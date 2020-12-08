@@ -1,3 +1,7 @@
+'use strict';
+
+const Joi = require('@hapi/joi');
+
 const { formFactory, fields } = require('shared/lib/forms');
 
 const { postcodeSchema } = require('../lib/postcode-validator');
@@ -37,9 +41,9 @@ const form = request => {
   return f;
 };
 
-const schema = {
+const schema = () => Joi.object({
   postcode: postcodeSchema
-};
+});
 
 exports.form = form;
 exports.schema = schema;

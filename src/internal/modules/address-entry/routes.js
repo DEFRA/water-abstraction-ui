@@ -1,10 +1,14 @@
 'use strict';
 
+const { createPreHandler } = require('shared/lib/pre-handlers/forms');
+
 const controller = require('./controller');
 const preHandlers = require('./pre-handlers');
 
 const { charging } = require('internal/lib/constants').scope;
 const allowedScopes = [charging];
+
+const forms = require('./forms');
 
 module.exports = {
   getPostcode: {
@@ -25,6 +29,10 @@ module.exports = {
         method: preHandlers.getSessionData, assign: 'sessionData'
       }, {
         method: preHandlers.searchForAddressesByPostcode, assign: 'addressSearchResults'
+      }, {
+        method: createPreHandler(forms.ukPostcode), assign: 'postcodeForm'
+      }, {
+        method: createPreHandler(forms.selectAddress), assign: 'selectAddressForm'
       }]
     }
   },
@@ -47,6 +55,10 @@ module.exports = {
         method: preHandlers.getSessionData, assign: 'sessionData'
       }, {
         method: preHandlers.searchForAddressesByPostcode, assign: 'addressSearchResults'
+      }, {
+        method: createPreHandler(forms.ukPostcode), assign: 'postcodeForm'
+      }, {
+        method: createPreHandler(forms.selectAddress), assign: 'selectAddressForm'
       }]
     }
   },
@@ -67,6 +79,8 @@ module.exports = {
       },
       pre: [{
         method: preHandlers.getSessionData, assign: 'sessionData'
+      }, {
+        method: createPreHandler(forms.manualAddressEntry), assign: 'form'
       }]
     }
   },
@@ -87,6 +101,112 @@ module.exports = {
       },
       pre: [{
         method: preHandlers.getSessionData, assign: 'sessionData'
+      }, {
+        method: createPreHandler(forms.manualAddressEntry), assign: 'form'
+      }]
+    }
+  },
+
+  getSelectCompanyAddress: {
+    method: 'GET',
+    path: '/address-entry/{key}/select-company-address',
+    handler: controller.getSelectCompanyAddress,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      description: 'Select an existing company address',
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications'
+        }
+      },
+      pre: [{
+        method: preHandlers.getSessionData, assign: 'sessionData'
+      }, {
+        method: preHandlers.getCompanyAddresses, assign: 'addresses'
+      }, {
+        method: preHandlers.getCompany, assign: 'company'
+      }, {
+        method: createPreHandler(forms.selectCompanyAddress), assign: 'form'
+      }]
+    }
+  },
+
+  postSelectCompanyAddress: {
+    method: 'POST',
+    path: '/address-entry/{key}/select-company-address',
+    handler: controller.postSelectCompanyAddress,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      description: 'Select an existing company address',
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications'
+        }
+      },
+      pre: [{
+        method: preHandlers.getSessionData, assign: 'sessionData'
+      }, {
+        method: preHandlers.getCompanyAddresses, assign: 'addresses'
+      }, {
+        method: preHandlers.getCompany, assign: 'company'
+      }, {
+        method: createPreHandler(forms.selectCompanyAddress), assign: 'form'
+      }]
+    }
+  },
+
+  getUseRegisteredOfficeAddress: {
+    method: 'get',
+    path: '/address-entry/{key}/use-registered-address',
+    handler: controller.getUseRegisteredAddress,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      description: 'Whether to use registered company address',
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications'
+        }
+      },
+      pre: [{
+        method: preHandlers.getSessionData, assign: 'sessionData'
+      },
+      {
+        method: preHandlers.getCompaniesHouseCompany, assign: 'company'
+      },
+      {
+        method: createPreHandler(forms.useRegisteredAddress), assign: 'form'
+      }]
+    }
+  },
+
+  postUseRegisteredOfficeAddress: {
+    method: 'post',
+    path: '/address-entry/{key}/use-registered-address',
+    handler: controller.postUseRegisteredAddress,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      description: 'Whether to use registered company address',
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications'
+        }
+      },
+      pre: [{
+        method: preHandlers.getSessionData, assign: 'sessionData'
+      },
+      {
+        method: preHandlers.getCompaniesHouseCompany, assign: 'company'
+      },
+      {
+        method: createPreHandler(forms.useRegisteredAddress), assign: 'form'
       }]
     }
   }

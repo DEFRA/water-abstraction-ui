@@ -103,7 +103,7 @@ const form = (request, address = {}) => {
 
 const OPTIONAL_STRING = Joi.string().empty('').default(null);
 
-const schema = VALID_ADDRESS.keys({
+const schema = () => VALID_ADDRESS.keys({
   csrf_token: Joi.string().uuid().required(),
   uprn: OPTIONAL_STRING
 });

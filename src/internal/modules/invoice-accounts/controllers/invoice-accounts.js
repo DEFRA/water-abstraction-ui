@@ -4,11 +4,8 @@ const queryString = require('querystring');
 const uuid = require('uuid');
 const sessionForms = require('shared/lib/session-forms');
 const forms = require('shared/lib/forms');
-const sessionHelper = require('shared/lib/session-helpers');
-const ADDRESS_FLOW_SESSION_KEY = require('../../address-entry/plugin').SESSION_KEY;
 
 const { selectCompanyForm, selectCompanyFormSchema } = require('../forms/select-company');
-const { selectAddressForm, selectAddressFormSchema } = require('../forms/select-address');
 const { selectExistingCompanyForm, selectExistingCompanySchema } = require('../forms/select-existing-company');
 const { addFaoForm, addFaoFormSchema } = require('../forms/add-fao');
 const { checkDetailsForm } = require('../forms/check-details');
@@ -17,8 +14,6 @@ const titleCase = require('title-case');
 const { has, isEmpty, assign } = require('lodash');
 const urlJoin = require('url-join');
 
-// tempId is used to determine if a new entity should be created.
-const tempId = '00000000-0000-0000-0000-000000000000';
 const dataService = require('../services/data-service');
 const helpers = require('../lib/helpers');
 
@@ -100,60 +95,32 @@ const postSearchCompany = async (request, h) => {
 
 const getAddress = async (request, h) => {
   const { regionId, companyId } = request.params;
-  // get the session data to check if the address has been set and if it is new or existing
   const session = dataService.sessionManager(request, regionId, companyId);
-  const addresses = await helpers.getAllAddresses(companyId, session);
-  if (session.address && session.address.addressId === tempId) { addresses.push(session.address); }
-  const selectedAddressId = has(session, 'address') ? session.address.addressId : null;
-  return h.view('nunjucks/form', {
-    ...request.view,
-    caption: helpers.getFormTitleCaption(session.viewData.licenceNumber),
-    pageTitle: `Select an existing address for ${session.viewData.companyName}`,
-    back: `/invoice-accounts/create/${regionId}/${companyId}?redirectPath=${session.viewData.redirectPath}`,
-    form: sessionForms.get(request, selectAddressForm(request, addresses, selectedAddressId))
-  });
-};
 
-const postAddress = async (request, h) => {
-  const { regionId, companyId } = request.params;
-  const session = dataService.sessionManager(request, regionId, companyId);
-  const addresses = await helpers.getAllAddresses(companyId, session);
-  const schema = selectAddressFormSchema(request.payload);
-  const form = forms.handleRequest(selectAddressForm(request, addresses), request, schema);
-  if (form.isValid) {
-    const { selectedAddress } = forms.getValues(form);
-    if (selectedAddress !== tempId) { // selectedAddress is either an address GUID, a tempId, or string `new_address`.
-      dataService.sessionManager(request, regionId, companyId, { address: { addressId: selectedAddress } });
-    }
-    const redirectPath = selectedAddress === 'new_address' ? 'create-address' : 'add-fao';
-    return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/${redirectPath}`);
-  }
-  return h.postRedirectGet(form, urlJoin('/invoice-accounts/create/', regionId, companyId, 'select-address'));
-};
+  // If the invoice account is delegated to an agent, present that company's addresses to
+  // choose from
+  // @todo this doesn't work in all cases presently as the contact plugin populates the .id property
+  // of the property with an all-zero guid - we should remove this behaviour so that non-persisted
+  // companies have no .id
+  const addressPluginCompanyId = session.agent ? session.agent.id : companyId;
 
-// Handles the redirection to the address entry flow
-const getCreateAddress = async (request, h) => {
-  const { regionId, companyId } = request.params;
-  const queryTail = queryString.stringify({
+  return h.redirect(request.addressLookupRedirect({
     redirectPath: `/invoice-accounts/create/${regionId}/${companyId}/address-entered`,
-    back: `/invoice-accounts/create/${regionId}/${companyId}/check-details`
-  });
-  return h.redirect(`/address-entry/postcode?${queryTail}`);
+    back: `/invoice-accounts/create/${regionId}/${companyId}`,
+    key: `new-invoice-account-${companyId}`,
+    companyId: addressPluginCompanyId,
+    caption: helpers.getFormTitleCaption(session.viewData.licenceNumber)
+  }));
 };
 
-// Handles the address entered via the address entry flow, and stores it in the session object
+// Handles the return from the address entry flow, gets address and stores it in the session object
 const getAddressEntered = async (request, h) => {
   const { regionId, companyId } = request.params;
-  // Fetch the address using the address flow session key
-  const address = await sessionHelper.saveToSession(request, ADDRESS_FLOW_SESSION_KEY);
-  // Store the address in the session object
-  dataService.sessionManager(request, regionId, companyId, {
-    address: {
-      ...address,
-      addressId: address.id ? address.id : tempId,
-      id: address.id ? address.id : tempId
-    }
-  });
+
+  // Get address from address plugin flow and store in session
+  const address = request.getNewAddress(helpers.getFlowKey(request));
+  dataService.sessionManager(request, regionId, companyId, { address });
+
   // Redirect the user to the check your answers page.
   return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/check-details`);
 };
@@ -200,6 +167,7 @@ const postFao = async (request, h) => {
 const getCheckDetails = async (request, h) => {
   const { regionId, companyId } = request.params;
   const session = dataService.sessionManager(request, regionId, companyId);
+
   if (Object.keys(session).length === 0 && session.constructor === Object) {
     throw boom.notFound('Session data not found');
   }
@@ -246,9 +214,6 @@ module.exports.getSearchCompany = getSearchCompany;
 module.exports.postSearchCompany = postSearchCompany;
 
 module.exports.getAddress = getAddress;
-module.exports.postAddress = postAddress;
-
-module.exports.getCreateAddress = getCreateAddress;
 module.exports.getAddressEntered = getAddressEntered;
 
 module.exports.postFao = postFao;

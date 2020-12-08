@@ -29,11 +29,33 @@ const searchForAddressesByPostcode = async request => {
   return null;
 };
 
-const getSessionData = request => {
+const getSessionDataFromRequest = request => {
   const { key } = request.params;
-  const data = session.get(request, key);
-  return data || Boom.notFound(`Session data not found for ${key}`);
+  return session.get(request, key);
+};
+
+const getSessionData = request => {
+  const data = getSessionDataFromRequest(request);
+  return data || Boom.notFound(`Session data not found for ${request.params.key}`);
+};
+
+const getCompanyAddresses = request => {
+  const { companyId } = getSessionDataFromRequest(request);
+  return services.water.companies.getAddresses(companyId);
+};
+
+const getCompany = request => {
+  const { companyId } = getSessionDataFromRequest(request);
+  return services.water.companies.getCompany(companyId);
+};
+
+const getCompaniesHouseCompany = async (request) => {
+  const { companyNumber } = getSessionDataFromRequest(request);
+  return services.water.companies.getCompanyFromCompaniesHouse(companyNumber);
 };
 
 exports.searchForAddressesByPostcode = searchForAddressesByPostcode;
 exports.getSessionData = getSessionData;
+exports.getCompanyAddresses = getCompanyAddresses;
+exports.getCompany = getCompany;
+exports.getCompaniesHouseCompany = getCompaniesHouseCompany;

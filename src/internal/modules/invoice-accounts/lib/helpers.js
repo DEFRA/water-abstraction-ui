@@ -62,13 +62,13 @@ const processSelectContactFormData = (request, regionId, companyId, selectedCont
 };
 
 const getSelectedAddress = async (companyId, session) => {
-  if (session.address.addressId === tempId) {
-    return session.address;
-  } else {
+  const { address } = session;
+  if (address.id) {
     const addresses = await getAllAddresses(companyId, session);
-    const selectedAddress = addresses.find(address => (address.id === session.address.addressId));
+    const selectedAddress = addresses.find(address => (address.id === session.address.id));
     return selectedAddress;
-  };
+  }
+  return address;
 };
 
 const getAllAddresses = async (companyId, session) => {
@@ -214,6 +214,8 @@ const postDataHandler = (request) => {
   return requestBody;
 };
 
+const getFlowKey = request => `new-invoice-account-${request.params.companyId}`;
+
 exports.getName = getName;
 exports.getCompanyName = getCompanyName;
 exports.getContactName = getContactName;
@@ -226,3 +228,4 @@ exports.processCompanyFormData = processCompanyFormData;
 exports.processSelectContactFormData = processSelectContactFormData;
 exports.processContactEntry = processContactEntry;
 exports.postDataHandler = postDataHandler;
+exports.getFlowKey = getFlowKey;

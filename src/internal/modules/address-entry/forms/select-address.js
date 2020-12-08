@@ -39,9 +39,10 @@ const getAddressChoices = addresses => {
 const form = (request, uprn) => {
   const { csrfToken } = request.view;
   const { postcode } = request.query;
-  const { addressSearchResults } = request.pre;
+  const addresses = request.pre.addressSearchResults || [];
+  const { key } = request.params;
 
-  const manualEntryLink = routing.getManualEntry(request, { country: COUNTRY_UK, postcode });
+  const manualEntryLink = routing.getManualEntry(key, { country: COUNTRY_UK, postcode });
 
   const f = formFactory(`${request.path}?${queryString.stringify({ postcode })}`);
 
@@ -55,7 +56,7 @@ const form = (request, uprn) => {
       }
     },
     label: 'Select an address',
-    choices: getAddressChoices(addressSearchResults)
+    choices: getAddressChoices(addresses)
   }, parseInt(uprn)));
 
   f.fields.push(fields.link(null, {
@@ -70,11 +71,11 @@ const form = (request, uprn) => {
   return f;
 };
 
-const schema = {
+const schema = () => Joi.object({
   csrf_token: Joi.string().uuid().required(),
   uprn: Joi.string().regex(/^[0-9]+$/).required(),
   postcode: Joi.string().required().allow('')
-};
+});
 
 exports.form = form;
 exports.schema = schema;

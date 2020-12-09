@@ -1,9 +1,10 @@
 'use strict';
 
 const queryString = require('querystring');
+const { isEmpty } = require('lodash');
 
 const getPathWithQuery = (path, query) => {
-  const tail = query ? `?${queryString.stringify(query)}` : '';
+  const tail = !isEmpty(query) ? `?${queryString.stringify(query)}` : '';
   return `${path}${tail}`;
 };
 

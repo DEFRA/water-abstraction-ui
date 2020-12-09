@@ -1,6 +1,4 @@
 'use strict';
-
-const { createPreHandler } = require('shared/lib/pre-handlers/forms');
 const { createRoutePair } = require('shared/lib/route-helpers');
 
 const controller = require('./controller');
@@ -8,8 +6,6 @@ const preHandlers = require('./pre-handlers');
 
 const { charging } = require('internal/lib/constants').scope;
 const allowedScopes = [charging];
-
-const forms = require('./forms');
 
 module.exports = {
   getPostcode: {
@@ -30,10 +26,6 @@ module.exports = {
         method: preHandlers.getSessionData, assign: 'sessionData'
       }, {
         method: preHandlers.searchForAddressesByPostcode, assign: 'addressSearchResults'
-      }, {
-        method: createPreHandler(forms.ukPostcode), assign: 'postcodeForm'
-      }, {
-        method: createPreHandler(forms.selectAddress), assign: 'selectAddressForm'
       }]
     }
   },
@@ -56,10 +48,6 @@ module.exports = {
         method: preHandlers.getSessionData, assign: 'sessionData'
       }, {
         method: preHandlers.searchForAddressesByPostcode, assign: 'addressSearchResults'
-      }, {
-        method: createPreHandler(forms.ukPostcode), assign: 'postcodeForm'
-      }, {
-        method: createPreHandler(forms.selectAddress), assign: 'selectAddressForm'
       }]
     }
   },
@@ -78,8 +66,6 @@ module.exports = {
       },
       pre: [{
         method: preHandlers.getSessionData, assign: 'sessionData'
-      }, {
-        method: createPreHandler(forms.manualAddressEntry), assign: 'form'
       }]
     }
   }),
@@ -102,8 +88,6 @@ module.exports = {
         method: preHandlers.getCompanyAddresses, assign: 'addresses'
       }, {
         method: preHandlers.getCompany, assign: 'company'
-      }, {
-        method: createPreHandler(forms.selectCompanyAddress), assign: 'form'
       }]
     }
   }),
@@ -125,9 +109,6 @@ module.exports = {
       },
       {
         method: preHandlers.getCompaniesHouseCompany, assign: 'company'
-      },
-      {
-        method: createPreHandler(forms.useRegisteredAddress), assign: 'form'
       }]
     }
   })

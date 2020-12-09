@@ -94,18 +94,14 @@ const form = (request, address = {}) => {
   const data = Object.assign({}, address, pick(request.query, 'country', 'postcode'));
   f = setValues(f, data);
 
-  f.fields.push(fields.hidden('uprn', {}, null));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 
   return f;
 };
 
-const OPTIONAL_STRING = Joi.string().empty('').default(null);
-
 const schema = () => VALID_ADDRESS.keys({
-  csrf_token: Joi.string().uuid().required(),
-  uprn: OPTIONAL_STRING
+  csrf_token: Joi.string().uuid().required()
 });
 
 exports.form = form;

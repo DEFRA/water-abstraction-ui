@@ -49,7 +49,7 @@ const getCompany = request => {
   return services.water.companies.getCompany(companyId);
 };
 
-const getCompaniesHouseCompany = async (request) => {
+const getCompaniesHouseCompany = async request => {
   const { companyNumber } = getSessionDataFromRequest(request);
   return services.water.companies.getCompanyFromCompaniesHouse(companyNumber);
 };

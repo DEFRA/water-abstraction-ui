@@ -55,6 +55,6 @@ class CompaniesService extends ServiceClient {
   getCompanyFromCompaniesHouse (companyNumber) {
     const url = this.joinUrl(`companies-house/companies/${companyNumber}`);
     return this.serviceRequest.get(url);
-  };
+  }
 }
 module.exports = CompaniesService;

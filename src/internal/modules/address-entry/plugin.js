@@ -54,7 +54,7 @@ function getNewAddress (key) {
 }
 
 const addressLookupPlugin = {
-  register: (server, options) => {
+  register: server => {
     // Register method to initiate flow and get data
     server.decorate('request', 'addressLookupRedirect', addressLookupRedirect);
     server.decorate('request', 'getNewAddress', getNewAddress);

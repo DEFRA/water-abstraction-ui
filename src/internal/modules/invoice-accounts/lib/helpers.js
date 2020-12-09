@@ -65,8 +65,7 @@ const getSelectedAddress = async (companyId, session) => {
   const { address } = session;
   if (address.id) {
     const addresses = await getAllAddresses(companyId, session);
-    const selectedAddress = addresses.find(address => (address.id === session.address.id));
-    return selectedAddress;
+    return addresses.find(row => (row.id === address.id));
   }
   return address;
 };

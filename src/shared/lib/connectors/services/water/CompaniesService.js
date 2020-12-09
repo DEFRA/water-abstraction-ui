@@ -42,18 +42,28 @@ class CompaniesService extends ServiceClient {
     return this.serviceRequest.post(url, { body });
   }
 
-  getCompaniesByName (searchQuery) {
-    const url = this.joinUrl(`companies/search?name=${searchQuery}`);
-    return this.serviceRequest.get(url);
+  getCompaniesByName (name) {
+    const url = this.joinUrl('companies/search');
+    const options = {
+      qs: {
+        name
+      }
+    };
+    return this.serviceRequest.get(url, options);
   };
 
-  getCompaniesFromCompaniesHouse (searchQuery) {
-    const url = this.joinUrl(`companies-house/search/companies?q=${searchQuery}`);
-    return this.serviceRequest.get(url);
+  getCompaniesFromCompaniesHouse (q) {
+    const url = this.joinUrl('companies-house/search/companies');
+    const options = {
+      qs: {
+        q
+      }
+    };
+    return this.serviceRequest.get(url, options);
   };
 
   getCompanyFromCompaniesHouse (companyNumber) {
-    const url = this.joinUrl(`companies-house/companies/${companyNumber}`);
+    const url = this.joinUrl('companies-house/companies', companyNumber);
     return this.serviceRequest.get(url);
   }
 }

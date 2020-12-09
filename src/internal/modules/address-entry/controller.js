@@ -20,6 +20,7 @@ const getDefaultView = request => {
  * Search by postcode and display results
  */
 const getPostcode = async (request, h) => {
+  const { key } = request.params;
   const { postcodeForm, selectAddressForm } = request.pre;
 
   // If valid postcode, select available addresses
@@ -28,7 +29,7 @@ const getPostcode = async (request, h) => {
 
     return h.view('nunjucks/address-entry/select-address', {
       ...getDefaultView(request),
-      back: request.path,
+      back: routing.getPostcode(key),
       pageTitle: 'Select the address',
       form: selectAddressForm,
       postcode
@@ -83,7 +84,6 @@ const postManualAddressEntry = (request, h) => {
 
 /**
  * Display form to select existing company address
- * @todo handle redirect if there are no addresses for this company
  */
 const getSelectCompanyAddress = (request, h) => {
   // If there are no existing addresses redirect to postcode search

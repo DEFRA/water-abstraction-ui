@@ -6,6 +6,7 @@ const titleCase = require('title-case');
 const Joi = require('@hapi/joi');
 const queryString = require('querystring');
 const routing = require('../lib/routing');
+const { postcodeSchema } = require('../lib/postcode-validator');
 
 const { COUNTRY_UK } = require('../lib/constants');
 
@@ -47,11 +48,9 @@ const form = (request, uprn) => {
   const f = formFactory(`${request.path}?${queryString.stringify({ postcode })}`);
 
   f.fields.push(fields.dropdown('uprn', {
+    mapper: 'numberMapper',
     errors: {
-      'any.empty': {
-        message: 'Select an address from the list'
-      },
-      'string.regex.base': {
+      'number.base': {
         message: 'Select an address from the list'
       }
     },
@@ -71,11 +70,17 @@ const form = (request, uprn) => {
   return f;
 };
 
-const schema = () => Joi.object({
-  csrf_token: Joi.string().uuid().required(),
-  uprn: Joi.string().regex(/^[0-9]+$/).required(),
-  postcode: Joi.string().required().allow('')
-});
+const getUprn = address => address.uprn;
+
+const schema = request => {
+  const { addressSearchResults } = request.pre;
+  const validUprns = addressSearchResults.map(getUprn);
+  return Joi.object({
+    csrf_token: Joi.string().uuid().required(),
+    uprn: Joi.number().integer().valid(validUprns).required(),
+    postcode: postcodeSchema
+  });
+};
 
 exports.form = form;
 exports.schema = schema;

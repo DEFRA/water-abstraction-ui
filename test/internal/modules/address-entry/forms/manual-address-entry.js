@@ -99,19 +99,19 @@ experiment('internal/modules/address-entry/forms/manual-address-entry', () => {
     });
 
     test('validates for a valid address and csrf token', async () => {
-      const { error } = manualAddressEntry.schema.validate(address);
+      const { error } = manualAddressEntry.schema().validate(address);
       expect(error).to.be.null();
     });
 
     test('fails validation for a valid address and invalid csrf token', async () => {
       address.csrf_token = 'not-a-guid';
-      const { error } = manualAddressEntry.schema.validate(address);
+      const { error } = manualAddressEntry.schema().validate(address);
       expect(error).to.not.be.null();
     });
 
     test('fails validation for an invalid address and valid csrf token', async () => {
       address.postcode = 'XXX XXX';
-      const { error } = manualAddressEntry.schema.validate(address);
+      const { error } = manualAddressEntry.schema().validate(address);
       expect(error).to.not.be.null();
     });
   });

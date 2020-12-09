@@ -101,16 +101,18 @@ const getAddress = async (request, h) => {
   // choose from
   // @todo this doesn't work in all cases presently as the contact plugin populates the .id property
   // of the property with an all-zero guid - we should remove this behaviour so that non-persisted
-  // companies have no .id
+  // companies have no .id property
   const addressPluginCompanyId = session.agent ? session.agent.id : companyId;
 
-  return h.redirect(request.addressLookupRedirect({
+  const path = request.addressLookupRedirect({
     redirectPath: `/invoice-accounts/create/${regionId}/${companyId}/address-entered`,
     back: `/invoice-accounts/create/${regionId}/${companyId}`,
-    key: `new-invoice-account-${companyId}`,
+    key: helpers.getFlowKey(request),
     companyId: addressPluginCompanyId,
     caption: helpers.getFormTitleCaption(session.viewData.licenceNumber)
-  }));
+  });
+
+  return h.redirect(path);
 };
 
 // Handles the return from the address entry flow, gets address and stores it in the session object

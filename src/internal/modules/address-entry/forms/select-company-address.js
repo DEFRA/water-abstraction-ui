@@ -4,6 +4,7 @@ const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const { uniqBy } = require('lodash');
 const addressMapper = require('shared/lib/mappers/address');
+const { NEW_ADDRESS } = require('../lib/constants');
 
 const getAddress = row => row.address;
 
@@ -43,7 +44,7 @@ const selectAddressForm = request => {
       {
         divider: 'or'
       },
-      { value: 'new_address', label: 'Set up a new address' }
+      { value: NEW_ADDRESS, label: 'Set up a new address' }
     ]
   }));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
@@ -57,10 +58,10 @@ const selectAddressFormSchema = request => {
   const validAddressIds = addresses
     .map(row => row.address.id);
 
-  return {
+  return Joi.object({
     csrf_token: Joi.string().uuid().required(),
-    selectedAddress: Joi.string().uuid().valid(validAddressIds).allow('new_address').required()
-  };
+    selectedAddress: Joi.string().uuid().valid(validAddressIds).allow(NEW_ADDRESS).required()
+  });
 };
 
 exports.form = selectAddressForm;

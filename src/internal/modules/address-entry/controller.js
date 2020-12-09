@@ -5,6 +5,7 @@ const { omit } = require('lodash');
 const forms = require('shared/lib/forms');
 const session = require('./lib/session');
 const routing = require('./lib/routing');
+const { NEW_ADDRESS } = require('./lib/constants');
 
 const getDefaultView = request => {
   const { sessionData: { caption, back } } = request.pre;
@@ -107,7 +108,7 @@ const postSelectCompanyAddress = (request, h) => {
 
   const { selectedAddress } = forms.getValues(request.pre.form);
 
-  if (selectedAddress === 'new_address') {
+  if (selectedAddress === NEW_ADDRESS) {
     return h.redirect(routing.getPostcode(request.params.key));
   }
 

@@ -15,8 +15,6 @@ const createPreHandler = formContainer => (request, h) => {
 
   // Handle request
   if (request.method === form.method.toLowerCase()) {
-    console.log('handle request', form);
-
     form = forms.handleRequest(
       formContainer.form(request),
       request,

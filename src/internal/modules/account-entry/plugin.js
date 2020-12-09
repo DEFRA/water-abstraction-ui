@@ -1,6 +1,6 @@
 const routes = require('./routes');
 
-const contactEntryPlugin = {
+const accountEntryPlugin = {
   register: (server) => {
     for (const eachRoute of Object.values(routes)) {
       server.route(eachRoute);
@@ -8,9 +8,9 @@ const contactEntryPlugin = {
   },
 
   pkg: {
-    name: 'contactEntryPlugin',
+    name: 'accountEntryPlugin',
     version: '1.0.0'
   }
 };
 
-module.exports = contactEntryPlugin;
+module.exports = accountEntryPlugin;

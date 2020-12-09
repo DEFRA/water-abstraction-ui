@@ -1,13 +1,13 @@
 'use strict';
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
-const routes = require('../../../../src/internal/modules/contact-entry/routes');
-const controllers = require('../../../../src/internal/modules/contact-entry/controllers');
+const routes = require('../../../../src/internal/modules/account-entry/routes');
+const controllers = require('../../../../src/internal/modules/account-entry/controllers');
 const testHelpers = require('../../test-helpers');
 const uuid = require('uuid');
 const queryString = require('querystring');
 
-experiment('internal/modules/contact-entry/routes', () => {
+experiment('internal/modules/account-entry/routes', () => {
   experiment('.getNew', () => {
     let server;
 
@@ -17,7 +17,7 @@ experiment('internal/modules/contact-entry/routes', () => {
 
     test('has the correct path', () => {
       expect(routes.getNew.path)
-        .to.equal('/contact-entry/new');
+        .to.equal('/account-entry/new');
     });
 
     test('has the correct controller', () => {
@@ -37,7 +37,7 @@ experiment('internal/modules/contact-entry/routes', () => {
         sessionKey: 'some key which clearly is not a uuid'
       });
 
-      let url = `/contact-entry/new?${queryTail}`;
+      let url = `/account-entry/new?${queryTail}`;
 
       const response = await server.inject(url, { method: 'GET' });
       expect(response.statusCode).to.equal(400);
@@ -51,7 +51,7 @@ experiment('internal/modules/contact-entry/routes', () => {
         sessionKey: uuid()
       });
 
-      let url = `/contact-entry/new?${queryTail}`;
+      let url = `/account-entry/new?${queryTail}`;
 
       const response = await server.inject(url, { method: 'GET' });
       expect(response.statusCode).to.equal(400);
@@ -65,7 +65,7 @@ experiment('internal/modules/contact-entry/routes', () => {
         searchQuery: 'a non-null value'
       });
 
-      let url = `/contact-entry/new?${queryTail}`;
+      let url = `/account-entry/new?${queryTail}`;
 
       const response = await server.inject(url, { method: 'GET' });
       expect(response.statusCode).to.equal(200);
@@ -81,7 +81,7 @@ experiment('internal/modules/contact-entry/routes', () => {
 
     test('has the correct path', () => {
       expect(routes.getSelectAccountType.path)
-        .to.equal('/contact-entry/new/account-type');
+        .to.equal('/account-entry/new/account-type');
     });
 
     test('has the correct controller', () => {
@@ -99,7 +99,7 @@ experiment('internal/modules/contact-entry/routes', () => {
         sessionKey: 'some key which clearly is not a uuid'
       });
 
-      let url = `/contact-entry/new/account-type?${queryTail}`;
+      let url = `/account-entry/new/account-type?${queryTail}`;
 
       const response = await server.inject(url, { method: 'GET' });
       expect(response.statusCode).to.equal(400);
@@ -110,7 +110,7 @@ experiment('internal/modules/contact-entry/routes', () => {
         sessionKey: uuid()
       });
 
-      let url = `/contact-entry/new/account-type?${queryTail}`;
+      let url = `/account-entry/new/account-type?${queryTail}`;
 
       const response = await server.inject(url, { method: 'GET' });
       expect(response.statusCode).to.equal(200);
@@ -125,7 +125,7 @@ experiment('internal/modules/contact-entry/routes', () => {
 
     test('has the correct path', () => {
       expect(routes.postSelectAccountType.path)
-        .to.equal('/contact-entry/new/account-type');
+        .to.equal('/account-entry/new/account-type');
     });
 
     test('has the correct controller', () => {
@@ -148,7 +148,7 @@ experiment('internal/modules/contact-entry/routes', () => {
 
     test('has the correct path', () => {
       expect(routes.getSelectAccountType.path)
-        .to.equal('/contact-entry/new/account-type');
+        .to.equal('/account-entry/new/account-type');
     });
 
     test('has the correct controller', () => {
@@ -161,7 +161,7 @@ experiment('internal/modules/contact-entry/routes', () => {
         sessionKey: 'some key which clearly is not a uuid'
       });
 
-      let url = `/contact-entry/new/account-type?${queryTail}`;
+      let url = `/account-entry/new/account-type?${queryTail}`;
 
       const response = await server.inject(url, { method: 'GET' });
       expect(response.statusCode).to.equal(400);
@@ -176,7 +176,7 @@ experiment('internal/modules/contact-entry/routes', () => {
 
     test('has the correct path', () => {
       expect(routes.postSelectAccountType.path)
-        .to.equal('/contact-entry/new/account-type');
+        .to.equal('/account-entry/new/account-type');
     });
 
     test('has the correct controller', () => {
@@ -193,7 +193,7 @@ experiment('internal/modules/contact-entry/routes', () => {
 
     test('has the correct path', () => {
       expect(routes.getEnterNewDetails.path)
-        .to.equal('/contact-entry/new/details');
+        .to.equal('/account-entry/new/details');
     });
 
     test('has the correct controller', () => {
@@ -210,7 +210,7 @@ experiment('internal/modules/contact-entry/routes', () => {
 
     test('has the correct path', () => {
       expect(routes.getAddressEntered.path)
-        .to.equal('/contact-entry/new/address-entered');
+        .to.equal('/account-entry/new/address-entered');
     });
 
     test('has the correct controller', () => {
@@ -227,7 +227,7 @@ experiment('internal/modules/contact-entry/routes', () => {
 
     test('has the correct path', () => {
       expect(routes.postCompanySearch.path)
-        .to.equal('/contact-entry/new/details/company-search');
+        .to.equal('/account-entry/new/details/company-search');
     });
 
     test('has the correct controller', () => {
@@ -244,7 +244,7 @@ experiment('internal/modules/contact-entry/routes', () => {
 
     test('has the correct path', () => {
       expect(routes.getSelectCompany.path)
-        .to.equal('/contact-entry/new/details/company-search/select-company');
+        .to.equal('/account-entry/new/details/company-search/select-company');
     });
 
     test('has the correct controller', () => {
@@ -261,7 +261,7 @@ experiment('internal/modules/contact-entry/routes', () => {
 
     test('has the correct path', () => {
       expect(routes.postSelectCompany.path)
-        .to.equal('/contact-entry/new/details/company-search/select-company');
+        .to.equal('/account-entry/new/details/company-search/select-company');
     });
 
     test('has the correct controller', () => {
@@ -278,7 +278,7 @@ experiment('internal/modules/contact-entry/routes', () => {
 
     test('has the correct path', () => {
       expect(routes.getSelectCompanyAddress.path)
-        .to.equal('/contact-entry/new/details/company-search/select-company-address');
+        .to.equal('/account-entry/new/details/company-search/select-company-address');
     });
 
     test('has the correct controller', () => {
@@ -295,7 +295,7 @@ experiment('internal/modules/contact-entry/routes', () => {
 
     test('has the correct path', () => {
       expect(routes.postSelectCompanyAddress.path)
-        .to.equal('/contact-entry/new/details/company-search/select-company-address');
+        .to.equal('/account-entry/new/details/company-search/select-company-address');
     });
 
     test('has the correct controller', () => {

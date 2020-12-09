@@ -6,7 +6,7 @@ module.exports = {
   getNew: {
     // Route for starting the flow. Registers data in session.
     method: 'GET',
-    path: '/contact-entry/new',
+    path: '/account-entry/new',
     handler: controllers.getNew,
     options: {
       validate: {
@@ -23,7 +23,7 @@ module.exports = {
   getSelectAccountType: {
     // Route for displaying the page for selecting an account type when creating a new contact
     method: 'GET',
-    path: '/contact-entry/new/account-type',
+    path: '/account-entry/new/account-type',
     handler: controllers.getSelectAccountTypeController,
     options: {
       validate: {
@@ -37,13 +37,13 @@ module.exports = {
   postSelectAccountType: {
     // Route for selecting an account type when creating a new contact
     method: 'POST',
-    path: '/contact-entry/new/account-type',
+    path: '/account-entry/new/account-type',
     handler: controllers.postSelectAccountTypeController
   },
   getEnterNewDetails: {
     // Route for displaying the list of existing contact addresses.
     method: 'GET',
-    path: '/contact-entry/new/details',
+    path: '/account-entry/new/details',
     handler: controllers.getDetailsController,
     options: {
       validate: {
@@ -57,7 +57,7 @@ module.exports = {
   getAddressEntered: {
     // Route for handling the handover from the address entry module
     method: 'GET',
-    path: '/contact-entry/new/address-entered',
+    path: '/account-entry/new/address-entered',
     handler: controllers.getAddressEntered,
     options: {
       validate: {
@@ -72,12 +72,12 @@ module.exports = {
     // Route for posting the name or number of a new company contact
     // It searches companies house for a matching company
     method: 'POST',
-    path: '/contact-entry/new/details/company-search',
+    path: '/account-entry/new/details/company-search',
     handler: controllers.postCompanySearchController
   },
   getSelectCompany: {
     method: 'GET',
-    path: '/contact-entry/new/details/company-search/select-company',
+    path: '/account-entry/new/details/company-search/select-company',
     handler: controllers.getSelectCompanyController,
     options: {
       pre: [
@@ -93,7 +93,7 @@ module.exports = {
   },
   postSelectCompany: {
     method: 'POST',
-    path: '/contact-entry/new/details/company-search/select-company',
+    path: '/account-entry/new/details/company-search/select-company',
     handler: controllers.postSelectCompanyController,
     options: {
       pre: [
@@ -103,7 +103,7 @@ module.exports = {
   },
   getSelectCompanyAddress: {
     method: 'GET',
-    path: '/contact-entry/new/details/company-search/select-company-address',
+    path: '/account-entry/new/details/company-search/select-company-address',
     handler: controllers.getSelectCompanyAddressController,
     options: {
       pre: [
@@ -119,7 +119,7 @@ module.exports = {
   },
   postSelectCompanyAddress: {
     method: 'POST',
-    path: '/contact-entry/new/details/company-search/select-company-address',
+    path: '/account-entry/new/details/company-search/select-company-address',
     handler: controllers.postSelectCompanyAddressController,
     options: {
       pre: [

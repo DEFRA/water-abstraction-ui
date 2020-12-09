@@ -12,7 +12,7 @@ const sandbox = sinon.createSandbox();
 const uuid = require('uuid/v4');
 
 const services = require('internal/lib/connectors/services');
-const preHandlers = require('internal/modules/contact-entry/pre-handlers');
+const preHandlers = require('internal/modules/account-entry/pre-handlers');
 
 let defaultId = uuid();
 let contactId = uuid();

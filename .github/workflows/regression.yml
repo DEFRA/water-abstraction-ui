@@ -1,9 +1,6 @@
 name: Regression
 
-on:
-  push:
-    branches:
-      - 'release/**'
+on: workflow_dispatch
 
 jobs:
   RegressionTests:
@@ -188,9 +185,8 @@ jobs:
         with:
           redis-version: 6
 
-      - name: Provision SQL data and start pm2
+      - name: Start pm2
         run: |
-          PGPASSWORD=water psql -U water -d water -a -f ./test/regression/shared-helpers/provision.sql
           cd water-abstraction-permit-repository && pm2 start ecosystem.config.json && cd ..
           cd water-abstraction-service && pm2 start ecosystem.config.json && cd ..
           cd water-abstraction-tactical-crm && pm2 start ecosystem.config.json && cd ..

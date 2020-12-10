@@ -1,9 +1,6 @@
 name: Regression
 
-on:
-  push:
-    branches:
-      - 'release/**'
+on: workflow_dispatch
 
 jobs:
   RegressionTests:

@@ -61,19 +61,6 @@ experiment('internal/modules/address-entry/forms/manual-address-entry', () => {
       expect(field.value).to.equal('United Kingdom');
     });
 
-    test('has a hidden uprn field set to null', async () => {
-      const form = manualAddressEntry.form(createRequest());
-      const field = findField(form, 'uprn');
-      expect(field.value).to.equal(null);
-      expect(field.options.type).to.equal('hidden');
-    });
-
-    test('sets the uprn field to null even when a value is provided', async () => {
-      const form = manualAddressEntry.form(createRequest(), { uprn: '1234' });
-      const field = findField(form, 'uprn');
-      expect(field.value).to.equal(null);
-    });
-
     test('has a submit button', async () => {
       const form = manualAddressEntry.form(createRequest());
       const button = findButton(form);
@@ -99,19 +86,19 @@ experiment('internal/modules/address-entry/forms/manual-address-entry', () => {
     });
 
     test('validates for a valid address and csrf token', async () => {
-      const { error } = manualAddressEntry.schema.validate(address);
+      const { error } = manualAddressEntry.schema().validate(address);
       expect(error).to.be.null();
     });
 
     test('fails validation for a valid address and invalid csrf token', async () => {
       address.csrf_token = 'not-a-guid';
-      const { error } = manualAddressEntry.schema.validate(address);
+      const { error } = manualAddressEntry.schema().validate(address);
       expect(error).to.not.be.null();
     });
 
     test('fails validation for an invalid address and valid csrf token', async () => {
       address.postcode = 'XXX XXX';
-      const { error } = manualAddressEntry.schema.validate(address);
+      const { error } = manualAddressEntry.schema().validate(address);
       expect(error).to.not.be.null();
     });
   });

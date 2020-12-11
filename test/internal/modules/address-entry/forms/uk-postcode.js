@@ -3,15 +3,22 @@
 const { expect } = require('@hapi/code');
 const {
   experiment,
-  test
+  test,
+  beforeEach
 } = exports.lab = require('@hapi/lab').script();
 
+const { omit } = require('lodash');
 const ukPostcode = require('internal/modules/address-entry/forms/uk-postcode');
 const { findField, findButton } = require('../../../../lib/form-test');
+
+const KEY = 'test-key';
 
 const createRequest = (options = {}) => ({
   view: {
     csrfToken: 'token'
+  },
+  params: {
+    key: KEY
   },
   query: {},
   ...options
@@ -19,15 +26,9 @@ const createRequest = (options = {}) => ({
 
 experiment('internal/modules/address-entry/forms/uk-postcode', () => {
   experiment('.form', () => {
-    test('sets the form method to POST', async () => {
+    test('sets the form method to GET', async () => {
       const form = ukPostcode.form(createRequest());
-      expect(form.method).to.equal('POST');
-    });
-
-    test('has CSRF token field', async () => {
-      const form = ukPostcode.form(createRequest());
-      const csrf = findField(form, 'csrf_token');
-      expect(csrf.value).to.equal('token');
+      expect(form.method).to.equal('get');
     });
 
     test('has a postcode field', async () => {
@@ -52,7 +53,7 @@ experiment('internal/modules/address-entry/forms/uk-postcode', () => {
       const form = ukPostcode.form(createRequest());
       const field = findField(form, { options: { widget: 'link' } });
       expect(field.options.text).to.equal('This address is outside the UK');
-      expect(field.options.url).to.equal('/address-entry/manual-entry');
+      expect(field.options.url).to.equal('/address-entry/test-key/manual-entry');
     });
 
     test('has a submit button', async () => {
@@ -63,27 +64,39 @@ experiment('internal/modules/address-entry/forms/uk-postcode', () => {
   });
 
   experiment('.schema', () => {
-    experiment('csrf token', () => {
-      test('validates for a uuid', async () => {
-        const result = ukPostcode.schema.csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
-        expect(result.error).to.be.null();
-      });
+    let data;
 
-      test('fails for a string that is not a uuid', async () => {
-        const result = ukPostcode.schema.csrf_token.validate('pizza');
-        expect(result.error).to.exist();
-      });
+    beforeEach(async () => {
+      data = {
+        postcode: 'TT1 1TT'
+      };
     });
 
-    experiment('postcode', () => {
-      test('validates for a valid postcode', async () => {
-        const result = ukPostcode.schema.postcode.validate('TT1 1TT');
-        expect(result.error).to.be.null();
+    test('validates when the data is valid', async () => {
+      const { error } = ukPostcode.schema().validate(data);
+      expect(error).to.be.null();
+    });
+
+    experiment('.postcode validation', () => {
+      test('fails if omitted', async () => {
+        const { error } = ukPostcode.schema().validate(omit(data, 'postcode'));
+        expect(error).to.not.be.null();
       });
 
-      test('fails for a string that is not valid postcode', async () => {
-        const result = ukPostcode.schema.postcode.validate('123abc');
-        expect(result.error).to.exist();
+      test('fails if not a string', async () => {
+        const { error } = ukPostcode.schema().validate({
+          ...data,
+          postcode: null
+        });
+        expect(error).to.not.be.null();
+      });
+
+      test('fails if not a valid UK postcode', async () => {
+        const { error } = ukPostcode.schema().validate({
+          ...data,
+          postcode: 'X99 X99'
+        });
+        expect(error).to.not.be.null();
       });
     });
   });

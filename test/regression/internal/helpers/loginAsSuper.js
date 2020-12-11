@@ -5,10 +5,10 @@ const loginAsSuperUser = async () => {
     await browser.url('http://localhost:8008/signin');
 
     let emailField = await $('#email');
-    await emailField.setValue('regression.tests@defra.gov.uk');
+    await emailField.setValue('acceptance-test.external@example.com');
 
     let passwordField = await $('#password');
-    await passwordField.setValue('regression.tests#100');
+    await passwordField.setValue('P@55word');
 
     let SignInButton = await $('button[class="govuk-button govuk-button--start"]');
     await SignInButton.click();

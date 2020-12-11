@@ -1,3 +1,6 @@
+require('dotenv').config();
+const request = require('request');
+
 exports.config = {
   //
   // ====================
@@ -146,7 +149,7 @@ exports.config = {
     require: ['@babel/register'],
     ui: 'bdd',
     timeout: 60000
-  }
+  },
   //
   // =====
   // Hooks
@@ -160,8 +163,24 @@ exports.config = {
      * @param {Object} config wdio configuration object
      * @param {Array.<Object>} capabilities list of capabilities details
      */
-  // onPrepare: function (config, capabilities) {
-  // },
+  onPrepare: function (config, capabilities) {
+    request(`${process.env.WATER_URI}/acceptance-tests/set-up`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${process.env.JWT_TOKEN}`
+        },
+        form: {
+          includeInternalUsers: true
+        }
+      }, (err, response) => {
+        if (err) {
+          console.log('Something went wrong during set up.');
+        } else {
+          console.log('SET UP COMPLETE');
+        }
+      });
+  }
   /**
      * Gets executed before a worker process is spawned and can be used to initialise specific service
      * for that worker as well as modify runtime environments in an async fashion.

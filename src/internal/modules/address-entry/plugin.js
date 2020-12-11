@@ -1,19 +1,66 @@
-const SESSION_KEY = 'addressLookupData';
+'use strict';
 
-const getNewAddress = function (clearData = true) {
-  const address = this.yar.get(SESSION_KEY);
-  if (clearData) this.yar.clear(SESSION_KEY);
-  return address || {};
-};
+const Joi = require('@hapi/joi');
+const routes = Object.values(require('./routes'));
 
-const setNewAddress = function (address) {
-  return this.yar.set(SESSION_KEY, address);
-};
+const session = require('./lib/session');
+const routing = require('./lib/routing');
+
+const OPTIONS_SCHEMA = Joi.object({
+  back: Joi.string().required(),
+  caption: Joi.string().optional().default(null),
+  key: Joi.string().required(),
+  redirectPath: Joi.string().required(),
+  companyNumber: Joi.number().optional().integer().min(1),
+  companyId: Joi.string().guid().optional()
+});
+
+/**
+ * This function stores data in the session and returns
+ * a path which can start the flow
+ * @param {Object} options
+ * @return {String} path
+ */
+function addressLookupRedirect (options) {
+  // Validate options
+  Joi.assert(options, OPTIONS_SCHEMA);
+
+  // Store in session
+  session.set(this, options.key, options);
+
+  const { companyId, companyNumber, key } = options;
+
+  // Display existing company addresses
+  if (companyId) {
+    return routing.getCompanyAddress(key);
+  }
+
+  // Look up registered address at Companies House
+  if (companyNumber) {
+    return routing.getRegisteredAddress(key);
+  }
+
+  // Return redirect path to enter flow
+  return routing.getPostcode(key);
+}
+
+/**
+ * Get the data set in the flow
+ * @param {String} key
+ * @return {Object}
+ */
+function getNewAddress (key) {
+  return (session.get(this, key) || {}).data;
+}
 
 const addressLookupPlugin = {
-  register: (server) => {
+  register: server => {
+    // Register method to initiate flow and get data
+    server.decorate('request', 'addressLookupRedirect', addressLookupRedirect);
     server.decorate('request', 'getNewAddress', getNewAddress);
-    server.decorate('request', 'setNewAddress', setNewAddress);
+
+    // Register flow routes
+    server.route(routes);
   },
 
   pkg: {
@@ -23,4 +70,3 @@ const addressLookupPlugin = {
 };
 
 module.exports = addressLookupPlugin;
-module.exports.SESSION_KEY = SESSION_KEY;

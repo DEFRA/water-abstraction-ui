@@ -38,17 +38,6 @@ experiment('internal/modules/invoice-accounts/routes/invoice-accounts', () => {
     });
   });
 
-  experiment('.postAddress', () => {
-    test('limits scope to users with charing role', async () => {
-      expect(routes.postAddress.config.auth.scope)
-        .to.only.include([scope.charging]);
-    });
-    test('has the correct path', () => {
-      expect(routes.postAddress.path)
-        .to.equal('/invoice-accounts/create/{regionId}/{companyId}/select-address');
-    });
-  });
-
   experiment('.getFao', () => {
     test('limits scope to users with charing role', async () => {
       expect(routes.getFao.config.auth.scope)

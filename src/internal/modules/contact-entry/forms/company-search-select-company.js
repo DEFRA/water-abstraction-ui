@@ -1,6 +1,6 @@
 const { formFactory, fields } = require('shared/lib/forms');
 const Joi = require('@hapi/joi');
-const { getAddressText } = require('../../address-entry/lib/helpers');
+const { getAddressText } = require('../lib/helpers');
 
 const getCompanyText = row => {
   return `${row.company.name}, ${row.address ? getAddressText(row.address) : row.company.companyNumber}`;

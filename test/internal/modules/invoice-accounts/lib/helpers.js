@@ -115,7 +115,7 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
     });
 
     test('returns the address from the data service if the address != tempId', async () => {
-      const response = await helpers.getSelectedAddress(companyId, { address: { addressId: address.id } });
+      const response = await helpers.getSelectedAddress(companyId, { address: { id: address.id } });
       expect(response).to.equal(address);
     });
   });

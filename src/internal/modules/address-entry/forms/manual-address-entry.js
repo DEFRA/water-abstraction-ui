@@ -1,10 +1,10 @@
 'use strict';
 
+const { pick } = require('lodash');
 const { VALID_ADDRESS } = require('@envage/water-abstraction-helpers').validators;
 
 const { formFactory, fields, setValues } = require('shared/lib/forms');
 const Joi = require('@hapi/joi');
-const { isEmpty } = require('lodash');
 const countryList = require('./country-list');
 
 const GOVUK_WIDTH_TWO_THIRDS = 'govuk-!-width-two-thirds';
@@ -76,11 +76,8 @@ const getCountryDropdownChoices = () => [
  */
 const form = (request, address = {}) => {
   const { csrfToken } = request.view;
-  if (isEmpty(address) && request.query.country) {
-    address.country = request.query.country;
-  }
 
-  let f = formFactory('/address-entry/manual-entry');
+  let f = formFactory(request.path);
 
   f.fields.push(...addressTextFields);
 
@@ -93,20 +90,18 @@ const form = (request, address = {}) => {
     choices: getCountryDropdownChoices(address.country)
   }));
 
-  f = setValues(f, address);
+  // Allow country/postcode fields to be pre-populated by query params
+  const data = Object.assign({}, address, pick(request.query, 'country', 'postcode'));
+  f = setValues(f, data);
 
-  f.fields.push(fields.hidden('uprn', {}, null));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 
   return f;
 };
 
-const OPTIONAL_STRING = Joi.string().empty('').default(null);
-
-const schema = VALID_ADDRESS.keys({
-  csrf_token: Joi.string().uuid().required(),
-  uprn: OPTIONAL_STRING
+const schema = () => VALID_ADDRESS.keys({
+  csrf_token: Joi.string().uuid().required()
 });
 
 exports.form = form;

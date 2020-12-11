@@ -61,6 +61,7 @@ if (isAcceptanceTestTarget) {
         ]
       }
     },
+
     getAddress: {
       method: 'GET',
       path: '/invoice-accounts/create/{regionId}/{companyId}/select-address',
@@ -84,25 +85,7 @@ if (isAcceptanceTestTarget) {
         }
       }
     },
-    postAddress: {
-      method: 'POST',
-      path: '/invoice-accounts/create/{regionId}/{companyId}/select-address',
-      handler: controller.postAddress,
-      config: {
-        auth: { scope: allowedScopes },
-        description: 'select invoice account address',
-        validate: {
-          params: {
-            regionId: VALID_GUID,
-            companyId: VALID_GUID
-          },
-          payload: {
-            csrf_token: VALID_GUID,
-            selectedAddress: Joi.string().optional().allow('')
-          }
-        }
-      }
-    },
+
     getContactEntryTakeover: { // This route is intended to act as a redirection utility. When users reach the end of the `contact-entry` workflow, they will be redirected to this GET request.
       method: 'GET',
       path: '/invoice-accounts/create/{regionId}/{companyId}/contact-entry-complete',
@@ -120,6 +103,8 @@ if (isAcceptanceTestTarget) {
       }
 
     },
+
+    /*
     getCreateAddress: {
       method: 'GET',
       path: '/invoice-accounts/create/{regionId}/{companyId}/create-address',
@@ -141,6 +126,8 @@ if (isAcceptanceTestTarget) {
         }
       }
     },
+    */
+
     getAddressEntered: {
       method: 'GET',
       path: '/invoice-accounts/create/{regionId}/{companyId}/address-entered',

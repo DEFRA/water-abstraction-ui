@@ -1,3 +1,5 @@
+'use strict';
+
 const saveToSession = (request, sessionKey, data = {}) => {
   // get existing session data
   let sessionData = request.yar.get(sessionKey);

@@ -14,10 +14,23 @@ const sandbox = require('sinon').createSandbox();
 const dataService = require('../../../../../src/internal/modules/invoice-accounts/services/data-service');
 const forms = require('../../../../../src/shared/lib/forms/index');
 const sessionHelper = require('../../../../../src/shared/lib/session-helpers');
-const ADDRESS_FLOW_SESSION_KEY = require('../../../../../src/internal/modules/address-entry/plugin').SESSION_KEY;
-const tempId = '00000000-0000-0000-0000-000000000000';
 const moment = require('moment');
 const titleCase = require('title-case');
+
+const ADDRESS_ENTRY_PATH = '/address/entry/path';
+
+const ADDRESS = {
+  addressLine1: 'Daisy Cottage',
+  addressLine2: 'Buttercup Lane',
+  addressLine3: null,
+  addressLine4: null,
+  town: 'Testington',
+  county: 'Testingshire',
+  postcode: 'TT1 1TT',
+  country: 'United Kindom',
+  uprn: null,
+  source: 'wrls'
+};
 
 experiment('./internal/modules/invoice-accounts/controller', () => {
   const regionId = uuid();
@@ -87,7 +100,9 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
           id: companyId,
           name: companyName
         }
-      }
+      },
+      addressLookupRedirect: sandbox.stub().returns(ADDRESS_ENTRY_PATH),
+      getNewAddress: sandbox.stub().returns(ADDRESS)
     };
 
     h = {
@@ -196,86 +211,20 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
     beforeEach(async () => {
       await controller.getAddress(request, h);
     });
-    test('calls dataService.getCompanyAddresses with the correct query param', async () => {
-      const args = dataService.getCompanyAddresses.firstCall.args;
-      expect(args[0]).to.equal(companyId);
-    });
-    test('calls dataService.sessionManager with the correct params', async () => {
-      const args = dataService.sessionManager.firstCall.args;
-      expect(args[0]).to.equal(request);
-      expect(args[1]).to.equal(regionId);
-      expect(args[2]).to.equal(companyId);
-      // no data to merge is passed to the session
-      expect(args[3]).to.equal(undefined);
-      expect(dataService.sessionManager.calledOnce).to.be.true();
-    });
-    test('the expected view template is used', async () => {
-      const args = h.view.lastCall.args;
-      expect(args[0]).to.equal('nunjucks/form');
-    });
-    test('the correct page title is assigned', async () => {
-      const { pageTitle } = h.view.lastCall.args[1];
-      expect(pageTitle).to.equal(`Select an existing address for ${companyName}`);
-    });
-    test('the caption has the correct value assigned', async () => {
-      const { caption } = h.view.lastCall.args[1];
-      expect(caption).to.equal('Licence 01/123');
-    });
-    test('view context is assigned a back link path for type', async () => {
-      const { back } = h.view.lastCall.args[1];
-      expect(back).to.startWith('/invoice-accounts/create');
-    });
-  });
 
-  experiment('.postAddress', () => {
-    test('dataService.getCompanyAddresses is called with the companyId', async () => {
-      await controller.postAddress(request, h);
-      const args = dataService.getCompanyAddresses.firstCall.args;
-      expect(args[0]).to.equal(companyId);
+    test('calls request.addressLookupRedirect to get the redirect path', async () => {
+      const [params] = request.addressLookupRedirect.lastCall.args;
+      expect(params.redirectPath).to.equal(`/invoice-accounts/create/${regionId}/${companyId}/address-entered`);
+      expect(params.back).to.equal(`/invoice-accounts/create/${regionId}/${companyId}`);
+      expect(params.key).to.equal(`new-invoice-account-${companyId}`);
+      expect(params.companyId).to.be.undefined();
+      expect(params.caption).to.equal('Licence 01/123');
     });
 
-    experiment('when the form is valid', () => {
-      test('the address id is stored in the session data', async () => {
-        forms.getValues.returns({ selectedAddress: 'test-address-id' });
-        await controller.postAddress(request, h);
-        const args = dataService.sessionManager.lastCall.args;
-        expect(args[0]).to.equal(request);
-        expect(args[1]).to.equal(regionId);
-        expect(args[2]).to.equal(companyId);
-        expect(args[3]).to.equal({ address: { addressId: 'test-address-id' } });
-      });
-      test('when an existing address has been selected the user is redirected to the add-fao path', async () => {
-        forms.getValues.returns({ selectedAddress: 'test-address-id' });
-        await controller.postAddress(request, h);
-        const args = h.redirect.lastCall.args;
-        const redirectPath = `/invoice-accounts/create/${regionId}/${companyId}/add-fao`;
-        expect(args[0]).to.equal(redirectPath);
-      });
-      test('when selectedAddress = new_address the user is rdirected to the search address path', async () => {
-        forms.getValues.returns({ selectedAddress: 'new_address' });
-        await controller.postAddress(request, h);
-        const args = h.redirect.lastCall.args;
-        const redirectPath = `/invoice-accounts/create/${regionId}/${companyId}/create-address`;
-        expect(args[0]).to.equal(redirectPath);
-      });
-    });
-    experiment('when the form is not valid', () => {
-      test('the user is redirected back to select addresss form', async () => {
-        forms.handleRequest.returns({ isValid: false });
-        await controller.postAddress(request, h);
-        const args = h.postRedirectGet.lastCall.args;
-        expect(args[1]).to.equal(`/invoice-accounts/create/${regionId}/${companyId}/select-address`);
-      });
-    });
-  });
-
-  experiment('.getCreateAddress', () => {
-    beforeEach(async () => {
-      await controller.getCreateAddress(request, h);
-    });
-    test('client is redirected to the address entry workflow', async () => {
-      const args = h.redirect.lastCall.args;
-      expect(args[0]).to.startWith(`/address-entry/postcode`);
+    test('calls h.redirect to redirect to the address entry plugin flow', async () => {
+      expect(
+        h.redirect.calledWith(ADDRESS_ENTRY_PATH)
+      ).to.be.true();
     });
   });
 
@@ -283,19 +232,19 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
     beforeEach(async () => {
       await controller.getAddressEntered(request, h);
     });
-    test('calls saveToSession to fetch the address from the address entry workflow', async () => {
-      const args = sessionHelper.saveToSession.lastCall.args;
-      expect(args[0]).to.equal(request);
-      expect(args[1]).to.equal(ADDRESS_FLOW_SESSION_KEY);
+
+    test('calls request.getNewAddress with correct key', async () => {
+      expect(request.getNewAddress.calledWith(
+        `new-invoice-account-${companyId}`
+      )).to.be.true();
     });
-    test('calls dataService.sessionManager with the correct params', async () => {
-      const args = dataService.sessionManager.lastCall.args;
-      expect(args[0]).to.equal(request);
-      expect(args[1]).to.equal(regionId);
-      expect(args[2]).to.equal(companyId);
-      expect(typeof args[3]).to.equal('object');
-      expect(args[3].address.addressId).to.equal(tempId);
+
+    test('sets the new address in the session', async () => {
+      expect(dataService.sessionManager.calledWith(
+        request, regionId, companyId, { address: ADDRESS }
+      )).to.be.true();
     });
+
     test('client is redirected to the check your answers page', async () => {
       const args = h.redirect.lastCall.args;
       expect(args[0]).to.startWith(`/invoice-accounts/create/${regionId}/${companyId}/check-details`);
@@ -397,10 +346,7 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
       expect(args[3]).to.equal(undefined);
       expect(dataService.sessionManager.calledOnce).to.be.true();
     });
-    test('calls dataService.getCompanyAddresses with the correct query param', async () => {
-      const args = dataService.getCompanyAddresses.firstCall.args;
-      expect(args[0]).to.equal(companyId);
-    });
+
     test('the expected view template is used', async () => {
       const args = h.view.lastCall.args;
       expect(args[0]).to.equal('nunjucks/invoice-accounts/check-details');

@@ -1,98 +1,189 @@
-const { ukPostcode, selectAddress, manualAddressEntry } = require('./forms');
-const forms = require('shared/lib/forms');
-const helpers = require('./lib/helpers');
+'use strict';
+
 const { omit } = require('lodash');
-const queryString = require('querystring');
 
-const sessionForms = require('shared/lib/session-forms');
+const forms = require('shared/lib/forms');
+const session = require('./lib/session');
+const routing = require('./lib/routing');
+const { NEW_ADDRESS } = require('./lib/constants');
+const addressForms = require('./forms');
+const { handleFormRequest } = require('shared/lib/form-handler');
 
-const storeAddressAndRedirect = (request, h, address) => {
-  request.setNewAddress(address);
-  const redirectPath = helpers.getRedirectPath(request);
-  return h.redirect(redirectPath);
+const getDefaultView = request => {
+  const { sessionData: { caption, back } } = request.pre;
+  return {
+    ...request.view,
+    back,
+    caption
+  };
 };
 
+/**
+ * Search by postcode and display results
+ */
 const getPostcode = async (request, h) => {
-  await helpers.saveReferenceData(request);
+  const { key } = request.params;
+  const postcodeForm = handleFormRequest(request, addressForms.ukPostcode);
+  const selectAddressForm = handleFormRequest(request, addressForms.selectAddress);
 
+  // If valid postcode, select available addresses
+  const isPostcodeSelected = [postcodeForm.isValid, selectAddressForm.isSubmitted].includes(true);
+  if (isPostcodeSelected) {
+    const { postcode } = forms.getValues(selectAddressForm);
+
+    return h.view('nunjucks/address-entry/select-address', {
+      ...getDefaultView(request),
+      back: routing.getPostcode(key),
+      pageTitle: 'Select the address',
+      form: selectAddressForm,
+      postcode
+    });
+  }
+
+  // Otherwise display postcode form
   return h.view('nunjucks/address-entry/enter-uk-postcode', {
-    ...request.view,
-    ...helpers.getPageCaption(request),
+    ...getDefaultView(request),
     pageTitle: 'Enter the UK postcode',
-    back: request.query.back,
-    form: sessionForms.get(request, ukPostcode.form(request))
+    form: postcodeForm
   });
 };
 
-const postPostcode = async (request, h) => {
-  const { postcode } = request.payload;
-  const form = forms.handleRequest(
-    ukPostcode.form(request),
-    request,
-    ukPostcode.schema
-  );
-
-  if (form.isValid) {
-    const queryTail = queryString.stringify({ postcode: postcode.toUpperCase() });
-    return h.redirect(`/address-entry/address/select?${queryTail}`);
-  }
-  return h.postRedirectGet(form, '/address-entry/postcode', helpers.getPostcodeUrlParams(request));
-};
-
-const getSelectAddress = (request, h) => h.view('nunjucks/address-entry/select-address', {
-  ...request.view,
-  ...helpers.getPageCaption(request),
-  pageTitle: 'Select the address',
-  back: helpers.getPostcodeUrl(request),
-  postcode: request.query.postcode,
-  form: sessionForms.get(request, selectAddress.form(request, helpers.getAddressUprn(request)))
-});
-
+/**
+ * Post handler for selecting address
+ */
 const postSelectAddress = (request, h) => {
-  const { postcode, uprn } = request.payload;
-  const { addressSearchResults } = request.pre;
-  const form = forms.handleRequest(
-    selectAddress.form(request, uprn),
-    request,
-    selectAddress.schema
-  );
+  const form = handleFormRequest(request, addressForms.selectAddress);
 
-  if (form.isValid) {
-    const selectedAddress = addressSearchResults.find(address => address.uprn === parseInt(uprn));
-    return storeAddressAndRedirect(request, h, selectedAddress);
+  if (!form.isValid) {
+    return h.postRedirectGet(form);
   }
 
-  return h.postRedirectGet(form, '/address-entry/address/select', { postcode });
+  const { key } = request.params;
+  const { addressSearchResults } = request.pre;
+  const { uprn } = forms.getValues(form);
+
+  const selectedAddress = addressSearchResults.find(address => address.uprn === parseInt(uprn));
+  const { redirectPath } = session.merge(request, key, { data: selectedAddress });
+  return h.redirect(redirectPath);
 };
 
+/**
+ * Display manual address entry form
+ */
 const getManualAddressEntry = (request, h) => h.view('nunjucks/form', {
-  ...request.view,
-  ...helpers.getPageCaption(request),
+  ...getDefaultView(request),
   pageTitle: 'Enter the address',
-  back: helpers.getManualAddressEntryBackLink(request),
-  form: sessionForms.get(request, manualAddressEntry.form(request, request.getNewAddress(false)))
+  back: routing.getPostcode(request.params.key, request.query),
+  form: handleFormRequest(request, addressForms.manualAddressEntry)
 });
 
+/**
+ * Post handler for manual address entry form
+ */
 const postManualAddressEntry = (request, h) => {
-  const form = forms.handleRequest(
-    manualAddressEntry.form(request, request.payload),
-    request,
-    manualAddressEntry.schema
-  );
+  const form = handleFormRequest(request, addressForms.manualAddressEntry);
 
-  if (form.isValid) {
-    const data = {
-      source: 'wrls',
-      ...omit(forms.getValues(form), 'csrf_token')
-    };
-    return storeAddressAndRedirect(request, h, data);
+  if (!form.isValid) {
+    return h.postRedirectGet(form);
   }
-  return h.postRedirectGet(form);
+
+  const data = {
+    source: 'wrls',
+    uprn: null,
+    ...omit(forms.getValues(form), 'csrf_token')
+  };
+
+  const { key } = request.params;
+  const { redirectPath } = session.merge(request, key, { data });
+  return h.redirect(redirectPath);
+};
+
+/**
+ * Display form to select existing company address
+ */
+const getSelectCompanyAddress = (request, h) => {
+  const form = handleFormRequest(request, addressForms.selectCompanyAddress);
+
+  // If there are no existing addresses redirect to postcode search
+  if (request.pre.addresses.length === 0) {
+    return h.redirect(routing.getPostcode(request.params.key));
+  }
+
+  return h.view('nunjucks/form', {
+    ...getDefaultView(request),
+    pageTitle: `Select an existing address for ${request.pre.company.name}`,
+    form
+  });
+};
+
+const getAddress = row => row.address;
+
+/**
+ * Post handler for select existing company address
+ */
+const postSelectCompanyAddress = (request, h) => {
+  const form = handleFormRequest(request, addressForms.selectCompanyAddress);
+  if (!form.isValid) {
+    return h.postRedirectGet(form);
+  }
+
+  const { key } = request.params;
+  const { selectedAddress } = forms.getValues(form);
+
+  if (selectedAddress === NEW_ADDRESS) {
+    return h.redirect(routing.getPostcode(key));
+  }
+
+  // Find address in array
+  const data = request.pre.addresses
+    .map(getAddress)
+    .find(row => row.id === selectedAddress);
+
+  // Set address in session and redirect back to parent flow
+  const { redirectPath } = session.merge(request, key, { data });
+  return h.redirect(redirectPath);
+};
+
+/**
+ * Display form with registered company address
+ */
+const getUseRegisteredAddress = (request, h) => h.view('nunjucks/address-entry/use-registered-address', {
+  ...getDefaultView(request),
+  pageTitle: `Registered office address`,
+  form: handleFormRequest(request, addressForms.useRegisteredAddress),
+  address: request.pre.company.address
+});
+
+/**
+ * Post handler for registered company address form
+ */
+const postUseRegisteredAddress = (request, h) => {
+  const form = handleFormRequest(request, addressForms.useRegisteredAddress);
+  if (!form.isValid) {
+    return h.postRedirectGet(form);
+  }
+
+  const { key } = request.params;
+  const { useRegisteredAddress } = forms.getValues(form);
+
+  if (useRegisteredAddress) {
+    // Set address in session and redirect back to parent flow
+    const { redirectPath } = session.merge(request, key, { data: request.pre.company.address });
+    return h.redirect(redirectPath);
+  }
+
+  // Set a custom address instead
+  return h.redirect(routing.getPostcode(key));
 };
 
 exports.getPostcode = getPostcode;
-exports.postPostcode = postPostcode;
-exports.getSelectAddress = getSelectAddress;
 exports.postSelectAddress = postSelectAddress;
+
 exports.getManualAddressEntry = getManualAddressEntry;
 exports.postManualAddressEntry = postManualAddressEntry;
+
+exports.getSelectCompanyAddress = getSelectCompanyAddress;
+exports.postSelectCompanyAddress = postSelectCompanyAddress;
+
+exports.getUseRegisteredAddress = getUseRegisteredAddress;
+exports.postUseRegisteredAddress = postUseRegisteredAddress;

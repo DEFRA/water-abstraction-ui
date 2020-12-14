@@ -118,16 +118,17 @@
     </tbody>
   </table>
 
-  <a href="/licences/{{ licenceId }}/charge-information/create" role="button" draggable="false" class="govuk-button govuk-!-margin-right-3" data-module="govuk-button">
-    Setup a new charge
-  </a>
-
-  <a href="/licences/{{ licenceId }}/charge-information/non-chargeable-reason?start=1" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
-    Make licence non-chargeable
-  </a>
 {% else %}
   <p>No charge information for this licence.</p>
 {% endif %}
+
+<a href="/licences/{{ licenceId }}/charge-information/create" role="button" draggable="false" class="govuk-button govuk-!-margin-right-3" data-module="govuk-button">
+  Setup a new charge
+</a>
+
+<a href="/licences/{{ licenceId }}/charge-information/non-chargeable-reason?start=1" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+  Make licence non-chargeable
+</a>
 
 {% if agreements.length %}
 

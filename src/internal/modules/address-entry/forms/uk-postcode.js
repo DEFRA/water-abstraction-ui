@@ -1,7 +1,10 @@
-const { formFactory, fields } = require('shared/lib/forms');
+'use strict';
+
 const Joi = require('@hapi/joi');
 
-const { postcodeSchema } = require('./postcode');
+const { formFactory, fields } = require('shared/lib/forms');
+
+const { postcodeSchema } = require('../lib/postcode-validator');
 
 /**
  * Creates an object to represent the form for capturing the
@@ -11,10 +14,10 @@ const { postcodeSchema } = require('./postcode');
  * @param {String} postcode The UK postcode
  */
 const form = request => {
-  const { csrfToken } = request.view;
+  const { key } = request.params;
   const { postcode } = request.payload || request.query;
 
-  const f = formFactory('/address-entry/postcode');
+  const f = formFactory(request.path, 'get');
 
   f.fields.push(fields.text('postcode', {
     errors: {
@@ -30,19 +33,17 @@ const form = request => {
 
   f.fields.push(fields.link(null, {
     text: 'This address is outside the UK',
-    url: '/address-entry/manual-entry'
+    url: `/address-entry/${key}/manual-entry`
   }));
 
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Find address' }));
 
   return f;
 };
 
-const schema = {
-  csrf_token: Joi.string().uuid().required(),
+const schema = () => Joi.object({
   postcode: postcodeSchema
-};
+});
 
 exports.form = form;
 exports.schema = schema;

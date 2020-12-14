@@ -36,17 +36,6 @@ experiment('src/internal/modules/address-entry/pre-handlers .searchForAddressesB
     expect(postcode).to.equal(POSTCODE);
   });
 
-  test('can handle getting the postcode from the payload', async () => {
-    request = {
-      payload: {
-        postcode: POSTCODE
-      }
-    };
-    result = await preHandlers.searchForAddressesByPostcode(request);
-    const [postcode] = services.water.addressSearch.getAddressSearchResults.lastCall.args;
-    expect(postcode).to.equal(POSTCODE);
-  });
-
   test('returns the data from the address search', () => {
     expect(result).to.equal({ foo: 'bar' });
   });

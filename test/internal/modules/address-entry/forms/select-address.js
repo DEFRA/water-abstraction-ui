@@ -4,12 +4,17 @@ const { expect } = require('@hapi/code');
 const {
   experiment,
   test,
-  afterEach
+  afterEach,
+  beforeEach
 } = exports.lab = require('@hapi/lab').script();
 const sandbox = require('sinon').createSandbox();
+const uuid = require('uuid/v4');
+const { omit } = require('lodash');
 
 const selectAddress = require('internal/modules/address-entry/forms/select-address');
 const { findField, findButton } = require('../../../../lib/form-test');
+
+const KEY = 'test-key';
 
 const addressSearchResults = [{
   address2: '123',
@@ -32,6 +37,9 @@ const createRequest = (query = {}) => ({
     csrfToken: 'token'
   },
   query,
+  params: {
+    key: KEY
+  },
   pre: { addressSearchResults }
 });
 
@@ -71,10 +79,10 @@ experiment('internal/modules/address-entry/forms/select-address', () => {
     });
 
     test('has a link to the manual address entry page', async () => {
-      const form = selectAddress.form(createRequest());
+      const form = selectAddress.form(createRequest({ postcode: 'TT1 1TT' }));
       const field = findField(form, { options: { widget: 'link' } });
       expect(field.options.text).to.equal('I cannot find the address in the list');
-      expect(field.options.url).to.equal('/address-entry/manual-entry?country=United Kingdom');
+      expect(field.options.url).to.equal('/address-entry/test-key/manual-entry?country=United%20Kingdom&postcode=TT1%201TT');
     });
 
     test('has hidden postcode field', async () => {
@@ -97,27 +105,88 @@ experiment('internal/modules/address-entry/forms/select-address', () => {
   });
 
   experiment('.schema', () => {
-    experiment('csrf token', () => {
-      test('validates for a uuid', async () => {
-        const result = selectAddress.schema.csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
-        expect(result.error).to.be.null();
+    let data, request;
+
+    beforeEach(async () => {
+      data = {
+        csrf_token: uuid(),
+        uprn: 123,
+        postcode: 'TT1 1TT'
+      };
+      request = {
+        pre: {
+          addressSearchResults: [{
+            uprn: 123
+          }, {
+            uprn: 456
+          }]
+        }
+      };
+    });
+
+    test('validates when the data is valid', async () => {
+      const { error } = selectAddress.schema(request).validate(data);
+      expect(error).to.be.null();
+    });
+
+    experiment('.csrf_token validation', () => {
+      test('fails if omitted', async () => {
+        const { error } = selectAddress.schema(request).validate(omit(data, 'csrf_token'));
+        expect(error).to.not.be.null();
       });
 
-      test('fails for a string that is not a uuid', async () => {
-        const result = selectAddress.schema.csrf_token.validate('pizza');
-        expect(result.error).to.exist();
+      test('fails if not a guid', async () => {
+        const { error } = selectAddress.schema(request).validate({
+          ...data,
+          csrf_token: 'not-a-guid'
+        });
+        expect(error).to.not.be.null();
       });
     });
 
-    experiment('uprn', () => {
-      test('validates for a string of numbers', async () => {
-        const result = selectAddress.schema.uprn.validate('123456');
-        expect(result.error).to.be.null();
+    experiment('.uprn validation', () => {
+      test('fails if omitted', async () => {
+        const { error } = selectAddress.schema(request).validate(omit(data, 'uprn'));
+        expect(error).to.not.be.null();
       });
 
-      test('fails for a string that contains letters', async () => {
-        const result = selectAddress.schema.uprn.validate('123abc');
-        expect(result.error).to.exist();
+      test('fails if not a number', async () => {
+        const { error } = selectAddress.schema(request).validate({
+          ...data,
+          uprn: null
+        });
+        expect(error).to.not.be.null();
+      });
+
+      test('fails if not one of the address search results defined in request.pre', async () => {
+        const { error } = selectAddress.schema(request).validate({
+          ...data,
+          uprn: 999
+        });
+        expect(error).to.not.be.null();
+      });
+    });
+
+    experiment('.postcode validation', () => {
+      test('fails if omitted', async () => {
+        const { error } = selectAddress.schema(request).validate(omit(data, 'postcode'));
+        expect(error).to.not.be.null();
+      });
+
+      test('fails if not a string', async () => {
+        const { error } = selectAddress.schema(request).validate({
+          ...data,
+          postcode: null
+        });
+        expect(error).to.not.be.null();
+      });
+
+      test('fails if not a valid UK postcode', async () => {
+        const { error } = selectAddress.schema(request).validate({
+          ...data,
+          postcode: 'X99 X99'
+        });
+        expect(error).to.not.be.null();
       });
     });
   });

@@ -4,10 +4,6 @@
  * @module route helpers for paper forms flow
  */
 
-const querystring = require('querystring');
-
-const { SESSION_KEYS } = require('../lib/constants');
-
 const getEnterLicenceNumber = () => '/returns-notifications/paper-forms';
 
 const getSelectLicenceHolders = () => '/returns-notifications/select-licence-holders';
@@ -34,14 +30,14 @@ const getSelectAddressRedirect = request => {
 
 const getAddressFlowRedirect = request => {
   const { documentId } = request.params;
-  const state = request.yar.get(SESSION_KEYS.paperFormsFlow);
-  const { id: licenceId } = state[documentId].licence;
-  const query = {
+  const { document } = request.pre;
+
+  return request.addressLookupRedirect({
+    key: documentId,
     back: getRecipient(documentId),
-    redirectPath: getAcceptOneTimeAddress(documentId),
-    licenceId
-  };
-  return `/address-entry/postcode?${querystring.stringify(query)}`;
+    caption: `Licence ${document.licence.licenceNumber}`,
+    redirectPath: `/returns-notifications/${documentId}/accept-one-time-address`
+  });
 };
 
 exports.getCheckAnswers = getCheckAnswers;

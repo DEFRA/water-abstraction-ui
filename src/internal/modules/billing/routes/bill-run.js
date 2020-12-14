@@ -4,7 +4,7 @@ const Joi = require('joi');
 const controller = require('../controllers/bill-run');
 const { billing } = require('../../../../internal/lib/constants').scope;
 const allowedScopes = [billing];
-const isAcceptanceTestTarget = ['local', 'dev', 'development', 'test', 'preprod'].includes(process.env.NODE_ENV);
+const isAcceptanceTestTarget = ['local', 'dev', 'development', 'test', 'qa', 'preprod'].includes(process.env.NODE_ENV);
 const preHandlers = require('../pre-handlers');
 
 const { featureToggles } = require('../../../config');

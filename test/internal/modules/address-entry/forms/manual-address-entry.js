@@ -50,12 +50,15 @@ experiment('internal/modules/address-entry/forms/manual-address-entry', () => {
       expect(csrf.value).to.equal(csrfToken);
     });
 
-    experiment('when the address is set', () => {
+    experiment('when the address is set and the source is wrls', () => {
       let request, form;
       beforeEach(async () => {
         request = createRequest();
         request.yar.get.returns({
-          data: address
+          data: {
+            ...address,
+            source: 'wrls'
+          }
         });
         form = manualAddressEntry.form(request);
       });
@@ -69,6 +72,32 @@ experiment('internal/modules/address-entry/forms/manual-address-entry', () => {
         test(`sets the ${fieldName} value if supplied`, async () => {
           const field = findField(form, fieldName);
           expect(field.value).to.equal(address[fieldName]);
+        });
+      });
+    });
+
+    experiment('when the address is set and the source is not wrls', () => {
+      let request, form;
+      beforeEach(async () => {
+        request = createRequest();
+        request.yar.get.returns({
+          data: {
+            ...address,
+            source: 'not-wrls'
+          }
+        });
+        form = manualAddressEntry.form(request);
+      });
+
+      Object.keys(address).forEach(fieldName => {
+        test(`has a/an ${fieldName} field`, async () => {
+          const field = findField(form, fieldName);
+          expect(field).to.exist();
+        });
+
+        test(`does not set the ${fieldName} value`, async () => {
+          const field = findField(form, fieldName);
+          expect(field.value).to.be.undefined();
         });
       });
     });

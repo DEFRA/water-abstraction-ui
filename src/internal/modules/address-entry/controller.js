@@ -3,6 +3,7 @@
 const { omit } = require('lodash');
 
 const forms = require('shared/lib/forms');
+const { addressSources } = require('shared/lib/constants');
 const session = require('./lib/session');
 const routing = require('./lib/routing');
 const { NEW_ADDRESS } = require('./lib/constants');
@@ -88,7 +89,7 @@ const postManualAddressEntry = (request, h) => {
   }
 
   const data = {
-    source: 'wrls',
+    source: addressSources.wrls,
     uprn: null,
     ...omit(forms.getValues(form), 'csrf_token')
   };

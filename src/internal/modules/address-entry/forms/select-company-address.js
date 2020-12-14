@@ -2,7 +2,7 @@
 
 const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms/');
-const { uniqBy, get } = require('lodash');
+const { uniqBy, get, isEmpty } = require('lodash');
 const addressMapper = require('shared/lib/mappers/address');
 const { NEW_ADDRESS } = require('../lib/constants');
 const session = require('../lib/session');
@@ -36,7 +36,8 @@ const selectAddressForm = request => {
 
   // Get the address ID from session data
   const { key } = request.params;
-  const id = get(session.get(request, key), 'data.id');
+  const address = get(session.get(request, key), 'data', {});
+  const value = isEmpty(address) ? null : address.id || NEW_ADDRESS;
 
   f.fields.push(fields.radio('selectedAddress', {
     errors: {
@@ -51,7 +52,7 @@ const selectAddressForm = request => {
       },
       { value: NEW_ADDRESS, label: 'Set up a new address' }
     ]
-  }, id));
+  }, value));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 

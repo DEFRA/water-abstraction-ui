@@ -1,11 +1,12 @@
 'use strict';
 
-const { pick } = require('lodash');
+const { pick, get } = require('lodash');
 const { VALID_ADDRESS } = require('@envage/water-abstraction-helpers').validators;
 
 const { formFactory, fields, setValues } = require('shared/lib/forms');
 const Joi = require('@hapi/joi');
 const countryList = require('./country-list');
+const session = require('../lib/session');
 
 const GOVUK_WIDTH_TWO_THIRDS = 'govuk-!-width-two-thirds';
 
@@ -74,8 +75,12 @@ const getCountryDropdownChoices = () => [
  * @param {Object} request The Hapi request object
  * @param {Object} address contains address data values
  */
-const form = (request, address = {}) => {
+const form = request => {
   const { csrfToken } = request.view;
+
+  // Get the address from session data
+  const { key } = request.params;
+  const address = get(session.get(request, key), 'data', {});
 
   let f = formFactory(request.path);
 

@@ -158,7 +158,6 @@ const postDataHandler = (request) => {
 const getFlowKey = request => `new-invoice-account-${request.params.companyId}`;
 
 const getSelectedContact = (session, companyContacts) => {
-  console.log(session.contact);
   if (isEmpty(session.contact)) return 'No';
   const { contactId } = session.contact;
   const contact = contactId

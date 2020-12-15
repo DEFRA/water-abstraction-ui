@@ -153,7 +153,7 @@ const postFao = async (request, h) => {
   const schema = addFaoFormSchema(request.payload);
   const form = forms.handleRequest(addFaoForm(request), request, schema);
   if (!form.isValid) {
-    return h.postRedirectGet(form, urlJoin('/invoice-accounts/create/', regionId, companyId, 'add-fao'));
+    return h.postRedirectGet(form);
   }
   const { faoRequired } = forms.getValues(form);
   if (faoRequired) {
@@ -213,7 +213,7 @@ const postCheckDetails = async (request, h) => {
   const redirectPath = session.viewData.redirectPath;
   // Formulate the body of the request
   const requestBody = await helpers.postDataHandler(request);
-  console.log({ requestBody });
+
   // Make the request
   const invoiceAcc = await dataService.saveInvoiceAccDetails(companyId, requestBody);
   request.yar.clear(`newInvoiceAccountFlow.${regionId}.${companyId}`);

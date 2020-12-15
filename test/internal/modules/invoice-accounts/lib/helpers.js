@@ -38,7 +38,6 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
     sandbox.stub(dataService, 'sessionManager').resolves({});
     sandbox.stub(dataService, 'getCompanyAddresses').returns([address, address]);
     sandbox.stub(dataService, 'getCompany').resolves(company);
-    sandbox.stub(dataService, 'getCompanyContacts').resolves([{ id: 'test-id', firstName: 'Jackie', lastName: 'Smith' }]);
   });
 
   afterEach(async () => {
@@ -88,26 +87,6 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
     });
   });
 
-  experiment('.processFaoFormData', () => {
-    test('if addFao === yes', () => {
-      const response = helpers.processFaoFormData(request, regionId, companyId, 'yes');
-      expect(response).to.equal('select-contact');
-    });
-
-    test('if addFao === no returns the correct redirect path element', () => {
-      const response = helpers.processFaoFormData(request, regionId, companyId, 'no');
-      expect(response).to.equal('check-details');
-    });
-    test('if addFao === no returns the correct details are saved in the session', () => {
-      helpers.processFaoFormData(request, regionId, companyId, 'no');
-      const args = dataService.sessionManager.lastCall.args;
-      expect(args[0]).to.equal(request);
-      expect(args[1]).to.equal(regionId);
-      expect(args[2]).to.equal(companyId);
-      expect(args[3]).to.equal({ contact: null });
-    });
-  });
-
   experiment('.getSelectedAddress', () => {
     test('returns the session address when the session address id === tempId', async () => {
       const response = await helpers.getSelectedAddress(companyId, { address: { addressId: tempId, addressLine1: 'test' } });
@@ -132,84 +111,43 @@ experiment('internal/modules/incoive-accounts/lib/data-service', () => {
     });
   });
 
-  experiment('.processSelectContactFormData', () => {
-    test('if selected contact is department', () => {
-      const department = 'test department name';
-      const selectedContact = 'department';
-      helpers.processSelectContactFormData(request, regionId, companyId, selectedContact, department);
-      const args = dataService.sessionManager.lastCall.args;
-      expect(args[0]).to.equal(request);
-      expect(args[1]).to.equal(regionId);
-      expect(args[2]).to.equal(companyId);
-      expect(args[3]).to.equal({ contact: { department: 'test department name', type: 'department' } });
+  experiment('.getSelectedContact', () => {
+    let companyContacts;
+    beforeEach(() => {
+      companyContacts = [{
+        id: 'test-company-contact-1',
+        type: 'person',
+        firstName: 'Lewis',
+        lastName: 'Hamilton'
+      },
+      {
+        id: 'test-company-contact-2',
+        type: 'person',
+        firstName: 'Valtteri',
+        lastName: 'Bottas'
+      }];
     });
-    test('saves the contact id if selectedContact is a person with contact id', () => {
-      const department = 'test department name';
-      const selectedContact = 'test-contact-id';
-      helpers.processSelectContactFormData(request, regionId, companyId, selectedContact, department);
-      const args = dataService.sessionManager.lastCall.args;
-      expect(args[0]).to.equal(request);
-      expect(args[1]).to.equal(regionId);
-      expect(args[2]).to.equal(companyId);
-      expect(args[3]).to.equal({ contact: { contactId: 'test-contact-id' } });
+    test('if session contact is empty', async () => {
+      const session = { contact: null };
+      const response = await helpers.getSelectedContact(session, companyContacts);
+      expect(response).to.equal('No');
     });
-  });
 
-  experiment('.getCOntactName', () => {
-    test('if selected contact is department', () => {
-      const department = 'test department name';
-      const selectedContact = 'department';
-      helpers.processSelectContactFormData(request, regionId, companyId, selectedContact, department);
-      const args = dataService.sessionManager.lastCall.args;
-      expect(args[0]).to.equal(request);
-      expect(args[1]).to.equal(regionId);
-      expect(args[2]).to.equal(companyId);
-      expect(args[3]).to.equal({ contact: { department: 'test department name', type: 'department' } });
+    test('if an existing contact has been selected', async () => {
+      const session = { contact: { contactId: 'test-company-contact-2' } };
+      const response = await helpers.getSelectedContact(session, companyContacts);
+      expect(response).to.equal('Valtteri Bottas');
     });
-    test('saves the contact id if selectedContact is a person with contact id', () => {
-      const department = 'test department name';
-      const selectedContact = 'test-contact-id';
-      helpers.processSelectContactFormData(request, regionId, companyId, selectedContact, department);
-      const args = dataService.sessionManager.lastCall.args;
-      expect(args[0]).to.equal(request);
-      expect(args[1]).to.equal(regionId);
-      expect(args[2]).to.equal(companyId);
-      expect(args[3]).to.equal({ contact: { contactId: 'test-contact-id' } });
-    });
-  });
 
-  experiment('.getContactName', () => {
     test('if session contact type = person it returns the correct name', async () => {
-      const sessionContact = { title: 'Mr', firstName: 'Chris', lastName: 'Brown', type: 'person' };
-      const response = await helpers.getContactName(companyId, sessionContact);
-      expect(response).to.equal('Mr Chris Brown');
+      const session = { contact: { title: 'Mr', firstName: 'George', lastName: 'Russel', type: 'person' } };
+      const response = await helpers.getSelectedContact(session, companyContacts);
+      expect(response).to.equal('Mr George Russel');
     });
-    test('if session contact type = department it returns the correct name', async () => {
-      const sessionContact = { title: 'Mr', department: 'Finance', type: 'department' };
-      const response = await helpers.getContactName(companyId, sessionContact);
-      expect(response).to.equal('Finance');
-    });
-    test('if session contact is an existing contact it returns the correct name', async () => {
-      const sessionContact = { contactId: 'test-id' };
-      const response = await helpers.getContactName(companyId, sessionContact);
-      expect(response).to.equal('Jackie Smith');
-    });
-  });
 
-  experiment('.getName', () => {
-    test('if contact name does not have a department it returns the correct name', async () => {
-      const sessionContact = { title: 'Mr', firstName: 'Chris', lastName: 'Brown', type: 'person' };
-      const response = helpers.getName(sessionContact);
-      expect(response).to.equal('Mr Chris Brown');
-    });
-    test('if session contact does have department it returns the correct name', async () => {
-      const sessionContact = { title: 'Mr', firstName: 'Kris', lastName: 'Kross', department: 'Finance' };
-      const response = helpers.getName(sessionContact);
-      expect(response).to.equal('Mr Kris Kross, Finance');
-    });
-    test('if session contact only has a deprtmant it returns the correct name', async () => {
-      const sessionContact = { firstName: '', department: 'Finance' };
-      const response = helpers.getName(sessionContact);
+    test('if session contact type = department it returns the correct name', async () => {
+      const session = { contact: { department: 'Finance', type: 'department' } };
+      const response = await helpers.getSelectedContact(session, companyContacts);
       expect(response).to.equal('Finance');
     });
   });

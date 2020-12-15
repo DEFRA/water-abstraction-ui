@@ -5,9 +5,9 @@ const preHandlers = require('../../../../src/internal/modules/invoice-accounts/p
 const uuid = require('uuid');
 const sandbox = require('sinon').createSandbox();
 const services = require('internal/lib/connectors/services');
-const dataService = require('../../../../src/internal/modules/invoice-accounts/services/data-service');
-const helpers = require('../../../../src/internal/modules/invoice-accounts/lib/helpers');
-const { water } = require('../../../../src/internal/lib/connectors/services');
+const dataService = require('internal/modules/invoice-accounts/services/data-service');
+const helpers = require('internal/modules/invoice-accounts/lib/helpers');
+const sharedPreHandlers = require('shared/lib/pre-handlers/companies');
 
 experiment('internal/modules/invoice-accounts/pre-handlers', () => {
   const regionId = uuid();
@@ -57,13 +57,18 @@ experiment('internal/modules/invoice-accounts/pre-handlers', () => {
     });
     await sandbox.stub(helpers, 'getAgentCompany').returns({ id: tempAgentId });
 
-    sandbox.stub(services.water.companies, 'getCompany').resolves({
-      companyId,
-      name: companyName
-    });
     sandbox.stub(services.water.companies, 'getCompaniesByName').resolves([{
       companyId,
       name: companyName
+    }]);
+    sandbox.stub(sharedPreHandlers, 'loadCompany').resolves({
+      companyId,
+      name: companyName
+    });
+    sandbox.stub(sharedPreHandlers, 'loadCompanyContacts').resolves([{
+      id: 'test-company-contact',
+      firstName: 'Alex',
+      lastName: 'Albon'
     }]);
   });
   afterEach(async () => {
@@ -97,7 +102,16 @@ experiment('internal/modules/invoice-accounts/pre-handlers', () => {
       await preHandlers.searchForCompaniesByString(request);
     });
     test('calls the service method', async () => {
-      expect(water.companies.getCompaniesByName.calledWith(filter)).to.be.true();
+      expect(services.water.companies.getCompaniesByName.calledWith(filter)).to.be.true();
+    });
+  });
+
+  experiment('.loadCompanyContacts', async () => {
+    beforeEach(async () => {
+      await preHandlers.loadCompanyContacts(request);
+    });
+    test('calls shared loadCompanyContacts pre-handler', async () => {
+      expect(sharedPreHandlers.loadCompanyContacts.calledWith(request)).to.be.true();
     });
   });
 });

@@ -18,6 +18,7 @@ const moment = require('moment');
 const titleCase = require('title-case');
 
 const ADDRESS_ENTRY_PATH = '/address/entry/path';
+const CONTACT_ENTRY_PATH = '/contact/entry/path';
 
 const ADDRESS = {
   addressLine1: 'Daisy Cottage',
@@ -30,6 +31,13 @@ const ADDRESS = {
   country: 'United Kindom',
   uprn: null,
   source: 'wrls'
+};
+
+const CONTACT = {
+  type: 'person',
+  title: 'Mr',
+  firstName: 'Lando',
+  lastName: 'Norris'
 };
 
 experiment('./internal/modules/invoice-accounts/controller', () => {
@@ -102,7 +110,9 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
         }
       },
       addressLookupRedirect: sandbox.stub().returns(ADDRESS_ENTRY_PATH),
-      getNewAddress: sandbox.stub().returns(ADDRESS)
+      getNewAddress: sandbox.stub().returns(ADDRESS),
+      contactEntryRedirect: sandbox.stub().returns(CONTACT_ENTRY_PATH),
+      getNewContact: sandbox.stub().returns(CONTACT)
     };
 
     h = {
@@ -247,22 +257,24 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
 
     test('client is redirected to the check your answers page', async () => {
       const args = h.redirect.lastCall.args;
-      expect(args[0]).to.startWith(`/invoice-accounts/create/${regionId}/${companyId}/check-details`);
+      expect(args[0]).to.startWith(`/invoice-accounts/create/${regionId}/${companyId}/add-fao`);
     });
   });
 
-  experiment('.getContactEntryHandover', () => {
+  experiment('.getContactEntered', () => {
     beforeEach(async () => {
-      await controller.getContactEntryHandover(request, h);
+      await controller.getContactEntered(request, h);
     });
     test('calls dataService.sessionManager with the correct params', async () => {
       const args = dataService.sessionManager.lastCall.args;
       expect(args[0]).to.equal(request);
       expect(args[1]).to.equal(regionId);
       expect(args[2]).to.equal(companyId);
+      expect(args[3]).to.equal({ contact: CONTACT });
     });
-    test('client is redirected', async () => {
-      expect(h.redirect.calledWith(`/invoice-accounts/create/${regionId}/${companyId}/add-fao`)).to.be.true();
+
+    test('client is redirected to check your answers page', async () => {
+      expect(h.redirect.calledWith(`/invoice-accounts/create/${regionId}/${companyId}/check-details`)).to.be.true();
     });
   });
 
@@ -298,37 +310,40 @@ experiment('./internal/modules/invoice-accounts/controller', () => {
   });
 
   experiment('.postFao', () => {
-    experiment('when the form is valid', () => {
-      test('and faoRequired = no the contact is set to null in the session data', async () => {
-        forms.getValues.returns({ faoRequired: 'no' });
-        await controller.postFao(request, h);
-        const args = dataService.sessionManager.lastCall.args;
-        expect(args[0]).to.equal(request);
-        expect(args[1]).to.equal(regionId);
-        expect(args[2]).to.equal(companyId);
-        expect(args[3]).to.equal({ contact: null });
-      });
-      test('and faoRequired = no the user is redirected to the check-details path', async () => {
-        forms.getValues.returns({ faoRequired: 'no' });
-        await controller.postFao(request, h);
-        const args = h.redirect.lastCall.args;
-        const redirectPath = `/invoice-accounts/create/${regionId}/${companyId}/check-details`;
-        expect(args[0]).to.equal(redirectPath);
-      });
-      test('and faoRequired = yes the user is redirected to the select-fao path', async () => {
-        forms.getValues.returns({ faoRequired: 'yes' });
-        await controller.postFao(request, h);
-        const args = h.redirect.lastCall.args;
-        const redirectPath = `/invoice-accounts/create/${regionId}/${companyId}/select-contact`;
-        expect(args[0]).to.equal(redirectPath);
-      });
-    });
     experiment('when the form is not valid', () => {
-      test('the user is redirected back to select addresss form', async () => {
+      test('the user is redirected to the get page with errors', async () => {
         forms.handleRequest.returns({ isValid: false });
         await controller.postFao(request, h);
-        const args = h.postRedirectGet.lastCall.args;
-        expect(args[1]).to.equal(`/invoice-accounts/create/${regionId}/${companyId}/add-fao`);
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+    });
+
+    experiment('when the form is valid', () => {
+      experiment('and the FAO is required', () => {
+        beforeEach(async () => {
+          forms.getValues.returns({ faoRequired: true });
+          await controller.postFao(request, h);
+        });
+
+        test('calls request.addressLookupRedirect to get the redirect path', async () => {
+          const [params] = request.contactEntryRedirect.lastCall.args;
+          expect(params.redirectPath).to.equal(`/invoice-accounts/create/${regionId}/${companyId}/contact-entered`);
+          expect(params.back).to.equal(`/invoice-accounts/create/${regionId}/${companyId}`);
+          expect(params.key).to.equal(`new-invoice-account-${companyId}`);
+          expect(params.companyId).to.be.undefined();
+          expect(params.caption).to.equal('Licence 01/123');
+        });
+
+        test('redirects the user to the contact entry plugin', async () => {
+          const [path] = h.redirect.lastCall.args;
+          expect(path).to.equal(CONTACT_ENTRY_PATH);
+        });
+      });
+      test('and the FAO is not required, the user is redirected to the check-details page', async () => {
+        forms.getValues.returns({ faoRequired: false });
+        await controller.postFao(request, h);
+        const [path] = h.redirect.lastCall.args;
+        expect(path).to.equal(`/invoice-accounts/create/${regionId}/${companyId}/check-details`);
       });
     });
   });

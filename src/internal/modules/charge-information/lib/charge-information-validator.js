@@ -24,7 +24,7 @@ const validations = {
   },
   billableVolume: {
     validatorFunc: isBillableVolumeLessThanAuthorisedVolume,
-    warningMessage: 'The billable volume exceeds the authorised volume' }
+    warningMessage: 'The billable quantity is more than the authorised quantity' }
 };
 
 const validate = chargeElement =>

@@ -6,7 +6,7 @@ const { charging } = require('internal/lib/constants').scope;
 const { VALID_GUID } = require('shared/lib/validators');
 const preHandlers = require('../pre-handlers');
 const allowedScopes = [charging];
-const isAcceptanceTestTarget = ['local', 'dev', 'development', 'test', 'preprod'].includes(process.env.NODE_ENV);
+const isAcceptanceTestTarget = ['local', 'dev', 'development', 'test', 'qa', 'preprod'].includes(process.env.NODE_ENV);
 
 if (isAcceptanceTestTarget) {
   module.exports = {

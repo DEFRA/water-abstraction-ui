@@ -25,12 +25,6 @@ const getCompanyAddresses = async (companyId) => {
   }
 };
 
-const getCompanyContacts = async (companyId) => {
-  const { data: contacts } = await services.water.companies.getContacts(companyId);
-  const uniqueContacts = uniqBy(contacts.map(row => row.contact), 'id');
-  return uniqueContacts;
-};
-
 const getLicenceById = async (licenceId) => {
   const licence = services.water.licences.getLicenceById(licenceId);
   return licence;
@@ -46,4 +40,3 @@ exports.getCompanyAddresses = getCompanyAddresses;
 exports.getCompany = getCompany;
 exports.saveInvoiceAccDetails = saveInvoiceAccDetails;
 exports.sessionManager = sessionManager;
-exports.getCompanyContacts = getCompanyContacts;

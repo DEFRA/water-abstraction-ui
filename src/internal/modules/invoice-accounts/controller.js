@@ -5,17 +5,17 @@ const uuid = require('uuid');
 const sessionForms = require('shared/lib/session-forms');
 const forms = require('shared/lib/forms');
 
-const { selectCompanyForm, selectCompanyFormSchema } = require('../forms/select-company');
-const { selectExistingCompanyForm, selectExistingCompanySchema } = require('../forms/select-existing-company');
-const { addFaoForm, addFaoFormSchema } = require('../forms/add-fao');
-const { checkDetailsForm } = require('../forms/check-details');
+const { selectCompanyForm, selectCompanyFormSchema } = require('./forms/select-company');
+const { selectExistingCompanyForm, selectExistingCompanySchema } = require('./forms/select-existing-company');
+const { addFaoForm, addFaoFormSchema } = require('./forms/add-fao');
+const { checkDetailsForm } = require('./forms/check-details');
 
 const titleCase = require('title-case');
-const { has, isEmpty, assign } = require('lodash');
+const { has, isEmpty, assign, get } = require('lodash');
 const urlJoin = require('url-join');
 
-const dataService = require('../services/data-service');
-const helpers = require('../lib/helpers');
+const dataService = require('./services/data-service');
+const helpers = require('./lib/helpers');
 
 const getCompany = async (request, h) => {
   const { regionId, companyId } = request.params;
@@ -123,34 +123,28 @@ const getAddressEntered = async (request, h) => {
   const address = request.getNewAddress(helpers.getFlowKey(request));
   dataService.sessionManager(request, regionId, companyId, { address });
 
-  // Redirect the user to the check your answers page.
-  return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/check-details`);
+  // Redirect the user to the 'do you need to add an FAO'
+  return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/add-fao`);
 };
 
-const getContactEntryHandover = async (request, h) => {
+const getContactEntered = async (request, h) => {
   const { regionId, companyId } = request.params;
 
-  let data = await helpers.processContactEntry(request);
-
-  dataService.sessionManager(request, regionId, companyId, data);
-  return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/add-fao`);
+  const contact = request.getNewContact(helpers.getFlowKey(request));
+  dataService.sessionManager(request, regionId, companyId, { contact });
+  return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/check-details`);
 };
 
 const getFao = async (request, h) => {
   const { regionId, companyId } = request.params;
   const session = dataService.sessionManager(request, regionId, companyId);
-  let selectedContact;
-  if (has(session, 'contact')) {
-    selectedContact = isEmpty(session.contact) ? 'no' : 'yes';
-  } else {
-    selectedContact = null;
-  }
+
   return h.view('nunjucks/form', {
     ...request.view,
     caption: helpers.getFormTitleCaption(session.viewData.licenceNumber),
     pageTitle: 'Do you need to add an FAO?',
     back: `/invoice-accounts/create/${regionId}/${companyId}/select-address`,
-    form: sessionForms.get(request, addFaoForm(request, selectedContact))
+    form: sessionForms.get(request, addFaoForm(request, session.contact))
   });
 };
 
@@ -158,12 +152,29 @@ const postFao = async (request, h) => {
   const { regionId, companyId } = request.params;
   const schema = addFaoFormSchema(request.payload);
   const form = forms.handleRequest(addFaoForm(request), request, schema);
-  if (form.isValid) {
-    const { faoRequired } = forms.getValues(form);
-    const redirectPath = helpers.processFaoFormData(request, regionId, companyId, faoRequired);
-    return h.redirect(urlJoin('/invoice-accounts/create/', regionId, companyId, redirectPath));
+  if (!form.isValid) {
+    return h.postRedirectGet(form, urlJoin('/invoice-accounts/create/', regionId, companyId, 'add-fao'));
   }
-  return h.postRedirectGet(form, urlJoin('/invoice-accounts/create/', regionId, companyId, 'add-fao'));
+  const { faoRequired } = forms.getValues(form);
+  if (faoRequired) {
+    const session = dataService.sessionManager(request, regionId, companyId);
+    const key = helpers.getFlowKey(request);
+    // redirect to contact entry plugin
+    const path = request.contactEntryRedirect({
+      redirectPath: `/invoice-accounts/create/${regionId}/${companyId}/contact-entered`,
+      back: `/invoice-accounts/create/${regionId}/${companyId}`,
+      key,
+      companyId: session.agent ? session.agent.id : companyId,
+      caption: helpers.getFormTitleCaption(session.viewData.licenceNumber),
+      data: session.contact
+    });
+
+    return h.redirect(path);
+  }
+
+  // save contact as null and go to check details page
+  dataService.sessionManager(request, regionId, companyId, { contact: null });
+  return h.redirect(urlJoin('/invoice-accounts/create/', regionId, companyId, 'check-details'));
 };
 
 const getCheckDetails = async (request, h) => {
@@ -173,9 +184,10 @@ const getCheckDetails = async (request, h) => {
   if (Object.keys(session).length === 0 && session.constructor === Object) {
     throw boom.notFound('Session data not found');
   }
-  const selectedContact = isEmpty(session.contact) ? 'No' : await helpers.getContactName(companyId, session.contact);
+  const selectedContact = helpers.getSelectedContact(session, request.pre.companyContacts);
   const selectedAddress = await helpers.getSelectedAddress(companyId, session);
   const { companies } = request.pre;
+
   let company;
   if (has(session, 'agent.companyId')) {
     company = companies[1];
@@ -201,7 +213,7 @@ const postCheckDetails = async (request, h) => {
   const redirectPath = session.viewData.redirectPath;
   // Formulate the body of the request
   const requestBody = await helpers.postDataHandler(request);
-
+  console.log({ requestBody });
   // Make the request
   const invoiceAcc = await dataService.saveInvoiceAccDetails(companyId, requestBody);
   request.yar.clear(`newInvoiceAccountFlow.${regionId}.${companyId}`);
@@ -221,7 +233,7 @@ module.exports.getAddressEntered = getAddressEntered;
 module.exports.postFao = postFao;
 module.exports.getFao = getFao;
 
-module.exports.getContactEntryHandover = getContactEntryHandover;
+module.exports.getContactEntered = getContactEntered;
 
 module.exports.getCheckDetails = getCheckDetails;
 module.exports.postCheckDetails = postCheckDetails;

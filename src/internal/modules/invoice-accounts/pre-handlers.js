@@ -3,6 +3,7 @@
 const dataService = require('./services/data-service');
 const helpers = require('./lib/helpers');
 const { water } = require('../../lib/connectors/services');
+const companyPreHandlers = require('shared/lib/pre-handlers/companies');
 
 const loadCompanies = async (request) => {
   const { regionId, companyId } = request.params;
@@ -13,8 +14,8 @@ const loadCompanies = async (request) => {
   return [originalCompany, agentCompany];
 };
 
-const getCompany = async (request) =>
-  water.companies.getCompany(request.params.companyId);
+const getCompany = async request =>
+  companyPreHandlers.loadCompany(request);
 
 const searchForCompaniesByString = async request => {
   const { filter } = request.payload || request.query;
@@ -26,5 +27,9 @@ const searchForCompaniesByString = async request => {
   }
 };
 
+const loadCompanyContacts = async request =>
+  companyPreHandlers.loadCompanyContacts(request);
+
 exports.loadCompanies = loadCompanies;
 exports.searchForCompaniesByString = searchForCompaniesByString;
+exports.loadCompanyContacts = loadCompanyContacts;

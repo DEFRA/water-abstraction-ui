@@ -8,12 +8,12 @@ const {
   before,
   after
 } = exports.lab = require('@hapi/lab').script();
-const controller = require('../../../../../src/internal/modules/invoice-accounts/controllers/invoice-accounts');
+const controller = require('../../../../src/internal/modules/invoice-accounts/controller');
 const uuid = require('uuid');
 const sandbox = require('sinon').createSandbox();
-const dataService = require('../../../../../src/internal/modules/invoice-accounts/services/data-service');
-const forms = require('../../../../../src/shared/lib/forms/index');
-const sessionHelper = require('../../../../../src/shared/lib/session-helpers');
+const dataService = require('../../../../src/internal/modules/invoice-accounts/services/data-service');
+const forms = require('../../../../src/shared/lib/forms/index');
+const sessionHelper = require('../../../../src/shared/lib/session-helpers');
 const moment = require('moment');
 const titleCase = require('title-case');
 

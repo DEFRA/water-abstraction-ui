@@ -5,7 +5,7 @@ const loginAsSuperUser = async () => {
     await browser.url('http://localhost:8008/signin');
 
     let emailField = await $('#email');
-    await emailField.setValue('acceptance-test.external@example.com');
+    await emailField.setValue('acceptance-test.internal.super@defra.gov.uk');
 
     let passwordField = await $('#password');
     await passwordField.setValue('P@55word');

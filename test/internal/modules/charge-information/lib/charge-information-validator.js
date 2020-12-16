@@ -76,7 +76,7 @@ experiment('internal/modules/charge-information/lib/charge-information-validator
 
     test('when the billable quantity is higher than authorised quantity, the expected validation warning is present', () => {
       const { validationWarnings } = getElement(decoratedChargeInfo, 'billable-volume-warning');
-      expect(validationWarnings).to.equal(['The billable volume exceeds the authorised volume']);
+      expect(validationWarnings).to.equal(['The billable quantity is more than the authorised quantity']);
     });
 
     test('when there are multiple warnings, all warnings are present', () => {

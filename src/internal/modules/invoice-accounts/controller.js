@@ -11,7 +11,7 @@ const { addFaoForm, addFaoFormSchema } = require('./forms/add-fao');
 const { checkDetailsForm } = require('./forms/check-details');
 
 const titleCase = require('title-case');
-const { has, isEmpty, assign, get } = require('lodash');
+const { has, isEmpty, assign } = require('lodash');
 const urlJoin = require('url-join');
 
 const dataService = require('./services/data-service');

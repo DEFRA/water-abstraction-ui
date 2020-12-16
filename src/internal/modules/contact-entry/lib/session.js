@@ -2,7 +2,6 @@
 
 const SESSION_KEY = 'contactEntryPlugin';
 
-// @TODO-2963: Move/use these helpers from shared location
 const getSessionKey = userKey => `${SESSION_KEY}.${userKey}`;
 
 const get = (request, key) => request.yar.get(getSessionKey(key));

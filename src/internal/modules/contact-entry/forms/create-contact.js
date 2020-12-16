@@ -28,7 +28,7 @@ const getNameField = (name, value) =>
  * Returns an object to create a new contact
  * @param {Object} request The Hapi request object
   */
-const createContactForm = (request) => {
+const createContactForm = request => {
   const f = formFactory(request.path);
   const contact = helpers.getContactFromSession(request);
 

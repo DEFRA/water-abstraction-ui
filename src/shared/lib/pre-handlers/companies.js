@@ -16,8 +16,7 @@ const { errorHandler } = require('./lib/error-handler');
 const loadCompany = async (request, h, companyId = null) => {
   const id = companyId || request.params.companyId;
   try {
-    const data = await request.services.water.companies.getCompany(id);
-    return data;
+    return request.services.water.companies.getCompany(id);
   } catch (err) {
     return errorHandler(err, `Company not found for companyId: ${id}`);
   }
@@ -33,8 +32,7 @@ const loadCompanyContacts = async (request, h, companyId = null) => {
   const id = companyId || request.params.companyId;
   try {
     const { data } = await request.services.water.companies.getContacts(id);
-    const uniqueContacts = uniqBy(data.map(row => row.contact), 'id');
-    return uniqueContacts;
+    return uniqBy(data.map(row => row.contact), 'id');
   } catch (err) {
     return errorHandler(err, `Company contacts not found for companyId: ${id}`);
   }

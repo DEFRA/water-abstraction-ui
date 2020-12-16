@@ -2,20 +2,17 @@ const { formFactory, fields } = require('shared/lib/forms');
 const Joi = require('@hapi/joi');
 const { getAddressText } = require('../lib/helpers');
 
-const getCompanyText = row => {
-  return `${row.company.name}, ${row.address ? getAddressText(row.address) : row.company.companyNumber}`;
-};
+const getCompanyText = row =>
+  `${row.company.name}, ${row.address ? getAddressText(row.address) : row.company.companyNumber}`;
 
-const getCompanyChoices = companies => {
-  const choices = [{ value: null, label: `${companies.length} companies found` },
+const getCompanyChoices = companies =>
+  [{ value: null, label: `${companies.length} companies found` },
     ...companies.map(record => {
       return ({
         value: record.company.companyNumber,
         label: getCompanyText(record)
       });
     })];
-  return choices;
-};
 
 const form = (request, defaultValue) => {
   const { csrfToken } = request.view;

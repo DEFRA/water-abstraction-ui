@@ -161,7 +161,7 @@ const getSelectedContact = (session, companyContacts) => {
   if (isEmpty(session.contact)) return 'No';
   const { contactId } = session.contact;
   const contact = contactId
-    ? companyContacts.find(contact => contact.id === contactId)
+    ? companyContacts.find(row => row.id === contactId)
     : session.contact;
 
   return mapContactToString(contact);

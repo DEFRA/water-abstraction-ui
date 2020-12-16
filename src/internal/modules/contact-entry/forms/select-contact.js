@@ -57,7 +57,7 @@ const getContactChoices = (contacts, contactData) => {
  * @param {Object} request The Hapi request object
   */
 const selectContactForm = request => {
-  let f = formFactory(request.path);
+  const f = formFactory(request.path);
 
   const { companyContacts } = request.pre;
   const contact = helpers.getContactFromSession(request);

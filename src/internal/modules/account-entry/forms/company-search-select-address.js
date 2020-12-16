@@ -3,15 +3,13 @@ const Joi = require('@hapi/joi');
 const { uniqBy } = require('lodash');
 const { getAddressText } = require('../lib/helpers');
 
-const getAddressChoices = addresses => {
-  const choices = uniqBy(addresses, entity => [entity.postcode].join()).map(record => {
+const getAddressChoices = addresses =>
+  uniqBy(addresses, entity => [entity.postcode].join()).map(record => {
     return ({
       value: JSON.stringify(record),
       label: getAddressText(record)
     });
   });
-  return choices;
-};
 
 const form = (request, defaultValue) => {
   const { csrfToken } = request.view;

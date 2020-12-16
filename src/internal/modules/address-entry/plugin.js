@@ -12,7 +12,8 @@ const OPTIONS_SCHEMA = Joi.object({
   key: Joi.string().required(),
   redirectPath: Joi.string().required(),
   companyNumber: Joi.number().optional().integer().min(1),
-  companyId: Joi.string().guid().optional()
+  companyId: Joi.string().guid().optional(),
+  data: Joi.object().optional()
 });
 
 /**

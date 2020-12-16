@@ -33,7 +33,7 @@ const ADDRESS = {
   country: 'United Kingdom'
 };
 
-experiment('src/internal/modules/address-entry/pre-handlers .searchForAddressesByPostcode', () => {
+experiment('src/internal/modules/address-entry/controller.js', () => {
   let request, h;
 
   beforeEach(async () => {

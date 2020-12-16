@@ -3,6 +3,32 @@
 const Joi = require('@hapi/joi');
 
 const { formFactory, fields } = require('shared/lib/forms');
+const { isEqual, pick, isEmpty, get } = require('lodash');
+const session = require('../lib/session');
+
+const ADDRESS_FIELDS = ['addressLine1', 'addressLine2', 'addressLine3', 'addressLine4', 'town', 'county', 'postcode', 'country'];
+
+const getAddressForComparison = address => pick(address, ADDRESS_FIELDS);
+
+const isSameAddress = (addressA, addressB) => isEqual(
+  ...[addressA, addressB].map(getAddressForComparison)
+);
+
+/**
+ * Gets the form value - this is a boolean value if the address is set, or null otherwise
+ * @param {Object} request
+ * @return {Boolean|null}
+ */
+const isRegisteredAddressSelected = request => {
+  // Get the address from session data
+  const { key } = request.params;
+  const address = get(session.get(request, key), 'data', {});
+
+  // Get registered address from request.pre
+  const { address: registeredAddress } = request.pre.company;
+
+  return isEmpty(address) ? null : isSameAddress(address, registeredAddress);
+};
 
 /**
  * Creates an object to represent the form for capturing the
@@ -35,7 +61,7 @@ const form = request => {
         message: 'Select whether to use the registered office address'
       }
     }
-  }));
+  }, isRegisteredAddressSelected(request)));
 
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));

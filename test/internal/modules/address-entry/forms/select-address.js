@@ -40,7 +40,10 @@ const createRequest = (query = {}) => ({
   params: {
     key: KEY
   },
-  pre: { addressSearchResults }
+  pre: { addressSearchResults },
+  yar: {
+    get: sandbox.stub()
+  }
 });
 
 experiment('internal/modules/address-entry/forms/select-address', () => {
@@ -73,7 +76,13 @@ experiment('internal/modules/address-entry/forms/select-address', () => {
     });
 
     test('sets the uprn value to an integer if provided', async () => {
-      const form = selectAddress.form(createRequest(), '123456');
+      const request = createRequest();
+      request.yar.get.returns({
+        data: {
+          uprn: 123456
+        }
+      });
+      const form = selectAddress.form(request);
       const field = findField(form, 'uprn');
       expect(field.value).to.equal(123456);
     });

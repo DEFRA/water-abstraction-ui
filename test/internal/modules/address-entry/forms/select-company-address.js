@@ -4,11 +4,14 @@ const { omit } = require('lodash');
 const uuid = require('uuid/v4');
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
+const sandbox = require('sinon').createSandbox();
 
 const selectCompanyAddress = require('internal/modules/address-entry/forms/select-company-address');
 const { findField, findButton } = require('../../../../lib/form-test');
 
 const ADDRESS_ID = uuid();
+
+const KEY = uuid();
 
 const createRoles = () => ([
   {
@@ -30,6 +33,12 @@ const createRequest = () => ({
   },
   pre: {
     addresses: createRoles()
+  },
+  params: {
+    key: KEY
+  },
+  yar: {
+    get: sandbox.stub()
   }
 });
 

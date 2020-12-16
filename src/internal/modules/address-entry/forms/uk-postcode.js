@@ -2,9 +2,30 @@
 
 const Joi = require('@hapi/joi');
 
+const { get } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms');
-
+const session = require('../lib/session');
+const { addressSources } = require('shared/lib/constants');
 const { postcodeSchema } = require('../lib/postcode-validator');
+
+const isFacadeAddress = address => address.source === addressSources.eaAddressFacade;
+
+/**
+ * Gets the value of the postcode form from the request
+ * @param {*} request
+ */
+const getValue = request => {
+  // Get the selected postcode from session data
+  const { key } = request.params;
+  const address = get(session.get(request, key), 'data', {});
+
+  if (isFacadeAddress(address) && address.postcode) {
+    return address.postcode;
+  }
+
+  const data = request.payload || request.query;
+  return data.postcode;
+};
 
 /**
  * Creates an object to represent the form for capturing the
@@ -15,7 +36,7 @@ const { postcodeSchema } = require('../lib/postcode-validator');
  */
 const form = request => {
   const { key } = request.params;
-  const { postcode } = request.payload || request.query;
+  const postcode = getValue(request);
 
   const f = formFactory(request.path, 'get');
 

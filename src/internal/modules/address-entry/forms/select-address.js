@@ -1,12 +1,13 @@
 'use strict';
 
 const { formFactory, fields } = require('shared/lib/forms');
-const { compact } = require('lodash');
+const { compact, get } = require('lodash');
 const titleCase = require('title-case');
 const Joi = require('@hapi/joi');
 const queryString = require('querystring');
 const routing = require('../lib/routing');
 const { postcodeSchema } = require('../lib/postcode-validator');
+const session = require('../lib/session');
 
 const { COUNTRY_UK } = require('../lib/constants');
 
@@ -37,11 +38,14 @@ const getAddressChoices = addresses => {
  *
  * @param {Object} request The Hapi request object
  */
-const form = (request, uprn) => {
+const form = request => {
   const { csrfToken } = request.view;
   const { postcode } = request.query;
   const addresses = request.pre.addressSearchResults || [];
+
+  // Get the uprn from session data
   const { key } = request.params;
+  const uprn = get(session.get(request, key), 'data.uprn');
 
   const manualEntryLink = routing.getManualEntry(key, { country: COUNTRY_UK, postcode });
 

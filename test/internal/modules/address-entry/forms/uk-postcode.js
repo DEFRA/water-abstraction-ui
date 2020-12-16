@@ -10,6 +10,7 @@ const {
 const { omit } = require('lodash');
 const ukPostcode = require('internal/modules/address-entry/forms/uk-postcode');
 const { findField, findButton } = require('../../../../lib/form-test');
+const sandbox = require('sinon').createSandbox();
 
 const KEY = 'test-key';
 
@@ -21,7 +22,10 @@ const createRequest = (options = {}) => ({
     key: KEY
   },
   query: {},
-  ...options
+  ...options,
+  yar: {
+    get: sandbox.stub()
+  }
 });
 
 experiment('internal/modules/address-entry/forms/uk-postcode', () => {

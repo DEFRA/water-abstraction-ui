@@ -1,11 +1,15 @@
 'use strict';
 
-const { pick } = require('lodash');
+const { pick, get } = require('lodash');
 const { VALID_ADDRESS } = require('@envage/water-abstraction-helpers').validators;
 
 const { formFactory, fields, setValues } = require('shared/lib/forms');
+const { addressSources } = require('shared/lib/constants');
 const Joi = require('@hapi/joi');
 const countryList = require('./country-list');
+const session = require('../lib/session');
+
+const isWRLSAddress = address => address.source === addressSources.wrls;
 
 const GOVUK_WIDTH_TWO_THIRDS = 'govuk-!-width-two-thirds';
 
@@ -67,6 +71,17 @@ const getCountryDropdownChoices = () => [
   ...countryList.map(country => ({ label: country, value: country }))
 ];
 
+const getValues = request => {
+  // Allow country and postcode to be pre-filled from query params
+  const query = pick(request.query, 'country', 'postcode');
+
+  // Get the address from session data
+  const { key } = request.params;
+  const address = get(session.get(request, key), 'data', {});
+
+  return isWRLSAddress(address) ? address : query;
+};
+
 /**
  * Creates an object to represent the form for capturing
  * an address
@@ -74,7 +89,7 @@ const getCountryDropdownChoices = () => [
  * @param {Object} request The Hapi request object
  * @param {Object} address contains address data values
  */
-const form = (request, address = {}) => {
+const form = request => {
   const { csrfToken } = request.view;
 
   let f = formFactory(request.path);
@@ -87,12 +102,11 @@ const form = (request, address = {}) => {
       'any.empty': { message: 'Select a country' }
     },
     label: 'Country',
-    choices: getCountryDropdownChoices(address.country)
+    choices: getCountryDropdownChoices()
   }));
 
   // Allow country/postcode fields to be pre-populated by query params
-  const data = Object.assign({}, address, pick(request.query, 'country', 'postcode'));
-  f = setValues(f, data);
+  f = setValues(f, getValues(request));
 
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));

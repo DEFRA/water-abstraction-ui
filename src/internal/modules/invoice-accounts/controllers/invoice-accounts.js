@@ -109,7 +109,8 @@ const getAddress = async (request, h) => {
     back: `/invoice-accounts/create/${regionId}/${companyId}`,
     key: helpers.getFlowKey(request),
     companyId: addressPluginCompanyId,
-    caption: helpers.getFormTitleCaption(session.viewData.licenceNumber)
+    caption: helpers.getFormTitleCaption(session.viewData.licenceNumber),
+    data: session.address
   });
 
   return h.redirect(path);

@@ -7,8 +7,10 @@ const {
   beforeEach
 } = exports.lab = require('@hapi/lab').script();
 
+const uuid = require('uuid/v4');
 const manualAddressEntry = require('internal/modules/address-entry/forms/manual-address-entry');
 const { findField, findButton } = require('../../../../lib/form-test');
+const sandbox = require('sinon').createSandbox();
 
 const csrfToken = 'c5afe238-fb77-4131-be80-384aaf245842';
 const address = {
@@ -22,11 +24,17 @@ const address = {
   country: 'United Kingdom'
 };
 
+const KEY = uuid();
+
 const createRequest = (query = {}) => ({
   view: {
     csrfToken
   },
-  query
+  query,
+  params: { key: KEY },
+  yar: {
+    get: sandbox.stub().returns({})
+  }
 });
 
 experiment('internal/modules/address-entry/forms/manual-address-entry', () => {
@@ -42,16 +50,55 @@ experiment('internal/modules/address-entry/forms/manual-address-entry', () => {
       expect(csrf.value).to.equal(csrfToken);
     });
 
-    Object.keys(address).forEach(fieldName => {
-      const form = manualAddressEntry.form(createRequest(), address);
-      const field = findField(form, fieldName);
-
-      test(`has a/an ${fieldName} field`, async () => {
-        expect(field).to.exist();
+    experiment('when the address is set and the source is wrls', () => {
+      let request, form;
+      beforeEach(async () => {
+        request = createRequest();
+        request.yar.get.returns({
+          data: {
+            ...address,
+            source: 'wrls'
+          }
+        });
+        form = manualAddressEntry.form(request);
       });
 
-      test(`sets the ${fieldName} value if supplied`, async () => {
-        expect(field.value).to.equal(address[fieldName]);
+      Object.keys(address).forEach(fieldName => {
+        test(`has a/an ${fieldName} field`, async () => {
+          const field = findField(form, fieldName);
+          expect(field).to.exist();
+        });
+
+        test(`sets the ${fieldName} value if supplied`, async () => {
+          const field = findField(form, fieldName);
+          expect(field.value).to.equal(address[fieldName]);
+        });
+      });
+    });
+
+    experiment('when the address is set and the source is not wrls', () => {
+      let request, form;
+      beforeEach(async () => {
+        request = createRequest();
+        request.yar.get.returns({
+          data: {
+            ...address,
+            source: 'not-wrls'
+          }
+        });
+        form = manualAddressEntry.form(request);
+      });
+
+      Object.keys(address).forEach(fieldName => {
+        test(`has a/an ${fieldName} field`, async () => {
+          const field = findField(form, fieldName);
+          expect(field).to.exist();
+        });
+
+        test(`does not set the ${fieldName} value`, async () => {
+          const field = findField(form, fieldName);
+          expect(field.value).to.be.undefined();
+        });
       });
     });
 

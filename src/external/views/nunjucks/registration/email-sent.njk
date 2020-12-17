@@ -4,10 +4,13 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {{ title(pageTitle) }}
-      <p>
-        We have sent a link to <span class="govuk-!-font-weight-bold">{{ email }}</span>
+      <p data-test-id="success-text">
+        We have sent a link to
+        <span class="govuk-!-font-weight-bold">{{ email }}</span>
       </p>
-      <p><a class="govuk-link" href="/send-again">I have not received the email</a></p>
+      <p>
+        <a class="govuk-link" href="/send-again" data-test-id="send-again-link">I have not received the email</a>
+      </p>
     </div>
   </div>
 {% endblock %}

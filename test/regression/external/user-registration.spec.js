@@ -1,6 +1,6 @@
 'use strict';
 
-const { getButton, getPageTitle, getValidationSummaryMessage, getByTestId } = require('./helpers/page');
+const { getButton, getPageTitle, getValidationSummaryMessage, getByTestId } = require('../shared/helpers/page');
 const { getPersonalisation } = require('./helpers/notifications');
 const config = require('./config');
 
@@ -132,5 +132,6 @@ describe('external user registration', () => {
 
   /**
    * @todo flow where user enters email twice
+   * @todo flow where user is already registered
    */
 });

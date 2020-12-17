@@ -2,7 +2,7 @@
 
 require('dotenv').config();
 
-const setup = require('./test/regression/shared/lib/setup');
+const setup = require('./test/regression/shared/helpers/setup');
 
 exports.config = {
   //

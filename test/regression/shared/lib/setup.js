@@ -7,16 +7,17 @@ const rp = require('request-promise-native').defaults({
   proxy: null,
   strictSSL: false
 });
+const urlJoin = require('url-join');
 
 /**
- * Calls the water service
+ * HTTP request to the water service
  * @param {String} uri
  * @param {Object} [overrides]
  * @return {Promise}
  */
-const callWaterService = async (uri, overrides = {}) => {
+const waterRequest = async (tail, overrides = {}) => {
   const opts = Object.assign({}, {
-    uri,
+    uri: urlJoin(process.env.WATER_URI, tail),
     method: 'POST',
     headers: {
       Authorization: `Bearer ${process.env.JWT_TOKEN}`
@@ -31,7 +32,7 @@ const callWaterService = async (uri, overrides = {}) => {
  * Sets up acceptance test data
  * @return {Promise}
  */
-const setUp = () => callWaterService(`${process.env.WATER_URI}/acceptance-tests/set-up`, {
+const setUp = () => waterRequest('/acceptance-tests/set-up', {
   form: {
     includeInternalUsers: true
   }
@@ -41,7 +42,7 @@ const setUp = () => callWaterService(`${process.env.WATER_URI}/acceptance-tests/
  * Tears down acceptance test data
  * @return {Promise}
  */
-const tearDown = () => callWaterService(`${process.env.WATER_URI}/acceptance-tests/tear-down`);
+const tearDown = () => waterRequest('/acceptance-tests/tear-down');
 
 exports.setUp = setUp;
 exports.tearDown = tearDown;

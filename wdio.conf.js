@@ -166,10 +166,7 @@ exports.config = {
      * @param {Object} config wdio configuration object
      * @param {Array.<Object>} capabilities list of capabilities details
      */
-  onPrepare: () => async () => {
-    await setup.tearDown();
-    return setup.setUp();
-  },
+  onPrepare: () => setup.setUp(),
 
   /**
      * Gets executed before a worker process is spawned and can be used to initialise specific service

@@ -2,7 +2,6 @@
 
 const { getButton, getPageTitle, getValidationSummaryMessage, getByTestId } = require('./helpers/page');
 const { getPersonalisation } = require('./helpers/notifications');
-const { tearDown } = require('./helpers/acceptance-tests-proxy');
 const config = require('./config');
 
 const uuid = require('uuid/v4');
@@ -134,8 +133,4 @@ describe('external user registration', () => {
   /**
    * @todo flow where user enters email twice
    */
-
-  after(async () => {
-    await tearDown();
-  });
 });

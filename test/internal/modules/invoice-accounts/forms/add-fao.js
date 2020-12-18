@@ -1,6 +1,5 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
 const uuid = require('uuid/v4');
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
@@ -50,26 +49,54 @@ experiment('invoice-accounts/forms/add-fao form', () => {
 });
 
 experiment('invoice-accounts/forms/add-fao schema', () => {
+  let request, data;
+  beforeEach(() => {
+    request = createRequest();
+    data = {
+      csrf_token: uuid(),
+      faoRequired: true
+    };
+  });
   experiment('csrf token', () => {
     test('validates for a uuid', async () => {
-      const result = addFaoFormSchema(createRequest()).csrf_token.validate(uuid());
+      const result = addFaoFormSchema(request).validate(data);
       expect(result.error).to.be.null();
     });
 
     test('fails for a string that is not a uuid', async () => {
-      const result = addFaoFormSchema(createRequest()).csrf_token.validate('notAGuid');
+      const result = addFaoFormSchema(createRequest()).validate({
+        ...data,
+        csrf_token: 'not-a-guid'
+      });
       expect(result.error).to.exist();
     });
   });
 
   experiment('faoRequired', () => {
-    test('It should only allow yes or no', async () => {
-      const result = Joi.describe(addFaoFormSchema(createRequest()));
-      expect(result.children.faoRequired.valids).to.equal(['yes', 'no']);
+    test('validates for true', async () => {
+      const result = addFaoFormSchema(request).validate(data);
+      expect(result.error).to.be.null();
+    });
+
+    test('validates for false', async () => {
+      const result = addFaoFormSchema(request).validate({
+        ...data,
+        faoRequired: false
+      });
+      expect(result.error).to.be.null();
+    });
+
+    test('fails for a value that is not a boolean', async () => {
+      const result = addFaoFormSchema(request).validate({
+        ...data,
+        faoRequired: 'no'
+      });
+      expect(result.error).to.exist();
     });
 
     test('fails if blank', async () => {
-      const result = addFaoFormSchema(createRequest()).faoRequired.validate();
+      delete data.faoRequired;
+      const result = addFaoFormSchema(request).validate(data);
       expect(result.error).to.exist();
     });
   });

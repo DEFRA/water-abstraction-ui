@@ -13,7 +13,7 @@ const uuid = require('uuid/v4');
 
 const sandbox = sinon.createSandbox();
 
-const controller = require('../../../../src/internal/modules/contact-entry/controllers');
+const controller = require('../../../../src/internal/modules/account-entry/controllers');
 const ADDRESS_FLOW_SESSION_KEY = require('../../../../src/internal/modules/address-entry/plugin').SESSION_KEY;
 
 let contactId = uuid();

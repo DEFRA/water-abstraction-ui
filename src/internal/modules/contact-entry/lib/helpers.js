@@ -1,14 +1,25 @@
-'use strict';
+const { CONTACT_TYPES } = require('./constants');
+const { get } = require('lodash');
+const session = require('../lib/session');
 
-const titleCase = require('title-case');
-const { compact } = require('lodash');
+/**
+ * Returns value to be stored in the session
+ * @param {String} selected value from form: guid|department
+ * @param {String} department
+ */
+const getSelectedContact = (selected, department) => {
+  if (selected === CONTACT_TYPES.department) {
+    return {
+      type: CONTACT_TYPES.department,
+      department
+    };
+  }
 
-const getAddressText = address => {
-  const { addressLine1, addressLine2, addressLine3, addressLine4 } = address;
-  const addressLines = compact([addressLine1, addressLine2, addressLine3, addressLine4])
-    .map(line => titleCase(line))
-    .join(' ');
-  return `${addressLines}, ${titleCase(address.town)}, ${address.postcode}`;
+  return { contactId: selected };
 };
 
-exports.getAddressText = getAddressText;
+const getContactFromSession = request =>
+  get(session.get(request, request.params.key), 'data', {});
+
+exports.getSelectedContact = getSelectedContact;
+exports.getContactFromSession = getContactFromSession;

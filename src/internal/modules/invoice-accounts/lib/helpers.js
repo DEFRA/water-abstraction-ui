@@ -1,10 +1,11 @@
 const dataService = require('../services/data-service');
 const forms = require('shared/lib/forms');
-const { has, isEmpty, assign, omit } = require('lodash');
+const { has, assign, omit, isEmpty } = require('lodash');
 const moment = require('moment');
 const titleCase = require('title-case');
 const tempId = '00000000-0000-0000-0000-000000000000';
 const sessionHelper = require('shared/lib/session-helpers');
+const { mapContactToString } = require('shared/lib/mappers/contact');
 
 const getFormTitleCaption = (licenceNumber) => {
   return licenceNumber ? `Licence ${licenceNumber}` : '';
@@ -29,36 +30,6 @@ const processCompanyFormData = (request, regionId, companyId, formData) => {
     }
     return 'select-address';
   }
-};
-
-/**
- * Identifies redirction route after addFao and saves empty
- * contact in session if no FAO contact should be added
- * @param {*} request Hapi request object
- * @param {*} regionId
- * @param {*} companyId
- * @param {*} addFao - value selected in addFao form
- * @returns redirection route
- */
-const processFaoFormData = (request, regionId, companyId, addFao) => {
-  if (addFao === 'yes') {
-    return 'select-contact';
-  } else {
-    dataService.sessionManager(request, regionId, companyId, { contact: null });
-    return 'check-details';
-  }
-};
-
-const processSelectContactFormData = (request, regionId, companyId, selectedContact, department) => {
-  const session = dataService.sessionManager(request, regionId, companyId);
-  if (has(session, 'contact')) { dataService.sessionManager(request, regionId, companyId, { contact: null }); }
-  // if it is a new department contact
-  if (selectedContact === 'department') {
-    dataService.sessionManager(request, regionId, companyId, { contact: { type: 'department', department } });
-  } else {
-    // if the contact exist then save the contact id
-    dataService.sessionManager(request, regionId, companyId, { contact: { contactId: selectedContact } });
-  };
 };
 
 const getSelectedAddress = async (companyId, session) => {
@@ -102,35 +73,6 @@ const getCompanyName = async (request) => {
   } else {
     const originalCompany = await dataService.getCompany(companyId);
     return originalCompany.name;
-  }
-};
-
-const getName = (contact) => {
-  const name = [
-    contact.title,
-    contact.firstName,
-    contact.middleInitials,
-    contact.lastName,
-    contact.suffix
-  ].filter(item => !isEmpty(item)).join(' ');
-  if (!isEmpty(contact.department) && !isEmpty(name)) {
-    return [titleCase(name), titleCase(contact.department)].join(', ');
-  } else {
-    return isEmpty(contact.department) ? titleCase(name) : titleCase(contact.department);
-  }
-};
-
-const getContactName = async (companyId, sessionContact) => {
-  if (sessionContact.type === 'person') {
-    const name = getName(sessionContact);
-    return name;
-  } else if (sessionContact.type === 'department') {
-    return titleCase(sessionContact.department);
-  } else {
-    const contacts = await dataService.getCompanyContacts(companyId);
-    const contact = contacts.find(contact => contact.id === sessionContact.contactId);
-    const name = getName(contact);
-    return name;
   }
 };
 
@@ -215,16 +157,23 @@ const postDataHandler = (request) => {
 
 const getFlowKey = request => `new-invoice-account-${request.params.companyId}`;
 
-exports.getName = getName;
+const getSelectedContact = (session, companyContacts) => {
+  if (isEmpty(session.contact)) return 'No';
+  const { contactId } = session.contact;
+  const contact = contactId
+    ? companyContacts.find(row => row.id === contactId)
+    : session.contact;
+
+  return mapContactToString(contact);
+};
+
 exports.getCompanyName = getCompanyName;
-exports.getContactName = getContactName;
 exports.getFormTitleCaption = getFormTitleCaption;
 exports.getAllAddresses = getAllAddresses;
 exports.getAgentCompany = getAgentCompany;
 exports.getSelectedAddress = getSelectedAddress;
-exports.processFaoFormData = processFaoFormData;
 exports.processCompanyFormData = processCompanyFormData;
-exports.processSelectContactFormData = processSelectContactFormData;
 exports.processContactEntry = processContactEntry;
 exports.postDataHandler = postDataHandler;
 exports.getFlowKey = getFlowKey;
+exports.getSelectedContact = getSelectedContact;

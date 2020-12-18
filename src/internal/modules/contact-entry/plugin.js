@@ -39,7 +39,7 @@ function getNewContact (key) {
 }
 
 const contactEntryPlugin = {
-  register: (server, options) => {
+  register: server => {
     // Register method to initiate flow and get data
     server.decorate('request', 'contactEntryRedirect', contactEntryRedirect);
     server.decorate('request', 'getNewContact', getNewContact);

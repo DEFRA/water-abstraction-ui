@@ -17,7 +17,7 @@ const getPageTitle = () => $('h1');
 /**
  * Gets caption with class govuk-caption-l
  */
-const getPageCaption = () => $('govuk-caption-l');
+const getPageCaption = () => $('.govuk-caption-l');
 
 /**
  * Gets the validation summary message.

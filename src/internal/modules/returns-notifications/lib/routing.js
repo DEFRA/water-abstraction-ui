@@ -4,7 +4,7 @@
  * @module route helpers for paper forms flow
  */
 
-const getEnterLicenceNumber = () => '/returns-notifications/paper-forms';
+const getEnterLicenceNumber = () => '/returns-notifications/forms';
 
 const getSelectLicenceHolders = () => '/returns-notifications/select-licence-holders';
 

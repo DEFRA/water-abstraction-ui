@@ -1,0 +1,27 @@
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+
+{% macro noReturnsDueBanner(licences) %}
+{% if licences.length > 0 %}
+      {% set html %}
+        {% if licences.length > 1 %}
+          <p class="govuk-notification-banner__heading">
+              There are no returns due for licences:
+          </p>
+          {% for licence in licences %}
+            <ul class="govuk-list govuk-list--bullet">
+              <li>{{licence}}</li>
+            </ul>
+          {% endfor %}
+        {% else %}
+          <p class="govuk-notification-banner__heading">
+                There are no returns due for licence
+            {{ licences[0] }}
+          </p>
+        {% endif %}
+      {% endset %}
+
+      {{ govukNotificationBanner({
+        html: html
+      }) }}
+    {% endif %}
+{% endmacro %}

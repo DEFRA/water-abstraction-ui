@@ -15,6 +15,11 @@ const getButton = (text = 'Continue') =>
 const getPageTitle = () => $('h1');
 
 /**
+ * Gets caption with class govuk-caption-l
+ */
+const getPageCaption = () => $('.govuk-caption-l');
+
+/**
  * Gets the validation summary message.
  * Where there is more than 1 error, an index can be supplied to get
  * the message with the supplied index
@@ -32,7 +37,12 @@ const getValidationSummaryMessage = (index = 0) =>
 const getByTestId = id =>
   $(`[data-test-id=${id}]`);
 
+const getBackLink = () =>
+  $('.govuk-back-link');
+
 exports.getButton = getButton;
 exports.getPageTitle = getPageTitle;
+exports.getPageCaption = getPageCaption;
 exports.getValidationSummaryMessage = getValidationSummaryMessage;
 exports.getByTestId = getByTestId;
+exports.getBackLink = getBackLink;

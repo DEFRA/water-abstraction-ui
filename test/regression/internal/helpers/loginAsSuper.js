@@ -1,8 +1,9 @@
 /* eslint-disable no-undef */
+const config = require('../config');
 
 const loginAsSuperUser = async () => {
   try {
-    await browser.url('http://localhost:8008/signin');
+    await browser.url(`${config.baseUrl}/signin`);
 
     let emailField = await $('#email');
     await emailField.setValue('acceptance-test.internal.super@defra.gov.uk');

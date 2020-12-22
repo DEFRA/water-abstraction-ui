@@ -1,7 +1,7 @@
 'use strict';
 
 const { getButton, getPageTitle, getValidationSummaryMessage, getByTestId } = require('../shared/helpers/page');
-const { getPersonalisation } = require('./helpers/notifications');
+const { getPersonalisation } = require('../shared/helpers/notifications');
 const config = require('./config');
 
 const uuid = require('uuid/v4');
@@ -74,7 +74,7 @@ describe('external user registration', () => {
   });
 
   it('clicks the link in the confirmation email', () => {
-    const link = getPersonalisation(EMAIL_ADDRESS, 'link');
+    const link = getPersonalisation(config.baseUrl, EMAIL_ADDRESS, 'link');
     browser.url(link);
     expect(browser).toHaveUrlContaining('/create-password?');
     expect(getPageTitle()).toHaveText('Create a password');

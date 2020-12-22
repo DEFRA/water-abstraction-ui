@@ -77,7 +77,9 @@ const mapLicencesToState = (licences, refDate) => {
     licenceRow.documents.forEach(documentRow =>
       acc.set(documentRow.document.id, mapDocumentRow(licenceRow, documentRow, refDate))
     );
-    if (licenceRow.documents.length === 0) { acc.set(licenceRow.licence.id, licenceRow.licence.licenceNumber); }
+    if (licenceRow.documents.length === 0) {
+      acc.set(licenceRow.licence.id, licenceRow.licence.licenceNumber);
+    };
     return acc;
   }, new Map());
   return Object.fromEntries(map);

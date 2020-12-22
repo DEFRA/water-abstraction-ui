@@ -1,16 +1,16 @@
 'use strict';
 
 const { setUp } = require('../shared/helpers/setup');
-const { loginAsUser, INTERNAL_USERS, USER_EMAILS } = require('./helpers/login-as-user');
+const { loginAsUser, USER_EMAILS } = require('./helpers/login-as-user');
 const { getButton, getPageTitle, getPageCaption, getBackLink } = require('../shared/helpers/page');
 
-const EMAIL_ADDRESS = USER_EMAILS.environment_officer;
+const EMAIL_ADDRESS = USER_EMAILS.environmentOfficer;
 
 /* eslint-disable no-undef */
 describe('change internal user permissions as B&D user', () => {
   before(async () => {
     await setUp();
-    await loginAsUser(INTERNAL_USERS.billingAndData);
+    await loginAsUser(USER_EMAILS.billingAndData);
   });
 
   it('searches for user by email address', () => {

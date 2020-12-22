@@ -48,7 +48,7 @@ module.exports = {
     password: process.env.COOKIE_SECRET,
     isSecure: !isLocal,
     isSameSite: 'Lax',
-    ttl: 2 * 60 * 60 * 1000, // Set session to 1 day,
+    ttl: 2 * 60 * 60 * 1000, // Set session to 2 hours,
     redirectTo: request => withQueryStringSubset('/welcome', request.query, '_ga'),
     isHttpOnly: true,
     keepAlive: true // ttl restarts after each request

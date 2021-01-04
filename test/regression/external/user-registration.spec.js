@@ -49,83 +49,131 @@ describe('external user registration', () => {
     expect(getPageTitle()).toHaveText('Create an account');
   });
 
-  it('shows a validation message if the email field is empty', () => {
-    $('#email').setValue('');
-    getButton('Continue').click();
-    expect(getValidationSummaryMessage()).toHaveText('Enter an email address in the right format');
+  it('shows a validation message if the email field is empty', async () => {
+    const email = await $('#email');
+    const continueButton = await getButton('Continue');
+    const validationMessage = await getValidationSummaryMessage();
+
+    email.setValue('');
+    continueButton.click();
+    expect(validationMessage).toHaveText('Enter an email address in the right format');
   });
 
-  it('shows a validation message if the email field is invalid', () => {
-    $('#email').setValue('not-an-email-address');
-    getButton('Continue').click();
-    expect(getValidationSummaryMessage()).toHaveText('Enter an email address in the right format');
+  it('shows a validation message if the email field is invalid', async () => {
+    const email = await $('input#email');
+    const continueButton = await getButton('Continue');
+    const validationMessage = await getValidationSummaryMessage();
+
+    email.setValue('not-an-email-address');
+    continueButton.click();
+    expect(validationMessage).toHaveText('Enter an email address in the right format');
   });
 
-  it('navigates to the success page if the email address is valid', () => {
-    $('#email').setValue(EMAIL_ADDRESS);
-    getButton('Continue').click();
+  it('navigates to the success page if the email address is valid', async () => {
+    const email = await $('input#email');
+    const continueButton = await getButton('Continue');
+    const pageTitle = await getPageTitle();
+
+    email.setValue(EMAIL_ADDRESS);
+    continueButton.click();
     const uri = `/success?${qs.encode({ email: EMAIL_ADDRESS })}`;
     expect(browser).toHaveUrlContaining(uri);
-    expect(getPageTitle()).toHaveText('Confirm your email address');
+    expect(pageTitle).toHaveText('Confirm your email address');
   });
 
-  it('shows confirmation text including the email address', () => {
-    expect(getByTestId('success-text')).toHaveText(`We have sent a link to ${EMAIL_ADDRESS}`);
+  it('shows confirmation text including the email address', async () => {
+    const confirmationText = await getByTestId('success-text');
+    expect(confirmationText).toHaveText(`We have sent a link to ${EMAIL_ADDRESS}`);
   });
 
-  it('clicks the link in the confirmation email', () => {
-    const link = getPersonalisation(baseUrl, EMAIL_ADDRESS, 'link');
+  it('clicks the link in the confirmation email', async () => {
+    const link = await getPersonalisation(baseUrl, EMAIL_ADDRESS, 'link');
+    const pageTitle = await getPageTitle();
+
     browser.url(link);
     expect(browser).toHaveUrlContaining('/create-password?');
-    expect(getPageTitle()).toHaveText('Create a password');
+    expect(pageTitle).toHaveText('Create a password');
   });
 
-  it('shows a validation error message if no passwords are entered', () => {
-    $('#password').setValue('');
-    $('#confirm-password').setValue('');
-    getButton('Change password').click();
+  it('shows a validation error message if no passwords are entered', async () => {
+    const passwordField = await $('#password');
+    const confirmPasswordField = await $('#confirm-password');
+    const changePasswordButton = await getButton('Change password');
+
+    passwordField.setValue('');
+    confirmPasswordField.setValue('');
+
+    changePasswordButton.click();
     expectPasswordValidationToBe(false, false, false);
   });
 
-  it('shows a validation error message if passwords are too short', () => {
-    $('#password').setValue('short');
-    $('#confirm-password').setValue('short');
-    getButton('Change password').click();
+  it('shows a validation error message if passwords are too short', async () => {
+    const passwordField = await $('#password');
+    const confirmPasswordField = await $('#confirm-password');
+    const changePasswordButton = await getButton('Change password');
+
+    passwordField.setValue('short');
+    confirmPasswordField.setValue('short');
+    changePasswordButton.click();
+
     expectPasswordValidationToBe(false, false, false);
   });
 
-  it('shows a validation error message if passwords have correct length only', () => {
-    $('#password').setValue('12345678');
-    $('#confirm-password').setValue('12345678');
-    getButton('Change password').click();
+  it('shows a validation error message if passwords have correct length only', async () => {
+    const passwordField = await $('#password');
+    const confirmPasswordField = await $('#confirm-password');
+    const changePasswordButton = await getButton('Change password');
+
+    passwordField.setValue('12345678');
+    confirmPasswordField.setValue('12345678');
+    changePasswordButton.click();
     expectPasswordValidationToBe(true, false, false);
   });
 
-  it('shows a validation error message if passwords have symbol only', () => {
-    $('#password').setValue('123$');
-    $('#confirm-password').setValue('123$');
-    getButton('Change password').click();
+  it('shows a validation error message if passwords have symbol only', async () => {
+    const passwordField = await $('#password');
+    const confirmPasswordField = await $('#confirm-password');
+    const changePasswordButton = await getButton('Change password');
+
+    passwordField.setValue('123$');
+    confirmPasswordField.setValue('123$');
+    changePasswordButton.click();
+
     expectPasswordValidationToBe(false, true, false);
   });
 
-  it('shows a validation error message if passwords have capital only', () => {
-    $('#password').setValue('123A');
-    $('#confirm-password').setValue('123A');
-    getButton('Change password').click();
+  it('shows a validation error message if passwords have capital only', async () => {
+    const passwordField = await $('#password');
+    const confirmPasswordField = await $('#confirm-password');
+    const changePasswordButton = await getButton('Change password');
+
+    passwordField.setValue('123A');
+    confirmPasswordField.setValue('123A');
+    changePasswordButton.click();
+
     expectPasswordValidationToBe(false, false, true);
   });
 
-  it('shows a validation error message if passwords do not match', () => {
-    $('#password').setValue('A12345678$');
-    $('#confirm-password').setValue('B12345678$');
-    getButton('Change password').click();
+  it('shows a validation error message if passwords do not match', async () => {
+    const passwordField = await $('#password');
+    const confirmPasswordField = await $('#confirm-password');
+    const changePasswordButton = await getButton('Change password');
+
+    passwordField.setValue('A12345678$');
+    confirmPasswordField.setValue('B12345678$');
+    changePasswordButton.click();
     expect(getValidationSummaryMessage()).toHaveText('Re-enter your new password');
   });
 
-  it('sets the passwords and signs in if valid and matching', () => {
-    $('#password').setValue('A12345678$');
-    $('#confirm-password').setValue('A12345678$');
-    getButton('Change password').click();
+  it('sets the passwords and signs in if valid and matching', async () => {
+    const passwordField = await $('#password');
+    const confirmPasswordField = await $('#confirm-password');
+    const changePasswordButton = await getButton('Change password');
+
+    passwordField.setValue('A12345678$');
+    confirmPasswordField.setValue('A12345678$');
+    changePasswordButton.click();
+
     expect(browser).toHaveUrlContaining('/add-licences');
     expect(getPageTitle()).toHaveText('Add your licences to the service');
   });

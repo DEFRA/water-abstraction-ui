@@ -74,7 +74,7 @@ describe('external user registration', () => {
   });
 
   it('clicks the link in the confirmation email', () => {
-    const link = getPersonalisation(config.baseUrl, EMAIL_ADDRESS, 'link');
+    const link = getPersonalisation('http://127.0.0.1:8000', EMAIL_ADDRESS, 'link');
     browser.url(link);
     expect(browser).toHaveUrlContaining('/create-password?');
     expect(getPageTitle()).toHaveText('Create a password');

@@ -12,7 +12,7 @@ describe('external user resetting their password:', function () {
   before(async () => {
     // registerUser(EMAIL_ADDRESS);
     await setUp();
-    browser.url(`${config.baseUrl}/signin`);
+    browser.url(`http://127.0.0.1:8000/signin`);
   });
 
   it('navigate to the reset your password page', () => {

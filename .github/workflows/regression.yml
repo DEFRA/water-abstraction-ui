@@ -185,6 +185,11 @@ jobs:
         with:
           redis-version: 6
 
+      - name: Sleep for 30 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '30s'
+
       - name: Start pm2
         run: |
           cd water-abstraction-permit-repository && pm2 start ecosystem.config.json && cd ..

@@ -185,10 +185,10 @@ jobs:
         with:
           redis-version: 6
 
-      - name: Sleep for 30 seconds
+      - name: Sleep for 15 seconds
         uses: jakejarvis/wait-action@master
         with:
-          time: '30s'
+          time: '15s'
 
       - name: Start pm2
         run: |
@@ -199,6 +199,11 @@ jobs:
           cd water-abstraction-returns && pm2 start ecosystem.config.json && cd ..
           cd water-abstraction-import && pm2 start ecosystem.config.json && cd ..
           pm2 start ecosystem.config.json
+
+      - name: Sleep for 15 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '15s'
 
       - name: Run regression tests
         run: |

@@ -29,7 +29,7 @@ describe('external user registration', () => {
   };
 
   before(() => {
-    browser.url(config.baseUrl);
+    browser.url('http://127.0.0.1:8000');
   });
 
   it('redirects to the welcome page', () => {

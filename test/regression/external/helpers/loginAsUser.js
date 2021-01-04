@@ -2,7 +2,7 @@ const { baseUrl } = require('../config');
 /* eslint-disable no-undef */
 
 const loginAsUser = async () => {
-  await browser.url(`http://127.0.0.1:8000/signin`);
+  await browser.url(`${baseUrl}/signin`);
 
   let emailField = await $('#email');
   await emailField.setValue('acceptance-test.external@example.com');

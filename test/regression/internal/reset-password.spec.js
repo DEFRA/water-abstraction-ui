@@ -1,16 +1,14 @@
 'use strict';
 const { getButton, getPageTitle, getPageCaption, getValidationSummaryMessage } = require('../shared/helpers/page');
 const { getPersonalisation } = require('../shared/helpers/notifications');
-const { setUp } = require('../shared/helpers/setup');
-const config = require('./config');
+const { baseUrl } = require('./config');
 
 const EMAIL_ADDRESS = 'acceptance-test.internal.wirs@defra.gov.uk';
 
 /* eslint-disable no-undef */
 describe('internal user resetting their password:', function () {
   before(async () => {
-    await setUp();
-    browser.url(`http://127.0.0.1:8008/signin`);
+    browser.url(`${baseUrl}/signin`);
   });
 
   it('navigate to the reset your password page', () => {
@@ -51,7 +49,7 @@ describe('internal user resetting their password:', function () {
   });
 
   it('clicks the link in the confirmation email', () => {
-    const resetUrl = getPersonalisation('http://127.0.0.1:8008', EMAIL_ADDRESS, 'reset_url');
+    const resetUrl = getPersonalisation(baseUrl, EMAIL_ADDRESS, 'reset_url');
     browser.url(resetUrl);
     expect(browser).toHaveUrlContaining('/reset_password_change_password?');
     expect(getPageTitle()).toHaveText('Change your password');

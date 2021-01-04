@@ -2,19 +2,12 @@
 
 const { getButton, getPageTitle, getValidationSummaryMessage } = require('../shared/helpers/page');
 const { getPersonalisation } = require('../shared/helpers/notifications');
-const { setUp } = require('../shared/helpers/setup');
 const config = require('./config');
 
 const EMAIL_ADDRESS = 'acceptance-test.external@example.com';
 
 /* eslint-disable no-undef */
 describe('external user resetting their password:', function () {
-  before(async () => {
-    // registerUser(EMAIL_ADDRESS);
-    await setUp();
-    browser.url(`http://127.0.0.1:8000/signin`);
-  });
-
   it('navigate to the reset your password page', () => {
     $('#main-content > p > a').click();
     expect(browser).toHaveUrlContaining('/reset_password');

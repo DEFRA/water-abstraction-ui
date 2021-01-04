@@ -2,7 +2,7 @@
 
 const { getButton, getPageTitle, getValidationSummaryMessage, getByTestId } = require('../shared/helpers/page');
 const { getPersonalisation } = require('../shared/helpers/notifications');
-const config = require('./config');
+const { baseUrl } = require('./config');
 
 const uuid = require('uuid/v4');
 const qs = require('querystring');
@@ -29,7 +29,7 @@ describe('external user registration', () => {
   };
 
   before(() => {
-    browser.url('http://127.0.0.1:8000');
+    browser.url(baseUrl);
   });
 
   it('redirects to the welcome page', () => {
@@ -74,7 +74,7 @@ describe('external user registration', () => {
   });
 
   it('clicks the link in the confirmation email', () => {
-    const link = getPersonalisation('http://127.0.0.1:8000', EMAIL_ADDRESS, 'link');
+    const link = getPersonalisation(baseUrl, EMAIL_ADDRESS, 'link');
     browser.url(link);
     expect(browser).toHaveUrlContaining('/create-password?');
     expect(getPageTitle()).toHaveText('Create a password');

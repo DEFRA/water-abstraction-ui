@@ -51,6 +51,7 @@ exports.config = {
   // Sauce Labs platform configurator - a great tool to configure your capabilities:
   // https://docs.saucelabs.com/reference/platforms-configurator
   //
+  port: '4444',
   capabilities: [{
 
     // maxInstances can get overwritten per capability. So if you have an in-house Selenium
@@ -236,7 +237,7 @@ exports.config = {
      * Hook that gets executed after the suite has ended
      * @param {Object} suite suite details
      */
-  afterSuite: () => setup.tearDown()
+  // afterSuite: () => setup.tearDown()
   /**
      * Runs after a WebdriverIO command gets executed
      * @param {String} commandName hook command name
@@ -261,8 +262,7 @@ exports.config = {
      * @param {Array.<Object>} capabilities list of capabilities details
      * @param {Array.<String>} specs List of spec file paths that ran
      */
-  // afterSession: function (config, capabilities, specs) {
-  // },
+  afterSession: () => setup.tearDown()
   /**
      * Gets executed after all workers got shut down and the process is about to exit. An error
      * thrown in the onComplete hook will result in the test run failing.

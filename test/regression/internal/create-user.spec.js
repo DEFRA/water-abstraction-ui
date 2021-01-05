@@ -1,10 +1,11 @@
 /* eslint-disable no-undef */
-const { loginAsUser, USER_EMAILS } = require('./helpers/login-as-user');
+const { loginAsUser } = require('../shared/helpers/login-as-user');
+const { baseUrl, userEmails } = require('./config');
 const uuid = require('uuid/v4');
 
 describe('creating an internal user:', function () {
   before(async () => {
-    await loginAsUser(USER_EMAILS.super);
+    await loginAsUser(baseUrl, userEmails.super);
   });
 
   describe('navigates to the new internal user form:', () => {

@@ -2,9 +2,9 @@
 
 const { getButton, getPageTitle, getValidationSummaryMessage } = require('../shared/helpers/page');
 const { getPersonalisation } = require('../shared/helpers/notifications');
-const { baseUrl } = require('./config');
+const { baseUrl, userEmails } = require('./config');
 
-const EMAIL_ADDRESS = 'acceptance-test.external@example.com';
+const EMAIL_ADDRESS = userEmails.external;
 
 /* eslint-disable no-undef */
 describe('external user resetting their password:', function () {

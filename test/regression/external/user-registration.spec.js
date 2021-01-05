@@ -37,14 +37,16 @@ describe('external user registration', () => {
     expect(getPageTitle()).toHaveText('Sign in or create an account');
   });
 
-  it('navigates to the start page', () => {
-    getButton('Create account').click();
+  it('navigates to the start page', async () => {
+    const createAccountButton = await getButton('Create account');
+    await createAccountButton.click();
     expect(browser).toHaveUrlContaining('/start');
     expect(getPageTitle()).toHaveText('Create an account to manage your water abstraction licence online');
   });
 
-  it('navigates to the create account page', () => {
-    getButton('Create account').click();
+  it('navigates to the create account page', async () => {
+    const createAccountButton = await getButton('Create account');
+    await createAccountButton.click();
     expect(browser).toHaveUrlContaining('/register');
     expect(getPageTitle()).toHaveText('Create an account');
   });
@@ -54,8 +56,8 @@ describe('external user registration', () => {
     const continueButton = await getButton('Continue');
     const validationMessage = await getValidationSummaryMessage();
 
-    email.setValue('');
-    continueButton.click();
+    await email.setValue('');
+    await continueButton.click();
     expect(validationMessage).toHaveText('Enter an email address in the right format');
   });
 
@@ -63,7 +65,7 @@ describe('external user registration', () => {
     const email = await $('input#email');
     const continueButton = await getButton('Continue');
 
-    email.setValue('not-an-email-address');
+    await email.setValue('not-an-email-address');
     await continueButton.click();
     browser.pause(1000);
 
@@ -76,8 +78,9 @@ describe('external user registration', () => {
     const continueButton = await getButton('Continue');
     const pageTitle = await getPageTitle();
 
-    email.setValue(EMAIL_ADDRESS);
-    continueButton.click();
+    await email.setValue(EMAIL_ADDRESS);
+    await continueButton.click();
+
     const uri = `/success?${qs.encode({ email: EMAIL_ADDRESS })}`;
     expect(browser).toHaveUrlContaining(uri);
     expect(pageTitle).toHaveText('Confirm your email address');
@@ -92,7 +95,7 @@ describe('external user registration', () => {
     const link = await getPersonalisation(baseUrl, EMAIL_ADDRESS, 'link');
     const pageTitle = await getPageTitle();
 
-    browser.url(link);
+    await browser.url(link);
     expect(browser).toHaveUrlContaining('/create-password?');
     expect(pageTitle).toHaveText('Create a password');
   });
@@ -102,10 +105,10 @@ describe('external user registration', () => {
     const confirmPasswordField = await $('#confirm-password');
     const changePasswordButton = await getButton('Change password');
 
-    passwordField.setValue('');
-    confirmPasswordField.setValue('');
+    await passwordField.setValue('');
+    await confirmPasswordField.setValue('');
 
-    changePasswordButton.click();
+    await changePasswordButton.click();
     expectPasswordValidationToBe(false, false, false);
   });
 
@@ -114,9 +117,9 @@ describe('external user registration', () => {
     const confirmPasswordField = await $('#confirm-password');
     const changePasswordButton = await getButton('Change password');
 
-    passwordField.setValue('short');
-    confirmPasswordField.setValue('short');
-    changePasswordButton.click();
+    await passwordField.setValue('short');
+    await confirmPasswordField.setValue('short');
+    await changePasswordButton.click();
 
     expectPasswordValidationToBe(false, false, false);
   });
@@ -126,9 +129,9 @@ describe('external user registration', () => {
     const confirmPasswordField = await $('#confirm-password');
     const changePasswordButton = await getButton('Change password');
 
-    passwordField.setValue('12345678');
-    confirmPasswordField.setValue('12345678');
-    changePasswordButton.click();
+    await passwordField.setValue('12345678');
+    await confirmPasswordField.setValue('12345678');
+    await changePasswordButton.click();
     expectPasswordValidationToBe(true, false, false);
   });
 
@@ -137,9 +140,9 @@ describe('external user registration', () => {
     const confirmPasswordField = await $('#confirm-password');
     const changePasswordButton = await getButton('Change password');
 
-    passwordField.setValue('123$');
-    confirmPasswordField.setValue('123$');
-    changePasswordButton.click();
+    await passwordField.setValue('123$');
+    await confirmPasswordField.setValue('123$');
+    await changePasswordButton.click();
 
     expectPasswordValidationToBe(false, true, false);
   });
@@ -149,9 +152,9 @@ describe('external user registration', () => {
     const confirmPasswordField = await $('#confirm-password');
     const changePasswordButton = await getButton('Change password');
 
-    passwordField.setValue('123A');
-    confirmPasswordField.setValue('123A');
-    changePasswordButton.click();
+    await passwordField.setValue('123A');
+    await confirmPasswordField.setValue('123A');
+    await changePasswordButton.click();
 
     expectPasswordValidationToBe(false, false, true);
   });
@@ -161,9 +164,9 @@ describe('external user registration', () => {
     const confirmPasswordField = await $('#confirm-password');
     const changePasswordButton = await getButton('Change password');
 
-    passwordField.setValue('A12345678$');
-    confirmPasswordField.setValue('B12345678$');
-    changePasswordButton.click();
+    await passwordField.setValue('A12345678$');
+    await confirmPasswordField.setValue('B12345678$');
+    await changePasswordButton.click();
     expect(getValidationSummaryMessage()).toHaveText('Re-enter your new password');
   });
 
@@ -172,9 +175,9 @@ describe('external user registration', () => {
     const confirmPasswordField = await $('#confirm-password');
     const changePasswordButton = await getButton('Change password');
 
-    passwordField.setValue('A12345678$');
-    confirmPasswordField.setValue('A12345678$');
-    changePasswordButton.click();
+    await passwordField.setValue('A12345678$');
+    await confirmPasswordField.setValue('A12345678$');
+    await changePasswordButton.click();
 
     expect(browser).toHaveUrlContaining('/add-licences');
     expect(getPageTitle()).toHaveText('Add your licences to the service');

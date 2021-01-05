@@ -3,6 +3,7 @@
 const loginAsUser = async (baseUrl, userEmail) => {
   try {
     await browser.url(`${baseUrl}/signin`);
+    const SignInButton = await $('button[class="govuk-button govuk-button--start"]');
 
     let emailField = await $('#email');
     await emailField.setValue(userEmail);
@@ -10,10 +11,8 @@ const loginAsUser = async (baseUrl, userEmail) => {
     let passwordField = await $('#password');
     await passwordField.setValue('P@55word');
 
-    let SignInButton = await $('button[class="govuk-button govuk-button--start"]');
     await SignInButton.click();
-
-    await $('#navbar-notifications').isDisplayed;
+    await browser.pause(500);
   } catch (err) {
     console.log(err);
   }

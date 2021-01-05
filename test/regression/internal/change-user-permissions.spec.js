@@ -16,8 +16,8 @@ describe('change internal user permissions as B&D user', function () {
     const searchField = await $('#query');
     const searchButton = await $('.search__button');
 
-    searchField.setValue(EMAIL_ADDRESS);
-    searchButton.click();
+    await searchField.setValue(EMAIL_ADDRESS);
+    await searchButton.click();
 
     expect($('h2')).toHaveText('Users');
     expect($('ul.govuk-list > li')).toHaveText(EMAIL_ADDRESS);
@@ -25,7 +25,7 @@ describe('change internal user permissions as B&D user', function () {
 
   it('navigates to the user page', async () => {
     const userPageLink = await $('.govuk-list .govuk-link');
-    userPageLink.click();
+    await userPageLink.click();
 
     expect(browser).toHaveUrlContaining('/status');
     expect(getPageCaption()).toHaveText('Internal');
@@ -37,8 +37,8 @@ describe('change internal user permissions as B&D user', function () {
     const npsRadioOption = await $('#permission-4');
     const button = await getButton('Continue');
 
-    npsRadioOption.click();
-    button.click();
+    await npsRadioOption.click();
+    await button.click();
 
     expect(browser).toHaveUrlContaining('/update-permissions/success');
     expect(getPageTitle()).toHaveText('Account permissions are updated');
@@ -46,7 +46,7 @@ describe('change internal user permissions as B&D user', function () {
 
   it('user page shows updated permissions', async () => {
     const backLink = await getBackLink();
-    backLink.click();
+    await backLink.click();
 
     expect($('.govuk-radios__input[checked=""] + label')).toHaveText('National Permitting Service');
   });

@@ -3,20 +3,21 @@
 /* eslint-disable no-undef */
 const { get } = require('lodash');
 const querystring = require('querystring');
+const request = require('request');
 
 /**
  * Gets the data for the last notification sent to the supplied email address
  * @param {String} email
  * @return {Object}
  */
-const getLastNotifications = (baseUrl, email) => {
-  // Go to the last notification page
+const getLastNotifications = (baseUrl, email, callback) => {
   const url = `${baseUrl}/notifications/last?${querystring.encode({ email })}`;
-  browser.url(url);
-
-  // Get the content body and parse JSON
-  const content = $('pre').getText(false);
-  return JSON.parse(content);
+  request.get(url, function (err, resp, body) {
+    if (err) {
+      return callback(err, null);
+    }
+    callback(null, JSON.parse(body));
+  });
 };
 
 /**
@@ -26,8 +27,12 @@ const getLastNotifications = (baseUrl, email) => {
  * @return {Mixed}
  */
 const getPersonalisation = (baseUrl, email, param) => {
-  const data = getLastNotifications(baseUrl, email);
-  return get(data, `data[0].personalisation.${param}`);
+  getLastNotifications(baseUrl, email, function (err, body) {
+    if (err) {
+      throw err;
+    }
+    return get(body, `data[0].personalisation.${param}`);
+  });
 };
 
 exports.getPersonalisation = getPersonalisation;

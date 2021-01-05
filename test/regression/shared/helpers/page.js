@@ -1,5 +1,4 @@
 'use strict';
-
 /* eslint-disable no-undef */
 
 /**
@@ -25,8 +24,7 @@ const getPageCaption = () => $('.govuk-caption-l');
  * the message with the supplied index
  * @param {Number} [index] - index of validation summary error message
  */
-const getValidationSummaryMessage = (index = 0) =>
-  $('ul.govuk-error-summary__list').$$('li')[index];
+const getValidationSummaryMessage = (index = 0) => $('ul.govuk-error-summary__list') ? $('ul.govuk-error-summary__list').$$ ? $('ul.govuk-error-summary__list').$$('li')[index] : null : null;
 
 /**
  * Gets the element with specified data-test-id id

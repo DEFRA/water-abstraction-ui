@@ -1,16 +1,14 @@
 'use strict';
 const { getButton, getPageTitle, getPageCaption, getValidationSummaryMessage } = require('../shared/helpers/page');
 const { getPersonalisation } = require('../shared/helpers/notifications');
-const { setUp } = require('../shared/helpers/setup');
-const config = require('./config');
+const { baseUrl } = require('./config');
 
 const EMAIL_ADDRESS = 'acceptance-test.internal.wirs@defra.gov.uk';
 
 /* eslint-disable no-undef */
 describe('internal user resetting their password:', function () {
   before(async () => {
-    await setUp();
-    browser.url(`${config.baseUrl}/signin`);
+    browser.url(`${baseUrl}/signin`);
   });
 
   it('navigate to the reset your password page', () => {
@@ -24,51 +22,77 @@ describe('internal user resetting their password:', function () {
     expect($('input#email')).toBeVisible();
   });
 
-  it('shows a validation message if the email field is empty', () => {
-    $('input#email').setValue('');
-    getButton('Continue').click();
+  it('shows a validation message if the email field is empty', async () => {
+    const email = await $('#email');
+    const continueButton = await getButton('Continue');
 
-    expect(getValidationSummaryMessage()).toHaveText('Enter an email address');
+    email.setValue('');
+    await continueButton.click();
+    browser.pause(1000);
+
+    const validationMessage = await getValidationSummaryMessage();
+    expect(validationMessage).toHaveText('Enter an email address');
   });
 
-  it('shows a validation message if the email field is invalid', () => {
-    $('input#email').setValue('not-an-email-address');
-    getButton('Continue').click();
+  it('shows a validation message if the email field is invalid', async () => {
+    const email = await $('#email');
+    const continueButton = await getButton('Continue');
 
-    expect(getValidationSummaryMessage()).toHaveText('Enter an email address in the correct format');
+    email.setValue('not-an-email-address');
+    await continueButton.click();
+    browser.pause(1000);
+
+    const validationMessage = await getValidationSummaryMessage();
+    expect(validationMessage).toHaveText('Enter an email address in the right format');
   });
 
-  it('navigates to success page if the email address is valid', () => {
-    $('input#email').setValue(EMAIL_ADDRESS);
-    getButton('Continue').click();
+  it('navigates to success page if the email address is valid', async () => {
+    const email = await $('input#email');
+    const continueButton = await getButton('Continue');
+    const pageTitle = await getPageTitle();
+
+    email.setValue(EMAIL_ADDRESS);
+    continueButton.click();
 
     expect(browser).toHaveUrlContaining('/reset_password_check_email');
-    expect(getPageTitle()).toHaveText('Check your email');
+    expect(pageTitle).toHaveText('Check your email');
   });
 
-  it('shows a link to resend the reset password email', () => {
-    expect($('a[href="/reset_password_resend_email"]')).toHaveText('Has the email not arrived?');
+  it('shows a link to resend the reset password email', async () => {
+    const resetPasswordLink = await $('a[href="/reset_password_resend_email"]');
+    expect(resetPasswordLink).toHaveText('Has the email not arrived?');
   });
 
-  it('clicks the link in the confirmation email', () => {
-    const resetUrl = getPersonalisation(config.baseUrl, EMAIL_ADDRESS, 'reset_url');
+  it('clicks the link in the confirmation email', async () => {
+    const resetUrl = await getPersonalisation(baseUrl, EMAIL_ADDRESS, 'reset_url');
+    const pageTitle = await getPageTitle();
+
     browser.url(resetUrl);
     expect(browser).toHaveUrlContaining('/reset_password_change_password?');
-    expect(getPageTitle()).toHaveText('Change your password');
+    expect(pageTitle).toHaveText('Change your password');
   });
 
-  it('shows the change password fields', () => {
-    expect($('label[for="password"]')).toHaveText('Enter a new password');
-    expect($('input#password')).toBeVisible();
-    expect($('label[for="confirm-password"]')).toHaveText('Confirm your password');
-    expect($('input#confirm-password')).toBeVisible();
+  it('shows the change password fields', async () => {
+    const passwordFieldLabel = await $('label[for="password"]');
+    const passwordFieldInput = await $('input#password');
+    const confirmPasswordFieldLabel = await $('label[for="confirm-password"]');
+    const confirmPasswordFieldInput = await $('input#confirm-password');
+
+    expect(passwordFieldLabel).toHaveText('Enter a new password');
+    expect(passwordFieldInput).toBeVisible();
+    expect(confirmPasswordFieldLabel).toHaveText('Confirm your password');
+    expect(confirmPasswordFieldInput).toBeVisible();
   });
 
-  it('changes the password and signs in', () => {
-    $('#password').setValue('P@55word');
-    $('#confirm-password').setValue('P@55word');
+  it('changes the password and signs in', async () => {
+    const passwordFieldInput = await $('input#password');
+    const confirmPasswordFieldInput = await $('input#confirm-password');
+    const changePasswordButton = await getButton('Change password');
 
-    getButton('Change password').click();
+    passwordFieldInput.setValue('P@55word');
+    confirmPasswordFieldInput.setValue('P@55word');
+
+    changePasswordButton.click();
   });
 
   it('is redirected to the search page', async () => {

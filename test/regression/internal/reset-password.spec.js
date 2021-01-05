@@ -25,20 +25,24 @@ describe('internal user resetting their password:', function () {
   it('shows a validation message if the email field is empty', async () => {
     const email = await $('#email');
     const continueButton = await getButton('Continue');
-    const validationMessage = await getValidationSummaryMessage();
 
     email.setValue('');
-    continueButton.click();
-    expect(validationMessage).toHaveText('Enter an email address in the right format');
+    await continueButton.click();
+    browser.pause(1000);
+
+    const validationMessage = await getValidationSummaryMessage();
+    expect(validationMessage).toHaveText('Enter an email address');
   });
 
   it('shows a validation message if the email field is invalid', async () => {
     const email = await $('#email');
     const continueButton = await getButton('Continue');
-    const validationMessage = await getValidationSummaryMessage();
 
     email.setValue('not-an-email-address');
-    continueButton.click();
+    await continueButton.click();
+    browser.pause(1000);
+
+    const validationMessage = await getValidationSummaryMessage();
     expect(validationMessage).toHaveText('Enter an email address in the right format');
   });
 

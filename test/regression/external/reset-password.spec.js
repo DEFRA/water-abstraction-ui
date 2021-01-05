@@ -9,7 +9,7 @@ const EMAIL_ADDRESS = 'acceptance-test.external@example.com';
 /* eslint-disable no-undef */
 describe('external user resetting their password:', function () {
   before(async () => {
-    await browser.url(baseUrl);
+    await browser.url(`${baseUrl}/signin`);
   });
 
   it('navigate to the reset your password page', async () => {
@@ -29,20 +29,24 @@ describe('external user resetting their password:', function () {
   it('shows a validation message if the email field is empty', async () => {
     const email = await $('#email');
     const continueButton = await getButton('Continue');
-    const validationMessage = await getValidationSummaryMessage();
 
     email.setValue('');
-    continueButton.click();
-    expect(validationMessage).toHaveText('Enter an email address in the right format');
+    await continueButton.click();
+    browser.pause(1000);
+
+    const validationMessage = await getValidationSummaryMessage();
+    expect(validationMessage).toHaveText('Enter an email address');
   });
 
   it('shows a validation message if the email field is invalid', async () => {
     const email = await $('input#email');
     const continueButton = await getButton('Continue');
-    const validationMessage = await getValidationSummaryMessage();
 
     email.setValue('not-an-email-address');
-    continueButton.click();
+    await continueButton.click();
+    browser.pause(1000);
+
+    const validationMessage = await getValidationSummaryMessage();
     expect(validationMessage).toHaveText('Enter an email address in the right format');
   });
 

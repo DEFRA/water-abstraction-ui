@@ -62,10 +62,12 @@ describe('external user registration', () => {
   it('shows a validation message if the email field is invalid', async () => {
     const email = await $('input#email');
     const continueButton = await getButton('Continue');
-    const validationMessage = await getValidationSummaryMessage();
 
     email.setValue('not-an-email-address');
-    continueButton.click();
+    await continueButton.click();
+    browser.pause(1000);
+
+    const validationMessage = await getValidationSummaryMessage();
     expect(validationMessage).toHaveText('Enter an email address in the right format');
   });
 

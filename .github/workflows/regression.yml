@@ -189,7 +189,7 @@ jobs:
         uses: jakejarvis/wait-action@master
         with:
           time: '15s'
-          
+
       - name: Start pm2
         run: |
           cd water-abstraction-permit-repository && pm2 start ecosystem.config.json && cd ..

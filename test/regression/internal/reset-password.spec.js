@@ -26,7 +26,7 @@ describe('internal user resetting their password:', function () {
     const email = await $('#email');
     const continueButton = await getButton('Continue');
 
-    email.setValue('');
+    await email.setValue('');
     await continueButton.click();
     browser.pause(1000);
 
@@ -38,7 +38,7 @@ describe('internal user resetting their password:', function () {
     const email = await $('#email');
     const continueButton = await getButton('Continue');
 
-    email.setValue('not-an-email-address');
+    await email.setValue('not-an-email-address');
     await continueButton.click();
     browser.pause(1000);
 
@@ -51,8 +51,8 @@ describe('internal user resetting their password:', function () {
     const continueButton = await getButton('Continue');
     const pageTitle = await getPageTitle();
 
-    email.setValue(EMAIL_ADDRESS);
-    continueButton.click();
+    await email.setValue(EMAIL_ADDRESS);
+    await continueButton.click();
 
     expect(browser).toHaveUrlContaining('/reset_password_check_email');
     expect(pageTitle).toHaveText('Check your email');
@@ -89,10 +89,10 @@ describe('internal user resetting their password:', function () {
     const confirmPasswordFieldInput = await $('input#confirm-password');
     const changePasswordButton = await getButton('Change password');
 
-    passwordFieldInput.setValue('P@55word');
-    confirmPasswordFieldInput.setValue('P@55word');
+    await passwordFieldInput.setValue('P@55word');
+    await confirmPasswordFieldInput.setValue('P@55word');
 
-    changePasswordButton.click();
+    await changePasswordButton.click();
   });
 
   it('is redirected to the search page', async () => {

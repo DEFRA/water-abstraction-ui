@@ -35,8 +35,12 @@ const getValidationSummaryMessage = (index = 0) => $('ul.govuk-error-summary__li
 const getByTestId = id =>
   $(`[data-test-id=${id}]`);
 
+const getBackLink = () =>
+  $('.govuk-back-link');
+
 exports.getButton = getButton;
 exports.getPageTitle = getPageTitle;
 exports.getPageCaption = getPageCaption;
 exports.getValidationSummaryMessage = getValidationSummaryMessage;
 exports.getByTestId = getByTestId;
+exports.getBackLink = getBackLink;

@@ -2,9 +2,9 @@
 
 const { getButton, getPageTitle, getValidationSummaryMessage } = require('../shared/helpers/page');
 const { getPersonalisation } = require('../shared/helpers/notifications');
-const { baseUrl } = require('./config');
+const { baseUrl, userEmails } = require('./config');
 
-const EMAIL_ADDRESS = 'acceptance-test.external@example.com';
+const EMAIL_ADDRESS = userEmails.external;
 
 /* eslint-disable no-undef */
 describe('external user resetting their password:', function () {
@@ -14,7 +14,7 @@ describe('external user resetting their password:', function () {
 
   it('navigate to the reset your password page', async () => {
     const passwordResetLink = await $('#main-content > p > a');
-    passwordResetLink.click();
+    await passwordResetLink.click();
     expect(browser).toHaveUrlContaining('/reset_password');
     expect(getPageTitle()).toHaveText('Reset your password');
   });
@@ -30,7 +30,7 @@ describe('external user resetting their password:', function () {
     const email = await $('#email');
     const continueButton = await getButton('Continue');
 
-    email.setValue('');
+    await email.setValue('');
     await continueButton.click();
     browser.pause(1000);
 
@@ -42,7 +42,7 @@ describe('external user resetting their password:', function () {
     const email = await $('input#email');
     const continueButton = await getButton('Continue');
 
-    email.setValue('not-an-email-address');
+    await email.setValue('not-an-email-address');
     await continueButton.click();
     browser.pause(1000);
 
@@ -55,8 +55,9 @@ describe('external user resetting their password:', function () {
     const continueButton = await getButton('Continue');
     const pageTitle = await getPageTitle();
 
-    emailFieldInput.setValue(EMAIL_ADDRESS);
-    continueButton.click();
+    await emailFieldInput.setValue(EMAIL_ADDRESS);
+    await continueButton.click();
+    await browser.pause(500);
 
     expect(browser).toHaveUrlContaining('/reset_password_check_email');
     expect(pageTitle).toHaveText('Check your email');
@@ -93,10 +94,10 @@ describe('external user resetting their password:', function () {
     const confirmPasswordFieldInput = await $('input#confirm-password');
     const changePasswordButton = await getButton('Change password');
 
-    passwordFieldInput.setValue('P@55word');
-    confirmPasswordFieldInput.setValue('P@55word');
+    await passwordFieldInput.setValue('P@55word');
+    await confirmPasswordFieldInput.setValue('P@55word');
 
-    changePasswordButton.click();
+    await changePasswordButton.click();
   });
 
   it('is redirected to the add licences page', async () => {

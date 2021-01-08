@@ -1,7 +1,7 @@
 const {
   getDefaultView,
   getLicencePageUrl,
-  findInvoiceAccountAddress
+  getCurrentBillingAccountAddress
 } = require('../lib/helpers');
 const forms = require('shared/lib/forms');
 const services = require('../../../lib/connectors/services');
@@ -32,11 +32,11 @@ const getViewChargeInformation = async (request, h) => {
 };
 
 const getReviewChargeInformation = async (request, h) => {
-  const { draftChargeInformation, licence, isChargeable } = request.pre;
+  const { draftChargeInformation, licence, isChargeable, billingAccount } = request.pre;
   const { chargeVersionWorkflowId } = request.params;
   const backLink = await getLicencePageUrl(licence);
   const isApprover = hasScope(request, chargeVersionWorkflowReviewer);
-  const invoiceAccountAddress = findInvoiceAccountAddress(request);
+  const invoiceAccountAddress = getCurrentBillingAccountAddress(billingAccount);
   const validatedDraftChargeVersion = chargeInformationValidator.addValidation(draftChargeInformation);
 
   // Set the address ID to the first address in the array if it's null

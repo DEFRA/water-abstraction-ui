@@ -16,7 +16,6 @@ const accountRoutes = require('./account/routes');
 const unlinkLicenceRoutes = require('./unlink-licence/routes');
 const billingRoutes = require('./billing/routes');
 const chargeInformationRoutes = require('./charge-information/routes');
-const invoiceAccRoutes = require('./invoice-accounts/routes');
 const agreementsRoutes = require('./agreements/routes');
 
 module.exports = [
@@ -39,6 +38,5 @@ module.exports = [
   ...Object.values(unlinkLicenceRoutes),
   ...Object.values(billingRoutes),
   ...Object.values(chargeInformationRoutes),
-  ...Object.values(invoiceAccRoutes),
   ...Object.values(agreementsRoutes)
 ];

@@ -1,9 +1,10 @@
 /* eslint-disable no-undef */
-const { loginAsUser } = require('./helpers/loginAsUser');
+const { loginAsUser } = require('../shared/helpers/login-as-user');
+const { baseUrl, userEmails } = require('./config');
 
 describe('Login page', function () {
   before(async () => {
-    await loginAsUser();
+    await loginAsUser(baseUrl, userEmails.external);
   });
 
   it('has the title of the service', async () => {

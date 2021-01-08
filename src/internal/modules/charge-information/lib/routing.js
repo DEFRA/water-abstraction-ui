@@ -25,6 +25,11 @@ exports.getCreateBillingAccount = (licence, licenceHolderRole, redirect) => {
 
 exports.postReview = (chargeVersionWorkflowId, licenceId) => createUrl(`${chargeVersionWorkflowId}/review`)(licenceId);
 
+exports.getHandleBillingAccount = (licenceId, isCheckAnswers) => {
+  const qs = queryString.stringify({ returnToCheckData: isCheckAnswers });
+  return createUrl(`set-billing-account?${qs}`)(licenceId);
+};
+
 exports.getCheckData = createUrl('check');
 exports.getReason = createUrl('create');
 exports.getStartDate = createUrl('start-date');

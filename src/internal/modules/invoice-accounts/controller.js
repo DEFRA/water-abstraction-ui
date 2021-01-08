@@ -44,8 +44,23 @@ const postCompany = async (request, h) => {
   const form = forms.handleRequest(selectCompanyForm(request, companies), request, schema);
   const { viewData } = await dataService.sessionManager(request, regionId, companyId);
   if (form.isValid) {
+    const { selectedCompany, companySearch } = forms.getValues(form);
+
+    if (selectedCompany === 'company_search') {
+      const path = request.accountEntryRedirect({
+        caption: 'Test caption',
+        redirectPath: `/invoice-accounts/create/${regionId}/${companyId}/contact-entered`,
+        key: `invoice-account-${regionId}-${companyId}`,
+        back: request.path,
+        searchQuery: companySearch
+      });
+      return h.redirect(path);
+    }
+
+    /*
     const redirectPath = helpers.processCompanyFormData(request, regionId, companyId, form);
     return h.redirect(`/invoice-accounts/create/${regionId}/${companyId}/${redirectPath}`);
+    */
   }
   return h.postRedirectGet(form, urlJoin('/invoice-accounts/create/', regionId, companyId), { redirectPath: viewData.redirectPath });
 };

@@ -9,98 +9,33 @@ const {
 } = exports.lab = require('@hapi/lab').script();
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
-const uuid = require('uuid/v4');
 
 const services = require('internal/lib/connectors/services');
 const preHandlers = require('internal/modules/account-entry/pre-handlers');
 
-let defaultId = uuid();
-let contactId = uuid();
-let companyId = uuid();
-let regionId = uuid();
-
-const createRequest = (tempSessionKey, contactType = 'organisation', expectedSelectedCompanyId = '123456') => {
-  return ({
-    query: {
-      sessionKey: tempSessionKey,
-      back: '/some/return/url'
-    },
-    params: {
-      regionId: regionId,
-      companyId: companyId
-    },
-    view: {
-      foo: 'bar',
-      csrfToken: uuid()
-    },
-    pre: {
-      companiesHouseResults: [{
-        company: {
-          companyNumber: '123456',
-          name: 'some company name'
-        }
-      }],
-      companiesHouseAddresses: [{
-        'postal_code': 'GL10 1GL',
-        'locality': 'Cheltenham',
-        'address_line_2': 'Some place',
-        'country': 'England'
-      }],
-      addressSearchResults: [],
-      contactSearchResults: [{
-        id: contactId,
-        name: 'some name'
-      }]
-    },
-    yar: {
-      get: sandbox.stub().resolves({
-        id: defaultId,
-        back: 'someplace',
-        sessionKey: tempSessionKey,
-        originalCompanyId: companyId,
-        regionId: regionId,
-        searchQuery: 'testco',
-        accountType: contactType,
-        selectedCompaniesHouseNumber: expectedSelectedCompanyId,
-        companyNameOrNumber: 'SomeCompany'
-      }),
-      set: sandbox.stub(),
-      clear: sandbox.stub()
-    },
-    server: {
-      methods: {
-        setDraftChargeInformation: sandbox.stub()
+const data = {
+  getCompaniesFromCompaniesHouseResponse: {
+    data: {
+      company: {
+        companyAddresses: [
+          { address: {} }
+        ]
       }
     }
-  });
+  }
 };
 
 experiment('internal/modules/contact-entry/pre-handlers', () => {
   let request, response;
 
   beforeEach(async () => {
-    request = createRequest(uuid(), 'organisation', '123456');
-
-    sandbox.stub(services.water.companies, 'getCompaniesFromCompaniesHouse').resolves({
-      data: [
-        {
-          company: {
-            companyAddresses: [
-              { address: {} }
-            ]
-          }
-        }
-      ]
-    });
-
-    sandbox.stub(services.water.companies, 'getAddresses').resolves([]);
-
-    sandbox.stub(services.water.companies, 'getCompaniesByName').resolves([
-      {
-        id: uuid(),
-        name: 'Company One'
+    request = {
+      query: {
+        q: 'Test query'
       }
-    ]);
+    };
+
+    sandbox.stub(services.water.companies, 'getCompaniesFromCompaniesHouse').resolves(data.getCompaniesFromCompaniesHouseResponse);
   });
 
   afterEach(async () => {
@@ -108,60 +43,34 @@ experiment('internal/modules/contact-entry/pre-handlers', () => {
   });
 
   experiment('searchForCompaniesInCompaniesHouse', () => {
-    beforeEach(async () => {
-      response = await preHandlers.searchForCompaniesInCompaniesHouse(request);
-    });
-
-    afterEach(async () => {
-      sandbox.restore();
-    });
-
-    test('calls yar.get', async () => {
-      expect(request.yar.get.called).to.be.true();
-    });
-
-    test('responds with an array', async () => {
-      expect(Array.isArray(response)).to.be.true();
-    });
-  });
-
-  experiment('returnCompanyAddressesFromCompaniesHouse', () => {
-    experiment('when selectedCompaniesHouseNumber is valid', () => {
+    experiment('when the query is an empty string', () => {
       beforeEach(async () => {
-        response = await preHandlers.returnCompanyAddressesFromCompaniesHouse(request);
-      });
-      afterEach(async () => {
-        sandbox.restore();
-      });
-      test('calls yar.get', async () => {
-        expect(request.yar.get.called).to.be.true();
+        request.query.q = '';
+        response = await preHandlers.searchForCompaniesInCompaniesHouse(request);
       });
 
-      test('returns an array', () => {
-        expect(Array.isArray(response)).to.be.true();
+      test('the service method is not called', async () => {
+        expect(services.water.companies.getCompaniesFromCompaniesHouse.called).to.be.false();
       });
 
-      test('calls the service method', async () => {
-        expect(services.water.companies.getCompaniesFromCompaniesHouse.calledWith('123456')).to.be.true();
+      test('resolves with an empty array', async () => {
+        expect(response).to.be.an.array().length(0);
       });
     });
 
-    experiment('when selectedCompaniesHouseNumber is invalid', () => {
-      let responseToUnhealthyRequest, unhealthyRequest;
-
+    experiment('when the query is valid', () => {
       beforeEach(async () => {
-        unhealthyRequest = createRequest(uuid(), 'organisation', undefined);
-        responseToUnhealthyRequest = await preHandlers.returnCompanyAddressesFromCompaniesHouse(unhealthyRequest);
+        response = await preHandlers.searchForCompaniesInCompaniesHouse(request);
       });
 
-      afterEach(async () => {
-        sandbox.restore();
+      test('the service method is called', async () => {
+        expect(services.water.companies.getCompaniesFromCompaniesHouse.calledWith(
+          request.query.q
+        )).to.be.true();
       });
-      test('calls yar.get', async () => {
-        expect(unhealthyRequest.yar.get.called).to.be.true();
-      });
-      test('returns an array', () => {
-        expect(Array.isArray(responseToUnhealthyRequest)).to.be.true();
+
+      test('resolves with the company data', async () => {
+        expect(response).to.equal(data.getCompaniesFromCompaniesHouseResponse.data);
       });
     });
   });

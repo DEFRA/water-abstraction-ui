@@ -18,7 +18,6 @@ const billingRoutes = require('./billing/routes');
 const chargeInformationRoutes = require('./charge-information/routes');
 const invoiceAccRoutes = require('./invoice-accounts/routes');
 const agreementsRoutes = require('./agreements/routes');
-const billingAccountsRoutes = require('./billing-accounts/routes');
 
 module.exports = [
   ...Object.values(coreRoutes),
@@ -41,6 +40,5 @@ module.exports = [
   ...Object.values(billingRoutes),
   ...Object.values(chargeInformationRoutes),
   ...Object.values(invoiceAccRoutes),
-  ...Object.values(agreementsRoutes),
-  ...Object.values(billingAccountsRoutes)
+  ...Object.values(agreementsRoutes)
 ];

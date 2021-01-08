@@ -3,6 +3,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 {% from "crm/address.njk" import address %}
+{% from "crm/company.njk" import company %}
 {% from "badge.njk" import badge %}
 {% from "forms/index.njk" import formRender,
 formErrorSummary %}
@@ -79,8 +80,11 @@ formErrorSummary %}
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">Billing account</dt>
             <dd class="govuk-summary-list__value">
-              {{ chargeVersion.invoiceAccount.accountNumber }}
+              {{ accountNumber }}
               <br>
+              {% if invoiceAccountAddress.agentCompany %}
+                {{ company(invoiceAccountAddress.agentCompany) }}<br/>
+              {% endif %}
               {{ address(invoiceAccountAddress.address) }}
             </dd>
             {% if isEditable %}
@@ -90,7 +94,7 @@ formErrorSummary %}
             {% endif %}
           </div>
 
-          {{ summaryListRow('Licence holder', chargeVersion.invoiceAccount.company.name | titleCase) }}
+          {{ summaryListRow('Licence holder', licenceHolder | titleCase) }}
         {% endif %}
 
       </dl>

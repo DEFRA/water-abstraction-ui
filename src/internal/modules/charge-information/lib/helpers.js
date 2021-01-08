@@ -1,9 +1,14 @@
-const { handleRequest, getValues } = require('shared/lib/forms');
-const { reducer } = require('./reducer');
-const sessionForms = require('shared/lib/session-forms');
+'use strict';
+
 const { isFunction, isEmpty, omit } = require('lodash');
-const routing = require('../lib/routing');
+const titleCase = require('title-case');
+
+const { handleRequest, getValues } = require('shared/lib/forms');
+const sessionForms = require('shared/lib/session-forms');
 const services = require('../../../lib/connectors/services');
+
+const { reducer } = require('./reducer');
+const routing = require('../lib/routing');
 
 const getPostedForm = (request, formContainer) => {
   const schema = formContainer.schema(request);
@@ -44,7 +49,8 @@ const createPostHandler = (formContainer, actionCreator, redirectPathFunc) => as
 
   if (form.isValid) {
     await applyFormResponse(request, form, actionCreator);
-    const redirectPath = getRedirectPath(request, redirectPathFunc(request, getValues(form)));
+    const defaultPath = await redirectPathFunc(request, getValues(form));
+    const redirectPath = await getRedirectPath(request, defaultPath);
     return h.redirect(redirectPath);
   }
   return h.postRedirectGet(form);
@@ -78,12 +84,14 @@ const getLicencePageUrl = async licence => {
   return `/licences/${document.document_id}#charge`;
 };
 
-const findInvoiceAccountAddress = request => {
-  const { draftChargeInformation, isChargeable } = request.pre;
-  const address = draftChargeInformation.invoiceAccount.invoiceAccountAddresses
-    .find(eachAddress => eachAddress.id === draftChargeInformation.invoiceAccount.invoiceAccountAddress);
-  return isChargeable ? address : null;
-};
+const isCurrentAddress = invoiceAccountAddress => invoiceAccountAddress.dateRange.endDate === null;
+
+const getCurrentBillingAccountAddress = billingAccount => billingAccount.invoiceAccountAddresses
+  .find(isCurrentAddress);
+
+const getBillingAccountHolder = billingAccount => titleCase(billingAccount.company.name);
+
+const getBillingAccountNumber = billingAccount => billingAccount.accountNumber;
 
 /**
  * Checks if the new draft charge version has the same start date as an existing charge version
@@ -103,4 +111,6 @@ exports.createPostHandler = createPostHandler;
 exports.getDefaultView = getDefaultView;
 exports.prepareChargeInformation = prepareChargeInformation;
 exports.getLicencePageUrl = getLicencePageUrl;
-exports.findInvoiceAccountAddress = findInvoiceAccountAddress;
+exports.getCurrentBillingAccountAddress = getCurrentBillingAccountAddress;
+exports.getBillingAccountHolder = getBillingAccountHolder;
+exports.getBillingAccountNumber = getBillingAccountNumber;

@@ -11,7 +11,7 @@ const plugin = require('internal/modules/account-entry/plugin');
 experiment('internal/modules/account-entry/plugin', () => {
   test('has a package name and version', async () => {
     expect(plugin.pkg.name).to.equal('accountEntryPlugin');
-    expect(plugin.pkg.version).to.equal('1.0.0');
+    expect(plugin.pkg.version).to.equal('2.0.0');
   });
 
   test('has a register method', async () => {

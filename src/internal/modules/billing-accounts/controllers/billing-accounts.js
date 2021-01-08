@@ -1,3 +1,5 @@
+'use strict';
+
 const titleCase = require('title-case');
 
 const getBillingAccountCaption = billingAccount =>

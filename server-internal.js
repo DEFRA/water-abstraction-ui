@@ -73,6 +73,8 @@ const pluginsArray = [
     plugin: require('internal/modules/contact-entry/plugin')
   }, {
     plugin: require('internal/modules/account-entry/plugin')
+  }, {
+    plugin: require('internal/modules/billing-accounts/plugin')
   }
 ];
 

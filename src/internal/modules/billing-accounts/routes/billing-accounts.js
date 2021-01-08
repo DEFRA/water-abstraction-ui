@@ -1,5 +1,7 @@
-const controller = require('./controller');
-const preHandlers = require('./pre-handlers');
+'use strict';
+
+const controller = require('../controllers/billing-accounts');
+const preHandlers = require('../pre-handlers');
 const Joi = require('@hapi/joi');
 const { VALID_GUID } = require('shared/lib/validators');
 const { manageBillingAccounts } = require('internal/lib/constants').scope;

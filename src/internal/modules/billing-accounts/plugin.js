@@ -9,10 +9,12 @@ const routing = require('./lib/routing');
 const OPTIONS_SCHEMA = Joi.object({
   back: Joi.string().required(),
   redirectPath: Joi.string().required(),
-  caption: Joi.string().optional().default(null),
-  searchQuery: Joi.string().required().trim(),
+  companyId: Joi.string().guid().required(),
+  regionId: Joi.string().guid().required(),
   key: Joi.string().required(),
-  data: Joi.object().optional()
+  caption: Joi.string().optional(),
+  data: Joi.object().optional().default({}),
+  startDate: Joi.string().isoDate().required()
 });
 
 /**
@@ -21,17 +23,17 @@ const OPTIONS_SCHEMA = Joi.object({
  * @param {Object} options
  * @return {String} path
  */
-function accountEntryRedirect (options) {
+function billingAccountEntryRedirect (options) {
   // Validate options
   Joi.assert(options, OPTIONS_SCHEMA);
 
   // Store in session
   session.set(this, options.key, options);
 
-  const { key, searchQuery } = options;
+  const { key } = options;
 
   // Return redirect path to enter flow
-  return routing.getSelectExistingAccount(key, searchQuery);
+  return routing.getSelectExistingBillingAccount(key);
 }
 
 /**
@@ -39,24 +41,24 @@ function accountEntryRedirect (options) {
  * @param {String} key
  * @return {Object}
  */
-function getAccount (key) {
+function getBillingAccount (key) {
   return (session.get(this, key) || {}).data;
 }
 
-const accountEntryPlugin = {
+const billingAccountsPlugin = {
   register: server => {
     // Register method to initiate flow and get data
-    server.decorate('request', 'accountEntryRedirect', accountEntryRedirect);
-    server.decorate('request', 'getAccountEntry', getAccount);
+    server.decorate('request', 'billingAccountEntryRedirect', billingAccountEntryRedirect);
+    server.decorate('request', 'getBillingAccount', getBillingAccount);
 
-    // Register flow routes
+    // Register routes
     server.route(routes);
   },
-
   pkg: {
-    name: 'accountEntryPlugin',
-    version: '2.0.0'
+    name: 'billingAccountsPlugin',
+    version: '2.0.0',
+    dependencies: ['addressEntryPlugin', 'accountEntryPlugin', 'contactEntryPlugin']
   }
 };
 
-module.exports = accountEntryPlugin;
+module.exports = billingAccountsPlugin;

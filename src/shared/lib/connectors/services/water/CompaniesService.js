@@ -66,5 +66,15 @@ class CompaniesService extends ServiceClient {
     const url = this.joinUrl('companies-house/companies', companyNumber);
     return this.serviceRequest.get(url);
   }
+
+  getCompanyInvoiceAccounts (companyId, regionId) {
+    const options = {
+      qs: {
+        regionId
+      }
+    };
+    const url = this.joinUrl('companies', companyId, 'invoice-accounts');
+    return this.serviceRequest.get(url, options);
+  }
 }
 module.exports = CompaniesService;

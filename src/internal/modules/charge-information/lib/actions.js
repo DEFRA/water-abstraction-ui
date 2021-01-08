@@ -37,21 +37,12 @@ const setStartDate = (request, formValues) => {
   };
 };
 
-const setBillingAccount = (request, formValues) => {
-  const invoiceAccount = request.pre.billingAccounts.find(account => {
-    return account.invoiceAccountAddresses.find(address => {
-      return address.id === formValues.invoiceAccountAddress;
-    });
-  }) || { invoiceAccount: null };
-
-  return {
-    type: ACTION_TYPES.setBillingAccount,
-    payload: {
-      ...(invoiceAccount && invoiceAccount) || null,
-      invoiceAccountAddress: formValues.invoiceAccountAddress
-    }
-  };
-};
+const setBillingAccount = id => ({
+  type: ACTION_TYPES.setBillingAccount,
+  payload: {
+    billingAccountId: id
+  }
+});
 
 const generateIds = chargeElements =>
   chargeElements.map(element => ({

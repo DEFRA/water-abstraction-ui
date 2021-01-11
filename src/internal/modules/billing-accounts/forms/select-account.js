@@ -15,6 +15,7 @@ const getRadioValue = request => {
   if (isNull(agentCompany)) {
     return BILLING_ACCOUNT_HOLDER;
   }
+  return undefined;
 };
 
 const getSearchValue = request =>
@@ -71,7 +72,7 @@ const selectCompanyForm = request => {
   return f;
 };
 
-const selectCompanyFormSchema = (request) => {
+const selectCompanyFormSchema = () => {
   return {
     csrf_token: Joi.string().uuid().required(),
     account: Joi.string().required().valid([BILLING_ACCOUNT_HOLDER, OTHER_ACCOUNT]),

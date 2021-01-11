@@ -12,6 +12,7 @@ const getValue = request => {
   if (isObject(contact)) {
     return true;
   }
+  return undefined;
 };
 
 /**

@@ -16,6 +16,8 @@ const selectAccountTypeForm = require('./forms/select-account-type');
 const companySearchForm = require('./forms/company-search');
 const companySearchSelectCompanyForm = require('./forms/company-search-select-company');
 
+const NUNJUCKS_FORM_TEMPLATE = 'nunjucks/form';
+
 const getDefaultView = request => {
   const { sessionData: { caption, back } } = request.pre;
   return {
@@ -35,7 +37,7 @@ const getSelectExistingAccount = (request, h) => {
     return h.redirect(routing.getSelectAccountType(key));
   }
 
-  return h.view('nunjucks/form', {
+  return h.view(NUNJUCKS_FORM_TEMPLATE, {
     ...getDefaultView(request),
     pageTitle: 'Does this account already exist?',
     form: handleFormRequest(request, selectExistingAccountForm)
@@ -60,7 +62,7 @@ const postSelectExistingAccount = (request, h) => {
   }
 
   // Store selected account to session and redirect to parent flow
-  const company = request.pre.companies.find(company => company.id === companyId);
+  const company = request.pre.companies.find(row => row.id === companyId);
   const { redirectPath } = session.merge(request, key, { data: company });
 
   return h.redirect(redirectPath);
@@ -73,7 +75,7 @@ const postSelectExistingAccount = (request, h) => {
 const getSelectAccountType = (request, h) => {
   const { sessionData: { searchQuery } } = request.pre;
 
-  return h.view('nunjucks/form', {
+  return h.view(NUNJUCKS_FORM_TEMPLATE, {
     ...getDefaultView(request),
     pageTitle: 'Select the account type',
     form: handleFormRequest(request, selectAccountTypeForm),
@@ -118,7 +120,7 @@ const getCompanySearch = (request, h) => {
 
   // If the user has searched for a company, display the list
   if (companySearch.isValid) {
-    return h.view('nunjucks/form', {
+    return h.view(NUNJUCKS_FORM_TEMPLATE, {
       ...getDefaultView(request),
       pageTitle: 'Select the registered company details',
       form: selectCompany,
@@ -127,7 +129,7 @@ const getCompanySearch = (request, h) => {
   }
 
   // Otherwise display company search form
-  return h.view('nunjucks/form', {
+  return h.view(NUNJUCKS_FORM_TEMPLATE, {
     ...getDefaultView(request),
     pageTitle: 'Enter the company details',
     form: handleFormRequest(request, companySearchForm),

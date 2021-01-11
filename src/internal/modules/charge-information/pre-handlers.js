@@ -170,6 +170,7 @@ const loadBillingAccount = async request => {
   if (invoiceAccountId) {
     return services.water.invoiceAccounts.getInvoiceAccount(invoiceAccountId);
   }
+  return null;
 };
 
 exports.loadChargeableChangeReasons = loadChargeableChangeReasons;

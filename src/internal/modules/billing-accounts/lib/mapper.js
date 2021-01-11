@@ -2,8 +2,11 @@
 
 const { pick } = require('lodash');
 
+/**
+ * @note the water company API currently accepts addressId rather than id
+ * as it should
+ */
 const mapAddressToWaterApi = address => ({
-  // @todo this endpoint currently accepts addressId rather than id for this model
   addressId: address.id,
   ...pick(address, [
     'addressLine1',
@@ -19,9 +22,12 @@ const mapAddressToWaterApi = address => ({
   ])
 });
 
+/**
+ * @note the water company API currently accepts companyId rather than id
+ * as it should
+ */
 const mapCompanyToWaterApi = company =>
   company === null ? null : {
-    // @todo this endpoint currently accepts companyId rather than id for this model
     companyId: company.id,
     ...pick(company, [
       'type',

@@ -14,6 +14,8 @@ const selectAccountForm = require('../forms/select-account');
 const selectFaoRequiredForm = require('../forms/select-fao-required');
 const confirmForm = require('shared/lib/forms/confirm-form');
 
+const NUNJUCKS_FORM_TEMPLATE = 'nunjucks/form';
+
 const getDefaultView = request => {
   const { sessionData: { caption, back } } = request.pre;
   return {
@@ -34,7 +36,7 @@ const getSelectExistingBillingAccount = (request, h) => {
     return h.redirect(routing.getSelectIfAgent(key));
   }
 
-  return h.view('nunjucks/form', {
+  return h.view(NUNJUCKS_FORM_TEMPLATE, {
     ...getDefaultView(request),
     pageTitle: `Select an existing billing account for ${account.name} `,
     form: handleFormRequest(request, selectBillingAccountForm)
@@ -58,7 +60,7 @@ const postSelectExistingBillingAccount = async (request, h) => {
   }
 
   // Store selected account to session and redirect to parent flow
-  const billingAccount = request.pre.billingAccounts.find(billingAccount => billingAccount.id === billingAccountId);
+  const billingAccount = request.pre.billingAccounts.find(row => row.id === billingAccountId);
   const { redirectPath } = session.merge(request, key, { data: billingAccount });
   return h.redirect(redirectPath);
 };
@@ -67,7 +69,7 @@ const postSelectExistingBillingAccount = async (request, h) => {
  * GET handler for selecting if the billing account holder should pay the bills
  * or delegate it to an agent account
  */
-const getSelectAccount = (request, h) => h.view('nunjucks/form', {
+const getSelectAccount = (request, h) => h.view(NUNJUCKS_FORM_TEMPLATE, {
   ...getDefaultView(request),
   pageTitle: 'Who should the bills go to?',
   form: handleFormRequest(request, selectAccountForm),
@@ -103,16 +105,15 @@ const postSelectAccount = (request, h) => {
 
   // Redirect to address selection
   return h.redirect(getAddressRedirectPath(request));
-//  return h.redirect(routing.getFAORequired(key));
 };
 
 const getAddressRedirectPath = (request, query) => {
   const { key } = request.params;
   const { caption, data } = session.get(request, key);
   return request.addressLookupRedirect({
-    back: routing.getSelectAccount(key),
     caption,
     key,
+    back: routing.getSelectAccount(key),
     redirectPath: routing.getHandleAddressEntry(key, query),
     companyId: getCompanyId(data),
     companyNumber: getCompanyNumber(data)
@@ -152,7 +153,7 @@ const getHandleAddressEntry = async (request, h) => {
 /**
  * GET - Select if FAO needed
  */
-const getSelectFaoRequired = async (request, h) => h.view('nunjucks/form', {
+const getSelectFaoRequired = async (request, h) => h.view(NUNJUCKS_FORM_TEMPLATE, {
   ...getDefaultView(request),
   pageTitle: 'Do you need to add an FAO?',
   form: handleFormRequest(request, selectFaoRequiredForm),

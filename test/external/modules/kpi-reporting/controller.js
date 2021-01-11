@@ -4,7 +4,7 @@ const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
-const controller = require('external/modules/kpi-reporting/controller');
+const controller = require('external/../../../../src/internal/modules/kpi-reporting/controller');
 const services = require('external/lib/connectors/services');
 
 experiment('modules/account/controller', () => {

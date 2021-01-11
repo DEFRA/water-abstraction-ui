@@ -1,15 +1,13 @@
 const controller = require('./controller');
+const { hasManageTab } = require('internal/lib/constants').scope;
 
 module.exports = {
   getKpiReporting: {
     method: 'GET',
-    path: '/kpi-reporting',
+    path: '/reporting/kpi-reporting',
     handler: controller.getKPIDashboard,
     config: {
-      auth: {
-        strategy: 'standard',
-        mode: 'try'
-      },
+      auth: { scope: hasManageTab },
       plugins: {
         viewContext: {
           pageTitle: 'Manage your water abstraction and impoundment licence',

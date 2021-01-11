@@ -1,6 +1,6 @@
 'use-strict';
 
-const services = require('external/lib/connectors/services');
+const services = require('internal/lib/connectors/services');
 
 const getKPIDashboard = async (request, h) => {
   const { data } = await services.water.kpiReporting.getKpiData();

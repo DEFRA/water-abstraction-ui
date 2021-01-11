@@ -30,7 +30,7 @@ const getRedisCacheStatus = async (redisConfig, logger) => {
   return result;
 };
 
-const fileCheck = require('../../lib/file-check');
+const fileCheck = require('shared/lib/file-check');
 
 /**
  * Checks if virus scanner is working correctly

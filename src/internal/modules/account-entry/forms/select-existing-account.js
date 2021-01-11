@@ -35,7 +35,7 @@ const form = request => {
         message: 'Select an account from the list or set up a new account'
       }
     },
-    choices: mapCompaniesToChoices(companies, selectedCompanyId)
+    choices: mapCompaniesToChoices(companies)
   }, selectedCompanyId));
 
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

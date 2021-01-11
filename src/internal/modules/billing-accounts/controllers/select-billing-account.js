@@ -177,15 +177,15 @@ const postSelectFaoRequired = async (request, h) => {
   }
 
   const { key } = request.params;
-  const { faoRequired } = forms.getValues(form);
+  const { faoRequired: isFaoRequired } = forms.getValues(form);
 
   // Redirect to contact entry if FAO required
-  if (faoRequired) {
+  if (isFaoRequired) {
     const { sessionData: { caption } } = request.pre;
     const path = request.contactEntryRedirect({
-      back: routing.getFAORequired(key),
       caption,
       key,
+      back: routing.getFAORequired(key),
       redirectPath: routing.getHandleContactEntry(key, request.query),
       companyId: getCompanyId(request.pre.sessionData.data)
     });

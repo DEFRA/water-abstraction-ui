@@ -1,0 +1,42 @@
+{% extends "./nunjucks/layout.njk" %}
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl">Download a charging forecast report</h2>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h2 class="govuk-heading-l">Billed licences</h2>
+    <p class="govuk-body">Active charge information for licences that have been billed in the current financial year.</p>
+    <button onclick='fetchDownloadableReport("billedLicences")' class="govuk-button govuk-button--secondary" data-module="govuk-button">
+      Download <span class="govuk-visually-hidden">Active charge information for billed licences</span> report
+    </button>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h2 class="govuk-heading-l">Unbilled licences</h2>
+    <p class="govuk-body">Active charge information for licences that have not been billed in the current financial year.</p>
+    <button onclick='fetchDownloadableReport("unbilledLicences")' class="govuk-button govuk-button--secondary" data-module="govuk-button">
+      Download <span class="govuk-visually-hidden">Active charge information for unbilled licences</span> report
+    </button>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h2 class="govuk-heading-l">Revoked licences not yet credited</h2>
+    <p class="govuk-body">Charge information for licences revoked after annual billing, but not yet credited back in the current financial year.</p>
+    <button onclick='fetchDownloadableReport("revokedUncreditedLicences")' class="govuk-button govuk-button--secondary" data-module="govuk-button">
+      Download <span class="govuk-visually-hidden">Charge information for revoked licences not yet credited </span> report
+    </button>
+  </div>
+</div>
+{% endblock %}
+{% block bodyEnd %}
+    <script>
+        const fetchDownloadableReport = (report) =>  {
+            window.open(`/reporting/download/${report}`);
+        }
+    </script>
+{% endblock %}

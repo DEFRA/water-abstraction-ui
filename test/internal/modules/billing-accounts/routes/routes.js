@@ -6,14 +6,14 @@ const {
   beforeEach
 } = exports.lab = require('@hapi/lab').script();
 
-const testHelpers = require('../../test-helpers');
+const testHelpers = require('../../../test-helpers');
 const uuid = require('uuid/v4');
 
 const { scope } = require('internal/lib/constants');
 const preHandlers = require('internal/modules/billing-accounts/pre-handlers');
 
-const routes = require('internal/modules/billing-accounts/routes');
-const controller = require('internal/modules/billing-accounts/controller');
+const routes = require('internal/modules/billing-accounts/routes/billing-accounts');
+const controller = require('internal/modules/billing-accounts/controllers/billing-accounts');
 
 experiment('internal/modules/billing-accounts/routes', () => {
   let billingAccountId, server;

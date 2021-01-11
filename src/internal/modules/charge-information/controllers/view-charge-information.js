@@ -59,10 +59,10 @@ const getReviewChargeInformation = async (request, h) => {
 };
 
 const postReviewChargeInformation = async (request, h) => {
-  const { draftChargeInformation, licence, isChargeable } = request.pre;
+  const { draftChargeInformation, licence, isChargeable, billingAccount } = request.pre;
   const backLink = await getLicencePageUrl(licence);
   const isApprover = hasScope(request, chargeVersionWorkflowReviewer);
-  const invoiceAccountAddress = findInvoiceAccountAddress(request);
+  const invoiceAccountAddress = getCurrentBillingAccountAddress(billingAccount);
   const { chargeVersionWorkflowId } = request.params;
   const form = forms.handleRequest(
     reviewForm(request),

@@ -9,7 +9,7 @@ const {
 } = exports.lab = require('@hapi/lab').script();
 const sandbox = require('sinon').createSandbox();
 
-const controller = require('internal/modules/billing-accounts/controller');
+const controller = require('internal/modules/billing-accounts/controllers/billing-accounts');
 
 const createRequest = query => ({
   view: {

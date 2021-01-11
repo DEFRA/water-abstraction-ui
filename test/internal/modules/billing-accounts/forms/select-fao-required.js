@@ -4,7 +4,7 @@ const uuid = require('uuid/v4');
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 
-const { addFaoForm, addFaoFormSchema } = require('../../../../../src/internal/modules/invoice-accounts/forms/add-fao');
+const selectFaoRequiredForm = require('../../../../../src/internal/modules/billing-accounts/forms/select-fao-required');
 const { findField, findButton } = require('../../../../lib/form-test');
 
 const createRequest = () => ({
@@ -14,10 +14,19 @@ const createRequest = () => ({
   params: {
     regionId: uuid(),
     companyId: uuid()
+  },
+  pre: {
+    sessionData: {
+      data: {
+        contact: {
+
+        }
+      }
+    }
   }
 });
 
-experiment('invoice-accounts/forms/add-fao form', () => {
+experiment('internal/billing-accounts/forms/select-fao-required', () => {
   let request;
 
   beforeEach(async => {
@@ -25,24 +34,24 @@ experiment('invoice-accounts/forms/add-fao form', () => {
   });
 
   test('sets the form method to POST', async () => {
-    const form = addFaoForm(request);
+    const form = selectFaoRequiredForm.form(request);
     expect(form.method).to.equal('POST');
   });
 
   test('has CSRF token field', async () => {
-    const form = addFaoForm(request);
+    const form = selectFaoRequiredForm.form(request);
     const csrf = findField(form, 'csrf_token');
     expect(csrf.value).to.equal(request.view.csrfToken);
   });
 
   test('has a FAO yes/no required field', async () => {
-    const form = addFaoForm(request);
+    const form = selectFaoRequiredForm.form(request);
     const faoRequired = findField(form, 'faoRequired');
     expect(faoRequired).to.exist();
   });
 
   test('has a submit button', async () => {
-    const form = addFaoForm(request);
+    const form = selectFaoRequiredForm.form(request);
     const button = findButton(form);
     expect(button.options.label).to.equal('Continue');
   });
@@ -59,12 +68,12 @@ experiment('invoice-accounts/forms/add-fao schema', () => {
   });
   experiment('csrf token', () => {
     test('validates for a uuid', async () => {
-      const result = addFaoFormSchema(request).validate(data);
+      const result = selectFaoRequiredForm.schema(request).validate(data);
       expect(result.error).to.be.null();
     });
 
     test('fails for a string that is not a uuid', async () => {
-      const result = addFaoFormSchema(createRequest()).validate({
+      const result = selectFaoRequiredForm.schema(createRequest()).validate({
         ...data,
         csrf_token: 'not-a-guid'
       });
@@ -74,12 +83,12 @@ experiment('invoice-accounts/forms/add-fao schema', () => {
 
   experiment('faoRequired', () => {
     test('validates for true', async () => {
-      const result = addFaoFormSchema(request).validate(data);
+      const result = selectFaoRequiredForm.schema(request).validate(data);
       expect(result.error).to.be.null();
     });
 
     test('validates for false', async () => {
-      const result = addFaoFormSchema(request).validate({
+      const result = selectFaoRequiredForm.schema(request).validate({
         ...data,
         faoRequired: false
       });
@@ -87,7 +96,7 @@ experiment('invoice-accounts/forms/add-fao schema', () => {
     });
 
     test('fails for a value that is not a boolean', async () => {
-      const result = addFaoFormSchema(request).validate({
+      const result = selectFaoRequiredForm.schema(request).validate({
         ...data,
         faoRequired: 'no'
       });
@@ -96,7 +105,7 @@ experiment('invoice-accounts/forms/add-fao schema', () => {
 
     test('fails if blank', async () => {
       delete data.faoRequired;
-      const result = addFaoFormSchema(request).validate(data);
+      const result = selectFaoRequiredForm.schema(request).validate(data);
       expect(result.error).to.exist();
     });
   });

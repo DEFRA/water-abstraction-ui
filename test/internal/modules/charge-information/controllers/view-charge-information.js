@@ -66,6 +66,19 @@ const createRequest = () => ({
         }]
       }
     },
+    billingAccount: {
+      invoiceAccountAddress: 'test-invoice-account-address-2',
+      invoiceAccountAddresses: [{
+        id: 'test-invoice-account-address-2',
+        company: {
+          name: 'second company'
+        },
+        dateRange: {
+          startDate: '2016-10-01',
+          endDate: null
+        }
+      }]
+    },
     isChargeable: true,
     chargeVersion: {
       dateRange: {
@@ -165,7 +178,7 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
 
     test('has the correct invoice account address', async () => {
       const { invoiceAccountAddress } = h.view.lastCall.args[1];
-      expect(invoiceAccountAddress).to.equal(request.pre.draftChargeInformation.invoiceAccount.invoiceAccountAddresses[1]);
+      expect(invoiceAccountAddress).to.equal(request.pre.billingAccount.invoiceAccountAddresses[0]);
     });
 
     test('has the draft charge information with validation messages', async () => {
@@ -232,7 +245,7 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
 
       test('has the correct invoice account address', async () => {
         const { invoiceAccountAddress } = h.view.lastCall.args[1];
-        expect(invoiceAccountAddress).to.equal(request.pre.draftChargeInformation.invoiceAccount.invoiceAccountAddresses[1]);
+        expect(invoiceAccountAddress).to.equal(request.pre.billingAccount.invoiceAccountAddresses[0]);
       });
 
       test('has the draft charge information with validation messages', async () => {

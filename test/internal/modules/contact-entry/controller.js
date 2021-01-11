@@ -91,7 +91,7 @@ experiment('src/internal/modules/contact-entry/controller', () => {
 
     test('the correct data is output to the view', async () => {
       const [, { pageTitle, caption, back, form }] = h.view.lastCall.args;
-      expect(pageTitle).to.equal(`Setup a contact for ${COMPANY_NAME}`);
+      expect(pageTitle).to.equal(`Set up a contact for ${COMPANY_NAME}`);
       expect(caption).to.equal(request.pre.sessionData.caption);
       expect(back).to.equal(BACK_PATH);
       expect(form).to.be.an.object();
@@ -125,9 +125,10 @@ experiment('src/internal/modules/contact-entry/controller', () => {
         });
 
         test('the contact id is stored in the session', async () => {
+          console.log(session.merge.lastCall.args);
           expect(session.merge.calledWith(
             request, KEY, {
-              data: { contactId: CONTACT_ID }
+              data: request.pre.companyContacts[0]
             }
           )).to.be.true();
         });

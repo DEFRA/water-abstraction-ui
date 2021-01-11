@@ -170,69 +170,6 @@ module.exports = {
     }
   },
 
-  /*
-  getSelectBillingAccount: {
-    method: 'GET',
-    path: '/licences/{licenceId}/charge-information/billing-account',
-    handler: controller.getSelectBillingAccount,
-    options: {
-      auth: {
-        scope: allowedScopes
-      },
-      plugins: {
-        viewContext: {
-          activeNavLink: 'view'
-        }
-      },
-      validate: {
-        params: {
-          licenceId: VALID_GUID
-        },
-        query: {
-          form: VALID_GUID.optional(),
-          returnToCheckData: Joi.number().default(0).allow(0, 1)
-        }
-      },
-      pre: [
-        { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
-        { method: preHandlers.loadLicence, assign: 'licence' },
-        { method: preHandlers.loadBillingAccounts, assign: 'billingAccounts' },
-        { method: preHandlers.loadLicenceHolderRole, assign: 'licenceHolderRole' }
-      ]
-    }
-  },
-
-  postSelectBillingAccount: {
-    method: 'POST',
-    path: '/licences/{licenceId}/charge-information/billing-account',
-    handler: controller.postSelectBillingAccount,
-    options: {
-      auth: {
-        scope: allowedScopes
-      },
-      plugins: {
-        viewContext: {
-          activeNavLink: 'view'
-        }
-      },
-      validate: {
-        params: {
-          licenceId: VALID_GUID
-        },
-        query: {
-          returnToCheckData: Joi.number().default(0).allow(0, 1)
-        }
-      },
-      pre: [
-        { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
-        { method: preHandlers.loadLicence, assign: 'licence' },
-        { method: preHandlers.loadBillingAccounts, assign: 'billingAccounts' },
-        { method: preHandlers.loadLicenceHolderRole, assign: 'licenceHolderRole' }
-      ]
-    }
-  },
-  */
-
   getUseAbstractionData: {
     method: 'GET',
     path: '/licences/{licenceId}/charge-information/use-abstraction-data',
@@ -257,7 +194,6 @@ module.exports = {
         }
       },
       pre: [
-        // { method: preHandlers.saveInvoiceAccount },
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadChargeVersions, assign: 'chargeVersions' },
         { method: preHandlers.loadLicence, assign: 'licence' }
@@ -316,7 +252,6 @@ module.exports = {
       pre: [
 
         { method: preHandlers.loadBillingAccount, assign: 'billingAccount' },
-        // { method: preHandlers.saveInvoiceAccount },
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' },
         { method: preHandlers.loadIsChargeable, assign: 'isChargeable' }

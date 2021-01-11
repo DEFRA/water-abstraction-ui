@@ -28,7 +28,7 @@ experiment('internal/modules/address-entry/plugin', () => {
   });
 
   test('has a package name and version', async () => {
-    expect(plugin.pkg.name).to.equal('addressLookupPlugin');
+    expect(plugin.pkg.name).to.equal('addressEntryPlugin');
     expect(plugin.pkg.version).to.equal('1.0.0');
   });
 

@@ -19,16 +19,15 @@ const searchCRMCompanies = async request => {
   return services.water.companies.getCompaniesByName(q);
 };
 
-const searchForCompaniesInCompaniesHouse = async request => {
-  const { q } = request.query;
+const getCompaniesFromCompaniesHouse = async q => {
+  // Search companies house. Return results as array;
+  const { data } = await services.water.companies.getCompaniesFromCompaniesHouse(q);
+  return data;
+};
 
-  if (!q) {
-    return [];
-  } else {
-    // Search companies house. Return results as array;
-    const { data } = await services.water.companies.getCompaniesFromCompaniesHouse(q);
-    return data;
-  }
+const searchForCompaniesInCompaniesHouse = request => {
+  const { q } = request.query;
+  return q ? getCompaniesFromCompaniesHouse(q) : [];
 };
 
 exports.getSessionData = getSessionData;

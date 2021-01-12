@@ -43,6 +43,11 @@ experiment('getManageTabConfig', () => {
         { group: 'reports',
           name: 'Notices',
           path: '/notifications/report' },
+        {
+          group: 'reports',
+          name: 'Key performance indicators',
+          path: '/reporting/kpi-reporting'
+        },
         { group: 'returnNotifications',
           name: 'Invitations',
           path: '/returns-notifications/invitations' },
@@ -58,7 +63,8 @@ experiment('getManageTabConfig', () => {
       const request = createRequest(scope.abstractionReformApprover);
       const config = getManageTabConfig(request);
       expect(getAllLinks(config)).to.equal([
-        { group: 'reports', name: 'Digitise!', path: '/digitise/report' }
+        { group: 'reports', name: 'Digitise!', path: '/digitise/report' },
+        { group: 'reports', name: 'Key performance indicators', path: '/reporting/kpi-reporting' }
       ]);
     });
   });
@@ -71,6 +77,9 @@ experiment('getManageTabConfig', () => {
         { group: 'reports',
           name: 'Notices',
           path: '/notifications/report' },
+        { group: 'reports',
+          name: 'Key performance indicators',
+          path: '/reporting/kpi-reporting' },
         { group: 'licenceNotifications',
           name: 'Renewal',
           path: 'notifications/2?start=1' }
@@ -89,6 +98,11 @@ experiment('getManageTabConfig', () => {
         { group: 'reports',
           name: 'Returns cycles',
           path: '/returns-reports' },
+        {
+          group: 'reports',
+          name: 'Key performance indicators',
+          path: '/reporting/kpi-reporting'
+        },
         { group: 'returnNotifications',
           name: 'Paper forms',
           path: '/returns-notifications/forms'
@@ -103,6 +117,11 @@ experiment('getManageTabConfig', () => {
       expect(getAllLinks(config)).to.equal([ { group: 'reports',
         name: 'Notices',
         path: '/notifications/report' },
+      {
+        group: 'reports',
+        name: 'Key performance indicators',
+        path: '/reporting/kpi-reporting'
+      },
       { group: 'hofNotifications',
         name: 'Restriction',
         path: 'notifications/1?start=1' },
@@ -119,11 +138,17 @@ experiment('getManageTabConfig', () => {
     test('they can view create account link', async () => {
       const request = createRequest(scope.manageAccounts);
       const config = getManageTabConfig(request);
-      expect(getAllLinks(config)).to.equal([{
-        group: 'accounts',
-        name: 'Create an internal account',
-        path: '/account/create-user'
-      }]);
+      expect(getAllLinks(config)).to.equal([
+        {
+          group: 'reports',
+          name: 'Key performance indicators',
+          path: '/reporting/kpi-reporting'
+        }, {
+          group: 'accounts',
+          name: 'Create an internal account',
+          path: '/account/create-user'
+        }
+      ]);
     });
   });
 });

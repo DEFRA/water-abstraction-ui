@@ -77,6 +77,11 @@ const createRequest = (overrides = {}) => ({
   }
 });
 
+const createPostRequest = (overrides = {}) => createRequest({
+  ...overrides,
+  method: 'post'
+});
+
 experiment('internal/modules/billing-accounts/controllers/select-billing-account', () => {
   let request, h;
 
@@ -90,6 +95,7 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
     sandbox.stub(session, 'merge').returns({
       redirectPath: REDIRECT_PATH
     });
+    sandbox.stub(session, 'setProperty');
   });
 
   afterEach(async () => sandbox.restore());
@@ -159,6 +165,77 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
         const [, { form }] = h.view.lastCall.args;
         const button = formTest.findButton(form);
         expect(button.options.label).to.equal('Continue');
+      });
+    });
+  });
+
+  experiment('.postSelectExistingBillingAccount', () => {
+    experiment('when the form has validation errors', async () => {
+      beforeEach(async () => {
+        request = createPostRequest({
+          payload: {
+            csrf_token: CSRF_TOKEN
+          }
+        });
+        await controller.postSelectExistingBillingAccount(request, h);
+      });
+
+      test('the user is redirected to the form with errors displayed', async () => {
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+    });
+
+    experiment('when the "new billing account" option is selected', async () => {
+      beforeEach(async () => {
+        request = createPostRequest({
+          payload: {
+            csrf_token: CSRF_TOKEN,
+            billingAccountId: constants.NEW_BILLING_ACCOUNT
+          }
+        });
+        await controller.postSelectExistingBillingAccount(request, h);
+      });
+
+      test('the billing account .id property in the session is set to undefined', async () => {
+        expect(session.setProperty.calledWith(
+          request, KEY, 'data.id', undefined
+        )).to.be.true();
+      });
+
+      test('the .company property in the session is set to request.pre.account', async () => {
+        expect(session.setProperty.calledWith(
+          request, KEY, 'data.company', request.pre.account
+        )).to.be.true();
+      });
+
+      test('the user is redirected to the "select account" page', async () => {
+        expect(h.redirect.calledWith(
+          `/billing-account-entry/${KEY}/select-account`
+        )).to.be.true();
+      });
+    });
+
+    experiment('when an existing billing account is selected', async () => {
+      beforeEach(async () => {
+        request = createPostRequest({
+          payload: {
+            csrf_token: CSRF_TOKEN,
+            billingAccountId: data.billingAccounts[0].id
+          }
+        });
+        await controller.postSelectExistingBillingAccount(request, h);
+      });
+
+      test('the billing account is stored in the session', async () => {
+        expect(session.merge.calledWith(
+          request, KEY, { data: data.billingAccounts[0] }
+        )).to.be.true();
+      });
+
+      test('the user is redirected to the parent flow', async () => {
+        expect(h.redirect.calledWith(
+          REDIRECT_PATH
+        )).to.be.true();
       });
     });
   });

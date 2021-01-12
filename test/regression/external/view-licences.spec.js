@@ -2,7 +2,7 @@
 
 const { loginAsUser } = require('../shared/helpers/login-as-user');
 const { baseUrl, userEmails } = require('./config');
-const { getButton, getPageTitle, getPageCaption, getBackLink } = require('../shared/helpers/page');
+const { getPageTitle } = require('../shared/helpers/page');
 
 const EMAIL_ADDRESS = userEmails.external;
 

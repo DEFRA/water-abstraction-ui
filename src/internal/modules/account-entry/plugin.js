@@ -60,3 +60,5 @@ const accountEntryPlugin = {
 };
 
 module.exports = accountEntryPlugin;
+module.exports._accountEntryRedirect = accountEntryRedirect;
+module.exports._getAccountEntry = getAccount;

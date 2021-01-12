@@ -59,7 +59,7 @@ const h = {
   view: sandbox.stub()
 };
 
-experiment('internal/modules/billing-accounts/controller', () => {
+experiment('internal/modules/billing-accounts/controllers/billing-accounts', () => {
   let request;
 
   afterEach(() => sandbox.restore());

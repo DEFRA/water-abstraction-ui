@@ -33,12 +33,12 @@ const getSelectExistingBillingAccount = (request, h) => {
   const { billingAccounts, account } = request.pre;
   if (billingAccounts.length === 0) {
     const { key } = request.params;
-    return h.redirect(routing.getSelectIfAgent(key));
+    return h.redirect(routing.getSelectAccount(key));
   }
 
   return h.view(NUNJUCKS_FORM_TEMPLATE, {
     ...getDefaultView(request),
-    pageTitle: `Select an existing billing account for ${account.name} `,
+    pageTitle: `Select an existing billing account for ${account.name}`,
     form: handleFormRequest(request, selectBillingAccountForm)
   });
 };

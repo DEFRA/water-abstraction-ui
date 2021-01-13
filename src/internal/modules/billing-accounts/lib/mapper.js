@@ -7,7 +7,7 @@ const { pick } = require('lodash');
  * as it should
  */
 const mapAddressToWaterApi = address => ({
-  addressId: address.id,
+  ...address.id && { addressId: address.id },
   ...pick(address, [
     'addressLine1',
     'addressLine2',
@@ -28,7 +28,7 @@ const mapAddressToWaterApi = address => ({
  */
 const mapCompanyToWaterApi = company =>
   company === null ? null : {
-    companyId: company.id,
+    ...company.id && { companyId: company.id },
     ...pick(company, [
       'type',
       'name',
@@ -39,7 +39,7 @@ const mapCompanyToWaterApi = company =>
 
 const mapContactToWaterApi = contact =>
   contact === null ? null : {
-    contactId: contact.id,
+    ...contact.id && { contactId: contact.id },
     ...pick(contact, [
       'type',
       'title',

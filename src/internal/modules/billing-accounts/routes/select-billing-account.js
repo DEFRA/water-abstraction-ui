@@ -5,11 +5,17 @@ const { createRoutePair } = require('shared/lib/route-helpers');
 const controller = require('../controllers/select-billing-account');
 const preHandlers = require('../pre-handlers');
 
+const { charging } = require('internal/lib/constants').scope;
+const allowedScopes = [charging];
+
 module.exports = {
 
   ...createRoutePair(controller, 'selectExistingBillingAccount', {
     path: '/billing-account-entry/{key}',
     options: {
+      auth: {
+        scope: allowedScopes
+      },
       validate: {
         params: {
           key: Joi.string().required()
@@ -28,6 +34,9 @@ module.exports = {
   ...createRoutePair(controller, 'selectAccount', {
     path: '/billing-account-entry/{key}/select-account',
     options: {
+      auth: {
+        scope: allowedScopes
+      },
       validate: {
         params: {
           key: Joi.string().required()
@@ -46,6 +55,9 @@ module.exports = {
     method: 'get',
     handler: controller.getHandleAgentAccountEntry,
     options: {
+      auth: {
+        scope: allowedScopes
+      },
       description: 'Handle agent account entry via account entry plugin',
       validate: {
         params: {
@@ -63,6 +75,9 @@ module.exports = {
     method: 'get',
     handler: controller.getHandleAddressEntry,
     options: {
+      auth: {
+        scope: allowedScopes
+      },
       description: 'Handle address entry via address entry plugin',
       validate: {
         params: {
@@ -81,6 +96,9 @@ module.exports = {
   ...createRoutePair(controller, 'selectFAORequired', {
     path: '/billing-account-entry/{key}/fao',
     options: {
+      auth: {
+        scope: allowedScopes
+      },
       validate: {
         params: {
           key: Joi.string().required()
@@ -102,6 +120,9 @@ module.exports = {
     method: 'get',
     handler: controller.getHandleContactEntry,
     options: {
+      auth: {
+        scope: allowedScopes
+      },
       description: 'Handle contact entry via contact entry plugin',
       validate: {
         params: {
@@ -120,6 +141,9 @@ module.exports = {
   ...createRoutePair(controller, 'checkAnswers', {
     path: '/billing-account-entry/{key}/check-answers',
     options: {
+      auth: {
+        scope: allowedScopes
+      },
       description: 'Check answers page',
       validate: {
         params: {

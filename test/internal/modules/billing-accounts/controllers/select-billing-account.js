@@ -558,6 +558,21 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
   });
 
   experiment('.postSelectFaoRequired', () => {
+    experiment('when the form has validation errors', async () => {
+      beforeEach(async () => {
+        request = createPostRequest({
+          payload: {
+            csrf_token: CSRF_TOKEN
+          }
+        });
+        await controller.postSelectFaoRequired(request, h);
+      });
+
+      test('the user is redirected to the form with errors displayed', async () => {
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+    });
+
     experiment('when an fao is required', async () => {
       beforeEach(async () => {
         request = createPostRequest({

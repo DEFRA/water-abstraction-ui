@@ -62,3 +62,5 @@ const billingAccountsPlugin = {
 };
 
 module.exports = billingAccountsPlugin;
+module.exports._billingAccountEntryRedirect = billingAccountEntryRedirect;
+module.exports._getBillingAccount = getBillingAccount;

@@ -123,7 +123,7 @@ experiment('internal/modules/contact-entry/pre-handlers', () => {
     });
   });
 
-  experiment('.getSessionData', () => {
+  experiment('.searchCRMCompanies', () => {
     beforeEach(async () => {
       response = await preHandlers.searchCRMCompanies(request);
     });

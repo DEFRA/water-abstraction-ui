@@ -58,7 +58,12 @@ const data = {
     caption: CAPTION,
     back: BACK_PATH,
     redirectPath: REDIRECT_PATH,
-    data: {}
+    data: {
+      company: {
+        id: COMPANY_ID
+      },
+      agentCompany: null
+    }
   }
 };
 
@@ -84,8 +89,9 @@ const createRequest = (overrides = {}) => ({
     account: data.account
   },
   accountEntryRedirect: sandbox.stub().returns(ACCOUNT_ENTRY_PATH),
-  addressLookupRedirect: sandbox.stub().returns(ADDRESS_ENTRY_PATH)
-
+  addressLookupRedirect: sandbox.stub().returns(ADDRESS_ENTRY_PATH),
+  getAccountEntry: sandbox.stub(),
+  getNewAddress: sandbox.stub()
 });
 
 const createPostRequest = (overrides = {}) => createRequest({
@@ -392,7 +398,7 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
         await controller.postSelectAccount(request, h);
       });
 
-      test('a account entry plugin method is called with the correct arguments', async () => {
+      test('the account entry plugin method is called with the correct arguments', async () => {
         const [options] = request.accountEntryRedirect.lastCall.args;
         expect(options).to.equal({
           back: `/billing-account-entry/${KEY}/select-account`,
@@ -405,6 +411,80 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
 
       test('the user is redirected to the account entry flow', async () => {
         expect(h.redirect.calledWith(ACCOUNT_ENTRY_PATH)).to.be.true();
+      });
+    });
+  });
+
+  experiment('.getHandleAgentAccountEntry', () => {
+    const ACCOUNT = {
+      id: uuid()
+    };
+
+    beforeEach(async () => {
+      request = createRequest();
+      request.getAccountEntry.returns(ACCOUNT);
+      await controller.getHandleAgentAccountEntry(request, h);
+    });
+
+    test('request.getAccountEntry is called with the session key', async () => {
+      expect(request.getAccountEntry.calledWith(KEY)).to.be.true();
+    });
+
+    test('the agent account is set in the session', async () => {
+      expect(session.setProperty.calledWith(
+        request, KEY, 'data.agentCompany', ACCOUNT
+      )).to.be.true();
+    });
+
+    test('the user is redirected to the address entry', async () => {
+      expect(h.redirect.calledWith(ADDRESS_ENTRY_PATH)).to.be.true();
+    });
+  });
+
+  experiment('.getHandleAgentAddressEntry', () => {
+    const ADDRESS = {
+      addressLine1: 'Buttercup Farm'
+    };
+
+    experiment('when the check answers query param is not supplied', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.getNewAddress.returns(ADDRESS);
+        await controller.getHandleAddressEntry(request, h);
+      });
+
+      test('request.getNewAddress is called with the session key', async () => {
+        expect(request.getNewAddress.calledWith(KEY)).to.be.true();
+      });
+
+      test('the address is set in the session', async () => {
+        expect(session.setProperty.calledWith(
+          request, KEY, 'data.address', ADDRESS
+        )).to.be.true();
+      });
+
+      test('the user is redirected to the "FAO required" page', async () => {
+        expect(h.redirect.calledWith(
+          `/billing-account-entry/${KEY}/fao`
+        )).to.be.true();
+      });
+    });
+
+    experiment('when the check answers query param is supplied', () => {
+      beforeEach(async () => {
+        request = createRequest({
+          query: {
+            checkAnswers: true
+          }
+        });
+        request.getNewAddress.returns(ADDRESS);
+        await controller.getHandleAddressEntry(request, h);
+      });
+
+      test('the user is redirected to the "check answers" page', async () => {
+        expect(h.redirect.calledWith(
+          `/billing-account-entry/${KEY}/check-answers`
+        )).to.be.true();
       });
     });
   });

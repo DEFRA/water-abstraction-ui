@@ -14,33 +14,6 @@
 
          <h1 class="govuk-heading-l">Service status</h1>
 
-         <h2 class="govuk-heading-m">IDM</h2>
-         <table class="govuk-table">
-            {{ statusRow('IDM users', idm.users) }}
-            {{ statusRow('Internal registrations not completed', idm.internalRegistrationsCompleted) }}
-            {{ statusRow('Internal registrations not completed', idm.internalRegistrationsNotCompleted) }}
-            {{ statusRow('External registrations completed', idm.externalRegistrationsCompleted) }}
-            {{ statusRow('External registrations not completed', idm.externalRegistrationsNotCompleted) }}
-         </table>
-
-         <h2 class="govuk-heading-m">CRM</h2>
-         <table class="govuk-table">
-            {{ statusRow('Documents', crm.documents) }}
-            {{ statusRow('Renamed licences', crm.renamedLicences) }}
-            {{ statusRow('Users with multiple verifications', crm.usersWithMultipleVerifications) }}
-            {{ statusRow('Verifications completed last month', crm.verificationsCompletedLastMonth) }}
-            {{ statusRow('Verifications started this month', crm.verificationsStartedThisMonth) }}
-            {{ statusRow('Verifications completed this month', crm.verificationsCompletedThisMonth) }}
-            {{ statusRow('Additional access grantees', crm.additionalAccessGrantees) }}
-            {{ statusRow('Verifications started last month', crm.verificationsStartedLastMonth) }}
-            {{ statusRow('Verifications', crm.verifications) }}
-         </table>
-
-         <h2 class="govuk-heading-m">Permit Repo</h2>
-         <table class="govuk-table">
-            {{ statusRow('Permits', permitRepo.permits) }}
-         </table>
-
          <h2 class="govuk-heading-m">Import</h2>
          <table class="govuk-table">
             <tr class="govuk-table__row">

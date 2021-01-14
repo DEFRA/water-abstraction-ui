@@ -10,8 +10,8 @@ const {
 const { expect } = require('@hapi/code');
 const sandbox = require('sinon').createSandbox();
 
-const controller = require('../../../../src/shared/plugins/service-status/controller');
-const fileCheck = require('../../../../src/shared/lib/file-check');
+const controller = require('internal/modules/service-status/controller');
+const fileCheck = require('shared/lib/file-check');
 const Catbox = require('@hapi/catbox');
 
 experiment('shared/plugins/service-status/controller', () => {

@@ -111,6 +111,7 @@ experiment('internal/modules/returns-notifications/controllers/paper-forms', () 
         userName: 'mail@example.com'
       },
       params: {},
+      query: {},
       getNewAddress: sandbox.stub()
     };
 
@@ -140,7 +141,7 @@ experiment('internal/modules/returns-notifications/controllers/paper-forms', () 
 
     test('uses the correct template', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/form');
+      expect(template).to.equal('nunjucks/returns-notifications/licence-numbers');
     });
 
     test('the back link is to the manage tab', async () => {
@@ -169,6 +170,10 @@ experiment('internal/modules/returns-notifications/controllers/paper-forms', () 
       expect(field.options.label).to.equal('Enter a licence number');
       expect(field.options.hint).to.equal('You can enter more than one licence. You can separate licence numbers using spaces, commas, or by entering them on different lines.');
       expect(field.options.heading).to.be.true();
+    });
+
+    test('The session data is cleared', async () => {
+      expect(request.yar.clear.called).to.be.true();
     });
   });
 
@@ -251,6 +256,24 @@ experiment('internal/modules/returns-notifications/controllers/paper-forms', () 
       });
     });
 
+    experiment('when all of the licences has no returns due', () => {
+      beforeEach(async () => {
+        request.payload.licenceNumbers = '01/123/ABC,02/456/BCD';
+        const data = apiResponse.documents = [];
+        services.water.returns.getIncompleteReturns.resolves(data);
+        await controller.postEnterLicenceNumber(request, h);
+      });
+
+      test('the licence numbers are stored in the session', () => {
+        expect(request.yar.set.called).to.be.true();
+      });
+
+      test('the user is redirected to enter licences form with the correct query params', () => {
+        const data = h.redirect.lastCall.args;
+        expect(data[0]).to.equal('/returns-notifications/forms');
+      });
+    });
+
     experiment('when a single requested licence is found', () => {
       beforeEach(async () => {
         request.payload.licenceNumbers = '01/123/ABC';
@@ -327,7 +350,7 @@ experiment('internal/modules/returns-notifications/controllers/paper-forms', () 
 
       test('includes a back link', async () => {
         const [, { back }] = h.view.lastCall.args;
-        expect(back).to.equal('/returns-notifications/paper-forms');
+        expect(back).to.equal('/returns-notifications/forms');
       });
 
       test('uses the correct template', async () => {
@@ -346,6 +369,24 @@ experiment('internal/modules/returns-notifications/controllers/paper-forms', () 
       test('they are omitted from the view model', async () => {
         const [, { documents }] = h.view.lastCall.args;
         expect(documents).to.be.an.array().length(0);
+      });
+    });
+
+    experiment('when licences with no returns due are included', () => {
+      beforeEach(async () => {
+        request.pre.state = { ...createState(), testId: '01/987/ZYX' };
+        await controller.getCheckAnswers(request, h);
+      });
+
+      test('the licence refs are included in the licencesWithNoReturns in the view model', async () => {
+        const [, { licencesWithNoReturns }] = h.view.lastCall.args;
+        expect(licencesWithNoReturns[0]).to.equal('01/987/ZYX');
+      });
+
+      test('only the licences with no returns due are incluced in licencesWithNoReturns in the view model', async () => {
+        const [, { licencesWithNoReturns, documents }] = h.view.lastCall.args;
+        expect(licencesWithNoReturns.length).to.equal(1);
+        expect(documents).to.be.an.array().length(1);
       });
     });
   });

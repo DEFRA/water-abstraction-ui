@@ -37,8 +37,7 @@ const roleMapper = require('shared/lib/mappers/role');
  * they wish to send paper return forms
  */
 const getEnterLicenceNumber = async (request, h) => {
-  const sessionData = request.yar.get(SESSION_KEYS.paperFormsFlow);
-  const licencesWithNoReturns = sessionData ? sessionData.licencesWithNoReturns : null;
+  const licencesWithNoReturns = request.pre.state ? request.pre.state.licencesWithNoReturns : null;
   return h.view('nunjucks/returns-notifications/licence-numbers', {
     ...request.view,
     back: '/manage',

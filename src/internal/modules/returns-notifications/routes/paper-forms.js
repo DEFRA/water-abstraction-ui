@@ -27,7 +27,10 @@ const formRoutes = {
         query: {
           form: Joi.string().optional()
         }
-      }
+      },
+      pre: [
+        { method: preHandlers.getStateFromSession, assign: 'state' }
+      ]
     }
   },
 

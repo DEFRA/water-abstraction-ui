@@ -260,7 +260,11 @@ experiment('internal/modules/returns-notifications/controllers/paper-forms', () 
         await controller.postEnterLicenceNumber(request, h);
       });
 
-      test('the user is redirected to enter licences form with the correct query params', async () => {
+      test('the licence numbers are stored in the session', () => {
+        expect(request.yar.set.called).to.be.true();
+      });
+
+      test('the user is redirected to enter licences form with the correct query params', () => {
         const data = h.redirect.lastCall.args;
         expect(data[0]).to.equal('/returns-notifications/forms');
       });

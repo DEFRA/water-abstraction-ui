@@ -262,7 +262,7 @@ experiment('internal/modules/returns-notifications/controllers/paper-forms', () 
 
       test('the user is redirected to enter licences form with the correct query params', async () => {
         const data = h.redirect.lastCall.args;
-        expect(data[0]).to.equal('/returns-notifications/forms?licencesWithNoReturns=%5B%2201%2F123%2FABC%22%2C%2202%2F456%2FBCD%22%5D');
+        expect(data[0]).to.equal('/returns-notifications/forms');
       });
     });
 

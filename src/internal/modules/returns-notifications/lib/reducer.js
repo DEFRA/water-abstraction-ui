@@ -77,6 +77,8 @@ const mapLicencesToState = (licences, refDate) => {
     licenceRow.documents.forEach(documentRow =>
       acc.set(documentRow.document.id, mapDocumentRow(licenceRow, documentRow, refDate))
     );
+    // if the water service returns no documents then no returns due
+    // so record the licence number to display in the UI as a o returns due warning
     if (licenceRow.documents.length === 0) {
       acc.set(licenceRow.licence.id, licenceRow.licence.licenceNumber);
     };

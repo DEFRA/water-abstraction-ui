@@ -25,7 +25,6 @@ const formRoutes = {
       },
       validate: {
         query: {
-          licencesWithNoReturns: Joi.array().items(Joi.any()).optional(),
           form: Joi.string().optional()
         }
       }

@@ -10,7 +10,6 @@ const routing = require('../lib/routing');
 
 const { getReturnStatusString } = require('../lib/return-mapper');
 const { SESSION_KEYS } = require('../lib/constants');
-const querystring = require('querystring');
 
 // Services
 const services = require('../../../lib/connectors/services');
@@ -38,7 +37,8 @@ const roleMapper = require('shared/lib/mappers/role');
  * they wish to send paper return forms
  */
 const getEnterLicenceNumber = async (request, h) => {
-  const { licencesWithNoReturns } = request.query;
+  const sessionData = request.yar.get(SESSION_KEYS.paperFormsFlow);
+  const licencesWithNoReturns = sessionData ? sessionData.licencesWithNoReturns : null;
   return h.view('nunjucks/returns-notifications/licence-numbers', {
     ...request.view,
     back: '/manage',
@@ -75,7 +75,8 @@ const postEnterLicenceNumber = async (request, h) => {
     if (isReturnsDueForLicences(data)) {
       path = isMultipleLicenceHoldersForLicence(data) ? routing.getSelectLicenceHolders() : routing.getCheckAnswers();
     } else {
-      path = `${routing.getEnterLicenceNumber()}?` + querystring.stringify({ licencesWithNoReturns: JSON.stringify(licenceNumbers) });
+      request.yar.set(SESSION_KEYS.paperFormsFlow, { licencesWithNoReturns: licenceNumbers });
+      path = routing.getEnterLicenceNumber();
     }
     return h.redirect(path);
   } catch (err) {
@@ -121,7 +122,6 @@ const getRecipientCount = state => Object.values(state)
  */
 const getCheckAnswers = async (request, h) => {
   const isRecipients = getRecipientCount(request.pre.state) > 0;
-  console.log(licencesWithNoReturnsDue(request.pre.state));
   const view = {
     ...request.view,
     documents: mapStateToView(request.pre.state),

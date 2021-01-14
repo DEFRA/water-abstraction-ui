@@ -171,6 +171,10 @@ experiment('internal/modules/returns-notifications/controllers/paper-forms', () 
       expect(field.options.hint).to.equal('You can enter more than one licence. You can separate licence numbers using spaces, commas, or by entering them on different lines.');
       expect(field.options.heading).to.be.true();
     });
+
+    test('The session data is cleared', async () => {
+      expect(request.yar.clear.called).to.be.true();
+    });
   });
 
   experiment('.postEnterLicenceNumber', () => {

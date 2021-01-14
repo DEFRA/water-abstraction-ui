@@ -38,6 +38,7 @@ const roleMapper = require('shared/lib/mappers/role');
  */
 const getEnterLicenceNumber = async (request, h) => {
   const licencesWithNoReturns = request.pre.state ? request.pre.state.licencesWithNoReturns : null;
+  request.yar.clear(SESSION_KEYS.paperFormsFlow);
   return h.view('nunjucks/returns-notifications/licence-numbers', {
     ...request.view,
     back: '/manage',

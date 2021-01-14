@@ -8,6 +8,7 @@ const eventPreHandlers = require('shared/lib/pre-handlers/events');
 const constants = require('../../../lib/constants');
 const { returns } = constants.scope;
 const { createFormRoutes } = require('shared/lib/route-helpers');
+const Joi = require('@hapi/joi');
 
 const formRoutes = {
   enterLicenceNumber: {
@@ -21,7 +22,15 @@ const formRoutes = {
           activeNavLink: 'notifications',
           pageTitle: 'Enter a licence number'
         }
-      }
+      },
+      validate: {
+        query: {
+          form: Joi.string().optional()
+        }
+      },
+      pre: [
+        { method: preHandlers.getStateFromSession, assign: 'state' }
+      ]
     }
   },
 

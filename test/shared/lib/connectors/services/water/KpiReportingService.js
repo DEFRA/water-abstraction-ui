@@ -9,7 +9,7 @@ const {
 } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
 
-const KpiReportingService = require('shared/lib/connectors/services/water/KpiReportingService');
+const KpiReportingService = require('internal/lib/connectors/services/water/KpiReportingService');
 const { serviceRequest } = require('@envage/water-abstraction-helpers');
 
 experiment('services/water/KpiReportingService', () => {

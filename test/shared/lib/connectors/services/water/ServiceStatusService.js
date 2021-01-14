@@ -9,7 +9,7 @@ const {
 } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
 
-const ServiceStatusService = require('shared/lib/connectors/services/water/ServiceStatusService');
+const ServiceStatusService = require('internal/lib/connectors/services/water/ServiceStatusService');
 const { serviceRequest } = require('@envage/water-abstraction-helpers');
 
 experiment('services/water/ServiceStatusService', () => {

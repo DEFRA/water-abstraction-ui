@@ -21,7 +21,6 @@ jobs:
       TEST_NOTIFY_KEY: ${{ secrets.TEST_NOTIFY_KEY }}
       WHITELIST_NOTIFY_KEY: ${{ secrets.WHITELIST_NOTIFY_KEY }}
       LIVE_NOTIFY_KEY: somerealnotifykey-00000000-0000-0000-0000-000000000000-00000000-0000-0000-0000-000000000000
-      TEST_MODE: 1
       TRAVIS: 1
       NODE_ENV: local
       CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
@@ -185,6 +184,11 @@ jobs:
         with:
           redis-version: 6
 
+      - name: Sleep for 15 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '15s'
+
       - name: Start pm2
         run: |
           cd water-abstraction-permit-repository && pm2 start ecosystem.config.json && cd ..
@@ -193,7 +197,12 @@ jobs:
           cd water-abstraction-tactical-idm && pm2 start ecosystem.config.json && cd ..
           cd water-abstraction-returns && pm2 start ecosystem.config.json && cd ..
           cd water-abstraction-import && pm2 start ecosystem.config.json && cd ..
-          pm2 start ecosystem.config.json
+          pm2 start ecosystem.config.json --env production
+
+      - name: Sleep for 15 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '15s'
 
       - name: Run regression tests
         run: |

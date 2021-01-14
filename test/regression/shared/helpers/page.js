@@ -1,5 +1,4 @@
 'use strict';
-
 /* eslint-disable no-undef */
 
 /**
@@ -15,13 +14,17 @@ const getButton = (text = 'Continue') =>
 const getPageTitle = () => $('h1');
 
 /**
+ * Gets caption with class govuk-caption-l
+ */
+const getPageCaption = () => $('.govuk-caption-l');
+
+/**
  * Gets the validation summary message.
  * Where there is more than 1 error, an index can be supplied to get
  * the message with the supplied index
  * @param {Number} [index] - index of validation summary error message
  */
-const getValidationSummaryMessage = (index = 0) =>
-  $('ul.govuk-error-summary__list').$$('li')[index];
+const getValidationSummaryMessage = (index = 0) => $('ul.govuk-error-summary__list') ? $('ul.govuk-error-summary__list').$$ ? $('ul.govuk-error-summary__list').$$('li')[index] : null : null;
 
 /**
  * Gets the element with specified data-test-id id
@@ -32,7 +35,12 @@ const getValidationSummaryMessage = (index = 0) =>
 const getByTestId = id =>
   $(`[data-test-id=${id}]`);
 
+const getBackLink = () =>
+  $('.govuk-back-link');
+
 exports.getButton = getButton;
 exports.getPageTitle = getPageTitle;
+exports.getPageCaption = getPageCaption;
 exports.getValidationSummaryMessage = getValidationSummaryMessage;
 exports.getByTestId = getByTestId;
+exports.getBackLink = getBackLink;

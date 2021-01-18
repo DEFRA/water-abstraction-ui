@@ -1,7 +1,6 @@
 'use strict';
 
 const { isFunction, isEmpty, omit } = require('lodash');
-const titleCase = require('title-case');
 
 const { handleRequest, getValues } = require('shared/lib/forms');
 const sessionForms = require('shared/lib/session-forms');
@@ -89,10 +88,6 @@ const isCurrentAddress = invoiceAccountAddress => invoiceAccountAddress.dateRang
 const getCurrentBillingAccountAddress = billingAccount => billingAccount.invoiceAccountAddresses
   .find(isCurrentAddress);
 
-const getBillingAccountHolder = billingAccount => titleCase(billingAccount.company.name);
-
-const getBillingAccountNumber = billingAccount => billingAccount.accountNumber;
-
 /**
  * Checks if the new draft charge version has the same start date as an existing charge version
  * @param {*} request hapi request object
@@ -112,5 +107,3 @@ exports.getDefaultView = getDefaultView;
 exports.prepareChargeInformation = prepareChargeInformation;
 exports.getLicencePageUrl = getLicencePageUrl;
 exports.getCurrentBillingAccountAddress = getCurrentBillingAccountAddress;
-exports.getBillingAccountHolder = getBillingAccountHolder;
-exports.getBillingAccountNumber = getBillingAccountNumber;

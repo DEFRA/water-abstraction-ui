@@ -13,9 +13,7 @@ const {
   prepareChargeInformation,
   getLicencePageUrl,
   isOverridingChargeVersion,
-  getCurrentBillingAccountAddress,
-  getBillingAccountHolder,
-  getBillingAccountNumber
+  getCurrentBillingAccountAddress
 } = require('../lib/helpers');
 const chargeInformationValidator = require('../lib/charge-information-validator');
 const { CHARGE_ELEMENT_FIRST_STEP, CHARGE_ELEMENT_STEPS } = require('../lib/charge-elements/constants');

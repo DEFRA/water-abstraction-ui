@@ -4,6 +4,7 @@
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 {% from "crm/address.njk" import address %}
 {% from "crm/company.njk" import company %}
+{% from "crm/contact.njk" import contact %}
 {% from "badge.njk" import badge %}
 {% from "forms/index.njk" import formRender,
 formErrorSummary %}
@@ -76,16 +77,20 @@ formErrorSummary %}
           {{ summaryListRow('End date', chargeVersion.dateRange.endDate | date) }}
         {% endif %}
 
-        {% if chargeVersion.invoiceAccount %}
+        {% if billingAccount %}
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">Billing account</dt>
             <dd class="govuk-summary-list__value">
-              {{ accountNumber }}
+              {{ billingAccount.accountNumber }}
               <br>
-              {% if invoiceAccountAddress.agentCompany %}
-                {{ company(invoiceAccountAddress.agentCompany) }}<br/>
+              {% if billingAccountAddress.contact %}
+                FAO
+                {{ contact(billingAccountAddress.contact) }}<br/>
               {% endif %}
-              {{ address(invoiceAccountAddress.address) }}
+              {% if billingAccountAddress.agentCompany %}
+                {{ company(billingAccountAddress.agentCompany) }}<br/>
+              {% endif %}
+              {{ address(billingAccountAddress.address) }}
             </dd>
             {% if isEditable %}
               <dd class="govuk-summary-list__actions">
@@ -94,7 +99,7 @@ formErrorSummary %}
             {% endif %}
           </div>
 
-          {{ summaryListRow('Licence holder', licenceHolder | titleCase) }}
+          {{ summaryListRow('Licence holder', company(billingAccount.company)) }}
         {% endif %}
 
       </dl>

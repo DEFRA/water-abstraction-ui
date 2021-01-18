@@ -33,22 +33,19 @@ const getViewChargeInformation = async (request, h) => {
 
 const getReviewChargeInformation = async (request, h) => {
   const { draftChargeInformation, licence, isChargeable, billingAccount } = request.pre;
+
   const { chargeVersionWorkflowId } = request.params;
   const backLink = await getLicencePageUrl(licence);
   const isApprover = hasScope(request, chargeVersionWorkflowReviewer);
-  const invoiceAccountAddress = getCurrentBillingAccountAddress(billingAccount);
+  const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount);
   const validatedDraftChargeVersion = chargeInformationValidator.addValidation(draftChargeInformation);
-
-  // Set the address ID to the first address in the array if it's null
-  if (validatedDraftChargeVersion.invoiceAccount.invoiceAccountAddress === null) {
-    validatedDraftChargeVersion.invoiceAccount.invoiceAccountAddress = validatedDraftChargeVersion.invoiceAccount.invoiceAccountAddresses[0].id;
-  }
 
   return h.view('nunjucks/charge-information/view', {
     ...getDefaultView(request, backLink),
     pageTitle: `Check charge information`,
     chargeVersion: validatedDraftChargeVersion,
-    invoiceAccountAddress,
+    billingAccount,
+    billingAccountAddress,
     licenceId: licence.id,
     isEditable: draftChargeInformation.status === 'changes_requested',
     isApprover,

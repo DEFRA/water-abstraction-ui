@@ -176,16 +176,15 @@ const getCheckData = async (request, h) => {
     ? routing.getUseAbstractionData(licenceId)
     : routing.getEffectiveDate(licenceId);
 
-  const invoiceAccountAddress = getCurrentBillingAccountAddress(billingAccount);
+  const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount);
   const editChargeVersionWarning = await isOverridingChargeVersion(request, draftChargeInformation.dateRange.startDate);
   const view = {
     ...getDefaultView(request, back),
     pageTitle: 'Check charge information',
     chargeVersion: chargeInformationValidator.addValidation(draftChargeInformation),
     licenceId: request.params.licenceId,
-    invoiceAccountAddress,
-    licenceHolder: getBillingAccountHolder(billingAccount),
-    accountNumber: getBillingAccountNumber(billingAccount),
+    billingAccountAddress,
+    billingAccount,
     chargeVersionWorkflowId,
     isChargeable,
     isEditable: true,

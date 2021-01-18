@@ -176,9 +176,9 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
       expect(foo).to.equal(request.view.foo);
     });
 
-    test('has the correct invoice account address', async () => {
-      const { invoiceAccountAddress } = h.view.lastCall.args[1];
-      expect(invoiceAccountAddress).to.equal(request.pre.billingAccount.invoiceAccountAddresses[0]);
+    test('has the correct billing account address', async () => {
+      const { billingAccountAddress } = h.view.lastCall.args[1];
+      expect(billingAccountAddress).to.equal(request.pre.billingAccount.invoiceAccountAddresses[0]);
     });
 
     test('has the draft charge information with validation messages', async () => {

@@ -4,7 +4,6 @@ const contactForms = require('./forms');
 const forms = require('shared/lib/forms');
 const { handleFormRequest } = require('shared/lib/form-handler');
 const { CONTACT_TYPES } = require('./lib/constants');
-const { getSelectedContact } = require('./lib/helpers');
 const session = require('./lib/session');
 
 const { omit, omitBy, isEmpty } = require('lodash');
@@ -16,10 +15,13 @@ const { omit, omitBy, isEmpty } = require('lodash');
  */
 const getSelectContact = async (request, h) => {
   const { sessionData, company } = request.pre;
+
+  const pageTitle = company ? `Set up a contact for ${company.name}` : 'Set up a contact';
+
   return h.view('nunjucks/form', {
     ...request.view,
     caption: sessionData.caption,
-    pageTitle: `Setup a contact for ${company.name}`,
+    pageTitle,
     back: sessionData.back,
     form: handleFormRequest(request, contactForms.selectContact)
   });
@@ -33,12 +35,20 @@ const postSelectContact = async (request, h) => {
   const { key } = request.params;
   const { selectedContact, department } = forms.getValues(form);
 
+  // For person, redirect to contact entry screen
   if (selectedContact === CONTACT_TYPES.person) {
     return h.redirect(`/contact-entry/${key}/create-contact`);
   }
 
-  const contact = getSelectedContact(selectedContact, department);
-  const { redirectPath } = session.merge(request, key, { data: contact });
+  // Data is department or existing selected contact
+  const data = selectedContact === CONTACT_TYPES.department
+    ? {
+      type: CONTACT_TYPES.department,
+      department
+    }
+    : request.pre.companyContacts.find(row => row.id === selectedContact);
+
+  const { redirectPath } = session.merge(request, key, { data });
   return h.redirect(redirectPath);
 };
 
@@ -50,10 +60,12 @@ const postSelectContact = async (request, h) => {
 const getCreateContact = async (request, h) => {
   const { sessionData, company } = request.pre;
 
+  const pageTitle = company ? `Add a new contact for ${company.name}` : 'Add a new contact';
+
   return h.view('nunjucks/form', {
     ...request.view,
     caption: sessionData.caption,
-    pageTitle: `Add a new contact for ${company.name}`,
+    pageTitle,
     back: `/contact-entry/${request.params.key}/select-contact`,
     form: handleFormRequest(request, contactForms.createContact)
   });

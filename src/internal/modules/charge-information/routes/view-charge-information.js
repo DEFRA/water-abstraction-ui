@@ -56,7 +56,8 @@ module.exports = {
       pre: [
         { method: preHandlers.loadLicence, assign: 'licence' },
         { method: preHandlers.loadChargeVersionWorkflow, assign: 'draftChargeInformation' },
-        { method: preHandlers.loadIsChargeable, assign: 'isChargeable' }
+        { method: preHandlers.loadIsChargeable, assign: 'isChargeable' },
+        { method: preHandlers.loadBillingAccount, assign: 'billingAccount' }
       ]
     }
   },
@@ -84,7 +85,8 @@ module.exports = {
       pre: [
         { method: preHandlers.loadLicence, assign: 'licence' },
         { method: preHandlers.loadChargeVersionWorkflow, assign: 'draftChargeInformation' },
-        { method: preHandlers.loadIsChargeable, assign: 'isChargeable' }
+        { method: preHandlers.loadIsChargeable, assign: 'isChargeable' },
+        { method: preHandlers.loadBillingAccount, assign: 'billingAccount' }
       ]
     }
   }

@@ -6,23 +6,17 @@ const {
   test,
   beforeEach
 } = exports.lab = require('@hapi/lab').script();
-const queryString = require('querystring');
 
 const routing = require('internal/modules/charge-information/lib/routing');
 
 experiment('internal/modules/charge-information/lib/routing', () => {
-  let licence, licenceHolderRole;
+  let licence;
 
   beforeEach(async () => {
     licence = {
       id: 'test-licence-id',
       region: {
         id: 'test-region-id'
-      }
-    };
-    licenceHolderRole = {
-      company: {
-        id: 'test-company-id'
       }
     };
   });
@@ -41,23 +35,10 @@ experiment('internal/modules/charge-information/lib/routing', () => {
     });
   });
 
-  experiment('.getCreateBillingAccount', () => {
+  experiment('.getCheckData', () => {
     test('returns the correct url', async () => {
-      const expectedQueryString = queryString.stringify({
-        redirectPath: '/licences/test-licence-id/charge-information/check',
-        licenceId: 'test-licence-id'
-      });
-      const url = routing.getCreateBillingAccount(licence, licenceHolderRole, 'check');
-      const [base, query] = url.split('?');
-      expect(base).to.equal('/invoice-accounts/create/test-region-id/test-company-id');
-      expect(query).to.equal(expectedQueryString);
-    });
-
-    experiment('.getCheckData', () => {
-      test('returns the correct url', async () => {
-        const url = routing.getCheckData(licence.id);
-        expect(url).to.equal('/licences/test-licence-id/charge-information/check');
-      });
+      const url = routing.getCheckData(licence.id);
+      expect(url).to.equal('/licences/test-licence-id/charge-information/check');
     });
   });
 

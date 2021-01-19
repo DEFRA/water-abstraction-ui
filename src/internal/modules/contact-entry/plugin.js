@@ -8,7 +8,7 @@ const OPTIONS_SCHEMA = Joi.object({
   caption: Joi.string().optional().default(null),
   key: Joi.string().required(),
   redirectPath: Joi.string().required(),
-  companyId: Joi.string().guid().required(),
+  companyId: Joi.string().guid().required().allow(null),
   data: Joi.object().optional()
 });
 

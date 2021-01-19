@@ -1,33 +1,34 @@
+'use strict';
+
+const Boom = require('@hapi/boom');
 const services = require('../../lib/connectors/services');
-const sessionHelper = require('shared/lib/session-helpers');
+const session = require('./lib/session');
+
+const getSessionDataFromRequest = request => {
+  const { key } = request.params;
+  return session.get(request, key);
+};
+
+const getSessionData = request => {
+  const data = getSessionDataFromRequest(request);
+  return data || Boom.notFound(`Session data not found for ${request.params.key}`);
+};
+
+const searchCRMCompanies = async request => {
+  const { q } = request.query;
+  return services.water.companies.getCompaniesByName(q);
+};
 
 const searchForCompaniesInCompaniesHouse = async request => {
-  const { sessionKey } = request.payload || request.query;
-  const { companyNameOrNumber } = await sessionHelper.saveToSession(request, sessionKey);
-  if (!companyNameOrNumber) {
+  const { q } = request.query;
+  if (!q) {
     return [];
-  } else {
-    // Search companies house. Return results as array;
-    const { data } = await services.water.companies.getCompaniesFromCompaniesHouse(companyNameOrNumber);
-    // Store results in yar, so that we can retrieve the results again later for address selection
-    return data;
   }
+  // Search companies house. Return results as array;
+  const { data } = await services.water.companies.getCompaniesFromCompaniesHouse(q);
+  return data;
 };
 
-const returnCompanyAddressesFromCompaniesHouse = async request => {
-  const { sessionKey } = request.payload || request.query;
-  const { selectedCompaniesHouseNumber } = await sessionHelper.saveToSession(request, sessionKey);
-  if (!selectedCompaniesHouseNumber) {
-    return [];
-  } else {
-    // Search companies house. Return results as array;
-    const { data } = await services.water.companies.getCompaniesFromCompaniesHouse(selectedCompaniesHouseNumber);
-    // Compile the addresses array and the main address object into a single array
-    const addressArray = [...data[0].company.companyAddresses, data[0].address];
-    // Store results in yar, so that we can retrieve the results again later for address selection
-    return addressArray;
-  }
-};
-
+exports.getSessionData = getSessionData;
+exports.searchCRMCompanies = searchCRMCompanies;
 exports.searchForCompaniesInCompaniesHouse = searchForCompaniesInCompaniesHouse;
-exports.returnCompanyAddressesFromCompaniesHouse = returnCompanyAddressesFromCompaniesHouse;

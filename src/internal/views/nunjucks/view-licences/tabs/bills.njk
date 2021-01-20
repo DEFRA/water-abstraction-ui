@@ -1,0 +1,75 @@
+{% macro billLink(bill) %}
+<a href="#">
+  {{bill.billingInvoice.invoiceNumber}}
+</a>
+{% endmacro %}
+
+{% macro billRow(bill) %}
+<tr class="govuk-table__row">
+  <td class="govuk-table__cell" scope="row">
+    {{ billLink(bill) }}
+  </td>
+  <td class="govuk-table__cell">
+    {{ bill.billingInvoice.dateCreated | date}}
+  </td>
+  <td class="govuk-table__cell">
+    {{ bill.billingInvoice.invoiceAccountNumber }}
+  </td>
+  <td class="govuk-table__cell">
+    {{ bill.billingInvoice.billingBatch.batchType | sentenceCase }}
+  </td>
+  <td class="govuk-table__cell govuk-table__cell--numeric">
+    {{ bill.billingInvoice.billingBatch.toFinancialYearEnding }}
+  </td>
+  <td class="govuk-table__cell govuk-table__cell--numeric">
+    {{ bill.billingInvoice.netAmount | charge }}
+    {% if bill.billingInvoice.isCredit %}
+    <p>Credit note</p>
+    {% endif %}
+  </td>
+</tr>
+{% endmacro %}
+
+
+{% macro billRowMobile(bill) %}
+<div class="phone--show">
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+  <h3 class="govuk-heading-m govuk-!-margin-bottom-1">
+    {{ billLink(bill) }}
+  </h3>
+</div>
+{% endmacro %}
+
+{% if bills.length %}
+  {% for bill in bills %}
+    {{ billRowMobile(bill) }}
+  {% endfor %}
+
+  <table class="govuk-table phone--hide">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header" scope="col">Bill number</th>
+        <th class="govuk-table__header" scope="col">Date created</th>
+        <th class="govuk-table__header" scope="col">Billing account</th>
+        <th class="govuk-table__header" scope="col">Bill run type</th>
+        <th class="govuk-table__header" scope="col">Financial year</th>
+        <th class="govuk-table__header" scope="col">Bill total</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      {% for bill in bills %}
+        {{ billRow(bill) }}
+      {% endfor %}
+    </tbody>
+  </table>
+
+
+  {% if hasMoreBills %}
+  <p>
+    <a href="/licences/{{ licenceId }}/bills">View all sent bills</a>
+  </p>
+  {% endif %}
+
+{% else %}
+  <p>No bills sent for this licence.</p>
+{% endif %}

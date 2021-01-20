@@ -1,4 +1,6 @@
 'use strict';
+const { pick } = require('lodash');
+
 const forms = require('shared/lib/forms');
 const { handleFormRequest } = require('shared/lib/form-handler');
 const routing = require('../lib/routing');
@@ -69,12 +71,16 @@ const postSelectExistingBillingAccount = async (request, h) => {
  * GET handler for selecting if the billing account holder should pay the bills
  * or delegate it to an agent account
  */
-const getSelectAccount = (request, h) => h.view(NUNJUCKS_FORM_TEMPLATE, {
-  ...getDefaultView(request),
-  pageTitle: 'Who should the bills go to?',
-  form: handleFormRequest(request, selectAccountForm),
-  back: routing.getSelectExistingBillingAccount(request.params.key)
-});
+const getSelectAccount = (request, h) => {
+  const { isUpdate, back } = request.pre.sessionData;
+
+  return h.view(NUNJUCKS_FORM_TEMPLATE, {
+    ...getDefaultView(request),
+    pageTitle: 'Who should the bills go to?',
+    form: handleFormRequest(request, selectAccountForm),
+    back: isUpdate ? back : routing.getSelectExistingBillingAccount(request.params.key)
+  });
+};
 
 const postSelectAccount = (request, h) => {
   const form = handleFormRequest(request, selectAccountForm);
@@ -229,13 +235,22 @@ const getCheckAnswers = (request, h) => {
   });
 };
 
-const createBillingAccount = state =>
-  services.water.companies.postInvoiceAccount(state.companyId, mapper.mapSessionDataToWaterApi(state));
+const persistData = state => {
+  const { isUpdate } = state;
+  const data = mapper.mapSessionDataToWaterApi(state);
+  // For updates, post the agent, contact and address to the create address endpoint
+  if (isUpdate) {
+    return services.water.invoiceAccounts.createInvoiceAccountAddress(state.data.id,
+      pick(data, 'agent', 'contact', 'address')
+    );
+  }
+  // Otherwise create a new billing account
+  return services.water.companies.postInvoiceAccount(state.companyId, data);
+};
 
 const postCheckAnswers = async (request, h) => {
   try {
-    // Store invoice account via composite API endpoint in water service
-    const response = await createBillingAccount(request.pre.sessionData);
+    const response = await persistData(request.pre.sessionData);
     // Set address in session and redirect back to parent flow
     const { key } = request.params;
     const { redirectPath } = session.merge(request, key, { data: response });

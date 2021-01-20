@@ -9,6 +9,19 @@ class InvoiceAccountService extends ServiceClient {
     const uri = this.joinUrl('invoice-accounts', invoiceAccountId);
     return this.serviceRequest.get(uri);
   }
+
+  /**
+   * Creates a new invoice account address record
+   * @param {String} invoiceAccountId
+   * @param {Object} data
+   * @param {Object|Null} data.agent - company record for agent
+   * @param {Object|Null} data.contact - FAO
+   * @param {Object} data.address
+   */
+  createInvoiceAccountAddress (invoiceAccountId, data) {
+    const uri = this.joinUrl('invoice-accounts', invoiceAccountId, 'addresses');
+    return this.serviceRequest.post(uri, data);
+  }
 }
 
 module.exports = InvoiceAccountService;

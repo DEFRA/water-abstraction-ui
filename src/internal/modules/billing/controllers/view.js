@@ -1,7 +1,7 @@
 'use strict';
 
-const { getLicenceInvoices } = require('../../../lib/view-licence-config');
-const { water } = require('../../../lib/connectors/services');
+const viewLicenceLib = require('../../../lib/view-licence-config');
+const services = require('../../../lib/connectors/services');
 
 /**
  * Get a list of returns for a particular licence
@@ -12,9 +12,9 @@ const getBillsForLicence = async (request, h) => {
   const { licenceId } = request.params;
   const { page } = request.query;
 
-  const document = await water.licences.getDocumentByLicenceId(licenceId);
+  const document = await services.water.licences.getDocumentByLicenceId(licenceId);
 
-  const bills = await getLicenceInvoices(licenceId, page, 1000);
+  const bills = await viewLicenceLib.getLicenceInvoices(licenceId, page, 0);
 
   return h.view('nunjucks/billing/bills', {
     ...request.view,

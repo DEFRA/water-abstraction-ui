@@ -35,11 +35,11 @@
           <li class="govuk-tabs__list-item">
             <a class="govuk-tabs__tab" href="#communications">Communications</a>
           </li>
-
+        {% if bills.length %}
           <li class="govuk-tabs__list-item">
               <a class="govuk-tabs__tab" href="#bills">Bills</a>
           </li>
-
+        {% endif %}
           {% if showChargeVersions %}
             <li class="govuk-tabs__list-item">
               <a class="govuk-tabs__tab" href="#charge">Charge information</a>
@@ -60,12 +60,12 @@
         <section class="govuk-tabs__panel" id="communications">
           {% include "nunjucks/view-licences/tabs/communications.njk" %}
         </section>
-
+      {% if bills.length %}
         <section class="govuk-tabs__panel" id="bills">
           <h2 class="govuk-heading-l">Bills</h2>
           {% include "nunjucks/view-licences/tabs/bills.njk" %}
         </section>
-
+      {% endif %}
         {% if showChargeVersions %}
           <section class="govuk-tabs__panel" id="charge">
             {% include "nunjucks/view-licences/tabs/charge.njk" %}

@@ -105,12 +105,16 @@ const getLicence = async (request, h) => {
   const { licenceNumber } = request.licence.summary;
   const licenceId = request.licence.summary.waterLicence.id;
 
-  const { getLicenceSummaryReturns, getReturnPath, canShowCharging, getLicenceAgreements, getLicenceInvoices } = h.realm.pluginOptions;
+  const {
+    getLicenceSummaryReturns,
+    getReturnPath,
+    canShowCharging,
+    getLicenceAgreements,
+    getLicenceInvoices
+  } = h.realm.pluginOptions;
   const isChargingUser = hasScope(request, scope.charging);
 
   const returns = await getLicenceSummaryReturns(licenceNumber);
-
-  const bills = await getLicenceInvoices(licenceId);
 
   const showChargeVersions = canShowCharging(request);
 
@@ -119,14 +123,18 @@ const getLicence = async (request, h) => {
     pageTitle: `Licence number ${licenceNumber}`,
     returns: returns.data.map(ret => ({ ...ret, ...getReturnPath(ret, request) })),
     hasMoreReturns: hasMultiplePages(returns.pagination),
-    bills: bills.data,
-    hasMoreBills: hasMultiplePages(bills.pagination),
     back: '/licences',
     showChargeVersions,
     licenceId,
     isChargingUser,
     featureToggles: h.realm.pluginOptions.featureToggles
   };
+
+  if (isChargingUser) {
+    const bills = await getLicenceInvoices(licenceId);
+    view.bills = bills.data;
+    view.hasMoreBills = hasMultiplePages(bills.pagination);
+  }
 
   if (showChargeVersions && isChargingUser) {
     const agreements = await getLicenceAgreements(licenceId);

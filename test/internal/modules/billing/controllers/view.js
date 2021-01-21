@@ -28,7 +28,6 @@ experiment('internal/modules/billing/controllers/view', () => {
   });
 
   experiment('.getBillsForLicence', () => {
-    let result;
     let h = {
       view: sandbox.stub(),
       response: sandbox.stub().returns(),
@@ -46,7 +45,7 @@ experiment('internal/modules/billing/controllers/view', () => {
       }
     };
     beforeEach(async () => {
-      result = controllers.getBillsForLicence(request, h);
+      await controllers.getBillsForLicence(request, h);
     });
 
     test('calls getDocumentByLicenceId', () => {

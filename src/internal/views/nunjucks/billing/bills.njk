@@ -1,11 +1,16 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "title.njk" import title %}
+{% from 'nunjucks/billing/macros/invoices-table.njk' import licenceInvoicesView %}
 
 {% block content %}
-    {{ title(pageTitle, caption, subHeading) }}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-            {% include "nunjucks/view-licences/tabs/bills.njk" %}
-        </div>
+  {{ title(pageTitle, caption, subHeading) }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {% if isChargingUser %}
+
+        {{ licenceInvoicesView(bills) }}
+
+      {% endif %}
     </div>
+  </div>
 {% endblock %}

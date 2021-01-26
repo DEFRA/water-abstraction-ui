@@ -2,6 +2,8 @@
 
 const viewLicenceLib = require('../../../lib/view-licence-config');
 const services = require('../../../lib/connectors/services');
+const { hasScope } = require('internal/lib/permissions');
+const { scope } = require('internal/lib/constants');
 
 /**
  * Get a list of returns for a particular licence
@@ -16,9 +18,12 @@ const getBillsForLicence = async (request, h) => {
 
   const bills = await viewLicenceLib.getLicenceInvoices(licenceId, page, 0);
 
+  const isChargingUser = hasScope(request, scope.charging);
+
   return h.view('nunjucks/billing/bills', {
     ...request.view,
     pageTitle: document.metadata.Name,
+    isChargingUser,
     subHeading: 'All sent bills',
     caption: document.system_external_id,
     bills: bills.data,

@@ -2,6 +2,7 @@
 {% from "govuk/components/tabs/macro.njk" import govukTabs %}
 {% from "nunjucks/view-licences/macros/verifications-alert.njk" import verificationsAlert %}
 {% from "badge.njk" import badge %}
+
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
@@ -35,7 +36,7 @@
           <li class="govuk-tabs__list-item">
             <a class="govuk-tabs__tab" href="#communications">Communications</a>
           </li>
-        {% if bills.length %}
+        {% if isChargingUser %}
           <li class="govuk-tabs__list-item">
               <a class="govuk-tabs__tab" href="#bills">Bills</a>
           </li>
@@ -60,7 +61,7 @@
         <section class="govuk-tabs__panel" id="communications">
           {% include "nunjucks/view-licences/tabs/communications.njk" %}
         </section>
-      {% if bills.length %}
+      {% if isChargingUser %}
         <section class="govuk-tabs__panel" id="bills">
           <h2 class="govuk-heading-l">Bills</h2>
           {% include "nunjucks/view-licences/tabs/bills.njk" %}

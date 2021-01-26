@@ -10,11 +10,11 @@ const {
 const sandbox = require('sinon').createSandbox();
 const uuid = require('uuid/v4');
 
-const controllers = require('../../../../../src/internal/modules/billing/controllers/view');
-const viewLicenceLib = require('../../../../../src/internal/lib/view-licence-config');
-const services = require('../../../../../src/internal/lib/connectors/services');
+const controllers = require('internal/modules/licences/controllers/bills-tab');
+const viewLicenceLib = require('internal/lib/view-licence-config');
+const services = require('internal/lib/connectors/services');
 
-experiment('internal/modules/billing/controllers/view', () => {
+experiment('internal/modules/billing/controllers/bills-tab', () => {
   before(async () => {
     sandbox.stub(services.water.licences, 'getDocumentByLicenceId').resolves({
       metadata: {},

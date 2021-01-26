@@ -3,10 +3,10 @@
 const { expect } = require('@hapi/code');
 const { experiment, test } = exports.lab = require('@hapi/lab').script();
 const { scope } = require('internal/lib/constants');
-const routes = require('internal/modules/billing/routes/view');
-const controller = require('internal/modules/billing/controllers/view');
+const routes = require('internal/modules/licences/routes/bills-tab');
+const controller = require('internal/modules/licences/controllers/bills-tab');
 
-experiment('internal/modules/billing/routes/view', () => {
+experiment('internal/modules/billing/routes/bills-tab', () => {
   experiment('.getBillsForLicence', () => {
     test('has the right method', () => {
       expect(routes.getBillsForLicence.method).to.equal('GET');

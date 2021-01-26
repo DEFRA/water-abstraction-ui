@@ -1,5 +1,5 @@
 {% macro billLink(bill) %}
-<a href="#">
+<a href="/billing/batch/{{ bill.billingInvoice.billingBatch.id }}/invoice/{{ bill.billingInvoice.id }}">
   {{bill.billingInvoice.invoiceNumber}}
 </a>
 {% endmacro %}
@@ -13,13 +13,15 @@
     {{ bill.billingInvoice.dateCreated | date}}
   </td>
   <td class="govuk-table__cell">
-    {{ bill.billingInvoice.invoiceAccountNumber }}
+    <a href="/billing-accounts/{{ bill.billingInvoice.invoiceAccount.id }}">
+        {{ bill.billingInvoice.invoiceAccount.accountNumber }}
+    </a>
   </td>
   <td class="govuk-table__cell">
-    {{ bill.billingInvoice.billingBatch.batchType | sentenceCase }}
+    {{ bill.billingInvoice.billingBatch.type | sentenceCase }}
   </td>
   <td class="govuk-table__cell govuk-table__cell--numeric">
-    {{ bill.billingInvoice.billingBatch.toFinancialYearEnding }}
+    {{ bill.billingInvoice.billingBatch.endYear.yearEnding }}
   </td>
   <td class="govuk-table__cell govuk-table__cell--numeric">
     {{ bill.billingInvoice.netAmount | charge }}
@@ -52,8 +54,8 @@
         <th class="govuk-table__header" scope="col">Date created</th>
         <th class="govuk-table__header" scope="col">Billing account</th>
         <th class="govuk-table__header" scope="col">Bill run type</th>
-        <th class="govuk-table__header" scope="col">Financial year</th>
-        <th class="govuk-table__header" scope="col">Bill total</th>
+        <th class="govuk-table__header govuk-table__header--numeric" scope="col">Financial year</th>
+        <th class="govuk-table__header govuk-table__header--numeric" scope="col">Bill total</th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">

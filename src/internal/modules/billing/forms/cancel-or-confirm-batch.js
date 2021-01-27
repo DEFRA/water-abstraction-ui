@@ -1,4 +1,5 @@
-const confirmForm = require('./confirm-form');
+'use strict';
+const confirmForm = require('shared/lib/forms/confirm-form');
 
 /**
  * Creates an object to represent the form for confirming
@@ -11,7 +12,7 @@ const form = (request, batchAction) => {
   const { batchId } = request.params;
   const action = `/billing/batch/${batchId}/${batchAction}`;
   const buttonText = batchAction === 'confirm' ? 'Send bill run' : 'Cancel bill run';
-  return confirmForm(request, action, buttonText);
+  return confirmForm.form(request, buttonText, action);
 };
 
 exports.cancelOrConfirmBatchForm = form;

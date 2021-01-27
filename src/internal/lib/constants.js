@@ -13,6 +13,7 @@ const SCOPE_DELETE_AGREEMENTS = 'delete_agreements';
 const SCOPE_MANAGE_AGREEMENTS = 'manage_agreements';
 const SCOPE_CHARGE_VERSION_WORKFLOW_REVIEWER = 'charge_version_workflow_reviewer';
 const SCOPE_CHARGE_VERSION_WORKFLOW_EDITOR = 'charge_version_workflow_editor';
+const SCOPE_MANAGE_BILLING_ACCOUNTS = 'manage_billing_accounts';
 
 module.exports = {
   scope: {
@@ -43,6 +44,7 @@ module.exports = {
     deleteAgreements: SCOPE_DELETE_AGREEMENTS,
     manageAgreements: SCOPE_MANAGE_AGREEMENTS,
     chargeVersionWorkflowReviewer: SCOPE_CHARGE_VERSION_WORKFLOW_REVIEWER,
-    chargeVersionWorkflowEditor: SCOPE_CHARGE_VERSION_WORKFLOW_EDITOR
+    chargeVersionWorkflowEditor: SCOPE_CHARGE_VERSION_WORKFLOW_EDITOR,
+    manageBillingAccounts: SCOPE_MANAGE_BILLING_ACCOUNTS
   }
 };

@@ -19,6 +19,28 @@ const transactionStatuses = {
   error: 'error'
 };
 
+const addressSources = {
+  nald: 'nald',
+  wrls: 'wrls',
+  eaAddressFacade: 'ea-address-facade',
+  companiesHouse: 'companies-house'
+};
+
+const accountTypes = {
+  organisation: 'organisation',
+  person: 'person'
+};
+
+const organisationTypes = {
+  individual: 'individual',
+  limitedCompany: 'limitedCompany',
+  limitedLiabilityPartnership: 'limitedLiabilityPartnership',
+  publicLimitedCompany: 'publicLimitedCompany'
+};
+
 exports.returnStatuses = returnStatuses;
 exports.crmRoles = crmRoles;
 exports.transactionStatuses = transactionStatuses;
+exports.addressSources = addressSources;
+exports.accountTypes = accountTypes;
+exports.organisationTypes = organisationTypes;

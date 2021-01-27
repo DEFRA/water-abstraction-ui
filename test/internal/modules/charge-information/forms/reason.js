@@ -18,18 +18,26 @@ const createRequest = (changeReason, isChargeable = true) => ({
     draftChargeInformation: {
       changeReason
     },
-    changeReasons: [{
-      id: 'change-reason-1',
-      description: 'Change Reason 1'
-    },
-    {
-      id: 'change-reason-2',
-      description: 'Change Reason 2'
-    },
-    {
-      id: 'change-reason-3',
-      description: 'Change Reason 3'
-    }]
+    changeReasons: [
+      {
+        id: 'non-enabled-change-reason',
+        isEnabledForNewChargeVersions: false
+      },
+      {
+        id: 'change-reason-1',
+        description: 'Change Reason 1',
+        isEnabledForNewChargeVersions: true
+      },
+      {
+        id: 'change-reason-2',
+        description: 'Change Reason 2',
+        isEnabledForNewChargeVersions: true
+      },
+      {
+        id: 'change-reason-3',
+        description: 'Change Reason 3',
+        isEnabledForNewChargeVersions: true
+      }]
   }
 });
 

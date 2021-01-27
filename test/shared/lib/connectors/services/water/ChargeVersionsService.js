@@ -21,22 +21,13 @@ experiment('services/water/ChargeVersionsService', () => {
     sandbox.restore();
   });
 
-  experiment('.getChargeVersionsByLicenceRef', () => {
+  experiment('.getChargeVersionsByLicenceId', () => {
     test('passes the expected URL to the service request', async () => {
       const service = new ChargeVersionsService('http://127.0.0.1:8001/water/1.0');
-      await service.getChargeVersionsByLicenceRef('licence-ref');
-      const expectedUrl = `http://127.0.0.1:8001/water/1.0/charge-versions`;
+      await service.getChargeVersionsByLicenceId('licence-id');
+      const expectedUrl = `http://127.0.0.1:8001/water/1.0/charge-versions/licence/licence-id`;
       const [url] = serviceRequest.get.lastCall.args;
       expect(url).to.equal(expectedUrl);
-    });
-
-    test('passes the expected options to the service request', async () => {
-      const service = new ChargeVersionsService('http://127.0.0.1:8001/water/1.0');
-      await service.getChargeVersionsByLicenceRef('licence-ref');
-
-      const [, { qs }] = serviceRequest.get.lastCall.args;
-
-      expect(qs.licenceRef).to.equal('licence-ref');
     });
   });
 

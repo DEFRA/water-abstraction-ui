@@ -1,0 +1,22 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "title.njk" import title %}
+{% from "crm/invoice-address.njk" import invoiceAddress %}
+
+
+{% block content %}
+  {{ title(pageTitle, caption) }}
+  
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+    <h2 class="govuk-heading-m">
+      Billing address
+    </h2>
+
+    <p class="govuk-body">
+      {{ invoiceAddress(currentAddress, billingAccount.company) }}
+    </p>
+
+    </div>
+  </div>
+{% endblock %}

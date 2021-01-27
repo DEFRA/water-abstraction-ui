@@ -1,11 +1,12 @@
 
 # water-abstraction
-[![Maintainability](https://api.codeclimate.com/v1/badges/cbb2d0b03cc084ad17a3/maintainability)](https://codeclimate.com/github/DEFRA/water-abstraction-ui/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/cbb2d0b03cc084ad17a3/test_coverage)](https://codeclimate.com/github/DEFRA/water-abstraction-ui/test_coverage)
 
-[![Build Status](https://travis-ci.org/DEFRA/water-abstraction-ui.svg?branch=master)](https://travis-ci.org/DEFRA/water-abstraction-ui)
+|               |              |  
+|---------------|--------------|
+| Build         |  ![CI](https://github.com/DEFRA/water-abstraction-ui/workflows/CI/badge.svg) |
+| Test coverage | [![Test Coverage](https://api.codeclimate.com/v1/badges/cbb2d0b03cc084ad17a3/test_coverage)](https://codeclimate.com/github/DEFRA/water-abstraction-ui/test_coverage) |
+| Quality check |  [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_water-abstraction-ui&metric=alert_status)](https://sonarcloud.io/dashboard?id=DEFRA_water-abstraction-ui) |
 
-[![Known Vulnerabilities](https://snyk.io/test/github/DEFRA/water-abstraction-ui/badge.svg)](https://snyk.io/test/github/DEFRA/water-abstraction-ui)
 
 Project for the GOV.UK Water Abstraction service
 

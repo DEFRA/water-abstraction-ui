@@ -60,5 +60,45 @@ experiment('shared/lib/forms/confirm-form.js', () => {
         expect(button.options.label).to.equal('Do the thing');
       });
     });
+
+    experiment('when a custom path string is supplied as the third argument', () => {
+      beforeEach(async () => {
+        form = confirmForm.form(request, 'Do the thing', '/custom/path');
+      });
+
+      test('the submit button uses the custom text', async () => {
+        const [, button] = form.fields;
+        expect(button.options.widget).to.equal('button');
+        expect(button.options.label).to.equal('Do the thing');
+      });
+
+      test('the form action is that supplied', async () => {
+        expect(form.action).to.equal('/custom/path');
+      });
+    });
+
+    experiment('when an options object is supplied as the third argument', () => {
+      beforeEach(async () => {
+        form = confirmForm.form(request, 'Do the thing', {
+          action: '/custom/path',
+          isWarning: true
+        });
+      });
+
+      test('the submit button uses the custom text', async () => {
+        const [, button] = form.fields;
+        expect(button.options.widget).to.equal('button');
+        expect(button.options.label).to.equal('Do the thing');
+      });
+
+      test('the submit button has a warning class', async () => {
+        const [, button] = form.fields;
+        expect(button.options.controlClass).to.equal('govuk-button--warning');
+      });
+
+      test('the form action is that supplied', async () => {
+        expect(form.action).to.equal('/custom/path');
+      });
+    });
   });
 });

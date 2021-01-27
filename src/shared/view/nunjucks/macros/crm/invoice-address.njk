@@ -1,18 +1,18 @@
 {% from "./address.njk" import address %}
 {% from "./contact.njk" import contact %}
 
-{% macro invoiceAddress(invoice) %}
+{% macro invoiceAddress(invoice, company) %}
+
+  {% if invoice.agentCompany %}
+    {{ invoice.agentCompany.name | titleCase }}
+  {% else %}
+    {{ company.name | titleCase }}
+  {% endif %}
+    <br/>
 
   {% if invoice.contact %}
     FAO
     {{ contact(invoice.contact) }}<br/>
-  {% endif %}
-
-  {{ invoice.invoiceAccount.company.name | titleCase }}<br/>
-
-  {% if invoice.agentCompany %}
-    C/O
-    {{ invoice.agentCompany.name | titleCase }}<br/>
   {% endif %}
 
   {{ address(invoice.address) }}

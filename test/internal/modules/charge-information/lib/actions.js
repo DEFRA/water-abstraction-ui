@@ -8,6 +8,7 @@ const {
 
 const { expect } = require('@hapi/code');
 const moment = require('moment');
+const uuid = require('uuid/v4');
 
 const actions = require('internal/modules/charge-information/lib/actions');
 
@@ -109,14 +110,18 @@ experiment('internal/modules/charge-information/lib/actions', () => {
         pre: {
           defaultCharges: [
             { source: 'unsupported' }
+          ],
+          chargeVersions: [
+            { id: 'test-cv-id-1', dateRange: { startDate: '2010-04-20' }, status: 'superseded', chargeElements: [{ source: 'unsupported' }] },
+            { id: 'test-cv-id-2', dateRange: { startDate: '2015-04-20' }, status: 'current', chargeElements: [{ source: 'tidal' }] }
           ]
         }
       };
     });
 
-    experiment('when the existing data is used', () => {
+    experiment('when the existing abstraction data is used', () => {
       test('the abstraction data is added to the action payload', async () => {
-        const formValues = { useAbstractionData: true };
+        const formValues = { useAbstractionData: 'yes' };
         const action = actions.setAbstractionData(request, formValues);
 
         expect(action.type).to.equal(actions.ACTION_TYPES.setChargeElementData);
@@ -124,86 +129,51 @@ experiment('internal/modules/charge-information/lib/actions', () => {
       });
 
       test('the charge elements are assigned a guid id', async () => {
-        const formValues = { useAbstractionData: true };
+        const formValues = { useAbstractionData: 'yes' };
         const action = actions.setAbstractionData(request, formValues);
         const guidRegex = /^[a-z,0-9]{8}-[a-z,0-9]{4}-[a-z,0-9]{4}-[a-z,0-9]{4}-[a-z,0-9]{12}$/;
         expect(action.payload[0].id).to.match(guidRegex);
       });
     });
 
-    experiment('when the existing data is not used', () => {
+    experiment('when the abstraction data is not used', () => {
       test('the action payload is set to false', async () => {
-        const formValues = { useAbstractionData: false };
+        const formValues = { useAbstractionData: 'no' };
         const action = actions.setAbstractionData(request, formValues);
 
         expect(action.type).to.equal(actions.ACTION_TYPES.setChargeElementData);
         expect(action.payload).to.equal([]);
       });
     });
+
+    experiment('when the existing charge version data is used', () => {
+      test('the charge version data is added to the action payload', async () => {
+        const formValues = { useAbstractionData: 'test-cv-id-1' };
+        const action = actions.setAbstractionData(request, formValues);
+
+        expect(action.type).to.equal(actions.ACTION_TYPES.setChargeElementData);
+        expect(action.payload[0].source).to.equal(request.pre.chargeVersions[0].chargeElements[0].source);
+      });
+
+      test('the charge elements are assigned a guid id', async () => {
+        const formValues = { useAbstractionData: 'test-cv-id-1' };
+        const action = actions.setAbstractionData(request, formValues);
+        const guidRegex = /^[a-z,0-9]{8}-[a-z,0-9]{4}-[a-z,0-9]{4}-[a-z,0-9]{4}-[a-z,0-9]{12}$/;
+        expect(action.payload[0].id).to.match(guidRegex);
+      });
+    });
   });
 
   experiment('.setBillingAccount', () => {
-    let request;
-
-    beforeEach(async () => {
-      request = {
-        pre: {
-          billingAccounts: [
-            {
-              id: '00000000-0000-0000-0000-000000001111',
-              invoiceAccountAddresses: [
-                {
-                  id: '00000000-0000-0000-0000-000000002222',
-                  invoiceAccountId: '00000000-0000-0000-0000-000000001111'
-                },
-                {
-                  id: '00000000-0000-0000-0000-000000003333',
-                  invoiceAccountId: '00000000-0000-0000-0000-000000001111'
-                }
-              ],
-              accountNumber: 'A10000000A'
-            }
-          ]
-        }
-      };
-    });
-
     experiment('when the user wants to set up a new account', () => {
       test('the payload is a key', async () => {
-        const formValues = { invoiceAccountAddress: 'set-up-new-billing-account' };
-        const action = actions.setBillingAccount(request, formValues);
+        const id = uuid();
+        const action = actions.setBillingAccount(id);
 
         expect(action).to.equal({
           type: actions.ACTION_TYPES.setBillingAccount,
           payload: {
-            invoiceAccountAddress: 'set-up-new-billing-account',
-            invoiceAccount: null
-          }
-        });
-      });
-    });
-
-    experiment('when an existing account is selected', () => {
-      test('the payload contains the account and the invoice account address id', async () => {
-        const formValues = { invoiceAccountAddress: '00000000-0000-0000-0000-000000002222' };
-        const action = actions.setBillingAccount(request, formValues);
-
-        expect(action).to.equal({
-          type: actions.ACTION_TYPES.setBillingAccount,
-          payload: {
-            id: '00000000-0000-0000-0000-000000001111',
-            invoiceAccountAddress: '00000000-0000-0000-0000-000000002222',
-            invoiceAccountAddresses: [
-              {
-                id: '00000000-0000-0000-0000-000000002222',
-                invoiceAccountId: '00000000-0000-0000-0000-000000001111'
-              },
-              {
-                id: '00000000-0000-0000-0000-000000003333',
-                invoiceAccountId: '00000000-0000-0000-0000-000000001111'
-              }
-            ],
-            accountNumber: 'A10000000A'
+            billingAccountId: id
           }
         });
       });

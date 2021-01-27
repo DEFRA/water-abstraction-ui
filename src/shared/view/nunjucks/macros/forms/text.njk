@@ -12,14 +12,7 @@
     {% if field.options.multiline %}
       {{ govukTextarea(options) }}
     {% else %}
-      {% if field.options.suffix %}
-        {% set str %}{{ govukInput(options) }}{% endset %}
-        {{ str | slice(0, -7) | safe }}
-        <span class="govuk-body">{{ field.options.suffix }}</span>
-        </div>
-      {% else %}
-        {{ govukInput(options) }}
-      {% endif %}
+      {{ govukInput(options) }}
     {% endif %}
   {% endif %}
 {% endmacro %}

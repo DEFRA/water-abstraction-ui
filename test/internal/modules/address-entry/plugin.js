@@ -18,7 +18,8 @@ experiment('internal/modules/address-entry/plugin', () => {
 
   beforeEach(async () => {
     server = {
-      decorate: sandbox.stub()
+      decorate: sandbox.stub(),
+      route: sandbox.stub()
     };
   });
 
@@ -27,7 +28,7 @@ experiment('internal/modules/address-entry/plugin', () => {
   });
 
   test('has a package name and version', async () => {
-    expect(plugin.pkg.name).to.equal('addressLookupPlugin');
+    expect(plugin.pkg.name).to.equal('addressEntryPlugin');
     expect(plugin.pkg.version).to.equal('1.0.0');
   });
 
@@ -40,17 +41,17 @@ experiment('internal/modules/address-entry/plugin', () => {
       plugin.register(server);
     });
 
-    test('the request object is decorated with "getNewAddress"', async () => {
+    test('the request object is decorated with "addressLookupRedirect"', async () => {
       const [obj, name, func] = server.decorate.firstCall.args;
       expect(obj).to.equal('request');
-      expect(name).to.equal('getNewAddress');
+      expect(name).to.equal('addressLookupRedirect');
       expect(func).to.be.a.function();
     });
 
-    test('the request object is decorated with "setNewAddress"', async () => {
+    test('the request object is decorated with "getNewAddress"', async () => {
       const [obj, name, func] = server.decorate.lastCall.args;
       expect(obj).to.equal('request');
-      expect(name).to.equal('setNewAddress');
+      expect(name).to.equal('getNewAddress');
       expect(func).to.be.a.function();
     });
   });

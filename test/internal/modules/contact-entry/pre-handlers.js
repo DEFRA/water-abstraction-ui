@@ -7,162 +7,95 @@ const {
   beforeEach,
   afterEach
 } = exports.lab = require('@hapi/lab').script();
-const sinon = require('sinon');
-const sandbox = sinon.createSandbox();
-const uuid = require('uuid/v4');
+const sandbox = require('sinon').createSandbox();
 
-const services = require('internal/lib/connectors/services');
+const companyPreHandlers = require('shared/lib/pre-handlers/companies');
+const session = require('internal/modules/contact-entry/lib/session');
+
 const preHandlers = require('internal/modules/contact-entry/pre-handlers');
 
-let defaultId = uuid();
-let contactId = uuid();
-let companyId = uuid();
-let regionId = uuid();
+const h = sandbox.stub();
+const COMPANY_ID = 'test-company-id';
 
-const createRequest = (tempSessionKey, contactType = 'organisation', expectedSelectedCompanyId = '123456') => {
-  return ({
-    query: {
-      sessionKey: tempSessionKey,
-      back: '/some/return/url'
-    },
-    params: {
-      regionId: regionId,
-      companyId: companyId
-    },
-    view: {
-      foo: 'bar',
-      csrfToken: uuid()
-    },
-    pre: {
-      companiesHouseResults: [{
-        company: {
-          companyNumber: '123456',
-          name: 'some company name'
-        }
-      }],
-      companiesHouseAddresses: [{
-        'postal_code': 'GL10 1GL',
-        'locality': 'Cheltenham',
-        'address_line_2': 'Some place',
-        'country': 'England'
-      }],
-      addressSearchResults: [],
-      contactSearchResults: [{
-        id: contactId,
-        name: 'some name'
-      }]
-    },
-    yar: {
-      get: sandbox.stub().resolves({
-        id: defaultId,
-        back: 'someplace',
-        sessionKey: tempSessionKey,
-        originalCompanyId: companyId,
-        regionId: regionId,
-        searchQuery: 'testco',
-        accountType: contactType,
-        selectedCompaniesHouseNumber: expectedSelectedCompanyId,
-        companyNameOrNumber: 'SomeCompany'
-      }),
-      set: sandbox.stub(),
-      clear: sandbox.stub()
-    },
-    server: {
-      methods: {
-        setDraftChargeInformation: sandbox.stub()
-      }
-    }
-  });
-};
-
-experiment('internal/modules/contact-entry/pre-handlers', () => {
-  let request, response;
-
+experiment('src/internal/modules/contact-entry/pre-handlers', () => {
+  let request, result;
   beforeEach(async () => {
-    request = createRequest(uuid(), 'organisation', '123456');
+    sandbox.stub(companyPreHandlers, 'loadCompany').resolves({ foo: 'bar' });
+    sandbox.stub(companyPreHandlers, 'loadCompanyContacts').resolves({ bar: 'baz' });
+    sandbox.stub(session, 'get').returns({ companyId: COMPANY_ID });
 
-    sandbox.stub(services.water.companies, 'getCompaniesFromCompaniesHouse').resolves({
-      data: [
-        {
-          company: {
-            companyAddresses: [
-              { address: {} }
-            ]
-          }
-        }
-      ]
-    });
-
-    sandbox.stub(services.water.companies, 'getAddresses').resolves([]);
-
-    sandbox.stub(services.water.companies, 'getCompaniesByName').resolves([
-      {
-        id: uuid(),
-        name: 'Company One'
+    request = {
+      params: {
+        key: 'test-key'
       }
-    ]);
+    };
   });
 
-  afterEach(async () => {
-    sandbox.restore();
-  });
+  afterEach(() => sandbox.restore());
 
-  experiment('searchForCompaniesInCompaniesHouse', () => {
+  experiment('.getSessionData', () => {
     beforeEach(async () => {
-      response = await preHandlers.searchForCompaniesInCompaniesHouse(request);
+      result = await preHandlers.getSessionData(request);
     });
 
-    afterEach(async () => {
-      sandbox.restore();
+    test('gets the session using the key param', () => {
+      const [reqObj, key] = session.get.lastCall.args;
+      expect(reqObj).to.equal(request);
+      expect(key).to.equal(request.params.key);
     });
 
-    test('calls yar.get', async () => {
-      expect(request.yar.get.called).to.be.true();
+    test('returns the data from the session', () => {
+      expect(result).to.equal({ companyId: COMPANY_ID });
     });
 
-    test('responds with an array', async () => {
-      expect(Array.isArray(response)).to.be.true();
+    test('returns a Boom not found error if no data is found', async () => {
+      session.get.returns();
+      result = await preHandlers.getSessionData(request);
+
+      expect(result.isBoom).to.be.true();
+      expect(result.message).to.equal(`Session data not found for ${request.params.key}`);
     });
   });
 
-  experiment('returnCompanyAddressesFromCompaniesHouse', () => {
-    experiment('when selectedCompaniesHouseNumber is valid', () => {
-      beforeEach(async () => {
-        response = await preHandlers.returnCompanyAddressesFromCompaniesHouse(request);
-      });
-      afterEach(async () => {
-        sandbox.restore();
-      });
-      test('calls yar.get', async () => {
-        expect(request.yar.get.called).to.be.true();
-      });
-
-      test('returns an array', () => {
-        expect(Array.isArray(response)).to.be.true();
-      });
-
-      test('calls the service method', async () => {
-        expect(services.water.companies.getCompaniesFromCompaniesHouse.calledWith('123456')).to.be.true();
-      });
+  experiment('.loadCompany', () => {
+    beforeEach(async () => {
+      result = await preHandlers.loadCompany(request, h);
     });
 
-    experiment('when selectedCompaniesHouseNumber is invalid', () => {
-      let responseToUnhealthyRequest, unhealthyRequest;
+    test('gets the companyId from the session', () => {
+      expect(session.get.called).to.be.true();
+    });
 
-      beforeEach(async () => {
-        unhealthyRequest = createRequest(uuid(), 'organisation', undefined);
-        responseToUnhealthyRequest = await preHandlers.returnCompanyAddressesFromCompaniesHouse(unhealthyRequest);
-      });
+    test('calls the shared pre-handler with expected params', () => {
+      const [reqObj, toolkit, companyId] = companyPreHandlers.loadCompany.lastCall.args;
+      expect(reqObj).to.equal(request);
+      expect(toolkit).to.equal(h);
+      expect(companyId).to.equal(COMPANY_ID);
+    });
 
-      afterEach(async () => {
-        sandbox.restore();
-      });
-      test('calls yar.get', async () => {
-        expect(unhealthyRequest.yar.get.called).to.be.true();
-      });
-      test('returns an array', () => {
-        expect(Array.isArray(responseToUnhealthyRequest)).to.be.true();
-      });
+    test('returns the data from the shared pre-handler', () => {
+      expect(result).to.equal({ foo: 'bar' });
+    });
+  });
+
+  experiment('.loadCompanyContacts', () => {
+    beforeEach(async () => {
+      result = await preHandlers.loadCompanyContacts(request, h);
+    });
+
+    test('gets the companyId from the session', () => {
+      expect(session.get.called).to.be.true();
+    });
+
+    test('calls the shared pre-handler with expected params', () => {
+      const [reqObj, toolkit, companyId] = companyPreHandlers.loadCompanyContacts.lastCall.args;
+      expect(reqObj).to.equal(request);
+      expect(toolkit).to.equal(h);
+      expect(companyId).to.equal(COMPANY_ID);
+    });
+
+    test('returns the data from the shared pre-handler', () => {
+      expect(result).to.equal({ bar: 'baz' });
     });
   });
 });

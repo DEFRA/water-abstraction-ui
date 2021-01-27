@@ -1,4 +1,2 @@
-exports.selectAccountType = require('./select-account-type');
-exports.companySearch = require('./company-search');
-exports.companySearchSelectCompany = require('./company-search-select-company');
-exports.companySearchSelectAddress = require('./company-search-select-address');
+exports.createContact = require('./create-contact');
+exports.selectContact = require('./select-contact');

@@ -84,6 +84,10 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
       ]
     });
 
+    sandbox.stub(services.water.chargeVersions, 'getChargeVersionsByLicenceId').resolves({
+      data: [{ id: 'test-cv-id', status: 'current', dateRange: { startDate: '2010-04-01' } }]
+    });
+
     sandbox.stub(services.water.chargeVersions, 'getChargeVersion').resolves({
       id: 'test-charge-version-id',
       status: 'current'
@@ -278,62 +282,6 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
     });
   });
 
-  experiment('.loadBillingAccounts', () => {
-    beforeEach(async () => {
-      request.pre = {
-        licence: {
-          id: 'test-licence-id',
-          licenceNumber: '123/123'
-        },
-        draftChargeInformation: {
-          dateRange: {
-            startDate: '2000-01-01'
-          }
-        }
-      };
-    });
-
-    experiment('when data is found', () => {
-      beforeEach(async () => {
-        result = await preHandlers.loadBillingAccounts(request);
-      });
-
-      test('the licence number and start date are used to get the licence accounts', async () => {
-        const [licenceNumber, startDate] = services.water.licences.getLicenceAccountsByRefAndDate.lastCall.args;
-        expect(licenceNumber).to.equal(request.pre.licence.licenceNumber);
-        expect(startDate).to.equal(request.pre.draftChargeInformation.dateRange.startDate);
-      });
-    });
-
-    experiment('when the data is not found', () => {
-      beforeEach(async () => {
-        const err = new Error();
-        err.statusCode = 404;
-        services.water.licences.getLicenceAccountsByRefAndDate.rejects(err);
-        result = await preHandlers.loadBillingAccounts(request);
-      });
-
-      test('resolves with a Boom 404 error', async () => {
-        expect(result.isBoom).to.be.true();
-        expect(result.output.statusCode).to.equal(404);
-        expect(result.message).to.equal('Cannot load billing accounts for licence test-licence-id');
-      });
-    });
-
-    experiment('for other errors', () => {
-      beforeEach(async () => {
-        const err = new Error('Oh no!');
-        services.water.licences.getLicenceAccountsByRefAndDate.rejects(err);
-      });
-
-      test('rejects with the error', async () => {
-        const func = () => preHandlers.loadBillingAccounts(request);
-        const err = await expect(func()).to.reject();
-        expect(err.message).to.equal('Oh no!');
-      });
-    });
-  });
-
   experiment('loadLicencesWithoutChargeVersions', () => {
     experiment('when the service response is valid', async () => {
       beforeEach(async () => {
@@ -469,6 +417,53 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
     });
   });
 
+  experiment('.loadChargeVersions', () => {
+    experiment('when data is found', () => {
+      beforeEach(async () => {
+        result = await preHandlers.loadChargeVersions(request);
+      });
+
+      test('the service method is called', async () => {
+        expect(
+          services.water.chargeVersions.getChargeVersionsByLicenceId.called
+        ).to.be.true();
+      });
+
+      test('resolves with reasons data', async () => {
+        expect(result).to.be.an.array().length(1);
+        expect(result[0].id).to.equal('test-cv-id');
+      });
+    });
+
+    experiment('when the data is not found', () => {
+      beforeEach(async () => {
+        const err = new Error();
+        err.statusCode = 404;
+        services.water.chargeVersions.getChargeVersionsByLicenceId.rejects(err);
+        result = await preHandlers.loadChargeVersions(request);
+      });
+
+      test('resolves with a Boom 404 error', async () => {
+        expect(result.isBoom).to.be.true();
+        expect(result.output.statusCode).to.equal(404);
+        expect(result.message).to.equal('Cannot load charge versions for licence test-licence-id');
+      });
+    });
+
+    experiment('for other errors', () => {
+      beforeEach(async () => {
+        const err = new Error('Oh no!');
+        services.water.chargeVersions.getChargeVersionsByLicenceId.rejects(err);
+      });
+
+      test('rejects with the error', async () => {
+        const func = () => preHandlers.loadChargeVersions(request);
+        const err = await expect(func()).to.reject();
+        expect(err.message).to.equal('Oh no!');
+      });
+    });
+  });
+
   experiment('.loadChargeVersionWorkflow', () => {
     beforeEach(async () => {
       request.params.chargeVersionWorkflowId = 'test-charge-version-workflow-id';
@@ -566,81 +561,6 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
 
       test('rejects with the error', async () => {
         const func = () => preHandlers.loadLicenceHolderRole(request);
-        const err = await expect(func()).to.reject();
-        expect(err.message).to.equal('Oh no!');
-      });
-    });
-  });
-
-  experiment('.saveInvoiceAccount', () => {
-    experiment('when invoice account id is present', () => {
-      beforeEach(async () => {
-        result = await preHandlers.saveInvoiceAccount(request);
-      });
-
-      test('the invoice account is not retrieved', async () => {
-        expect(
-          services.water.invoiceAccounts.getInvoiceAccount.called
-        ).to.be.false();
-      });
-    });
-
-    experiment('when invoice account id is present', () => {
-      experiment('and the data is not found', () => {
-        beforeEach(async () => {
-          request.query.invoiceAccountId = 'test-invoice-account-id';
-          result = await preHandlers.saveInvoiceAccount(request);
-        });
-
-        test('the invoice account is retrieved by id', async () => {
-          const [id] = services.water.invoiceAccounts.getInvoiceAccount.lastCall.args;
-          expect(id).to.equal(request.query.invoiceAccountId);
-        });
-
-        test('the invoice account is saved in the session', async () => {
-          const [licenceId, chargeInfo] = request.setDraftChargeInformation.lastCall.args;
-          expect(licenceId).to.equal(request.params.licenceId);
-          expect(chargeInfo).to.be.an.object();
-        });
-
-        test('the invoice account is saved in the session', async () => {
-          const [, chargeInfo] = request.setDraftChargeInformation.lastCall.args;
-          expect(chargeInfo.invoiceAccount).to.equal({
-            id: 'test-invoice-account-id',
-            invoiceAccountAddresses: [{
-              id: 'test-invoice-account-address-id'
-            }],
-            invoiceAccountAddress: 'test-invoice-account-address-id'
-          });
-        });
-      });
-
-      experiment('and the data is not found', () => {
-        beforeEach(async () => {
-          const err = new Error();
-          err.statusCode = 404;
-          services.water.invoiceAccounts.getInvoiceAccount.rejects(err);
-          request.query.invoiceAccountId = 'test-invoice-account-id';
-          result = await preHandlers.saveInvoiceAccount(request);
-        });
-
-        test('resolves with a Boom 404 error', async () => {
-          expect(result.isBoom).to.be.true();
-          expect(result.output.statusCode).to.equal(404);
-          expect(result.message).to.equal('Cannot load invoice account test-invoice-account-id');
-        });
-      });
-    });
-
-    experiment('for other errors', () => {
-      beforeEach(async () => {
-        const err = new Error('Oh no!');
-        services.water.invoiceAccounts.getInvoiceAccount.rejects(err);
-      });
-
-      test('rejects with the error', async () => {
-        request.query.invoiceAccountId = 'test-invoice-account-id';
-        const func = () => preHandlers.saveInvoiceAccount(request);
         const err = await expect(func()).to.reject();
         expect(err.message).to.equal('Oh no!');
       });

@@ -6,10 +6,11 @@ const {
   test,
   beforeEach
 } = exports.lab = require('@hapi/lab').script();
-const Joi = require('@hapi/joi');
 
+const uuid = require('uuid/v4');
 const manualAddressEntry = require('internal/modules/address-entry/forms/manual-address-entry');
 const { findField, findButton } = require('../../../../lib/form-test');
+const sandbox = require('sinon').createSandbox();
 
 const csrfToken = 'c5afe238-fb77-4131-be80-384aaf245842';
 const address = {
@@ -23,11 +24,17 @@ const address = {
   country: 'United Kingdom'
 };
 
+const KEY = uuid();
+
 const createRequest = (query = {}) => ({
   view: {
     csrfToken
   },
-  query
+  query,
+  params: { key: KEY },
+  yar: {
+    get: sandbox.stub().returns({})
+  }
 });
 
 experiment('internal/modules/address-entry/forms/manual-address-entry', () => {
@@ -43,16 +50,55 @@ experiment('internal/modules/address-entry/forms/manual-address-entry', () => {
       expect(csrf.value).to.equal(csrfToken);
     });
 
-    Object.keys(address).forEach(fieldName => {
-      const form = manualAddressEntry.form(createRequest(), address);
-      const field = findField(form, fieldName);
-
-      test(`has a/an ${fieldName} field`, async () => {
-        expect(field).to.exist();
+    experiment('when the address is set and the source is wrls', () => {
+      let request, form;
+      beforeEach(async () => {
+        request = createRequest();
+        request.yar.get.returns({
+          data: {
+            ...address,
+            source: 'wrls'
+          }
+        });
+        form = manualAddressEntry.form(request);
       });
 
-      test(`sets the ${fieldName} value if supplied`, async () => {
-        expect(field.value).to.equal(address[fieldName]);
+      Object.keys(address).forEach(fieldName => {
+        test(`has a/an ${fieldName} field`, async () => {
+          const field = findField(form, fieldName);
+          expect(field).to.exist();
+        });
+
+        test(`sets the ${fieldName} value if supplied`, async () => {
+          const field = findField(form, fieldName);
+          expect(field.value).to.equal(address[fieldName]);
+        });
+      });
+    });
+
+    experiment('when the address is set and the source is not wrls', () => {
+      let request, form;
+      beforeEach(async () => {
+        request = createRequest();
+        request.yar.get.returns({
+          data: {
+            ...address,
+            source: 'not-wrls'
+          }
+        });
+        form = manualAddressEntry.form(request);
+      });
+
+      Object.keys(address).forEach(fieldName => {
+        test(`has a/an ${fieldName} field`, async () => {
+          const field = findField(form, fieldName);
+          expect(field).to.exist();
+        });
+
+        test(`does not set the ${fieldName} value`, async () => {
+          const field = findField(form, fieldName);
+          expect(field.value).to.be.undefined();
+        });
       });
     });
 
@@ -60,26 +106,6 @@ experiment('internal/modules/address-entry/forms/manual-address-entry', () => {
       const form = manualAddressEntry.form(createRequest({ country: 'United Kingdom' }));
       const field = findField(form, 'country');
       expect(field.value).to.equal('United Kingdom');
-    });
-
-    test('has a hidden data source field set to "wrls"', async () => {
-      const form = manualAddressEntry.form(createRequest());
-      const field = findField(form, 'dataSource');
-      expect(field.value).to.equal('wrls');
-      expect(field.options.type).to.equal('hidden');
-    });
-
-    test('has a hidden uprn field set to null', async () => {
-      const form = manualAddressEntry.form(createRequest());
-      const field = findField(form, 'uprn');
-      expect(field.value).to.equal(null);
-      expect(field.options.type).to.equal('hidden');
-    });
-
-    test('sets the uprn field to null even when a value is provided', async () => {
-      const form = manualAddressEntry.form(createRequest(), { uprn: '1234' });
-      const field = findField(form, 'uprn');
-      expect(field.value).to.equal(null);
     });
 
     test('has a submit button', async () => {
@@ -90,179 +116,37 @@ experiment('internal/modules/address-entry/forms/manual-address-entry', () => {
   });
 
   experiment('.schema', () => {
-    experiment('csrf token', () => {
-      test('validates for a uuid', async () => {
-        const result = manualAddressEntry.schema.csrf_token.validate(csrfToken);
-        expect(result.error).to.be.null();
-      });
+    let address;
 
-      test('fails for a string that is not a uuid', async () => {
-        const result = manualAddressEntry.schema.csrf_token.validate('pizza');
-        expect(result.error).to.exist();
-      });
-    });
-
-    ['addressLine1',
-      'addressLine2',
-      'addressLine3',
-      'addressLine4',
-      'town',
-      'county'
-    ].forEach(fieldName => {
-      experiment(fieldName, () => {
-        test('validates for a string', async () => {
-          const result = manualAddressEntry.schema[fieldName].validate(address[fieldName]);
-          expect(result.error).to.be.null();
-        });
-
-        test('is optional - validates for an empty string', async () => {
-          const result = manualAddressEntry.schema[fieldName].validate('');
-          expect(result.error).to.be.null();
-        });
-      });
-    });
-
-    experiment('postcode', () => {
-      test('validates for a valid postcode', async () => {
-        const result = manualAddressEntry.schema.postcode.validate('TT1 1TT');
-        expect(result.error).to.be.null();
-      });
-
-      test('is optional when country is not "United Kingdom"', async () => {
-        const addressData = {
-          csrf_token: csrfToken,
-          ...address,
-          postcode: '',
-          country: 'British Virgin Islands',
-          dataSource: 'wrls',
-          uprn: ''
-        };
-        const result = Joi.validate(addressData, manualAddressEntry.schema);
-        expect(result.error).to.be.null();
-      });
-
-      test('fails for a string that is not valid postcode', async () => {
-        const result = manualAddressEntry.schema.postcode.validate('123abc');
-        expect(result.error).to.exist();
-      });
-    });
-
-    experiment('country', () => {
-      test('validates for a valid country', async () => {
-        const result = manualAddressEntry.schema.country.validate('United Kingdom');
-        expect(result.error).to.be.null();
-      });
-
-      test('fails for a string that is not valid country', async () => {
-        const result = manualAddressEntry.schema.country.validate('Fakeland');
-        expect(result.error).to.exist();
-      });
-    });
-
-    experiment('dataSource', () => {
-      test('validates for "wlrs"', async () => {
-        const result = manualAddressEntry.schema.dataSource.validate('wrls');
-        expect(result.error).to.be.null();
-      });
-
-      test('fails for a string that is not equal to "wrls"', async () => {
-        const result = manualAddressEntry.schema.dataSource.validate('nald');
-        expect(result.error).to.exist();
-      });
-    });
-  });
-
-  experiment('.applyRequiredFieldErrors', () => {
-    let form;
-    beforeEach(() => {
-      const request = createRequest();
-      form = manualAddressEntry.form(request, address);
-      form.errors = [{
-        name: 'testError',
-        message: 'test error',
-        summary: 'test error'
-      }];
-    });
-
-    experiment('does not apply errors when', () => {
-      test('all address fields have values', async () => {
-        const result = manualAddressEntry.applyRequiredFieldErrors(form, address);
-        expect(result).to.equal(form);
-      });
-
-      test('addressLine2 has a value, addressLine3 does not have a value', async () => {
-        const addressData = {
-          ...address,
-          addressLine3: ''
-        };
-        const result = manualAddressEntry.applyRequiredFieldErrors(form, addressData);
-        expect(result).to.equal(form);
-      });
-
-      test('addressLine3 has a value, addressLine2 does not have a value', async () => {
-        const addressData = {
-          ...address,
-          addressLine2: ''
-        };
-        const result = manualAddressEntry.applyRequiredFieldErrors(form, addressData);
-        expect(result).to.equal(form);
-      });
-
-      test('addressLine4 has a value, town does not have a value', async () => {
-        const addressData = {
-          ...address,
-          town: ''
-        };
-        const result = manualAddressEntry.applyRequiredFieldErrors(form, addressData);
-        expect(result).to.equal(form);
-      });
-
-      test('town has a value, addressLine4 does not have a value', async () => {
-        const addressData = {
-          ...address,
-          addressLine4: ''
-        };
-        const result = manualAddressEntry.applyRequiredFieldErrors(form, addressData);
-        expect(result).to.equal(form);
-      });
-    });
-
-    test('sets the isValid flag to false when new errors are found', () => {
-      const addressData = {
-        ...address,
-        addressLine2: '',
-        addressLine3: ''
+    beforeEach(async () => {
+      address = {
+        addressLine1: 'Flat 123',
+        addressLine2: '456',
+        addressLine3: 'Testing House',
+        addressLine4: 'Testing Street',
+        town: 'Testington',
+        county: 'Testingshire',
+        postcode: 'TT1 1TT',
+        country: 'United Kingdom',
+        csrf_token: csrfToken
       };
-      const result = manualAddressEntry.applyRequiredFieldErrors(form, addressData);
-      expect(result.isValid).to.be.false();
     });
 
-    experiment('applies new errors when', () => {
-      test('addressLine2 and addressLine3 do not have a value', async () => {
-        const addressData = {
-          ...address,
-          addressLine2: '',
-          addressLine3: ''
-        };
-        const result = manualAddressEntry.applyRequiredFieldErrors(form, addressData);
-        expect(result.errors).to.have.length(2);
-        expect(result.errors[0].name).to.equal('addressLine2');
-        expect(result.errors[0].message).to.equal('Enter either a building number or building name');
-        expect(result.errors[0].summary).to.equal('Enter either a building number or building name');
-      });
+    test('validates for a valid address and csrf token', async () => {
+      const { error } = manualAddressEntry.schema().validate(address);
+      expect(error).to.be.null();
+    });
 
-      test('addressLine4 and town do not have a value', async () => {
-        const addressData = {
-          ...address,
-          addressLine4: '',
-          town: ''
-        };
-        const result = manualAddressEntry.applyRequiredFieldErrors(form, addressData);
-        expect(result.errors).to.have.length(2);
-        expect(result.errors[0].name).to.equal('addressLine4');
-        expect(result.errors[0].message).to.equal('Enter either a street name or town or city');
-        expect(result.errors[0].summary).to.equal('Enter either a street name or town or city');
-      });
+    test('fails validation for a valid address and invalid csrf token', async () => {
+      address.csrf_token = 'not-a-guid';
+      const { error } = manualAddressEntry.schema().validate(address);
+      expect(error).to.not.be.null();
+    });
+
+    test('fails validation for an invalid address and valid csrf token', async () => {
+      address.postcode = 'XXX XXX';
+      const { error } = manualAddressEntry.schema().validate(address);
+      expect(error).to.not.be.null();
     });
   });
 });

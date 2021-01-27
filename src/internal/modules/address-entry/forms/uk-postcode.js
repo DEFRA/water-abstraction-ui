@@ -1,7 +1,31 @@
-const { formFactory, fields } = require('shared/lib/forms');
+'use strict';
+
 const Joi = require('@hapi/joi');
 
-const { postcodeSchema } = require('./postcode');
+const { get } = require('lodash');
+const { formFactory, fields } = require('shared/lib/forms');
+const session = require('../lib/session');
+const { addressSources } = require('shared/lib/constants');
+const { postcodeSchema } = require('../lib/postcode-validator');
+
+const isFacadeAddress = address => address.source === addressSources.eaAddressFacade;
+
+/**
+ * Gets the value of the postcode form from the request
+ * @param {*} request
+ */
+const getValue = request => {
+  // Get the selected postcode from session data
+  const { key } = request.params;
+  const address = get(session.get(request, key), 'data', {});
+
+  if (isFacadeAddress(address) && address.postcode) {
+    return address.postcode;
+  }
+
+  const data = request.payload || request.query;
+  return data.postcode;
+};
 
 /**
  * Creates an object to represent the form for capturing the
@@ -11,10 +35,10 @@ const { postcodeSchema } = require('./postcode');
  * @param {String} postcode The UK postcode
  */
 const form = request => {
-  const { csrfToken } = request.view;
-  const { postcode } = request.payload || request.query;
+  const { key } = request.params;
+  const postcode = getValue(request);
 
-  const f = formFactory('/address-entry/postcode');
+  const f = formFactory(request.path, 'get');
 
   f.fields.push(fields.text('postcode', {
     errors: {
@@ -30,19 +54,17 @@ const form = request => {
 
   f.fields.push(fields.link(null, {
     text: 'This address is outside the UK',
-    url: '/address-entry/manual-entry'
+    url: `/address-entry/${key}/manual-entry`
   }));
 
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Find address' }));
 
   return f;
 };
 
-const schema = {
-  csrf_token: Joi.string().uuid().required(),
+const schema = () => Joi.object({
   postcode: postcodeSchema
-};
+});
 
 exports.form = form;
 exports.schema = schema;

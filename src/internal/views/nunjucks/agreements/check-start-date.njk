@@ -18,9 +18,7 @@ formErrorSummary %}
 
       {% if isLicenceStartDate %}
         <p class="govuk-body">This is the licence start date</p>
-      {% endif %}
-
-      {% if isFinancialYearStartDate %}
+      {% elseif isFinancialYearStartDate %}
         <p>This is the start of the new financial year.</p>
       {% endif %}
 

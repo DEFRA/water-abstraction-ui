@@ -1,4 +1,6 @@
-const { cloneDeep, get } = require('lodash');
+'use strict';
+
+const { cloneDeep, get, isEmpty } = require('lodash');
 const fields = require('./fields');
 const mappers = require('./mappers');
 const { mapFields } = require('./mapFields');
@@ -124,6 +126,10 @@ const getPayload = (form, request) => form.method.toUpperCase() === 'POST'
  * @param {Object} request - HAPI HTTP request
  */
 const handleRequest = (form, request, validationSchema, options) => {
+  if (form.method === 'get' && isEmpty(request.query)) {
+    return form;
+  }
+
   const adapter = validationAdapterFactory.load(form.validationType);
   let f = cloneDeep(form);
   f.isSubmitted = true;

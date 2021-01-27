@@ -37,21 +37,12 @@ const setStartDate = (request, formValues) => {
   };
 };
 
-const setBillingAccount = (request, formValues) => {
-  const invoiceAccount = request.pre.billingAccounts.find(account => {
-    return account.invoiceAccountAddresses.find(address => {
-      return address.id === formValues.invoiceAccountAddress;
-    });
-  }) || { invoiceAccount: null };
-
-  return {
-    type: ACTION_TYPES.setBillingAccount,
-    payload: {
-      ...(invoiceAccount && invoiceAccount) || null,
-      invoiceAccountAddress: formValues.invoiceAccountAddress
-    }
-  };
-};
+const setBillingAccount = id => ({
+  type: ACTION_TYPES.setBillingAccount,
+  payload: {
+    billingAccountId: id
+  }
+});
 
 const generateIds = chargeElements =>
   chargeElements.map(element => ({
@@ -60,13 +51,16 @@ const generateIds = chargeElements =>
   }));
 
 const setAbstractionData = (request, formValues) => {
-  const abstractionData = formValues.useAbstractionData
-    ? generateIds(request.pre.defaultCharges)
-    : [];
-
+  let chargeElements = [];
+  if (formValues.useAbstractionData === 'yes') {
+    chargeElements = generateIds(request.pre.defaultCharges);
+  } else if (formValues.useAbstractionData !== 'no') {
+    const chargeVersion = request.pre.chargeVersions.find(cv => cv.id === formValues.useAbstractionData);
+    chargeElements = generateIds(chargeVersion.chargeElements);
+  }
   return {
     type: ACTION_TYPES.setChargeElementData,
-    payload: abstractionData
+    payload: chargeElements
   };
 };
 

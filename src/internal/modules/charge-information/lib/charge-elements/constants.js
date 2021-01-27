@@ -21,7 +21,7 @@ const ROUTING_CONFIG = {
   purpose: { pageTitle: 'Select a purpose use', nextStep: CHARGE_ELEMENT_STEPS.description },
   description: { pageTitle: 'Add element description', nextStep: CHARGE_ELEMENT_STEPS.abstractionPeriod, back: CHARGE_ELEMENT_STEPS.purpose },
   abstraction: { pageTitle: 'Set abstraction period', nextStep: CHARGE_ELEMENT_STEPS.quantities, back: CHARGE_ELEMENT_STEPS.description },
-  quantities: { pageTitle: 'Add licence quantities', nextStep: CHARGE_ELEMENT_STEPS.timeLimit, back: CHARGE_ELEMENT_STEPS.abstractionPeriod },
+  quantities: { pageTitle: 'Add annual quantities', nextStep: CHARGE_ELEMENT_STEPS.timeLimit, back: CHARGE_ELEMENT_STEPS.abstractionPeriod },
   time: { pageTitle: 'Set time limit?', nextStep: CHARGE_ELEMENT_STEPS.source, back: CHARGE_ELEMENT_STEPS.quantities },
   source: { pageTitle: 'Select source', nextStep: CHARGE_ELEMENT_STEPS.season, back: CHARGE_ELEMENT_STEPS.timeLimit },
   season: { pageTitle: 'Select season', nextStep: CHARGE_ELEMENT_STEPS.loss, back: CHARGE_ELEMENT_STEPS.source },

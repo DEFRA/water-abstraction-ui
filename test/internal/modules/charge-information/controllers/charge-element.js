@@ -100,8 +100,8 @@ const validPayload = {
     'endDate-month': '10'
   },
   quantities: {
-    authorisedAnnualQuantity: 1234,
-    billableAnnualQuantity: null
+    authorisedAnnualQuantity: '1234',
+    billableAnnualQuantity: ''
   },
   time: {
     timeLimitedPeriod: 'no'
@@ -121,7 +121,7 @@ const formErrors = {
   purpose: 'Select a purpose use',
   description: 'Enter a description of the element',
   abstraction: 'Enter a real start date',
-  quantities: 'Enter a valid authorised quantity as a number that is more than zero',
+  quantities: 'Enter an authorised quantity',
   time: 'Select yes if you want to set a time limit. Select no to continue',
   source: 'Select a source',
   season: 'Select a season',

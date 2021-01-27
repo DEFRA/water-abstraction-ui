@@ -127,7 +127,7 @@ const getLicence = async (request, h) => {
   if (showChargeVersions && isChargingUser) {
     const agreements = await getLicenceAgreements(licenceId);
     view.agreements = agreements.map(mapLicenceAgreement);
-    view.chargeVersions = sortBy(request.licence.chargeVersions, 'versionNumber').reverse();
+    view.chargeVersions = sortBy(request.licence.chargeVersions, ['dateRange.startDate', 'versionNumber']).reverse();
   }
 
   return h.view('nunjucks/view-licences/licence', view);

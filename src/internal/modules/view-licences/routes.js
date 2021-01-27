@@ -20,8 +20,7 @@ const getExpiredLicence = {
         load: {
           licence: true,
           primaryUser: true,
-          communications: true,
-          chargeVersions: true
+          communications: true
         }
       }
     }

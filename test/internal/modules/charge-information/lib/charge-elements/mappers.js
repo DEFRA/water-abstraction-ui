@@ -2,7 +2,7 @@
 
 const { expect } = require('@hapi/code');
 const { experiment, test } = exports.lab = require('@hapi/lab').script();
-const { purpose, time, abstraction, source } = require('../../../../../../src/internal/modules/charge-information/lib/charge-elements/mappers');
+const { purpose, time, abstraction, source, quantities } = require('../../../../../../src/internal/modules/charge-information/lib/charge-elements/mappers');
 const { SOURCES, EIUC_SOURCE_OTHER } = require('../../../../../../src/internal/modules/charge-information/lib/charge-elements/constants');
 
 experiment('internal/modules/charge-information/lib/charge-elements/mappers', () => {
@@ -64,6 +64,23 @@ experiment('internal/modules/charge-information/lib/charge-elements/mappers', ()
     test('when the source is any other value, eiuc source is set to "other"', () => {
       const result = source({ source: SOURCES.supported });
       expect(result).to.be.equal({ source: SOURCES.supported, eiucSource: EIUC_SOURCE_OTHER });
+    });
+  });
+
+  experiment('.quantities', () => {
+    test('converts authorised quantity to float', () => {
+      const result = quantities({ authorisedAnnualQuantity: '123.456' });
+      expect(result.authorisedAnnualQuantity).to.be.equal(123.456);
+    });
+
+    test('sets billable quantity to null if is empty', () => {
+      const result = quantities({ authorisedAnnualQuantity: '123.456', billableAnnualQuantity: '' });
+      expect(result.billableAnnualQuantity).to.be.null();
+    });
+
+    test('converts billable quantity to float if provided', () => {
+      const result = quantities({ authorisedAnnualQuantity: '123.456', billableAnnualQuantity: '45.6' });
+      expect(result.billableAnnualQuantity).to.be.equal(45.6);
     });
   });
 });

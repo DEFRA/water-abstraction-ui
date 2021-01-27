@@ -1,3 +1,5 @@
+'use strict';
+
 const Boom = require('@hapi/boom');
 const services = require('../../lib/connectors/services');
 const { loadLicence } = require('shared/lib/pre-handlers/licences');
@@ -74,18 +76,6 @@ const loadDefaultCharges = async request => {
   }
 };
 
-const loadBillingAccounts = async request => {
-  const { licenceNumber, id } = request.pre.licence;
-  const { startDate } = request.pre.draftChargeInformation.dateRange;
-
-  try {
-    const licenceAccounts = await services.water.licences.getLicenceAccountsByRefAndDate(licenceNumber, startDate);
-    return licenceAccounts;
-  } catch (err) {
-    return errorHandler(err, `Cannot load billing accounts for licence ${id}`);
-  }
-};
-
 const loadLicencesWithoutChargeVersions = async request => {
   try {
     const response = await services.water.chargeVersionWorkflows.getLicencesWithoutChargeInformation();
@@ -101,10 +91,20 @@ const loadLicencesWithoutChargeVersions = async request => {
 const loadLicencesWithWorkflowsInProgress = async request => {
   try {
     const licencesWithWorkflowsInProgress = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows();
-    return licencesWithWorkflowsInProgress.data.sort((rowA, rowB) => new Date(rowB.startDate) - new Date(rowA.startDate));
+    return sortBy(licencesWithWorkflowsInProgress.data, 'startDate');
   } catch (err) {
     return errorHandler(err, `Could not retrieve licences with pending charge versions.`);
   }
+};
+
+const loadChargeVersions = async request => {
+  const { licenceId } = request.params;
+  try {
+    const { data: chargeVersions } = await services.water.chargeVersions.getChargeVersionsByLicenceId(licenceId);
+    return sortBy(chargeVersions, ['dateRange.startDate', 'versionNumber']);
+  } catch (err) {
+    return errorHandler(err, `Cannot load charge versions for licence ${licenceId}`);
+  };
 };
 
 const loadChargeVersion = async request => {
@@ -163,28 +163,19 @@ const loadLicenceHolderRole = async request => {
   }
 };
 
-const saveInvoiceAccount = async request => {
-  const { invoiceAccountId } = request.query;
+const loadBillingAccount = async request => {
   const { licenceId } = request.params;
-  const chargeInfo = request.getDraftChargeInformation(licenceId);
+  const state = request.getDraftChargeInformation(licenceId);
+  const invoiceAccountId = get(state, 'invoiceAccount.id');
   if (invoiceAccountId) {
-    try {
-      const invoiceAccount = await services.water.invoiceAccounts.getInvoiceAccount(invoiceAccountId);
-      chargeInfo.invoiceAccount = {
-        ...invoiceAccount,
-        invoiceAccountAddress: invoiceAccount.invoiceAccountAddresses[0].id
-      };
-      request.setDraftChargeInformation(licenceId, chargeInfo);
-    } catch (err) {
-      return errorHandler(err, `Cannot load invoice account ${invoiceAccountId}`);
-    }
+    return services.water.invoiceAccounts.getInvoiceAccount(invoiceAccountId);
   }
-  return chargeInfo;
+  return null;
 };
 
-exports.loadBillingAccounts = loadBillingAccounts;
 exports.loadChargeableChangeReasons = loadChargeableChangeReasons;
 exports.loadChargeVersion = loadChargeVersion;
+exports.loadChargeVersions = loadChargeVersions;
 exports.loadChargeVersionWorkflow = loadChargeVersionWorkflow;
 exports.loadDefaultCharges = loadDefaultCharges;
 exports.loadDraftChargeInformation = loadDraftChargeInformation;
@@ -194,4 +185,4 @@ exports.loadNonChargeableChangeReasons = loadNonChargeableChangeReasons;
 exports.loadLicencesWithoutChargeVersions = loadLicencesWithoutChargeVersions;
 exports.loadLicencesWithWorkflowsInProgress = loadLicencesWithWorkflowsInProgress;
 exports.loadLicenceHolderRole = loadLicenceHolderRole;
-exports.saveInvoiceAccount = saveInvoiceAccount;
+exports.loadBillingAccount = loadBillingAccount;

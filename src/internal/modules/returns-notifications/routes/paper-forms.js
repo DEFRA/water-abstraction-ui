@@ -7,10 +7,11 @@ const preHandlers = require('../pre-handlers');
 const eventPreHandlers = require('shared/lib/pre-handlers/events');
 const constants = require('../../../lib/constants');
 const { returns } = constants.scope;
-const { createFormRoutes } = require('../lib/route-helpers');
+const { createFormRoutes } = require('shared/lib/route-helpers');
+const Joi = require('@hapi/joi');
 
 const formRoutes = {
-  getEnterLicenceNumber: {
+  enterLicenceNumber: {
     path: '/returns-notifications/forms',
     config: {
       auth: {
@@ -21,11 +22,19 @@ const formRoutes = {
           activeNavLink: 'notifications',
           pageTitle: 'Enter a licence number'
         }
-      }
+      },
+      validate: {
+        query: {
+          form: Joi.string().optional()
+        }
+      },
+      pre: [
+        { method: preHandlers.getStateFromSession, assign: 'state' }
+      ]
     }
   },
 
-  getCheckAnswers: {
+  checkAnswers: {
     path: '/returns-notifications/check-answers',
     config: {
       auth: {
@@ -43,7 +52,7 @@ const formRoutes = {
     }
   },
 
-  getSelectReturns: {
+  selectReturns: {
     path: '/returns-notifications/{documentId}/select-returns',
     config: {
       auth: {
@@ -66,7 +75,7 @@ const formRoutes = {
     }
   },
 
-  getSelectAddress: {
+  selectAddress: {
     path: '/returns-notifications/{documentId}/select-address',
     config: {
       auth: {
@@ -89,7 +98,7 @@ const formRoutes = {
     }
   },
 
-  getRecipient: {
+  recipient: {
     path: '/returns-notifications/{documentId}/recipient',
     config: {
       auth: {
@@ -112,7 +121,7 @@ const formRoutes = {
     }
   },
 
-  getSelectLicenceHolders: {
+  selectLicenceHolders: {
     path: '/returns-notifications/select-licence-holders',
     config: {
       auth: {

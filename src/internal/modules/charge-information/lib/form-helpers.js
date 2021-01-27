@@ -1,3 +1,5 @@
+'use-strict';
+
 const routing = require('./routing');
 const qs = require('querystring');
 

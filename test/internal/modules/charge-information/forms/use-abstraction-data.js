@@ -15,7 +15,8 @@ const createRequest = () => ({
     licence: {
       id: 'test-licence-id'
     },
-    draftChargeInformation: {}
+    draftChargeInformation: {},
+    chargeVersions: []
   }
 });
 
@@ -38,12 +39,29 @@ experiment('internal/modules/charge-information/forms/use-abstraction-data', () 
       expect(button.options.label).to.equal('Continue');
     });
 
-    test('has a choice for using abstraction data', async () => {
+    test('has yes and no choices for using abstraction data and does not include the divider', async () => {
       const abstractionForm = form(createRequest());
       const radio = findField(abstractionForm, 'useAbstractionData');
 
       expect(radio.options.choices[0].label).to.equal('Yes');
       expect(radio.options.choices[1].label).to.equal('No');
+      expect(radio.options.choices.length).to.equal(2);
+    });
+
+    test('has yes and no choices as well as options for existing charge versions for using abstraction data', async () => {
+      const request = createRequest();
+      request.pre.chargeVersions = [
+        { id: 'test-cv-id-1', status: 'superseded', dateRange: { startDate: '2001-03-19' } },
+        { id: 'test-cv-id-2', status: 'current', dateRange: { startDate: '2015-06-19' } },
+        { id: 'test-cv-id-2', status: 'invalid', dateRange: { startDate: '2015-06-19' } }
+      ];
+      const abstractionForm = form(request);
+      const radio = findField(abstractionForm, 'useAbstractionData');
+
+      expect(radio.options.choices[0].label).to.equal('Yes');
+      expect(radio.options.choices[1].label).to.equal('No');
+      expect(radio.options.choices[2].divider).to.equal('or');
+      expect(radio.options.choices[3].label).to.equal('Use charge information valid from 19 June 2015');
     });
   });
 
@@ -62,17 +80,28 @@ experiment('internal/modules/charge-information/forms/use-abstraction-data', () 
 
     experiment('useAbstractionData', () => {
       test('can be true', async () => {
-        const result = schema().useAbstractionData.validate(true);
+        const result = schema(createRequest()).useAbstractionData.validate('yes');
         expect(result.error).to.not.exist();
       });
 
       test('can be true', async () => {
-        const result = schema().useAbstractionData.validate(false);
+        const result = schema(createRequest()).useAbstractionData.validate('no');
+        expect(result.error).to.not.exist();
+      });
+
+      test('can be a charge version id', async () => {
+        const request = createRequest();
+        request.pre.chargeVersions = [
+          { id: 'test-cv-id-1', status: 'superseded', dateRange: { startDate: '2001-03-19' } },
+          { id: 'test-cv-id-3', status: 'current', dateRange: { startDate: '2015-06-19' } },
+          { id: 'test-cv-id-2', status: 'invalid', dateRange: { startDate: '2015-06-19' } }
+        ];
+        const result = schema(request).useAbstractionData.validate('test-cv-id-3');
         expect(result.error).to.not.exist();
       });
 
       test('cannot be a unexpected string be true', async () => {
-        const result = schema().useAbstractionData.validate('pizza');
+        const result = schema(createRequest()).useAbstractionData.validate('pizza');
         expect(result.error).to.exist();
       });
     });

@@ -1,33 +1,34 @@
-const services = require('../../lib/connectors/services');
-const sessionHelper = require('shared/lib/session-helpers');
+'use strict';
 
-const searchForCompaniesInCompaniesHouse = async request => {
-  const { sessionKey } = request.payload || request.query;
-  const { companyNameOrNumber } = await sessionHelper.saveToSession(request, sessionKey);
-  if (!companyNameOrNumber) {
-    return [];
-  } else {
-    // Search companies house. Return results as array;
-    const { data } = await services.water.companies.getCompaniesFromCompaniesHouse(companyNameOrNumber);
-    // Store results in yar, so that we can retrieve the results again later for address selection
-    return data;
-  }
+const { isNull } = require('lodash');
+const Boom = require('@hapi/boom');
+const session = require('./lib/session');
+const companyPreHandlers = require('shared/lib/pre-handlers/companies');
+
+const getSessionDataFromRequest = request => {
+  const { key } = request.params;
+  return session.get(request, key);
 };
 
-const returnCompanyAddressesFromCompaniesHouse = async request => {
-  const { sessionKey } = request.payload || request.query;
-  const { selectedCompaniesHouseNumber } = await sessionHelper.saveToSession(request, sessionKey);
-  if (!selectedCompaniesHouseNumber) {
-    return [];
-  } else {
-    // Search companies house. Return results as array;
-    const { data } = await services.water.companies.getCompaniesFromCompaniesHouse(selectedCompaniesHouseNumber);
-    // Compile the addresses array and the main address object into a single array
-    const addressArray = [...data[0].company.companyAddresses, data[0].address];
-    // Store results in yar, so that we can retrieve the results again later for address selection
-    return addressArray;
-  }
+const getSessionData = request => {
+  const data = getSessionDataFromRequest(request);
+  return data || Boom.notFound(`Session data not found for ${request.params.key}`);
 };
 
-exports.searchForCompaniesInCompaniesHouse = searchForCompaniesInCompaniesHouse;
-exports.returnCompanyAddressesFromCompaniesHouse = returnCompanyAddressesFromCompaniesHouse;
+const loadCompany = async (request, h) => {
+  const { companyId } = getSessionDataFromRequest(request);
+  return isNull(companyId)
+    ? null
+    : companyPreHandlers.loadCompany(request, h, companyId);
+};
+
+const loadCompanyContacts = async (request, h) => {
+  const { companyId } = getSessionDataFromRequest(request);
+  return isNull(companyId)
+    ? []
+    : companyPreHandlers.loadCompanyContacts(request, h, companyId);
+};
+
+exports.getSessionData = getSessionData;
+exports.loadCompany = loadCompany;
+exports.loadCompanyContacts = loadCompanyContacts;

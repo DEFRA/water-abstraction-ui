@@ -1,9 +1,9 @@
 {% macro contact(contact) %}
   {% if contact.type === 'department' %}
-    {{ contact.department }}
+    {{ contact.department | titleCase }}
   {% else %}
-    {{ contact.salutation }}
-    {{ contact.initials }}
-    {{ contact.lastName }}
+    {{ contact.title | titleCase }}
+    {{ contact.firstName }}
+    {{ contact.lastName | titleCase }}
   {% endif %}
 {% endmacro %}

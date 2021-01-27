@@ -66,6 +66,18 @@ experiment('mapFormField', () => {
     test('It should set the class property', async () => {
       expect(result.classes).to.equal(textField.options.controlClass);
     });
+
+    test('It should set the attributes property', async () => {
+      expect(result.attributes).to.equal(textField.options.attr);
+    });
+
+    test('It should set the suffix property', async () => {
+      expect(result.suffix.text).to.equal(textField.options.suffix);
+    });
+
+    test('It should set the auto complete property', async () => {
+      expect(result.autocomplete).to.equal(textField.options.autoComplete);
+    });
   });
 
   experiment('when the field "heading" property is true', () => {

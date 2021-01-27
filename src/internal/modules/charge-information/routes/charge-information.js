@@ -123,70 +123,50 @@ module.exports = {
         }
       },
       pre: [
-        { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' }
       ]
     }
   },
 
-  getSelectBillingAccount: {
+  getBillingAccount: {
     method: 'GET',
     path: '/licences/{licenceId}/charge-information/billing-account',
-    handler: controller.getSelectBillingAccount,
+    handler: controller.getBillingAccount,
     options: {
       auth: {
         scope: allowedScopes
-      },
-      plugins: {
-        viewContext: {
-          activeNavLink: 'view'
-        }
       },
       validate: {
         params: {
           licenceId: VALID_GUID
         },
         query: {
-          form: VALID_GUID.optional(),
-          returnToCheckData: Joi.number().default(0).allow(0, 1)
+          returnToCheckData: Joi.boolean().truthy('1').default(false)
         }
       },
       pre: [
-        { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' },
-        { method: preHandlers.loadBillingAccounts, assign: 'billingAccounts' },
-        { method: preHandlers.loadLicenceHolderRole, assign: 'licenceHolderRole' }
+        { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' }
       ]
     }
   },
 
-  postSelectBillingAccount: {
-    method: 'POST',
-    path: '/licences/{licenceId}/charge-information/billing-account',
-    handler: controller.postSelectBillingAccount,
+  getHandleBillingAccount: {
+    method: 'GET',
+    path: '/licences/{licenceId}/charge-information/set-billing-account',
+    handler: controller.getHandleBillingAccount,
     options: {
       auth: {
         scope: allowedScopes
-      },
-      plugins: {
-        viewContext: {
-          activeNavLink: 'view'
-        }
       },
       validate: {
         params: {
           licenceId: VALID_GUID
         },
         query: {
-          returnToCheckData: Joi.number().default(0).allow(0, 1)
+          returnToCheckData: Joi.boolean().truthy('1').default(false)
         }
-      },
-      pre: [
-        { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
-        { method: preHandlers.loadLicence, assign: 'licence' },
-        { method: preHandlers.loadBillingAccounts, assign: 'billingAccounts' },
-        { method: preHandlers.loadLicenceHolderRole, assign: 'licenceHolderRole' }
-      ]
+      }
     }
   },
 
@@ -210,12 +190,12 @@ module.exports = {
         query: {
           form: VALID_GUID.optional(),
           invoiceAccountId: VALID_GUID.optional(),
-          returnToCheckData: Joi.number().default(0).allow(0, 1)
+          returnToCheckData: Joi.boolean().truthy('1').default(false)
         }
       },
       pre: [
-        { method: preHandlers.saveInvoiceAccount },
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
+        { method: preHandlers.loadChargeVersions, assign: 'chargeVersions' },
         { method: preHandlers.loadLicence, assign: 'licence' }
       ]
     }
@@ -245,7 +225,8 @@ module.exports = {
       pre: [
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' },
-        { method: preHandlers.loadDefaultCharges, assign: 'defaultCharges' }
+        { method: preHandlers.loadDefaultCharges, assign: 'defaultCharges' },
+        { method: preHandlers.loadChargeVersions, assign: 'chargeVersions' }
       ]
     }
   },
@@ -269,7 +250,8 @@ module.exports = {
         }
       },
       pre: [
-        { method: preHandlers.saveInvoiceAccount },
+
+        { method: preHandlers.loadBillingAccount, assign: 'billingAccount' },
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' },
         { method: preHandlers.loadIsChargeable, assign: 'isChargeable' }

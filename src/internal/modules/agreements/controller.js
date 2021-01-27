@@ -1,6 +1,6 @@
 'use strict';
 const moment = require('moment');
-const { partialRight } = require('lodash');
+const { partialRight, omit } = require('lodash');
 const { isoToReadable } = require('@envage/water-abstraction-helpers').nald.dates;
 
 const sessionForms = require('shared/lib/session-forms');
@@ -185,7 +185,7 @@ const getCheckAnswers = async (request, h) => {
       link: `${basePath}/select-type?check=1`
     }, {
       label: 'Date signed',
-      value: isoToReadable(flowState.dateSigned),
+      value: isoToReadable(flowState.dateSigned) || 'Not known',
       visuallyHiddenText: 'date signed',
       link: `${basePath}/date-signed?check=1`
     }, {
@@ -202,7 +202,7 @@ const postCheckAnswers = async (request, h) => {
   const { licenceId } = request.params;
   const { flowState, document } = request.pre;
 
-  await water.licences.createAgreement(licenceId, flowState);
+  await water.licences.createAgreement(licenceId, omit(flowState, 'isDateSignedKnown'));
 
   clearAddAgreementSessionData(request);
 

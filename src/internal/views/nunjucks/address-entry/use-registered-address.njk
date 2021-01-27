@@ -1,0 +1,26 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "forms/index.njk" import formRender,
+formErrorSummary %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "crm/address.njk" import address as crmAddress %}
+
+{% from "title.njk" import title %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ formErrorSummary(form) }}
+      {{ title(pageTitle, caption) }}
+
+      {% set insetHtml %}
+      {{ crmAddress(address) }}
+      {% endset %}
+
+      {{ govukInsetText({ html: insetHtml}) }}
+    </div>
+    <div class="govuk-grid-column-full">
+      {{ formRender(form) }}
+    </div>
+  </div>
+
+{% endblock %}

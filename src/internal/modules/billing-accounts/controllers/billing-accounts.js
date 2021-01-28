@@ -17,7 +17,7 @@ const getBillingAccountRedirectLink = request => {
     caption: `Billing account ${billingAccount.accountNumber}`,
     key: `change-address-${billingAccountId}`,
     back: `/billing-accounts/${billingAccountId}`,
-    redirectPath: `/billing-accounts/${billingAccountId}/change-address-complete`,
+    redirectPath: `/billing-accounts/${billingAccountId}`,
     isUpdate: true,
     data: billingAccount
   };

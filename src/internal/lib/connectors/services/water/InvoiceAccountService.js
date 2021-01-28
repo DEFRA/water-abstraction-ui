@@ -20,7 +20,7 @@ class InvoiceAccountService extends ServiceClient {
    */
   createInvoiceAccountAddress (invoiceAccountId, data) {
     const uri = this.joinUrl('invoice-accounts', invoiceAccountId, 'addresses');
-    return this.serviceRequest.post(uri, data);
+    return this.serviceRequest.post(uri, { body: data });
   }
 }
 

@@ -1,5 +1,5 @@
 'use strict';
-const { pick } = require('lodash');
+const { pick, cloneDeep } = require('lodash');
 
 const forms = require('shared/lib/forms');
 const { handleFormRequest } = require('shared/lib/form-handler');
@@ -235,17 +235,25 @@ const getCheckAnswers = (request, h) => {
   });
 };
 
-const persistData = state => {
+const persistData = async state => {
+  const data = cloneDeep(state.data);
   const { isUpdate } = state;
-  const data = mapper.mapSessionDataToWaterApi(state);
-  // For updates, post the agent, contact and address to the create address endpoint
-  if (isUpdate) {
-    return services.water.invoiceAccounts.createInvoiceAccountAddress(state.data.id,
-      pick(data, 'agent', 'contact', 'address')
+
+  // Create a new billing account if we are not doing an address update
+  if (!isUpdate) {
+    const invoiceAccount = await services.water.companies.postInvoiceAccount(state.companyId,
+      mapper.mapSessionDataToCreateInvoiceAccount(state)
     );
+    data.id = invoiceAccount.id;
   }
-  // Otherwise create a new billing account
-  return services.water.companies.postInvoiceAccount(state.companyId, data);
+
+  // For both new account and address updates, post the agent, contact and address
+  // to the create address endpoint
+  const invoiceAccountAddress = await services.water.invoiceAccounts.createInvoiceAccountAddress(state.data.id,
+    mapper.mapSessionDataToCreateInvoiceAccountAddress(state)
+  );
+  Object.assign(data, pick(invoiceAccountAddress, ['address', 'agentCompany', 'contact']));
+  return data;
 };
 
 const postCheckAnswers = async (request, h) => {

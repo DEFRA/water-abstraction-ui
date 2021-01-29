@@ -106,7 +106,7 @@ experiment('internal/modules/charge-information/lib/helpers', () => {
 
   experiment('.getCurrentBillingAccountAddress', () => {
     const address1 = { id: 'address1', dateRange: { endDate: null } };
-    const address2 = { id: 'address2', dateRange: { endDate: new Date() } };
+    const address2 = { id: 'address2', dateRange: { endDate: '2020-01-01' } };
     const billingAccountWithAddresses = { invoiceAccountAddresses: [address1, address2] };
     const billingAccountWithoutAddresses = { invoiceAccountAddresses: [] };
     experiment('when billing account addresses are present', () => {

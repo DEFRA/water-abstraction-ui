@@ -188,7 +188,6 @@ formErrorSummary %}
 {% macro nonChargeableData(drafChargeInformation, licence) %}
   <section class="govuk-!-margin-bottom-7">
     <dl class="govuk-summary-list">
-    {{ chargeVersionWorkflowId }}
       {% if not chargeVersionWorkflowId %}
         This licence was made non-chargeable on {{ chargeVersion.dateRange.startDate | date }}.
       {% endif %}

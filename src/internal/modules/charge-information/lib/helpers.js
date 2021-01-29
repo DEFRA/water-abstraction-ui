@@ -1,6 +1,6 @@
 'use strict';
 
-const { isFunction, isEmpty, omit } = require('lodash');
+const { isFunction, isEmpty, omit, get } = require('lodash');
 
 const { handleRequest, getValues } = require('shared/lib/forms');
 const sessionForms = require('shared/lib/session-forms');
@@ -85,8 +85,7 @@ const getLicencePageUrl = async licence => {
 
 const isCurrentAddress = invoiceAccountAddress => invoiceAccountAddress.dateRange.endDate === null;
 
-const getCurrentBillingAccountAddress = billingAccount => billingAccount.invoiceAccountAddresses
-  .find(isCurrentAddress);
+const getCurrentBillingAccountAddress = billingAccount => get(billingAccount, 'invoiceAccountAddresses', []).find(isCurrentAddress);
 
 /**
  * Checks if the new draft charge version has the same start date as an existing charge version

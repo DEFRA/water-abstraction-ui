@@ -31,13 +31,13 @@ const getViewChargeInformation = async (request, h) => {
     billingAccountAddress,
     // @TODO: use request.pre.isChargeable to determine this
     // after the chargeVersion import ticket has been completed
-    isChargeable: true
+    // In the meantime, it will use chargeVersion.changeReason.type === 'new_non_chargeable_charge_version'
+    isChargeable: chargeVersion.changeReason.type !== 'new_non_chargeable_charge_version'
   });
 };
 
 const getReviewChargeInformation = async (request, h) => {
   const { draftChargeInformation, licence, isChargeable, billingAccount } = request.pre;
-
   const { chargeVersionWorkflowId } = request.params;
   const backLink = await getLicencePageUrl(licence);
   const isApprover = hasScope(request, chargeVersionWorkflowReviewer);

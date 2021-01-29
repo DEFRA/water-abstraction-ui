@@ -84,6 +84,7 @@ const createRequest = () => ({
       dateRange: {
         startDate: '2016-10-01'
       },
+      changeReason: {},
       status: 'current'
     }
   }

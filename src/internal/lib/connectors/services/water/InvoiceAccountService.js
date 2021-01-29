@@ -22,6 +22,16 @@ class InvoiceAccountService extends ServiceClient {
     const uri = this.joinUrl('invoice-accounts', invoiceAccountId, 'addresses');
     return this.serviceRequest.post(uri, { body: data });
   }
+
+  /**
+   * Gets licences currently linked to the supplied invoice account
+   * via charge versions
+   * @param {String} invoiceAccountId
+   */
+  getLicences (invoiceAccountId) {
+    const uri = this.joinUrl('invoice-accounts', invoiceAccountId, 'licences');
+    return this.serviceRequest.get(uri);
+  }
 }
 
 module.exports = InvoiceAccountService;

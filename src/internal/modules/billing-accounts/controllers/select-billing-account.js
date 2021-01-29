@@ -221,6 +221,7 @@ const getHandleContactEntry = async (request, h) => {
  */
 const getCheckAnswers = (request, h) => {
   const { key } = request.params;
+  const { licences } = request.pre;
   return h.view('nunjucks/billing-accounts/check-answers', {
     ...getDefaultView(request),
     pageTitle: 'Check billing account details',
@@ -231,7 +232,8 @@ const getCheckAnswers = (request, h) => {
       address: getAddressRedirectPath(request, { checkAnswers: true }),
       fao: routing.getFAORequired(key)
     },
-    form: confirmForm.form(request, 'Continue')
+    licences,
+    form: confirmForm.form(request, 'Confirm')
   });
 };
 

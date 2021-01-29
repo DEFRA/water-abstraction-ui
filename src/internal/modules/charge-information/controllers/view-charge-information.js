@@ -3,6 +3,7 @@ const {
   getLicencePageUrl,
   getCurrentBillingAccountAddress
 } = require('../lib/helpers');
+const { get } = require('lodash');
 const forms = require('shared/lib/forms');
 const services = require('../../../lib/connectors/services');
 const chargeInformationValidator = require('../lib/charge-information-validator');
@@ -32,7 +33,7 @@ const getViewChargeInformation = async (request, h) => {
     // @TODO: use request.pre.isChargeable to determine this
     // after the chargeVersion import ticket has been completed
     // In the meantime, it will use chargeVersion.changeReason.type === 'new_non_chargeable_charge_version'
-    isChargeable: chargeVersion.changeReason.type !== 'new_non_chargeable_charge_version'
+    isChargeable: get(chargeVersion, 'changeReason.type') !== 'new_non_chargeable_charge_version'
   });
 };
 

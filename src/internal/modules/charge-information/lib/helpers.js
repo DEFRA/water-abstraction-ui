@@ -85,8 +85,8 @@ const getLicencePageUrl = async licence => {
 
 const isCurrentAddress = invoiceAccountAddress => invoiceAccountAddress.dateRange.endDate === null;
 
-const getCurrentBillingAccountAddress = billingAccount => billingAccount.invoiceAccountAddresses
-  .find(isCurrentAddress);
+const getCurrentBillingAccountAddress = billingAccount => billingAccount && billingAccount.invoiceAccountAddresses ? billingAccount.invoiceAccountAddresses
+  .find(isCurrentAddress) : null;
 
 /**
  * Checks if the new draft charge version has the same start date as an existing charge version

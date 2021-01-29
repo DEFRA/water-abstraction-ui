@@ -11,8 +11,8 @@ const OPTIONS_SCHEMA = Joi.object({
   caption: Joi.string().optional().default(null),
   key: Joi.string().required(),
   redirectPath: Joi.string().required(),
-  companyNumber: Joi.number().optional().integer().min(1),
-  companyId: Joi.string().guid().optional(),
+  companyNumber: Joi.string().allow(null),
+  companyId: Joi.string().guid().optional().allow(null),
   data: Joi.object().optional()
 });
 
@@ -54,7 +54,7 @@ function getNewAddress (key) {
   return (session.get(this, key) || {}).data;
 }
 
-const addressLookupPlugin = {
+const addressEntryPlugin = {
   register: server => {
     // Register method to initiate flow and get data
     server.decorate('request', 'addressLookupRedirect', addressLookupRedirect);
@@ -65,9 +65,9 @@ const addressLookupPlugin = {
   },
 
   pkg: {
-    name: 'addressLookupPlugin',
+    name: 'addressEntryPlugin',
     version: '1.0.0'
   }
 };
 
-module.exports = addressLookupPlugin;
+module.exports = addressEntryPlugin;

@@ -19,7 +19,9 @@ const reducer = (state, action) => {
     case ACTION_TYPES.setBillingAccount:
       return {
         ...state,
-        invoiceAccount: action.payload
+        invoiceAccount: {
+          id: action.payload.billingAccountId
+        }
       };
 
     case ACTION_TYPES.setChargeElementData:

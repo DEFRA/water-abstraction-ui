@@ -2,8 +2,8 @@
   {% if contact.type === 'department' %}
     {{ contact.department | titleCase }}
   {% else %}
-    {{ contact.salutation | titleCase }}
-    {{ contact.initials }}
+    {{ contact.title | titleCase }}
+    {{ contact.firstName }}
     {{ contact.lastName | titleCase }}
   {% endif %}
 {% endmacro %}

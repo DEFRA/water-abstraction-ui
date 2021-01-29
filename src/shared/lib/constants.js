@@ -26,7 +26,21 @@ const addressSources = {
   companiesHouse: 'companies-house'
 };
 
+const accountTypes = {
+  organisation: 'organisation',
+  person: 'person'
+};
+
+const organisationTypes = {
+  individual: 'individual',
+  limitedCompany: 'limitedCompany',
+  limitedLiabilityPartnership: 'limitedLiabilityPartnership',
+  publicLimitedCompany: 'publicLimitedCompany'
+};
+
 exports.returnStatuses = returnStatuses;
 exports.crmRoles = crmRoles;
 exports.transactionStatuses = transactionStatuses;
 exports.addressSources = addressSources;
+exports.accountTypes = accountTypes;
+exports.organisationTypes = organisationTypes;

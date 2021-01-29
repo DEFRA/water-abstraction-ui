@@ -74,6 +74,8 @@ const pluginsArray = [
   }, {
     plugin: require('internal/modules/account-entry/plugin')
   }, {
+    plugin: require('internal/modules/billing-accounts/plugin')
+  }, {
     plugin: require('internal/modules/service-status'),
     options: {
       services: connectors,

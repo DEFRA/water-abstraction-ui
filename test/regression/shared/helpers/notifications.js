@@ -26,7 +26,7 @@ const getPersonalisation = async (baseUrl, email, param) => {
   const lastNotification = await getLastNotifications(baseUrl, email);
   const personalisation = await get(JSON.parse(lastNotification), `data[0].personalisation.${param}`);
 
-  const parsedPersonalisation = personalisation.replace((/^https?:\/\/[^\/]+/g).exec(personalisation), baseUrl);
+  const parsedPersonalisation = personalisation.replace((/^https?:\/\/[^/]+/g).exec(personalisation), baseUrl);
 
   return parsedPersonalisation;
 };

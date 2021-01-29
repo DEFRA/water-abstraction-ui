@@ -14,8 +14,16 @@ const getLicenceSummaryReturns = licenceNumber => {
   });
 };
 
+const getLicenceInvoices = (licenceId, page = 1, perPage = 10) => {
+  return services.water.licences.getInvoicesByLicenceId(licenceId, {
+    page,
+    perPage
+  });
+};
+
 exports.getReturnPath = getReturnPath;
 exports.getLicenceSummaryReturns = getLicenceSummaryReturns;
+exports.getLicenceInvoices = getLicenceInvoices;
 exports.getCommunication = services.water.communications.getCommunication.bind(services.water.communications);
 exports.getRiverLevel = services.water.riverLevels.getRiverLevel.bind(services.water.riverLevels);
 exports.getLicenceAgreements = services.water.licences.getLicenceAgreements.bind(services.water.licences);

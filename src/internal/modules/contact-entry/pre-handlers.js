@@ -1,3 +1,6 @@
+'use strict';
+
+const { isNull } = require('lodash');
 const Boom = require('@hapi/boom');
 const session = require('./lib/session');
 const companyPreHandlers = require('shared/lib/pre-handlers/companies');
@@ -14,12 +17,16 @@ const getSessionData = request => {
 
 const loadCompany = async (request, h) => {
   const { companyId } = getSessionDataFromRequest(request);
-  return companyPreHandlers.loadCompany(request, h, companyId);
+  return isNull(companyId)
+    ? null
+    : companyPreHandlers.loadCompany(request, h, companyId);
 };
 
 const loadCompanyContacts = async (request, h) => {
   const { companyId } = getSessionDataFromRequest(request);
-  return companyPreHandlers.loadCompanyContacts(request, h, companyId);
+  return isNull(companyId)
+    ? []
+    : companyPreHandlers.loadCompanyContacts(request, h, companyId);
 };
 
 exports.getSessionData = getSessionData;

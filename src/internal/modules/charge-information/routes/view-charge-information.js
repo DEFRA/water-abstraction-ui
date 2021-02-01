@@ -29,7 +29,7 @@ module.exports = {
       pre: [
         { method: preHandlers.loadLicence, assign: 'licence' },
         { method: preHandlers.loadChargeVersion, assign: 'chargeVersion' },
-        { method: preHandlers.loadBillingAccount, assign: 'billingAccount' }
+        { method: preHandlers.loadBillingAccountByChargeVersion, assign: 'billingAccount' }
       ]
     }
   },

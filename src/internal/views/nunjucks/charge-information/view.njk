@@ -81,7 +81,9 @@ formErrorSummary %}
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">Billing account</dt>
             <dd class="govuk-summary-list__value">
-              {{ billingAccount.accountNumber }}
+              <a href="/billing-accounts/{{ billingAccount.id }}">
+                {{ billingAccount.accountNumber }}
+              </a>
               <br>
               {% if billingAccountAddress.contact %}
                 FAO
@@ -189,7 +191,8 @@ formErrorSummary %}
   <section class="govuk-!-margin-bottom-7">
     <dl class="govuk-summary-list">
       {% if not chargeVersionWorkflowId %}
-        This licence was made non-chargeable on {{ chargeVersion.dateRange.startDate | date }}.
+        This licence was made non-chargeable on
+        {{ chargeVersion.dateRange.startDate | date }}.
       {% endif %}
       {{ summaryListRow(
         'Reason licence is not chargeable',

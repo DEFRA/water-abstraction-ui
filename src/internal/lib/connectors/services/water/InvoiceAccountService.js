@@ -1,12 +1,14 @@
 const ServiceClient = require('shared/lib/connectors/services/ServiceClient');
 
+const pathPrefix = 'invoice-accounts';
+
 class InvoiceAccountService extends ServiceClient {
   /**
    * Get invoice account by ID
    * @param {String} invoiceAccountId
    */
   getInvoiceAccount (invoiceAccountId) {
-    const uri = this.joinUrl('invoice-accounts', invoiceAccountId);
+    const uri = this.joinUrl(pathPrefix, invoiceAccountId);
     return this.serviceRequest.get(uri);
   }
 
@@ -19,7 +21,7 @@ class InvoiceAccountService extends ServiceClient {
    * @param {Object} data.address
    */
   createInvoiceAccountAddress (invoiceAccountId, data) {
-    const uri = this.joinUrl('invoice-accounts', invoiceAccountId, 'addresses');
+    const uri = this.joinUrl(pathPrefix, invoiceAccountId, 'addresses');
     return this.serviceRequest.post(uri, { body: data });
   }
 
@@ -29,7 +31,7 @@ class InvoiceAccountService extends ServiceClient {
    * @param {String} invoiceAccountId
    */
   getLicences (invoiceAccountId) {
-    const uri = this.joinUrl('invoice-accounts', invoiceAccountId, 'licences');
+    const uri = this.joinUrl(pathPrefix, invoiceAccountId, 'licences');
     return this.serviceRequest.get(uri);
   }
 }

@@ -11,7 +11,19 @@ const OPTIONS_SCHEMA = Joi.object({
   redirectPath: Joi.string().required(),
   key: Joi.string().required(),
   caption: Joi.string().optional(),
-  data: Joi.object().optional().default({}),
+  data: Joi.when(
+    'isUpdate', {
+      is: true,
+      then: Joi.object({
+        id: Joi.string().guid(),
+        company: Joi.object(),
+        address: Joi.object(),
+        agentCompany: Joi.object().allow(null),
+        contact: Joi.object().allow(null)
+      }),
+      otherwise: Joi.object().optional().default({})
+    }
+  ),
   isUpdate: Joi.boolean().optional().default(false).notes('True if updating an existing billing account'),
   startDate: Joi.when(
     'isUpdate', {

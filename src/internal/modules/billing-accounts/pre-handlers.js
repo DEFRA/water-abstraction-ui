@@ -62,6 +62,7 @@ const getBillingAccountLicences = async request => {
     const { data } = await water.invoiceAccounts.getLicences(id);
     return data;
   }
+  return [];
 };
 
 exports.loadBillingAccount = loadBillingAccount;

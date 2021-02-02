@@ -238,7 +238,7 @@ const getCheckAnswers = (request, h) => {
 };
 
 const persistData = async state => {
-  const data = cloneDeep(state.data);
+  const clonedState = cloneDeep(state);
   const { isUpdate } = state;
 
   // Create a new billing account if we are not doing an address update
@@ -246,24 +246,24 @@ const persistData = async state => {
     const invoiceAccount = await services.water.companies.postInvoiceAccount(state.companyId,
       mapper.mapSessionDataToCreateInvoiceAccount(state)
     );
-    data.id = invoiceAccount.id;
+    clonedState.data.id = invoiceAccount.id;
   }
 
   // For both new account and address updates, post the agent, contact and address
   // to the create address endpoint
-  const invoiceAccountAddress = await services.water.invoiceAccounts.createInvoiceAccountAddress(state.data.id,
-    mapper.mapSessionDataToCreateInvoiceAccountAddress(state)
+  const invoiceAccountAddress = await services.water.invoiceAccounts.createInvoiceAccountAddress(clonedState.data.id,
+    mapper.mapSessionDataToCreateInvoiceAccountAddress(clonedState)
   );
-  Object.assign(data, pick(invoiceAccountAddress, ['address', 'agentCompany', 'contact']));
-  return data;
+  Object.assign(clonedState.data, pick(invoiceAccountAddress, ['address', 'agentCompany', 'contact']));
+  return clonedState;
 };
 
 const postCheckAnswers = async (request, h) => {
   try {
-    const response = await persistData(request.pre.sessionData);
+    const { data } = await persistData(request.pre.sessionData);
     // Set address in session and redirect back to parent flow
     const { key } = request.params;
-    const { redirectPath } = session.merge(request, key, { data: response });
+    const { redirectPath } = session.merge(request, key, { data });
     return h.redirect(redirectPath);
   } catch (err) {
     logger.error(`Error saving billing account`, err);

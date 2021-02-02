@@ -27,6 +27,7 @@ const ACCOUNT_ENTRY_PATH = '/account-entry-redirect-path';
 const ADDRESS_ENTRY_PATH = '/address-entry-redirect-path';
 const CONTACT_ENTRY_PATH = '/contact-entry-redirect-path';
 const COMPANY_ID = uuid();
+const INVOICE_ACCOUNT_ID = uuid();
 const ADDRESS = {
   addressLine1: 'Big Farm',
   addressLine2: 'Buttercup meadow',
@@ -128,6 +129,7 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
     sandbox.stub(session, 'get').returns(data.sessionData);
     sandbox.stub(session, 'setProperty');
     sandbox.stub(services.water.companies, 'postInvoiceAccount');
+    sandbox.stub(services.water.invoiceAccounts, 'createInvoiceAccountAddress');
     sandbox.stub(logger, 'error');
   });
 
@@ -688,10 +690,10 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
       expect(field.value).to.equal(CSRF_TOKEN);
     });
 
-    test('the form has a continue button', async () => {
+    test('the form has a confirm button', async () => {
       const [, { form }] = h.view.lastCall.args;
       const button = formTest.findButton(form);
-      expect(button.options.label).to.equal('Continue');
+      expect(button.options.label).to.equal('Confirm');
     });
 
     test('links to change the answers are output to the view', async () => {
@@ -705,6 +707,9 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
   experiment('.postCheckAnswers', () => {
     experiment('when there are no errors', () => {
       beforeEach(async () => {
+        services.water.companies.postInvoiceAccount.resolves({
+          id: INVOICE_ACCOUNT_ID
+        });
         request = createPostRequest({
           payload: {
             csrf_token: CSRF_TOKEN
@@ -720,8 +725,15 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
 
         expect(data).to.equal({
           regionId: REGION_ID,
-          startDate: START_DATE,
-          agent: null,
+          startDate: START_DATE
+        });
+      });
+
+      test('creates the billing account address', async () => {
+        const [invoiceAccountId, data] = services.water.invoiceAccounts.createInvoiceAccountAddress.lastCall.args;
+        expect(invoiceAccountId).to.equal(INVOICE_ACCOUNT_ID);
+        expect(data).to.equal({
+          agentCompany: null,
           contact: null,
           address: ADDRESS
         });

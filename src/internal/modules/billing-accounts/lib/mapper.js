@@ -48,8 +48,7 @@ const mapContactToWaterApi = contact =>
 
 const mapSessionDataToCreateInvoiceAccount = state => pick(state, ['regionId', 'startDate']);
 
-const mapSessionDataToCreateInvoiceAccountAddress = ({ startDate, data }) => ({
-  startDate,
+const mapSessionDataToCreateInvoiceAccountAddress = ({ data }) => ({
   agentCompany: mapCompanyToWaterApi(data.agentCompany),
   contact: mapContactToWaterApi(data.contact),
   address: mapAddressToWaterApi(data.address)

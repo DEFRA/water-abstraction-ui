@@ -1,5 +1,6 @@
 'use strict';
 
+const { pick } = require('lodash');
 const titleCase = require('title-case');
 
 const getBillingAccountCaption = billingAccount =>
@@ -19,8 +20,9 @@ const getBillingAccountRedirectLink = request => {
     back: `/billing-accounts/${billingAccountId}`,
     redirectPath: `/billing-accounts/${billingAccountId}`,
     isUpdate: true,
-    data: billingAccount
+    data: pick(billingAccount, 'id', 'company')
   };
+
   return request.billingAccountEntryRedirect(data);
 };
 

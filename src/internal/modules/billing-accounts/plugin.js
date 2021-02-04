@@ -16,10 +16,7 @@ const OPTIONS_SCHEMA = Joi.object({
       is: true,
       then: Joi.object({
         id: Joi.string().guid(),
-        company: Joi.object(),
-        address: Joi.object(),
-        agentCompany: Joi.object().allow(null),
-        contact: Joi.object().allow(null)
+        company: Joi.object()
       }),
       otherwise: Joi.object().optional().default({})
     }

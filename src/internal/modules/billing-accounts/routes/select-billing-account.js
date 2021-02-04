@@ -152,6 +152,8 @@ module.exports = {
       },
       pre: [{
         method: preHandlers.getSessionData, assign: 'sessionData'
+      }, {
+        method: preHandlers.getBillingAccountLicences, assign: 'licences'
       }]
     }
   })

@@ -1,21 +1,27 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "title.njk" import title %}
 {% from "crm/invoice-address.njk" import invoiceAddress %}
-
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% block content %}
   {{ title(pageTitle, caption) }}
-  
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
 
-    <h2 class="govuk-heading-m">
-      Billing address
-    </h2>
+      <h2 class="govuk-heading-m">
+        Billing address
+      </h2>
 
-    <p class="govuk-body">
-      {{ invoiceAddress(currentAddress, billingAccount.company) }}
-    </p>
+      <p class="govuk-body">
+        {{ invoiceAddress(currentAddress, billingAccount.company) }}
+      </p>
+
+      {{ govukButton({ 
+        text : 'Change address', 
+        classes: 'govuk-button--secondary', 
+        href: changeAddressLink 
+      }) }}
 
     </div>
   </div>

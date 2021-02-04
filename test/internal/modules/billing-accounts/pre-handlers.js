@@ -8,7 +8,7 @@ const {
   afterEach
 } = exports.lab = require('@hapi/lab').script();
 const sandbox = require('sinon').createSandbox();
-
+const uuid = require('uuid/v4');
 const services = require('internal/lib/connectors/services');
 const preHandlers = require('internal/modules/billing-accounts/pre-handlers');
 const session = require('internal/modules/billing-accounts/lib/session');
@@ -42,6 +42,7 @@ experiment('internal/modules/billing-accounts/pre-handlers', () => {
         name: 'test-company'
       }
     });
+    sandbox.stub(services.water.invoiceAccounts, 'getLicences');
     sandbox.stub(services.water.companies, 'getCompanyInvoiceAccounts');
     sandbox.stub(services.water.companies, 'getCompany');
     sandbox.stub(session, 'get');
@@ -185,6 +186,57 @@ experiment('internal/modules/billing-accounts/pre-handlers', () => {
 
     test('calls the service method with the correct params', async () => {
       expect(services.water.companies.getCompany.calledWith(COMPANY_ID)).to.be.true();
+    });
+  });
+
+  experiment('.getBillingAccountLicences', () => {
+    const billingAccountId = uuid();
+    const apiResponse = {
+      data: [{
+        id: uuid()
+      }]
+    };
+
+    beforeEach(async () => {
+      services.water.invoiceAccounts.getLicences.resolves(apiResponse);
+      request = {
+        pre: {
+          sessionData: {
+            data: {
+              id: billingAccountId
+            }
+          }
+        }
+      };
+    });
+
+    experiment('when the billing account ID is present in the session data', () => {
+      beforeEach(async () => {
+        response = await preHandlers.getBillingAccountLicences(request);
+      });
+
+      test('the service method is called with the ID', async () => {
+        expect(services.water.invoiceAccounts.getLicences.calledWith(billingAccountId)).to.be.true();
+      });
+
+      test('the pre handler resolves with the API data', async () => {
+        expect(response).to.equal(apiResponse.data);
+      });
+    });
+
+    experiment('when the billing account ID is not present in the session data', () => {
+      beforeEach(async () => {
+        delete request.pre.sessionData.data.id;
+        response = await preHandlers.getBillingAccountLicences(request);
+      });
+
+      test('the service method is not called', async () => {
+        expect(services.water.invoiceAccounts.getLicences.called).to.be.false();
+      });
+
+      test('the pre handler resolves with an empty array', async () => {
+        expect(response).to.equal([]);
+      });
     });
   });
 });

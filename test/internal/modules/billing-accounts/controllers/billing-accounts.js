@@ -105,7 +105,9 @@ experiment('internal/modules/billing-accounts/controllers/billing-accounts', () 
       expect(data.back).to.equal(`/billing-accounts/${request.pre.billingAccount.id}`);
       expect(data.redirectPath).to.equal(`/billing-accounts/${request.pre.billingAccount.id}`);
       expect(data.isUpdate).to.equal(true);
-      expect(data.data).to.equal(request.pre.billingAccount);
+
+      const { id, company } = request.pre.billingAccount;
+      expect(data.data).to.equal({ id, company });
     });
 
     test('has a change address link', () => {

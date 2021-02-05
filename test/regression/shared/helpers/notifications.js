@@ -4,7 +4,6 @@
 const { get } = require('lodash');
 const querystring = require('querystring');
 const request = require('request-promise-native');
-const uuid = require('uuid/v4');
 
 /**
  * Gets the data for the last notification sent to the supplied email address

@@ -1,6 +1,7 @@
 'use strict';
 
 const Boom = require('@hapi/boom');
+const { get } = require('lodash');
 const { water } = require('../../lib/connectors/services');
 
 const session = require('./lib/session');
@@ -45,7 +46,6 @@ const getBillingAccounts = async request => {
 
 /**
  * Gets the "company" account
- * @param {*} request
  */
 const getAccount = async request => {
   const { key } = request.params;
@@ -53,7 +53,20 @@ const getAccount = async request => {
   return water.companies.getCompany(companyId);
 };
 
+/**
+ * Get licences currently linked to the billing account
+ */
+const getBillingAccountLicences = async request => {
+  const { id } = get(request, 'pre.sessionData.data');
+  if (id) {
+    const { data } = await water.invoiceAccounts.getLicences(id);
+    return data;
+  }
+  return [];
+};
+
 exports.loadBillingAccount = loadBillingAccount;
 exports.getSessionData = getSessionData;
 exports.getBillingAccounts = getBillingAccounts;
 exports.getAccount = getAccount;
+exports.getBillingAccountLicences = getBillingAccountLicences;

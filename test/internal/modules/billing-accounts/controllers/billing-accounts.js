@@ -11,6 +11,8 @@ const sandbox = require('sinon').createSandbox();
 
 const controller = require('internal/modules/billing-accounts/controllers/billing-accounts');
 
+const addressChangeLink = '/test/link';
+
 const createRequest = query => ({
   view: {
     csrf_token: 'csrf-token'
@@ -52,7 +54,8 @@ const createRequest = query => ({
       }
     }
   },
-  query: query || {}
+  query: query || {},
+  billingAccountEntryRedirect: sandbox.stub().returns(addressChangeLink)
 });
 
 const h = {
@@ -93,6 +96,23 @@ experiment('internal/modules/billing-accounts/controllers/billing-accounts', () 
     test('contains the billing account', () => {
       const [, view] = h.view.lastCall.args;
       expect(view.billingAccount).to.equal(request.pre.billingAccount);
+    });
+
+    test('calls request.billingAccountEntryRedirect() with the correct params', () => {
+      const [data] = request.billingAccountEntryRedirect.lastCall.args;
+      expect(data.caption).to.equal(`Billing account ${request.pre.billingAccount.accountNumber}`);
+      expect(data.key).to.equal(`change-address-${request.pre.billingAccount.id}`);
+      expect(data.back).to.equal(`/billing-accounts/${request.pre.billingAccount.id}`);
+      expect(data.redirectPath).to.equal(`/billing-accounts/${request.pre.billingAccount.id}`);
+      expect(data.isUpdate).to.equal(true);
+
+      const { id, company } = request.pre.billingAccount;
+      expect(data.data).to.equal({ id, company });
+    });
+
+    test('has a change address link', () => {
+      const [, { changeAddressLink }] = h.view.lastCall.args;
+      expect(changeAddressLink).to.equal(addressChangeLink);
     });
 
     experiment('back link', () => {

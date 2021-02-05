@@ -163,14 +163,20 @@ const loadLicenceHolderRole = async request => {
   }
 };
 
+const getBillingAccount = invoiceAccountId => invoiceAccountId
+  ? services.water.invoiceAccounts.getInvoiceAccount(invoiceAccountId)
+  : null;
+
 const loadBillingAccount = async request => {
   const { licenceId } = request.params;
   const state = request.getDraftChargeInformation(licenceId);
   const invoiceAccountId = get(state, 'invoiceAccount.id');
-  if (invoiceAccountId) {
-    return services.water.invoiceAccounts.getInvoiceAccount(invoiceAccountId);
-  }
-  return null;
+  return getBillingAccount(invoiceAccountId);
+};
+
+const loadBillingAccountByChargeVersion = async request => {
+  const invoiceAccountId = get(request, 'pre.chargeVersion.invoiceAccount.id');
+  return getBillingAccount(invoiceAccountId);
 };
 
 exports.loadChargeableChangeReasons = loadChargeableChangeReasons;
@@ -186,3 +192,4 @@ exports.loadLicencesWithoutChargeVersions = loadLicencesWithoutChargeVersions;
 exports.loadLicencesWithWorkflowsInProgress = loadLicencesWithWorkflowsInProgress;
 exports.loadLicenceHolderRole = loadLicenceHolderRole;
 exports.loadBillingAccount = loadBillingAccount;
+exports.loadBillingAccountByChargeVersion = loadBillingAccountByChargeVersion;

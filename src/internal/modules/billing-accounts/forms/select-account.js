@@ -27,7 +27,7 @@ const getChoices = request => {
     {
       value: BILLING_ACCOUNT_HOLDER,
       label: titleCase(account.name),
-      hint: titleCase(account.type)
+      hint: 'Customer'
     },
     {
       value: OTHER_ACCOUNT,

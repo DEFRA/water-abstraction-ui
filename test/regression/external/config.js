@@ -5,6 +5,7 @@ module.exports = {
   userEmails: {
     external: 'acceptance-test.external@example.com',
     agent: 'acceptance-test.agent@example.com',
-    returnsAgent: 'acceptance-test.returns-agent@example.com'
+    returnsAgent: 'acceptance-test.returns-agent@example.com',
+    notifyCallbackTestEmail: 'notify-callback-test@example.com'
   }
 };

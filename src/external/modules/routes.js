@@ -8,6 +8,7 @@ const returnsRoutes = require('./returns/routes');
 const companySelector = require('./company-selector/routes');
 const accountRoutes = require('./account/routes');
 const notificationRoutes = require('./notifications/routes');
+const notifyRoutes = require('./notify/routes');
 
 module.exports = [
   ...Object.values(addLicencesRoutes),
@@ -19,5 +20,6 @@ module.exports = [
   ...Object.values(returnsRoutes),
   ...Object.values(companySelector),
   ...Object.values(notificationRoutes),
-  ...Object.values(accountRoutes)
+  ...Object.values(accountRoutes),
+  ...Object.values(notifyRoutes)
 ];

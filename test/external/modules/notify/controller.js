@@ -14,11 +14,12 @@ experiment('callback', () => {
     payload: {}
   };
 
+  const responseStub = {
+    code: sandbox.stub()
+  };
+
   const h = {
-    response: sinon.stub().returns({
-      code: sinon.spy()
-    }),
-    code: sinon.stub().resolves()
+    response: sinon.stub().returns(responseStub)
   };
 
   beforeEach(async () => {
@@ -36,7 +37,7 @@ experiment('callback', () => {
     test('returns Unauthorized', async () => {
       await controller.callback(request, h);
       expect(h.response.calledWith('Unauthorized')).to.be.true();
-      expect(h.response.lastCall.returnValue.code.lastCall.args).to.equal([403]);
+      expect(responseStub.code.calledWith(403)).to.be.true();
     });
   });
 
@@ -50,7 +51,7 @@ experiment('callback', () => {
     test('returns Unauthorized', async () => {
       await controller.callback(request, h);
       expect(h.response.calledWith('Unauthorized')).to.be.true();
-      expect(h.response.lastCall.returnValue.code.lastCall.args).to.equal([403]);
+      expect(responseStub.code.calledWith(403)).to.be.true();
     });
   });
 
@@ -62,7 +63,7 @@ experiment('callback', () => {
     });
     test('returns 204 with blank body', async () => {
       await controller.callback(request, h);
-      expect(h.response.lastCall.returnValue.code.lastCall.args).to.equal([204]);
+      expect(responseStub.code.calledWith(204)).to.be.true();
     });
   });
 });

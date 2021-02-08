@@ -8,8 +8,7 @@ describe('notify callback attempt', function () {
   before(async () => {
     await sleepFor(1000);
     scheduledNotification = await getLastNotifications(config.baseUrl, config.userEmails.notifyCallbackTestEmail);
-    console.log(scheduledNotification);
-    scheduledNotificationNotifyId = JSON.parse(scheduledNotification).data[0].notify_id;
+    scheduledNotificationNotifyId = scheduledNotification.notify_id;
   });
 
   it('checks if the notification was found', () => {
@@ -20,6 +19,6 @@ describe('notify callback attempt', function () {
     await simulateNotifyCallback(scheduledNotificationNotifyId);
     await sleepFor(1000);
     scheduledNotificationAfterCallback = await getLastNotifications(config.baseUrl, config.userEmails.notifyCallbackTestEmail);
-    expect(JSON.parse(scheduledNotificationAfterCallback).data[0].notify_status).toBe('delivered');
+    expect(scheduledNotificationAfterCallback.notify_status).toBe('delivered');
   });
 });

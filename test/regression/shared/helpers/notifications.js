@@ -13,7 +13,7 @@ const request = require('request-promise-native');
 const getLastNotifications = async (baseUrl, email) => {
   const url = `${baseUrl}/notifications/last?${querystring.encode({ email })}`;
   const response = await request.get(url);
-  return response;
+  return get(JSON.parse(response), `data[0]`, {});
 };
 
 /**
@@ -24,7 +24,7 @@ const getLastNotifications = async (baseUrl, email) => {
  */
 const getPersonalisation = async (baseUrl, email, param) => {
   const lastNotification = await getLastNotifications(baseUrl, email);
-  const personalisation = await get(JSON.parse(lastNotification), `data[0].personalisation.${param}`);
+  const personalisation = await get(lastNotification, `personalisation.${param}`);
 
   const parsedPersonalisation = personalisation.replace((/^https?:\/\/[^/]+/g).exec(personalisation), baseUrl);
 

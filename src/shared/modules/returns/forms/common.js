@@ -11,6 +11,10 @@ const getCsrfTokenField = request => {
   return fields.hidden('csrf_token', {}, csrfToken);
 };
 
+const getHiddenField = (identifier, value) => {
+  return fields.hidden(identifier, {}, value);
+};
+
 const getHeadingField = (text, element = 'h3') => {
   return fields.paragraph(null, {
     text,
@@ -88,6 +92,7 @@ const getSuffix = (unit) => {
 
 exports.getContinueField = getContinueField;
 exports.getCsrfTokenField = getCsrfTokenField;
+exports.getHiddenField = getHiddenField;
 exports.getHeadingField = getHeadingField;
 exports.getParagraphField = getParagraphField;
 exports.getLineName = getLineName;

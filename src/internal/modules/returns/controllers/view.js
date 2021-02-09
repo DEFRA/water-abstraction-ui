@@ -3,7 +3,7 @@ const Boom = require('@hapi/boom');
 const { get } = require('lodash');
 const helpers = require('../lib/helpers');
 const returnHelpers = require('../lib/return-helpers');
-
+const { isBilling } = require('internal/lib/permissions');
 const { getEditButtonPath } = require('internal/lib/return-path');
 
 const services = require('../../../lib/connectors/services');
@@ -64,6 +64,7 @@ const getReturn = async (request, h) => {
     editButtonPath: getEditButtonPath(data, request),
     showVersions,
     isVoid: data.status === 'void',
+    isBillingUser: isBilling(request),
     endReading: get(data, `meters[0].readings.${helpers.endReadingKey(data)}`)
   };
 

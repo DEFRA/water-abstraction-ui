@@ -58,5 +58,12 @@
       {% endfor %}
     </div>
   {% endif %}
-</div>
+  </div>
+  {% if isBillingUser %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <a href="/returns/delete-return?id={{ data.returnId }}" class="govuk-button govuk-button--warning" data-module="govuk-button">Delete return</a>
+        </div>
+    </div>
+  {% endif %}
 {% endblock %}

@@ -3,7 +3,6 @@ const controller = require('../controllers/edit');
 const constants = require('../../../lib/constants');
 const allowedScopes = [constants.scope.returns];
 const steps = require('shared/modules/returns/steps');
-
 const services = require('internal/lib/connectors/services');
 const FlowStorageAdapter = require('shared/modules/returns/FlowStorageAdapter');
 const storageAdapter = new FlowStorageAdapter(services.water.returns);

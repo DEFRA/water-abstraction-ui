@@ -34,6 +34,11 @@ class ReturnsService extends SharedReturnsService {
       qsStringifyOptions: { arrayFormat: 'repeat' }
     });
   }
+
+  deleteReturn (returnId) {
+    const url = this.joinUrl('returns', returnId);
+    return this.serviceRequest.delete(url);
+  }
 }
 
 module.exports = ReturnsService;

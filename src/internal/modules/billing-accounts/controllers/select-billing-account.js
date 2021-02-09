@@ -1,4 +1,6 @@
 'use strict';
+const { pick, cloneDeep } = require('lodash');
+
 const forms = require('shared/lib/forms');
 const { handleFormRequest } = require('shared/lib/form-handler');
 const routing = require('../lib/routing');
@@ -69,12 +71,16 @@ const postSelectExistingBillingAccount = async (request, h) => {
  * GET handler for selecting if the billing account holder should pay the bills
  * or delegate it to an agent account
  */
-const getSelectAccount = (request, h) => h.view(NUNJUCKS_FORM_TEMPLATE, {
-  ...getDefaultView(request),
-  pageTitle: 'Who should the bills go to?',
-  form: handleFormRequest(request, selectAccountForm),
-  back: routing.getSelectExistingBillingAccount(request.params.key)
-});
+const getSelectAccount = (request, h) => {
+  const { isUpdate, back } = request.pre.sessionData;
+
+  return h.view(NUNJUCKS_FORM_TEMPLATE, {
+    ...getDefaultView(request),
+    pageTitle: 'Who should the bills go to?',
+    form: handleFormRequest(request, selectAccountForm),
+    back: isUpdate ? back : routing.getSelectExistingBillingAccount(request.params.key)
+  });
+};
 
 const postSelectAccount = (request, h) => {
   const form = handleFormRequest(request, selectAccountForm);
@@ -215,6 +221,7 @@ const getHandleContactEntry = async (request, h) => {
  */
 const getCheckAnswers = (request, h) => {
   const { key } = request.params;
+  const { licences } = request.pre;
   return h.view('nunjucks/billing-accounts/check-answers', {
     ...getDefaultView(request),
     pageTitle: 'Check billing account details',
@@ -225,20 +232,38 @@ const getCheckAnswers = (request, h) => {
       address: getAddressRedirectPath(request, { checkAnswers: true }),
       fao: routing.getFAORequired(key)
     },
-    form: confirmForm.form(request, 'Continue')
+    licences,
+    form: confirmForm.form(request, 'Confirm')
   });
 };
 
-const createBillingAccount = state =>
-  services.water.companies.postInvoiceAccount(state.companyId, mapper.mapSessionDataToWaterApi(state));
+const persistData = async state => {
+  const clonedState = cloneDeep(state);
+  const { isUpdate } = state;
+
+  // Create a new billing account if we are not doing an address update
+  if (!isUpdate) {
+    const invoiceAccount = await services.water.companies.postInvoiceAccount(state.companyId,
+      mapper.mapSessionDataToCreateInvoiceAccount(state)
+    );
+    clonedState.data.id = invoiceAccount.id;
+  }
+
+  // For both new account and address updates, post the agent, contact and address
+  // to the create address endpoint
+  const invoiceAccountAddress = await services.water.invoiceAccounts.createInvoiceAccountAddress(clonedState.data.id,
+    mapper.mapSessionDataToCreateInvoiceAccountAddress(clonedState)
+  );
+  Object.assign(clonedState.data, pick(invoiceAccountAddress, ['address', 'agentCompany', 'contact']));
+  return clonedState;
+};
 
 const postCheckAnswers = async (request, h) => {
   try {
-    // Store invoice account via composite API endpoint in water service
-    const response = await createBillingAccount(request.pre.sessionData);
+    const { data } = await persistData(request.pre.sessionData);
     // Set address in session and redirect back to parent flow
     const { key } = request.params;
-    const { redirectPath } = session.merge(request, key, { data: response });
+    const { redirectPath } = session.merge(request, key, { data });
     return h.redirect(redirectPath);
   } catch (err) {
     logger.error(`Error saving billing account`, err);

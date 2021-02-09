@@ -55,7 +55,8 @@ experiment('shared/plugins/view-licence/controller', () => {
           getLicenceSummaryReturns: sandbox.stub(),
           getReturnPath: sandbox.stub(),
           canShowCharging: sandbox.stub(),
-          getLicenceAgreements: sandbox.stub()
+          getLicenceAgreements: sandbox.stub(),
+          getLicenceInvoices: sandbox.stub()
         }
       }
     };
@@ -67,6 +68,13 @@ experiment('shared/plugins/view-licence/controller', () => {
     beforeEach(async () => {
       h.realm.pluginOptions.getLicenceSummaryReturns.resolves({
         data: [],
+        pagination: { pageCount: 1 }
+      });
+
+      h.realm.pluginOptions.getLicenceInvoices.resolves({
+        data: [{
+          id: '0000000-0000-0000-0000-000000003335'
+        }],
         pagination: { pageCount: 1 }
       });
 
@@ -117,6 +125,14 @@ experiment('shared/plugins/view-licence/controller', () => {
     test('sets the agreements', async () => {
       expect(view.agreements[0].id).to.equal('0000000-0000-0000-0000-000000003333');
       expect(view.agreements[0].agreement.description).to.equal('Two-part tariff (S127)');
+    });
+
+    test('sets the invoices/bills', async () => {
+      expect(view.bills[0].id).to.equal('0000000-0000-0000-0000-000000003335');
+    });
+
+    test('sets hasMoreBills', async () => {
+      expect(view.hasMoreBills).to.equal(false);
     });
 
     test('sets the licence id', async () => {

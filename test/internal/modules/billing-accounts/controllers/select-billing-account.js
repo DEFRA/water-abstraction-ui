@@ -27,6 +27,7 @@ const ACCOUNT_ENTRY_PATH = '/account-entry-redirect-path';
 const ADDRESS_ENTRY_PATH = '/address-entry-redirect-path';
 const CONTACT_ENTRY_PATH = '/contact-entry-redirect-path';
 const COMPANY_ID = uuid();
+const INVOICE_ACCOUNT_ID = uuid();
 const ADDRESS = {
   addressLine1: 'Big Farm',
   addressLine2: 'Buttercup meadow',
@@ -95,7 +96,10 @@ const createRequest = (overrides = {}) => ({
     clear: sandbox.stub()
   },
   pre: {
-    sessionData: data.sessionData,
+    sessionData: {
+      ...data.sessionData,
+      isUpdate: overrides.isUpdate || false
+    },
     billingAccounts: overrides.billingAccounts || data.billingAccounts,
     account: data.account
   },
@@ -128,6 +132,7 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
     sandbox.stub(session, 'get').returns(data.sessionData);
     sandbox.stub(session, 'setProperty');
     sandbox.stub(services.water.companies, 'postInvoiceAccount');
+    sandbox.stub(services.water.invoiceAccounts, 'createInvoiceAccountAddress');
     sandbox.stub(logger, 'error');
   });
 
@@ -274,62 +279,81 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
   });
 
   experiment('.getSelectAccount', () => {
-    beforeEach(async () => {
-      request = createRequest();
-      await controller.getSelectAccount(request, h);
+    experiment('for the "new billing account" flow', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        await controller.getSelectAccount(request, h);
+      });
+
+      test('the page uses the correct template', async () => {
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+      });
+
+      test('the back link is defined', async () => {
+        const [, { back }] = h.view.lastCall.args;
+        expect(back).to.equal(`/billing-account-entry/${KEY}`);
+      });
+
+      test('the page has the correct title', async () => {
+        const [, { pageTitle }] = h.view.lastCall.args;
+        expect(pageTitle).to.equal('Who should the bills go to?');
+      });
+
+      test('the page has the correct caption', async () => {
+        const [, { caption }] = h.view.lastCall.args;
+        expect(caption).to.equal(CAPTION);
+      });
+
+      test('a form object is output to the view', async () => {
+        const [, { form }] = h.view.lastCall.args;
+        expect(form).to.be.an.object();
+      });
+
+      test('the form has a CSRF token field', async () => {
+        const [, { form }] = h.view.lastCall.args;
+        const field = formTest.findField(form, 'csrf_token');
+        expect(field.value).to.equal(CSRF_TOKEN);
+      });
+
+      test('the form has radio options for licence holder or agent account', async () => {
+        const [, { form }] = h.view.lastCall.args;
+        const field = formTest.findField(form, 'account');
+
+        expect(field.options.widget).to.equal('radio');
+        expect(field.options.choices.length).to.equal(2);
+
+        expect(field.options.choices[0].label).to.equal('Test Co Ltd');
+        expect(field.options.choices[0].value).to.equal(constants.BILLING_ACCOUNT_HOLDER);
+
+        expect(field.options.choices[1].label).to.equal('Another billing contact');
+        expect(field.options.choices[1].value).to.equal(constants.OTHER_ACCOUNT);
+      });
+
+      test('the "other billing" account option has a sub-field for the account name', async () => {
+        const [, { form }] = h.view.lastCall.args;
+        const field = formTest.findField(form, 'account');
+        const subField = get(field, 'options.choices[1].fields[0]');
+        expect(subField.name).to.equal('accountSearch');
+      });
+
+      test('the form has a continue button', async () => {
+        const [, { form }] = h.view.lastCall.args;
+        const button = formTest.findButton(form);
+        expect(button.options.label).to.equal('Continue');
+      });
     });
 
-    test('the page uses the correct template', async () => {
-      const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/form');
-    });
+    experiment('for the "update address" flow', () => {
+      beforeEach(async () => {
+        request = createRequest({ isUpdate: true });
+        await controller.getSelectAccount(request, h);
+      });
 
-    test('the page has the correct title', async () => {
-      const [, { pageTitle }] = h.view.lastCall.args;
-      expect(pageTitle).to.equal('Who should the bills go to?');
-    });
-
-    test('the page has the correct caption', async () => {
-      const [, { caption }] = h.view.lastCall.args;
-      expect(caption).to.equal(CAPTION);
-    });
-
-    test('a form object is output to the view', async () => {
-      const [, { form }] = h.view.lastCall.args;
-      expect(form).to.be.an.object();
-    });
-
-    test('the form has a CSRF token field', async () => {
-      const [, { form }] = h.view.lastCall.args;
-      const field = formTest.findField(form, 'csrf_token');
-      expect(field.value).to.equal(CSRF_TOKEN);
-    });
-
-    test('the form has radio options for licence holder or agent account', async () => {
-      const [, { form }] = h.view.lastCall.args;
-      const field = formTest.findField(form, 'account');
-
-      expect(field.options.widget).to.equal('radio');
-      expect(field.options.choices.length).to.equal(2);
-
-      expect(field.options.choices[0].label).to.equal('Test Co Ltd');
-      expect(field.options.choices[0].value).to.equal(constants.BILLING_ACCOUNT_HOLDER);
-
-      expect(field.options.choices[1].label).to.equal('Another billing contact');
-      expect(field.options.choices[1].value).to.equal(constants.OTHER_ACCOUNT);
-    });
-
-    test('the "other billing" account option has a sub-field for the account name', async () => {
-      const [, { form }] = h.view.lastCall.args;
-      const field = formTest.findField(form, 'account');
-      const subField = get(field, 'options.choices[1].fields[0]');
-      expect(subField.name).to.equal('accountSearch');
-    });
-
-    test('the form has a continue button', async () => {
-      const [, { form }] = h.view.lastCall.args;
-      const button = formTest.findButton(form);
-      expect(button.options.label).to.equal('Continue');
+      test('the back link exits the flow', async () => {
+        const [, { back }] = h.view.lastCall.args;
+        expect(back).to.equal(request.pre.sessionData.back);
+      });
     });
   });
 
@@ -688,10 +712,10 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
       expect(field.value).to.equal(CSRF_TOKEN);
     });
 
-    test('the form has a continue button', async () => {
+    test('the form has a confirm button', async () => {
       const [, { form }] = h.view.lastCall.args;
       const button = formTest.findButton(form);
-      expect(button.options.label).to.equal('Continue');
+      expect(button.options.label).to.equal('Confirm');
     });
 
     test('links to change the answers are output to the view', async () => {
@@ -705,6 +729,9 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
   experiment('.postCheckAnswers', () => {
     experiment('when there are no errors', () => {
       beforeEach(async () => {
+        services.water.companies.postInvoiceAccount.resolves({
+          id: INVOICE_ACCOUNT_ID
+        });
         request = createPostRequest({
           payload: {
             csrf_token: CSRF_TOKEN
@@ -720,8 +747,15 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
 
         expect(data).to.equal({
           regionId: REGION_ID,
-          startDate: START_DATE,
-          agent: null,
+          startDate: START_DATE
+        });
+      });
+
+      test('creates the billing account address', async () => {
+        const [invoiceAccountId, data] = services.water.invoiceAccounts.createInvoiceAccountAddress.lastCall.args;
+        expect(invoiceAccountId).to.equal(INVOICE_ACCOUNT_ID);
+        expect(data).to.equal({
+          agentCompany: null,
           contact: null,
           address: ADDRESS
         });
@@ -729,6 +763,23 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
 
       test('redirects to the redirect path', async () => {
         expect(h.redirect.calledWith(REDIRECT_PATH)).to.be.true();
+      });
+    });
+
+    experiment('for the "update address" flow', () => {
+      beforeEach(async () => {
+        request = createPostRequest({
+          payload: {
+            csrf_token: CSRF_TOKEN
+          },
+          isUpdate: true
+        });
+        await controller.postCheckAnswers(request, h);
+      });
+
+      test('only the "create address" service endpoint is called', async () => {
+        expect(services.water.companies.postInvoiceAccount.called).to.be.false();
+        expect(services.water.invoiceAccounts.createInvoiceAccountAddress.called).to.be.true();
       });
     });
 

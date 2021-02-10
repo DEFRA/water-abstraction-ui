@@ -31,12 +31,18 @@ const testData = isCurrent => {
     licenceNumber: '123-abc',
     isCurrent,
     lines: [{
-      startDate: '2012-01-01'
+      startDate: '2020-11-01',
+      endDate: '2020-11-30',
+      timePeriod: 'month'
     }],
     meters: [{}],
     metadata: {
       isCurrent
-    } };
+    },
+    startDate: '2020-11-01',
+    endDate: '2021-10-31',
+    frequency: 'month'
+  };
 };
 
 experiment('external view controller', async () => {
@@ -104,7 +110,8 @@ experiment('external view controller', async () => {
       expect(template).to.equal('nunjucks/returns/return');
       expect(view.data.isCurrent).to.equal(returnData.isCurrent);
       expect(view.data.licenceNumber).to.equal(returnData.licenceNumber);
-      expect(view.data.lines).to.equal(returnData.lines);
+      expect(view.data.lines).to.be.an.array().length(12);
+      expect(view.data.lines[0]).to.equal(returnData.lines[0]);
       expect(view.data.metadata).to.equal(returnData.metadata);
     });
 

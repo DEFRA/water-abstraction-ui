@@ -73,13 +73,29 @@ experiment('Lines model', () => {
       expect(lines.lines.length).to.equal(12);
     });
 
-    test('initialises with supplied lines', async () => {
+    test('initialises with supplied lines if they match the line dates', async () => {
       const lines = new Lines([{
         startDate: '2019-01-01',
         endDate: '2019-01-31',
         quantity: 5
       }], createOptions());
-      expect(lines.lines.length).to.equal(1);
+      expect(lines.lines.length).to.equal(12);
+      expect(lines.lines[0].quantity).to.be.undefined();
+      expect(lines.lines[1].quantity).to.be.undefined();
+      expect(lines.lines[2].quantity).to.equal(5);
+      expect(lines.lines[3].quantity).to.be.undefined();
+    });
+
+    test('ignores  supplied lines if they do not match the required line dates', async () => {
+      const lines = new Lines([{
+        startDate: '2019-01-01',
+        endDate: '2019-01-15',
+        quantity: 5
+      }], createOptions());
+      expect(lines.lines.length).to.equal(12);
+
+      const quantities = lines.lines.map(line => line.quantity);
+      expect(quantities).to.only.include(undefined);
     });
 
     test('throws an error if invalid argument for options', async () => {

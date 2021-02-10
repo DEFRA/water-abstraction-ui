@@ -28,11 +28,24 @@ const getDateKey = line => `${line.startDate}_${line.endDate}`;
 const getDateKeys = lines => lines.map(getDateKey);
 
 const getInitialLines = (lines = [], options) => {
-  if (lines.length) {
-    return lines;
-  }
   const { startDate, endDate, frequency, isFinal } = options;
-  return getRequiredLines(startDate, endDate, frequency, isFinal);
+
+  // Create the required lines defined by the return header data
+  const requiredLines = getRequiredLines(startDate, endDate, frequency, isFinal);
+
+  // Index supplied lines by date range
+  const map = lines.reduce((acc, line) =>
+    acc.set(getDateKey(line), line)
+  , new Map());
+
+  // Use existing lines if correct date range
+  return requiredLines.reduce((acc, requiredLine) => {
+    const key = getDateKey(requiredLine);
+    return [
+      ...acc,
+      map.has(key) ? map.get(key) : requiredLine
+    ];
+  }, []);
 };
 
 class Lines {

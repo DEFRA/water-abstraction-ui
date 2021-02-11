@@ -126,7 +126,7 @@ const postBillingBatchRegion = async (request, h) => {
   try {
     const batch = getBatchDetails(request, billingRegionForm);
     const { data } = await services.water.billingBatches.createBillingBatch(batch);
-    const path = routing.getBillingBatchRoute(data.batch, false);
+    const path = routing.getBillingBatchRoute(data.batch, { isBackEnabled: false });
     return h.redirect(path);
   } catch (err) {
     if (err.statusCode === 409) {

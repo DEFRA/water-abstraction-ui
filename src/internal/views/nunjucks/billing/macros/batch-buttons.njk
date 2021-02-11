@@ -57,12 +57,15 @@
 {% endmacro %}
 
 {% macro downloadBatchButton(batch) %}
+  {% set isSentBatch = batch.status == 'sent' %}
+  {% set text %} Download {{ 'the' if isSentBatch else 'this' }} bill run {% endset %}
   {% set href %}/billing/batch/{{batch.id}}/transactions-csv{% endset %}
+  {% set classes %} govuk-!-margin-right-1 {{ 'govuk-button--secondary' if not isSentBatch }} {% endset %}
   {{
     govukButton({
-      text: "Download this bill run",
+      text: text,
       href: href,
-      classes: 'govuk-!-margin-right-1 govuk-button--secondary'
+      classes: classes
     })
   }}
 {% endmacro %}

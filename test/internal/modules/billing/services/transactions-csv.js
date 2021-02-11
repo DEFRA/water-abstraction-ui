@@ -349,6 +349,20 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
     });
   });
 
+  experiment('_getTransactionAmounts', async () => {
+    test('when value is a number, value is mapped to relevant line', async () => {
+      const transactionLines = transactionsCSV._getTransactionAmounts({ value: 123456, isCredit: false });
+      expect(transactionLines['Net transaction line amount(debit)']).to.equal('1,234.56');
+      expect(transactionLines['Net transaction line amount(credit)']).to.be.null();
+    });
+
+    test('when value is null, an error message is mapped to both lines', async () => {
+      const transactionLines = transactionsCSV._getTransactionAmounts({ value: null });
+      expect(transactionLines['Net transaction line amount(debit)']).to.equal('Error - not calculated');
+      expect(transactionLines['Net transaction line amount(credit)']).to.equal('Error - not calculated');
+    });
+  });
+
   experiment('.createCSV', async () => {
     let csvData;
 

@@ -20,8 +20,8 @@ const getChargeElementData = trans => {
   return {
     'Authorised annual quantity': trans.chargeElement.authorisedAnnualQuantity,
     'Billable annual quantity': trans.chargeElement.billableAnnualQuantity,
-    'Source': trans.chargeElement.defaultSource,
-    'Adjusted source': trans.chargeElement.source,
+    'Source': trans.chargeElement.source,
+    'Adjusted source': trans.chargeElement.eiucSource,
     'Season': trans.chargeElement.season,
     'Loss': trans.chargeElement.loss,
     'Purpose code': trans.chargeElement.purposeUse.code,

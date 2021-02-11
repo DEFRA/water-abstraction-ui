@@ -44,7 +44,7 @@ const invoice =
               id: '13597728-0390-48b3-8c97-adbc17b6111a',
               chargeVersionId: '967a1db8-e161-4fd7-b45f-9e96db97202e',
               source: 'unsupported',
-              defaultSource: 'supported',
+              eiucSource: 'other',
               season: 'winter',
               loss: 'high',
               abstractionPeriod: {
@@ -194,8 +194,8 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
     test('charge element data to user friendly headings', () => {
       expect(transactionData['Authorised annual quantity']).to.equal(transaction.chargeElement.authorisedAnnualQuantity);
       expect(transactionData['Billable annual quantity']).to.equal(transaction.chargeElement.billableAnnualQuantity);
-      expect(transactionData['Source']).to.equal(transaction.chargeElement.defaultSource);
-      expect(transactionData['Adjusted source']).to.equal(transaction.chargeElement.source);
+      expect(transactionData['Source']).to.equal(transaction.chargeElement.source);
+      expect(transactionData['Adjusted source']).to.equal(transaction.chargeElement.eiucSource);
       expect(transactionData['Season']).to.equal(transaction.chargeElement.season);
       expect(transactionData['Loss']).to.equal(transaction.chargeElement.loss);
       expect(transactionData['Purpose code']).to.equal(transaction.chargeElement.purposeUse.code);

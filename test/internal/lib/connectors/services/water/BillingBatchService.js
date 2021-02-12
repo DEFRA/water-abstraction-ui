@@ -102,6 +102,17 @@ experiment('services/water/BillingBatchService', () => {
     });
   });
 
+  experiment('.getBatchDownloadData', () => {
+    test('passes the expected URL to the service request', async () => {
+      const batchId = uuid();
+
+      await service.getBatchDownloadData(batchId);
+
+      const [url] = serviceRequest.get.lastCall.args;
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/download-data`);
+    });
+  });
+
   experiment('.getBatches', () => {
     let page;
     let perPage;

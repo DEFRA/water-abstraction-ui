@@ -170,8 +170,8 @@ describe('Step through the returns paper forms flow:', function () {
     });
 
     it('the licence return details are displayed in the list', () => {
-      const dueDateThisYear = moment().add(1, 'month').format('YYYY-MM-DD');
-      const dueDateLastYear = moment().add(-1, 'year').format('YYYY-MM-DD');
+      const dueDateThisYear = moment().add(1, 'month').format('DD MMMM YYYY');
+      const dueDateLastYear = moment().add(-1, 'year').format('DD MMMM YYYY');
       const licenceDetails = $('//main/div/div/dl[1]');
       expect(licenceDetails.$('//div[1]/dt')).toHaveText('Licence holder');
       expect(licenceDetails.$('//div[1]/dd')).toHaveText('acceptance-test-company');
@@ -227,7 +227,7 @@ describe('Step through the returns paper forms flow:', function () {
     });
 
     it('check returns details now contains only one returns reference', () => {
-      const dueDateThisYear = moment().add(1, 'month').format('YYYY-MM-DD');
+      const dueDateThisYear = moment().add(1, 'month').format('DD MMMM YYYY');
       const licenceDetails = $('//main/div/div/dl[1]');
       expect(licenceDetails.$('//div[2]/dd[1]/div/div[1]/div[1]')).toHaveText('9999993');
       expect(licenceDetails.$('//div[2]/dd[1]/div/div[1]/div[2]')).toHaveText(`Due ${dueDateThisYear}`);

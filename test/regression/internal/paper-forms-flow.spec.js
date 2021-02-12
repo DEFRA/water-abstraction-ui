@@ -2,6 +2,7 @@
 const { loginAsUser } = require('../shared/helpers/login-as-user');
 const { getPageTitle } = require('../shared/helpers/page');
 const { baseUrl, userEmails } = require('./config');
+const moment = require('moment');
 
 /**
  * click the change address link and check the page loads ok
@@ -167,15 +168,18 @@ describe('Step through the returns paper forms flow:', function () {
       const licenceMonthly = $('//main/div/div').$('h2*=MONTHLY');
       expect(licenceMonthly).toHaveText('Licence AT/CURR/MONTHLY/01');
     });
+
     it('the licence return details are displayed in the list', () => {
+      const dueDateThisYear = moment().add(1, 'month').format('YYYY-MM-DD');
+      const dueDateLastYear = moment().add(-1, 'year').format('YYYY-MM-DD');
       const licenceDetails = $('//main/div/div/dl[1]');
       expect(licenceDetails.$('//div[1]/dt')).toHaveText('Licence holder');
       expect(licenceDetails.$('//div[1]/dd')).toHaveText('acceptance-test-company');
       expect(licenceDetails.$('//div[2]/dt')).toHaveText('Returns reference numbers');
       expect(licenceDetails.$('//div[2]/dd[1]/div/div[1]/div[1]')).toHaveText('9999993');
-      expect(licenceDetails.$('//div[2]/dd[1]/div/div[1]/div[2]')).toHaveText('Due 10 March 2021');
+      expect(licenceDetails.$('//div[2]/dd[1]/div/div[1]/div[2]')).toHaveText(`Due ${dueDateThisYear}`);
       expect(licenceDetails.$('//div[2]/dd[1]/div/div[2]/div[1]')).toHaveText('9999994');
-      expect(licenceDetails.$('//div[2]/dd[1]/div/div[2]/div[2]')).toHaveText('Due 10 February 2020');
+      expect(licenceDetails.$('//div[2]/dd[1]/div/div[2]/div[2]')).toHaveText(`Due ${dueDateLastYear}`);
       expect(licenceDetails.$('//div[2]/dd[2]/a')).toHaveTextContaining('Change');
     });
 
@@ -223,9 +227,10 @@ describe('Step through the returns paper forms flow:', function () {
     });
 
     it('check returns details now contains only one returns reference', () => {
+      const dueDateThisYear = moment().add(1, 'month').format('YYYY-MM-DD');
       const licenceDetails = $('//main/div/div/dl[1]');
       expect(licenceDetails.$('//div[2]/dd[1]/div/div[1]/div[1]')).toHaveText('9999993');
-      expect(licenceDetails.$('//div[2]/dd[1]/div/div[1]/div[2]')).toHaveText('Due 10 March 2021');
+      expect(licenceDetails.$('//div[2]/dd[1]/div/div[1]/div[2]')).toHaveText(`Due ${dueDateThisYear}`);
       expect(licenceDetails.$('//div[2]/dd[1]/div/div[2]')).not.toBeVisible();
     });
   });

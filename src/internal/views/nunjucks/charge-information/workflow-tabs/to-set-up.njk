@@ -24,7 +24,7 @@
                     <tr class="govuk-table__row">
                         <td class="govuk-table__cell">{{row.licence.licenceNumber}}</td>
                         <td class="govuk-table__cell">{{row.role.company.name}}</td>
-                        <td class="govuk-table__cell">{{row.licence.startDate}}</td>
+                        <td class="govuk-table__cell">{{row.licence.startDate | date}}</td>
                         <td class="govuk-table__cell">
                             <a href="/licences/{{row.licence.id}}/charge-information/create">Create</a>
                         </td>

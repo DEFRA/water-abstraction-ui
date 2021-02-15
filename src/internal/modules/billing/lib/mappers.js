@@ -15,7 +15,7 @@ const mapBatchListRow = batch => ({
   ...batch,
   batchType: mapBatchType(batch.type),
   billCount: batch.totals ? batch.totals.invoiceCount + batch.totals.creditNoteCount : null,
-  link: routing.getBillingBatchRoute(batch)
+  link: routing.getBillingBatchRoute(batch, { isBackEnabled: true })
 });
 
 const isTransactionEdited = transaction => {

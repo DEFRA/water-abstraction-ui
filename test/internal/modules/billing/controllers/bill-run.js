@@ -24,6 +24,7 @@ const createBatchData = () => ({
   region: {
     id: 'test-region-1',
     name: 'Anglian',
+    displayName: 'Anglian',
     code: 'A'
   },
   totals: {
@@ -130,6 +131,7 @@ experiment('internal/modules/billing/controller', () => {
     sandbox.stub(services.water.billingBatches, 'getBatchInvoice').resolves(invoice);
     sandbox.stub(services.water.billingBatches, 'getBatchInvoices').resolves(batchInvoicesResult);
     sandbox.stub(services.water.billingBatches, 'deleteInvoiceFromBatch').resolves();
+    sandbox.stub(services.water.billingBatches, 'getBatchDownloadData');
 
     sandbox.stub(services.water.billingBatches, 'cancelBatch').resolves();
     sandbox.stub(services.water.billingBatches, 'approveBatch').resolves();
@@ -139,6 +141,10 @@ experiment('internal/modules/billing/controller', () => {
     sandbox.stub(batchService, 'getBatchList');
     sandbox.stub(batchService, 'getBatchInvoice').resolves({ id: 'invoice-account-id', accountNumber: 'A12345678A' });
     sandbox.stub(logger, 'info');
+
+    sandbox.stub(transactionsCSV, 'createCSV');
+    sandbox.stub(transactionsCSV, 'getCSVFileName').returns('fileName');
+    sandbox.stub(csv, 'csvDownload');
 
     request = createRequest();
   });
@@ -471,7 +477,7 @@ experiment('internal/modules/billing/controller', () => {
 
     test('the user is redirected back to the batch summary', async () => {
       const [redirectPath] = h.redirect.lastCall.args;
-      expect(redirectPath).to.equal('/billing/batch/test-batch-id/summary');
+      expect(redirectPath).to.equal('/billing/batch/test-batch-id/processing');
     });
 
     test('if the approval fails, the user is redirected to the batch summary, an error is thrown', async () => {
@@ -481,35 +487,56 @@ experiment('internal/modules/billing/controller', () => {
     });
   });
 
+  experiment('.getBillingBatchConfirmSuccess', () => {
+    beforeEach(async () => {
+      await controller.getBillingBatchConfirmSuccess(request, h);
+    });
+
+    test('passes the expected view template', async () => {
+      const [view] = h.view.lastCall.args;
+      expect(view).to.equal('nunjucks/billing/batch-sent-success');
+    });
+
+    test('passes the expected data in the view context', async () => {
+      const [, context] = h.view.lastCall.args;
+      expect(context).to.contain({ foo: 'bar' });
+      expect(context.pageTitle).to.equal('Bill run sent');
+      expect(context.batch).to.equal(batchData);
+      expect(context.panelText).to.equal('You\'ve sent the Anglian supplementary bill run 1234');
+    });
+  });
+
   experiment('getTransactionsCSV', () => {
-    let invoicesForBatch, csvData;
+    let invoices, chargeVersions, csvData;
 
     beforeEach(async () => {
-      invoicesForBatch = [ { id: 'test-d', invoiceLicences: [], error: null } ];
+      invoices = [ { id: 'test-d', invoiceLicences: [], error: null } ];
+      chargeVersions = [{ id: 'charge-version-id' }];
+      services.water.billingBatches.getBatchDownloadData.resolves({ invoices, chargeVersions });
+
       csvData = [['header1', 'header2', 'header2'], ['transaction', 'line', 1]];
-      sandbox.stub(services.water.billingBatches, 'getBatchInvoicesDetails').resolves(invoicesForBatch);
-      sandbox.stub(transactionsCSV, 'createCSV').resolves(csvData);
-      sandbox.stub(transactionsCSV, 'getCSVFileName').returns('fileName');
-      sandbox.stub(csv, 'csvDownload');
+      transactionsCSV.createCSV.resolves(csvData);
+
       await controller.getTransactionsCSV(request, h);
     });
 
     test('calls billingBatches service with batchId', () => {
-      const [batchId] = services.water.billingBatches.getBatchInvoicesDetails.lastCall.args;
-      expect(services.water.billingBatches.getBatchInvoicesDetails.calledOnce).to.be.true();
-      expect(batchId).to.equal(request.params.batchId);
+      expect(services.water.billingBatches.getBatchDownloadData.calledWith(
+        request.params.batchId
+      )).to.be.true();
     });
 
     test('calls transactionsCSV.createCSV with data returned from billingBatches services', () => {
-      const [ data ] = transactionsCSV.createCSV.lastCall.args;
-      expect(transactionsCSV.createCSV.calledOnce).to.be.true();
-      expect(data).to.equal(invoicesForBatch);
+      expect(transactionsCSV.createCSV.calledWith(
+        invoices,
+        chargeVersions
+      )).to.be.true();
     });
 
     test('calls transactionsCSV.getCSVFileName with data returned from batchService', () => {
-      const [data] = transactionsCSV.getCSVFileName.lastCall.args;
-      expect(transactionsCSV.getCSVFileName.calledOnce).to.be.true();
-      expect(data).to.equal(batchData);
+      expect(transactionsCSV.getCSVFileName.calledWith(
+        batchData
+      )).to.be.true();
     });
 
     test('calls csv.csvDownload with csv data and file name', () => {

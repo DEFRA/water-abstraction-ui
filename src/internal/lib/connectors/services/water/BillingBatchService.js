@@ -48,6 +48,11 @@ class BillingBatchService extends ServiceClient {
     return this.serviceRequest.get(uri);
   }
 
+  getBatchDownloadData (batchId) {
+    const uri = this.joinUrl(`billing/batches/${batchId}/download-data`);
+    return this.serviceRequest.get(uri);
+  }
+
   createBillingBatch (batch) {
     const uri = this.joinUrl('billing/batches');
     const options = {

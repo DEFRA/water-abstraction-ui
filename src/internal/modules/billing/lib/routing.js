@@ -2,19 +2,21 @@
  * Gets the correct route for the specified batch depending on its
  * current status
  * @param {Object} batch - the batch object from water service
- * @param {Boolean} isBackEnabled - whether back should be enabled on processing page
- * @param {Boolean} isErrorRoutesIncluded - whether to include error/empty batch routes
+ * @param {Object} options - whether back should be enabled on processing page
+ *          {Boolean} isBackEnabled - whether back should be enabled on processing page
+ *          {Boolean} isErrorRoutesIncluded - whether to include error/empty batch routes
+ *          {Boolean} showSuccessPage - whether to show success or summary page for sent batch
  * @return {String} the link
  */
-const getBillingBatchRoute = (batch, isBackEnabled = true, isErrorRoutesIncluded = false) => {
+const getBillingBatchRoute = (batch, opts = {}) => {
   const { id } = batch;
   const links = {
-    processing: `/billing/batch/${id}/processing?back=${isBackEnabled ? 1 : 0}`,
+    processing: `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`,
     ready: `/billing/batch/${id}/summary`,
-    sent: `/billing/batch/${id}/summary`,
+    sent: opts.showSuccessPage ? `/billing/batch/${id}/confirm/success` : `/billing/batch/${id}/summary`,
     review: `/billing/batch/${id}/two-part-tariff-review`
   };
-  if (isErrorRoutesIncluded) {
+  if (opts.isErrorRoutesIncluded) {
     Object.assign(links, {
       error: `/billing/batch/${id}/processing`,
       empty: `/billing/batch/${id}/empty`

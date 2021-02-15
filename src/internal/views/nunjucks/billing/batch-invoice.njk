@@ -93,12 +93,12 @@ invoiceDebitsTotal %}
     <div class="govuk-grid-row govuk-!-margin-bottom-6">
       <div class="govuk-grid-column-one-half">
         <h2>
-          {{ invoiceCreditsTotal(invoice.totals.creditLineValue) }}
+          {{ invoiceCreditsTotal(invoice.totals.creditNoteValue) }}
         </h2>
       </div>
       <div class="govuk-grid-column-one-half">
         <h2>
-          {{ invoiceDebitsTotal(invoice.totals.debitLineValue) }}
+          {{ invoiceDebitsTotal(invoice.totals.invoiceValue) }}
         </h2>
       </div>
     </div>

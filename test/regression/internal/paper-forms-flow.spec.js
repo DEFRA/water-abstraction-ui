@@ -71,7 +71,7 @@ const checkAddress = (address) => {
 
 describe('Step through the returns paper forms flow:', function () {
   before(async () => {
-    await loginAsUser(baseUrl, userEmails.super);
+    await loginAsUser(baseUrl, userEmails.billingAndData);
   });
 
   describe('navigates to the paper forms flow', () => {

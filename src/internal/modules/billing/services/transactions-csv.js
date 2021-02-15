@@ -1,7 +1,7 @@
 'use strict';
 const moment = require('moment');
 const numberFormatter = require('../../../../shared/lib/number-formatter');
-const { mapValues, isNull, isNumber, sortBy } = require('lodash');
+const { mapValues, isNull, isNumber, sortBy, get } = require('lodash');
 const mappers = require('../lib/mappers');
 
 const isNullOrUndefined = value => isNull(value) || value === undefined;
@@ -77,21 +77,22 @@ const getInvoiceData = invoice => {
 
 const getTransactionAmounts = trans => {
   const { value, isCredit } = trans;
-  // if there was an issue calculating the value due to
-  // unexpected data passed to the CM from NALD
-  if (isNumber(value)) {
-    return getDebitCreditLines(value, isCredit, 'Net transaction line amount(debit)', 'Net transaction line amount(credit)');
+
+  if (isNull(value)) {
+    return {
+      'Net transaction line amount(debit)': 'Error - not calculated',
+      'Net transaction line amount(credit)': 'Error - not calculated'
+    };
   }
-  return {
-    'Net transaction line amount(debit)': 'Error - not calculated',
-    'Net transaction line amount(credit)': 'Error - not calculated'
-  };
+  return getDebitCreditLines(value, isCredit, 'Net transaction line amount(debit)', 'Net transaction line amount(credit)');
 };
 
 const getChangeReason = (chargeVersions, transaction) => {
-  const { chargeElement: { chargeVersionId } } = transaction;
-  const { changeReason } = chargeVersions.find(cv => cv.id === chargeVersionId);
-  return changeReason ? changeReason.description : null;
+  const chargeVersionId = get(transaction, 'chargeElement.chargeVersionId');
+  const chargeVersion = chargeVersions.find(cv => cv.id === chargeVersionId);
+  return (chargeVersion && chargeVersion.changeReason)
+    ? chargeVersion.changeReason.description
+    : null;
 };
 
 const createCSV = async (invoices, chargeVersions) => {
@@ -99,6 +100,7 @@ const createCSV = async (invoices, chargeVersions) => {
   return sortedInvoices.reduce((dataForCSV, invoice) => {
     invoice.invoiceLicences.forEach(invLic => {
       invLic.transactions.forEach(trans => {
+        console.log(invoice.invoiceAccount);
         const { isDeMinimis, description, ...transactionData } = getTransactionData(trans);
         const csvLine = {
           ...getInvoiceAccountData(invoice.invoiceAccount),

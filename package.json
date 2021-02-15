@@ -88,6 +88,7 @@
     "csv-parse": "^4.8.8",
     "csv-stringify": "^5.3.6",
     "debug": "^2.6.9",
+    "decimal.js-light": "^2.5.1",
     "deep-extend": "^0.6.0",
     "deep-map": "^1.5.0",
     "dotenv": "^4.0.0",

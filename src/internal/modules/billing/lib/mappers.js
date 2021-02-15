@@ -1,6 +1,7 @@
 'use strict';
 
-const { omit, sortBy, groupBy, pick } = require('lodash');
+const Decimal = require('decimal.js-light');
+const { omit, sortBy, groupBy, pick, mapValues } = require('lodash');
 const sentenceCase = require('sentence-case');
 const routing = require('./routing');
 const { transactionStatuses } = require('shared/lib/constants');
@@ -37,16 +38,18 @@ const getTransactionTotals = transactions => {
   }
 
   const initialValue = {
-    debits: 0,
-    credits: 0,
-    netTotal: 0
+    debits: new Decimal(0),
+    credits: new Decimal(0),
+    netTotal: new Decimal(0)
   };
 
-  return transactions.reduce((acc, row) => ({
-    debits: acc.debits + (row.isCredit ? 0 : row.value),
-    credits: acc.credits + (row.isCredit ? row.value : 0),
-    netTotal: acc.netTotal + row.value
+  const totals = transactions.reduce((acc, row) => ({
+    debits: acc.debits.plus(row.isCredit ? 0 : row.value),
+    credits: acc.credits.plus(row.isCredit ? row.value : 0),
+    netTotal: acc.netTotal.plus(row.value)
   }), initialValue);
+
+  return mapValues(totals, val => val.toFixed());
 };
 
 const isMinimimChargeTransaction = trans => trans.isMinimumCharge;

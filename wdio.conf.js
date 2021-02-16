@@ -23,7 +23,7 @@ exports.config = {
   // directory is where your package.json resides, so `wdio` will be called from there.
   //
   specs: [
-    './test/regression/**/*.spec.js'
+    './test/regression/external/login.spec.js'
   ],
   // Patterns to exclude.
   exclude: [
@@ -167,7 +167,7 @@ exports.config = {
      * @param {Object} config wdio configuration object
      * @param {Array.<Object>} capabilities list of capabilities details
      */
-  onPrepare: () => setup.setUp(),
+  // onPrepare: () => setup.setUp(),
 
   /**
      * Gets executed before a worker process is spawned and can be used to initialise specific service

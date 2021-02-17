@@ -3,12 +3,14 @@
 const { getButton, getPageTitle, getValidationSummaryMessage } = require('../shared/helpers/page');
 const { getPersonalisation } = require('../shared/helpers/notifications');
 const { baseUrl, userEmails } = require('./config');
+const { setUp } = require('../shared/helpers/setup');
 
 const EMAIL_ADDRESS = userEmails.external;
 
 /* eslint-disable no-undef */
 describe('external user resetting their password:', function () {
   before(async () => {
+    await setUp('users');
     await browser.url(`${baseUrl}/signin`);
   });
 

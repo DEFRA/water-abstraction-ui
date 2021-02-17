@@ -3,12 +3,14 @@
 const { loginAsUser } = require('../shared/helpers/login-as-user');
 const { baseUrl, userEmails } = require('./config');
 const { getPageTitle } = require('../shared/helpers/page');
-
+const { setUp } = require('../shared/helpers/setup');
 const EMAIL_ADDRESS = userEmails.external;
 
 /* eslint-disable no-undef */
 describe('view licences as an external user', function () {
   before(async () => {
+    await setUp('users');
+    await setUp('licences');
     await loginAsUser(baseUrl, EMAIL_ADDRESS);
   });
 

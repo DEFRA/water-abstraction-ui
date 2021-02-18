@@ -2,13 +2,14 @@
 const { getButton, getPageTitle, getPageCaption, getValidationSummaryMessage } = require('../shared/helpers/page');
 const { getPersonalisation } = require('../shared/helpers/notifications');
 const { baseUrl } = require('./config');
-
+const { setUp } = require('../shared/helpers/setup');
 const EMAIL_ADDRESS = 'acceptance-test.internal.wirs@defra.gov.uk';
 
 /* eslint-disable no-undef */
 describe('internal user resetting their password:', function () {
   before(async () => {
-    browser.url(`${baseUrl}/signin`);
+    await setUp('barebones');
+    await browser.url(`${baseUrl}/signin`);
   });
 
   it('navigate to the reset your password page', () => {
@@ -28,7 +29,7 @@ describe('internal user resetting their password:', function () {
 
     await email.setValue('');
     await continueButton.click();
-    browser.pause(1000);
+    await browser.pause(1000);
 
     const validationMessage = await getValidationSummaryMessage();
     expect(validationMessage).toHaveText('Enter an email address');
@@ -40,7 +41,7 @@ describe('internal user resetting their password:', function () {
 
     await email.setValue('not-an-email-address');
     await continueButton.click();
-    browser.pause(1000);
+    await browser.pause(1000);
 
     const validationMessage = await getValidationSummaryMessage();
     expect(validationMessage).toHaveText('Enter an email address in the right format');
@@ -64,10 +65,16 @@ describe('internal user resetting their password:', function () {
   });
 
   it('clicks the link in the confirmation email', async () => {
+    console.log('GOT HERE====');
     const resetUrl = await getPersonalisation(baseUrl, EMAIL_ADDRESS, 'reset_url');
-    const pageTitle = await getPageTitle();
 
-    browser.url(resetUrl);
+    console.log('===---===---===');
+    console.log(resetUrl);
+    console.log(resetUrl);
+    console.log(resetUrl);
+
+    const pageTitle = await getPageTitle();
+    await browser.url(resetUrl);
     expect(browser).toHaveUrlContaining('/reset_password_change_password?');
     expect(pageTitle).toHaveText('Change your password');
   });

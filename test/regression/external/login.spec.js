@@ -5,7 +5,7 @@ const { setUp } = require('../shared/helpers/setup');
 
 describe('Login page', function () {
   before(async () => {
-    await setUp('users');
+    await setUp('barebones');
     await loginAsUser(baseUrl, userEmails.external);
   });
 

@@ -10,7 +10,7 @@ const EMAIL_ADDRESS = userEmails.external;
 /* eslint-disable no-undef */
 describe('external user resetting their password:', function () {
   before(async () => {
-    await setUp('users');
+    await setUp('barebones');
     await browser.url(`${baseUrl}/signin`);
   });
 

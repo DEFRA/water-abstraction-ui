@@ -9,8 +9,7 @@ const EMAIL_ADDRESS = userEmails.external;
 /* eslint-disable no-undef */
 describe('view licences as an external user', function () {
   before(async () => {
-    await setUp('users');
-    await setUp('licences');
+    await setUp('barebones');
     await loginAsUser(baseUrl, EMAIL_ADDRESS);
   });
 

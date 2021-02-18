@@ -3,13 +3,15 @@
 const { loginAsUser } = require('../shared/helpers/login-as-user');
 const { baseUrl, userEmails } = require('./config');
 const { getButton, getPageTitle, getPageCaption, getBackLink } = require('../shared/helpers/page');
-
+const { setUp } = require('../shared/helpers/setup');
 const EMAIL_ADDRESS = userEmails.environmentOfficer;
 
 /* eslint-disable no-undef */
 describe('change internal user permissions as B&D user', function () {
   before(async () => {
+    await setUp('barebones');
     await loginAsUser(baseUrl, userEmails.billingAndData);
+    await browser.url(baseUrl);
   });
 
   it('searches for user by email address', async () => {

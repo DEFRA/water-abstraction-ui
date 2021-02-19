@@ -3,7 +3,6 @@ const { loginAsUser } = require('../shared/helpers/login-as-user');
 const { getPageTitle } = require('../shared/helpers/page');
 const { baseUrl, userEmails } = require('./config');
 const moment = require('moment');
-const { v4: uuid } = require('uuid');
 const { setUp, tearDown } = require('../shared/helpers/setup');
 
 /**
@@ -174,8 +173,6 @@ describe('Step through the returns paper forms flow:', function () {
     });
 
     it('the licence return details are displayed in the list', () => {
-      const dueDateThisYear = moment().add(1, 'month').format('DD MMMM YYYY');
-      const dueDateLastYear = moment().add(-1, 'year').format('DD MMMM YYYY');
       const licenceDetails = $('//main/div/div/dl[1]');
       expect(licenceDetails.$('//div[1]/dt')).toHaveText('Licence holder');
       expect(licenceDetails.$('//div[1]/dd')).toHaveText('Big Farm Co Ltd');
@@ -183,10 +180,6 @@ describe('Step through the returns paper forms flow:', function () {
 
       licenceDetails.scrollIntoView();
       browser.saveScreenshot(`temp/2.png`);
-      // expect(licenceDetails.$('//div[2]/dd[1]/div/div[1]/div[1]')).toHaveText('9999991');
-      // expect(licenceDetails.$('//div[2]/dd[1]/div/div[1]/div[2]')).toHaveText(`Due ${dueDateThisYear}`);
-      // expect(licenceDetails.$('//div[2]/dd[1]/div/div[2]/div[1]')).toHaveText('9999990');
-      // expect(licenceDetails.$('//div[2]/dd[1]/div/div[2]/div[2]')).toHaveText(`Due ${dueDateLastYear}`);
       expect(licenceDetails.$('//div[2]/dd[2]/a')).toHaveTextContaining('Change');
     });
 

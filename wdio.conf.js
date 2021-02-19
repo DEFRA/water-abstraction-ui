@@ -23,7 +23,7 @@ exports.config = {
   // directory is where your package.json resides, so `wdio` will be called from there.
   //
   specs: [
-    './test/regression/internal/paper-forms-flow.spec.js'
+    './test/regression/**/*.spec.js'
   ],
   // Patterns to exclude.
   exclude: [
@@ -45,7 +45,7 @@ exports.config = {
   // and 30 processes will get spawned. The property handles how many capabilities
   // from the same test should run tests.
   //
-  maxInstances: 10,
+  maxInstances: 1,
   //
   // If you have trouble getting all important capabilities together, check out the
   // Sauce Labs platform configurator - a great tool to configure your capabilities:
@@ -167,7 +167,7 @@ exports.config = {
      * @param {Object} config wdio configuration object
      * @param {Array.<Object>} capabilities list of capabilities details
      */
-  // onPrepare: () => setup.setUp(),
+  // onPrepare: () => setup.tearDown(),
 
   /**
      * Gets executed before a worker process is spawned and can be used to initialise specific service
@@ -208,8 +208,7 @@ exports.config = {
      * Hook that gets executed before the suite starts
      * @param {Object} suite suite details
      */
-  // beforeSuite: function (suite) {
-  // },
+  // beforeSuite: function (suite) {},
   /**
      * Function to be executed before a test (in Mocha/Jasmine) starts.
      */
@@ -262,7 +261,7 @@ exports.config = {
      * @param {Array.<Object>} capabilities list of capabilities details
      * @param {Array.<String>} specs List of spec file paths that ran
      */
-  afterSession: () => setup.tearDown()
+  // afterSession: () => setup.tearDown()
   /**
      * Gets executed after all workers got shut down and the process is about to exit. An error
      * thrown in the onComplete hook will result in the test run failing.
@@ -271,7 +270,7 @@ exports.config = {
      * @param {Array.<Object>} capabilities list of capabilities details
      * @param {<Object>} results object containing test results
      */
-  // onComplete: () => setup.tearDown()
+  onComplete: () => setup.tearDown()
   // },
   /**
      * Gets executed when a refresh happens.

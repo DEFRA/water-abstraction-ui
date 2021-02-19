@@ -2,12 +2,13 @@
 const { getButton, getPageTitle, getPageCaption, getValidationSummaryMessage } = require('../shared/helpers/page');
 const { getPersonalisation } = require('../shared/helpers/notifications');
 const { baseUrl } = require('./config');
-const { setUp } = require('../shared/helpers/setup');
+const { tearDown, setUp } = require('../shared/helpers/setup');
 const EMAIL_ADDRESS = 'acceptance-test.internal.wirs@defra.gov.uk';
 
 /* eslint-disable no-undef */
 describe('internal user resetting their password:', function () {
   before(async () => {
+    await tearDown();
     await setUp('barebones');
     await browser.url(`${baseUrl}/signin`);
   });
@@ -65,13 +66,7 @@ describe('internal user resetting their password:', function () {
   });
 
   it('clicks the link in the confirmation email', async () => {
-    console.log('GOT HERE====');
     const resetUrl = await getPersonalisation(baseUrl, EMAIL_ADDRESS, 'reset_url');
-
-    console.log('===---===---===');
-    console.log(resetUrl);
-    console.log(resetUrl);
-    console.log(resetUrl);
 
     const pageTitle = await getPageTitle();
     await browser.url(resetUrl);

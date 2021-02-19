@@ -1,7 +1,7 @@
 'use strict';
 const moment = require('moment');
 const numberFormatter = require('../../../../shared/lib/number-formatter');
-const { mapValues, isNull, isNumber, sortBy, get } = require('lodash');
+const { mapValues, isNull, sortBy, get } = require('lodash');
 const mappers = require('../lib/mappers');
 
 const isNullOrUndefined = value => isNull(value) || value === undefined;
@@ -64,13 +64,11 @@ const getDebitCreditLines = (value, isCredit, debitLabel, creditLabel) => {
 };
 
 const getInvoiceData = invoice => {
-  // netAmount and isCredit are only available for sent batches
-  const invoiceTotal = Math.abs(invoice.totals ? invoice.totals.netTotal : invoice.netAmount);
-  const isCredit = invoice.totals ? invoice.totals.netTotal < 0 : invoice.isCredit;
+  const { netTotal, isCredit } = invoice;
   return {
     ...invoice.invoiceNumber && { 'Bill number': invoice.invoiceNumber },
     'Financial year': invoice.financialYear.yearEnding,
-    ...getDebitCreditLines(invoiceTotal, isCredit, 'Invoice amount', 'Credit amount')
+    ...getDebitCreditLines(netTotal, isCredit, 'Invoice amount', 'Credit amount')
   }
   ;
 };
@@ -100,7 +98,6 @@ const createCSV = async (invoices, chargeVersions) => {
   return sortedInvoices.reduce((dataForCSV, invoice) => {
     invoice.invoiceLicences.forEach(invLic => {
       invLic.transactions.forEach(trans => {
-        console.log(invoice.invoiceAccount);
         const { isDeMinimis, description, ...transactionData } = getTransactionData(trans);
         const csvLine = {
           ...getInvoiceAccountData(invoice.invoiceAccount),

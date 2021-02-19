@@ -1,10 +1,14 @@
 'use strict';
 
 const Decimal = require('decimal.js-light');
-const { omit, sortBy, groupBy, pick, mapValues } = require('lodash');
+const { omit, sortBy, groupBy, pick, mapValues, isNull } = require('lodash');
 const sentenceCase = require('sentence-case');
 const routing = require('./routing');
 const { transactionStatuses } = require('shared/lib/constants');
+
+const getBillCount = batch => [batch.invoiceCount, batch.creditNoteCount].reduce((acc, value) =>
+  isNull(value) ? acc : (acc || 0) + value
+, null);
 
 /**
  * Maps a batch for the batch list view, adding the badge, batch type and
@@ -15,7 +19,7 @@ const { transactionStatuses } = require('shared/lib/constants');
 const mapBatchListRow = batch => ({
   ...batch,
   batchType: mapBatchType(batch.type),
-  billCount: batch.totals ? batch.totals.invoiceCount + batch.totals.creditNoteCount : null,
+  billCount: getBillCount(batch),
   link: routing.getBillingBatchRoute(batch, { isBackEnabled: true })
 });
 
@@ -49,7 +53,7 @@ const getTransactionTotals = transactions => {
     netTotal: acc.netTotal.plus(row.value)
   }), initialValue);
 
-  return mapValues(totals, val => val.toFixed());
+  return mapValues(totals, val => val.toNumber());
 };
 
 const isMinimimChargeTransaction = trans => trans.isMinimumCharge;

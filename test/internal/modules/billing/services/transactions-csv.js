@@ -2,7 +2,6 @@
 
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
-const { omit } = require('lodash');
 
 const transactionsCSV = require('internal/modules/billing/services/transactions-csv');
 
@@ -154,9 +153,7 @@ const invoice =
     financialYear: {
       yearEnding: 2019
     },
-    totals: {
-      netTotal: 123456
-    }
+    netTotal: 123456
   };
 
 const chargeVersions = [{
@@ -302,32 +299,33 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
           expect(invoiceData['Credit amount']).to.equal(null);
         });
 
-        test('and the total is positive', async () => {
-          invoice.totals = { netTotal: -123456 };
+        test('and the total is negative', async () => {
+          invoice.netTotal = -123456;
+          invoice.isCredit = true;
           invoiceData = transactionsCSV._getInvoiceData(invoice);
 
           expect(invoiceData['Invoice amount']).to.equal(null);
-          expect(invoiceData['Credit amount']).to.equal('1,234.56');
+          expect(invoiceData['Credit amount']).to.equal('-1,234.56');
         });
       });
 
       experiment('invoice amounts come from WRLS', () => {
         test('and the isCredit flag is false', async () => {
-          invoiceData = transactionsCSV._getInvoiceData({
-            ...omit(invoice, 'totals'), netAmount: 123456, isCredit: false
-          });
+          invoice.netTotal = 123456;
+          invoice.isCredit = false;
+          invoiceData = transactionsCSV._getInvoiceData(invoice);
 
           expect(invoiceData['Invoice amount']).to.equal('1,234.56');
           expect(invoiceData['Credit amount']).to.equal(null);
         });
 
         test('and the isCredit flag is true', async () => {
-          invoiceData = transactionsCSV._getInvoiceData({
-            ...omit(invoice, 'totals'), netAmount: 123456, isCredit: true
-          });
+          invoice.netTotal = -123456;
+          invoice.isCredit = true;
+          invoiceData = transactionsCSV._getInvoiceData(invoice);
 
           expect(invoiceData['Invoice amount']).to.equal(null);
-          expect(invoiceData['Credit amount']).to.equal('1,234.56');
+          expect(invoiceData['Credit amount']).to.equal('-1,234.56');
         });
       });
     });

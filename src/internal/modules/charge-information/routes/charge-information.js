@@ -190,7 +190,7 @@ module.exports = {
         query: {
           form: VALID_GUID.optional(),
           invoiceAccountId: VALID_GUID.optional(),
-          returnToCheckData: Joi.boolean().truthy('1').default(false)
+          returnToCheckData: Joi.number().default(0).allow(0, 1)
         }
       },
       pre: [

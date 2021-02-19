@@ -49,7 +49,7 @@
                   {% if batch.status == 'error' %}
                     <span>-</span>
                   {% else %}
-                    {{ chargeOrDash(batch.totals.netTotal, true) }}
+                    {{ chargeOrDash(batch.netTotal, true) }}
                   {% endif %}
                 </td>
 

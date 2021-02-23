@@ -3,6 +3,7 @@ const { loginAsUser } = require('../shared/helpers/login-as-user');
 const { getPageTitle } = require('../shared/helpers/page');
 const { baseUrl, userEmails } = require('./config');
 const moment = require('moment');
+const { setUp, tearDown } = require('../shared/helpers/setup');
 
 /**
  * click the change address link and check the page loads ok
@@ -16,11 +17,11 @@ const changeAddress = (fao) => {
   it('check correct form details and page title is displayed for select address', () => {
     const pageTitle = getPageTitle();
     expect(pageTitle).toHaveTextContaining('Select where to send the form');
-    expect(pageTitle).toHaveTextContaining('Licence AT/CURR/MONTHLY/01');
+    expect(pageTitle).toHaveTextContaining('Licence AT/CURR/MONTHLY/02');
     expect($('form')).toBeVisible();
     const radioButton1 = $('[value="licenceHolder"]');
     const label1 = radioButton1.getElementComputedLabel(radioButton1.elementId);
-    expect(label1).toContain('acceptance-test-company, Test Address Line 1');
+    expect(label1).toContain('Big Farm Co Ltd');
     expect($('.govuk-radios__divider=Or')).toBeVisible();
     const radioButton2 = $('[value="createOneTimeAddress"]');
     const label2 = radioButton2.getElementComputedLabel(radioButton2.elementId);
@@ -33,7 +34,7 @@ const changeAddress = (fao) => {
   it('enters full name for FAO', () => {
     const pageTitle = getPageTitle();
     expect(pageTitle).toHaveTextContaining('Who should receive the form?');
-    expect(pageTitle).toHaveTextContaining('Licence AT/CURR/MONTHLY/01');
+    expect(pageTitle).toHaveTextContaining('Licence AT/CURR/MONTHLY/02');
     expect($('form')).toBeVisible();
     const hint = $('[id="fullName-hint"]').getText();
     expect(hint).toEqual('Enter full name');
@@ -57,7 +58,7 @@ const checkAddress = (address) => {
     const addressLine = licenceDetails.$('//div[3]/dd[1]');
     expect(licenceDetails.$('//div[3]/dt')).toHaveText('Address');
     if (address.fao) expect(addressLine).toHaveTextContaining(address.fao);
-    expect(addressLine).toHaveTextContaining('acceptance-test-company'); // can not change the company
+    expect(addressLine).toHaveTextContaining('Big Farm Co Ltd'); // can not change the company
     if (address.line1) expect(addressLine).toHaveTextContaining(address.line1);
     if (address.line2) expect(addressLine).toHaveTextContaining(address.line2);
     if (address.line3) expect(addressLine).toHaveTextContaining(address.line3);
@@ -71,13 +72,15 @@ const checkAddress = (address) => {
 
 describe('Step through the returns paper forms flow:', function () {
   before(async () => {
+    await tearDown();
+    await setUp('barebones');
     await loginAsUser(baseUrl, userEmails.billingAndData);
   });
 
   describe('navigates to the paper forms flow', () => {
     before(async () => {
       const manageTabDiv = await $('#navbar-notifications');
-      await manageTabDiv.click();
+      manageTabDiv.click();
     });
     it('sees the page header', () => {
       expect($('.govuk-heading-l')).toHaveText('Manage reports and notices');
@@ -100,7 +103,7 @@ describe('Step through the returns paper forms flow:', function () {
     it('has a text area field label', () => {
       expect($('label.govuk-label')).toHaveText('Enter a licence number');
     });
-    it('has an email field', () => {
+    it('has an input field', () => {
       expect($('textarea#licenceNumbers')).toBeVisible();
     });
     it('has a submit button', () => {
@@ -133,7 +136,7 @@ describe('Step through the returns paper forms flow:', function () {
   describe('enter a single licence number that does not have a return due', () => {
     before('populates the text area field', () => {
       const field = $('#licenceNumbers');
-      field.setValue('AT/CURR/MONTHLY/02');
+      field.setValue('AT/CURR/MONTHLY/01');
       const button = $('button[class="govuk-button"]');
       button.click();
     });
@@ -144,7 +147,7 @@ describe('Step through the returns paper forms flow:', function () {
     });
     it('it sees the notification banner with the correct message', () => {
       const notificationBanner = $('.govuk-notification-banner__heading*=There are no returns due');
-      expect(notificationBanner).toHaveText('There are no returns due for licence AT/CURR/MONTHLY/02');
+      expect(notificationBanner).toHaveText('There are no returns due for licence AT/CURR/MONTHLY/01');
     });
   });
 
@@ -162,24 +165,21 @@ describe('Step through the returns paper forms flow:', function () {
     });
     it('the notification banner with the correct message is displayed for the licence with no return due', () => {
       const notificationBanner = $('.govuk-notification-banner__heading*=There are no returns due');
-      expect(notificationBanner).toHaveText('There are no returns due for licence AT/CURR/MONTHLY/02');
+      expect(notificationBanner).toHaveText('There are no returns due for licence AT/CURR/MONTHLY/01');
     });
     it('the licence header is displayed in the list', () => {
       const licenceMonthly = $('//main/div/div').$('h2*=MONTHLY');
-      expect(licenceMonthly).toHaveText('Licence AT/CURR/MONTHLY/01');
+      expect(licenceMonthly).toHaveText('Licence AT/CURR/MONTHLY/02');
     });
 
     it('the licence return details are displayed in the list', () => {
-      const dueDateThisYear = moment().add(1, 'month').format('DD MMMM YYYY');
-      const dueDateLastYear = moment().add(-1, 'year').format('DD MMMM YYYY');
       const licenceDetails = $('//main/div/div/dl[1]');
       expect(licenceDetails.$('//div[1]/dt')).toHaveText('Licence holder');
-      expect(licenceDetails.$('//div[1]/dd')).toHaveText('acceptance-test-company');
+      expect(licenceDetails.$('//div[1]/dd')).toHaveText('Big Farm Co Ltd');
       expect(licenceDetails.$('//div[2]/dt')).toHaveText('Returns reference numbers');
-      expect(licenceDetails.$('//div[2]/dd[1]/div/div[1]/div[1]')).toHaveText('9999993');
-      expect(licenceDetails.$('//div[2]/dd[1]/div/div[1]/div[2]')).toHaveText(`Due ${dueDateThisYear}`);
-      expect(licenceDetails.$('//div[2]/dd[1]/div/div[2]/div[1]')).toHaveText('9999994');
-      expect(licenceDetails.$('//div[2]/dd[1]/div/div[2]/div[2]')).toHaveText(`Due ${dueDateLastYear}`);
+
+      licenceDetails.scrollIntoView();
+      browser.saveScreenshot(`temp/2.png`);
       expect(licenceDetails.$('//div[2]/dd[2]/a')).toHaveTextContaining('Change');
     });
 
@@ -187,17 +187,18 @@ describe('Step through the returns paper forms flow:', function () {
       const licenceDetails = $('//main/div/div/dl[1]');
       const addressLine = licenceDetails.$('//div[3]/dd[1]');
       expect(licenceDetails.$('//div[3]/dt')).toHaveText('Address');
-      expect(addressLine).toHaveTextContaining('acceptance-test-company');
+      expect(addressLine).toHaveTextContaining('Big Farm Co Ltd');
     });
 
     // check the address is displayed correctly
     checkAddress({
-      line1: 'Test Address Line 1',
-      line2: 'Test Address Line 2',
-      line3: 'Test Address Line 3',
-      line4: 'Test Address Line 4',
-      town: 'SomeCity',
-      country: 'Lebanon'
+      line1: 'Big Farm',
+      line2: 'Windy road',
+      line3: 'Buttercup meadow',
+      line4: 'Buttercup Village',
+      town: 'Testington',
+      postcode: 'TT1 1TT',
+      country: 'UK'
     });
 
     it('the licence has an address change link', () => {
@@ -212,14 +213,15 @@ describe('Step through the returns paper forms flow:', function () {
       changeLink.click();
     });
 
-    it('check the correct form and page title is diaplayed', () => {
+    it('check the correct form and page title is displayed', () => {
       const pageTitle = getPageTitle();
       expect(pageTitle).toHaveTextContaining('Which returns need a form?');
-      expect(pageTitle).toHaveTextContaining('Licence AT/CURR/MONTHLY/01');
+      expect(pageTitle).toHaveTextContaining('Licence AT/CURR/MONTHLY/02');
       expect($('form')).toBeVisible();
     });
 
     it('remove one returns reference and click continue', () => {
+      browser.saveScreenshot(`temp/1.png`);
       const returnId2 = $('input[id="returnIds-2"]');
       returnId2.click();
       const button = $('button[class="govuk-button"]');
@@ -227,10 +229,12 @@ describe('Step through the returns paper forms flow:', function () {
     });
 
     it('check returns details now contains only one returns reference', () => {
-      const dueDateThisYear = moment().add(1, 'month').format('DD MMMM YYYY');
+      const dueDate = moment('2021-01-28').format('DD MMMM YYYY');
       const licenceDetails = $('//main/div/div/dl[1]');
-      expect(licenceDetails.$('//div[2]/dd[1]/div/div[1]/div[1]')).toHaveText('9999993');
-      expect(licenceDetails.$('//div[2]/dd[1]/div/div[1]/div[2]')).toHaveText(`Due ${dueDateThisYear}`);
+      licenceDetails.scrollIntoView();
+      browser.saveScreenshot(`temp/3.png`);
+      expect(licenceDetails.$('//div[2]/dd[1]/div/div[1]/div[1]')).toHaveText('9999991');
+      expect(licenceDetails.$('//div[2]/dd[1]/div/div[1]/div[2]')).toHaveText(`Due ${dueDate}`);
       expect(licenceDetails.$('//div[2]/dd[1]/div/div[2]')).not.toBeVisible();
     });
   });
@@ -444,7 +448,7 @@ describe('Step through the returns paper forms flow:', function () {
       const pageTitle = getPageTitle();
       expect(pageTitle).toHaveTextContaining('Enter the UK postcode');
       const caption = $('.govuk-caption-l').getText();
-      expect(caption).toEqual('Licence AT/CURR/MONTHLY/01');
+      expect(caption).toEqual('Licence AT/CURR/MONTHLY/02');
       expect($('form')).toBeVisible();
       const textBox = $('input[name="postcode"]');
       expect(textBox).toBeVisible();
@@ -459,7 +463,7 @@ describe('Step through the returns paper forms flow:', function () {
       const pageTitle = getPageTitle();
       expect(pageTitle).toHaveTextContaining('Select the address');
       const caption = $('.govuk-caption-l').getText();
-      expect(caption).toEqual('Licence AT/CURR/MONTHLY/01');
+      expect(caption).toEqual('Licence AT/CURR/MONTHLY/02');
       expect($('form')).toBeVisible();
       const selectList = $('select[class="govuk-select"]');
       expect(selectList).toBeVisible();

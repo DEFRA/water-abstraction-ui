@@ -41,10 +41,6 @@ A valid JWT token is required for requests to the API. This should be appended t
 
 Please note that a mechanism for obtaining the JWT token is not yet in place.
 
-## Contributing to this project
-
-Please read the [contribution guidelines](/CONTRIBUTING.md) before submitting a pull request.
-
 ## License
 
 THIS INFORMATION IS LICENSED UNDER THE CONDITIONS OF THE OPEN GOVERNMENT LICENCE found at:

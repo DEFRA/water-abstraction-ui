@@ -37,39 +37,26 @@ chargeOrDash %}
 
   {{ batchErrors(errors) }}
 
-  {% if not batch.totals %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-3">
-        {{
-          govukWarningText({
-            text: "Totals loading. Try refreshing the page in a few minutes.",
-            iconFallbackText: "Warning"
-          })
-        }}
-      </div>
-    </div>
-  {% endif %}
-
   {{ batchHeader(pageTitle, batch) }}
 
   <div class="govuk-grid-row govuk-!-margin-bottom-3">
     <div class="govuk-grid-column-two-thirds">
       <h2 class="govuk-!-margin-bottom-0">
-        {{ billRunTotal(batch.totals.netTotal) }}
+        {{ billRunTotal(batch.netTotal) }}
       </h2>
     </div>
   </div>
 
-  {% if batch.totals.creditNoteCount %}
+  {% if batch.creditNoteCount %}
     <div class="govuk-grid-row govuk-!-margin-bottom-6">
       <div class="govuk-grid-column-one-half">
         <h2>
-          {{ creditNoteTotal(batch.totals.creditNoteCount, batch.totals.creditLineValue) }}
+          {{ creditNoteTotal(batch.creditNoteCount, batch.creditNoteValue) }}
         </h2>
       </div>
       <div class="govuk-grid-column-one-half">
         <h2>
-          {{ invoicesTotal(batch.totals.invoiceCount, batch.totals.invoiceValue) }}
+          {{ invoicesTotal(batch.invoiceCount, batch.invoiceValue) }}
         </h2>
       </div>
     </div>

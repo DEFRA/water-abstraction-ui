@@ -17,7 +17,7 @@ const getBatchInvoice = async (batchId, invoiceId) => {
     accountNumber: data.invoiceAccount.accountNumber,
     companyName: data.invoiceAccount.company.name,
     licences: data.invoiceLicences.map(invoiceLicence => ({ licenceRef: invoiceLicence.licence.licenceNumber })),
-    amount: data.totals.netTotal,
+    amount: data.netTotal,
     dateCreated: data.dateCreated
   };
 };

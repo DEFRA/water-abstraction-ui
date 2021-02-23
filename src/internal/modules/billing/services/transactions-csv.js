@@ -1,7 +1,7 @@
 'use strict';
 const moment = require('moment');
 const numberFormatter = require('../../../../shared/lib/number-formatter');
-const { mapValues, isNull, isNumber, sortBy } = require('lodash');
+const { mapValues, isNull, sortBy, get } = require('lodash');
 const mappers = require('../lib/mappers');
 
 const isNullOrUndefined = value => isNull(value) || value === undefined;
@@ -64,34 +64,33 @@ const getDebitCreditLines = (value, isCredit, debitLabel, creditLabel) => {
 };
 
 const getInvoiceData = invoice => {
-  // netAmount and isCredit are only available for sent batches
-  const invoiceTotal = Math.abs(invoice.totals ? invoice.totals.netTotal : invoice.netAmount);
-  const isCredit = invoice.totals ? invoice.totals.netTotal < 0 : invoice.isCredit;
+  const { netTotal, isCredit } = invoice;
   return {
     ...invoice.invoiceNumber && { 'Bill number': invoice.invoiceNumber },
     'Financial year': invoice.financialYear.yearEnding,
-    ...getDebitCreditLines(invoiceTotal, isCredit, 'Invoice amount', 'Credit amount')
+    ...getDebitCreditLines(netTotal, isCredit, 'Invoice amount', 'Credit amount')
   }
   ;
 };
 
 const getTransactionAmounts = trans => {
   const { value, isCredit } = trans;
-  // if there was an issue calculating the value due to
-  // unexpected data passed to the CM from NALD
-  if (isNumber(value)) {
-    return getDebitCreditLines(value, isCredit, 'Net transaction line amount(debit)', 'Net transaction line amount(credit)');
+
+  if (isNull(value)) {
+    return {
+      'Net transaction line amount(debit)': 'Error - not calculated',
+      'Net transaction line amount(credit)': 'Error - not calculated'
+    };
   }
-  return {
-    'Net transaction line amount(debit)': 'Error - not calculated',
-    'Net transaction line amount(credit)': 'Error - not calculated'
-  };
+  return getDebitCreditLines(value, isCredit, 'Net transaction line amount(debit)', 'Net transaction line amount(credit)');
 };
 
 const getChangeReason = (chargeVersions, transaction) => {
-  const { chargeElement: { chargeVersionId } } = transaction;
-  const { changeReason } = chargeVersions.find(cv => cv.id === chargeVersionId);
-  return changeReason ? changeReason.description : null;
+  const chargeVersionId = get(transaction, 'chargeElement.chargeVersionId');
+  const chargeVersion = chargeVersions.find(cv => cv.id === chargeVersionId);
+  return (chargeVersion && chargeVersion.changeReason)
+    ? chargeVersion.changeReason.description
+    : null;
 };
 
 const createCSV = async (invoices, chargeVersions) => {

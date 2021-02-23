@@ -335,11 +335,9 @@ experiment('internal/modules/billing/controller', () => {
               code: 'A',
               numericCode: 1
             },
-            totals: {
-              creditNoteCount: 2,
-              invoiceCount: 12,
-              netTotal: 4005
-            },
+            creditNoteCount: 2,
+            invoiceCount: 12,
+            netTotal: 4005,
             externalId: 1234
           },
           {
@@ -349,7 +347,7 @@ experiment('internal/modules/billing/controller', () => {
             season: 'all year',
             status: 'review',
             dateCreated: '2019-11-29T12:24:06.585Z',
-            dataUpdated: '2019-11-29T12:24:06.585Z',
+            dateUpdated: '2019-11-29T12:24:06.585Z',
             startYear: {
               yearEnding: 2020
             },
@@ -362,7 +360,11 @@ experiment('internal/modules/billing/controller', () => {
               name: 'Midlands',
               code: 'M',
               numericCode: 2
-            }
+            },
+            creditNoteCount: 5,
+            invoiceCount: 3,
+            netTotal: 4005,
+            externalId: 244
           }
         ],
         pagination: {
@@ -380,6 +382,7 @@ experiment('internal/modules/billing/controller', () => {
     test('passes the required batch list data to the view', async () => {
       const [, context] = h.view.lastCall.args;
       const { batches } = context;
+
       expect(batches).to.be.array();
       expect(batches[0].batchType).to.equal('Supplementary');
       expect(batches[0].region.name).to.equal('Anglian');
@@ -389,7 +392,7 @@ experiment('internal/modules/billing/controller', () => {
       expect(batches[1].type).to.equal('Two-part tariff');
       expect(batches[1].region.name).to.equal('Midlands');
       expect(batches[1].status).to.equal('review');
-      expect(batches[1].billCount).to.equal(null);
+      expect(batches[1].billCount).to.equal(8);
       expect(batches[1].link).to.be.equal('/billing/batch/8ae7c31b-3c5a-44b8-baa5-a10b40aef9e2/two-part-tariff-review');
     });
 
@@ -409,7 +412,7 @@ experiment('internal/modules/billing/controller', () => {
       expect(view).to.equal('nunjucks/billing/confirm-page-with-metadata');
     });
 
-    test('passes the expedcted data in the view context', async () => {
+    test('passes the expected data in the view context', async () => {
       const [, context] = h.view.lastCall.args;
       expect(context).to.contain({ foo: 'bar' });
       expect(context.batch).to.equal(batchData);

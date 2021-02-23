@@ -31,7 +31,9 @@ The required environment variables for local development can be found in the [.e
 
 ## Launching
 
-`node index.js`
+`node server-internal`
+and/or
+`node server-external`
 
 ## Security
 

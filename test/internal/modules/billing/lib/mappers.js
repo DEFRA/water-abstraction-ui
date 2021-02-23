@@ -1,5 +1,4 @@
 'use strict';
-const { omit } = require('lodash');
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
 
@@ -26,11 +25,9 @@ const batch = {
     'code': 'A',
     'numericCode': 1
   },
-  'totals': {
-    'creditNoteCount': 2,
-    'invoiceCount': 4,
-    'netTotal': '2003'
-  }
+  'creditNoteCount': 2,
+  'invoiceCount': 4,
+  'netTotal': '2003'
 };
 
 const LICENCE_1 = '01/123/456/A';
@@ -198,9 +195,15 @@ experiment('modules/billing/lib/mappers', () => {
       });
     });
 
-    experiment('when batch.totals are not set', () => {
+    experiment('when batch totals are null', () => {
       beforeEach(async () => {
-        result = mappers.mapBatchListRow(omit(batch, 'totals'));
+        const pendingBatch = {
+          ...batch,
+          netTotal: null,
+          invoiceCount: null,
+          creditNoteCount: null
+        };
+        result = mappers.mapBatchListRow(pendingBatch);
       });
 
       test('bill count is null', async () => {

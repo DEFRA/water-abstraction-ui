@@ -118,4 +118,15 @@ experiment('services/water/CompaniesService', () => {
       )).to.be.true();
     });
   });
+
+  experiment('.getCompanyInvoiceAccounts', () => {
+    test('passes the expected URL and query to the service', async () => {
+      const COMPANY_ID = 'test-company-id';
+      const REGION_ID = 'test-region-id';
+      await service.getCompanyInvoiceAccounts(COMPANY_ID, REGION_ID);
+      expect(serviceRequest.get.calledWith(
+        `${BASE_URL}/companies/${COMPANY_ID}/invoice-accounts`
+      )).to.be.true();
+    });
+  });
 });

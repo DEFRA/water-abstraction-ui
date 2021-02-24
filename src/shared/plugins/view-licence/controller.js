@@ -105,7 +105,13 @@ const getLicence = async (request, h) => {
   const { licenceNumber } = request.licence.summary;
   const licenceId = request.licence.summary.waterLicence.id;
 
-  const { getLicenceSummaryReturns, getReturnPath, canShowCharging, getLicenceAgreements } = h.realm.pluginOptions;
+  const {
+    getLicenceSummaryReturns,
+    getReturnPath,
+    canShowCharging,
+    getLicenceAgreements,
+    getLicenceInvoices
+  } = h.realm.pluginOptions;
   const isChargingUser = hasScope(request, scope.charging);
 
   const returns = await getLicenceSummaryReturns(licenceNumber);
@@ -123,6 +129,12 @@ const getLicence = async (request, h) => {
     isChargingUser,
     featureToggles: h.realm.pluginOptions.featureToggles
   };
+
+  if (isChargingUser) {
+    const bills = await getLicenceInvoices(licenceId);
+    view.bills = bills.data.filter(x => x.invoice.invoiceNumber);
+    view.hasMoreBills = hasMultiplePages(bills.pagination);
+  }
 
   if (showChargeVersions && isChargingUser) {
     const agreements = await getLicenceAgreements(licenceId);

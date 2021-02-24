@@ -16,10 +16,11 @@ const accountRoutes = require('./account/routes');
 const unlinkLicenceRoutes = require('./unlink-licence/routes');
 const billingRoutes = require('./billing/routes');
 const chargeInformationRoutes = require('./charge-information/routes');
-const invoiceAccRoutes = require('./invoice-accounts/routes');
 const agreementsRoutes = require('./agreements/routes');
 const billingAccountsRoutes = require('./billing-accounts/routes');
 const reportingRoutes = require('./reporting/routes');
+const kpiReporting = require('../../internal/modules/kpi-reporting/routes');
+const licences = require('../../internal/modules/licences/routes');
 
 module.exports = [
   ...Object.values(coreRoutes),
@@ -41,8 +42,9 @@ module.exports = [
   ...Object.values(unlinkLicenceRoutes),
   ...Object.values(billingRoutes),
   ...Object.values(chargeInformationRoutes),
-  ...Object.values(invoiceAccRoutes),
   ...Object.values(agreementsRoutes),
   ...Object.values(billingAccountsRoutes),
-  ...Object.values(reportingRoutes)
+  ...Object.values(reportingRoutes),
+  ...Object.values(kpiReporting),
+  ...Object.values(licences)
 ];

@@ -32,11 +32,7 @@ const waterRequest = async (tail, overrides = {}) => {
  * Sets up acceptance test data
  * @return {Promise}
  */
-const setUp = () => waterRequest('/acceptance-tests/set-up', {
-  form: {
-    includeInternalUsers: true
-  }
-});
+const setUp = (key) => waterRequest('/acceptance-tests/set-up-from-yaml/' + key);
 
 /**
  * Tears down acceptance test data

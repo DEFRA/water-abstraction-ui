@@ -98,18 +98,23 @@ experiment('internal/modules/charge-information/lib/reducer', () => {
   experiment('when the reason is setBillingAccount', () => {
     let action;
     let state;
+    const BILLING_ACCOUNT_ID = 'test-new-id';
 
     beforeEach(async () => {
       action = {
         type: ACTION_TYPES.setBillingAccount,
-        payload: 'updated-billing-account-data'
+        payload: {
+          billingAccountId: BILLING_ACCOUNT_ID
+        }
       };
 
       state = reducer(initialState, action);
     });
 
     test('the abstractionData is updated', async () => {
-      expect(state.invoiceAccount).to.equal('updated-billing-account-data');
+      expect(state.invoiceAccount).to.equal({
+        id: BILLING_ACCOUNT_ID
+      });
     });
 
     test('the other data is untouched', async () => {

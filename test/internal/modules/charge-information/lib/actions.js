@@ -8,6 +8,7 @@ const {
 
 const { expect } = require('@hapi/code');
 const moment = require('moment');
+const uuid = require('uuid/v4');
 
 const actions = require('internal/modules/charge-information/lib/actions');
 
@@ -164,67 +165,15 @@ experiment('internal/modules/charge-information/lib/actions', () => {
   });
 
   experiment('.setBillingAccount', () => {
-    let request;
-
-    beforeEach(async () => {
-      request = {
-        pre: {
-          billingAccounts: [
-            {
-              id: '00000000-0000-0000-0000-000000001111',
-              invoiceAccountAddresses: [
-                {
-                  id: '00000000-0000-0000-0000-000000002222',
-                  invoiceAccountId: '00000000-0000-0000-0000-000000001111'
-                },
-                {
-                  id: '00000000-0000-0000-0000-000000003333',
-                  invoiceAccountId: '00000000-0000-0000-0000-000000001111'
-                }
-              ],
-              accountNumber: 'A10000000A'
-            }
-          ]
-        }
-      };
-    });
-
     experiment('when the user wants to set up a new account', () => {
       test('the payload is a key', async () => {
-        const formValues = { invoiceAccountAddress: 'set-up-new-billing-account' };
-        const action = actions.setBillingAccount(request, formValues);
+        const id = uuid();
+        const action = actions.setBillingAccount(id);
 
         expect(action).to.equal({
           type: actions.ACTION_TYPES.setBillingAccount,
           payload: {
-            invoiceAccountAddress: 'set-up-new-billing-account',
-            invoiceAccount: null
-          }
-        });
-      });
-    });
-
-    experiment('when an existing account is selected', () => {
-      test('the payload contains the account and the invoice account address id', async () => {
-        const formValues = { invoiceAccountAddress: '00000000-0000-0000-0000-000000002222' };
-        const action = actions.setBillingAccount(request, formValues);
-
-        expect(action).to.equal({
-          type: actions.ACTION_TYPES.setBillingAccount,
-          payload: {
-            id: '00000000-0000-0000-0000-000000001111',
-            invoiceAccountAddress: '00000000-0000-0000-0000-000000002222',
-            invoiceAccountAddresses: [
-              {
-                id: '00000000-0000-0000-0000-000000002222',
-                invoiceAccountId: '00000000-0000-0000-0000-000000001111'
-              },
-              {
-                id: '00000000-0000-0000-0000-000000003333',
-                invoiceAccountId: '00000000-0000-0000-0000-000000001111'
-              }
-            ],
-            accountNumber: 'A10000000A'
+            billingAccountId: id
           }
         });
       });

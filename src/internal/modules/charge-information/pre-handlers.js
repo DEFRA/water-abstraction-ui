@@ -1,3 +1,5 @@
+'use strict';
+
 const Boom = require('@hapi/boom');
 const services = require('../../lib/connectors/services');
 const { loadLicence } = require('shared/lib/pre-handlers/licences');
@@ -71,18 +73,6 @@ const loadDefaultCharges = async request => {
     return [];
   } catch (err) {
     return errorHandler(err, `Default charges not found for licence ${licenceId}`);
-  }
-};
-
-const loadBillingAccounts = async request => {
-  const { licenceNumber, id } = request.pre.licence;
-  const { startDate } = request.pre.draftChargeInformation.dateRange;
-
-  try {
-    const licenceAccounts = await services.water.licences.getLicenceAccountsByRefAndDate(licenceNumber, startDate);
-    return licenceAccounts;
-  } catch (err) {
-    return errorHandler(err, `Cannot load billing accounts for licence ${id}`);
   }
 };
 
@@ -173,26 +163,22 @@ const loadLicenceHolderRole = async request => {
   }
 };
 
-const saveInvoiceAccount = async request => {
-  const { invoiceAccountId } = request.query;
+const getBillingAccount = invoiceAccountId => invoiceAccountId
+  ? services.water.invoiceAccounts.getInvoiceAccount(invoiceAccountId)
+  : null;
+
+const loadBillingAccount = async request => {
   const { licenceId } = request.params;
-  const chargeInfo = request.getDraftChargeInformation(licenceId);
-  if (invoiceAccountId) {
-    try {
-      const invoiceAccount = await services.water.invoiceAccounts.getInvoiceAccount(invoiceAccountId);
-      chargeInfo.invoiceAccount = {
-        ...invoiceAccount,
-        invoiceAccountAddress: invoiceAccount.invoiceAccountAddresses[0].id
-      };
-      request.setDraftChargeInformation(licenceId, chargeInfo);
-    } catch (err) {
-      return errorHandler(err, `Cannot load invoice account ${invoiceAccountId}`);
-    }
-  }
-  return chargeInfo;
+  const state = request.getDraftChargeInformation(licenceId);
+  const invoiceAccountId = get(state, 'invoiceAccount.id');
+  return getBillingAccount(invoiceAccountId);
 };
 
-exports.loadBillingAccounts = loadBillingAccounts;
+const loadBillingAccountByChargeVersion = async request => {
+  const invoiceAccountId = get(request, 'pre.chargeVersion.invoiceAccount.id');
+  return getBillingAccount(invoiceAccountId);
+};
+
 exports.loadChargeableChangeReasons = loadChargeableChangeReasons;
 exports.loadChargeVersion = loadChargeVersion;
 exports.loadChargeVersions = loadChargeVersions;
@@ -205,4 +191,5 @@ exports.loadNonChargeableChangeReasons = loadNonChargeableChangeReasons;
 exports.loadLicencesWithoutChargeVersions = loadLicencesWithoutChargeVersions;
 exports.loadLicencesWithWorkflowsInProgress = loadLicencesWithWorkflowsInProgress;
 exports.loadLicenceHolderRole = loadLicenceHolderRole;
-exports.saveInvoiceAccount = saveInvoiceAccount;
+exports.loadBillingAccount = loadBillingAccount;
+exports.loadBillingAccountByChargeVersion = loadBillingAccountByChargeVersion;

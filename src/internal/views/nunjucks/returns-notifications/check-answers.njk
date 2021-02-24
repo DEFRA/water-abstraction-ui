@@ -7,10 +7,13 @@ formErrorSummary %}
 {% from "crm/company.njk" import company %}
 {% from "crm/address.njk" import address %}
 {% from "forms/index.njk" import formRender %}
+{% from "./nunjucks/returns-notifications/macros/no-returns-due-banner.njk" import noReturnsDueBanner %}
 
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
+
+      {{ noReturnsDueBanner(licencesWithNoReturns) }}
 
       {{ title(pageTitle) }}
 

@@ -1,11 +1,13 @@
+'use strict';
+
 const { formFactory, fields } = require('shared/lib/forms');
 const Joi = require('@hapi/joi');
+const { accountTypes } = require('shared/lib/constants');
 
-const form = (request, accountTypeDefaultValue, personNameDefaultValue) => {
+const form = request => {
   const { csrfToken } = request.view;
-  const { sessionKey } = request.query;
 
-  const f = formFactory('/contact-entry/new/account-type');
+  const f = formFactory(request.path);
 
   f.fields.push(fields.radio('accountType', {
     errors: {
@@ -14,10 +16,10 @@ const form = (request, accountTypeDefaultValue, personNameDefaultValue) => {
       }
     },
     choices: [
-      { value: 'organisation', label: 'Company' },
+      { value: accountTypes.organisation, label: 'Company' },
       { divider: 'or' },
       {
-        value: 'person',
+        value: accountTypes.person,
         label: 'Individual',
         fields: [fields.text('personName', {
           errors: {
@@ -26,26 +28,24 @@ const form = (request, accountTypeDefaultValue, personNameDefaultValue) => {
             }
           },
           label: 'Full name'
-        }, personNameDefaultValue)]
+        })]
       }]
-  }, accountTypeDefaultValue));
+  }));
 
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-  f.fields.push(fields.hidden('sessionKey', {}, sessionKey));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 
   return f;
 };
 
-const schema = {
+const schema = () => Joi.object({
   csrf_token: Joi.string().uuid().required(),
-  sessionKey: Joi.string().uuid().required(),
-  accountType: Joi.string().required().allow(['organisation', 'person']),
+  accountType: Joi.string().required().valid([accountTypes.organisation, accountTypes.person]),
   personName: Joi.when('accountType', {
-    is: 'person',
-    then: Joi.string().required()
+    is: accountTypes.person,
+    then: Joi.string().required().trim()
   })
-};
+});
 
 exports.form = form;
 exports.schema = schema;

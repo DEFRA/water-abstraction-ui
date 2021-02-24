@@ -10,7 +10,6 @@ const {
 const sandbox = require('sinon').createSandbox();
 
 const session = require('internal/modules/contact-entry/lib/session');
-const { CONTACT_TYPES } = require('internal/modules/contact-entry/lib/constants');
 
 const helpers = require('internal/modules/contact-entry/lib/helpers');
 
@@ -29,21 +28,6 @@ experiment('src/internal/modules/contact-entry/lib/helpers', () => {
   });
 
   afterEach(() => sandbox.restore());
-
-  experiment('.getSelectedContact', () => {
-    test('returns department data if selected value is "department"', () => {
-      result = helpers.getSelectedContact(CONTACT_TYPES.department, 'Department name');
-      expect(result).to.equal({
-        type: CONTACT_TYPES.department,
-        department: 'Department name'
-      });
-    });
-
-    test('returns contact id if selected value is not "department"', () => {
-      result = helpers.getSelectedContact(CONTACT_ID);
-      expect(result).to.equal({ contactId: CONTACT_ID });
-    });
-  });
 
   experiment('.getContactFromSession', () => {
     test('returns contact data from the session', () => {

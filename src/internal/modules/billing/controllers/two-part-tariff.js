@@ -247,7 +247,7 @@ const getApproveReview = (request, h) => {
 const postApproveReview = async (request, h) => {
   const { batchId } = request.params;
   const { data: { batch } } = await services.water.billingBatches.approveBatchReview(batchId);
-  return h.redirect(routing.getBillingBatchRoute(batch));
+  return h.redirect(routing.getBillingBatchRoute(batch, { isBackEnabled: true }));
 };
 
 exports.getTwoPartTariffReview = getTwoPartTariffReview;

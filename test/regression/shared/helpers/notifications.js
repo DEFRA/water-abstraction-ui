@@ -13,7 +13,7 @@ const request = require('request-promise-native');
 const getLastNotifications = async (baseUrl, email) => {
   const url = `${baseUrl}/notifications/last?${querystring.encode({ email })}`;
   const response = await request.get(url);
-  return response;
+  return get(JSON.parse(response), `data[0]`, {});
 };
 
 /**
@@ -24,9 +24,37 @@ const getLastNotifications = async (baseUrl, email) => {
  */
 const getPersonalisation = async (baseUrl, email, param) => {
   const lastNotification = await getLastNotifications(baseUrl, email);
-  const personalisation = await get(JSON.parse(lastNotification), `data[0].personalisation.${param}`);
+  const personalisation = await get(lastNotification, `personalisation.${param}`);
 
-  return personalisation;
+  const parsedPersonalisation = personalisation.replace((/^https?:\/\/[^/]+/g).exec(personalisation), baseUrl);
+
+  return parsedPersonalisation;
 };
 
+/**
+ * Calls the Notify callback endpoint, to simulate a response from Notify
+ */
+const simulateNotifyCallback = async (notificationId) => {
+  const requestBody = {
+    id: notificationId,
+    reference: notificationId,
+    status: 'delivered',
+    notification_type: 'email',
+    to: 'irrelevant',
+    created_at: new Date().toISOString(),
+    completed_at: new Date().toISOString(),
+    sent_at: new Date().toISOString()
+  };
+  const { baseUrl: frontendBaseUrl } = require('../../external/config');
+  const url = `${frontendBaseUrl}/notify/callback`;
+  return request.post(url, {
+    form: requestBody,
+    headers: {
+      authorization: `Bearer ${process.env.NOTIFY_CALLBACK_TOKEN}`
+    }
+  });
+};
+
+exports.getLastNotifications = getLastNotifications;
 exports.getPersonalisation = getPersonalisation;
+exports.simulateNotifyCallback = simulateNotifyCallback;

@@ -56,11 +56,13 @@ experiment('internal/modules/charge-information/routes/view-charge-information',
     });
 
     test('has the expected pre handlers', async () => {
-      expect(routes.getViewChargeInformation.options.pre.length).to.equal(2);
+      expect(routes.getViewChargeInformation.options.pre.length).to.equal(3);
       expect(routes.getViewChargeInformation.options.pre[0].method).to.equal(preHandlers.loadLicence);
       expect(routes.getViewChargeInformation.options.pre[0].assign).to.equal('licence');
       expect(routes.getViewChargeInformation.options.pre[1].method).to.equal(preHandlers.loadChargeVersion);
       expect(routes.getViewChargeInformation.options.pre[1].assign).to.equal('chargeVersion');
+      expect(routes.getViewChargeInformation.options.pre[2].method).to.equal(preHandlers.loadBillingAccountByChargeVersion);
+      expect(routes.getViewChargeInformation.options.pre[2].assign).to.equal('billingAccount');
     });
   });
 
@@ -106,13 +108,15 @@ experiment('internal/modules/charge-information/routes/view-charge-information',
     });
 
     test('has the expected pre handlers', async () => {
-      expect(routes.getReviewChargeInformation.options.pre.length).to.equal(3);
+      expect(routes.getReviewChargeInformation.options.pre.length).to.equal(4);
       expect(routes.getReviewChargeInformation.options.pre[0].method).to.equal(preHandlers.loadLicence);
       expect(routes.getReviewChargeInformation.options.pre[0].assign).to.equal('licence');
       expect(routes.getReviewChargeInformation.options.pre[1].method).to.equal(preHandlers.loadChargeVersionWorkflow);
       expect(routes.getReviewChargeInformation.options.pre[1].assign).to.equal('draftChargeInformation');
       expect(routes.getReviewChargeInformation.options.pre[2].method).to.equal(preHandlers.loadIsChargeable);
       expect(routes.getReviewChargeInformation.options.pre[2].assign).to.equal('isChargeable');
+      expect(routes.getReviewChargeInformation.options.pre[3].method).to.equal(preHandlers.loadBillingAccount);
+      expect(routes.getReviewChargeInformation.options.pre[3].assign).to.equal('billingAccount');
     });
   });
 });

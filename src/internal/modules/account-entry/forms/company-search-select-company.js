@@ -1,6 +1,9 @@
+'use strict';
+
 const { formFactory, fields } = require('shared/lib/forms');
 const Joi = require('@hapi/joi');
 const { getAddressText } = require('../lib/helpers');
+const routing = require('../lib/routing');
 
 const getCompanyText = row =>
   `${row.company.name}, ${row.address ? getAddressText(row.address) : row.company.companyNumber}`;
@@ -15,11 +18,12 @@ const getCompanyChoices = companies =>
     })];
 
 const form = (request, defaultValue) => {
+  const { q } = request.query;
+  const { key } = request.params;
   const { csrfToken } = request.view;
-  const { sessionKey } = request.query;
   const { companiesHouseResults } = request.pre;
 
-  const f = formFactory('/contact-entry/new/details/company-search/select-company');
+  const f = formFactory(routing.getCompanySearch(key, q));
 
   f.fields.push(fields.dropdown('selectedCompaniesHouseNumber', {
     errors: {
@@ -35,17 +39,15 @@ const form = (request, defaultValue) => {
   }, defaultValue));
 
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-  f.fields.push(fields.hidden('sessionKey', {}, sessionKey));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 
   return f;
 };
 
-const schema = {
+const schema = () => Joi.object({
   csrf_token: Joi.string().uuid().required(),
-  sessionKey: Joi.string().uuid().required(),
   selectedCompaniesHouseNumber: Joi.string().required()
-};
+});
 
 exports.form = form;
 exports.schema = schema;

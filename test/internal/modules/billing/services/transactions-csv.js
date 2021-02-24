@@ -16,7 +16,7 @@ const batch = {
   billRunNumber: 2345
 };
 
-const invoicesForBatch = [
+const invoice =
   {
     id: '0817794f-b5b4-47e8-8172-3411bd6165bd',
     invoiceLicences: [
@@ -26,7 +26,7 @@ const invoicesForBatch = [
           {
             value: 4005,
             isCredit: false,
-            agreements: [{ code: '126' }, { code: '127' }, { code: '130W' }],
+            agreements: [{ code: '130W' }],
             status: 'charge_created',
             id: '6ae19381-7f2b-4504-be94-429c78a71b5c',
             authorisedDays: 152,
@@ -41,7 +41,9 @@ const invoicesForBatch = [
             isCompensationCharge: false,
             chargeElement: {
               id: '13597728-0390-48b3-8c97-adbc17b6111a',
+              chargeVersionId: '967a1db8-e161-4fd7-b45f-9e96db97202e',
               source: 'unsupported',
+              eiucSource: 'other',
               season: 'winter',
               loss: 'high',
               abstractionPeriod: {
@@ -83,6 +85,7 @@ const invoicesForBatch = [
             isCompensationCharge: false,
             chargeElement: {
               id: '13597728-0390-48b3-8c97-adbc17b6111a',
+              chargeVersionId: '967a1db8-e161-4fd7-b45f-9e96db97202e',
               source: 'unsupported',
               season: 'winter',
               loss: 'high',
@@ -145,44 +148,79 @@ const invoicesForBatch = [
       addressLine1: 'Little  Orchard',
       addressLine2: 'Orchard lane',
       addressLine3: 'Orchard Hill',
-      addressLine4: 'The Royal Gala Valey'
-    }
+      addressLine4: 'The Royal Gala Valley'
+    },
+    financialYear: {
+      yearEnding: 2019
+    },
+    netTotal: 123456
+  };
+
+const chargeVersions = [{
+  id: '967a1db8-e161-4fd7-b45f-9e96db97202e',
+  changeReason: {
+    description: 'change reason description'
   }
-];
+}, {
+  id: '02b78cd4-e419-40e3-93f9-f405c9ccc009',
+  changeReason: {
+    description: 'irrelevant change reason description'
+  }
+}];
 
 experiment('internal/modules/billing/services/transactions-csv', async () => {
-  experiment('_getTransactionData', async () => {
-    const transaction = invoicesForBatch[0].invoiceLicences[0].transactions[0];
-    test('returns expected transaction data', async () => {
-      const transactionData = transactionsCSV._getTransactionData(transaction);
-      expect(transactionData.value).to.equal('40.05');
-
-      expect(transactionData.isCredit).to.equal(false);
-      expect(transactionData.isCompensationCharge).to.equal(false);
-      expect(transactionData.source).to.equal(transaction.chargeElement.source);
-      expect(transactionData.season).to.equal(transaction.chargeElement.season);
-      expect(transactionData.loss).to.equal(transaction.chargeElement.loss);
-      expect(transactionData.description).to.equal(transaction.description);
-      expect(transactionData.agreements).to.equal('126, 127, 130W');
-      expect(transactionData.chargePeriodStartDate).to.equal(transaction.chargePeriod.startDate);
-      expect(transactionData.chargePeriodEndDate).to.equal(transaction.chargePeriod.endDate);
-      expect(transactionData.authorisedDays).to.equal(transaction.authorisedDays);
-      expect(transactionData.billableDays).to.equal(transaction.billableDays);
-      expect(transactionData.absPeriodStartDate).to.equal('1 Nov');
-      expect(transactionData.absPeriodEndDate).to.equal('31 Mar');
-      expect(transactionData.authorisedAnnualQuantity).to.equal(transaction.chargeElement.authorisedAnnualQuantity);
-      expect(transactionData.billableAnnualQuantity).to.equal(transaction.chargeElement.billableAnnualQuantity);
-      expect(transactionData.volume).to.equal(transaction.volume);
-      expect(transactionData.calculatedVolume).to.equal(transaction.billingVolume.calculatedVolume);
-      expect(transactionData.isDeMinimis).to.equal(transaction.isDeMinimis);
+  experiment('_getTransactionData maps', async () => {
+    let transaction, transactionData;
+    beforeEach(() => {
+      transaction = invoice.invoiceLicences[0].transactions[0];
+      transactionData = transactionsCSV._getTransactionData(transaction);
     });
 
-    test('handles a null transaction value', () => {
-      const transactionData = transactionsCSV._getTransactionData({
-        ...transaction,
-        value: null
-      });
-      expect(transactionData.value).to.equal('Error - not calculated');
+    test('isDeMinimis flag as Y/N', () => {
+      expect(transactionData.isDeMinimis).to.equal('N');
+    });
+
+    test('description as is', () => {
+      expect(transactionData.description).to.equal(transaction.description);
+    });
+
+    test('compensation charge as Y/N to user friendly heading', () => {
+      expect(transactionData['Compensation charge']).to.equal('N');
+    });
+
+    test('charge element data to user friendly headings', () => {
+      expect(transactionData['Authorised annual quantity']).to.equal(transaction.chargeElement.authorisedAnnualQuantity);
+      expect(transactionData['Billable annual quantity']).to.equal(transaction.chargeElement.billableAnnualQuantity);
+      expect(transactionData['Source']).to.equal(transaction.chargeElement.source);
+      expect(transactionData['Adjusted source']).to.equal(transaction.chargeElement.eiucSource);
+      expect(transactionData['Season']).to.equal(transaction.chargeElement.season);
+      expect(transactionData['Loss']).to.equal(transaction.chargeElement.loss);
+      expect(transactionData['Purpose code']).to.equal(transaction.chargeElement.purposeUse.code);
+      expect(transactionData['Purpose name']).to.equal(transaction.chargeElement.purposeUse.name);
+      expect(transactionData['Abstraction period start date']).to.equal('1 Nov');
+      expect(transactionData['Abstraction period end date']).to.equal('31 Mar');
+    });
+
+    test('agreement to user friendly heading', () => {
+      expect(transactionData['Agreement code']).to.equal('130W');
+    });
+
+    test('charge period to user friendly headings', () => {
+      expect(transactionData['Charge period start date']).to.equal(transaction.chargePeriod.startDate);
+      expect(transactionData['Charge period end date']).to.equal(transaction.chargePeriod.endDate);
+    });
+
+    test('authorised days to user friendly heading', () => {
+      expect(transactionData['Authorised days']).to.equal(transaction.authorisedDays);
+    });
+
+    test('billable days to user friendly heading', () => {
+      expect(transactionData['Billable days']).to.equal(transaction.billableDays);
+    });
+
+    test('quantities to user friendly heading', () => {
+      expect(transactionData['Quantity']).to.equal(transaction.volume);
+      expect(transactionData['Calculated quantity']).to.equal(transaction.billingVolume.calculatedVolume);
     });
 
     test('handles multiple agreements', async () => {
@@ -190,7 +228,7 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
         ...transaction,
         agreements: [{ code: '126' }, { code: '127' }, { code: '130W' }]
       });
-      expect(transactionData.agreements).to.equal('126, 127, 130W');
+      expect(transactionData['Agreement code']).to.equal('126, 127, 130W');
     });
 
     test('handles undefined billing volume', async () => {
@@ -198,7 +236,7 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
         ...transaction,
         billingVolume: undefined
       });
-      expect(transactionData.calculatedVolume).to.be.null();
+      expect(transactionData['Calculated quantity']).to.be.null();
     });
 
     test('handles minimum charge transactions', async () => {
@@ -222,78 +260,146 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
       };
 
       const transactionData = transactionsCSV._getTransactionData(minChargeTransaction);
-      expect(transactionData.value).to.equal('14.68');
-      expect(transactionData.isCredit).to.equal(false);
-      expect(transactionData.isCompensationCharge).to.equal(false);
+      expect(transactionData.isDeMinimis).to.equal('N');
       expect(transactionData.description).to.equal(minChargeTransaction.description);
-      expect(transactionData.agreements).to.equal('');
-      expect(transactionData.chargePeriodStartDate).to.equal(minChargeTransaction.chargePeriod.startDate);
-      expect(transactionData.chargePeriodEndDate).to.equal(minChargeTransaction.chargePeriod.endDate);
-      expect(transactionData.isDeMinimis).to.equal(minChargeTransaction.isDeMinimis);
+      expect(transactionData['Compensation charge']).to.equal('N');
+      expect(transactionData['Agreement code']).to.equal('');
+      expect(transactionData['Charge period start date']).to.equal(minChargeTransaction.chargePeriod.startDate);
+      expect(transactionData['Charge period end date']).to.equal(minChargeTransaction.chargePeriod.endDate);
+    });
+  });
+
+  experiment('_getInvoiceData', async () => {
+    let invoiceData;
+    beforeEach(() => {
+      invoiceData = transactionsCSV._getInvoiceData(invoice);
+    });
+
+    experiment('invoice number', () => {
+      test('does not exist if not present', async () => {
+        expect(invoiceData['Bill number']).to.be.undefined();
+      });
+
+      test('is mapped to user friendly heading when present', async () => {
+        invoiceData = transactionsCSV._getInvoiceData({
+          ...invoice, invoiceNumber: 'IIA123456'
+        });
+        expect(invoiceData['Bill number']).to.equal('IIA123456');
+      });
+    });
+
+    test('maps financial year to user friendly heading', async () => {
+      expect(invoiceData['Financial year']).to.equal(invoice.financialYear.yearEnding);
+    });
+
+    experiment('maps invoice total as expected when', () => {
+      experiment('invoice amounts come from CM', () => {
+        test('and the total is positive', async () => {
+          expect(invoiceData['Invoice amount']).to.equal('1,234.56');
+          expect(invoiceData['Credit amount']).to.equal(null);
+        });
+
+        test('and the total is negative', async () => {
+          invoice.netTotal = -123456;
+          invoice.isCredit = true;
+          invoiceData = transactionsCSV._getInvoiceData(invoice);
+
+          expect(invoiceData['Invoice amount']).to.equal(null);
+          expect(invoiceData['Credit amount']).to.equal('-1,234.56');
+        });
+      });
+
+      experiment('invoice amounts come from WRLS', () => {
+        test('and the isCredit flag is false', async () => {
+          invoice.netTotal = 123456;
+          invoice.isCredit = false;
+          invoiceData = transactionsCSV._getInvoiceData(invoice);
+
+          expect(invoiceData['Invoice amount']).to.equal('1,234.56');
+          expect(invoiceData['Credit amount']).to.equal(null);
+        });
+
+        test('and the isCredit flag is true', async () => {
+          invoice.netTotal = -123456;
+          invoice.isCredit = true;
+          invoiceData = transactionsCSV._getInvoiceData(invoice);
+
+          expect(invoiceData['Invoice amount']).to.equal(null);
+          expect(invoiceData['Credit amount']).to.equal('-1,234.56');
+        });
+      });
     });
   });
 
   experiment('_getInvoiceAccountData', async () => {
-    const invoiceAccount = invoicesForBatch[0].invoiceAccount;
-    test('returns transaction data in expected order', async () => {
-      const invoiceAccountData = transactionsCSV._getInvoiceAccountData(invoiceAccount);
-      expect(invoiceAccountData.accountNumber).to.equal(invoiceAccount.accountNumber);
-      expect(invoiceAccountData.companyName).to.equal(invoiceAccount.company.name);
+    let invoiceAccount, invoiceAccountData;
+    beforeEach(() => {
+      invoiceAccount = invoice.invoiceAccount;
+      invoiceAccountData = transactionsCSV._getInvoiceAccountData(invoiceAccount);
+    });
+
+    test('maps account number to user friendly heading', async () => {
+      expect(invoiceAccountData['Billing account number']).to.equal(invoiceAccount.accountNumber);
+    });
+
+    test('maps account number to user friendly heading', async () => {
+      expect(invoiceAccountData['Customer name']).to.equal(invoiceAccount.company.name);
+    });
+  });
+
+  experiment('_getTransactionAmounts', async () => {
+    test('when value is a number, value is mapped to relevant line', async () => {
+      const transactionLines = transactionsCSV._getTransactionAmounts({ value: 123456, isCredit: false });
+      expect(transactionLines['Net transaction line amount(debit)']).to.equal('1,234.56');
+      expect(transactionLines['Net transaction line amount(credit)']).to.be.null();
+    });
+
+    test('when value is null, an error message is mapped to both lines', async () => {
+      const transactionLines = transactionsCSV._getTransactionAmounts({ value: null });
+      expect(transactionLines['Net transaction line amount(debit)']).to.equal('Error - not calculated');
+      expect(transactionLines['Net transaction line amount(credit)']).to.equal('Error - not calculated');
     });
   });
 
   experiment('.createCSV', async () => {
     let csvData;
-    const expectedKeys = [
-      'licenceNumber',
-      'region',
-      'isWaterUndertaker',
-      'historicalArea',
-      'value',
-      'isCredit',
-      'isCompensationCharge',
-      'source',
-      'season',
-      'chargeElementPurposeCode',
-      'chargeElementPurposeName',
-      'loss',
-      'description',
-      'agreements',
-      'chargePeriodStartDate',
-      'chargePeriodEndDate',
-      'authorisedDays',
-      'billableDays',
-      'absPeriodStartDate',
-      'absPeriodEndDate',
-      'authorisedAnnualQuantity',
-      'billableAnnualQuantity',
-      'calculatedVolume',
-      'volume',
-      'accountNumber',
-      'companyName'
-    ];
 
     beforeEach(async () => {
-      csvData = await transactionsCSV.createCSV(invoicesForBatch);
+      csvData = await transactionsCSV.createCSV([invoice], chargeVersions);
     });
 
-    test('csvData includes the all the required data keys', async () => {
-      expect(Object.keys(csvData[0])).to.include(expectedKeys);
+    test('licence number is mapped to user friendly heading', async () => {
+      expect(csvData[0]['Licence number']).to.equal('1/23/45/*S/6789');
     });
 
-    test('includes the tail data', async () => {
-      expect(csvData[0].licenceNumber).to.equal('1/23/45/*S/6789');
-      expect(csvData[0].region).to.equal('Anglian');
-      expect(csvData[0].isWaterUndertaker).to.equal('false');
-      expect(csvData[0].historicalArea).to.equal('AREA');
-      expect(csvData[0].accountNumber).to.equal(invoicesForBatch[0].invoiceAccount.accountNumber);
-      expect(csvData[0].companyName).to.equal(invoicesForBatch[0].invoiceAccount.company.name);
+    test('correct charge information reason is mapped', async () => {
+      expect(csvData[0]['Charge information reason']).to.equal('change reason description');
+    });
+
+    test('region is mapped to user friendly heading', async () => {
+      expect(csvData[0]['Region']).to.equal('Anglian');
+    });
+
+    test('de minimis is mapped to user friendly heading', async () => {
+      expect(csvData[0]['De minimis rule']).to.equal('N');
+    });
+
+    test('description is mapped to user friendly heading', async () => {
+      expect(csvData[0]['Description']).to.equal('The description - with 007');
+    });
+
+    test('water company is mapped to user friendly heading', async () => {
+      expect(csvData[0]['Water company']).to.equal('N');
+    });
+
+    test('historical area is mapped to user friendly heading', async () => {
+      expect(csvData[0]['Historical area']).to.equal('AREA');
     });
 
     test('creates a line for each transaction', async () => {
-      const licenceNumber = invoicesForBatch[0].invoiceLicences[0].licence.licenceNumber;
-      expect(csvData[0].licenceNumber).to.equal(licenceNumber);
-      expect(csvData[1].licenceNumber).to.equal(licenceNumber);
+      const licenceNumber = invoice.invoiceLicences[0].licence.licenceNumber;
+      expect(csvData[0]['Licence number']).to.equal(licenceNumber);
+      expect(csvData[1]['Licence number']).to.equal(licenceNumber);
     });
   });
 

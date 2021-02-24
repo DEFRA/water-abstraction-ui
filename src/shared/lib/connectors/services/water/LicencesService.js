@@ -105,6 +105,12 @@ class LicencesService extends ServiceClient {
     return this.serviceRequest.get(url, options);
   }
 
+  getInvoicesByLicenceId (licenceId, pagination) {
+    const url = this.joinUrl('licences', licenceId, 'invoices');
+    const options = { qs: pagination };
+    return this.serviceRequest.get(url, options);
+  }
+
   getDocumentByLicenceId (licenceId) {
     const url = this.joinUrl('licences', licenceId, 'document');
     return getRequest(this.serviceRequest, url);

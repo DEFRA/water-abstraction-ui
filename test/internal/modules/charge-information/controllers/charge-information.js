@@ -12,7 +12,6 @@ const { find } = require('lodash');
 const moment = require('moment');
 
 const uuid = require('uuid/v4');
-const queryString = require('querystring');
 
 const sandbox = sinon.createSandbox();
 
@@ -86,6 +85,19 @@ const createRequest = () => ({
         }]
       }
     ],
+    billingAccount: {
+      id: 'test-licence-account-1',
+      accountNumber: 'A12345678A',
+      company: { name: 'Test company' },
+      invoiceAccountAddresses: [{
+        id: 'test-invoice-account-address-1',
+        address,
+        dateRange: {
+          startDate: '2020-01-01',
+          endDate: null
+        }
+      }]
+    },
     chargeVersions: [
       { id: 'test-cv-id-1', dateRange: { startDate: '2010-04-20' }, status: 'superseded', chargeElements: [{ source: 'unsupported' }] },
       { id: 'test-cv-id-2', dateRange: { startDate: '2015-04-20' }, status: 'current', chargeElements: [{ source: 'tidal' }] }
@@ -613,144 +625,6 @@ experiment('internal/modules/charge-information/controller', () => {
         const [ form ] = h.postRedirectGet.lastCall.args;
         const field = find(form.fields, { name: 'startDate' }).options.choices[1].fields[0];
         expect(field.errors[0].message).to.equal("Date must be today or up to six years' in the past");
-      });
-    });
-  });
-
-  experiment('.getSelectBillingAccount', () => {
-    experiment('when there are no billing accounts for the licence', () => {
-      beforeEach(async () => {
-        request = createRequest();
-        request.pre.billingAccounts = [];
-        request.pre.licenceHolderRole = {
-          company: { id: 'test-company-id' }
-        };
-        await controller.getSelectBillingAccount(request, h);
-      });
-
-      test('the user is redirects to new billing account page', async () => {
-        const [url] = h.redirect.lastCall.args;
-        const expectedQueryString = queryString.stringify({
-          redirectPath: '/licences/test-licence-id/charge-information/use-abstraction-data',
-          licenceId: 'test-licence-id'
-        });
-        expect(url).to.equal(`/invoice-accounts/create/test-region-id/test-company-id?${expectedQueryString}`);
-      });
-    });
-
-    experiment('when there are no billing accounts for the licence', () => {
-      beforeEach(async () => {
-        request = createRequest();
-        await controller.getSelectBillingAccount(request, h);
-      });
-
-      test('uses the correct template', async () => {
-        const [template] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/form.njk');
-      });
-
-      test('sets a back link', async () => {
-        const { back } = h.view.lastCall.args[1];
-        expect(back).to.equal('/licences/test-licence-id/charge-information/start-date');
-      });
-
-      test('sets a page title including the company name', async () => {
-        const [, view] = h.view.lastCall.args;
-        expect(view.pageTitle).to.equal('Select an existing billing account for Test company');
-      });
-
-      test('has the expected form', async () => {
-        const [, view] = h.view.lastCall.args;
-        expect(view.form.action).to.equal('/licences/test-licence-id/charge-information/billing-account');
-        expect(view.form.method).to.equal('POST');
-      });
-    });
-  });
-
-  experiment('.postSelectBillingAccount', () => {
-    experiment('when the user chooses to set up a new billing account', () => {
-      beforeEach(async () => {
-        request = createRequest();
-        request.payload = {
-          csrf_token: request.view.csrfToken,
-          invoiceAccountAddress: 'set-up-new-billing-account'
-        };
-        request.pre.licenceHolderRole = {
-          company: { id: 'test-company-id' }
-        };
-        await controller.postSelectBillingAccount(request, h);
-      });
-
-      test('the user is redirected to the expected page', async () => {
-        const expectedQueryString = queryString.stringify({
-          redirectPath: '/licences/test-licence-id/charge-information/use-abstraction-data',
-          licenceId: 'test-licence-id'
-        });
-        expect(h.redirect.calledWith(
-          `/invoice-accounts/create/test-region-id/test-company-id?${expectedQueryString}`
-        )).to.be.true();
-      });
-    });
-
-    experiment('when the user chooses an existing billing account', () => {
-      beforeEach(async () => {
-        request = createRequest();
-        request.payload = {
-          csrf_token: request.view.csrfToken,
-          invoiceAccountAddress: 'test-invoice-account-address-2'
-        };
-        await controller.postSelectBillingAccount(request, h);
-      });
-
-      test('the user is redirected to the expected page', async () => {
-        expect(h.redirect.calledWith(
-          '/licences/test-licence-id/charge-information/use-abstraction-data'
-        )).to.be.true();
-      });
-    });
-
-    experiment('when changing billing account from check charge info page', () => {
-      experiment('and the user chooses an existing billing account', () => {
-        beforeEach(async () => {
-          request = createRequest();
-          request.payload = {
-            csrf_token: request.view.csrfToken,
-            invoiceAccountAddress: 'test-invoice-account-address-2'
-          };
-          request.query = { returnToCheckData: 1 };
-          await controller.postSelectBillingAccount(request, h);
-        });
-
-        test('the user is redirected to the expected page', async () => {
-          expect(h.redirect.calledWith(
-            '/licences/test-licence-id/charge-information/check'
-          )).to.be.true();
-        });
-      });
-
-      experiment('and the user chooses to set up a new billing account', () => {
-        beforeEach(async () => {
-          request = createRequest();
-          request.payload = {
-            csrf_token: request.view.csrfToken,
-            invoiceAccountAddress: 'set-up-new-billing-account'
-          };
-          request.pre.licenceHolderRole = {
-            company: { id: 'test-company-id' }
-          };
-          request.query = { returnToCheckData: 1 };
-          await controller.postSelectBillingAccount(request, h);
-        });
-
-        test('the user is redirected to the expected page', async () => {
-          const expectedQueryString = queryString.stringify({
-            redirectPath: '/licences/test-licence-id/charge-information/check',
-            licenceId: 'test-licence-id'
-          });
-          expect(h.redirect.calledWith(
-            `/invoice-accounts/create/test-region-id/test-company-id?${expectedQueryString}`
-          )).to.be.true();
-        });
       });
     });
   });

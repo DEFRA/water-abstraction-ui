@@ -1,5 +1,8 @@
 'use strict';
 
+const uuid = require('uuid');
+const { get } = require('lodash');
+
 const forms = require('../forms');
 const actions = require('../lib/actions');
 const routing = require('../lib/routing');
@@ -9,13 +12,13 @@ const {
   applyFormResponse,
   prepareChargeInformation,
   getLicencePageUrl,
-  findInvoiceAccountAddress,
-  isOverridingChargeVersion
+  isOverridingChargeVersion,
+  getCurrentBillingAccountAddress
 } = require('../lib/helpers');
 const chargeInformationValidator = require('../lib/charge-information-validator');
 const { CHARGE_ELEMENT_FIRST_STEP, CHARGE_ELEMENT_STEPS } = require('../lib/charge-elements/constants');
 const services = require('../../../lib/connectors/services');
-const uuid = require('uuid');
+const { reducer } = require('../lib/reducer');
 
 /**
  * Select the reason for the creation of a new charge version
@@ -51,53 +54,90 @@ const getStartDate = async (request, h) => {
   });
 };
 
+const getBillingAccountRedirectKey = licenceId => `charge-information-${licenceId}`;
+
 const postStartDate = createPostHandler(
   forms.startDate,
   actions.setStartDate,
-  request => routing.getSelectBillingAccount(request.params.licenceId)
+  async request => {
+    const { licenceId } = request.params;
+    return routing.getSelectBillingAccount(licenceId);
+  }
 );
 
-const getSelectBillingAccount = async (request, h) => {
-  const { billingAccounts, licence, licenceHolderRole } = request.pre;
+/**
+ * Maps licence and document to an object data for handover to the
+ * billing account plugin flow
+ * @param {Object} licence
+ * @param {Object} document
+ * @return {Object} data for billing account plugin handover
+ */
+const mapBillingAccountHandoverData = (licence, document, currentState, isCheckAnswers = false) => {
+  const { licenceNumber, id, region: { id: regionId } } = licence;
+  // Get company ID from document
+  const { company: { id: companyId } } = document.roles.find(role => role.roleName === 'licenceHolder');
 
-  // if no accounts redirect to the create new account page
-  if (billingAccounts.length === 0) {
-    const redirectPath = routing.getCreateBillingAccount(licence, licenceHolderRole, 'use-abstraction-data');
-    return h.redirect(redirectPath);
-  }
+  // Get currently selected billing account ID
+  const billingAccountId = get(currentState, 'invoiceAccount.id');
+  const { dateRange: { startDate } } = currentState;
 
-  // we have billing accounts, get the name and populate the view
-  const companyName = billingAccounts[0].company.name;
-
-  return h.view('nunjucks/form.njk', {
-    ...getDefaultView(request, routing.getStartDate, forms.billingAccount),
-    pageTitle: `Select an existing billing account for ${companyName}`
-  });
+  return {
+    caption: `Licence ${licenceNumber}`,
+    key: getBillingAccountRedirectKey(id),
+    companyId,
+    regionId,
+    back: `/licences/${id}/charge-information/start-date`,
+    redirectPath: routing.getHandleBillingAccount(id, isCheckAnswers),
+    ...billingAccountId && { data: {
+      id: billingAccountId
+    } },
+    startDate
+  };
 };
 
 /**
- * Handles the redirection to the next step when value billing account
- * data has been selected. Either the user wants to create a new billing
- * account, in which case redirect there, or move on to the next step.
- *
- * @param {Object} request
- * @param {Object} formValues
+ * Redirects to billing account plugin
+ * @param {*} request
+ * @param {*} h
  */
-const handleValidBillingAccountRedirect = (request, formValues) => {
-  const { licence, licenceHolderRole } = request.pre;
-  if (formValues.invoiceAccountAddress === 'set-up-new-billing-account') {
-    const { returnToCheckData } = request.query;
-    const redirect = returnToCheckData === 1 ? 'check' : 'use-abstraction-data';
-    return routing.getCreateBillingAccount(licence, licenceHolderRole, redirect);
-  }
-  return routing.getUseAbstractionData(licence.id);
+const getBillingAccount = async (request, h) => {
+  const { licenceId } = request.params;
+  const { returnToCheckData } = request.query;
+  const { draftChargeInformation: currentState } = request.pre;
+
+  // Get start date of new charge version, and associated CRM v2 document
+  const { dateRange: { startDate } } = request.getDraftChargeInformation(licenceId);
+  const document = await services.water.licences.getValidDocumentByLicenceIdAndDate(licenceId, startDate);
+
+  // Return redirect path to billing account entry flow
+  const data = mapBillingAccountHandoverData(request.pre.licence, document, currentState, returnToCheckData);
+  const path = request.billingAccountEntryRedirect(data);
+  return h.redirect(path);
 };
 
-const postSelectBillingAccount = createPostHandler(
-  forms.billingAccount,
-  actions.setBillingAccount,
-  handleValidBillingAccountRedirect
-);
+/**
+ * Sets the billing account and redirects to the "use abstraction data" page
+ */
+const getHandleBillingAccount = async (request, h) => {
+  const { licenceId } = request.params;
+  const { draftChargeInformation: currentState } = request.pre;
+  const { returnToCheckData } = request.query;
+
+  // Create action to set billing account ID
+  const { id } = request.getBillingAccount(getBillingAccountRedirectKey(licenceId));
+  const action = actions.setBillingAccount(id);
+
+  // Calculate next state
+  const nextState = reducer(currentState, action);
+  request.setDraftChargeInformation(licenceId, nextState);
+
+  // Redirect to next page in flow
+  const path = returnToCheckData
+    ? routing.getCheckData(licenceId)
+    : routing.getUseAbstractionData(licenceId);
+
+  return h.redirect(path);
+};
 
 const getUseAbstractionData = async (request, h) => {
   return h.view('nunjucks/form.njk', {
@@ -128,20 +168,21 @@ const postUseAbstractionData = createPostHandler(
 );
 
 const getCheckData = async (request, h) => {
-  const { draftChargeInformation, isChargeable } = request.pre;
+  const { draftChargeInformation, isChargeable, billingAccount } = request.pre;
   const { chargeVersionWorkflowId, licenceId } = request.params;
   const back = isChargeable
     ? routing.getUseAbstractionData(licenceId)
     : routing.getEffectiveDate(licenceId);
 
-  const invoiceAccountAddress = findInvoiceAccountAddress(request);
+  const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount);
   const editChargeVersionWarning = await isOverridingChargeVersion(request, draftChargeInformation.dateRange.startDate);
   const view = {
     ...getDefaultView(request, back),
     pageTitle: 'Check charge information',
     chargeVersion: chargeInformationValidator.addValidation(draftChargeInformation),
     licenceId: request.params.licenceId,
-    invoiceAccountAddress,
+    billingAccountAddress,
+    billingAccount,
     chargeVersionWorkflowId,
     isChargeable,
     isEditable: true,
@@ -241,14 +282,14 @@ const getSubmitted = async (request, h) => {
 exports.getCancelData = getCancelData;
 exports.getCheckData = getCheckData;
 exports.getReason = getReason;
-exports.getSelectBillingAccount = getSelectBillingAccount;
 exports.getStartDate = getStartDate;
+exports.getBillingAccount = getBillingAccount;
+exports.getHandleBillingAccount = getHandleBillingAccount;
 exports.getSubmitted = getSubmitted;
 exports.getUseAbstractionData = getUseAbstractionData;
 
 exports.postCancelData = postCancelData;
 exports.postCheckData = postCheckData;
 exports.postReason = postReason;
-exports.postSelectBillingAccount = postSelectBillingAccount;
 exports.postStartDate = postStartDate;
 exports.postUseAbstractionData = postUseAbstractionData;

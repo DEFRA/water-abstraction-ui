@@ -1,7 +1,7 @@
 'use strict';
 
 const Boom = require('@hapi/boom');
-const { get, partialRight } = require('lodash');
+const { get, partialRight, has } = require('lodash');
 
 const sessionForms = require('shared/lib/session-forms');
 const { handleRequest, getValues, applyErrors } = require('shared/lib/forms');
@@ -37,14 +37,19 @@ const roleMapper = require('shared/lib/mappers/role');
  * they wish to send paper return forms
  */
 const getEnterLicenceNumber = async (request, h) => {
-  return h.view('nunjucks/form', {
+  const licencesWithNoReturns = request.pre.state ? request.pre.state.licencesWithNoReturns : null;
+  request.yar.clear(SESSION_KEYS.paperFormsFlow);
+  return h.view('nunjucks/returns-notifications/licence-numbers', {
     ...request.view,
     back: '/manage',
+    licencesWithNoReturns,
     form: sessionForms.get(request, licenceNumbersForm.form(request))
   });
 };
 
 const isMultipleLicenceHoldersForLicence = data => data.some(row => row.documents.length > 1);
+const isReturnsDueForLicences = data => data.some(row => row.documents.length > 0);
+const licencesWithNoReturnsDue = data => Object.values(data).filter(row => !(has(row, 'document')));
 
 /**
  * Post handler for licence numbers entry
@@ -66,7 +71,13 @@ const postEnterLicenceNumber = async (request, h) => {
     const nextState = reducer({}, actions.setInitialState(request, data));
     request.yar.set(SESSION_KEYS.paperFormsFlow, nextState);
 
-    const path = isMultipleLicenceHoldersForLicence(data) ? routing.getSelectLicenceHolders() : routing.getCheckAnswers();
+    let path;
+    if (isReturnsDueForLicences(data)) {
+      path = isMultipleLicenceHoldersForLicence(data) ? routing.getSelectLicenceHolders() : routing.getCheckAnswers();
+    } else {
+      request.yar.set(SESSION_KEYS.paperFormsFlow, { licencesWithNoReturns: licenceNumbers });
+      path = routing.getEnterLicenceNumber();
+    }
     return h.redirect(path);
   } catch (err) {
     // Unexpected error
@@ -111,10 +122,10 @@ const getRecipientCount = state => Object.values(state)
  */
 const getCheckAnswers = async (request, h) => {
   const isRecipients = getRecipientCount(request.pre.state) > 0;
-
   const view = {
     ...request.view,
     documents: mapStateToView(request.pre.state),
+    licencesWithNoReturns: licencesWithNoReturnsDue(request.pre.state),
     back: routing.getEnterLicenceNumber(),
     form: isRecipients && confirmForm.form(request, 'Send paper forms')
   };

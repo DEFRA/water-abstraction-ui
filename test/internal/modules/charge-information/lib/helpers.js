@@ -104,6 +104,25 @@ experiment('internal/modules/charge-information/lib/helpers', () => {
     });
   });
 
+  experiment('.getCurrentBillingAccountAddress', () => {
+    const address1 = { id: 'address1', dateRange: { endDate: null } };
+    const address2 = { id: 'address2', dateRange: { endDate: '2020-01-01' } };
+    const billingAccountWithAddresses = { invoiceAccountAddresses: [address1, address2] };
+    const billingAccountWithoutAddresses = { invoiceAccountAddresses: [] };
+    experiment('when billing account addresses are present', () => {
+      test('returns the address with no end date', () => {
+        const result = helpers.getCurrentBillingAccountAddress(billingAccountWithAddresses);
+        expect(result).to.equal(address1);
+      });
+    });
+    experiment('when no billing account addresses are present', () => {
+      test('returns undefined', () => {
+        const result = helpers.getCurrentBillingAccountAddress(billingAccountWithoutAddresses);
+        expect(result).to.equal(undefined);
+      });
+    });
+  });
+
   experiment('.isOverridingChargeVersion', () => {
     const request = { pre: { licence: { id: 'test-licence-id' } } };
     const chargeVersions = [

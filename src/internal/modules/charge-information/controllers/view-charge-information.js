@@ -1,8 +1,9 @@
 const {
   getDefaultView,
   getLicencePageUrl,
-  findInvoiceAccountAddress
+  getCurrentBillingAccountAddress
 } = require('../lib/helpers');
+const { get } = require('lodash');
 const forms = require('shared/lib/forms');
 const services = require('../../../lib/connectors/services');
 const chargeInformationValidator = require('../lib/charge-information-validator');
@@ -15,9 +16,11 @@ const formatDateForPageTitle = startDate =>
   moment(startDate).format('D MMMM YYYY');
 
 const getViewChargeInformation = async (request, h) => {
-  const { chargeVersion, licence } = request.pre;
+  const { chargeVersion, licence, billingAccount } = request.pre;
   const { chargeVersionWorkflowId } = request.params;
   const backLink = await getLicencePageUrl(licence);
+
+  const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount);
 
   return h.view('nunjucks/charge-information/view', {
     ...getDefaultView(request, backLink),
@@ -25,30 +28,29 @@ const getViewChargeInformation = async (request, h) => {
     chargeVersion,
     isEditable: false,
     chargeVersionWorkflowId,
+    billingAccount,
+    billingAccountAddress,
     // @TODO: use request.pre.isChargeable to determine this
     // after the chargeVersion import ticket has been completed
-    isChargeable: true
+    // In the meantime, it will use chargeVersion.changeReason.type === 'new_non_chargeable_charge_version'
+    isChargeable: get(chargeVersion, 'changeReason.type') !== 'new_non_chargeable_charge_version'
   });
 };
 
 const getReviewChargeInformation = async (request, h) => {
-  const { draftChargeInformation, licence, isChargeable } = request.pre;
+  const { draftChargeInformation, licence, isChargeable, billingAccount } = request.pre;
   const { chargeVersionWorkflowId } = request.params;
   const backLink = await getLicencePageUrl(licence);
   const isApprover = hasScope(request, chargeVersionWorkflowReviewer);
-  const invoiceAccountAddress = findInvoiceAccountAddress(request);
+  const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount);
   const validatedDraftChargeVersion = chargeInformationValidator.addValidation(draftChargeInformation);
-
-  // Set the address ID to the first address in the array if it's null
-  if (validatedDraftChargeVersion.invoiceAccount.invoiceAccountAddress === null) {
-    validatedDraftChargeVersion.invoiceAccount.invoiceAccountAddress = validatedDraftChargeVersion.invoiceAccount.invoiceAccountAddresses[0].id;
-  }
 
   return h.view('nunjucks/charge-information/view', {
     ...getDefaultView(request, backLink),
     pageTitle: `Check charge information`,
     chargeVersion: validatedDraftChargeVersion,
-    invoiceAccountAddress,
+    billingAccount,
+    billingAccountAddress,
     licenceId: licence.id,
     isEditable: draftChargeInformation.status === 'changes_requested',
     isApprover,
@@ -59,10 +61,10 @@ const getReviewChargeInformation = async (request, h) => {
 };
 
 const postReviewChargeInformation = async (request, h) => {
-  const { draftChargeInformation, licence, isChargeable } = request.pre;
+  const { draftChargeInformation, licence, isChargeable, billingAccount } = request.pre;
   const backLink = await getLicencePageUrl(licence);
   const isApprover = hasScope(request, chargeVersionWorkflowReviewer);
-  const invoiceAccountAddress = findInvoiceAccountAddress(request);
+  const invoiceAccountAddress = getCurrentBillingAccountAddress(billingAccount);
   const { chargeVersionWorkflowId } = request.params;
   const form = forms.handleRequest(
     reviewForm(request),

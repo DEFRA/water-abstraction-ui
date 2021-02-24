@@ -1,9 +1,14 @@
 'use strict';
 
-const { omit, sortBy, groupBy, pick } = require('lodash');
+const Decimal = require('decimal.js-light');
+const { omit, sortBy, groupBy, pick, mapValues, isNull } = require('lodash');
 const sentenceCase = require('sentence-case');
 const routing = require('./routing');
 const { transactionStatuses } = require('shared/lib/constants');
+
+const getBillCount = batch => [batch.invoiceCount, batch.creditNoteCount].reduce((acc, value) =>
+  isNull(value) ? acc : (acc || 0) + value
+, null);
 
 /**
  * Maps a batch for the batch list view, adding the badge, batch type and
@@ -14,8 +19,8 @@ const { transactionStatuses } = require('shared/lib/constants');
 const mapBatchListRow = batch => ({
   ...batch,
   batchType: mapBatchType(batch.type),
-  billCount: batch.totals ? batch.totals.invoiceCount + batch.totals.creditNoteCount : null,
-  link: routing.getBillingBatchRoute(batch)
+  billCount: getBillCount(batch),
+  link: routing.getBillingBatchRoute(batch, { isBackEnabled: true })
 });
 
 const isTransactionEdited = transaction => {
@@ -37,16 +42,18 @@ const getTransactionTotals = transactions => {
   }
 
   const initialValue = {
-    debits: 0,
-    credits: 0,
-    netTotal: 0
+    debits: new Decimal(0),
+    credits: new Decimal(0),
+    netTotal: new Decimal(0)
   };
 
-  return transactions.reduce((acc, row) => ({
-    debits: acc.debits + (row.isCredit ? 0 : row.value),
-    credits: acc.credits + (row.isCredit ? row.value : 0),
-    netTotal: acc.netTotal + row.value
+  const totals = transactions.reduce((acc, row) => ({
+    debits: acc.debits.plus(row.isCredit ? 0 : row.value),
+    credits: acc.credits.plus(row.isCredit ? row.value : 0),
+    netTotal: acc.netTotal.plus(row.value)
   }), initialValue);
+
+  return mapValues(totals, val => val.toNumber());
 };
 
 const isMinimimChargeTransaction = trans => trans.isMinimumCharge;

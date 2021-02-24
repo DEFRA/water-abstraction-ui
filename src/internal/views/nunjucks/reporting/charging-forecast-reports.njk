@@ -9,7 +9,7 @@
   <div class="govuk-grid-column-two-thirds">
     <h2 class="govuk-heading-l">Billed active licences</h2>
     <p class="govuk-body">Active charge information for live licences that have been billed in the current financial year.</p>
-    <button onclick='fetchDownloadableReport("billedLicences")' class="govuk-button govuk-button--secondary" data-module="govuk-button">
+    <button onclick='fetchDownloadableReport("billedActiveLicences")' class="govuk-button govuk-button--secondary" data-module="govuk-button">
       Download <span class="govuk-visually-hidden">Active charge information for billed licences</span> report
     </button>
   </div>
@@ -18,7 +18,7 @@
   <div class="govuk-grid-column-two-thirds">
     <h2 class="govuk-heading-l">Unbilled active licences</h2>
     <p class="govuk-body">Active charge information for live licences that have not been billed in the current financial year.</p>
-    <button onclick='fetchDownloadableReport("unbilledLicences")' class="govuk-button govuk-button--secondary" data-module="govuk-button">
+    <button onclick='fetchDownloadableReport("unbilledActiveLicences")' class="govuk-button govuk-button--secondary" data-module="govuk-button">
       Download <span class="govuk-visually-hidden">Active charge information for unbilled licences</span> report
     </button>
   </div>
@@ -27,7 +27,7 @@
   <div class="govuk-grid-column-two-thirds">
     <h2 class="govuk-heading-l">Inactive licences not yet credited</h2>
     <p class="govuk-body">Charge information for licences revoked, lapsed or expired after annual billing, but not yet credited back in the current financial year.</p>
-    <button onclick='fetchDownloadableReport("revokedUncreditedLicences")' class="govuk-button govuk-button--secondary" data-module="govuk-button">
+    <button onclick='fetchDownloadableReport("uncreditedInactiveLicences")' class="govuk-button govuk-button--secondary" data-module="govuk-button">
       Download <span class="govuk-visually-hidden">Charge information for revoked licences not yet credited </span> report
     </button>
   </div>

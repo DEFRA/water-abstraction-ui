@@ -10,16 +10,18 @@
 {% block bodyEnd %}
     <script>
         const startDownload = () =>  {
-            let url = '{{signedUrl}}'
+            let url = decodeURIComponent('{{signedUrl}}').replaceAll('&amp;', '&');
             let a = document.createElement('A');
             a.href = url;
             a.download = url.substr(url.lastIndexOf('/') + 1);
             document.body.appendChild(a);
-            a.click();
+            window.setTimeout(function(){
+                a.click();
+            }, 500);
             document.body.removeChild(a);
             window.setTimeout(function(){
                 window.open(window.location, '_self').close();
-            }, 500);
+            }, 1500);
 
         }
         startDownload()

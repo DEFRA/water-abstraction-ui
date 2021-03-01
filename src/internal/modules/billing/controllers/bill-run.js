@@ -67,7 +67,8 @@ const getBillingBatchInvoice = async (request, h) => {
     invoiceLicences: mappers.mapInvoiceLicences(invoice, documentIds),
     isCredit: get(invoice, 'totals.netTotal', 0) < 0,
     caption: `Billing account ${invoice.invoiceAccount.accountNumber}`,
-    errors: mappers.mapInvoiceLevelErrors(invoice)
+    errors: mappers.mapInvoiceLevelErrors(invoice),
+    isCreditDebitBlockVisible: mappers.isCreditDebitBlockVisible(batch)
   });
 };
 

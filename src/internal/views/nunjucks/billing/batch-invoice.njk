@@ -88,18 +88,20 @@ invoiceDebitsTotal %}
     </div>
   </div>
 
-  <div class="govuk-grid-row govuk-!-margin-bottom-6">
-    <div class="govuk-grid-column-one-half">
-      <h2>
-        {{ invoiceCreditsTotal(invoice.creditNoteValue) }}
-      </h2>
+  {% if isCreditDebitBlockVisible %}
+    <div class="govuk-grid-row govuk-!-margin-bottom-6">
+      <div class="govuk-grid-column-one-half">
+        <h2>
+          {{ invoiceCreditsTotal(invoice.creditNoteValue) }}
+        </h2>
+      </div>
+      <div class="govuk-grid-column-one-half">
+        <h2>
+          {{ invoiceDebitsTotal(invoice.invoiceValue) }}
+        </h2>
+      </div>
     </div>
-    <div class="govuk-grid-column-one-half">
-      <h2>
-        {{ invoiceDebitsTotal(invoice.invoiceValue) }}
-      </h2>
-    </div>
-  </div>
+  {% endif %}
 
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-two-thirds">

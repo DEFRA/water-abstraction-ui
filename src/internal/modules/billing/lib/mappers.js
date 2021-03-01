@@ -143,6 +143,9 @@ const mapBatchLevelErrors = (batch, invoices) => invoices
     ...pick(invoice, 'accountNumber', 'financialYearEnding')
   }));
 
+const isCreditDebitBlockVisible = batch =>
+  batch.source === 'wrls' && batch.type === 'supplementary';
+
 exports.mapBatchListRow = mapBatchListRow;
 exports.mapInvoiceLicences = mapInvoiceLicences;
 exports.mapBatchType = mapBatchType;
@@ -150,3 +153,4 @@ exports.mapConditions = mapConditions;
 exports.mapInvoices = mapInvoices;
 exports.mapInvoiceLevelErrors = mapInvoiceLevelErrors;
 exports.mapBatchLevelErrors = mapBatchLevelErrors;
+exports.isCreditDebitBlockVisible = isCreditDebitBlockVisible;

@@ -120,7 +120,7 @@ const decorateChargeVersion = chargeVersionWorkflow => {
 const getChargeVersionWorkflow = async id =>
   services.water.chargeVersionWorkflows.getChargeVersionWorkflow(id);
 
-const loadChargeVersionWorkflows = async request => {
+const loadChargeVersionWorkflows = async () => {
   try {
     const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows();
     return sortBy(workflows, ['licence.startDate']);

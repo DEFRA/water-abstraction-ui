@@ -27,6 +27,16 @@ class NotificationsApiClient extends SharedNotificationsApiClient {
     };
     return serviceRequest.post(url, options);
   };
+
+  getNotifications (page = 1) {
+    const url = urlJoin(this.config.serviceUrl, 'notifications');
+    const options = {
+      qs: {
+        page
+      }
+    };
+    return serviceRequest.get(url, options);
+  }
 };
 
 module.exports = NotificationsApiClient;

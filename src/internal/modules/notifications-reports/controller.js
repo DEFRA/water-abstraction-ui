@@ -1,35 +1,15 @@
+'use strict';
+
 const services = require('../../lib/connectors/services');
 const { notifyToBadge } = require('./badge-status');
 
 /**
  * View list of notifications sent
- * @param {String} request.query.sort - the field to sort on
- * @param {Number} request.query.direction - +1 ascending, -1 descending
+ * @param {String} request.query.page - the page of results to fetch
  */
 async function getNotificationsList (request, reply) {
-  const { sort, direction } = request.query;
-
-  // Map URL to API fields
-  const field = sort.replace('notification', 'subtype').replace('status', 'metadata->>error').replace('recipients', 'metadata->>recipients');
-
-  const filter = {
-    type: 'notification',
-    status: {
-      $in: ['sent', 'completed', 'sending']
-    }
-  };
-  const sortParams = {
-    [field]: direction
-  };
-
-  const { data, error, pagination } = await services.water.events.findMany(filter, sortParams, {
-    page: 1,
-    perPage: 100
-  });
-
-  if (error) {
-    return reply(error);
-  }
+  const { page } = request.query;
+  const { pagination, data } = await services.water.notifications.getNotifications(page);
 
   return reply.view('nunjucks/notifications-reports/list', {
     ...request.view,

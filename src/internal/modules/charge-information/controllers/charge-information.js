@@ -250,7 +250,7 @@ const postCheckData = async (request, h) => {
 
 const getCancelData = (request, h) =>
   h.view('nunjucks/charge-information/cancel.njk', {
-    ...getDefaultView(request, routing.getCheckData, forms.cancelChargeInfo),
+    ...getDefaultView(request, routing.getCheckData, forms.deleteChargeInfo),
     pageTitle: 'You\'re about to cancel this charge information',
     draftChargeInformation: request.pre.draftChargeInformation
   });

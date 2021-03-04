@@ -1,4 +1,5 @@
 const controller = require('../controllers/charge-information-workflow');
+const { VALID_GUID } = require('shared/lib/validators');
 const { billing } = require('internal/lib/constants').scope;
 const preHandlers = require('../pre-handlers');
 const allowedScopes = [billing];
@@ -19,9 +20,55 @@ module.exports = {
         }
       },
       pre: [
-        { method: preHandlers.loadLicencesWithoutChargeVersions, assign: 'toSetUp' },
-        { method: preHandlers.loadLicencesWithWorkflowsInProgress, assign: 'inProgress' }
+        { method: preHandlers.loadChargeVersionWorkflows, assign: 'chargeInformationWorkflows' }
       ]
+    }
+  },
+
+  getRemoveChargeInformationWorkflow: {
+    method: 'GET',
+    path: '/charge-information-workflow/{chargeVersionWorkflowId}/remove',
+    handler: controller.getRemoveChargeInformationWorkflow,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      description: 'Confirmation page to remove charge information workflow',
+      plugins: {
+        viewContext: {
+          activeNavLink: 'view'
+        }
+      },
+      validate: {
+        params: {
+          chargeVersionWorkflowId: VALID_GUID
+        }
+      },
+      pre: [
+        { method: preHandlers.loadChargeVersionWorkflow, assign: 'chargeInformationWorkflow' }
+      ]
+    }
+  },
+
+  postRemoveChargeInformationWorkflow: {
+    method: 'POST',
+    path: '/charge-information-workflow/{chargeVersionWorkflowId}/remove',
+    handler: controller.postRemoveChargeInformationWorkflow,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      description: 'Post handler for remove charge information confirmation page',
+      plugins: {
+        viewContext: {
+          activeNavLink: 'view'
+        }
+      },
+      validate: {
+        params: {
+          chargeVersionWorkflowId: VALID_GUID
+        }
+      }
     }
   }
 };

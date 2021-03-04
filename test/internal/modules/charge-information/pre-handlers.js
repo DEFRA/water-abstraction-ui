@@ -20,7 +20,8 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
   beforeEach(async () => {
     request = {
       params: {
-        licenceId: 'test-licence-id'
+        licenceId: 'test-licence-id',
+        chargeVersionWorkflowId: 'test-charge-version-workflow-id'
       },
       query: {},
       setDraftChargeInformation: sandbox.stub(),
@@ -50,9 +51,9 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
       ]
     });
 
-    sandbox.stub(services.water.chargeVersionWorkflows, 'getChargeVersionWorkflows').resolves({
-      data: []
-    });
+    sandbox.stub(services.water.chargeVersionWorkflows, 'getChargeVersionWorkflows').resolves(
+      [{ licence: { startDate: '2002-05-03' } }, { licence: { startDate: '2000-09-30' } }]
+    );
 
     sandbox.stub(services.water.chargeVersionWorkflows, 'getLicencesWithoutChargeInformation').resolves({
       data: []
@@ -94,17 +95,15 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
     });
 
     sandbox.stub(services.water.chargeVersionWorkflows, 'getChargeVersionWorkflow').resolves({
-      chargeVersionWorkflow: {
-        id: 'test-charge-version-workflow-id',
-        status: 'review',
-        chargeVersion: {
-          chargeElements: [],
-          id: 'test-charge-version-id',
-          invoiceAccount: {
-            invoiceAccountAddresses: [{
-              id: 'test-invoice-account-address-id'
-            }]
-          }
+      id: 'test-charge-version-workflow-id',
+      status: 'review',
+      chargeVersion: {
+        chargeElements: [],
+        id: 'test-charge-version-id',
+        invoiceAccount: {
+          invoiceAccountAddresses: [{
+            id: 'test-invoice-account-address-id'
+          }]
         }
       }
     });
@@ -282,47 +281,17 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
     });
   });
 
-  experiment('loadLicencesWithoutChargeVersions', () => {
+  experiment('loadChargeVersionWorkflows', () => {
     experiment('when the service response is valid', async () => {
       beforeEach(async () => {
-        result = await preHandlers.loadLicencesWithoutChargeVersions(request);
+        result = await preHandlers.loadChargeVersionWorkflows(request);
       });
-      // calls the service method
-      test('calls the service method', async () => {
-        expect(services.water.chargeVersionWorkflows.getLicencesWithoutChargeInformation.called).to.be.true();
-      });
-      test('returns an array', async () => {
-        expect(Array.isArray(result)).to.be.true();
-      });
-    });
-    experiment('when the service response is invalid', async () => {
-      beforeEach(async () => {
-        const err = new Error();
-        err.statusCode = 404;
-        services.water.chargeVersionWorkflows.getLicencesWithoutChargeInformation.rejects(err);
-        result = await preHandlers.loadLicencesWithoutChargeVersions(request);
-      });
-      // calls the service method
-      test('calls the service method', async () => {
-        expect(services.water.chargeVersionWorkflows.getLicencesWithoutChargeInformation.called).to.be.true();
-      });
-      test('returns an error', async () => {
-        expect(result.message).to.equal('Could not retrieve list of licences without charge versions.');
-      });
-    });
-  });
-
-  experiment('loadLicencesWithWorkflowsInProgress', () => {
-    experiment('when the service response is valid', async () => {
-      beforeEach(async () => {
-        result = await preHandlers.loadLicencesWithWorkflowsInProgress(request);
-      });
-      // calls the service method
       test('calls the service method', async () => {
         expect(services.water.chargeVersionWorkflows.getChargeVersionWorkflows.called).to.be.true();
       });
-      test('returns an array', async () => {
-        expect(Array.isArray(result)).to.be.true();
+      test('returns the results ordered by licence start date', async () => {
+        expect(result[0]).to.equal({ licence: { startDate: '2000-09-30' } });
+        expect(result[1]).to.equal({ licence: { startDate: '2002-05-03' } });
       });
     });
     experiment('when the service response is invalid', async () => {
@@ -330,27 +299,48 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
         const err = new Error();
         err.statusCode = 404;
         services.water.chargeVersionWorkflows.getChargeVersionWorkflows.rejects(err);
-        result = await preHandlers.loadLicencesWithWorkflowsInProgress(request);
+        result = await preHandlers.loadChargeVersionWorkflows(request);
       });
       // calls the service method
       test('calls the service method', async () => {
         expect(services.water.chargeVersionWorkflows.getChargeVersionWorkflows.called).to.be.true();
       });
       test('returns an error', async () => {
-        expect(result.message).to.equal('Could not retrieve licences with pending charge versions.');
+        expect(result.message).to.equal('Could not retrieve charge version workflows.');
       });
+    });
+  });
+
+  experiment('loadChargeVersionWorkflow', () => {
+    beforeEach(async () => {
+      result = await preHandlers.loadChargeVersionWorkflow(request);
+    });
+    test('calls the service method', async () => {
+      expect(services.water.chargeVersionWorkflows.getChargeVersionWorkflow.called).to.be.true();
+    });
+    test('returns the result of the call', async () => {
+      expect(result).to.equal({
+        id: 'test-charge-version-workflow-id',
+        status: 'review',
+        chargeVersion: {
+          chargeElements: [],
+          id: 'test-charge-version-id',
+          invoiceAccount: {
+            invoiceAccountAddresses: [{
+              id: 'test-invoice-account-address-id'
+            }]
+          }
+        } });
     });
   });
 
   experiment('.loadIsChargeable', () => {
     test('returns true if the change reason is new_chargeable_charge_version', async () => {
-      request.pre = {
-        draftChargeInformation: {
-          changeReason: {
-            type: 'new_chargeable_charge_version'
-          }
+      request.getDraftChargeInformation.returns({
+        changeReason: {
+          type: 'new_chargeable_charge_version'
         }
-      };
+      });
 
       result = await preHandlers.loadIsChargeable(request);
 
@@ -358,13 +348,11 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
     });
 
     test('returns true if the change reason is new_non_chargeable_charge_version', async () => {
-      request.pre = {
-        draftChargeInformation: {
-          changeReason: {
-            type: 'new_non_chargeable_charge_version'
-          }
+      request.getDraftChargeInformation.returns({
+        changeReason: {
+          type: 'new_non_chargeable_charge_version'
         }
-      };
+      });
 
       result = await preHandlers.loadIsChargeable(request);
 
@@ -464,14 +452,14 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
     });
   });
 
-  experiment('.loadChargeVersionWorkflow', () => {
+  experiment('.loadChargeInformation', () => {
     beforeEach(async () => {
       request.params.chargeVersionWorkflowId = 'test-charge-version-workflow-id';
     });
 
     experiment('when data is found', () => {
       beforeEach(async () => {
-        result = await preHandlers.loadChargeVersionWorkflow(request);
+        result = await preHandlers.loadChargeInformation(request);
       });
 
       test('the charge version workflow is retrieved by its id', async () => {
@@ -497,7 +485,7 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
         const err = new Error();
         err.statusCode = 404;
         services.water.chargeVersionWorkflows.getChargeVersionWorkflow.rejects(err);
-        result = await preHandlers.loadChargeVersionWorkflow(request);
+        result = await preHandlers.loadChargeInformation(request);
       });
 
       test('resolves with a Boom 404 error', async () => {

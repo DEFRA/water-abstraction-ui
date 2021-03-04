@@ -45,7 +45,7 @@ const loadChargeableChangeReasons = () => getFilteredChangeReasons('new_chargeab
 const loadNonChargeableChangeReasons = () => getFilteredChangeReasons('new_non_chargeable_charge_version');
 
 const loadIsChargeable = async request => {
-  const type = get(request, 'pre.draftChargeInformation.changeReason.type');
+  const { changeReason: { type } } = request.getDraftChargeInformation(request.params.licenceId);
   return type === 'new_chargeable_charge_version';
 };
 
@@ -73,27 +73,6 @@ const loadDefaultCharges = async request => {
     return [];
   } catch (err) {
     return errorHandler(err, `Default charges not found for licence ${licenceId}`);
-  }
-};
-
-const loadLicencesWithoutChargeVersions = async request => {
-  try {
-    const response = await services.water.chargeVersionWorkflows.getLicencesWithoutChargeInformation();
-    const parsedResponse = response.data
-      .filter(row => row.licence.expiredDate !== null && moment(row.licence.expiredDate).isAfter(new Date()))
-      .sort((rowA, rowB) => new Date(rowA.licence.startDate) - new Date(rowB.licence.startDate));
-    return parsedResponse;
-  } catch (err) {
-    return errorHandler(err, `Could not retrieve list of licences without charge versions.`);
-  }
-};
-
-const loadLicencesWithWorkflowsInProgress = async request => {
-  try {
-    const licencesWithWorkflowsInProgress = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows();
-    return sortBy(licencesWithWorkflowsInProgress.data, 'startDate');
-  } catch (err) {
-    return errorHandler(err, `Could not retrieve licences with pending charge versions.`);
   }
 };
 
@@ -138,10 +117,31 @@ const decorateChargeVersion = chargeVersionWorkflow => {
   };
 };
 
+const getChargeVersionWorkflow = async id =>
+  services.water.chargeVersionWorkflows.getChargeVersionWorkflow(id);
+
+const loadChargeVersionWorkflows = async request => {
+  try {
+    const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows();
+    return sortBy(workflows, ['licence.startDate']);
+  } catch (err) {
+    return errorHandler(err, `Could not retrieve charge version workflows.`);
+  }
+};
+
 const loadChargeVersionWorkflow = async request => {
+  const { chargeVersionWorkflowId } = request.params;
+  try {
+    return getChargeVersionWorkflow(chargeVersionWorkflowId);
+  } catch (err) {
+    return errorHandler(err, `Cannot load charge version workflow ${chargeVersionWorkflowId}`);
+  }
+};
+
+const loadChargeInformation = async request => {
   const { licenceId, chargeVersionWorkflowId } = request.params;
   try {
-    const { chargeVersionWorkflow } = await services.water.chargeVersionWorkflows.getChargeVersionWorkflow(chargeVersionWorkflowId);
+    const chargeVersionWorkflow = await getChargeVersionWorkflow(chargeVersionWorkflowId);
     const chargeVersion = decorateChargeVersion(chargeVersionWorkflow);
 
     request.setDraftChargeInformation(licenceId, { ...chargeVersion, chargeVersionWorkflowId });
@@ -182,14 +182,14 @@ const loadBillingAccountByChargeVersion = async request => {
 exports.loadChargeableChangeReasons = loadChargeableChangeReasons;
 exports.loadChargeVersion = loadChargeVersion;
 exports.loadChargeVersions = loadChargeVersions;
+exports.loadChargeVersionWorkflows = loadChargeVersionWorkflows;
 exports.loadChargeVersionWorkflow = loadChargeVersionWorkflow;
+exports.loadChargeInformation = loadChargeInformation;
 exports.loadDefaultCharges = loadDefaultCharges;
 exports.loadDraftChargeInformation = loadDraftChargeInformation;
 exports.loadLicence = loadLicence;
 exports.loadIsChargeable = loadIsChargeable;
 exports.loadNonChargeableChangeReasons = loadNonChargeableChangeReasons;
-exports.loadLicencesWithoutChargeVersions = loadLicencesWithoutChargeVersions;
-exports.loadLicencesWithWorkflowsInProgress = loadLicencesWithWorkflowsInProgress;
 exports.loadLicenceHolderRole = loadLicenceHolderRole;
 exports.loadBillingAccount = loadBillingAccount;
 exports.loadBillingAccountByChargeVersion = loadBillingAccountByChargeVersion;

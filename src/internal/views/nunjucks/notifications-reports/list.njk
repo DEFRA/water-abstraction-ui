@@ -36,10 +36,9 @@
                 <a href="/notifications/report/{{ event.id }}">
                   {{ event.name }}
                   <span class="govuk-visually-hidden">
-                    sent by
-                    {{ event.issuer }}
-                    on
-                    {{ event.created | date}}</span>
+                    reference
+                    {{ event.referenceCode }}
+                  </span>
                 </a>
               </td>
               <td class="govuk-table__cell">{{ event.issuer }}</td>

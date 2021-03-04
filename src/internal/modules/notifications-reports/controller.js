@@ -1,7 +1,7 @@
 'use strict';
 
 const services = require('../../lib/connectors/services');
-const { notifyToBadge } = require('./badge-status');
+const { mapMessage } = require('./lib/message-mapper');
 
 /**
  * View list of notifications sent
@@ -32,14 +32,6 @@ async function getNotification (request, reply) {
     reply(error);
   }
 
-  // Load task config
-  const { metadata: { taskConfigId } } = event;
-  const { error: taskError, data: task } = await services.water.taskConfigs.findOne(taskConfigId);
-
-  if (taskError) {
-    return reply(taskError);
-  }
-
   // Load scheduled notifications
   const { error: notificationError, data: messages } = await services.water.notifications.findMany({ event_id: event.event_id });
   if (notificationError) {
@@ -49,10 +41,7 @@ async function getNotification (request, reply) {
   return reply.view('nunjucks/notifications-reports/report', {
     ...request.view,
     event,
-    task,
-    messages: messages.map(message => Object.assign(message, {
-      badgeStatus: notifyToBadge(message.notify_status)
-    })),
+    messages: messages.map(mapMessage),
     back: '/notifications/report'
   });
 }

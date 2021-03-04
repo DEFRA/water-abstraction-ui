@@ -56,7 +56,7 @@
           {{ message.message_type | capitalize }}
         </td>
         <td class="govuk-table__cell align-top" scope="row">
-          {{ badge(message.badgeStatus.text, message.badgeStatus.status) }}
+          {{ badge(message.badge) }}
         </td>
       </tr>
     {% endfor %}

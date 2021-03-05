@@ -28,6 +28,10 @@ class NotificationsApiClient extends SharedNotificationsApiClient {
     return serviceRequest.post(url, options);
   };
 
+  /**
+   * Gets a list of notifications
+   * @param {Number} page
+   */
   getNotifications (page = 1) {
     const url = urlJoin(this.config.serviceUrl, 'notifications');
     const options = {
@@ -36,6 +40,15 @@ class NotificationsApiClient extends SharedNotificationsApiClient {
       }
     };
     return serviceRequest.get(url, options);
+  }
+
+  /**
+   * Gets a single notification including the messages
+   * @param {String} eventId
+   */
+  getNotification (eventId) {
+    const url = urlJoin(this.config.serviceUrl, 'notifications', eventId);
+    return serviceRequest.get(url);
   }
 };
 

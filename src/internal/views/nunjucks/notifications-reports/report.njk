@@ -21,8 +21,8 @@
 {% block content %}
 
 <h1 class="govuk-caption-xl">{{ pageTitle }}</h1>
-<span class="govuk-heading-xl govuk-!-margin-bottom-0">{{ event.metadata.name }}</span>
-<h2 class="govuk-caption-m govuk-!-margin-top-1 govuk-!-font-weight-bold">{{ event.reference_code }}</h2>
+<span class="govuk-heading-xl govuk-!-margin-bottom-0">{{ event.name }}</span>
+<h2 class="govuk-caption-m govuk-!-margin-top-1 govuk-!-font-weight-bold">{{ event.referenceCode }}</h2>
 <h2 class="govuk-heading-s govuk-!-font-weight-bold">
   {{ event.created | date('D MMMM YYYY, hh:mma') }}
 </h2>
@@ -41,11 +41,11 @@
       <tr class="govuk-table__row">
         <td class="govuk-table__cell" scope="row">
 
-          {% if message.message_type === 'email' %}
+          {% if message.messageType === 'email' %}
             {{ message.recipient }}
           {% endif %}
 
-          {% if message.message_type === 'letter' %}
+          {% if message.messageType === 'letter' %}
             {{ notifyAddress(message.personalisation) }}
           {% endif %}
         </td>
@@ -53,7 +53,7 @@
           {{ message.licences | join(', ') }}
         </td>
         <td class="govuk-table__cell align-top" scope="row">
-          {{ message.message_type | capitalize }}
+          {{ message.messageType | capitalize }}
         </td>
         <td class="govuk-table__cell align-top" scope="row">
           {{ badge(message.badge) }}

@@ -50,6 +50,15 @@ class NotificationsApiClient extends SharedNotificationsApiClient {
     const url = urlJoin(this.config.serviceUrl, 'notifications', eventId);
     return serviceRequest.get(url);
   }
+
+  /**
+   * Gets a messages relating to a single notification
+   * @param {String} eventId
+   */
+  getNotificationMessages (eventId) {
+    const url = urlJoin(this.config.serviceUrl, 'notifications', eventId, 'messages');
+    return serviceRequest.get(url);
+  }
 };
 
 module.exports = NotificationsApiClient;

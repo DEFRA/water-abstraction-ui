@@ -28,12 +28,15 @@ async function getNotification (request, h) {
   const { id } = request.params;
 
   try {
-    const notification = await services.water.notifications.getNotification(id);
+    const [ event, { data: messages } ] = await Promise.all([
+      await services.water.notifications.getNotification(id),
+      await services.water.notifications.getNotificationMessages(id)
+    ]);
 
     return h.view('nunjucks/notifications-reports/report', {
       ...request.view,
-      event: notification,
-      messages: notification.scheduledNotifications.map(mapMessage),
+      event,
+      messages: messages.map(mapMessage),
       back: '/notifications/report'
     });
   } catch (err) {

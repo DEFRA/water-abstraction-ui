@@ -27,6 +27,38 @@ class NotificationsApiClient extends SharedNotificationsApiClient {
     };
     return serviceRequest.post(url, options);
   };
+
+  /**
+   * Gets a list of notifications
+   * @param {Number} page
+   */
+  getNotifications (page = 1) {
+    const url = urlJoin(this.config.serviceUrl, 'notifications');
+    const options = {
+      qs: {
+        page
+      }
+    };
+    return serviceRequest.get(url, options);
+  }
+
+  /**
+   * Gets a single notification including the messages
+   * @param {String} eventId
+   */
+  getNotification (eventId) {
+    const url = urlJoin(this.config.serviceUrl, 'notifications', eventId);
+    return serviceRequest.get(url);
+  }
+
+  /**
+   * Gets a messages relating to a single notification
+   * @param {String} eventId
+   */
+  getNotificationMessages (eventId) {
+    const url = urlJoin(this.config.serviceUrl, 'notifications', eventId, 'messages');
+    return serviceRequest.get(url);
+  }
 };
 
 module.exports = NotificationsApiClient;

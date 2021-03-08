@@ -2,8 +2,7 @@
 
 const titleCase = require('title-case');
 
-const badgeStatusMap = new Map()
-  .set('error', 'error');
+const isErrorStatus = status => status === 'error';
 
 /**
    * Maps the displayStatus from the water service to a badge
@@ -12,10 +11,8 @@ const badgeStatusMap = new Map()
    * @param {String} status
    */
 const messageStatusBadgeMapper = status => {
-  return {
-    text: titleCase(status),
-    status: badgeStatusMap.get(status)
-  };
+  const text = titleCase(status);
+  return isErrorStatus(status) ? { text, status } : { text };
 };
 
 const mapMessage = message => ({

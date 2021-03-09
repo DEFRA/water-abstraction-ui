@@ -10,23 +10,29 @@
 {% block content %}
 
    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-grid-column-full">
 
          <h1 class="govuk-heading-l">Service status</h1>
 
          <h2 class="govuk-heading-m">Import</h2>
          <table class="govuk-table">
             <tr class="govuk-table__row">
-               <th class="govuk-table__header" scope="row">Name</th>
-               <th class="govuk-table__header" scope="row">State</th>
-               <th class="govuk-table__header" scope="row">Count</th>
+               <th class="govuk-table__header" scope="row">Import task name</th>
+               <th class="govuk-table__header" scope="row">Success rate (last 3 days)</th>
+               <th class="govuk-table__header" scope="row">Active</th>
+               <th class="govuk-table__header" scope="row">Last updated</th>
+               <th class="govuk-table__header" scope="row">Last checked</th>
             </tr>
             {% for item in import.jobs.summary %}
-            <tr class="govuk-table__row">
-               <td class="govuk-table__cell govuk-table__cell">{{ item.name }}</td>
-               <td class="govuk-table__cell govuk-table__cell">{{ item.state }}</td>
-               <td class="govuk-table__cell govuk-table__cell--numeric">{{ item.count }}</td>
-            </tr>
+                {% if item.last_updated %}
+                    <tr class="govuk-table__row">
+                       <td class="govuk-table__cell govuk-table__cell">{{ item.name }}</td>
+                       <td class="govuk-table__cell govuk-table__cell">{{ (((item.completed_count / (+item.failed_count + +item.completed_count)))*100).toFixed(0) }}%</td>
+                       <td class="govuk-table__cell govuk-table__cell">{{ 'Yes' if item.active == 'true' else 'No' }}</td>
+                       <td class="govuk-table__cell govuk-table__cell">{{ item.last_updated | date("YYYY-MM-DD hh:m") }}</td>
+                       <td class="govuk-table__cell govuk-table__cell">{{ item.date_updated | date("YYYY-MM-DD hh:m") }}</td>
+                    </tr>
+                {% endif %}
             {% endfor %}
          </table>
 

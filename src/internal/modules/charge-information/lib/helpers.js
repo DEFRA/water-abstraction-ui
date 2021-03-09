@@ -78,8 +78,8 @@ const prepareChargeInformation = (licenceId, chargeData) => ({
   }
 });
 
-const getLicencePageUrl = async licence => {
-  const document = await services.crm.documents.getWaterLicence(licence.licenceNumber);
+const getLicencePageUrl = async (licence, includeExpired = false) => {
+  const document = await services.crm.documents.getWaterLicence(licence.licenceNumber, includeExpired);
   return `/licences/${document.document_id}#charge`;
 };
 

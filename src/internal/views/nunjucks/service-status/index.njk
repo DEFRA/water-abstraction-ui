@@ -27,10 +27,10 @@
                 {% if item.last_updated %}
                     <tr class="govuk-table__row">
                        <td class="govuk-table__cell govuk-table__cell">{{ item.name }}</td>
-                       <td class="govuk-table__cell govuk-table__cell">{{ (((item.completed_count / (+item.failed_count + +item.completed_count)))*100).toFixed(0) }}%</td>
+                       <td class="govuk-table__cell govuk-table__cell">{{ (((item.completedCount / (+item.failedCount + +item.completedCount)))*100).toFixed(0) }}%</td>
                        <td class="govuk-table__cell govuk-table__cell">{{ 'Yes' if item.active == 'true' else 'No' }}</td>
-                       <td class="govuk-table__cell govuk-table__cell">{{ item.last_updated | date("YYYY-MM-DD hh:m") }}</td>
-                       <td class="govuk-table__cell govuk-table__cell">{{ item.date_updated | date("YYYY-MM-DD hh:m") }}</td>
+                       <td class="govuk-table__cell govuk-table__cell">{{ item.lastUpdated | date("YYYY-MM-DD hh:m") }}</td>
+                       <td class="govuk-table__cell govuk-table__cell">{{ item.dateUpdated | date("YYYY-MM-DD hh:m") }}</td>
                     </tr>
                 {% endif %}
             {% endfor %}

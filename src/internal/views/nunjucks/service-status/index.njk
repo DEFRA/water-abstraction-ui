@@ -26,11 +26,11 @@
             {% for item in import.jobs.summary %}
                 {% if item.lastUpdated %}
                     <tr class="govuk-table__row">
-                       <td class="govuk-table__cell govuk-table__cell">{{ item.name }}</td>
+                       <td class="govuk-table__cell govuk-table__cell">{{ item.displayName }}</td>
                        <td class="govuk-table__cell govuk-table__cell">{{ (((item.completedCount / (+item.failedCount + +item.completedCount)))*100).toFixed(0) }}%</td>
                        <td class="govuk-table__cell govuk-table__cell">{{ 'Yes' if item.active == 'true' else 'No' }}</td>
-                       <td class="govuk-table__cell govuk-table__cell">{{ item.lastUpdated | date("YYYY-MM-DD hh:mm") }}</td>
-                       <td class="govuk-table__cell govuk-table__cell">{{ item.dateUpdated | date("YYYY-MM-DD hh:mm") }}</td>
+                       <td class="govuk-table__cell govuk-table__cell">{{ item.lastUpdated | date("LLL") }}</td>
+                       <td class="govuk-table__cell govuk-table__cell">{{ item.dateUpdated | date("LLL") }}</td>
                     </tr>
                 {% endif %}
             {% endfor %}

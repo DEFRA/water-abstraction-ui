@@ -24,7 +24,7 @@ const { reducer } = require('../lib/reducer');
  * Select the reason for the creation of a new charge version
  */
 const getReason = async (request, h) => {
-  const licenceUrl = await getLicencePageUrl(request.pre.licence);
+  const licenceUrl = await getLicencePageUrl(request.pre.licence, true);
   return h.view('nunjucks/form.njk', {
     ...getDefaultView(request, licenceUrl, forms.reason),
     pageTitle: 'Select reason for new charge information'
@@ -250,7 +250,7 @@ const postCheckData = async (request, h) => {
 
 const getCancelData = (request, h) =>
   h.view('nunjucks/charge-information/cancel.njk', {
-    ...getDefaultView(request, routing.getCheckData, forms.cancelChargeInfo),
+    ...getDefaultView(request, routing.getCheckData, forms.deleteChargeInfo),
     pageTitle: 'You\'re about to cancel this charge information',
     draftChargeInformation: request.pre.draftChargeInformation
   });

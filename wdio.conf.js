@@ -45,7 +45,7 @@ exports.config = {
   // and 30 processes will get spawned. The property handles how many capabilities
   // from the same test should run tests.
   //
-  maxInstances: 10,
+  maxInstances: 1,
   //
   // If you have trouble getting all important capabilities together, check out the
   // Sauce Labs platform configurator - a great tool to configure your capabilities:
@@ -167,7 +167,7 @@ exports.config = {
      * @param {Object} config wdio configuration object
      * @param {Array.<Object>} capabilities list of capabilities details
      */
-  onPrepare: () => setup.setUp(),
+  // onPrepare: () => setup.tearDown(),
 
   /**
      * Gets executed before a worker process is spawned and can be used to initialise specific service
@@ -208,8 +208,7 @@ exports.config = {
      * Hook that gets executed before the suite starts
      * @param {Object} suite suite details
      */
-  // beforeSuite: function (suite) {
-  // },
+  // beforeSuite: function (suite) {},
   /**
      * Function to be executed before a test (in Mocha/Jasmine) starts.
      */

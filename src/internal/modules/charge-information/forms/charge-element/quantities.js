@@ -58,7 +58,7 @@ const form = request => {
 };
 
 const schema = (request) => {
-  const nonZeroNumberWithWSixDpRegex = /^[1-9]\d*\.?\d{0,6}$/;
+  const nonZeroNumberWithWSixDpRegex = /^\s*(?=.*[1-9])\d*(?:\.\d{1,6})?\s*$/;
   return {
     csrf_token: Joi.string().uuid().required(),
     authorisedAnnualQuantity: Joi.string().regex(nonZeroNumberWithWSixDpRegex).required(),

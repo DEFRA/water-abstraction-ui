@@ -31,17 +31,15 @@ The required environment variables for local development can be found in the [.e
 
 ## Launching
 
-`node index.js`
+`node server-internal`
+and/or
+`node server-external`
 
 ## Security
 
 A valid JWT token is required for requests to the API. This should be appended to the URL in the format /API/1.0/org?token=[insert token here].
 
 Please note that a mechanism for obtaining the JWT token is not yet in place.
-
-## Contributing to this project
-
-Please read the [contribution guidelines](/CONTRIBUTING.md) before submitting a pull request.
 
 ## License
 

@@ -121,6 +121,32 @@ if (isAcceptanceTestTarget) {
       }
     },
 
+    getBillingBatchConfirmSuccess: {
+      method: 'GET',
+      path: '/billing/batch/{batchId}/confirm/success',
+      handler: controller.getBillingBatchConfirmSuccess,
+      config: {
+        app: {
+          validBatchStatuses: ['sent']
+        },
+        auth: { scope: allowedScopes },
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            batchId: Joi.string().uuid()
+          }
+        },
+        pre: [
+          { method: preHandlers.loadBatch, assign: 'batch' },
+          { method: preHandlers.redirectOnBatchStatus }
+        ]
+      }
+    },
+
     getBillingBatchCancel: {
       method: 'GET',
       path: '/billing/batch/{batchId}/cancel',

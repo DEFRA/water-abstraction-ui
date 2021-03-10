@@ -123,6 +123,16 @@ experiment('internal/modules/charge-information/forms/charge-element/quantities'
         expect(result.error).to.not.exist();
       });
 
+      test('cannot be a string describing -0.x', async () => {
+        const result = schema().billableAnnualQuantity.validate('-0.123');
+        expect(result.error).to.exist();
+      });
+
+      test('validates for a string describing 0.x', async () => {
+        const result = schema().billableAnnualQuantity.validate('0.123');
+        expect(result.error).to.not.exist();
+      });
+
       test('can be empty', async () => {
         const result = schema().billableAnnualQuantity.validate('');
         expect(result.error).not.to.exist();

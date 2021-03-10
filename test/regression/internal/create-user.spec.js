@@ -2,9 +2,12 @@
 const { loginAsUser } = require('../shared/helpers/login-as-user');
 const { baseUrl, userEmails } = require('./config');
 const uuid = require('uuid/v4');
+const { setUp, tearDown } = require('../shared/helpers/setup');
 
 describe('creating an internal user:', function () {
   before(async () => {
+    await tearDown();
+    await setUp('barebones');
     await loginAsUser(baseUrl, userEmails.super);
   });
 
@@ -19,7 +22,6 @@ describe('creating an internal user:', function () {
     it('sees the button to create a user', async () => {
       expect($('.govuk-heading-l')).toHaveText('Create an internal account');
     });
-
     after(async () => {
       const button = await $('a[href="/account/create-user"]');
       button.click();

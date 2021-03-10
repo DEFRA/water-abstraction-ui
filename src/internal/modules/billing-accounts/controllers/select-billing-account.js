@@ -1,5 +1,5 @@
 'use strict';
-const { pick, cloneDeep } = require('lodash');
+const { pick, cloneDeep, get } = require('lodash');
 
 const forms = require('shared/lib/forms');
 const { handleFormRequest } = require('shared/lib/form-handler');
@@ -91,7 +91,9 @@ const postSelectAccount = (request, h) => {
   const { account, accountSearch } = forms.getValues(form);
 
   const { key } = request.params;
-  const { sessionData: { caption, data: { agentCompany } } } = request.pre;
+
+  const agentCompany = get(request.pre, 'sessionData.data.agentCompany');
+  const caption = get(request.pre, 'sessionData.caption');
 
   // Redirect to account selection flow
   if (account === OTHER_ACCOUNT) {

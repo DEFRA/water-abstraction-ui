@@ -28,13 +28,13 @@
 
 {% macro billingAccountCell(invoice) %}
   <td class="govuk-table__cell">
-  {% if invoice.invoiceAccount %}
-    <a href="/billing-accounts/{{ invoice.invoiceAccount.id }}">
-      {{ invoice.invoiceAccount.accountNumber }}
-    </a>
-  {% else %}
-    {{ invoice.accountNumber }}
-  {% endif %}
+    {% if invoice.invoiceAccount %}
+      <a href="/billing-accounts/{{ invoice.invoiceAccount.id }}">
+        {{ invoice.invoiceAccount.accountNumber }}
+      </a>
+    {% else %}
+      {{ invoice.accountNumber }}
+    {% endif %}
   </td>
 {% endmacro %}
 
@@ -85,7 +85,7 @@
 
 {% macro amountCell(invoice) %}
   <td class="govuk-table__cell govuk-table__cell--numeric">
-    {{ chargeOrDash(invoice.netAmount) }}
+    {{ chargeOrDash(invoice.netTotal) }}
     {% if invoice.isCredit %}
       <div>Credit note</div>
     {% endif %}

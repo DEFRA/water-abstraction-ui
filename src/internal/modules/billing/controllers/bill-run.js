@@ -67,7 +67,8 @@ const getBillingBatchInvoice = async (request, h) => {
     invoiceLicences: mappers.mapInvoiceLicences(invoice, documentIds),
     isCredit: get(invoice, 'totals.netTotal', 0) < 0,
     caption: `Billing account ${invoice.invoiceAccount.accountNumber}`,
-    errors: mappers.mapInvoiceLevelErrors(invoice)
+    errors: mappers.mapInvoiceLevelErrors(invoice),
+    isCreditDebitBlockVisible: mappers.isCreditDebitBlockVisible(batch)
   });
 };
 
@@ -117,7 +118,17 @@ const getBillingBatchConfirm = async (request, h) => billingBatchAction(request,
 const postBillingBatchConfirm = async (request, h) => {
   const { batchId } = request.params;
   await services.water.billingBatches.approveBatch(batchId);
-  return h.redirect(`/billing/batch/${batchId}/summary`);
+  return h.redirect(`/billing/batch/${batchId}/processing`);
+};
+
+const getBillingBatchConfirmSuccess = (request, h) => {
+  const { batch } = request.pre;
+  return h.view('nunjucks/billing/batch-sent-success', {
+    ...request.view,
+    pageTitle: 'Bill run sent',
+    panelText: `You've sent the ${batch.region.displayName} ${getBillRunPageTitle(batch).toLowerCase()} ${batch.billRunNumber}`,
+    batch
+  });
 };
 
 /**
@@ -128,8 +139,8 @@ const postBillingBatchConfirm = async (request, h) => {
  */
 const getTransactionsCSV = async (request, h) => {
   const { batchId } = request.params;
-  const data = await services.water.billingBatches.getBatchInvoicesDetails(batchId);
-  const csvData = await transactionsCSV.createCSV(data);
+  const { invoices, chargeVersions } = await services.water.billingBatches.getBatchDownloadData(batchId);
+  const csvData = await transactionsCSV.createCSV(invoices, chargeVersions);
   const fileName = transactionsCSV.getCSVFileName(request.pre.batch);
   return csv.csvDownload(h, csvData, fileName);
 };
@@ -219,6 +230,7 @@ exports.postBillingBatchCancel = postBillingBatchCancel;
 
 exports.getBillingBatchConfirm = getBillingBatchConfirm;
 exports.postBillingBatchConfirm = postBillingBatchConfirm;
+exports.getBillingBatchConfirmSuccess = getBillingBatchConfirmSuccess;
 
 exports.getBillingBatchDeleteInvoice = getBillingBatchDeleteInvoice;
 exports.postBillingBatchDeleteInvoice = postBillingBatchDeleteInvoice;

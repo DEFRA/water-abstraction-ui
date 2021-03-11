@@ -7,6 +7,17 @@ const { setUp, tearDown } = require('../shared/helpers/setup');
 const EMAIL_ADDRESS = userEmails.external;
 
 /* eslint-disable no-undef */
+const checkErrorMessage = (message) => {
+  it('it sees the correct error message', () => {
+    const errorSummary = $('.govuk-error-summary');
+    const errorSummaryTitle = $('.govuk-error-summary__title');
+    const errorSummaryBody = $('.govuk-error-summary__body');
+    expect(errorSummary).toBeVisible();
+    expect(errorSummaryTitle).toHaveText('There is a problem');
+    expect(errorSummaryBody).toHaveTextContaining(message);
+  });
+};
+
 describe('submit a return metered readings return as an external user', function () {
   before(async () => {
     await tearDown();
@@ -57,7 +68,7 @@ describe('submit a return metered readings return as an external user', function
     expect(table).toBeVisible();
   });
 
-  it('it clicks on the return id 9999992', () => {
+  it('it clicks on the return id 9999992 to start the returns flow', () => {
     const returnsLink = $('*=9999992');
     returnsLink.click();
 
@@ -73,7 +84,15 @@ describe('submit a return metered readings return as an external user', function
     const radioButton2 = $('[value="true"]');
     const label2 = radioButton2.getElementComputedLabel(radioButton2.elementId);
     expect(label2).toEqual('No');
-    radioButton1.click();
+    const button = $('button[class="govuk-button"]');
+    button.click();
+  });
+
+  checkErrorMessage('Has any water been abstracted?');
+
+  it('selects yes - water has been abstracted', () => {
+    const radioButton = $('[value="false"]');
+    radioButton.click();
     const button = $('button[class="govuk-button"]');
     button.click();
   });
@@ -89,7 +108,15 @@ describe('submit a return metered readings return as an external user', function
     const radioButton3 = $('[value="abstractionVolumes,estimated"]');
     const label3 = radioButton3.getElementComputedLabel(radioButton3.elementId);
     expect(label3).toEqual('Estimates without a meter');
-    radioButton1.click();
+    const button = $('button[class="govuk-button"]');
+    button.click();
+  });
+
+  checkErrorMessage('Select readings from one meter, or other (abstraction volumes)');
+
+  it('selects Readings from a single meter', () => {
+    const radioButton = $('[value="oneMeter,measured"]');
+    radioButton.click();
     const button = $('button[class="govuk-button"]');
     button.click();
   });
@@ -104,7 +131,15 @@ describe('submit a return metered readings return as an external user', function
     const radioButton2 = $('[value="false"]');
     const label2 = radioButton2.getElementComputedLabel(radioButton2.elementId);
     expect(label2).toEqual('No');
-    radioButton2.click();
+    const button = $('button[class="govuk-button"]');
+    button.click();
+  });
+
+  checkErrorMessage('Has your meter reset or rolled over?');
+
+  it('selects No to meter reset', () => {
+    const radioButton = $('[value="false"]');
+    radioButton.click();
     const button = $('button[class="govuk-button"]');
     button.click();
   });
@@ -125,7 +160,15 @@ describe('submit a return metered readings return as an external user', function
     const radioButton4 = $('[value="gal"]');
     const label4 = radioButton4.getElementComputedLabel(radioButton4.elementId);
     expect(label4).toEqual('Gallons');
-    radioButton1.click();
+    const button = $('button[class="govuk-button"]');
+    button.click();
+  });
+
+  checkErrorMessage('Select a unit of measurement');
+
+  it('selects cubic meters', () => {
+    const radioButton = $('[value="m³"]');
+    radioButton.click();
     const button = $('button[class="govuk-button"]');
     button.click();
   });
@@ -134,6 +177,13 @@ describe('submit a return metered readings return as an external user', function
     expect($('form')).toBeVisible();
     const formQuestion = $('//form/p');
     expect(formQuestion).toHaveTextContaining('Enter your readings exactly as they appear on your meter');
+    const button = $('button[class="govuk-button"]');
+    button.click();
+  });
+
+  checkErrorMessage('Enter a meter start reading');
+
+  it('selects cubic meters', () => {
     const textBoxStart = $('input[name="startReading"]');
     textBoxStart.setValue('0');
     const textBoxJan = $('input[name="2021-01-01_2021-01-31"]');
@@ -148,6 +198,13 @@ describe('submit a return metered readings return as an external user', function
     expect($('form')).toBeVisible();
     const formQuestion = $('//form/p');
     expect(formQuestion).toHaveTextContaining('Your current meter details');
+    const button = $('button[class="govuk-button"]');
+    button.click();
+  });
+
+  checkErrorMessage('Enter the make of your meter');
+
+  it('selects cubic meters', () => {
     const textBoxMake = $('input[name="manufacturer"]');
     textBoxMake.setValue('Test Water Meter');
     const textBoxSerialNumber = $('input[name="serialNumber"]');

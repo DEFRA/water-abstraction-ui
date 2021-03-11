@@ -28,7 +28,7 @@
                     <tr class="govuk-table__row">
                        <td class="govuk-table__cell govuk-table__cell">{{ item.displayName }}</td>
                        <td class="govuk-table__cell govuk-table__cell">{{ (((item.completedCount / (+item.failedCount + +item.completedCount)))*100).toFixed(0) }}%</td>
-                       <td class="govuk-table__cell govuk-table__cell">{{ 'Yes' if item.isActive == 'true' else 'No' }}</td>
+                       <td class="govuk-table__cell govuk-table__cell">{{ 'Yes' if item.isActive == true else 'No' }}</td>
                        <td class="govuk-table__cell govuk-table__cell">{{ item.lastUpdated | date("LLL") }}</td>
                        <td class="govuk-table__cell govuk-table__cell">{{ item.dateUpdated | date("LLL") }}</td>
                     </tr>

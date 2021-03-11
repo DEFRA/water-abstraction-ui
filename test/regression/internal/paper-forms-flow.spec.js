@@ -179,7 +179,6 @@ describe('Step through the returns paper forms flow:', function () {
       expect(licenceDetails.$('//div[2]/dt')).toHaveText('Returns reference numbers');
 
       licenceDetails.scrollIntoView();
-      browser.saveScreenshot(`temp/2.png`);
       expect(licenceDetails.$('//div[2]/dd[2]/a')).toHaveTextContaining('Change');
     });
 
@@ -206,7 +205,7 @@ describe('Step through the returns paper forms flow:', function () {
       expect(licenceDetails.$('//div[3]/dd[2]/a')).toHaveTextContaining('Change');
     });
   });
-
+  // ##############################################
   describe('change the returns selected for a licence', () => {
     before('click on the change returns link', () => {
       const changeLink = $('[href*="/select-returns"]');
@@ -220,22 +219,19 @@ describe('Step through the returns paper forms flow:', function () {
       expect($('form')).toBeVisible();
     });
 
-    it('remove one returns reference and click continue', () => {
-      browser.saveScreenshot(`temp/1.png`);
+    it('add one returns reference and click continue', () => {
       const returnId2 = $('input[id="returnIds-2"]');
       returnId2.click();
       const button = $('button[class="govuk-button"]');
       button.click();
     });
 
-    it('check returns details now contains only one returns reference', () => {
+    it('check returns details contains only one returns reference', () => {
       const dueDate = moment('2021-01-28').format('DD MMMM YYYY');
       const licenceDetails = $('//main/div/div/dl[1]');
       licenceDetails.scrollIntoView();
-      browser.saveScreenshot(`temp/3.png`);
       expect(licenceDetails.$('//div[2]/dd[1]/div/div[1]/div[1]')).toHaveText('9999991');
       expect(licenceDetails.$('//div[2]/dd[1]/div/div[1]/div[2]')).toHaveText(`Due ${dueDate}`);
-      expect(licenceDetails.$('//div[2]/dd[1]/div/div[2]')).not.toBeVisible();
     });
   });
 
@@ -454,7 +450,7 @@ describe('Step through the returns paper forms flow:', function () {
       expect(textBox).toBeVisible();
 
       // enter the postcode and continue
-      textBox.setValue('EX1 1QA');
+      textBox.setValue('SW1A 1AA');
       const button = $('button[class="govuk-button"]');
       button.click();
     });
@@ -470,7 +466,7 @@ describe('Step through the returns paper forms flow:', function () {
       // click on the dropdown list to display all the options
       selectList.click();
       // pick the option and click on it
-      const option = $('option[value="10013050863"]');
+      const option = $('option[value="10033544614"]');
       option.click();
       // click on continue
       const button = $('button[class="govuk-button"]');
@@ -479,10 +475,9 @@ describe('Step through the returns paper forms flow:', function () {
 
     checkAddress({
       fao: 'FAO Tester van der Walt',
-      line1: '6',
-      line2: 'PRINCESSHAY',
-      town: 'EXETER',
-      postcode: 'EX1 1GE',
+      line1: 'BUCKINGHAM PALACE',
+      town: 'LONDON',
+      postcode: 'SW1A 1AA',
       country: 'United Kingdom'
     });
   });

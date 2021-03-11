@@ -1,16 +1,15 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "title.njk" import title %}
+{% from "paginate.njk" import paginate %}
 {% from 'nunjucks/billing/macros/invoices-table.njk' import licenceInvoicesView %}
 
 {% block content %}
-  {{ title(pageTitle, caption, subHeading) }}
+  {{ title(pageTitle, caption) }}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      {% if isChargingUser %}
+        {{ licenceInvoicesView(bills, tableCaption) }}
 
-        {{ licenceInvoicesView(bills) }}
-
-      {% endif %}
+        {{paginate(pagination)}}
     </div>
   </div>
 {% endblock %}

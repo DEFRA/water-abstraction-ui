@@ -12,6 +12,7 @@ const ReturnsService = require('./ReturnsService');
 const BatchNotificationsService = require('./BatchNotificationsService');
 const ChangeReasonsService = require('./ChangeReasonsService');
 const ReturnsNotificationsService = require('./ReturnsNotificationsService');
+const ReturnCyclesService = require('./ReturnCyclesService');
 const InternalSearchService = require('./InternalSearchService');
 const InvoiceAccountService = require('./InvoiceAccountService');
 const AddressSearchService = require('./AddressSearchService');
@@ -57,6 +58,7 @@ module.exports = config => ({
   internalSearch: new InternalSearchService(config.services.water, logger),
   regions: new RegionsService(config.services.water, logger),
   returns: new ReturnsService(config.services.water, logger),
+  returnCycles: new ReturnCyclesService(config.services.water, logger),
   serviceStatus: new ServiceStatusService(config.services.water, logger),
   returnsNotifications: new ReturnsNotificationsService(config.services.water, logger),
   kpiReporting: new KpiReportingService(config.services.water, logger),

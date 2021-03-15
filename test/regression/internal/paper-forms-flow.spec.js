@@ -67,8 +67,8 @@ const checkAddress = (address) => {
     if (address.postcode) expect(addressLine).toHaveTextContaining(address.postcode);
     if (address.country) expect(addressLine).toHaveTextContaining(address.country);
   });
-  
 };
+
 describe('Step through the returns paper forms flow:', function () {
   before(async () => {
     await tearDown();

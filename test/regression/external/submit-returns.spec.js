@@ -124,7 +124,7 @@ describe('submit a return metered readings return as an external user', function
   it('answers yes to Did your meter reset in this abstraction period?', () => {
     expect($('form')).toBeVisible();
     const formQuestion = $('//form/div/fieldset/legend');
-    expect(formQuestion).toHaveTextContaining('Did your meter reset in this abstraction period?');   
+    expect(formQuestion).toHaveTextContaining('Did your meter reset in this abstraction period?');
     const label1 = getLabel('meterReset');
     expect(label1).toHaveTextContaining('Yes');
     const label2 = getLabel('meterReset-2');

@@ -6,7 +6,8 @@ const testMode = parseInt(process.env.TEST_MODE) === 1;
 const isLocal = process.env.NODE_ENV === 'local';
 
 const { internal } = require('./lib/constants').scope;
-
+const moment = require('moment');
+const today = moment().format('YYYY-MM-DD');
 module.exports = {
 
   blankie: {
@@ -135,9 +136,9 @@ module.exports = {
   },
 
   featureToggles: {
-    manageAgreements: ['local', 'dev', 'development', 'test', 'qa', 'preprod'].includes(process.env.NODE_ENV),
-    chargeInformation: ['local', 'dev', 'development', 'test', 'qa', 'preprod'].includes(process.env.NODE_ENV),
-    manageInvoiceAccounts: ['local', 'dev', 'development', 'test', 'qa', 'preprod'].includes(process.env.NODE_ENV),
-    deleteAllBillingData: ['local', 'dev', 'development', 'test', 'qa'].includes(process.env.NODE_ENV)
+    manageAgreements: (['local', 'dev', 'development', 'test', 'qa', 'preprod'].includes(process.env.NODE_ENV)) || (today >= '2001-05-01'),
+    chargeInformation: (['local', 'dev', 'development', 'test', 'qa', 'preprod'].includes(process.env.NODE_ENV)) || (today >= '2001-05-01'),
+    manageInvoiceAccounts: (['local', 'dev', 'development', 'test', 'qa', 'preprod'].includes(process.env.NODE_ENV)) || (today >= '2001-05-01'),
+    deleteAllBillingData: (['local', 'dev', 'development', 'test', 'qa'].includes(process.env.NODE_ENV)) || (today >= '2001-05-01')
   }
 };

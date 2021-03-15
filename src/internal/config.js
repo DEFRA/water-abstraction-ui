@@ -136,9 +136,9 @@ module.exports = {
   },
 
   featureToggles: {
-    manageAgreements: (['local', 'dev', 'development', 'test', 'qa', 'preprod'].includes(process.env.NODE_ENV)) || (today >= '2021-05-01'),
-    chargeInformation: (['local', 'dev', 'development', 'test', 'qa', 'preprod'].includes(process.env.NODE_ENV)) || (today >= '2021-05-01'),
-    manageInvoiceAccounts: (['local', 'dev', 'development', 'test', 'qa', 'preprod'].includes(process.env.NODE_ENV)) || (today >= '2021-05-01'),
-    deleteAllBillingData: (['local', 'dev', 'development', 'test', 'qa'].includes(process.env.NODE_ENV)) || (today >= '2021-05-01')
+    manageAgreements: (['local', 'dev', 'development', 'test', 'qa', 'preprod'].includes(process.env.NODE_ENV)) || (today >= moment('2021-05-01')),
+    chargeInformation: (['local', 'dev', 'development', 'test', 'qa', 'preprod'].includes(process.env.NODE_ENV)) || (today >= moment('2021-05-01')),
+    manageInvoiceAccounts: (['local', 'dev', 'development', 'test', 'qa', 'preprod'].includes(process.env.NODE_ENV)) || (today >= moment('2021-05-01')),
+    deleteAllBillingData: (['local', 'dev', 'development', 'test', 'qa'].includes(process.env.NODE_ENV)) || (today >= moment('2021-05-01'))
   }
 };

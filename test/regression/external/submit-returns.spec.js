@@ -2,11 +2,15 @@
 
 const { loginAsUser } = require('../shared/helpers/login-as-user');
 const { baseUrl, userEmails } = require('./config');
-const { getPageTitle } = require('../shared/helpers/page');
+const { getPageTitle, getPageCaption, getButton, getLabel } = require('../shared/helpers/page');
 const { setUp, tearDown } = require('../shared/helpers/setup');
 const EMAIL_ADDRESS = userEmails.external;
 
 /* eslint-disable no-undef */
+/**
+ * helper method to test the error messages of a form
+ * @param {*} message error message expected on the form
+ */
 const checkErrorMessage = (message) => {
   it('it sees the correct error message', () => {
     const errorSummary = $('.govuk-error-summary');
@@ -18,6 +22,9 @@ const checkErrorMessage = (message) => {
   });
 };
 
+/**
+ * submit meter readings for the rturn
+ */
 describe('submit a return metered readings return as an external user', function () {
   before(async () => {
     await tearDown();
@@ -71,44 +78,37 @@ describe('submit a return metered readings return as an external user', function
   it('it clicks on the return id 9999992 to start the returns flow', () => {
     const returnsLink = $('*=9999992');
     returnsLink.click();
-
     const pageTitle = getPageTitle();
     expect(pageTitle).toHaveTextContaining('Abstraction return');
-    const caption = $('.govuk-caption-l').getText();
+    const caption = getPageCaption().getText();
     expect(caption).toEqual('Licence number AT/CURR/MONTHLY/02');
-
     expect($('form')).toBeVisible();
-    const radioButton1 = $('[value="false"]');
-    const label1 = radioButton1.getElementComputedLabel(radioButton1.elementId);
-    expect(label1).toContain('Yes');
-    const radioButton2 = $('[value="true"]');
-    const label2 = radioButton2.getElementComputedLabel(radioButton2.elementId);
-    expect(label2).toEqual('No');
-    const button = $('button[class="govuk-button"]');
+    const radioLabel1 = getLabel('isNil');
+    expect(radioLabel1).toHaveTextContaining('Yes');
+    const radioLabel2 = getLabel('isNil-2');
+    expect(radioLabel2).toHaveTextContaining('No');
+    const button = getButton();
     button.click();
   });
 
   checkErrorMessage('Has any water been abstracted?');
 
   it('selects yes - water has been abstracted', () => {
-    const radioButton = $('[value="false"]');
+    const radioButton = $('input[value="false"]');
     radioButton.click();
-    const button = $('button[class="govuk-button"]');
+    const button = getButton();
     button.click();
   });
 
   it('How are you reporting your figures', () => {
     expect($('form')).toBeVisible();
-    const radioButton1 = $('[value="oneMeter,measured"]');
-    const label1 = radioButton1.getElementComputedLabel(radioButton1.elementId);
-    expect(label1).toContain('Readings from a single meter');
-    const radioButton2 = $('[value="abstractionVolumes,measured"]');
-    const label2 = radioButton2.getElementComputedLabel(radioButton2.elementId);
-    expect(label2).toEqual('Volumes from one or more meters');
-    const radioButton3 = $('[value="abstractionVolumes,estimated"]');
-    const label3 = radioButton3.getElementComputedLabel(radioButton3.elementId);
-    expect(label3).toEqual('Estimates without a meter');
-    const button = $('button[class="govuk-button"]');
+    const radioLabel1 = getLabel('method');
+    expect(radioLabel1).toHaveTextContaining('Readings from a single meter');
+    const radioLabel2 = getLabel('method-2');
+    expect(radioLabel2).toHaveTextContaining('Volumes from one or more meters');
+    const radioLabel3 = getLabel('method-3');
+    expect(radioLabel3).toHaveTextContaining('Estimates without a meter');
+    const button = getButton();
     button.click();
   });
 
@@ -117,21 +117,19 @@ describe('submit a return metered readings return as an external user', function
   it('selects Readings from a single meter', () => {
     const radioButton = $('[value="oneMeter,measured"]');
     radioButton.click();
-    const button = $('button[class="govuk-button"]');
+    const button = getButton();
     button.click();
   });
 
   it('answers yes to Did your meter reset in this abstraction period?', () => {
     expect($('form')).toBeVisible();
     const formQuestion = $('//form/div/fieldset/legend');
-    expect(formQuestion).toHaveTextContaining('Did your meter reset in this abstraction period?');
-    const radioButton1 = $('[value="true"]');
-    const label1 = radioButton1.getElementComputedLabel(radioButton1.elementId);
-    expect(label1).toContain('Yes');
-    const radioButton2 = $('[value="false"]');
-    const label2 = radioButton2.getElementComputedLabel(radioButton2.elementId);
-    expect(label2).toEqual('No');
-    const button = $('button[class="govuk-button"]');
+    expect(formQuestion).toHaveTextContaining('Did your meter reset in this abstraction period?');   
+    const label1 = getLabel('meterReset');
+    expect(label1).toHaveTextContaining('Yes');
+    const label2 = getLabel('meterReset-2');
+    expect(label2).toHaveTextContaining('No');
+    const button = getButton();
     button.click();
   });
 
@@ -140,7 +138,7 @@ describe('submit a return metered readings return as an external user', function
   it('selects No to meter reset', () => {
     const radioButton = $('[value="false"]');
     radioButton.click();
-    const button = $('button[class="govuk-button"]');
+    const button = getButton();
     button.click();
   });
 
@@ -148,19 +146,15 @@ describe('submit a return metered readings return as an external user', function
     expect($('form')).toBeVisible();
     const formQuestion = $('//form/div/fieldset/legend');
     expect(formQuestion).toHaveTextContaining('Which units are you using?');
-    const radioButton1 = $('[value="m³"]');
-    const label1 = radioButton1.getElementComputedLabel(radioButton1.elementId);
-    expect(label1).toContain('Cubic metres');
-    const radioButton2 = $('[value="l"]');
-    const label2 = radioButton2.getElementComputedLabel(radioButton2.elementId);
-    expect(label2).toEqual('Litres');
-    const radioButton3 = $('[value="Ml"]');
-    const label3 = radioButton3.getElementComputedLabel(radioButton3.elementId);
-    expect(label3).toEqual('Megalitres');
-    const radioButton4 = $('[value="gal"]');
-    const label4 = radioButton4.getElementComputedLabel(radioButton4.elementId);
-    expect(label4).toEqual('Gallons');
-    const button = $('button[class="govuk-button"]');
+    const label1 = getLabel('units');
+    expect(label1).toHaveTextContaining('Cubic metres');
+    const label2 = getLabel('units-2');
+    expect(label2).toHaveTextContaining('Litres');
+    const label3 = getLabel('units-3');
+    expect(label3).toHaveTextContaining('Megalitres');
+    const label4 = getLabel('units-4');
+    expect(label4).toHaveTextContaining('Gallons');
+    const button = getButton();
     button.click();
   });
 
@@ -169,7 +163,7 @@ describe('submit a return metered readings return as an external user', function
   it('selects cubic meters', () => {
     const radioButton = $('[value="m³"]');
     radioButton.click();
-    const button = $('button[class="govuk-button"]');
+    const button = getButton();
     button.click();
   });
 
@@ -177,7 +171,7 @@ describe('submit a return metered readings return as an external user', function
     expect($('form')).toBeVisible();
     const formQuestion = $('//form/p');
     expect(formQuestion).toHaveTextContaining('Enter your readings exactly as they appear on your meter');
-    const button = $('button[class="govuk-button"]');
+    const button = getButton();
     button.click();
   });
 
@@ -190,7 +184,7 @@ describe('submit a return metered readings return as an external user', function
     textBoxJan.setValue('10');
     const textBoxFeb = $('input[name="2021-02-01_2021-02-28"]');
     textBoxFeb.setValue('20');
-    const button = $('button[class="govuk-button"]');
+    const button = getButton();
     button.click();
   });
 
@@ -198,7 +192,7 @@ describe('submit a return metered readings return as an external user', function
     expect($('form')).toBeVisible();
     const formQuestion = $('//form/p');
     expect(formQuestion).toHaveTextContaining('Your current meter details');
-    const button = $('button[class="govuk-button"]');
+    const button = getButton();
     button.click();
   });
 
@@ -211,7 +205,7 @@ describe('submit a return metered readings return as an external user', function
     textBoxSerialNumber.setValue('Test serial number');
     const textBoxMultiplier = $('input[name="isMultiplier"]');
     textBoxMultiplier.click();
-    const button = $('button[class="govuk-button"]');
+    const button = getButton();
     button.click();
   });
 
@@ -221,7 +215,7 @@ describe('submit a return metered readings return as an external user', function
     expect(pageSubHeader).toHaveTextContaining('Confirm your return');
     const totalAbstracted = $('//table/tbody/tr[3]/td[3]/strong');
     expect(totalAbstracted).toHaveTextContaining('200');
-    const button = $('button[class="govuk-button"]');
+    const button = getButton('Submit');
     button.click();
   });
 
@@ -231,6 +225,9 @@ describe('submit a return metered readings return as an external user', function
   });
 });
 
+/**
+ * Nill return
+ */
 describe('submit a nill return as an external user', function () {
   it('sees the page title', async () => {
     const viewLicencesLink = await $('*=View licences');
@@ -242,7 +239,6 @@ describe('submit a nill return as an external user', function () {
 
   it('sees the licences table', async () => {
     const table = await $('#results');
-
     expect(table).toBeVisible();
   });
 
@@ -254,11 +250,8 @@ describe('submit a nill return as an external user', function () {
   it('clicks on the MONTHLY licence 02', async () => {
     const dailyLicenceLink = await $('*=MONTHLY/02');
     await dailyLicenceLink.click();
-
     const licencePageHeader = await getPageTitle();
-
     await expect(licencePageHeader).toBeDisplayed();
-
     await expect(licencePageHeader).toHaveTextContaining('Licence number AT/CURR/MONTHLY/02');
   });
 
@@ -280,18 +273,14 @@ describe('submit a nill return as an external user', function () {
   it('it clicks on the return id 9999990', () => {
     const returnsLink = $('*=9999990');
     returnsLink.click();
-
     const pageTitle = getPageTitle();
     expect(pageTitle).toHaveTextContaining('Abstraction return');
-    const caption = $('.govuk-caption-l').getText();
-    expect(caption).toEqual('Licence number AT/CURR/MONTHLY/02');
-
+    const caption = getPageCaption();
+    expect(caption).toHaveTextContaining('Licence number AT/CURR/MONTHLY/02');
     expect($('form')).toBeVisible();
     const radioButton = $('[value="true"]');
-    const label = radioButton.getElementComputedLabel(radioButton.elementId);
-    expect(label).toEqual('No');
     radioButton.click();
-    const button = $('button[class="govuk-button"]');
+    const button = getButton();
     button.click();
   });
 
@@ -299,7 +288,7 @@ describe('submit a nill return as an external user', function () {
     expect($('form')).toBeVisible();
     const pageSubHeader = $('//main/div/div/h2');
     expect(pageSubHeader).toHaveTextContaining('Nil return');
-    const button = $('button[class="govuk-button"]');
+    const button = getButton('Submit');
     button.click();
   });
 
@@ -309,18 +298,19 @@ describe('submit a nill return as an external user', function () {
   });
 });
 
+/**
+ * submit return by volmes measured
+ */
 describe('submit a return by volumes as an external user', function () {
   it('sees the page title', async () => {
     const viewLicencesLink = await $('*=View licences');
     await viewLicencesLink.click();
     const title = await getPageTitle();
-
     expect(title).toHaveText('Your licences');
   });
 
   it('sees the licences table', async () => {
     const table = await $('#results');
-
     expect(table).toBeVisible();
   });
 
@@ -332,11 +322,8 @@ describe('submit a return by volumes as an external user', function () {
   it('clicks on the MONTHLY licence 02', async () => {
     const dailyLicenceLink = await $('*=MONTHLY/02');
     await dailyLicenceLink.click();
-
     const licencePageHeader = await getPageTitle();
-
     await expect(licencePageHeader).toBeDisplayed();
-
     await expect(licencePageHeader).toHaveTextContaining('Licence number AT/CURR/MONTHLY/02');
   });
 
@@ -358,37 +345,25 @@ describe('submit a return by volumes as an external user', function () {
   it('it clicks on the return id 9999991', () => {
     const returnsLink = $('*=9999991');
     returnsLink.click();
-
     const pageTitle = getPageTitle();
     expect(pageTitle).toHaveTextContaining('Abstraction return');
-    const caption = $('.govuk-caption-l').getText();
-    expect(caption).toEqual('Licence number AT/CURR/MONTHLY/02');
-
+    const caption = getPageCaption();
+    expect(caption).toHaveTextContaining('Licence number AT/CURR/MONTHLY/02');
     expect($('form')).toBeVisible();
+  });
+
+  it('selects yes for water has been abstracted in this period', () => {
     const radioButton1 = $('[value="false"]');
-    const label1 = radioButton1.getElementComputedLabel(radioButton1.elementId);
-    expect(label1).toContain('Yes');
-    const radioButton2 = $('[value="true"]');
-    const label2 = radioButton2.getElementComputedLabel(radioButton2.elementId);
-    expect(label2).toEqual('No');
     radioButton1.click();
-    const button = $('button[class="govuk-button"]');
+    const button = getButton();
     button.click();
   });
 
-  it('How are you reporting your figures', () => {
+  it('selects "Volumes from one or more meters"', () => {
     expect($('form')).toBeVisible();
-    const radioButton1 = $('[value="oneMeter,measured"]');
-    const label1 = radioButton1.getElementComputedLabel(radioButton1.elementId);
-    expect(label1).toContain('Readings from a single meter');
     const radioButton2 = $('[value="abstractionVolumes,measured"]');
-    const label2 = radioButton2.getElementComputedLabel(radioButton2.elementId);
-    expect(label2).toEqual('Volumes from one or more meters');
-    const radioButton3 = $('[value="abstractionVolumes,estimated"]');
-    const label3 = radioButton3.getElementComputedLabel(radioButton3.elementId);
-    expect(label3).toEqual('Estimates without a meter');
     radioButton2.click();
-    const button = $('button[class="govuk-button"]');
+    const button = getButton();
     button.click();
   });
 
@@ -396,20 +371,9 @@ describe('submit a return by volumes as an external user', function () {
     expect($('form')).toBeVisible();
     const formQuestion = $('//form/div/fieldset/legend');
     expect(formQuestion).toHaveTextContaining('Which units are you using?');
-    const radioButton1 = $('[value="m³"]');
-    const label1 = radioButton1.getElementComputedLabel(radioButton1.elementId);
-    expect(label1).toContain('Cubic metres');
     const radioButton2 = $('[value="l"]');
-    const label2 = radioButton2.getElementComputedLabel(radioButton2.elementId);
-    expect(label2).toEqual('Litres');
-    const radioButton3 = $('[value="Ml"]');
-    const label3 = radioButton3.getElementComputedLabel(radioButton3.elementId);
-    expect(label3).toEqual('Megalitres');
-    const radioButton4 = $('[value="gal"]');
-    const label4 = radioButton4.getElementComputedLabel(radioButton4.elementId);
-    expect(label4).toEqual('Gallons');
     radioButton2.click();
-    const button = $('button[class="govuk-button"]');
+    const button = getButton();
     button.click();
   });
 
@@ -441,7 +405,7 @@ describe('submit a return by volumes as an external user', function () {
     textBoxNov.setValue('10000');
     const textBoxDec = $('input[name="2020-12-01_2020-12-31"]');
     textBoxDec.setValue('10000');
-    const button = $('button[class="govuk-button"]');
+    const button = getButton();
     button.click();
   });
 
@@ -455,7 +419,7 @@ describe('submit a return by volumes as an external user', function () {
     textBoxSerialNumber.setValue('Test serial number');
     const textBoxMultiplier = $('input[name="isMultiplier"]');
     textBoxMultiplier.click();
-    const button = $('button[class="govuk-button"]');
+    const button = getButton();
     button.click();
   });
 
@@ -465,7 +429,7 @@ describe('submit a return by volumes as an external user', function () {
     expect(pageSubHeader).toHaveTextContaining('Confirm your return');
     const totalAbstracted = $('//table/tbody/tr[13]/td[3]/strong');
     expect(totalAbstracted).toHaveTextContaining('120');
-    const button = $('button[class="govuk-button"]');
+    const button = getButton('Submit');
     button.click();
   });
 

@@ -38,6 +38,10 @@ const getByTestId = id =>
 const getBackLink = () =>
   $('.govuk-back-link');
 
+const getLabel = labelFor =>
+  $(`label[for=${labelFor}]`);
+
+exports.getLabel = getLabel;
 exports.getButton = getButton;
 exports.getPageTitle = getPageTitle;
 exports.getPageCaption = getPageCaption;

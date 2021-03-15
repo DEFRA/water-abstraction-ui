@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 const { loginAsUser } = require('../shared/helpers/login-as-user');
-const { getPageTitle } = require('../shared/helpers/page');
+const { getPageTitle, getLabel, getButton, getPageCaption } = require('../shared/helpers/page');
 const { baseUrl, userEmails } = require('./config');
 const moment = require('moment');
 const { setUp, tearDown } = require('../shared/helpers/setup');
@@ -19,15 +19,14 @@ const changeAddress = (fao) => {
     expect(pageTitle).toHaveTextContaining('Select where to send the form');
     expect(pageTitle).toHaveTextContaining('Licence AT/CURR/MONTHLY/02');
     expect($('form')).toBeVisible();
-    const radioButton1 = $('[value="licenceHolder"]');
-    const label1 = radioButton1.getElementComputedLabel(radioButton1.elementId);
-    expect(label1).toContain('Big Farm Co Ltd');
+    const label1 = getLabel('selectedRole');
+    expect(label1).toHaveTextContaining('Big Farm Co Ltd');
     expect($('.govuk-radios__divider=Or')).toBeVisible();
-    const radioButton2 = $('[value="createOneTimeAddress"]');
-    const label2 = radioButton2.getElementComputedLabel(radioButton2.elementId);
-    expect(label2).toEqual('Set up a one time address');
+    const radioButton2 = $('input[value="createOneTimeAddress"]');
+    const label2 = getLabel('selectedRole-3');
+    expect(label2).toHaveTextContaining('Set up a one time address');
     radioButton2.click();
-    const button = $('button[class="govuk-button"]');
+    const button = getButton();
     button.click();
   });
 
@@ -43,7 +42,7 @@ const changeAddress = (fao) => {
 
     // enter the full name and continue
     textBox.setValue(fao);
-    const button = $('button[class="govuk-button"]');
+    const button = getButton();
     button.click();
   });
 };
@@ -68,8 +67,8 @@ const checkAddress = (address) => {
     if (address.postcode) expect(addressLine).toHaveTextContaining(address.postcode);
     if (address.country) expect(addressLine).toHaveTextContaining(address.country);
   });
+  
 };
-
 describe('Step through the returns paper forms flow:', function () {
   before(async () => {
     await tearDown();
@@ -115,7 +114,7 @@ describe('Step through the returns paper forms flow:', function () {
     before('populates the text area field', () => {
       const field = $('#licenceNumbers');
       field.setValue('INCORRECT/TEST/LICENCE/NUMBER');
-      const button = $('button[class="govuk-button"]');
+      const button = getButton();
       button.click();
     });
     it('the user is redeirected back to the same page', () => {
@@ -137,7 +136,7 @@ describe('Step through the returns paper forms flow:', function () {
     before('populates the text area field', () => {
       const field = $('#licenceNumbers');
       field.setValue('AT/CURR/MONTHLY/01');
-      const button = $('button[class="govuk-button"]');
+      const button = getButton();
       button.click();
     });
     it('the user is redeirected back to the same page', () => {
@@ -155,7 +154,7 @@ describe('Step through the returns paper forms flow:', function () {
     before('populates the text area field with the licence numbers and clicks submit', () => {
       const field = $('#licenceNumbers');
       field.setValue('AT/CURR/MONTHLY/02, AT/CURR/MONTHLY/01');
-      const button = $('button[class="govuk-button"]');
+      const button = getButton();
       button.click();
     });
     it('the check returns details page is displayed', () => {
@@ -205,7 +204,7 @@ describe('Step through the returns paper forms flow:', function () {
       expect(licenceDetails.$('//div[3]/dd[2]/a')).toHaveTextContaining('Change');
     });
   });
-  // ##############################################
+
   describe('change the returns selected for a licence', () => {
     before('click on the change returns link', () => {
       const changeLink = $('[href*="/select-returns"]');
@@ -222,7 +221,7 @@ describe('Step through the returns paper forms flow:', function () {
     it('add one returns reference and click continue', () => {
       const returnId2 = $('input[id="returnIds-2"]');
       returnId2.click();
-      const button = $('button[class="govuk-button"]');
+      const button = getButton();
       button.click();
     });
 
@@ -250,11 +249,11 @@ describe('Step through the returns paper forms flow:', function () {
     it('select option to setup address', () => {
       const pageTitle = getPageTitle();
       expect(pageTitle).toHaveTextContaining('Select where to send the form');
-      const radioButton2 = $('[value="createOneTimeAddress"]');
-      const label2 = radioButton2.getElementComputedLabel(radioButton2.elementId);
-      expect(label2).toEqual('Set up a one time address');
-      radioButton2.click();
-      const button = $('button[class="govuk-button"]');
+      const radioButton = $('[value="createOneTimeAddress"]');
+      const label = getLabel('selectedRole-3');
+      expect(label).toHaveTextContaining('Set up a one time address');
+      radioButton.click();
+      const button = getButton();
       button.click();
     });
 
@@ -267,7 +266,7 @@ describe('Step through the returns paper forms flow:', function () {
 
       // enter an empty string and continue
       textBox.setValue('');
-      const button = $('button[class="govuk-button"]');
+      const button = getButton();
       button.click();
     });
 
@@ -290,7 +289,7 @@ describe('Step through the returns paper forms flow:', function () {
 
       // enter an empty string and continue
       textBox.setValue('Tester2 Oosthuizen');
-      const button = $('button[class="govuk-button"]');
+      const button = getButton();
       button.click();
     });
 
@@ -303,9 +302,10 @@ describe('Step through the returns paper forms flow:', function () {
 
       // enter an empty string and continue
       textBox.setValue('');
-      const button = $('button[class="govuk-button"]');
+      const button = getButton('Find address');
       button.click();
     });
+
     it('checks the correct error message is displayed on the postcode entry form', () => {
       const pageTitle = getPageTitle();
       expect(pageTitle).toHaveTextContaining('Enter the UK postcode');
@@ -323,13 +323,13 @@ describe('Step through the returns paper forms flow:', function () {
       const textBox = $('input[name="postcode"]');
       expect(textBox).toBeVisible();
       textBox.setValue('EX1 1QA');
-      const button = $('button[class="govuk-button"]');
+      const button = getButton('Find address');
       button.click();
     });
 
     it('do not select an address from the list, click continue and checks the errors', () => {
       // click contiinue without selecting an address
-      const button = $('button[class="govuk-button"]');
+      const button = getButton();
       button.click();
       const pageTitle = getPageTitle();
       expect(pageTitle).toHaveTextContaining('Select the address');
@@ -361,7 +361,7 @@ describe('Step through the returns paper forms flow:', function () {
       const option = $('//select/option[1]');
       option.click();
       // click continue to display form errors
-      const button = $('button[class="govuk-button"]');
+      const button = getButton();
       button.click();
     });
 
@@ -424,7 +424,7 @@ describe('Step through the returns paper forms flow:', function () {
     });
 
     it('clicks the continue button', () => {
-      const button = $('button[class="govuk-button"]');
+      const button = getButton();
       button.click();
     });
 
@@ -451,15 +451,15 @@ describe('Step through the returns paper forms flow:', function () {
 
       // enter the postcode and continue
       textBox.setValue('SW1A 1AA');
-      const button = $('button[class="govuk-button"]');
+      const button = getButton('Find address');
       button.click();
     });
 
     it('check and select address from list', () => {
       const pageTitle = getPageTitle();
       expect(pageTitle).toHaveTextContaining('Select the address');
-      const caption = $('.govuk-caption-l').getText();
-      expect(caption).toEqual('Licence AT/CURR/MONTHLY/02');
+      const caption = getPageCaption();
+      expect(caption).toHaveTextContaining('Licence AT/CURR/MONTHLY/02');
       expect($('form')).toBeVisible();
       const selectList = $('select[class="govuk-select"]');
       expect(selectList).toBeVisible();
@@ -469,7 +469,7 @@ describe('Step through the returns paper forms flow:', function () {
       const option = $('option[value="10033544614"]');
       option.click();
       // click on continue
-      const button = $('button[class="govuk-button"]');
+      const button = getButton();
       button.click();
     });
 
@@ -538,7 +538,7 @@ describe('Step through the returns paper forms flow:', function () {
     });
 
     it('clicks the continue button', () => {
-      const button = $('button[class="govuk-button"]');
+      const button = getButton();
       button.click();
     });
 
@@ -548,7 +548,7 @@ describe('Step through the returns paper forms flow:', function () {
   describe('Send the paper forms and wait for successful confirmation', () => {
     it('check Paper return forms has been sent', () => {
       // click send paper forms
-      const button = $('button[class="govuk-button"]');
+      const button = getButton('Send paper forms');
       button.click();
       // sleep for 5 seconds to avoid temporary spinner page
       browser.pause(5000);

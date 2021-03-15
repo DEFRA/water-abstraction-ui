@@ -2,7 +2,7 @@
 
 const { loginAsUser } = require('../shared/helpers/login-as-user');
 const { baseUrl, userEmails } = require('./config');
-const { getPageTitle, getPageCaption, getButton, getLabel } = require('../shared/helpers/page');
+const { getPageTitle, getPageCaption, getButton, getLabel, getBackLink } = require('../shared/helpers/page');
 const { setUp, tearDown } = require('../shared/helpers/setup');
 const EMAIL_ADDRESS = userEmails.external;
 
@@ -100,7 +100,7 @@ describe('submit a return metered readings return as an external user', function
     button.click();
   });
 
-  it('How are you reporting your figures', () => {
+  it('selects no option for "How are you reporting your figures"', () => {
     expect($('form')).toBeVisible();
     const radioLabel1 = getLabel('method');
     expect(radioLabel1).toHaveTextContaining('Readings from a single meter');
@@ -114,14 +114,14 @@ describe('submit a return metered readings return as an external user', function
 
   checkErrorMessage('Select readings from one meter, or other (abstraction volumes)');
 
-  it('selects Readings from a single meter', () => {
+  it('selects "Readings from a single meter"', () => {
     const radioButton = $('[value="oneMeter,measured"]');
     radioButton.click();
     const button = getButton();
     button.click();
   });
 
-  it('answers yes to Did your meter reset in this abstraction period?', () => {
+  it('selects no option for "Did your meter reset in this abstraction period?"', () => {
     expect($('form')).toBeVisible();
     const formQuestion = $('//form/div/fieldset/legend');
     expect(formQuestion).toHaveTextContaining('Did your meter reset in this abstraction period?');
@@ -142,7 +142,7 @@ describe('submit a return metered readings return as an external user', function
     button.click();
   });
 
-  it('selects cubic meters as the unit measured', () => {
+  it('does not select a unit and clicks continue', () => {
     expect($('form')).toBeVisible();
     const formQuestion = $('//form/div/fieldset/legend');
     expect(formQuestion).toHaveTextContaining('Which units are you using?');
@@ -167,7 +167,7 @@ describe('submit a return metered readings return as an external user', function
     button.click();
   });
 
-  it('enters the meter readings', () => {
+  it('enters no meter readings', () => {
     expect($('form')).toBeVisible();
     const formQuestion = $('//form/p');
     expect(formQuestion).toHaveTextContaining('Enter your readings exactly as they appear on your meter');
@@ -176,6 +176,38 @@ describe('submit a return metered readings return as an external user', function
   });
 
   checkErrorMessage('Enter a meter start reading');
+
+  it('enters a negaive meter reading', () => {
+    expect($('form')).toBeVisible();
+    const formQuestion = $('//form/p');
+    expect(formQuestion).toHaveTextContaining('Enter your readings exactly as they appear on your meter');
+    const textBoxStart = $('input[name="startReading"]');
+    textBoxStart.setValue('-1');
+    const textBoxJan = $('input[name="2021-01-01_2021-01-31"]');
+    textBoxJan.setValue('10');
+    const textBoxFeb = $('input[name="2021-02-01_2021-02-28"]');
+    textBoxFeb.setValue('20');
+    const button = getButton();
+    button.click();
+  });
+
+  checkErrorMessage('This number should be positive');
+
+  it('enters non incremental meter readings', () => {
+    expect($('form')).toBeVisible();
+    const formQuestion = $('//form/p');
+    expect(formQuestion).toHaveTextContaining('Enter your readings exactly as they appear on your meter');
+    const textBoxStart = $('input[name="startReading"]');
+    textBoxStart.setValue('10');
+    const textBoxJan = $('input[name="2021-01-01_2021-01-31"]');
+    textBoxJan.setValue('0'); // this can not be lower than the previous reading
+    const textBoxFeb = $('input[name="2021-02-01_2021-02-28"]');
+    textBoxFeb.setValue('20');
+    const button = getButton();
+    button.click();
+  });
+
+  checkErrorMessage('Reading should be higher than or equal to the start reading');
 
   it('selects cubic meters', () => {
     const textBoxStart = $('input[name="startReading"]');
@@ -377,7 +409,102 @@ describe('submit a return by volumes as an external user', function () {
     button.click();
   });
 
-  it('enters the meter readings', () => {
+  it('enters the volumes', () => {
+    expect($('form')).toBeVisible();
+    const formQuestion = $('//form/p');
+    expect(formQuestion).toHaveTextContaining('Your abstraction volumes');
+    const textBoxJan = $('input[name="2020-01-01_2020-01-31"]');
+    textBoxJan.setValue('-10000');
+    const textBoxFeb = $('input[name="2020-02-01_2020-02-29"]');
+    textBoxFeb.setValue('-10000');
+    const textBoxMar = $('input[name="2020-03-01_2020-03-31"]');
+    textBoxMar.setValue('-10000');
+    const textBoxApr = $('input[name="2020-04-01_2020-04-30"]');
+    textBoxApr.setValue('-10000');
+    const textBoxMay = $('input[name="2020-05-01_2020-05-31"]');
+    textBoxMay.setValue('-10000');
+    const textBoxJun = $('input[name="2020-06-01_2020-06-30"]');
+    textBoxJun.setValue('-10000');
+    const textBoxJul = $('input[name="2020-07-01_2020-07-31"]');
+    textBoxJul.setValue('-10000');
+    const textBoxAug = $('input[name="2020-08-01_2020-08-31"]');
+    textBoxAug.setValue('-10000');
+    const textBoxSep = $('input[name="2020-09-01_2020-09-30"]');
+    textBoxSep.setValue('-10000');
+    const textBoxOct = $('input[name="2020-10-01_2020-10-31"]');
+    textBoxOct.setValue('-10000');
+    const textBoxNov = $('input[name="2020-11-01_2020-11-30"]');
+    textBoxNov.setValue('-10000');
+    const textBoxDec = $('input[name="2020-12-01_2020-12-31"]');
+    textBoxDec.setValue('-10000');
+    const button = getButton();
+    button.click();
+  });
+
+  checkErrorMessage('Enter an amount of 0 or above');
+
+  it('enters the volumes with some blank values', () => {
+    expect($('form')).toBeVisible();
+    const formQuestion = $('//form/p');
+    expect(formQuestion).toHaveTextContaining('Your abstraction volumes');
+    const textBoxJan = $('input[name="2020-01-01_2020-01-31"]');
+    textBoxJan.setValue('10000');
+    const textBoxFeb = $('input[name="2020-02-01_2020-02-29"]');
+    textBoxFeb.setValue('');
+    const textBoxMar = $('input[name="2020-03-01_2020-03-31"]');
+    textBoxMar.setValue('10000');
+    const textBoxApr = $('input[name="2020-04-01_2020-04-30"]');
+    textBoxApr.setValue('');
+    const textBoxMay = $('input[name="2020-05-01_2020-05-31"]');
+    textBoxMay.setValue('10000');
+    const textBoxJun = $('input[name="2020-06-01_2020-06-30"]');
+    textBoxJun.setValue('');
+    const textBoxJul = $('input[name="2020-07-01_2020-07-31"]');
+    textBoxJul.setValue('');
+    const textBoxAug = $('input[name="2020-08-01_2020-08-31"]');
+    textBoxAug.setValue('10000');
+    const textBoxSep = $('input[name="2020-09-01_2020-09-30"]');
+    textBoxSep.setValue('');
+    const textBoxOct = $('input[name="2020-10-01_2020-10-31"]');
+    textBoxOct.setValue('10000');
+    const textBoxNov = $('input[name="2020-11-01_2020-11-30"]');
+    textBoxNov.setValue('');
+    const textBoxDec = $('input[name="2020-12-01_2020-12-31"]');
+    textBoxDec.setValue('10000');
+    const button = getButton();
+    button.click();
+  });
+
+  it('enters the meter details', () => {
+    expect($('form')).toBeVisible();
+    const formQuestion = $('//form/p');
+    expect(formQuestion).toHaveTextContaining('Your current meter details');
+    const textBoxMake = $('input[name="manufacturer"]');
+    textBoxMake.setValue('Test Water Meter');
+    const textBoxSerialNumber = $('input[name="serialNumber"]');
+    textBoxSerialNumber.setValue('Test serial number');
+    const textBoxMultiplier = $('input[name="isMultiplier"]');
+    textBoxMultiplier.click();
+    const button = getButton();
+    button.click();
+  });
+
+  it('confirms the correct total abstracted has been calculated with blank values for volumes entered', () => {
+    expect($('form')).toBeVisible();
+    const pageSubHeader = $('//main/div/div/h2');
+    expect(pageSubHeader).toHaveTextContaining('Confirm your return');
+    const totalAbstracted = $('//table/tbody/tr[13]/td[3]/strong');
+    expect(totalAbstracted).toHaveTextContaining('60');
+    // move back two spaces or take a chance
+    let back = getBackLink();
+    back.click();
+    const formQuestion = $('//form/p');
+    expect(formQuestion).toHaveTextContaining('Your current meter details');
+    back = getBackLink();
+    back.click();
+  });
+
+  it('enters the volumes', () => {
     expect($('form')).toBeVisible();
     const formQuestion = $('//form/p');
     expect(formQuestion).toHaveTextContaining('Your abstraction volumes');
@@ -409,7 +536,7 @@ describe('submit a return by volumes as an external user', function () {
     button.click();
   });
 
-  it('enters the meter readings', () => {
+  it('enters the meter details', () => {
     expect($('form')).toBeVisible();
     const formQuestion = $('//form/p');
     expect(formQuestion).toHaveTextContaining('Your current meter details');

@@ -18,8 +18,24 @@ ignore:
         expires: '2018-03-23T12:46:42.040Z'
   SNYK-JS-USERAGENT-174737:
     - '@hapi/scooter > useragent':
-        reason: No solution available
-        expires: '2020-01-15T14:43:49.707Z'
+        reason: No patch available
+        expires: '2021-04-10T15:36:40.823Z'
+  SNYK-JS-LODASH-1018905:
+    - '@envage/hapi-pg-rest-api > lodash':
+        reason: No compatible upgrade available
+        expires: '2021-04-10T15:36:40.823Z'
+  SNYK-JS-LODASH-1040724:
+    - '@envage/hapi-pg-rest-api > lodash':
+        reason: No compatible upgrade available
+        expires: '2021-04-10T15:36:40.823Z'
+  SNYK-JS-HAPIHOEK-548452:
+    - blankie > @hapi/hoek:
+        reason: Upgrade to 5.x has breaking changes
+        expires: '2021-04-10T15:36:40.823Z'
+  SNYK-JS-MARKED-584281:
+    - marked:
+        reason: Update has breaking changes
+        expires: '2021-04-10T15:36:40.823Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:lodash:20180130':

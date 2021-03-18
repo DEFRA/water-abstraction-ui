@@ -24,6 +24,7 @@ experiment('internal/NotificationsApiClient', () => {
     client = new NotificationsApiClient(config, logger);
 
     sandbox.stub(serviceRequest, 'post').resolves({});
+    sandbox.stub(serviceRequest, 'get').resolves({});
   });
 
   afterEach(async () => {
@@ -80,6 +81,50 @@ experiment('internal/NotificationsApiClient', () => {
           sender
         }
       });
+    });
+  });
+
+  experiment('.getNotifications', () => {
+    const page = 4;
+
+    beforeEach(async () => {
+      await client.getNotifications(page);
+    });
+
+    test('calls the expected URL', async () => {
+      const [url] = serviceRequest.get.lastCall.args;
+      expect(url).to.equal('https://example.com/water/notifications');
+    });
+
+    test('includes the page as a query param', async () => {
+      const [, options] = serviceRequest.get.lastCall.args;
+      expect(options.qs.page).to.equal(page);
+    });
+  });
+
+  experiment('.getNotification', () => {
+    const eventId = 'test-event-id';
+
+    beforeEach(async () => {
+      await client.getNotification(eventId);
+    });
+
+    test('calls the expected URL', async () => {
+      const [url] = serviceRequest.get.lastCall.args;
+      expect(url).to.equal(`https://example.com/water/notifications/${eventId}`);
+    });
+  });
+
+  experiment('.getNotificationMessages', () => {
+    const eventId = 'test-event-id';
+
+    beforeEach(async () => {
+      await client.getNotificationMessages(eventId);
+    });
+
+    test('calls the expected URL', async () => {
+      const [url] = serviceRequest.get.lastCall.args;
+      expect(url).to.equal(`https://example.com/water/notifications/${eventId}/messages`);
     });
   });
 });

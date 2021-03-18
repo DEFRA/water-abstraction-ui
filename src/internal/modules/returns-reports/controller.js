@@ -38,7 +38,7 @@ const getConfirmDownload = async (request, h) => {
   const returnCycle = await services.water.returnCycles.getReturnCycleById(returnCycleId);
 
   // Format period
-  const period = [returnCycle.dateRange.startDate, returnCycle.dateRange.startDate]
+  const period = [returnCycle.dateRange.startDate, returnCycle.dateRange.endDate]
     .map(isoToReadable)
     .join(' to ');
 
@@ -51,27 +51,41 @@ const getConfirmDownload = async (request, h) => {
   });
 };
 
+const mapReturn = row => ({
+  'Return ID': row.id,
+  'Licence number': row.licenceRef,
+  'Return reference': row.returnRequirement,
+  'Frequency': row.returnsFrequency,
+  'Start date': row.dateRange.startDate,
+  'End date': row.dateRange.startDate,
+  'Due date': row.dueDate,
+  'Status': row.status,
+  'Date received': row.receivedDate,
+  'Submitted by': row.user && row.user.email,
+  'User type': row.userType
+});
+
+const mapFileName = returnCycle => [
+  returnCycle.isSummer ? 'Summer' : 'Winter all year',
+  `returns ${returnCycle.dateRange.startDate} to ${returnCycle.dateRange.endDate}`,
+  '.csv'
+].join(' ');
+
 /**
  * Download CSV report to show breakdown of internal/external users
  */
 const getDownloadReport = async (request, h) => {
-  const { cycleEndDate } = request.params;
-  const filter = {
-    end_date: cycleEndDate,
-    status: 'completed'
-  };
+  const { returnCycleId } = request.params;
 
-  const { error, data } = await services.returns.returns.getReport('userDetails', filter);
+  // Get return cycle and returns data
+  const [ returnCycle, { data } ] = await Promise.all([
+    services.water.returnCycles.getReturnCycleById(returnCycleId),
+    services.water.returnCycles.getReturnCycleReturns(returnCycleId)
+  ]);
 
-  if (error) {
-    const err = new Error(`Returns report error`);
-    err.params = { error, data, cycleEndDate };
-    throw err;
-  }
-
-  const filename = `returns-report-${cycleEndDate}.csv`;
-
-  return csv.csvDownload(h, data, filename);
+  // Map filename and return CSV
+  const fileName = mapFileName(returnCycle);
+  return csv.csvDownload(h, data.map(mapReturn), fileName);
 };
 
 module.exports = {

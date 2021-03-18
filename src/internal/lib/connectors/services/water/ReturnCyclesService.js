@@ -12,6 +12,11 @@ class ReturnCycles extends ServiceClient {
     const uri = this.joinUrl('return-cycles', returnCycleId);
     return this.serviceRequest.get(uri);
   }
+
+  getReturnCycleReturns (returnCycleId) {
+    const uri = this.joinUrl('return-cycles', returnCycleId, 'returns');
+    return this.serviceRequest.get(uri);
+  }
 }
 
 module.exports = ReturnCycles;

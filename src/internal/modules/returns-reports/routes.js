@@ -44,7 +44,7 @@ module.exports = {
 
   getDownload: {
     method: 'GET',
-    path: '/returns-reports/download/{cycleEndDate}',
+    path: '/returns-reports/download/{returnCycleId}',
     handler: controller.getDownloadReport,
     config: {
       auth: { scope: returns },
@@ -56,9 +56,9 @@ module.exports = {
         }
       },
       validate: {
-        params: {
-          cycleEndDate: Joi.string().isoDate().options({ convert: false })
-        }
+        params: Joi.object({
+          returnCycleId: Joi.string().guid().required()
+        })
       }
     }
   }

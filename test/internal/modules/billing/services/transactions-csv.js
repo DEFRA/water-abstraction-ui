@@ -386,6 +386,10 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
       expect(csvData[0]['Water company']).to.equal('N');
     });
 
+    test('DeMinimis is mapped to user friendly heading', async () => {
+      expect(csvData[0]['De minimis rule']).to.equal('N');
+    });
+
     test('historical area is mapped to user friendly heading', async () => {
       expect(csvData[0]['Historical area']).to.equal('AREA');
     });

@@ -19,6 +19,7 @@ const batch = {
 const invoice =
   {
     id: '0817794f-b5b4-47e8-8172-3411bd6165bd',
+    isDeMinimis: false,
     invoiceLicences: [
       {
         id: 'e93c4697-f288-491e-b9fe-6cab333bbef5',
@@ -64,8 +65,7 @@ const invoice =
             billingVolume: {
               calculatedVolume: 10.3,
               volume: 9.1
-            },
-            isDeMinimis: false
+            }
           },
           {
             value: 4006,
@@ -176,10 +176,6 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
       transactionData = transactionsCSV._getTransactionData(transaction);
     });
 
-    test('isDeMinimis flag as Y/N', () => {
-      expect(transactionData.isDeMinimis).to.equal('N');
-    });
-
     test('description as is', () => {
       expect(transactionData.description).to.equal(transaction.description);
     });
@@ -252,7 +248,6 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
          'Minimum Charge Calculation - raised under Schedule 23 of the Environment Act 1995',
         isCompensationCharge: false,
         isMinimumCharge: true,
-        isDeMinimis: false,
         isNewLicence: true,
         chargePeriod: {
           startDate: '2019-04-01',
@@ -260,7 +255,6 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
       };
 
       const transactionData = transactionsCSV._getTransactionData(minChargeTransaction);
-      expect(transactionData.isDeMinimis).to.equal('N');
       expect(transactionData.description).to.equal(minChargeTransaction.description);
       expect(transactionData['Compensation charge']).to.equal('N');
       expect(transactionData['Agreement code']).to.equal('');

@@ -5,10 +5,10 @@ const returns = constants.scope.returns;
 
 module.exports = {
 
-  getNotificationsList: {
+  getReturnCycles: {
     method: 'GET',
     path: '/returns-reports',
-    handler: controller.getReturns,
+    handler: controller.getReturnCycles,
     config: {
       auth: { scope: returns },
       description: 'View overview of all returns cycles',
@@ -17,6 +17,27 @@ module.exports = {
           activeNavLink: 'notifications',
           pageTitle: 'Returns overview'
         }
+      }
+    }
+  },
+
+  getConfirmDownload: {
+    method: 'GET',
+    path: '/returns-reports/{returnCycleId}',
+    handler: controller.getConfirmDownload,
+    config: {
+      auth: { scope: returns },
+      description: 'Confirmation page to download return cycle report',
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications',
+          pageTitle: 'Returns overview'
+        }
+      },
+      validate: {
+        params: Joi.object({
+          returnCycleId: Joi.string().guid().required()
+        })
       }
     }
   },

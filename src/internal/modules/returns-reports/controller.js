@@ -1,28 +1,53 @@
-const helpers = require('@envage/water-abstraction-helpers');
+'use strict';
 
+const { isoToReadable } = require('@envage/water-abstraction-helpers').nald.dates;
 const services = require('../../lib/connectors/services');
-const { getReturnStats } = require('./lib/returns-stats');
 const csv = require('internal/lib/csv-download');
 
-const getCycleStats = async cycle => {
-  cycle.stats = await getReturnStats(cycle.endDate);
-  return cycle;
-};
+const getStartDate = returnCycle => returnCycle.startDate;
+
+const mapCycle = returnCycle => ({
+  ...returnCycle,
+  link: `/returns-reports/${returnCycle.id}`
+});
 
 /**
  * Gets a list of returns cycles that are active within the service
  */
-const getReturns = async (request, h) => {
-  const cycles = helpers.returns.date.createReturnCycles();
-  const cyclesWithStats = await Promise.all(cycles.map(getCycleStats));
+const getReturnCycles = async (request, h) => {
+  // Get data from water service
+  const { data } = await services.water.returnCycles.getReport();
 
-  const [currentCycle, ...rest] = cyclesWithStats.reverse();
+  // Sort by date descending
+  const [currentCycle, ...cycles] = data
+    .sort(getStartDate)
+    .reverse()
+    .map(mapCycle);
 
   return h.view('nunjucks/returns-reports/index', {
     ...request.view,
     currentCycle,
-    cycles: rest,
-    csvPath: `/returns-reports/download/${currentCycle.endDate}`
+    cycles
+  });
+};
+
+const getConfirmDownload = async (request, h) => {
+  const { returnCycleId } = request.params;
+
+  // Get data from water service
+  const returnCycle = await services.water.returnCycles.getReturnCycleById(returnCycleId);
+
+  // Format period
+  const period = [returnCycle.dateRange.startDate, returnCycle.dateRange.startDate]
+    .map(isoToReadable)
+    .join(' to ');
+
+  return h.view('nunjucks/returns-reports/confirm-download', {
+    ...request.view,
+    pageTitle: `Download returns report for ${period}`,
+    returnCycle,
+    link: `/returns-reports/download/${returnCycle.id}`,
+    back: '/returns-reports'
   });
 };
 
@@ -50,6 +75,7 @@ const getDownloadReport = async (request, h) => {
 };
 
 module.exports = {
-  getReturns,
+  getReturnCycles,
+  getConfirmDownload,
   getDownloadReport
 };

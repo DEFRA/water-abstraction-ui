@@ -31,7 +31,6 @@ const getChargeElementData = trans => {
 };
 
 const getTransactionData = trans => ({
-  isDeMinimis: trans.isDeMinimis ? 'Y' : 'N',
   description: trans.description,
   'Compensation charge': trans.isCompensationCharge ? 'Y' : 'N',
   ...getChargeElementData(trans),
@@ -97,8 +96,9 @@ const createCSV = async (invoices, chargeVersions) => {
   const sortedInvoices = sortBy(invoices, 'invoiceAccount.accountNumber', 'invoiceLicences[0].licences.licenceNumber');
   return sortedInvoices.reduce((dataForCSV, invoice) => {
     invoice.invoiceLicences.forEach(invLic => {
+      const { isDeMinimis } = invoice;
       invLic.transactions.forEach(trans => {
-        const { isDeMinimis, description, ...transactionData } = getTransactionData(trans);
+        const { description, ...transactionData } = getTransactionData(trans);
         const csvLine = {
           ...getInvoiceAccountData(invoice.invoiceAccount),
           'Licence number': invLic.licence.licenceNumber,
@@ -106,7 +106,7 @@ const createCSV = async (invoices, chargeVersions) => {
           ...getTransactionAmounts(trans),
           'Charge information reason': getChangeReason(chargeVersions, trans),
           'Region': invLic.licence.region.displayName,
-          'De minimis rule': isDeMinimis,
+          'De minimis rule': isDeMinimis ? 'Y' : 'N',
           'Description': description,
           'Water company': invLic.licence.isWaterUndertaker ? 'Y' : 'N',
           'Historical area': invLic.licence.historicalArea.code,

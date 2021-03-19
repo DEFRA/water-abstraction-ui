@@ -16,8 +16,7 @@ module.exports = {
       description: 'View list of notifications sent',
       validate: {
         query: {
-          sort: Joi.string().valid('created', 'notification', 'issuer', 'recipients', 'status').default('created'),
-          direction: Joi.number().valid(-1, +1).default(-1)
+          page: Joi.number().integer().min(1).default(1)
         }
       },
       plugins: {

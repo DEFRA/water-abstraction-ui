@@ -42,11 +42,7 @@
     "@wdio/sync": "^6.9.1",
     "auto-changelog": "^1.16.4",
     "chai": "^4.2.0",
-<<<<<<< HEAD
     "chromedriver": "^89.0.0",
-=======
-    "chromedriver": "^87.0.7",
->>>>>>> develop
     "codecov": "^3.7.1",
     "del": "^3.0.0",
     "eslint": "^5.16.0",

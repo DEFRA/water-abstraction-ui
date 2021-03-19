@@ -18,14 +18,8 @@
 
 {% macro cycleRow(cycle) %}
 
-  {% set dateRange %}
-  {{ cycle.startDate | date }}
-  to
-  {{ cycle.endDate | date }}
-  {% endset %}
-
   <tr class="govuk-table__row">
-    <td class="govuk-table__cell">{{ dateRange }}</td>
+    <td class="govuk-table__cell">{{ cycle.dateRange | dateRange }}</td>
     <td class="govuk-table__cell govuk-table__cell--numeric">{{ cycle.dueCount }}</td>
     <td class="govuk-table__cell govuk-table__cell--numeric">{{ cycle.uniqueLicenceCount }}</td>
     <td class="govuk-table__cell govuk-table__cell--numeric">{{ cycle.monthlyCount }}</td>

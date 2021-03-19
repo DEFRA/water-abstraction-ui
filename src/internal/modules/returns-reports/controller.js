@@ -1,15 +1,13 @@
 'use strict';
 
+const { sortBy } = require('lodash');
 const { isoToReadable } = require('@envage/water-abstraction-helpers').nald.dates;
+
 const services = require('../../lib/connectors/services');
 const csv = require('internal/lib/csv-download');
+const mappers = require('./lib/mappers');
 
-const getStartDate = returnCycle => returnCycle.startDate;
-
-const mapCycle = returnCycle => ({
-  ...returnCycle,
-  link: `/returns-reports/${returnCycle.id}`
-});
+const getStartDate = returnCycle => returnCycle.dateRange.startDate;
 
 /**
  * Gets a list of returns cycles that are active within the service
@@ -19,10 +17,9 @@ const getReturnCycles = async (request, h) => {
   const { data } = await services.water.returnCycles.getReport();
 
   // Sort by date descending
-  const [currentCycle, ...cycles] = data
-    .sort(getStartDate)
+  const [currentCycle, ...cycles] = sortBy(data, getStartDate)
     .reverse()
-    .map(mapCycle);
+    .map(mappers.mapCycle);
 
   return h.view('nunjucks/returns-reports/index', {
     ...request.view,
@@ -31,6 +28,9 @@ const getReturnCycles = async (request, h) => {
   });
 };
 
+/**
+ * Confirm page for CSV download
+ */
 const getConfirmDownload = async (request, h) => {
   const { returnCycleId } = request.params;
 
@@ -45,34 +45,13 @@ const getConfirmDownload = async (request, h) => {
   return h.view('nunjucks/returns-reports/confirm-download', {
     ...request.view,
     pageTitle: `Download returns report for ${period}`,
-    returnCycle,
     link: `/returns-reports/download/${returnCycle.id}`,
     back: '/returns-reports'
   });
 };
 
-const mapReturn = row => ({
-  'Return ID': row.id,
-  'Licence number': row.licenceRef,
-  'Return reference': row.returnRequirement,
-  'Frequency': row.returnsFrequency,
-  'Start date': row.dateRange.startDate,
-  'End date': row.dateRange.startDate,
-  'Due date': row.dueDate,
-  'Status': row.status,
-  'Date received': row.receivedDate,
-  'Submitted by': row.user && row.user.email,
-  'User type': row.userType
-});
-
-const mapFileName = returnCycle => [
-  returnCycle.isSummer ? 'Summer' : 'Winter all year',
-  `returns ${returnCycle.dateRange.startDate} to ${returnCycle.dateRange.endDate}`,
-  '.csv'
-].join(' ');
-
 /**
- * Download CSV report to show breakdown of internal/external users
+ * Download CSV report for given return cycle
  */
 const getDownloadReport = async (request, h) => {
   const { returnCycleId } = request.params;
@@ -84,8 +63,8 @@ const getDownloadReport = async (request, h) => {
   ]);
 
   // Map filename and return CSV
-  const fileName = mapFileName(returnCycle);
-  return csv.csvDownload(h, data.map(mapReturn), fileName);
+  const fileName = mappers.mapFileName(returnCycle);
+  return csv.csvDownload(h, data.map(mappers.mapReturn), fileName);
 };
 
 module.exports = {

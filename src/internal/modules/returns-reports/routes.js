@@ -3,6 +3,8 @@ const controller = require('./controller');
 const constants = require('../../lib/constants');
 const returns = constants.scope.returns;
 
+const activeNavLink = 'notifications';
+
 module.exports = {
 
   getReturnCycles: {
@@ -14,7 +16,7 @@ module.exports = {
       description: 'View overview of all returns cycles',
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications',
+          activeNavLink,
           pageTitle: 'Returns overview'
         }
       }
@@ -30,8 +32,7 @@ module.exports = {
       description: 'Confirmation page to download return cycle report',
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications',
-          pageTitle: 'Returns overview'
+          activeNavLink
         }
       },
       validate: {
@@ -51,8 +52,7 @@ module.exports = {
       description: 'Download CSV report of specified return cycle',
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications',
-          pageTitle: 'Returns overview'
+          activeNavLink
         }
       },
       validate: {

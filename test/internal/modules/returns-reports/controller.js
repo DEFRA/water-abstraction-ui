@@ -77,7 +77,7 @@ experiment('internal/modules/returns-reports/controller.js', () => {
 
   experiment('.getReturnCycles', () => {
     beforeEach(async () => {
-      response = await controller.getReturnCycles(request, h);
+      await controller.getReturnCycles(request, h);
     });
 
     test('calls the water service api', async () => {
@@ -107,7 +107,7 @@ experiment('internal/modules/returns-reports/controller.js', () => {
       services.water.returnCycles.getReturnCycleById.resolves(
         data.report[0]
       );
-      response = await controller.getConfirmDownload(request, h);
+      await controller.getConfirmDownload(request, h);
     });
 
     test('calls the water service api', async () => {
@@ -142,7 +142,7 @@ experiment('internal/modules/returns-reports/controller.js', () => {
       services.water.returnCycles.getReturnCycleById.resolves(
         data.report[0]
       );
-      response = await controller.getDownloadReport(request, h);
+      await controller.getDownloadReport(request, h);
     });
 
     test('calls the water service api to get the cycle', async () => {

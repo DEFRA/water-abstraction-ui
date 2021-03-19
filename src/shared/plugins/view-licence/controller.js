@@ -116,8 +116,6 @@ const getLicence = async (request, h) => {
 
   const returns = await getLicenceSummaryReturns(licenceNumber);
 
-  // @todo: when this page is updated, this cah *possibly* be removed
-  // as it is the same operation as isChargingUser on line 115 above
   const showChargeVersions = canShowCharging(request);
 
   const view = {

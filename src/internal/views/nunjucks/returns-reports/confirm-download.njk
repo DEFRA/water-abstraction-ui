@@ -1,0 +1,19 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% extends "./nunjucks/layout.njk" %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ title(pageTitle) }}
+
+      <p>The report lists all the returns included in this cycle. It includes the licence number, returns reference and the returns contact name.</p>
+
+      {{ govukButton({
+  text: "Download report",
+  href: link
+}) }}
+    </div>
+  </div>
+
+{% endblock %}

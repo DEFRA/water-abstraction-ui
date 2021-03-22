@@ -3,41 +3,62 @@ const controller = require('./controller');
 const constants = require('../../lib/constants');
 const returns = constants.scope.returns;
 
+const activeNavLink = 'notifications';
+
 module.exports = {
 
-  getNotificationsList: {
+  getReturnCycles: {
     method: 'GET',
     path: '/returns-reports',
-    handler: controller.getReturns,
+    handler: controller.getReturnCycles,
     config: {
       auth: { scope: returns },
       description: 'View overview of all returns cycles',
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications',
+          activeNavLink,
           pageTitle: 'Returns overview'
         }
       }
     }
   },
 
+  getConfirmDownload: {
+    method: 'GET',
+    path: '/returns-reports/{returnCycleId}',
+    handler: controller.getConfirmDownload,
+    config: {
+      auth: { scope: returns },
+      description: 'Confirmation page to download return cycle report',
+      plugins: {
+        viewContext: {
+          activeNavLink
+        }
+      },
+      validate: {
+        params: Joi.object({
+          returnCycleId: Joi.string().guid().required()
+        })
+      }
+    }
+  },
+
   getDownload: {
     method: 'GET',
-    path: '/returns-reports/download/{cycleEndDate}',
+    path: '/returns-reports/download/{returnCycleId}',
     handler: controller.getDownloadReport,
     config: {
       auth: { scope: returns },
       description: 'Download CSV report of specified return cycle',
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications',
-          pageTitle: 'Returns overview'
+          activeNavLink
         }
       },
       validate: {
-        params: {
-          cycleEndDate: Joi.string().isoDate().options({ convert: false })
-        }
+        params: Joi.object({
+          returnCycleId: Joi.string().guid().required()
+        })
       }
     }
   }

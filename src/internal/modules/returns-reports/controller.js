@@ -1,55 +1,74 @@
-const helpers = require('@envage/water-abstraction-helpers');
+'use strict';
+
+const { sortBy } = require('lodash');
+const { isoToReadable } = require('@envage/water-abstraction-helpers').nald.dates;
 
 const services = require('../../lib/connectors/services');
-const { getReturnStats } = require('./lib/returns-stats');
 const csv = require('internal/lib/csv-download');
+const mappers = require('./lib/mappers');
 
-const getCycleStats = async cycle => {
-  cycle.stats = await getReturnStats(cycle.endDate);
-  return cycle;
-};
+const getStartDate = returnCycle => returnCycle.dateRange.startDate;
 
 /**
  * Gets a list of returns cycles that are active within the service
  */
-const getReturns = async (request, h) => {
-  const cycles = helpers.returns.date.createReturnCycles();
-  const cyclesWithStats = await Promise.all(cycles.map(getCycleStats));
+const getReturnCycles = async (request, h) => {
+  // Get data from water service
+  const { data } = await services.water.returnCycles.getReport();
 
-  const [currentCycle, ...rest] = cyclesWithStats.reverse();
+  // Sort by date descending
+  const [currentCycle, ...cycles] = sortBy(data, getStartDate)
+    .reverse()
+    .map(mappers.mapCycle);
 
   return h.view('nunjucks/returns-reports/index', {
     ...request.view,
     currentCycle,
-    cycles: rest,
-    csvPath: `/returns-reports/download/${currentCycle.endDate}`
+    cycles
   });
 };
 
 /**
- * Download CSV report to show breakdown of internal/external users
+ * Confirm page for CSV download
+ */
+const getConfirmDownload = async (request, h) => {
+  const { returnCycleId } = request.params;
+
+  // Get data from water service
+  const returnCycle = await services.water.returnCycles.getReturnCycleById(returnCycleId);
+
+  // Format period
+  const period = [returnCycle.dateRange.startDate, returnCycle.dateRange.endDate]
+    .map(isoToReadable)
+    .join(' to ');
+
+  return h.view('nunjucks/returns-reports/confirm-download', {
+    ...request.view,
+    pageTitle: `Download returns report for ${period}`,
+    link: `/returns-reports/download/${returnCycle.id}`,
+    back: '/returns-reports'
+  });
+};
+
+/**
+ * Download CSV report for given return cycle
  */
 const getDownloadReport = async (request, h) => {
-  const { cycleEndDate } = request.params;
-  const filter = {
-    end_date: cycleEndDate,
-    status: 'completed'
-  };
+  const { returnCycleId } = request.params;
 
-  const { error, data } = await services.returns.returns.getReport('userDetails', filter);
+  // Get return cycle and returns data
+  const [ returnCycle, { data } ] = await Promise.all([
+    services.water.returnCycles.getReturnCycleById(returnCycleId),
+    services.water.returnCycles.getReturnCycleReturns(returnCycleId)
+  ]);
 
-  if (error) {
-    const err = new Error(`Returns report error`);
-    err.params = { error, data, cycleEndDate };
-    throw err;
-  }
-
-  const filename = `returns-report-${cycleEndDate}.csv`;
-
-  return csv.csvDownload(h, data, filename);
+  // Map filename and return CSV
+  const fileName = mappers.mapFileName(returnCycle);
+  return csv.csvDownload(h, data.map(mappers.mapReturn), fileName);
 };
 
 module.exports = {
-  getReturns,
+  getReturnCycles,
+  getConfirmDownload,
   getDownloadReport
 };

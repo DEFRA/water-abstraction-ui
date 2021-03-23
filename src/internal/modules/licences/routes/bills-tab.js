@@ -4,7 +4,7 @@ const Joi = require('@hapi/joi');
 const controller = require('../controllers/bills-tab');
 const { scope } = require('../../../lib/constants');
 
-const allowedScopes = [scope.charging];
+const allowedScopes = [scope.billing];
 
 module.exports = {
   getBillsForLicence: {

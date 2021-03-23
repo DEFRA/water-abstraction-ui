@@ -18,7 +18,7 @@ experiment('internal/modules/billing/routes/bills-tab', () => {
       expect(routes.getBillsForLicence.handler).to.equal(controller.getBillsForLicence);
     });
     test('is available to billing folks', () => {
-      expect(routes.getBillsForLicence.config.auth).to.equal({ scope: [scope.charging] });
+      expect(routes.getBillsForLicence.config.auth).to.equal({ scope: [scope.billing] });
     });
   });
 });

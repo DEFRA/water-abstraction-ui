@@ -186,7 +186,7 @@
   {% macro invoiceLink(row) %}
     <td class="govuk-table__cell" scope="row">
       <a href="/billing/batch/{{ row.batch.id }}/invoice/{{ row.invoice.id }}">
-        {{row.invoice.invoiceNumber}}
+        {{row.invoice.displayLabel}}
       </a>
     </td>
   {% endmacro %}

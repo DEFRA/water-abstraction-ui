@@ -67,6 +67,12 @@
         <section class="govuk-tabs__panel" id="bills">
         <h2 class="govuk-heading-l">Bills</h2>
           {{ licenceInvoicesView(bills) }}
+
+          {% if hasMoreBills %}
+          <p>
+            <a href="/licences/{{ licenceId }}/bills">View all sent bills</a>
+          </p>  
+          {% endif %}
         </section>
       {% endif %}
         {% if showChargeVersions %}

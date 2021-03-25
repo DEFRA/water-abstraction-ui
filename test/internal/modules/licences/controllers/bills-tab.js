@@ -52,12 +52,19 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
       expect(services.water.licences.getDocumentByLicenceId.calledWith(tempLicenceId)).to.be.true();
     });
     test('calls getLicenceInvoices', () => {
-      expect(viewLicenceLib.getLicenceInvoices.calledWith(tempLicenceId, 1, 0)).to.be.true();
+      expect(viewLicenceLib.getLicenceInvoices.calledWith(tempLicenceId, 1)).to.be.true();
     });
     test('returns the correct view data objects', async () => {
       const keys = Object.keys(h.view.lastCall.args[1]);
 
-      expect(keys).to.include(['pageTitle', 'subHeading', 'caption', 'bills', 'back']);
+      expect(keys).to.include([
+        'pageTitle',
+        'caption',
+        'tableCaption',
+        'bills',
+        'pagination',
+        'licenceId',
+        'back']);
     });
   });
 });

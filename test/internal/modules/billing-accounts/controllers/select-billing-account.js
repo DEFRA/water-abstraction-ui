@@ -147,6 +147,18 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
         await controller.getSelectExistingBillingAccount(request, h);
       });
 
+      test('the billing account .id property in the session is set to undefined', async () => {
+        expect(session.setProperty.calledWith(
+          request, KEY, 'data.id', undefined
+        )).to.be.true();
+      });
+
+      test('the .company property in the session is set to request.pre.account', async () => {
+        expect(session.setProperty.calledWith(
+          request, KEY, 'data.company', request.pre.account
+        )).to.be.true();
+      });
+
       test('the user is redirected to the "select agent" screen', async () => {
         expect(h.redirect.calledWith(`/billing-account-entry/${KEY}/select-account`)).to.be.true();
       });

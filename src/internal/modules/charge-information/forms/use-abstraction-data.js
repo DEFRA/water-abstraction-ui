@@ -6,7 +6,6 @@ const moment = require('moment');
 
 const { formFactory, fields } = require('shared/lib/forms/');
 const routing = require('../lib/routing');
-const { getActionUrl } = require('../lib/form-helpers');
 
 const getAddionalChoices = (chargeVersions) => {
   if (chargeVersions.length > 0) {

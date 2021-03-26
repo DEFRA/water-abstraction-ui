@@ -231,8 +231,9 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the draft charge information is updated with the reason', async () => {
-        const [id, data] = request.setDraftChargeInformation.lastCall.args;
+        const [id, cvWorkflowId, data] = request.setDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
+        expect(cvWorkflowId).to.equal(undefined);
         expect(data.changeReason.id).to.equal(request.payload.reason);
       });
 
@@ -465,8 +466,9 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the draft charge information is updated with the start date', async () => {
-        const [id, data] = request.setDraftChargeInformation.lastCall.args;
+        const [id, cvWorkflowId, data] = request.setDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
+        expect(cvWorkflowId).to.equal(undefined);
         expect(data.dateRange.startDate).to.equal(getISODate());
       });
 
@@ -488,8 +490,9 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the draft charge information is updated with the start date', async () => {
-        const [id, data] = request.setDraftChargeInformation.lastCall.args;
+        const [id, cvWorkflowId, data] = request.setDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
+        expect(cvWorkflowId).to.equal(undefined);
         expect(data.dateRange.startDate).to.equal(request.pre.licence.startDate);
       });
 
@@ -516,8 +519,9 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the draft charge information is updated with the start date', async () => {
-        const [id, data] = request.setDraftChargeInformation.lastCall.args;
+        const [id, cvWorkflowId, data] = request.setDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
+        expect(cvWorkflowId).to.equal(undefined);
         expect(data.dateRange.startDate).to.equal(customDate.format('YYYY-MM-DD'));
       });
 
@@ -679,8 +683,9 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the draft charge information is updated with the abstraction data', async () => {
-        const [id, data] = request.setDraftChargeInformation.lastCall.args;
+        const [id, cvWorkflowId, data] = request.setDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
+        expect(cvWorkflowId).to.equal(undefined);
         expect(data.chargeElements[0]).to.contain(request.pre.defaultCharges[0]);
         expect(data.chargeElements[0]).to.include('id');
       });
@@ -703,8 +708,9 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the draft charge information is updated with the charge version data', async () => {
-        const [id, data] = request.setDraftChargeInformation.lastCall.args;
+        const [id, cvWorkflowId, data] = request.setDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
+        expect(cvWorkflowId).to.equal(undefined);
         expect(data.chargeElements[0].source).to.equal(request.pre.chargeVersions[1].chargeElements[0].source);
         const guidRegex = /^[a-z,0-9]{8}-[a-z,0-9]{4}-[a-z,0-9]{4}-[a-z,0-9]{4}-[a-z,0-9]{12}$/;
         expect(data.chargeElements[0].id).to.match(guidRegex);
@@ -849,7 +855,7 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the session data is saved excluding charge element to remove', async () => {
-        const [, data] = request.setDraftChargeInformation.lastCall.args;
+        const [,, data] = request.setDraftChargeInformation.lastCall.args;
         expect(data.chargeElements).to.equal([{
           id: 'test-element-2-id'
         }]);

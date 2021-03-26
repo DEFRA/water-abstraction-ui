@@ -7,6 +7,8 @@ const schema = Joi.object({
   companyId: Joi.string().guid()
 });
 
+const queryString = require('querystring');
+
 /**
  * Performs a GET request to the water service to get licence data relating
  * to the supplied CRM document ID
@@ -111,9 +113,10 @@ class LicencesService extends ServiceClient {
     return this.serviceRequest.get(url, options);
   }
 
-  getDocumentByLicenceId (licenceId) {
+  getDocumentByLicenceId (licenceId, includeExpired = false) {
     const url = this.joinUrl('licences', licenceId, 'document');
-    return getRequest(this.serviceRequest, url);
+    const path = includeExpired ? `${url}?${queryString.stringify({ includeExpired })}` : url;
+    return getRequest(this.serviceRequest, path);
   }
 
   createAgreement (licenceId, body) {

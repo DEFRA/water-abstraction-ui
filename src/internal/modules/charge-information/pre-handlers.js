@@ -6,7 +6,7 @@ const { loadLicence } = require('shared/lib/pre-handlers/licences');
 const moment = require('moment');
 const { get, sortBy } = require('lodash');
 const uuid = require('uuid');
-
+const { isEmpty } = require('lodash');
 const errorHandler = (err, message) => {
   if (err.statusCode === 404) {
     return Boom.notFound(message);
@@ -14,12 +14,19 @@ const errorHandler = (err, message) => {
   throw err;
 };
 
+const getChargeVersionWorkflowId = request => {
+  const chargeVersionWorkflowId = request.query.chargeVersionWorkflowId || request.params.chargeVersionWorkflowId;
+  return isEmpty(chargeVersionWorkflowId) ? '' : chargeVersionWorkflowId;
+};
+
 /**
  * Loads draft charge information for the specified licence from the cache
  * @param {String} request.params.licenceId - licence ID from water.licences.licence_id
  * @param {Promise<Object>}
  */
-const loadDraftChargeInformation = async request => request.getDraftChargeInformation(request.params.licenceId);
+const loadDraftChargeInformation = async request => {
+  return request.getDraftChargeInformation(request.params.licenceId, getChargeVersionWorkflowId(request));
+};
 
 const getFilteredChangeReasons = async type => {
   try {
@@ -130,7 +137,7 @@ const loadChargeVersionWorkflows = async () => {
 };
 
 const loadChargeVersionWorkflow = async request => {
-  const { chargeVersionWorkflowId } = request.params;
+  const chargeVersionWorkflowId = getChargeVersionWorkflowId(request);
   try {
     return getChargeVersionWorkflow(chargeVersionWorkflowId);
   } catch (err) {
@@ -139,12 +146,13 @@ const loadChargeVersionWorkflow = async request => {
 };
 
 const loadChargeInformation = async request => {
-  const { licenceId, chargeVersionWorkflowId } = request.params;
+  const { licenceId } = request.params;
+  const chargeVersionWorkflowId = getChargeVersionWorkflowId(request);
   try {
     const chargeVersionWorkflow = await getChargeVersionWorkflow(chargeVersionWorkflowId);
     const chargeVersion = decorateChargeVersion(chargeVersionWorkflow);
 
-    request.setDraftChargeInformation(licenceId, { ...chargeVersion, chargeVersionWorkflowId });
+    request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, { ...chargeVersion, chargeVersionWorkflowId });
     return chargeVersion;
   } catch (err) {
     return errorHandler(err, `Cannot load charge version workflow ${chargeVersionWorkflowId}`);
@@ -169,7 +177,8 @@ const getBillingAccount = invoiceAccountId => invoiceAccountId
 
 const loadBillingAccount = async request => {
   const { licenceId } = request.params;
-  const state = request.getDraftChargeInformation(licenceId);
+  const chargeVersionWorkflowId = getChargeVersionWorkflowId(request);
+  const state = request.getDraftChargeInformation(licenceId, chargeVersionWorkflowId);
   const invoiceAccountId = get(state, 'invoiceAccount.id');
   return getBillingAccount(invoiceAccountId);
 };

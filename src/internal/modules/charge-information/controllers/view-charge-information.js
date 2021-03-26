@@ -18,7 +18,7 @@ const formatDateForPageTitle = startDate =>
 const getViewChargeInformation = async (request, h) => {
   const { chargeVersion, licence, billingAccount } = request.pre;
   const { chargeVersionWorkflowId } = request.params;
-  const backLink = await getLicencePageUrl(licence);
+  const backLink = await getLicencePageUrl(licence, true);
 
   const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount);
 
@@ -40,7 +40,7 @@ const getViewChargeInformation = async (request, h) => {
 const getReviewChargeInformation = async (request, h) => {
   const { draftChargeInformation, licence, isChargeable, billingAccount } = request.pre;
   const { chargeVersionWorkflowId } = request.params;
-  const backLink = await getLicencePageUrl(licence);
+  const backLink = await getLicencePageUrl(licence, true);
   const isApprover = hasScope(request, chargeVersionWorkflowReviewer);
   const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount);
   const validatedDraftChargeVersion = chargeInformationValidator.addValidation(draftChargeInformation);
@@ -62,7 +62,7 @@ const getReviewChargeInformation = async (request, h) => {
 
 const postReviewChargeInformation = async (request, h) => {
   const { draftChargeInformation, licence, isChargeable, billingAccount } = request.pre;
-  const backLink = await getLicencePageUrl(licence);
+  const backLink = await getLicencePageUrl(licence, true);
   const isApprover = hasScope(request, chargeVersionWorkflowReviewer);
   const invoiceAccountAddress = getCurrentBillingAccountAddress(billingAccount);
   const { chargeVersionWorkflowId } = request.params;
@@ -95,10 +95,16 @@ const postReviewChargeInformation = async (request, h) => {
         {}
       );
     }
-    const { document_id: documentId } = await services.water.licences.getDocumentByLicenceId(licence.id);
     // Clear session
     request.clearDraftChargeInformation(licence.id);
-    return h.redirect(`/licences/${documentId}#charge`);
+
+    const document = await services.water.licences.getDocumentByLicenceId(licence.id, true);
+    if (document.metadata.IsCurrent) {
+      return h.redirect(`/licences/${document.document_id}#charge`);
+    } else {
+      // redirect to the licence expired page for future dated licences
+      return h.redirect(`/expired-licences/${document.document_id}`);
+    }
   }
 };
 

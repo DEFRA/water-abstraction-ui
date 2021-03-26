@@ -1,27 +1,29 @@
 'use strict';
 
 const queryString = require('querystring');
+const { isEmpty } = require('lodash');
 
-const createUrl = urlTail => licenceId => {
-  return `/licences/${licenceId}/charge-information/${urlTail}`;
+const cleanObject = obj => {
+  for (var key in obj) {
+    if (obj[key] === undefined || ((obj[key]).length) < 1) {
+      delete obj[key];
+    }
+  };
+  return isEmpty(obj) ? null : obj;
 };
 
-exports.getChargeElementStep = (licenceId, elementId, step) => {
-  return createUrl(`charge-element/${elementId}/${step}`)(licenceId);
+const createUrl = urlTail => (licenceId, queryParams = null) => {
+  const url = `/licences/${licenceId}/charge-information/${urlTail}`;
+  const qp = cleanObject(queryParams);
+  return isEmpty(qp) ? url : `${url}?${queryString.stringify(qp)}`;
 };
 
-exports.getSubmitted = (licenceId, isChargeable) => {
-  const qs = queryString.stringify({ chargeable: isChargeable });
-  return createUrl(`submitted?${qs}`)(licenceId);
-};
+exports.getChargeElementStep = (licenceId, elementId, step, queryParams) => createUrl(`charge-element/${elementId}/${step}`)(licenceId, queryParams);
 
 exports.postReview = (chargeVersionWorkflowId, licenceId) => createUrl(`${chargeVersionWorkflowId}/review`)(licenceId);
+exports.getHandleBillingAccount = (licenceId, queryParams) => createUrl('set-billing-account')(licenceId, queryParams);
 
-exports.getHandleBillingAccount = (licenceId, isCheckAnswers) => {
-  const qs = queryString.stringify({ returnToCheckData: isCheckAnswers });
-  return createUrl(`set-billing-account?${qs}`)(licenceId);
-};
-
+exports.getSubmitted = createUrl('submitted');
 exports.getCheckData = createUrl('check');
 exports.getReason = createUrl('create');
 exports.getStartDate = createUrl('start-date');

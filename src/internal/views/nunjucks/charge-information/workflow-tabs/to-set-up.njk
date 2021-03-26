@@ -15,7 +15,7 @@
                 <tr class="govuk-table__row">
                     <th class="govuk-table__header" scope="col">Licence</th>
                     <th class="govuk-table__header" scope="col">Licence holder</th>
-                    <th class="govuk-table__header" scope="col">Licence start date</th>
+                    <th class="govuk-table__header" scope="col">Licence version start date</th>
                     <th class="govuk-table__header" scope="col">Action</th>
                 </tr>
             </thead>
@@ -24,7 +24,7 @@
                     <tr class="govuk-table__row">
                         <td class="govuk-table__cell">{{row.licence.licenceNumber}}</td>
                         <td class="govuk-table__cell">{{row.licenceHolderRole.company.name}}</td>
-                        <td class="govuk-table__cell">{{row.licence.startDate | date}}</td>
+                        <td class="govuk-table__cell">{{row.licenceVersion.startDate | date}}</td>
                         <td class="govuk-table__cell">
                             <a href="/licences/{{row.licence.id}}/charge-information/create?chargeVersionWorkflowId={{row.id}}">Set up</a>
                             {% if isReviewer %} 

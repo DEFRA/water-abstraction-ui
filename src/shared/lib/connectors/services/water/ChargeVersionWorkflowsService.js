@@ -50,13 +50,14 @@ class ChargeVersionWorkflowsService extends ServiceClient {
   /**
    * Send a PATCH request to the service relating to a charge version workflow
    */
-  patchChargeVersionWorkflow (chargeVersionWorkflowId, status = 'review', approverComments = null, chargeVersion = {}) {
+  patchChargeVersionWorkflow (chargeVersionWorkflowId, status = 'review', approverComments = null, chargeVersion = {}, createdBy = {}) {
     const url = this.joinUrl('charge-version-workflows', chargeVersionWorkflowId);
     return this.serviceRequest.patch(url, {
       body: {
         status,
         approverComments,
-        chargeVersion
+        chargeVersion,
+        createdBy
       }
     });
   }

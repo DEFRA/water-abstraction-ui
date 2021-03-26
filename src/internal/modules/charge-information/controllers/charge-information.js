@@ -222,7 +222,7 @@ const submitDraftChargeInformation = async (request, h) => {
   const { chargeVersionWorkflowId } = request.query;
   const preparedChargeInfo = prepareChargeInformation(id, draftChargeInformation);
   preparedChargeInfo.chargeVersion['status'] = 'draft';
-
+  const user = get(request, 'defra.user');
   if (isEmpty(chargeVersionWorkflowId)) {
     await services.water.chargeVersionWorkflows.postChargeVersionWorkflow(preparedChargeInfo);
   } else {
@@ -230,7 +230,8 @@ const submitDraftChargeInformation = async (request, h) => {
       chargeVersionWorkflowId,
       'review',
       preparedChargeInfo.chargeVersion.approverComments,
-      preparedChargeInfo.chargeVersion
+      preparedChargeInfo.chargeVersion,
+      { id: user.user_id, email: user.user_name }
     );
   }
   await applyFormResponse(request, {}, actions.clearData);

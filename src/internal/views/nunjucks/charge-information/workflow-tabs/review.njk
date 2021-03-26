@@ -27,7 +27,7 @@
                         <td class="govuk-table__cell">{{chargeInformationRow.licence.licenceNumber}}</td>
                         <td class="govuk-table__cell">{{chargeInformationRow.licenceHolderRole.company.name}}</td>
                         <td class="govuk-table__cell">{{chargeInformationRow.createdBy.email}}</td>
-                        <td class="govuk-table__cell">{{chargeInformationRow.startDate | date}}</td>
+                        <td class="govuk-table__cell">{{chargeInformationRow.chargeVersion.dateRange.startDate | date}}</td>
                         <td class="govuk-table__cell"><a href="/licences/{{chargeInformationRow.licence.id}}/charge-information/{{chargeInformationRow.id}}/review">Review</a></td>
                     </tr>
                 {% endfor %}

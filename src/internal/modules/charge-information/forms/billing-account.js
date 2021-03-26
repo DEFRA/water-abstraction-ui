@@ -46,10 +46,9 @@ const mapBillingAccountsToChoices = accounts => {
 const selectBillingAccountForm = request => {
   const { csrfToken } = request.view;
   const { licence, draftChargeInformation, billingAccounts } = request.pre;
-  const { chargeVersionWorkflowId, returnToCheckData } = request.query;
 
   const invoiceAccountAddress = get(draftChargeInformation, 'invoiceAccount.invoiceAccountAddress');
-  const action = routing.getSelectBillingAccount(licence.id, { chargeVersionWorkflowId, returnToCheckData });
+  const action = routing.getSelectBillingAccount(licence.id, request.query);
 
   const f = formFactory(action, 'POST');
 

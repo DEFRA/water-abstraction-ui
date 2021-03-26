@@ -61,14 +61,12 @@ const postStartDate = createPostHandler(
   async request => {
     const { licenceId } = request.params;
     const { chargeVersionWorkflowId } = request.query;
-    const route = routing.getSelectBillingAccount(licenceId, { chargeVersionWorkflowId });
-    return route;
+    return routing.getSelectBillingAccount(licenceId, { chargeVersionWorkflowId });
   }
 );
 
-const getBillingAccountRedirectKey = (licenceId, chargeVersionWorkflowId) => {
-  return isEmpty(chargeVersionWorkflowId) ? `charge-information-${licenceId}` : `charge-information-${licenceId}-${chargeVersionWorkflowId}`;
-};
+const getBillingAccountRedirectKey = (licenceId, chargeVersionWorkflowId) =>
+  isEmpty(chargeVersionWorkflowId) ? `charge-information-${licenceId}` : `charge-information-${licenceId}-${chargeVersionWorkflowId}`;
 
 /**
  * Maps licence and document to an object data for handover to the

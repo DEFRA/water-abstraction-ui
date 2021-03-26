@@ -19,7 +19,7 @@ const getChargeInformationWorkflow = async (request, h) => {
     back: '/manage',
     ...request.view,
     pageTitle: 'Charge information workflow',
-    licences: { toSetUp, review: sortBy(review, ['chargeVersion.dateRange.startDate']), changeRequest },
+    licences: { changeRequest, toSetUp, review: sortBy(review, ['chargeVersion.dateRange.startDate']) },
     licencesCounts: {
       toSetUp: toSetUp.length,
       review: review.length,

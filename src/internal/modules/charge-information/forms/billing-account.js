@@ -5,7 +5,6 @@ const Joi = require('@hapi/joi');
 
 const { formFactory, fields } = require('shared/lib/forms/');
 const routing = require('../lib/routing');
-const { getActionUrl } = require('../lib/form-helpers');
 /**
  * Returns the truthy address parts join using a comma
  * @param {Object} address
@@ -47,9 +46,10 @@ const mapBillingAccountsToChoices = accounts => {
 const selectBillingAccountForm = request => {
   const { csrfToken } = request.view;
   const { licence, draftChargeInformation, billingAccounts } = request.pre;
+  const { chargeVersionWorkflowId, returnToCheckData } = request.query;
 
   const invoiceAccountAddress = get(draftChargeInformation, 'invoiceAccount.invoiceAccountAddress');
-  const action = getActionUrl(request, routing.getSelectBillingAccount(licence.id));
+  const action = routing.getSelectBillingAccount(licence.id, { chargeVersionWorkflowId, returnToCheckData });
 
   const f = formFactory(action, 'POST');
 

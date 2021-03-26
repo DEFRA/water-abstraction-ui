@@ -2,7 +2,7 @@
 
 const uuid = require('uuid');
 const { get } = require('lodash');
-
+const { isEmpty } = require('lodash');
 const forms = require('../forms');
 const actions = require('../lib/actions');
 const routing = require('../lib/routing');
@@ -33,9 +33,10 @@ const getReason = async (request, h) => {
 
 const handleValidReasonRedirect = (request, formValues) => {
   const { licenceId } = request.params;
+  const chargeVersionWorkflowId = request.query.chargeVersionWorkflowId;
   return formValues.reason === 'non-chargeable'
-    ? routing.getNonChargeableReason(licenceId)
-    : routing.getStartDate(licenceId);
+    ? routing.getNonChargeableReason(licenceId, { chargeVersionWorkflowId })
+    : routing.getStartDate(licenceId, { chargeVersionWorkflowId });
 };
 
 const postReason = createPostHandler(
@@ -54,16 +55,20 @@ const getStartDate = async (request, h) => {
   });
 };
 
-const getBillingAccountRedirectKey = licenceId => `charge-information-${licenceId}`;
-
 const postStartDate = createPostHandler(
   forms.startDate,
   actions.setStartDate,
   async request => {
     const { licenceId } = request.params;
-    return routing.getSelectBillingAccount(licenceId);
+    const { chargeVersionWorkflowId } = request.query;
+    const route = routing.getSelectBillingAccount(licenceId, { chargeVersionWorkflowId });
+    return route;
   }
 );
+
+const getBillingAccountRedirectKey = (licenceId, chargeVersionWorkflowId) => {
+  return isEmpty(chargeVersionWorkflowId) ? `charge-information-${licenceId}` : `charge-information-${licenceId}-${chargeVersionWorkflowId}`;
+};
 
 /**
  * Maps licence and document to an object data for handover to the
@@ -72,7 +77,7 @@ const postStartDate = createPostHandler(
  * @param {Object} document
  * @return {Object} data for billing account plugin handover
  */
-const mapBillingAccountHandoverData = (licence, document, currentState, isCheckAnswers = false) => {
+const mapBillingAccountHandoverData = (licence, document, currentState, isCheckAnswers = false, chargeVersionWorkflowId = '') => {
   const { licenceNumber, id, region: { id: regionId } } = licence;
   // Get company ID from document
   const { company: { id: companyId } } = document.roles.find(role => role.roleName === 'licenceHolder');
@@ -83,11 +88,11 @@ const mapBillingAccountHandoverData = (licence, document, currentState, isCheckA
 
   return {
     caption: `Licence ${licenceNumber}`,
-    key: getBillingAccountRedirectKey(id),
+    key: getBillingAccountRedirectKey(id, chargeVersionWorkflowId),
     companyId,
     regionId,
     back: `/licences/${id}/charge-information/start-date`,
-    redirectPath: routing.getHandleBillingAccount(id, isCheckAnswers),
+    redirectPath: routing.getHandleBillingAccount(id, { returnToCheckData: isCheckAnswers, chargeVersionWorkflowId }),
     ...billingAccountId && { data: {
       id: billingAccountId
     } },
@@ -102,15 +107,15 @@ const mapBillingAccountHandoverData = (licence, document, currentState, isCheckA
  */
 const getBillingAccount = async (request, h) => {
   const { licenceId } = request.params;
-  const { returnToCheckData } = request.query;
+  const { returnToCheckData, chargeVersionWorkflowId } = request.query;
   const { draftChargeInformation: currentState } = request.pre;
 
   // Get start date of new charge version, and associated CRM v2 document
-  const { dateRange: { startDate } } = request.getDraftChargeInformation(licenceId);
+  const { dateRange: { startDate } } = request.getDraftChargeInformation(licenceId, chargeVersionWorkflowId);
   const document = await services.water.licences.getValidDocumentByLicenceIdAndDate(licenceId, startDate);
 
   // Return redirect path to billing account entry flow
-  const data = mapBillingAccountHandoverData(request.pre.licence, document, currentState, returnToCheckData);
+  const data = mapBillingAccountHandoverData(request.pre.licence, document, currentState, returnToCheckData, chargeVersionWorkflowId);
   const path = request.billingAccountEntryRedirect(data);
   return h.redirect(path);
 };
@@ -121,20 +126,20 @@ const getBillingAccount = async (request, h) => {
 const getHandleBillingAccount = async (request, h) => {
   const { licenceId } = request.params;
   const { draftChargeInformation: currentState } = request.pre;
-  const { returnToCheckData } = request.query;
+  const { returnToCheckData, chargeVersionWorkflowId } = request.query;
 
   // Create action to set billing account ID
-  const { id } = request.getBillingAccount(getBillingAccountRedirectKey(licenceId));
+  const { id } = request.getBillingAccount(getBillingAccountRedirectKey(licenceId, chargeVersionWorkflowId));
   const action = actions.setBillingAccount(id);
 
   // Calculate next state
   const nextState = reducer(currentState, action);
-  request.setDraftChargeInformation(licenceId, nextState);
+  request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, nextState);
 
   // Redirect to next page in flow
   const path = returnToCheckData
-    ? routing.getCheckData(licenceId)
-    : routing.getUseAbstractionData(licenceId);
+    ? routing.getCheckData(licenceId, { chargeVersionWorkflowId })
+    : routing.getUseAbstractionData(licenceId, { chargeVersionWorkflowId });
 
   return h.redirect(path);
 };
@@ -156,9 +161,10 @@ const getUseAbstractionData = async (request, h) => {
 */
 const handleValidAbstractionDataRedirect = (request, formValues) => {
   const { licenceId } = request.params;
+  const { chargeVersionWorkflowId } = request.query;
   return formValues.useAbstractionData === 'no'
-    ? routing.getChargeElementStep(licenceId, uuid(), CHARGE_ELEMENT_STEPS.purpose)
-    : routing.getCheckData(licenceId);
+    ? routing.getChargeElementStep(licenceId, uuid(), CHARGE_ELEMENT_STEPS.purpose, request.query)
+    : routing.getCheckData(licenceId, { chargeVersionWorkflowId });
 };
 
 const postUseAbstractionData = createPostHandler(
@@ -169,21 +175,23 @@ const postUseAbstractionData = createPostHandler(
 
 const getCheckData = async (request, h) => {
   const { draftChargeInformation, isChargeable, billingAccount } = request.pre;
-  const { chargeVersionWorkflowId, licenceId } = request.params;
+  const { licenceId } = request.params;
   const back = isChargeable
-    ? routing.getUseAbstractionData(licenceId)
-    : routing.getEffectiveDate(licenceId);
+    ? routing.getUseAbstractionData(licenceId, request.query)
+    : routing.getEffectiveDate(licenceId, request.query);
 
   const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount);
   const editChargeVersionWarning = await isOverridingChargeVersion(request, draftChargeInformation.dateRange.startDate);
+  const action = routing.getCheckData(licenceId, request.query);
   const view = {
     ...getDefaultView(request, back),
+    action,
     pageTitle: 'Check charge information',
     chargeVersion: chargeInformationValidator.addValidation(draftChargeInformation),
     licenceId: request.params.licenceId,
     billingAccountAddress,
     billingAccount,
-    chargeVersionWorkflowId,
+    chargeVersionWorkflowId: request.query.chargeVersionWorkflowId,
     isChargeable,
     isEditable: true,
     isXlHeading: true,
@@ -205,18 +213,28 @@ const updateDraftChargeInformation = async (request, h) => {
     preparedChargeInfo.chargeVersion.approverComments,
     preparedChargeInfo.chargeVersion
   );
-  const route = routing.getSubmitted(id, isChargeable);
+  const route = routing.getSubmitted(id, { chargeable: isChargeable });
   return h.redirect(route);
 };
 
 const submitDraftChargeInformation = async (request, h) => {
   const { licence: { id }, draftChargeInformation, isChargeable } = request.pre;
-
+  const { chargeVersionWorkflowId } = request.query;
   const preparedChargeInfo = prepareChargeInformation(id, draftChargeInformation);
   preparedChargeInfo.chargeVersion['status'] = 'draft';
-  await services.water.chargeVersionWorkflows.postChargeVersionWorkflow(preparedChargeInfo);
+
+  if (isEmpty(chargeVersionWorkflowId)) {
+    await services.water.chargeVersionWorkflows.postChargeVersionWorkflow(preparedChargeInfo);
+  } else {
+    await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(
+      chargeVersionWorkflowId,
+      'review',
+      preparedChargeInfo.chargeVersion.approverComments,
+      preparedChargeInfo.chargeVersion
+    );
+  }
   await applyFormResponse(request, {}, actions.clearData);
-  const route = routing.getSubmitted(id, isChargeable);
+  const route = routing.getSubmitted(id, { chargeable: isChargeable });
   return h.redirect(route);
 };
 
@@ -226,12 +244,12 @@ const redirectToCancelPage = (request, h) =>
 const redirectToStartOfElementFlow = (request, h) => {
   const { licenceId } = request.params;
   // need to generate new id for new charge element
-  return h.redirect(routing.getChargeElementStep(licenceId, uuid(), CHARGE_ELEMENT_FIRST_STEP));
+  return h.redirect(routing.getChargeElementStep(licenceId, uuid(), CHARGE_ELEMENT_FIRST_STEP, request.query));
 };
 
 const removeElement = async (request, h) => {
   await applyFormResponse(request, {}, actions.removeChargeElement);
-  return h.redirect(routing.getCheckData(request.params.licenceId));
+  return h.redirect(routing.getCheckData(request.params.licenceId, request.query));
 };
 
 const checkDataButtonActions = {
@@ -269,7 +287,7 @@ const postCancelData = async (request, h) => {
 const getSubmitted = async (request, h) => {
   const { licence } = request.pre;
   const { chargeable: isChargeable } = request.query;
-  const licencePageUrl = await getLicencePageUrl(licence);
+  const licencePageUrl = await getLicencePageUrl(licence, true);
 
   return h.view('nunjucks/charge-information/submitted.njk', {
     ...getDefaultView(request),

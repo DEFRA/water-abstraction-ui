@@ -198,8 +198,9 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
           });
 
           test('the draft charge information is updated with the step data', async () => {
-            const [id, data] = request.setDraftChargeInformation.lastCall.args;
+            const [id, cvWorkflowId, data] = request.setDraftChargeInformation.lastCall.args;
             const stepData = getChargeElementDataForStep(data, step);
+            expect(cvWorkflowId).to.equal(undefined);
             expect(id).to.equal('test-licence-id');
             expect(stepData).to.equal(request.payload[step]);
           });

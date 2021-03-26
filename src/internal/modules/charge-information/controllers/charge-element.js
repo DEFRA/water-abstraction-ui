@@ -22,7 +22,7 @@ const getBackLink = request => {
 const getRedirectPath = request => {
   const { step, licenceId, elementId } = request.params;
   const { chargeVersionWorkflowId, returnToCheckData } = request.query;
-  if (returnToCheckData === 1 || step === CHARGE_ELEMENT_LAST_STEP) {
+  if (returnToCheckData || step === CHARGE_ELEMENT_LAST_STEP) {
     return routing.getCheckData(licenceId, { chargeVersionWorkflowId });
   }
   return routing.getChargeElementStep(licenceId, elementId, ROUTING_CONFIG[step].nextStep, { chargeVersionWorkflowId });

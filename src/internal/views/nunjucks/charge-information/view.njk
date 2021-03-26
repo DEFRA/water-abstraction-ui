@@ -33,12 +33,12 @@ formErrorSummary %}
   {% set changeLinkRoot = '/licences/' + licenceId + '/charge-information' %}
   {% if (chargeVersionWorkflowId | length) > 0 %}
     {% set queryTail = {
-        returnToCheckData: 1,
+        returnToCheckData: true,
         chargeVersionWorkflowId: chargeVersionWorkflowId
       } | queryString %}
   {% else %}
     {% set queryTail = {
-      returnToCheckData: 1
+      returnToCheckData: true
     } | queryString %}
   {% endif %}
   {% if chargeElementId %}

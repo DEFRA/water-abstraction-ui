@@ -4,11 +4,11 @@ const queryString = require('querystring');
 const { isEmpty } = require('lodash');
 
 const cleanObject = obj => {
-  for (var key in obj) {
+  for (const key in obj) {
     if (obj[key] === undefined || ((obj[key]).length) < 1) {
       delete obj[key];
     }
-  };
+  }
   return isEmpty(obj) ? null : obj;
 };
 

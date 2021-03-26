@@ -24,9 +24,8 @@ const getChargeVersionWorkflowId = request => {
  * @param {String} request.params.licenceId - licence ID from water.licences.licence_id
  * @param {Promise<Object>}
  */
-const loadDraftChargeInformation = async request => {
-  return request.getDraftChargeInformation(request.params.licenceId, getChargeVersionWorkflowId(request));
-};
+const loadDraftChargeInformation = async request =>
+  request.getDraftChargeInformation(request.params.licenceId, getChargeVersionWorkflowId(request));
 
 const getFilteredChangeReasons = async type => {
   try {

@@ -124,10 +124,11 @@ const getChoices = (dates, values, refDate, isChargeable) => {
 const selectStartDateForm = (request, refDate) => {
   const { csrfToken } = request.view;
   const { licence, isChargeable } = request.pre;
+  const { chargeVersionWorkflowId, returnToCheckData } = request.query;
 
   const action = isChargeable
-    ? getActionUrl(request, routing.getStartDate(licence.id))
-    : getActionUrl(request, routing.getEffectiveDate(licence.id));
+    ? routing.getStartDate(licence.id, { chargeVersionWorkflowId, returnToCheckData })
+    : routing.getEffectiveDate(licence.id, { chargeVersionWorkflowId, returnToCheckData });
 
   const errorMessage = isChargeable
     ? 'Select charge information start date'

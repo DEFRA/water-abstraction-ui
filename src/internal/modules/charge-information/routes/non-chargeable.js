@@ -27,7 +27,7 @@ module.exports = {
         query: {
           form: VALID_GUID.optional(),
           start: Joi.number().default(0).allow(0, 1),
-          returnToCheckData: Joi.number().default(0).allow(0, 1),
+          returnToCheckData: Joi.boolean().default(false),
           isChargeable: Joi.boolean().default(false)
         }
       },
@@ -58,7 +58,7 @@ module.exports = {
         },
         query: {
           form: VALID_GUID.optional(),
-          returnToCheckData: Joi.number().default(0).allow(0, 1),
+          returnToCheckData: Joi.boolean().default(false),
           isChargeable: Joi.boolean().default(false)
         }
       },
@@ -90,7 +90,7 @@ module.exports = {
         },
         query: {
           form: VALID_GUID.optional(),
-          returnToCheckData: Joi.number().default(0).allow(0, 1)
+          returnToCheckData: Joi.boolean().default(false)
         }
       },
       pre: [
@@ -121,7 +121,7 @@ module.exports = {
           licenceId: VALID_GUID
         },
         query: {
-          returnToCheckData: Joi.number().default(0).allow(0, 1)
+          returnToCheckData: Joi.boolean().default(false)
         }
       },
       pre: [

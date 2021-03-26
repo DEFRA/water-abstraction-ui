@@ -159,8 +159,9 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the draft charge information is updated with the reason', async () => {
-        const [id, data] = request.setDraftChargeInformation.lastCall.args;
+        const [id, cvWorkflowId, data] = request.setDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
+        expect(cvWorkflowId).to.equal(undefined);
         expect(data.changeReason.id).to.equal(request.payload.reason);
       });
 
@@ -201,8 +202,9 @@ experiment('internal/modules/charge-information/controller', () => {
     });
 
     test('the draft charge information is updated with the start date', async () => {
-      const [id, data] = request.setDraftChargeInformation.lastCall.args;
+      const [id, cvWorkflowId, data] = request.setDraftChargeInformation.lastCall.args;
       expect(id).to.equal('test-licence-id');
+      expect(cvWorkflowId).to.equal(undefined);
       expect(data.dateRange.startDate).to.equal(request.pre.licence.startDate);
     });
 
@@ -228,8 +230,9 @@ experiment('internal/modules/charge-information/controller', () => {
     });
 
     test('the draft charge information is updated with the start date', async () => {
-      const [id, data] = request.setDraftChargeInformation.lastCall.args;
+      const [id, cvWorkflowId, data] = request.setDraftChargeInformation.lastCall.args;
       expect(id).to.equal('test-licence-id');
+      expect(cvWorkflowId).to.equal(undefined);
       expect(data.dateRange.startDate).to.equal(customDate.format('YYYY-MM-DD'));
     });
 

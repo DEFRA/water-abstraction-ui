@@ -107,7 +107,11 @@ const createRequest = () => ({
     get: sandbox.stub()
   },
   setDraftChargeInformation: sandbox.stub(),
-  clearDraftChargeInformation: sandbox.stub()
+  getDraftChargeInformation: sandbox.stub().returns({ dateRange: { startDate: '2019-01-01' } }),
+  clearDraftChargeInformation: sandbox.stub(),
+  billingAccountEntryRedirect: sandbox.stub(),
+  getBillingAccount: sandbox.stub().returns({ id: 'test-billing-account-id' }),
+  defra: { user: { user_id: 19, user_name: 'test@test.test' } }
 });
 
 const getReadableDate = str => moment(str).format('D MMMM YYYY');
@@ -128,7 +132,24 @@ experiment('internal/modules/charge-information/controller', () => {
     });
     sandbox.stub(services.water.chargeVersionWorkflows, 'postChargeVersionWorkflow').resolves();
     sandbox.stub(services.water.chargeVersionWorkflows, 'deleteChargeVersionWorkflow').resolves();
+    sandbox.stub(services.water.chargeVersionWorkflows, 'patchChargeVersionWorkflow').resolves();
     sandbox.stub(services.water.chargeVersions, 'getChargeVersionsByLicenceId').resolves({ data: [] });
+    sandbox.stub(services.water.licences, 'getValidDocumentByLicenceIdAndDate').resolves({
+      roles: [
+        {
+          id: 'test-role-id',
+          roleName: 'licenceHolder',
+          dateRange: {
+            startDate: '2021-02-17',
+            endDate: null
+          },
+          company: {
+            name: 'Test UK Ltd',
+            type: 'person',
+            id: 'test-company-id'
+          } }
+      ]
+    });
   });
 
   afterEach(async () => {
@@ -241,6 +262,25 @@ experiment('internal/modules/charge-information/controller', () => {
         expect(h.redirect.calledWith(
           '/licences/test-licence-id/charge-information/start-date'
         )).to.be.true();
+      });
+    });
+
+    experiment('when a charge version workflow id query param is included', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          reason: 'test-reason-1'
+        };
+        request.query = {
+          chargeVersionWorkflowId: uuid()
+        };
+        await controller.postReason(request, h);
+      });
+
+      test('the charge version workflow id is used to update the session data', async () => {
+        const [, cvWorkflowId] = request.setDraftChargeInformation.lastCall.args;
+        expect(cvWorkflowId).to.equal(request.query.chargeVersionWorkflowId);
       });
     });
 
@@ -479,6 +519,23 @@ experiment('internal/modules/charge-information/controller', () => {
       });
     });
 
+    experiment('when charge version workflow id is included as a query param', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          startDate: 'today'
+        };
+        request.query = { chargeVersionWorkflowId: uuid() };
+        await controller.postStartDate(request, h);
+      });
+
+      test('the draft charge information is updated using the workflow id in the key', async () => {
+        const [, cvWorkflowId] = request.setDraftChargeInformation.lastCall.args;
+        expect(cvWorkflowId).to.equal(request.query.chargeVersionWorkflowId);
+      });
+    });
+
     experiment('when "licenceStartDate" is posted', () => {
       beforeEach(async () => {
         request = createRequest();
@@ -633,6 +690,48 @@ experiment('internal/modules/charge-information/controller', () => {
     });
   });
 
+  experiment('.getBillingAccount', () => {
+    beforeEach(async () => {
+      request = createRequest();
+      request.query = { chargeVersionWorkflowId: 'test-cv-workflow-id' };
+      await controller.getBillingAccount(request, h);
+    });
+
+    test('gets the draft charge info using the charge version workflow id', async () => {
+      const [id, cvWorkflowId] = request.getDraftChargeInformation.lastCall.args;
+      expect(id).to.equal(request.params.licenceId);
+      expect(cvWorkflowId).to.equal(request.query.chargeVersionWorkflowId);
+    });
+
+    test('maps the correct data for the billing account plugin', async () => {
+      const args = request.billingAccountEntryRedirect.lastCall.args[0];
+      expect(args.back).to.equal('/licences/test-licence-id/charge-information/start-date');
+      expect(args.caption).to.equal('Licence 01/123');
+      expect(args.key).to.equal('charge-information-test-licence-id-test-cv-workflow-id');
+      expect(args.redirectPath).to.equal('/licences/test-licence-id/charge-information/set-billing-account?returnToCheckData=false&chargeVersionWorkflowId=test-cv-workflow-id');
+    });
+  });
+
+  experiment('.getHandleBillingAccount', () => {
+    beforeEach(async () => {
+      request = createRequest();
+      request.query = { chargeVersionWorkflowId: 'test-cv-workflow-id' };
+      await controller.getHandleBillingAccount(request, h);
+    });
+
+    test('adds the correct billing account id to the draft charge data', async () => {
+      const [licenceId, workflowId, chargeData] = request.setDraftChargeInformation.lastCall.args;
+      expect(licenceId).to.equal('test-licence-id');
+      expect(workflowId).to.equal('test-cv-workflow-id');
+      expect(chargeData.invoiceAccount).to.equal({ id: 'test-billing-account-id' });
+    });
+
+    test('redirects to the correct page', async () => {
+      const redirectPath = '/licences/test-licence-id/charge-information/use-abstraction-data?chargeVersionWorkflowId=test-cv-workflow-id';
+      expect(h.redirect.lastCall.args[0]).to.equal(redirectPath);
+    });
+  });
+
   experiment('.getUseAbstractionData', () => {
     beforeEach(async () => {
       request = createRequest();
@@ -693,6 +792,32 @@ experiment('internal/modules/charge-information/controller', () => {
       test('the user is redirected to the expected page', async () => {
         expect(h.redirect.calledWith(
           '/licences/test-licence-id/charge-information/check'
+        )).to.be.true();
+      });
+    });
+
+    experiment('when a valid option is selected and the charge version workflow id is included as a query param', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          useAbstractionData: 'yes'
+        };
+        request.query = { chargeVersionWorkflowId: 'test-workflow-id' };
+        await controller.postUseAbstractionData(request, h);
+      });
+
+      test('the draft charge information is updated with the abstraction data', async () => {
+        const [id, cvWorkflowId, data] = request.setDraftChargeInformation.lastCall.args;
+        expect(id).to.equal('test-licence-id');
+        expect(cvWorkflowId).to.equal('test-workflow-id');
+        expect(data.chargeElements[0]).to.contain(request.pre.defaultCharges[0]);
+        expect(data.chargeElements[0]).to.include('id');
+      });
+
+      test('the user is redirected to the expected page', async () => {
+        expect(h.redirect.calledWith(
+          '/licences/test-licence-id/charge-information/check?chargeVersionWorkflowId=test-workflow-id'
         )).to.be.true();
       });
     });
@@ -775,6 +900,23 @@ experiment('internal/modules/charge-information/controller', () => {
     });
   });
 
+  experiment('.getCheckData when a workflow id is included', () => {
+    beforeEach(async () => {
+      request = createRequest();
+      request.query = { chargeVersionWorkflowId: 'test-workflow-id' };
+      await controller.getCheckData(request, h);
+    });
+
+    test('sets a back link', async () => {
+      const { back } = h.view.lastCall.args[1];
+      expect(back).to.equal('/licences/test-licence-id/charge-information/use-abstraction-data?chargeVersionWorkflowId=test-workflow-id');
+    });
+
+    test('adds the correct charge version workflow id to the view', async () => {
+      expect(h.view.lastCall.args[1].chargeVersionWorkflowId).to.equal(request.query.chargeVersionWorkflowId);
+    });
+  });
+
   experiment('.postCheckData', () => {
     experiment('when a the user confirms the charge info', () => {
       beforeEach(async () => {
@@ -790,6 +932,38 @@ experiment('internal/modules/charge-information/controller', () => {
         const [{ licenceId, chargeVersion }] = services.water.chargeVersionWorkflows.postChargeVersionWorkflow.lastCall.args;
         expect(licenceId).to.equal(request.params.licenceId);
         expect(chargeVersion).to.equal(request.pre.draftChargeInformation);
+      });
+
+      test('the session data is cleared', async () => {
+        const [licenceId] = request.clearDraftChargeInformation.lastCall.args;
+        expect(licenceId).to.equal(request.params.licenceId);
+      });
+
+      test('the user is redirected to the confirmation page', async () => {
+        expect(h.redirect.calledWith(
+          '/licences/test-licence-id/charge-information/submitted?chargeable=true'
+        )).to.be.true();
+      });
+    });
+
+    experiment('when a the user confirms the charge info for a charge version workflow', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          buttonAction: 'confirm'
+        };
+        request.query = { chargeVersionWorkflowId: 'test-workflow-id' };
+        await controller.postCheckData(request, h);
+      });
+
+      test('the data is submitted in the expected format', async () => {
+        const [workflowId, status, comments, chargeVersion, user] = services.water.chargeVersionWorkflows.patchChargeVersionWorkflow.lastCall.args;
+        expect(workflowId).to.equal('test-workflow-id');
+        expect(status).to.equal('review');
+        expect(comments).to.equal(null);
+        expect(chargeVersion).to.equal(request.pre.draftChargeInformation);
+        expect(user).to.equal({ id: 19, email: 'test@test.test' });
       });
 
       test('the session data is cleared', async () => {

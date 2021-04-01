@@ -1,15 +1,15 @@
 'use strict';
 
 const queryString = require('querystring');
-const { isEmpty } = require('lodash');
+const { isEmpty, isUndefined } = require('lodash');
 
 const cleanObject = obj => {
   for (const key in obj) {
-    if (obj[key] === undefined || ((obj[key]).length) < 1) {
+    if (isUndefined(obj[key]) || obj[key].length === 0) {
       delete obj[key];
     }
   }
-  return isEmpty(obj) ? null : obj;
+  return obj;
 };
 
 const createUrl = urlTail => (licenceId, queryParams = null) => {
@@ -19,10 +19,9 @@ const createUrl = urlTail => (licenceId, queryParams = null) => {
 };
 
 exports.getChargeElementStep = (licenceId, elementId, step, queryParams) => createUrl(`charge-element/${elementId}/${step}`)(licenceId, queryParams);
-
 exports.postReview = (chargeVersionWorkflowId, licenceId) => createUrl(`${chargeVersionWorkflowId}/review`)(licenceId);
-exports.getHandleBillingAccount = (licenceId, queryParams) => createUrl('set-billing-account')(licenceId, queryParams);
 
+exports.getHandleBillingAccount = createUrl('set-billing-account');
 exports.getSubmitted = createUrl('submitted');
 exports.getCheckData = createUrl('check');
 exports.getReason = createUrl('create');

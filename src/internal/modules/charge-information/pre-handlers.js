@@ -6,7 +6,6 @@ const { loadLicence } = require('shared/lib/pre-handlers/licences');
 const moment = require('moment');
 const { get, sortBy } = require('lodash');
 const uuid = require('uuid');
-const { isEmpty } = require('lodash');
 const errorHandler = (err, message) => {
   if (err.statusCode === 404) {
     return Boom.notFound(message);
@@ -14,10 +13,7 @@ const errorHandler = (err, message) => {
   throw err;
 };
 
-const getChargeVersionWorkflowId = request => {
-  const chargeVersionWorkflowId = request.query.chargeVersionWorkflowId || request.params.chargeVersionWorkflowId;
-  return isEmpty(chargeVersionWorkflowId) ? '' : chargeVersionWorkflowId;
-};
+const getChargeVersionWorkflowId = request => request.query.chargeVersionWorkflowId || request.params.chargeVersionWorkflowId;
 
 /**
  * Loads draft charge information for the specified licence from the cache

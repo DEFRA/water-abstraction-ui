@@ -21,15 +21,16 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object({
           licenceId: VALID_GUID
-        },
-        query: {
+        }),
+        query: Joi.object({
           form: VALID_GUID.optional(),
           start: Joi.number().default(0).allow(0, 1),
           returnToCheckData: Joi.boolean().default(false),
-          isChargeable: Joi.boolean().default(false)
-        }
+          isChargeable: Joi.boolean().default(false),
+          chargeVersionWorkflowId: Joi.string().uuid().optional().default('')
+        })
       },
       pre: [
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
@@ -53,14 +54,15 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object({
           licenceId: VALID_GUID
-        },
-        query: {
+        }),
+        query: Joi.object({
           form: VALID_GUID.optional(),
           returnToCheckData: Joi.boolean().default(false),
-          isChargeable: Joi.boolean().default(false)
-        }
+          isChargeable: Joi.boolean().default(false),
+          chargeVersionWorkflowId: Joi.string().uuid().optional().default('')
+        })
       },
       pre: [
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
@@ -85,13 +87,14 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object({
           licenceId: VALID_GUID
-        },
-        query: {
+        }),
+        query: Joi.object({
           form: VALID_GUID.optional(),
-          returnToCheckData: Joi.boolean().default(false)
-        }
+          returnToCheckData: Joi.boolean().default(false),
+          chargeVersionWorkflowId: Joi.string().uuid().optional().default('')
+        })
       },
       pre: [
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
@@ -117,12 +120,13 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object({
           licenceId: VALID_GUID
-        },
-        query: {
-          returnToCheckData: Joi.boolean().default(false)
-        }
+        }),
+        query: Joi.object({
+          returnToCheckData: Joi.boolean().default(false),
+          chargeVersionWorkflowId: Joi.string().uuid().optional().default('')
+        })
       },
       pre: [
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },

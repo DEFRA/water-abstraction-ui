@@ -11,4 +11,4 @@ jsconfig.json
 .DS_Store
 /temp/
 /driver-logs/wdio-chromedriver.log
-/test/cypress_e2e_tests/node_modules/*
+/test/cypress_e2e_tests/node_modules/

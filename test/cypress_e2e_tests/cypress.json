@@ -1,0 +1,9 @@
+{
+    "chromeWebSecurity": false,
+    "projectId": "tidgxq",
+    "baseUrl": "https://wal-admin-dev.aws.defra.cloud/signin",
+    "env":{
+        "Uname": "srujan.chada@defra.gov.uk",
+        "Pwd": "D3fr@test"
+    }
+}

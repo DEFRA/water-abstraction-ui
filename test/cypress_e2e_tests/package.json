@@ -1,0 +1,19 @@
+{
+  "name": "cypress_e2e_tests",
+  "version": "1.0.0",
+  "description": "cypress e2e automation tests",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cypress",
+    "e2e",
+    "automation"
+  ],
+  "author": "srujan",
+  "license": "ISC",
+  "dependencies": {
+    "cypress": "^6.8.0"
+  }
+}

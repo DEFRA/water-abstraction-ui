@@ -1,13 +1,16 @@
 'use strict';
 
 const sessionHelpers = require('shared/lib/session-helpers');
-
+const { isEmpty } = require('lodash');
 /**
  * A hapi plugin to get/set an object from the cache for creating
  * a new charge version
  */
 
-const getSessionKey = key => `draftChargeInformation.${key}`;
+const getSessionKey = (licenceId, chargeVersionWorkflowId) => {
+  const key = isEmpty(chargeVersionWorkflowId) ? licenceId : `${licenceId}-${chargeVersionWorkflowId}`;
+  return `draftChargeInformation.${key}`;
+};
 
 const generateChargeVersion = () => ({
   changeReason: null,
@@ -19,17 +22,17 @@ const generateChargeVersion = () => ({
 });
 
 const getDraftChargeInformation = function (licenceId, chargeVersionWorkflowId) {
-  const key = getSessionKey(`${licenceId}-${chargeVersionWorkflowId}`);
+  const key = getSessionKey(licenceId, chargeVersionWorkflowId);
   const draftChargeInfo = this.yar.get(key);
   return draftChargeInfo || generateChargeVersion();
 };
 
 const setDraftChargeInformation = function (licenceId, chargeVersionWorkflowId, data) {
-  sessionHelpers.saveToSession(this, getSessionKey(`${licenceId}-${chargeVersionWorkflowId}`), data);
+  sessionHelpers.saveToSession(this, getSessionKey(licenceId, chargeVersionWorkflowId), data);
 };
 
-const clearDraftChargeInformation = function (licenceId, chargeVersionWorkflowId = '') {
-  this.yar.clear(getSessionKey(`${licenceId}-${chargeVersionWorkflowId}`));
+const clearDraftChargeInformation = function (licenceId, chargeVersionWorkflowId) {
+  this.yar.clear(getSessionKey(licenceId, chargeVersionWorkflowId));
 };
 
 const chargeInformationPlugin = {

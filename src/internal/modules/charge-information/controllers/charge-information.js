@@ -75,7 +75,7 @@ const getBillingAccountRedirectKey = (licenceId, chargeVersionWorkflowId) =>
  * @param {Object} document
  * @return {Object} data for billing account plugin handover
  */
-const mapBillingAccountHandoverData = (licence, document, currentState, isCheckAnswers = false, chargeVersionWorkflowId = '') => {
+const mapBillingAccountHandoverData = (licence, document, currentState, chargeVersionWorkflowId, isCheckAnswers = false) => {
   const { licenceNumber, id, region: { id: regionId } } = licence;
   // Get company ID from document
   const { company: { id: companyId } } = document.roles.find(role => role.roleName === 'licenceHolder');
@@ -113,7 +113,7 @@ const getBillingAccount = async (request, h) => {
   const document = await services.water.licences.getValidDocumentByLicenceIdAndDate(licenceId, startDate);
 
   // Return redirect path to billing account entry flow
-  const data = mapBillingAccountHandoverData(request.pre.licence, document, currentState, returnToCheckData, chargeVersionWorkflowId);
+  const data = mapBillingAccountHandoverData(request.pre.licence, document, currentState, chargeVersionWorkflowId, returnToCheckData);
   const path = request.billingAccountEntryRedirect(data);
   return h.redirect(path);
 };

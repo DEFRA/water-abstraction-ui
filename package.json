@@ -17,6 +17,7 @@
     "test:shared": "lab ./test/shared",
     "test-cov-html": "lab -r html -o coverage.html",
     "test:regression": "wdio wdio.conf.js",
+    "test:e2e": "./test/e2e/node_modules/.bin/cypress run --config-file ./test/e2e/cypress.json",
     "lint": "eslint .",
     "codecov": "codecov",
     "sass": "gulp sass",

@@ -1,7 +1,17 @@
-.cookie-message {
-  width: 100%;
-  background-color: #d5e8f3;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  font-family: "nta", Arial, sans-serif;
+// Default
+#cookie-banner-js-enabled {
+  display: none;
+}
+
+// JS enabled browsers
+.js-enabled {
+
+  #cookie-banner-js-disabled {
+    display: none;
+  }
+
+  #cookie-banner-js-enabled {
+    display: block;
+  }
+
 }

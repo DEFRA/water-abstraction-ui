@@ -1,6 +1,8 @@
 {% extends "govuk/template.njk" %}
 {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/cookie-banner/macro.njk" import govukCookieBanner %}
+
 
 {% from "main-nav.njk" import mainNav %}
 {% from "forms/index.njk" import formRender, formErrorSummary %}
@@ -29,11 +31,61 @@
 {% endblock %}
 
 {% block header %}
-  {% if showCookieMessage %}
-    <div class="cookie-message">
-      GOV.UK use cookies to make the site simpler. <a href="/cookies">Find out more about cookies.</a>
-    </div>
+
+  {# {% if not cookieBanner.isDismissed %} #}
+
+  {# Users with JS #}
+
+  {% if isCookieBannerVisible %}
+
+    {{ govukCookieBanner({
+      ariaLabel: "Cookies on Manage your water abstraction or impoundment licence",
+      attributes: {
+        id: 'cookie-banner-js-enabled'
+      },
+      messages: [
+        {
+          headingText: "Cookies on Manage your water abstraction or impoundment licence",
+          text: "We use some essential cookies to make this service work.",
+          actions: [
+            {
+              text: "View cookies",
+              href: "/cookies"
+            },
+            {
+              text: "Hide this message",
+              type: "button"
+            }
+          ]
+        }
+      ]
+    }) }}
+
   {% endif %}
+
+  {# users without JS #}
+  {{ govukCookieBanner({
+  attributes: {
+    id: 'cookie-banner-js-disabled'
+  },
+  ariaLabel: "Cookies on Manage your water abstraction or impoundment licence",
+  messages: [
+    {
+      headingText: "Cookies on Manage your water abstraction or impoundment licence",
+      text: "We use some essential cookies to make this service work.",
+      actions: [
+        {
+          text: "View cookies",
+          href: "/cookies"
+        }
+      ]
+    }
+  ]
+}) }}
+
+
+
+  {# {% endif %} #}
 
   {{ govukHeader({
     homepageUrl: "https://www.gov.uk",

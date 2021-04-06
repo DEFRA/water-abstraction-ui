@@ -417,8 +417,8 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
         await controller.postBillingBatchRegion(request, h);
 
         const [batch] = services.water.billingBatches.createBillingBatch.lastCall.args;
-        const financialYear = helpers.charging.getFinancialYear(moment(billingRegions.data[0].dateCreated).toDate());
-        expect(batch.financialYearEnding).to.equal(financialYear);
+        const expectedFinYear = moment().month() > 3 ? moment().year() : moment().year() - 1;
+        expect(batch.financialYearEnding).to.equal(expectedFinYear);
       });
     });
   });

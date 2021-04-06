@@ -183,10 +183,10 @@
     </td>
   {% endmacro %}
 
-  {% macro invoiceLink(invoice) %}
+  {% macro invoiceLink(row) %}
     <td class="govuk-table__cell" scope="row">
-      <a href="/billing/batch/{{ invoice.billingBatch.id }}/invoice/{{ invoice.id }}">
-        {{invoice.invoiceNumber}}
+      <a href="/billing/batch/{{ row.batch.id }}/invoice/{{ row.invoice.id }}">
+        {{row.invoice.displayLabel}}
       </a>
     </td>
   {% endmacro %}
@@ -199,7 +199,7 @@
 
   {% macro tableRowLicenceInvoices(row) %}
     <tr class="govuk-table__row">
-      {{ invoiceLink(row.invoice) }}
+      {{ invoiceLink(row) }}
       {{ dateCreatedCell(row) }}
       {{ billingAccountCell(row.invoice) }}
       {{ batchTypeCell(row.batch) }}
@@ -208,8 +208,13 @@
     </tr>
   {% endmacro %}
 
-  {% macro licenceInvoicesTable(invoices) %}
+  {% macro licenceInvoicesTable(invoices, caption) %}
     <table class="govuk-table">
+    {% if caption %}
+      <caption class="govuk-table__caption govuk-heading-m">
+        {{ caption }}
+      </caption>
+    {% endif %}
       {{ tableHeaderLicenceInvoices() }}
       <tbody class="govuk-table__body">
         {% for invoice in invoices %}
@@ -219,9 +224,9 @@
     </table>
   {% endmacro %}
 
-  {% macro licenceInvoicesView(invoices) %}
+  {% macro licenceInvoicesView(invoices, caption) %}
     {% if invoices.length > 0 %}
-      {{ licenceInvoicesTable(invoices) }}
+      {{ licenceInvoicesTable(invoices, caption) }}
     {% else %}
       <p>No bills sent for this licence.</p>
     {% endif %}

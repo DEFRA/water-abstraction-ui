@@ -132,7 +132,8 @@ const getLicence = async (request, h) => {
 
   if (isChargingUser) {
     const bills = await getLicenceInvoices(licenceId);
-    view.bills = bills.data.filter(x => x.invoice.invoiceNumber);
+
+    view.bills = bills.data;
     view.hasMoreBills = hasMultiplePages(bills.pagination);
   }
 

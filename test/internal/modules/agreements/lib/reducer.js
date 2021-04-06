@@ -46,11 +46,12 @@ experiment('internal/modules/agreements/lib/reducer', () => {
 
     test('sets the date signed to undefined, if is date signed known is false', async () => {
       const nextState = reducer({ code: 'S127' }, actions.setDateSigned(request, { isDateSignedKnown: false, dateSigned: '2020-05-01' }));
+      const expectedFinYear = moment().month() > 3 ? moment().year() : moment().year();
       expect(nextState).to.equal({
         code: 'S127',
         dateSigned: undefined,
         isDateSignedKnown: false,
-        startDate: `${moment().year()}-04-01`
+        startDate: `${expectedFinYear}-04-01`
       });
     });
 
@@ -78,6 +79,7 @@ experiment('internal/modules/agreements/lib/reducer', () => {
   experiment('.setStartDate', () => {
     test('sets a custom start date', async () => {
       const nextState = reducer({ code: 'S127', isDateSignedKnown: true, dateSigned: '2019-01-01' }, actions.setStartDate(request, { isCustomStartDate: true, startDate: '2020-05-01' }));
+
       expect(nextState).to.equal({
         code: 'S127',
         dateSigned: '2019-01-01',

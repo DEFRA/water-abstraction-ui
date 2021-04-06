@@ -1,6 +1,7 @@
 'use strict';
 
 const { expect } = require('@hapi/code');
+const moment = require('moment');
 const {
   experiment,
   test,
@@ -49,7 +50,7 @@ experiment('internal/modules/agreements/lib/reducer', () => {
         code: 'S127',
         dateSigned: undefined,
         isDateSignedKnown: false,
-        startDate: '2020-04-01'
+        startDate: `${moment().year()}-04-01`
       });
     });
 

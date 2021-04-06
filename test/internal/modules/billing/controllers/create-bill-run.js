@@ -1,6 +1,7 @@
 'use strict';
 
 const { expect } = require('@hapi/code');
+const moment = require('moment');
 const {
   experiment,
   test,
@@ -416,8 +417,8 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
         await controller.postBillingBatchRegion(request, h);
 
         const [batch] = services.water.billingBatches.createBillingBatch.lastCall.args;
-        const financialYear = helpers.charging.getFinancialYear(new Date());
-        expect(batch.financialYearEnding).to.equal(financialYear - 1);
+        const financialYear = helpers.charging.getFinancialYear(moment(billingRegions.data[0].dateCreated).toDate());
+        expect(batch.financialYearEnding).to.equal(financialYear);
       });
     });
   });

@@ -49,15 +49,16 @@ experiment('plugins/cookie-message/index', () => {
   });
 
   experiment('._handler', () => {
-    afterEach(async () => {
-      sandbox.restore();
-    });
-    experiment('when seen_cookie_message === "yes"', () => {
-      const request = createRequest('yes');
+    let request;
 
-      test('does not call h.state', async () => {
+    experiment('when seen_cookie_message is "yes"', () => {
+      beforeEach(async () => {
+        request = createRequest('yes');
         plugin._handler(request, h);
-        expect(h.state.callCount).to.equal(0);
+      });
+
+      test('sets the flag to false in request.view', async () => {
+        expect(request.view.isCookieBannerVisible).to.be.false();
       });
 
       test('returns h.continue', async () => {
@@ -67,22 +68,14 @@ experiment('plugins/cookie-message/index', () => {
       });
     });
 
-    experiment('when seen_cookie_message !== "yes"', () => {
-      const request = createRequest();
-
-      test('calls h.state with expected arguments', async () => {
-        const options = {
-          ttl: 28 * 24 * 60 * 60 * 1000, // expires in 28 days
-          isSecure: false,
-          isHttpOnly: false
-        };
-
+    experiment('when seen_cookie_message is not "yes"', () => {
+      beforeEach(async () => {
+        request = createRequest();
         plugin._handler(request, h);
-        expect(h.state.calledWith(
-          'seen_cookie_message',
-          'yes',
-          options
-        )).to.be.true();
+      });
+
+      test('sets the flag to true in request.view', async () => {
+        expect(request.view.isCookieBannerVisible).to.be.true();
       });
 
       test('returns h.continue', async () => {

@@ -32,12 +32,10 @@
 
 {% block header %}
 
-  {# {% if not cookieBanner.isDismissed %} #}
-
-  {# Users with JS #}
-
+  
   {% if isCookieBannerVisible %}
 
+    {# Users with JS #}
     {{ govukCookieBanner({
       ariaLabel: "Cookies on Manage your water abstraction or impoundment licence",
       attributes: {
@@ -61,31 +59,27 @@
       ]
     }) }}
 
-  {% endif %}
-
-  {# users without JS #}
-  {{ govukCookieBanner({
-  attributes: {
-    id: 'cookie-banner-js-disabled'
-  },
-  ariaLabel: "Cookies on Manage your water abstraction or impoundment licence",
-  messages: [
-    {
-      headingText: "Cookies on Manage your water abstraction or impoundment licence",
-      text: "We use some essential cookies to make this service work.",
-      actions: [
+    {# Users without JS #}
+    {{ govukCookieBanner({
+      attributes: {
+        id: 'cookie-banner-js-disabled'
+      },
+      ariaLabel: "Cookies on Manage your water abstraction or impoundment licence",
+      messages: [
         {
-          text: "View cookies",
-          href: "/cookies"
+          headingText: "Cookies on Manage your water abstraction or impoundment licence",
+          text: "We use some essential cookies to make this service work.",
+          actions: [
+            {
+              text: "View cookies",
+              href: "/cookies"
+            }
+          ]
         }
       ]
-    }
-  ]
-}) }}
+    }) }}
 
-
-
-  {# {% endif %} #}
+  {% endif %}
 
   {{ govukHeader({
     homepageUrl: "https://www.gov.uk",

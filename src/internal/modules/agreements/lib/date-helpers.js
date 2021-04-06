@@ -11,11 +11,12 @@ const { getFinancialYear } = require('@envage/water-abstraction-helpers').chargi
  * @return {String}
  */
 const getDefaultStartDate = (dateSigned, licenceStartDate) => {
-  const financialYearEnding = getFinancialYear(dateSigned);
+  const financialYearEnding = getFinancialYear(dateSigned || new Date().toISOString().slice(0, 10));
   const dates = [
     licenceStartDate,
     `${financialYearEnding - 1}-04-01`
   ];
+
   return dates.sort().pop();
 };
 

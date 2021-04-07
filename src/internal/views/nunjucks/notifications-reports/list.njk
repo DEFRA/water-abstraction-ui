@@ -1,14 +1,7 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "sort-icon.njk" import sortIcon %}
 {% from "badge.njk" import badge %}
-
-{% macro headerLink(query, field, text, srText) %}
-  <a href="/notifications/report?{{ query | sortQuery(field) }}">
-    <span class="govuk-visually-hidden">Sort by {{ srText }}</span>
-    <span aria-hidden="true">{{ text }}</span>
-    {{ sortIcon(query, field) }}
-  </a>
-{% endmacro %}
+{% from "paginate.njk" import paginate %}
 
 {% block content %}
   {{ title(pageTitle) }}
@@ -19,19 +12,19 @@
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
             <th class="govuk-table__header" scope="col">
-              {{ headerLink(query, 'created', 'Date', 'date') }}
+              Date
             </th>
             <th class="govuk-table__header" scope="col">
-              {{ headerLink(query, 'notification', 'Notification', 'notification type') }}
+              Notification type
             </th>
             <th class="govuk-table__header" scope="col">
-              {{ headerLink(query, 'issuer', 'Sent by', 'sender') }}
+              Sent by
             </th>
             <th class="govuk-table__header" scope="col">
-              {{ headerLink(query, 'recipients', 'Recipients', 'number of recipients') }}
+              Recipients
             </th>
             <th class="govuk-table__header" scope="col">
-              {{ headerLink(query, 'status', 'Problems', 'number of errors') }}
+              Problems
             </th>
           </tr>
         </thead>
@@ -40,21 +33,27 @@
             <tr class="govuk-table__row">
               <td class="govuk-table__cell">{{ event.created | date}}</td>
               <td class="govuk-table__cell">
-                <a href="/notifications/report/{{ event.event_id }}">
-                  {{ event.metadata.name }}
+                <a href="/notifications/report/{{ event.id }}">
+                  {{ event.name }}
+                  <span class="govuk-visually-hidden">
+                    reference
+                    {{ event.referenceCode }}
+                  </span>
                 </a>
               </td>
               <td class="govuk-table__cell">{{ event.issuer }}</td>
-              <td class="govuk-table__cell govuk-table__cell--numeric">{{ event.metadata.recipients }}</td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">{{ event.recipientCount }}</td>
               <td class="govuk-table__cell govuk-table__cell--numeric">
-                {% if event.metadata.error %}
-                  {{ badge(event.metadata.error, 'error') }}
+                {% if event.errorCount %}
+                  {{ badge(event.errorCount, 'error') }}
                 {% endif %}
               </td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
+
+      {{ paginate(pagination, '/notifications/report') }}
     </div>
   </div>
 {% endblock %}

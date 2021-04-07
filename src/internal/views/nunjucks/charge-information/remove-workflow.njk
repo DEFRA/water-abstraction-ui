@@ -1,0 +1,43 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "forms/index.njk" import formRender, formErrorSummary %}
+{% from "title.njk" import title %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+    {{ title(pageTitle, null, null, true) }}
+    </div>
+  </div>
+
+  <section class="govuk-!-margin-bottom-2">
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <table class="govuk-table govuk-!-margin-bottom-8">
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">Licence</th>
+                <th scope="col" class="govuk-table__header">Licence holder</th>
+                  <th scope="col" class="govuk-table__header">Licence Start Date</th>
+              </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">
+                  {{ licence.licenceNumber }}
+                </td>
+                <td class="govuk-table__cell">
+                  {{ licenceHolderRole.company.name }}
+                </td>
+                <td class="govuk-table__cell">
+                  {{ licence.startDate | date }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+        {{ formRender(form) }}
+      </div>
+    </div>
+  </section>
+{% endblock %}

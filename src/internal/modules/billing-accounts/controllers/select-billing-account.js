@@ -1,5 +1,5 @@
 'use strict';
-const { pick, cloneDeep } = require('lodash');
+const { pick, cloneDeep, get } = require('lodash');
 
 const forms = require('shared/lib/forms');
 const { handleFormRequest } = require('shared/lib/form-handler');
@@ -27,6 +27,14 @@ const getDefaultView = request => {
   };
 };
 
+const beginNewBillingAccountCreation = (request, h) => {
+  const { key } = request.params;
+
+  session.setProperty(request, key, 'data.id', undefined);
+  session.setProperty(request, key, 'data.company', request.pre.account);
+  return h.redirect(routing.getSelectAccount(key));
+};
+
 /**
  * GET handler for selecting an existing billing account, or a new one
  */
@@ -34,8 +42,7 @@ const getSelectExistingBillingAccount = (request, h) => {
   // If no billing accounts to choose, redirect to start creation
   const { billingAccounts, account } = request.pre;
   if (billingAccounts.length === 0) {
-    const { key } = request.params;
-    return h.redirect(routing.getSelectAccount(key));
+    return beginNewBillingAccountCreation(request, h);
   }
 
   return h.view(NUNJUCKS_FORM_TEMPLATE, {
@@ -56,9 +63,7 @@ const postSelectExistingBillingAccount = async (request, h) => {
 
   // Begin creating a new billing account
   if (billingAccountId === NEW_BILLING_ACCOUNT) {
-    session.setProperty(request, key, 'data.id', undefined);
-    session.setProperty(request, key, 'data.company', request.pre.account);
-    return h.redirect(routing.getSelectAccount(key));
+    return beginNewBillingAccountCreation(request, h);
   }
 
   // Store selected account to session and redirect to parent flow
@@ -91,7 +96,9 @@ const postSelectAccount = (request, h) => {
   const { account, accountSearch } = forms.getValues(form);
 
   const { key } = request.params;
-  const { sessionData: { caption, data: { agentCompany } } } = request.pre;
+
+  const agentCompany = get(request.pre, 'sessionData.data.agentCompany');
+  const caption = get(request.pre, 'sessionData.caption');
 
   // Redirect to account selection flow
   if (account === OTHER_ACCOUNT) {
@@ -115,13 +122,13 @@ const postSelectAccount = (request, h) => {
 
 const getAddressRedirectPath = (request, query) => {
   const { key } = request.params;
-  const { caption, data } = session.get(request, key);
+  const { caption, data, companyId } = session.get(request, key);
   return request.addressLookupRedirect({
     caption,
     key,
     back: routing.getSelectAccount(key),
     redirectPath: routing.getHandleAddressEntry(key, query),
-    companyId: getCompanyId(data),
+    companyId: getCompanyId(data) || companyId,
     companyNumber: getCompanyNumber(data)
   });
 };

@@ -30,7 +30,8 @@ const createBatchData = () => ({
   totals: {
     netTotal: 43434
   },
-  billRunNumber: 1234
+  billRunNumber: 1234,
+  source: 'wrls'
 });
 
 const invoice = {
@@ -269,42 +270,88 @@ experiment('internal/modules/billing/controller', () => {
 
   experiment('.getBillingBatchInvoice', () => {
     let docIds;
+
     beforeEach(async () => {
       docIds = new Map();
       docIds.set('12/34/56', 'test-document-id');
       sandbox.stub(services.crm.documents, 'getDocumentIdMap').resolves(docIds);
-      await controller.getBillingBatchInvoice(request, h);
     });
 
-    test('calls getBatch in billingBatches service with batchId', async () => {
-      const [batchId] = services.water.billingBatches.getBatch.lastCall.args;
-      expect(batchId).to.equal(request.params.batchId);
+    experiment('for a WRLS supplementary batch', () => {
+      beforeEach(async () => {
+        await controller.getBillingBatchInvoice(request, h);
+      });
+
+      test('calls getBatch in billingBatches service with batchId', async () => {
+        const [batchId] = services.water.billingBatches.getBatch.lastCall.args;
+        expect(batchId).to.equal(request.params.batchId);
+      });
+
+      test('calls getBatchInvoice in billingBatches service with batchId and invoiceId', async () => {
+        const [batchId, invoiceId] = services.water.billingBatches.getBatchInvoice.lastCall.args;
+        expect(batchId).to.equal(request.params.batchId);
+        expect(invoiceId).to.equal(request.params.invoiceId);
+      });
+
+      test('the expected view template is used', async () => {
+        const [templateName] = h.view.lastCall.args;
+        expect(templateName).to.equal('nunjucks/billing/batch-invoice');
+      });
+
+      test('the expected data', async () => {
+        const [, view] = h.view.lastCall.args;
+        expect(view).to.contain({ foo: 'bar' });
+        expect(view.back).to.equal(`/billing/batch/${request.params.batchId}/summary`);
+        expect(view.pageTitle).to.equal('Bill for Company Name');
+        expect(view.invoice).to.equal(invoice);
+        expect(view.batch).to.equal(batchData);
+        expect(view.batchType).to.equal('Supplementary');
+        expect(view.invoiceLicences).to.be.an.array();
+        expect(view.isCredit).to.be.false();
+        expect(view.caption).to.equal('Billing account A12345678A');
+        expect(view.financialYearEnding).to.equal(2020);
+        expect(view.errors).to.be.an.array().length(0);
+      });
+
+      test('credit debit summary block is displayed', async () => {
+        const [, view] = h.view.lastCall.args;
+        expect(view.isCreditDebitBlockVisible).to.be.true();
+      });
     });
 
-    test('calls getBatchInvoice in billingBatches service with batchId and invoiceId', async () => {
-      const [batchId, invoiceId] = services.water.billingBatches.getBatchInvoice.lastCall.args;
-      expect(batchId).to.equal(request.params.batchId);
-      expect(invoiceId).to.equal(request.params.invoiceId);
-    });
+    const batchTypes = [{
+      source: 'wrls',
+      type: 'annual'
+    }, {
+      source: 'wrls',
+      type: 'two_part_tariff'
+    }, {
+      source: 'nald',
+      type: 'annual'
+    }, {
+      source: 'nald',
+      type: 'supplementary'
+    }, {
+      source: 'nald',
+      type: 'two_part_tariff'
+    }];
 
-    test('the expected view template is used', async () => {
-      const [templateName] = h.view.lastCall.args;
-      expect(templateName).to.equal('nunjucks/billing/batch-invoice');
-    });
+    batchTypes.forEach(({ source, type }) => {
+      experiment(`for a ${source} ${type} batch`, () => {
+        beforeEach(async () => {
+          services.water.billingBatches.getBatch.resolves({
+            ...createBatchData(),
+            source,
+            type
+          });
+          await controller.getBillingBatchInvoice(request, h);
+        });
 
-    test('the expected data', async () => {
-      const [, view] = h.view.lastCall.args;
-      expect(view).to.contain({ foo: 'bar' });
-      expect(view.back).to.equal(`/billing/batch/${request.params.batchId}/summary`);
-      expect(view.pageTitle).to.equal('Bill for Company Name');
-      expect(view.invoice).to.equal(invoice);
-      expect(view.batch).to.equal(batchData);
-      expect(view.batchType).to.equal('Supplementary');
-      expect(view.invoiceLicences).to.be.an.array();
-      expect(view.isCredit).to.be.false();
-      expect(view.caption).to.equal('Billing account A12345678A');
-      expect(view.financialYearEnding).to.equal(2020);
-      expect(view.errors).to.be.an.array().length(0);
+        test('credit debit summary block is not displayed', async () => {
+          const [, view] = h.view.lastCall.args;
+          expect(view.isCreditDebitBlockVisible).to.be.false();
+        });
+      });
     });
   });
 

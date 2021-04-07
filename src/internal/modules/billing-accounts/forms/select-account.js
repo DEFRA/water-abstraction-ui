@@ -8,7 +8,8 @@ const { formFactory, fields } = require('shared/lib/forms/');
 const { BILLING_ACCOUNT_HOLDER, OTHER_ACCOUNT } = require('../lib/constants');
 
 const getRadioValue = request => {
-  const { agentCompany } = request.pre.sessionData.data;
+  const agentCompany = get(request, 'pre.sessionData.data.agentCompany', null);
+
   if (isObject(agentCompany)) {
     return OTHER_ACCOUNT;
   }

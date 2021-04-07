@@ -9,7 +9,7 @@ const getNonChargeableReason = async (request, h) => {
   const { licence } = request.pre;
   const backUrl = request.query.start === 1
     ? await getLicencePageUrl(request.pre.licence)
-    : routing.getReason(licence.id);
+    : routing.getReason(licence.id, request.query);
 
   return h.view('nunjucks/form.njk', {
     ...getDefaultView(request, backUrl, forms.reason),
@@ -20,7 +20,8 @@ const getNonChargeableReason = async (request, h) => {
 const postNonChargeableReason = createPostHandler(
   forms.reason,
   actions.setChangeReason,
-  request => routing.getEffectiveDate(request.pre.licence.id)
+  request => routing.getEffectiveDate(request.pre.licence.id,
+    { chargeVersionWorkflowId: request.query.chargeVersionWorkflowId, returnToCheckData: request.query.returnToCheckData })
 );
 
 const getEffectiveDate = async (request, h) => {
@@ -33,7 +34,7 @@ const getEffectiveDate = async (request, h) => {
 const postEffectiveDate = createPostHandler(
   forms.startDate,
   actions.setStartDate,
-  request => routing.getCheckData(request.pre.licence.id)
+  request => routing.getCheckData(request.pre.licence.id, { chargeVersionWorkflowId: request.query.chargeVersionWorkflowId })
 );
 
 exports.getEffectiveDate = getEffectiveDate;

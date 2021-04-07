@@ -2,6 +2,7 @@ const controller = require('../controllers/charge-information-workflow');
 const { VALID_GUID } = require('shared/lib/validators');
 const { billing } = require('internal/lib/constants').scope;
 const preHandlers = require('../pre-handlers');
+const Joi = require('@hapi/joi');
 const allowedScopes = [billing];
 
 module.exports = {
@@ -13,7 +14,7 @@ module.exports = {
       auth: {
         scope: allowedScopes
       },
-      description: 'View for charge information workflow in the internal UI',
+      description: 'View for charge information workflow tabs in the internal UI',
       plugins: {
         viewContext: {
           activeNavLink: 'view'
@@ -40,9 +41,9 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object({
           chargeVersionWorkflowId: VALID_GUID
-        }
+        })
       },
       pre: [
         { method: preHandlers.loadChargeVersionWorkflow, assign: 'chargeInformationWorkflow' }
@@ -65,9 +66,9 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object({
           chargeVersionWorkflowId: VALID_GUID
-        }
+        })
       }
     }
   }

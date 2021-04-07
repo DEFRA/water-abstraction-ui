@@ -1,7 +1,6 @@
 const { kebabCase, partialRight } = require('lodash');
 const urlJoin = require('url-join');
 const queryString = require('querystring');
-const moment = require('moment');
 
 const forms = require('shared/lib/forms');
 const services = require('internal/lib/connectors/services');
@@ -13,8 +12,6 @@ const seasons = require('../lib/seasons');
 const routing = require('../lib/routing');
 const sessionForms = require('shared/lib/session-forms');
 const { getBatchFinancialYearEnding } = require('../lib/batch-financial-year');
-
-const DATE_FORMAT = 'YYYY-MM-DD';
 
 const getRegionUrl = (selectedBillingType, selectedTwoPartTariffSeason, formKey) => {
   const path = urlJoin(
@@ -76,7 +73,7 @@ const getBillingBatchRegion = async (request, h) => {
   });
 };
 
-const getBatchDetails = (request, billingRegionForm) => {
+const getBatchDetails = (request, billingRegionForm, refDate = Date.now()) => {
   const {
     selectedBillingType,
     selectedBillingRegion,
@@ -84,8 +81,7 @@ const getBatchDetails = (request, billingRegionForm) => {
   } = forms.getValues(billingRegionForm);
 
   const isSummer = selectedTwoPartTariffSeason === seasons.SUMMER;
-  const today = moment().format(DATE_FORMAT);
-  const financialYearEnding = getBatchFinancialYearEnding(selectedBillingType, isSummer, today);
+  const financialYearEnding = getBatchFinancialYearEnding(selectedBillingType, isSummer, refDate);
 
   const batch = {
     userEmail: request.defra.user.user_name,
@@ -112,7 +108,7 @@ const getBatchCreationErrorRedirectPath = err => {
  * @param {*} request
  * @param {*} h
  */
-const postBillingBatchRegion = async (request, h) => {
+const postBillingBatchRegion = async (request, h, refDate) => {
   const { regions } = request.pre;
   const schema = billingRegionFormSchema(regions);
   const billingRegionForm = forms.handleRequest(selectBillingRegionForm(request, regions), request, schema);
@@ -124,7 +120,7 @@ const postBillingBatchRegion = async (request, h) => {
   }
 
   try {
-    const batch = getBatchDetails(request, billingRegionForm);
+    const batch = getBatchDetails(request, billingRegionForm, refDate);
     const { data } = await services.water.billingBatches.createBillingBatch(batch);
     const path = routing.getBillingBatchRoute(data.batch, { isBackEnabled: false });
     return h.redirect(path);

@@ -8,10 +8,11 @@ const { getFinancialYear } = require('@envage/water-abstraction-helpers').chargi
  * - The licence start date
  * @param {String} dateSigned
  * @param {String} licenceStartDate
+ * @param {String} currentDate
  * @return {String}
  */
-const getDefaultStartDate = (dateSigned, licenceStartDate) => {
-  const financialYearEnding = getFinancialYear(dateSigned);
+const getDefaultStartDate = (dateSigned, licenceStartDate, currentDate) => {
+  const financialYearEnding = getFinancialYear(dateSigned || currentDate);
   const dates = [
     licenceStartDate,
     `${financialYearEnding - 1}-04-01`

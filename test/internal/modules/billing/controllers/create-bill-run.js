@@ -413,11 +413,10 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
           }
         });
 
-        await controller.postBillingBatchRegion(request, h);
+        await controller.postBillingBatchRegion(request, h, '2021-03-15');
 
         const [batch] = services.water.billingBatches.createBillingBatch.lastCall.args;
-        const financialYear = helpers.charging.getFinancialYear(new Date());
-        expect(batch.financialYearEnding).to.equal(financialYear - 1);
+        expect(batch.financialYearEnding).to.equal(2020);
       });
     });
   });

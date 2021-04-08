@@ -10,20 +10,22 @@ const actions = require('../lib/actions');
 
 const getBackLink = request => {
   const { step, licenceId, elementId } = request.params;
+  const { chargeVersionWorkflowId } = request.query;
   if (request.query.returnToCheckData === 1) {
     return routing.getCheckData(licenceId);
   }
   return step === CHARGE_ELEMENT_FIRST_STEP
-    ? routing.getUseAbstractionData(licenceId)
-    : routing.getChargeElementStep(licenceId, elementId, ROUTING_CONFIG[step].back);
+    ? routing.getUseAbstractionData(licenceId, { chargeVersionWorkflowId })
+    : routing.getChargeElementStep(licenceId, elementId, ROUTING_CONFIG[step].back, { chargeVersionWorkflowId });
 };
 
 const getRedirectPath = request => {
   const { step, licenceId, elementId } = request.params;
-  if (request.query.returnToCheckData === 1 || step === CHARGE_ELEMENT_LAST_STEP) {
-    return routing.getCheckData(licenceId);
+  const { chargeVersionWorkflowId, returnToCheckData } = request.query;
+  if (returnToCheckData || step === CHARGE_ELEMENT_LAST_STEP) {
+    return routing.getCheckData(licenceId, { chargeVersionWorkflowId });
   }
-  return routing.getChargeElementStep(licenceId, elementId, ROUTING_CONFIG[step].nextStep);
+  return routing.getChargeElementStep(licenceId, elementId, ROUTING_CONFIG[step].nextStep, { chargeVersionWorkflowId });
 };
 
 const getChargeElementStep = async (request, h) => {
@@ -43,7 +45,7 @@ const postChargeElementStep = async (request, h) => {
     return h.redirect(getRedirectPath(request));
   }
 
-  return h.postRedirectGet(form, routing.getChargeElementStep(licenceId, elementId, step));
+  return h.postRedirectGet(form, routing.getChargeElementStep(licenceId, elementId, step, request.query));
 };
 
 exports.getChargeElementStep = getChargeElementStep;

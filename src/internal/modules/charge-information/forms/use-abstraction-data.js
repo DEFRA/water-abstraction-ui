@@ -6,7 +6,6 @@ const moment = require('moment');
 
 const { formFactory, fields } = require('shared/lib/forms/');
 const routing = require('../lib/routing');
-const { getActionUrl } = require('../lib/form-helpers');
 
 const getAddionalChoices = (chargeVersions) => {
   if (chargeVersions.length > 0) {
@@ -26,6 +25,7 @@ const filterChargeVersions = chargeVersions => chargeVersions.filter(cv => cv.st
 
 const useAbstractionDataForm = request => {
   const { csrfToken } = request.view;
+  const { chargeVersionWorkflowId } = request.query;
   const { licence, draftChargeInformation, chargeVersions } = request.pre;
   const useAbstractionData = get(draftChargeInformation, 'abstractionData');
   const choices = [
@@ -34,7 +34,7 @@ const useAbstractionDataForm = request => {
     ...getAddionalChoices(filterChargeVersions(chargeVersions))
   ];
 
-  const action = getActionUrl(request, routing.getUseAbstractionData(licence.id));
+  const action = routing.getUseAbstractionData(licence.id, { chargeVersionWorkflowId });
 
   const f = formFactory(action, 'POST');
 

@@ -20,8 +20,8 @@ class ChargeVersionWorkflowsService extends ServiceClient {
    * Gets charge version workflows for given licence id
    * @param {String} licenceId
    */
-  getChargeVersionWorkflow (workflowId) {
-    const url = this.joinUrl('charge-version-workflows', workflowId);
+  getChargeVersionWorkflow (chargeVersionWorkflowId) {
+    const url = this.joinUrl('charge-version-workflows', chargeVersionWorkflowId);
     return this.serviceRequest.get(url);
   }
 
@@ -50,13 +50,14 @@ class ChargeVersionWorkflowsService extends ServiceClient {
   /**
    * Send a PATCH request to the service relating to a charge version workflow
    */
-  patchChargeVersionWorkflow (workflowId, status = 'review', approverComments = null, chargeVersion = {}) {
-    const url = this.joinUrl('charge-version-workflows', workflowId);
+  patchChargeVersionWorkflow (chargeVersionWorkflowId, status = 'review', approverComments = null, chargeVersion = {}, createdBy = {}) {
+    const url = this.joinUrl('charge-version-workflows', chargeVersionWorkflowId);
     return this.serviceRequest.patch(url, {
       body: {
         status,
         approverComments,
-        chargeVersion
+        chargeVersion,
+        createdBy
       }
     });
   }

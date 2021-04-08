@@ -5,7 +5,6 @@ const Joi = require('@hapi/joi');
 
 const { formFactory, fields } = require('shared/lib/forms/');
 const routing = require('../lib/routing');
-const { getActionUrl } = require('../lib/form-helpers');
 
 const mapChoice = changeReason => ({
   value: changeReason.id,
@@ -31,11 +30,11 @@ const getChoices = (changeReasons, isChargeable) => {
 const selectReasonForm = (request) => {
   const { csrfToken } = request.view;
   const { changeReasons, licence, draftChargeInformation } = request.pre;
-  const { isChargeable } = request.query;
+  const { isChargeable, chargeVersionWorkflowId, returnToCheckData } = request.query;
 
   const action = isChargeable
-    ? getActionUrl(request, routing.getReason(licence.id))
-    : getActionUrl(request, routing.getNonChargeableReason(licence.id));
+    ? routing.getReason(licence.id, { chargeVersionWorkflowId, returnToCheckData })
+    : routing.getNonChargeableReason(licence.id, { chargeVersionWorkflowId, returnToCheckData });
 
   const errorMessage = isChargeable
     ? 'Select a reason for new charge information' : 'Select a reason';

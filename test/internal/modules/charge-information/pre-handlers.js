@@ -468,13 +468,14 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
       });
 
       test('the charge version data is saved in the session', async () => {
-        const [licenceId, chargeVersion] = request.setDraftChargeInformation.lastCall.args;
+        const [licenceId, cvWorkflowId, chargeVersion] = request.setDraftChargeInformation.lastCall.args;
         expect(licenceId).to.equal(request.params.licenceId);
+        expect(cvWorkflowId).to.equal('test-charge-version-workflow-id');
         expect(chargeVersion.id).to.equal('test-charge-version-id');
       });
 
       test('the charge version data is mapped to the shape expected by the UI', async () => {
-        const [, chargeVersion] = request.setDraftChargeInformation.lastCall.args;
+        const [,, chargeVersion] = request.setDraftChargeInformation.lastCall.args;
         expect(chargeVersion.status).to.equal('review');
         expect(chargeVersion.invoiceAccount.invoiceAccountAddress).to.equal('test-invoice-account-address-id');
       });

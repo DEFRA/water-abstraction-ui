@@ -292,7 +292,8 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
 
           await sandbox.stub(services.water.chargeVersions, 'postCreateFromWorkflow').resolves();
           await sandbox.stub(services.water.licences, 'getDocumentByLicenceId').resolves({
-            document_id: uuid()
+            document_id: uuid(),
+            metadata: { IsCurrent: true }
           });
 
           await controller.postReviewChargeInformation(request, h);
@@ -327,7 +328,8 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
 
           await sandbox.stub(services.water.chargeVersionWorkflows, 'patchChargeVersionWorkflow').resolves();
           await sandbox.stub(services.water.licences, 'getDocumentByLicenceId').resolves({
-            document_id: uuid()
+            document_id: uuid(),
+            metadata: { IsCurrent: true }
           });
 
           await controller.postReviewChargeInformation(request, h);

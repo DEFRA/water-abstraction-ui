@@ -30,7 +30,7 @@ experiment('internal/modules/charge-information/lib/routing', () => {
 
   experiment('.getSubmitted', () => {
     test('returns the correct url', async () => {
-      const url = routing.getSubmitted(licence.id, true);
+      const url = routing.getSubmitted(licence.id, { chargeable: true });
       expect(url).to.equal('/licences/test-licence-id/charge-information/submitted?chargeable=true');
     });
   });

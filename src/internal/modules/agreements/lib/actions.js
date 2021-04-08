@@ -13,12 +13,13 @@ const setAgreementType = (request, formValues) => ({
   payload: pick(formValues, 'financialAgreementCode')
 });
 
-const setDateSigned = (request, formValues) => ({
+const setDateSigned = (request, formValues, currentDate = Date.now()) => ({
   type: ACTION_TYPES.setDateSigned,
   payload: {
     dateSigned: formValues.dateSigned,
     isDateSignedKnown: formValues.isDateSignedKnown,
-    licenceStartDate: request.pre.licence.startDate
+    licenceStartDate: request.pre.licence.startDate,
+    currentDate
   }
 });
 

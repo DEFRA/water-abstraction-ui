@@ -30,7 +30,8 @@ module.exports = {
         },
         query: {
           form: VALID_GUID.optional(),
-          returnToCheckData: Joi.number().allow(0, 1).optional()
+          returnToCheckData: Joi.boolean().default(false),
+          chargeVersionWorkflowId: Joi.string().uuid().optional().default('')
         }
       },
       pre: [
@@ -62,7 +63,8 @@ module.exports = {
         },
         query: {
           form: VALID_GUID.optional(),
-          returnToCheckData: Joi.number().allow(0, 1).optional()
+          returnToCheckData: Joi.boolean().default(false),
+          chargeVersionWorkflowId: Joi.string().uuid().optional().default('')
         }
       },
       pre: [

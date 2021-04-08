@@ -3,7 +3,6 @@ const { get, pullAt } = require('lodash');
 const moment = require('moment');
 const { formFactory, fields } = require('shared/lib/forms/');
 const routing = require('../lib/routing');
-const { getActionUrl } = require('../lib/form-helpers');
 
 const DATE_FORMAT = 'D MMMM YYYY';
 const ISO_FORMAT = 'YYYY-MM-DD';
@@ -124,10 +123,11 @@ const getChoices = (dates, values, refDate, isChargeable) => {
 const selectStartDateForm = (request, refDate) => {
   const { csrfToken } = request.view;
   const { licence, isChargeable } = request.pre;
+  const { chargeVersionWorkflowId, returnToCheckData } = request.query;
 
   const action = isChargeable
-    ? getActionUrl(request, routing.getStartDate(licence.id))
-    : getActionUrl(request, routing.getEffectiveDate(licence.id));
+    ? routing.getStartDate(licence.id, { chargeVersionWorkflowId, returnToCheckData })
+    : routing.getEffectiveDate(licence.id, { chargeVersionWorkflowId, returnToCheckData });
 
   const errorMessage = isChargeable
     ? 'Select charge information start date'

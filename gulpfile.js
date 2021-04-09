@@ -29,6 +29,7 @@ gulp.task('combine-minify-js', () => {
     './src/shared/public/javascripts/clickable-rows.js',
     './src/shared/public/javascripts/json-forms-toggle.js',
     './src/shared/public/javascripts/toggle-visibility.js',
+    './node_modules/js-cookie/src/js.cookie.js',
     './src/shared/public/javascripts/cookie-banner.js'
   ];
 

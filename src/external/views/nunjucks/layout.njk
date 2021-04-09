@@ -8,6 +8,7 @@
 {% from "forms/index.njk" import formRender, formErrorSummary %}
 {% from "title.njk" import title %}
 {% from "google-analytics.njk" import googleMeasurementSnippet, crossSiteTracking %}
+{% from "cookie-banner.njk" import cookieBanner as cookieBannerMacro %}
 
 {% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
 
@@ -32,54 +33,7 @@
 
 {% block header %}
 
-  
-  {% if isCookieBannerVisible %}
-
-    {# Users with JS #}
-    {{ govukCookieBanner({
-      ariaLabel: "Cookies on Manage your water abstraction or impoundment licence",
-      attributes: {
-        id: 'cookie-banner-js-enabled'
-      },
-      messages: [
-        {
-          headingText: "Cookies on Manage your water abstraction or impoundment licence",
-          text: "We use some essential cookies to make this service work.",
-          actions: [
-            {
-              text: "View cookies",
-              href: "/cookies"
-            },
-            {
-              text: "Hide this message",
-              type: "button"
-            }
-          ]
-        }
-      ]
-    }) }}
-
-    {# Users without JS #}
-    {{ govukCookieBanner({
-      attributes: {
-        id: 'cookie-banner-js-disabled'
-      },
-      ariaLabel: "Cookies on Manage your water abstraction or impoundment licence",
-      messages: [
-        {
-          headingText: "Cookies on Manage your water abstraction or impoundment licence",
-          text: "We use some essential cookies to make this service work.",
-          actions: [
-            {
-              text: "View cookies",
-              href: "/cookies"
-            }
-          ]
-        }
-      ]
-    }) }}
-
-  {% endif %}
+  {{ cookieBannerMacro(cookieBanner.isVisible) }}
 
   {{ govukHeader({
     homepageUrl: "https://www.gov.uk",
@@ -151,7 +105,9 @@
   <script nonce="{{ nonces.script }}">window.GOVUKFrontend.initAll()</script>
 
   <!-- Google Analytics -->
-  {{ googleMeasurementSnippet(nonces.script, tracking, gaUrl, gaPageTitle) }}
-  {{ crossSiteTracking(nonces.script, gaUrl, gaPageTitle) }}
+  {% if cookieBanner.isAnalyticsCookiesEnabled %}
+    {{ googleMeasurementSnippet(nonces.script, tracking, gaUrl, gaPageTitle) }}
+    {{ crossSiteTracking(nonces.script, gaUrl, gaPageTitle) }}
+  {% endif %}
   <!-- End Google Analytics -->
 {% endblock %}

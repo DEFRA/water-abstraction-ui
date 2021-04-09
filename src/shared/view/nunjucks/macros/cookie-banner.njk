@@ -41,9 +41,9 @@
 {% endmacro %}
 
 {# A banner to show a flash message when cookies are accepted/rejected #}
-{% macro cookieBannerFlashMessage(message) %}
+{% macro cookieBannerFlashMessage(message, cookiesPagePath) %}
   {% set html %}
-    <p>{{ message }} You can <a class="govuk-link" href="/cookies">change your cookie settings</a> at any time.</p>
+    <p>{{ message }} You can <a class="govuk-link" href="{{ cookiesPagePath }}">change your cookie settings</a> at any time.</p>
   {% endset %}
 
   {{ govukCookieBanner({
@@ -70,6 +70,6 @@
   {% endif %}
 
   {% if cookieBanner.flashMessage %}
-    {{ cookieBannerFlashMessage(cookieBanner.flashMessage) }}
+    {{ cookieBannerFlashMessage(cookieBanner.flashMessage, cookieBanner.cookiesPagePath) }}
   {% endif %}
 {% endmacro %}

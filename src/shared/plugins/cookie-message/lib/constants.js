@@ -2,4 +2,5 @@
 
 exports.cookieName = 'accept_analytics_cookies';
 exports.accepted = 'yes';
-exports.declined = 'no';
+exports.rejected = 'no';
+exports.flashMessageType = 'cookieBanner';

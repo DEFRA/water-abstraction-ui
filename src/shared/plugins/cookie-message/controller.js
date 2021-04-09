@@ -31,6 +31,13 @@ const postCookies = async (request, h) => {
     // Set the cookie preferences
     const { acceptAnalyticsCookies } = getValues(form);
     h.state(constants.cookieName, acceptAnalyticsCookies ? constants.accepted : constants.declined);
+
+    // If declined, clear analytics cookies
+    if (!acceptAnalyticsCookies) {
+      ['_ga', '_gid', '_gat', '_gat_govuk_shared'].forEach(cookieName => {
+        h.unstate(cookieName);
+      });
+    }
   }
 
   return h.postRedirectGet(form);

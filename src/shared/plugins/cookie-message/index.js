@@ -21,6 +21,9 @@ const cookieOptions = {
 
 const isCookiesPage = request => request.path === '/cookies';
 
+/**
+ * Pre handler sets cookie banner state in view
+ */
 const _handler = async (request, h) => {
   const isAnalyticsCookiesEnabled = request.isAnalyticsCookiesEnabled();
 

@@ -2,21 +2,18 @@ const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').scri
 const { expect } = require('@hapi/code');
 
 const routes = require('external/modules/core/routes');
-const Hapi = require('@hapi/hapi');
+const serverFactory = require('../../../lib/server-factory');
 
 experiment('modules/core/routes', () => {
   let server;
 
-  beforeEach(async () => {
-    const routeWithNoOpHandler = Object.assign(routes.index, {
-      handler: () => 'ok'
+  experiment('/', () => {
+    beforeEach(async () => {
+      server = await serverFactory.createServer(
+        serverFactory.createRouteWithNoOpHandler(routes.index)
+      );
     });
 
-    server = Hapi.server();
-    server.route(routeWithNoOpHandler);
-  });
-
-  experiment('/', () => {
     test('returns a 200 with no query params', async () => {
       const request = { method: 'get', url: '/' };
       const response = await server.inject(request);
@@ -56,14 +53,7 @@ experiment('modules/core/routes', () => {
     let response;
 
     beforeEach(async () => {
-      const anonRoute = Object.assign(routes.status, {
-        config: {
-          auth: false
-        }
-      });
-
-      const server = Hapi.server();
-      server.route(anonRoute);
+      server = await serverFactory.createServer(routes.status);
 
       const request = { method: 'get', url: '/status' };
       response = await server.inject(request);
@@ -75,6 +65,22 @@ experiment('modules/core/routes', () => {
 
     test('responds with an object containing the application version', async () => {
       expect(response.result.version).to.match(/\d*\.\d*\.\d*/g);
+    });
+  });
+
+  experiment('404 page', () => {
+    let response;
+
+    beforeEach(async () => {
+      server = await serverFactory.createServer(routes['404']);
+
+      const request = { method: 'get', url: '/invalid-path' };
+      response = await server.inject(request);
+    });
+
+    test('responds with a status code of 404', async () => {
+      expect(response.statusCode).to.equal(404);
+      expect(response.result).to.include('We cannot find that page');
     });
   });
 });

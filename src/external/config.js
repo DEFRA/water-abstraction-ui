@@ -1,8 +1,6 @@
 require('dotenv').config();
 const testMode = parseInt(process.env.TEST_MODE) === 1;
 const isLocal = process.env.NODE_ENV === 'local';
-const isAws = ['dev', 'qa', 'preprod', 'production'].includes(process.env.NODE_ENV);
-const isTest = process.env.NODE_ENV === 'test';
 const { withQueryStringSubset } = require('./lib/url');
 
 module.exports = {
@@ -123,8 +121,7 @@ module.exports = {
     host: process.env.REDIS_HOST || '127.0.0.1',
     port: process.env.REDIS_PORT || 6379,
     password: process.env.REDIS_PASSWORD || '',
-    ...isAws && { tls: {} },
-    db: 0,
-    lazyConnect: isTest
+    ...!isLocal && { tls: {} },
+    db: 0
   }
 };

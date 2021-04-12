@@ -108,9 +108,5 @@ process
     return process.exit(0);
   });
 
-if (!module.parent) {
-  start();
-}
-
 module.exports = server;
-module.exports._start = start;
+start();

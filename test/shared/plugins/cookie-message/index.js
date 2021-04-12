@@ -9,7 +9,6 @@ experiment('plugins/cookie-message/index', () => {
 
   beforeEach(async () => {
     server = {
-      dependency: sandbox.stub(),
       state: sandbox.stub(),
       ext: sandbox.stub(),
       decorate: sandbox.stub(),
@@ -43,7 +42,10 @@ experiment('plugins/cookie-message/index', () => {
   test('includes package name and version', async () => {
     expect(plugin.pkg).to.equal({
       name: 'cookieMessagePlugin',
-      version: '2.0.0'
+      version: '2.0.0',
+      dependencies: {
+        yar: '9.x.x'
+      }
     });
   });
 
@@ -56,16 +58,12 @@ experiment('plugins/cookie-message/index', () => {
       plugin.register(server);
     });
 
-    test('declares a dependency on yar', async () => {
-      expect(server.dependency.calledWith('yar'));
-    });
-
     test('defines the state cookie', async () => {
       expect(server.state.calledWith(
         'accept_analytics_cookies',
         {
           isSecure: true,
-          isHttpOnly: false,
+          isHttpOnly: true,
           ttl: 2419200000,
           isSameSite: 'Lax'
         }

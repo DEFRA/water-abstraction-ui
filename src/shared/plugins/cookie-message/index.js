@@ -123,15 +123,13 @@ function setCookiePreferences (isAnalyticsAccepted) {
  */
 const getCookieOptions = () => ({
   isSecure: process.env.NODE_ENV !== 'local',
-  isHttpOnly: false,
+  isHttpOnly: true,
   ttl: 28 * 24 * 60 * 60 * 1000,
   isSameSite: 'Lax'
 });
 
 const cookieMessagePlugin = {
-  register: (server, options) => {
-    server.dependency('yar');
-
+  register: server => {
     // Register cookie
     server.state(constants.cookieName, getCookieOptions());
 
@@ -151,7 +149,10 @@ const cookieMessagePlugin = {
 
   pkg: {
     name: 'cookieMessagePlugin',
-    version: '2.0.0'
+    version: '2.0.0',
+    dependencies: {
+      yar: '9.x.x'
+    }
   }
 };
 

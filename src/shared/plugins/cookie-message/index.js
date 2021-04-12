@@ -4,29 +4,39 @@ const { set, isEmpty } = require('lodash');
 const routes = require('./routes');
 const constants = require('./lib/constants');
 const qs = require('querystring');
-const { getSetCookiePreferences, getCookies } = require('./controller');
 
 /**
  * HAPI Cookie Message plugin
- *
- * Checks whether the 'seen_cookie_message' cookie exists and has a value of 'yes'
- * Sets flag in request.view
+ * Provides a means of users opting in/out of analytics cookies
  *
  * @module lib/hapi-plugins/cookie-message
  */
 
-const cookieOptions = {
-  isHttpOnly: false,
-  ttl: 28 * 24 * 60 * 60 * 1000,
-  isSameSite: 'Lax'
-};
-
+/**
+ * Predicate to check whether user is currently on the cookies page
+ *
+ * @param {Object} request
+ * @returns {Boolean}
+ */
 const isCookiesPage = request => request.path === '/cookies';
 
+/**
+ * Gets the current page path, including query string
+ *
+ * @param {Object} request
+ * @returns {String}
+ */
 const getCurrentPath = request => isEmpty(request.query)
   ? request.path
   : request.path + '?' + qs.stringify(request.query);
 
+/**
+ * Gets the path to set the cookie preferences
+ *
+ * @param {Object} request
+ * @param {Boolean} isAccepted - whether the user opts in/out of analytics cookies
+ * @returns {String}
+ */
 const getPreferencesPath = (request, isAccepted) => {
   const redirectPath = getCurrentPath(request);
   const query = qs.stringify({
@@ -36,10 +46,20 @@ const getPreferencesPath = (request, isAccepted) => {
   return `/set-cookie-preferences?${query}`;
 };
 
+/**
+ * Gets the path to the cookies page, including a redirectPath query param which points
+ * back to the user's current path
+ *
+ * @param {Object} request
+ * @returns {String}
+ */
 const getCookiesPagePath = request => `/cookies?${qs.stringify({ redirectPath: getCurrentPath(request) })}`;
 
 /**
  * Pre handler sets cookie banner state in view
+ *
+ * @param {Object} request
+ * @param {Object} h
  */
 const _handler = async (request, h) => {
   const isEnabled = request.isAnalyticsCookiesEnabled();
@@ -59,6 +79,13 @@ const _handler = async (request, h) => {
   return h.continue;
 };
 
+/**
+ * Checks whether analytics cookies are enabled by inspecting the state
+ * of the cookie.  If null is returned, the user has not yet
+ * set their preferences.
+ *
+ * @return {Boolean|Null}
+ */
 function isAnalyticsCookiesEnabled () {
   const value = this.state[constants.cookieName];
   if (value === constants.accepted) {
@@ -67,6 +94,15 @@ function isAnalyticsCookiesEnabled () {
   return value === constants.rejected ? false : null;
 }
 
+/**
+ * Sets the users analytics cookie preferences by setting the state
+ * of the cookie.
+ *
+ * If the user has opted out, we unset any Google Analytics cookies
+ * that are currently set.
+ *
+ * @param {Boolean} isAnalyticsAccepted
+ */
 function setCookiePreferences (isAnalyticsAccepted) {
   // Set preferences
   this.state(constants.cookieName, isAnalyticsAccepted ? constants.accepted : constants.rejected);
@@ -79,10 +115,25 @@ function setCookiePreferences (isAnalyticsAccepted) {
   }
 }
 
+/**
+ * Gets the options for declaring the cookie that will manage the
+ * preferences
+ *
+ * @returns {Object}
+ */
+const getCookieOptions = () => ({
+  isSecure: process.env.NODE_ENV !== 'local',
+  isHttpOnly: false,
+  ttl: 28 * 24 * 60 * 60 * 1000,
+  isSameSite: 'Lax'
+});
+
 const cookieMessagePlugin = {
   register: (server, options) => {
+    server.dependency('yar');
+
     // Register cookie
-    server.state(constants.cookieName, cookieOptions);
+    server.state(constants.cookieName, getCookieOptions());
 
     // Register pre handler
     server.ext({
@@ -100,9 +151,11 @@ const cookieMessagePlugin = {
 
   pkg: {
     name: 'cookieMessagePlugin',
-    version: '1.0.0'
+    version: '2.0.0'
   }
 };
 
 module.exports = cookieMessagePlugin;
 module.exports._handler = _handler;
+module.exports._isAnalyticsCookiesEnabled = isAnalyticsCookiesEnabled;
+module.exports._setCookiePreferences = setCookiePreferences;

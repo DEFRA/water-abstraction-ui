@@ -2,26 +2,39 @@ const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi
 const { expect } = require('@hapi/code');
 const sandbox = require('sinon').createSandbox();
 const plugin = require('shared/plugins/cookie-message');
-
-const createRequest = seenCookieMessage => {
-  return {
-    state: {
-      seen_cookie_message: seenCookieMessage
-    }
-  };
-};
-
-const h = {
-  state: sandbox.stub(),
-  continue: sandbox.stub()
-};
+const constants = require('shared/plugins/cookie-message/lib/constants');
 
 experiment('plugins/cookie-message/index', () => {
-  let server;
+  let server, request, h;
+
   beforeEach(async () => {
     server = {
-      ext: sandbox.stub()
+      dependency: sandbox.stub(),
+      state: sandbox.stub(),
+      ext: sandbox.stub(),
+      decorate: sandbox.stub(),
+      route: sandbox.stub()
     };
+
+    h = {
+      state: sandbox.stub(),
+      unstate: sandbox.stub(),
+      continue: 'continue'
+    };
+
+    request = {
+      path: '/test/path',
+      query: {
+        foo: 'bar'
+      },
+      yar: {
+        flash: sandbox.stub()
+      },
+      isAnalyticsCookiesEnabled: sandbox.stub(),
+      state: {}
+    };
+
+    sandbox.stub(process.env, 'NODE_ENV').value('dev');
   });
   afterEach(async () => {
     sandbox.restore();
@@ -30,7 +43,7 @@ experiment('plugins/cookie-message/index', () => {
   test('includes package name and version', async () => {
     expect(plugin.pkg).to.equal({
       name: 'cookieMessagePlugin',
-      version: '1.0.0'
+      version: '2.0.0'
     });
   });
 
@@ -38,50 +51,177 @@ experiment('plugins/cookie-message/index', () => {
     expect(plugin.register).to.be.a.function();
   });
 
-  test('register function binds the onPreHandler', async () => {
-    plugin.register(server, {});
-    expect(
-      server.ext.calledWith({
+  experiment('the register function', () => {
+    beforeEach(async () => {
+      plugin.register(server);
+    });
+
+    test('declares a dependency on yar', async () => {
+      expect(server.dependency.calledWith('yar'));
+    });
+
+    test('defines the state cookie', async () => {
+      expect(server.state.calledWith(
+        'accept_analytics_cookies',
+        {
+          isSecure: true,
+          isHttpOnly: false,
+          ttl: 2419200000,
+          isSameSite: 'Lax'
+        }
+      )).to.be.true();
+    });
+
+    test('registers the pre handler', async () => {
+      expect(server.ext.calledWith({
         type: 'onPreHandler',
         method: plugin._handler
-      })
-    ).to.equal(true);
+      })).to.be.true();
+    });
+
+    test('decorates request with isAnalyticsCookiesEnabled method', async () => {
+      expect(server.decorate.calledWith(
+        'request', 'isAnalyticsCookiesEnabled', plugin._isAnalyticsCookiesEnabled
+      )).to.be.true();
+    });
+
+    test('decorates response toolkit with setCookiePreferences method', async () => {
+      expect(server.decorate.calledWith(
+        'toolkit', 'setCookiePreferences', plugin._setCookiePreferences
+      )).to.be.true();
+    });
   });
 
-  experiment('._handler', () => {
-    let request;
-
-    experiment('when seen_cookie_message is "yes"', () => {
+  experiment('the pre-handler', () => {
+    experiment('when analytics cookies are not accepted/rejected', () => {
       beforeEach(async () => {
-        request = createRequest('yes');
-        plugin._handler(request, h);
+        request.yar.flash.returns([]);
+        request.isAnalyticsCookiesEnabled.returns(null);
+        await plugin._handler(request, h);
       });
 
-      test('sets the flag to false in request.view', async () => {
-        expect(request.view.isCookieBannerVisible).to.be.false();
-      });
-
-      test('returns h.continue', async () => {
-        const request = createRequest('yxes');
-        const response = await plugin._handler(request, h);
-        expect(response).to.equal(h.continue);
+      test('state is set in the view', async () => {
+        expect(request.view.cookieBanner).to.equal({
+          isAnalyticsCookiesEnabled: null,
+          isVisible: true,
+          acceptPath: '/set-cookie-preferences?redirectPath=%2Ftest%2Fpath%3Ffoo%3Dbar&acceptAnalytics=1',
+          rejectPath: '/set-cookie-preferences?redirectPath=%2Ftest%2Fpath%3Ffoo%3Dbar&acceptAnalytics=0',
+          flashMessage: undefined,
+          cookiesPagePath: '/cookies?redirectPath=%2Ftest%2Fpath%3Ffoo%3Dbar'
+        });
       });
     });
 
-    experiment('when seen_cookie_message is not "yes"', () => {
+    experiment('when analytics cookies are not accepted/rejected and the user is on the cookies page', () => {
       beforeEach(async () => {
-        request = createRequest();
-        plugin._handler(request, h);
+        request.path = '/cookies';
+        request.yar.flash.returns([]);
+        request.isAnalyticsCookiesEnabled.returns(null);
+        await plugin._handler(request, h);
       });
 
-      test('sets the flag to true in request.view', async () => {
-        expect(request.view.isCookieBannerVisible).to.be.true();
+      test('the cookie banner is hidden', async () => {
+        expect(request.view.cookieBanner.isVisible).to.be.false();
+      });
+    });
+
+    experiment('when analytics cookies are accepted', () => {
+      beforeEach(async () => {
+        request.yar.flash.returns([]);
+        request.isAnalyticsCookiesEnabled.returns(true);
+        await plugin._handler(request, h);
       });
 
-      test('returns h.continue', async () => {
-        const request = createRequest('yxes');
-        const response = await plugin._handler(request, h);
-        expect(response).to.equal(h.continue);
+      test('the cookie banner is hidden', async () => {
+        expect(request.view.cookieBanner.isVisible).to.be.false();
+      });
+
+      test('the flag is set to enable the cookies', async () => {
+        expect(request.view.cookieBanner.isAnalyticsCookiesEnabled).to.be.true();
+      });
+    });
+
+    experiment('when analytics cookies are rejected', () => {
+      beforeEach(async () => {
+        request.yar.flash.returns([]);
+        request.isAnalyticsCookiesEnabled.returns(false);
+        await plugin._handler(request, h);
+      });
+
+      test('the cookie banner is hidden', async () => {
+        expect(request.view.cookieBanner.isVisible).to.be.false();
+      });
+
+      test('the flag is cleared to disable the cookies', async () => {
+        expect(request.view.cookieBanner.isAnalyticsCookiesEnabled).to.be.false();
+      });
+    });
+
+    experiment('when a flash message is displayed', () => {
+      const flashMessage = 'You rejected cookies';
+
+      beforeEach(async () => {
+        request.yar.flash.returns([flashMessage]);
+        request.isAnalyticsCookiesEnabled.returns(false);
+        await plugin._handler(request, h);
+      });
+
+      test('the flash message is set in the view', async () => {
+        expect(request.view.cookieBanner.flashMessage).to.equal(flashMessage);
+      });
+    });
+  });
+
+  experiment('the isAnalyticsCookiesEnabled request method', () => {
+    test('returns null when the cookie is not set', async () => {
+      request.state = {};
+      expect(plugin._isAnalyticsCookiesEnabled.call(request)).to.be.null();
+    });
+
+    test('returns true when the cookie is accepted', async () => {
+      request.state = {
+        [constants.cookieName]: constants.accepted
+      };
+      expect(plugin._isAnalyticsCookiesEnabled.call(request)).to.be.true();
+    });
+
+    test('returns false when the cookie is rejected', async () => {
+      request.state = {
+        [constants.cookieName]: constants.rejected
+      };
+      expect(plugin._isAnalyticsCookiesEnabled.call(request)).to.be.false();
+    });
+  });
+
+  experiment('the setCookiePreferences toolkit method', () => {
+    experiment('when cookies are accepted', () => {
+      beforeEach(async () => {
+        plugin._setCookiePreferences.call(h, true);
+      });
+
+      test('sets the preferences cookie', async () => {
+        expect(h.state.calledWith(constants.cookieName, constants.accepted)).to.be.true();
+      });
+
+      test('does not unset any cookies', async () => {
+        expect(h.unstate.called).to.be.false();
+      });
+    });
+
+    experiment('when cookies are rejected', () => {
+      beforeEach(async () => {
+        plugin._setCookiePreferences.call(h, false);
+      });
+
+      test('sets the preferences cookie', async () => {
+        expect(h.state.calledWith(constants.cookieName, constants.rejected)).to.be.true();
+      });
+
+      test('unset any analytics cookies', async () => {
+        expect(h.unstate.calledWith('_ga')).to.be.true();
+        expect(h.unstate.calledWith('_gid')).to.be.true();
+        expect(h.unstate.calledWith('_gat')).to.be.true();
+        expect(h.unstate.calledWith('_gat_govuk_shared')).to.be.true();
       });
     });
   });

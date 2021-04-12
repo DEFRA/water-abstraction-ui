@@ -2,6 +2,8 @@ const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi
 const { expect } = require('@hapi/code');
 const sandbox = require('sinon').createSandbox();
 const controller = require('shared/plugins/cookie-message/controller');
+const constants = require('shared/plugins/cookie-message/lib/constants');
+
 const { findField } = require('../../../lib/form-test');
 
 experiment('plugins/cookie-message/controller', () => {
@@ -13,7 +15,8 @@ experiment('plugins/cookie-message/controller', () => {
     h = {
       view: sandbox.stub(),
       setCookiePreferences: sandbox.stub(),
-      postRedirectGet: sandbox.stub()
+      postRedirectGet: sandbox.stub(),
+      redirect: sandbox.stub()
     };
     request = {
       query: {
@@ -23,7 +26,8 @@ experiment('plugins/cookie-message/controller', () => {
       isAnalyticsCookiesEnabled: sandbox.stub(),
       yar: {
         get: sandbox.stub(),
-        set: sandbox.stub()
+        set: sandbox.stub(),
+        flash: sandbox.stub()
       }
     };
   });
@@ -145,6 +149,56 @@ experiment('plugins/cookie-message/controller', () => {
 
       test('redirects to the form page', async () => {
         expect(h.postRedirectGet.called).to.be.true();
+      });
+    });
+  });
+
+  experiment('.getSetCookiePreferences', () => {
+    experiment('when cookies are accepted', () => {
+      beforeEach(async () => {
+        request.query = {
+          redirectPath,
+          acceptAnalytics: true
+        };
+        await controller.getSetCookiePreferences(request, h);
+      });
+
+      test('sets the cookie preferences', async () => {
+        expect(h.setCookiePreferences.calledWith(true)).to.be.true();
+      });
+
+      test('sets the flash message', async () => {
+        expect(request.yar.flash.calledWith(
+          constants.flashMessageType, 'You’ve accepted analytics cookies.'
+        )).to.be.true();
+      });
+
+      test('redirects to the redirectPath', async () => {
+        expect(h.redirect.calledWith(redirectPath));
+      });
+    });
+
+    experiment('when cookies are rejected', () => {
+      beforeEach(async () => {
+        request.query = {
+          redirectPath,
+          acceptAnalytics: false
+        };
+        await controller.getSetCookiePreferences(request, h);
+      });
+
+      test('sets the cookie preferences', async () => {
+        expect(h.setCookiePreferences.calledWith(false)).to.be.true();
+      });
+
+      test('sets the flash message', async () => {
+        expect(request.yar.flash.calledWith(
+          constants.flashMessageType, 'You’ve rejected analytics cookies.'
+        )).to.be.true();
+      });
+
+      test('redirects to the redirectPath', async () => {
+        expect(h.redirect.calledWith(redirectPath));
       });
     });
   });

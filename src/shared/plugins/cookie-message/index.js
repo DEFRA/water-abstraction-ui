@@ -28,7 +28,7 @@ const isCookiesPage = request => request.path === '/cookies';
  */
 const getCurrentPath = request => isEmpty(request.query)
   ? request.path
-  : request.path + '?' + qs.stringify(request.query);
+  : `${request.path}?${qs.stringify(request.query)}`;
 
 /**
  * Gets the path to set the cookie preferences
@@ -68,11 +68,11 @@ const _handler = async (request, h) => {
   const [flashMessage] = request.yar.flash(constants.flashMessageType);
 
   set(request, 'view.cookieBanner', {
+    flashMessage,
     isAnalyticsCookiesEnabled: isEnabled,
     isVisible: (isEnabled === null) && !isCookiesPage(request),
     acceptPath: getPreferencesPath(request, 1),
     rejectPath: getPreferencesPath(request, 0),
-    flashMessage,
     cookiesPagePath: getCookiesPagePath(request)
   });
 

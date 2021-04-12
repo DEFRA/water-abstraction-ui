@@ -23,7 +23,7 @@ const getCookies = async (request, h) => {
     ...request.view,
     form,
     redirectPath,
-    isNotificationBannerVisible: form.isValid
+    isNotificationBannerVisible: !!form.isValid
   });
 };
 

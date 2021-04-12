@@ -9,28 +9,38 @@ const services = require('internal/lib/connectors/services');
 const controller = require('internal/modules/returns-reports/controller');
 const csv = require('internal/lib/csv-download');
 
+const futureReturnCycleId = 'future-return-cycle-id';
 const returnCycleId = 'test-id-1';
 
 const data = {
-  report: [{
-    id: returnCycleId,
-    dateRange: {
-      startDate: '2020-04-01',
-      endDate: '2021-03-31'
+  report: [
+    {
+      id: returnCycleId,
+      dateRange: {
+        startDate: '2020-04-01',
+        endDate: '2021-03-31'
+      }
+    }, {
+      id: 'test-id-2',
+      dateRange: {
+        startDate: '2019-04-01',
+        endDate: '2020-03-31'
+      }
+    }, {
+      id: 'test-id-3',
+      dateRange: {
+        startDate: '2018-04-01',
+        endDate: '2019-03-31'
+      }
+    },
+    {
+      id: futureReturnCycleId,
+      dateRange: {
+        startDate: '3020-04-01',
+        endDate: '3021-03-31'
+      }
     }
-  }, {
-    id: 'test-id-2',
-    dateRange: {
-      startDate: '2019-04-01',
-      endDate: '2020-03-31'
-    }
-  }, {
-    id: 'test-id-3',
-    dateRange: {
-      startDate: '2018-04-01',
-      endDate: '2019-03-31'
-    }
-  }],
+  ],
   returns: [{
     id: 'test-id',
     licenceRef: '01/123/ABC',
@@ -99,6 +109,11 @@ experiment('internal/modules/returns-reports/controller.js', () => {
       expect(cycles).to.be.an.array().length(2);
       expect(cycles[0].id).to.equal('test-id-2');
       expect(cycles[1].id).to.equal('test-id-3');
+    });
+
+    test('does not output future returns to the view', async () => {
+      const ids = h.view.lastCall.args[1].cycles.map(row => row.id);
+      expect(ids).to.not.include(futureReturnCycleId);
     });
   });
 

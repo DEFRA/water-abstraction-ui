@@ -3,7 +3,7 @@ const { chargeVersionWorkflowReviewer } = require('internal/lib/constants').scop
 const { hasScope } = require('internal/lib/permissions');
 const { deleteChargeInfo } = require('../forms');
 const services = require('../../../lib/connectors/services');
-
+const { sortBy } = require('lodash');
 const getChargeVersionWorkflowsByStatus = (workflows, status) =>
   workflows.filter(workflow => workflow.status === status);
 
@@ -19,7 +19,7 @@ const getChargeInformationWorkflow = async (request, h) => {
     back: '/manage',
     ...request.view,
     pageTitle: 'Charge information workflow',
-    licences: { toSetUp, review, changeRequest },
+    licences: { changeRequest, toSetUp, review: sortBy(review, ['chargeVersion.dateRange.startDate']) },
     licencesCounts: {
       toSetUp: toSetUp.length,
       review: review.length,

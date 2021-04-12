@@ -42,14 +42,14 @@ const getCookiesPagePath = request => `/cookies?${qs.stringify({ redirectPath: g
  * Pre handler sets cookie banner state in view
  */
 const _handler = async (request, h) => {
-  const isAnalyticsCookiesEnabled = request.isAnalyticsCookiesEnabled();
+  const isEnabled = request.isAnalyticsCookiesEnabled();
 
   // Get flash messages
   const [flashMessage] = request.yar.flash(constants.flashMessageType);
 
   set(request, 'view.cookieBanner', {
-    isAnalyticsCookiesEnabled,
-    isVisible: (isAnalyticsCookiesEnabled === null) && !isCookiesPage(request),
+    isAnalyticsCookiesEnabled: isEnabled,
+    isVisible: (isEnabled === null) && !isCookiesPage(request),
     acceptPath: getPreferencesPath(request, 1),
     rejectPath: getPreferencesPath(request, 0),
     flashMessage,
@@ -65,7 +65,7 @@ function isAnalyticsCookiesEnabled () {
     return true;
   }
   return value === constants.rejected ? false : null;
-};
+}
 
 function setCookiePreferences (isAnalyticsAccepted) {
   // Set preferences

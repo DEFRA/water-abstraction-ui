@@ -10,6 +10,10 @@ const server = require('../../../server-external');
 const routePath = `/licences/6e2118b7-fdce-49db-87f1-b2bade7bd8d0/contact`;
 
 lab.experiment('Check single licence - contact page', () => {
+  lab.before(async () => {
+    await server._start();
+  });
+
   lab.test('The page should redirect if unauthorised', async () => {
     const request = {
       method: 'GET',

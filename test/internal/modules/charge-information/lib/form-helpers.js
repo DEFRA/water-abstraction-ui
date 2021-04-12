@@ -44,18 +44,6 @@ experiment('internal/modules/charge-information/lib/form-helpers', () => {
     });
   });
 
-  experiment('.getActionUrl', () => {
-    test('returns the url as is when returnToCheckData query param is not present', async () => {
-      const actionUrl = formHelpers.getActionUrl(createRequest(), 'test-url');
-      expect(actionUrl).to.equal('test-url');
-    });
-
-    test('appends a query string to url when returnToCheckData query param is present', async () => {
-      const actionUrl = formHelpers.getActionUrl(createRequest({ query: { returnToCheckData: 1 } }), 'test-url');
-      expect(actionUrl).to.equal('test-url?returnToCheckData=1');
-    });
-  });
-
   experiment('.getChargeElementActionUrl', () => {
     const request = createRequest();
     const { licenceId, elementId } = request.params;

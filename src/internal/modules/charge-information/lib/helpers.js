@@ -16,11 +16,12 @@ const getPostedForm = (request, formContainer) => {
 
 const applyFormResponse = (request, form, actionCreator) => {
   const { licenceId } = request.params;
+  const { chargeVersionWorkflowId } = request.query;
   const action = actionCreator(request, getValues(form));
   const nextState = reducer(request.pre.draftChargeInformation, action);
   return isEmpty(nextState)
-    ? request.clearDraftChargeInformation(licenceId)
-    : request.setDraftChargeInformation(licenceId, nextState);
+    ? request.clearDraftChargeInformation(licenceId, chargeVersionWorkflowId)
+    : request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, nextState);
 };
 
 /**
@@ -35,10 +36,10 @@ const isUrlChargeInformationPage = url => {
 };
 
 const getRedirectPath = (request, nextPageInFlowUrl) => {
-  const { returnToCheckData } = request.query;
+  const { returnToCheckData, chargeVersionWorkflowId } = request.query;
   const isChargeInformationPage = isUrlChargeInformationPage(nextPageInFlowUrl);
-  if (returnToCheckData === 1 && isChargeInformationPage) {
-    return routing.getCheckData(request.params.licenceId);
+  if (returnToCheckData && isChargeInformationPage) {
+    return routing.getCheckData(request.params.licenceId, { chargeVersionWorkflowId });
   }
   return nextPageInFlowUrl;
 };
@@ -57,7 +58,7 @@ const createPostHandler = (formContainer, actionCreator, redirectPathFunc) => as
 
 const getDefaultView = (request, backLink, formContainer) => {
   const licence = request.pre.licence;
-  const back = isFunction(backLink) ? backLink(licence.id) : backLink;
+  const back = isFunction(backLink) ? backLink(licence.id, request.query) : backLink;
 
   const view = {
     ...request.view,

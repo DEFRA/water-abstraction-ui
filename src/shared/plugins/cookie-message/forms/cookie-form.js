@@ -22,6 +22,7 @@ const choices = [
  * @param {string} billRunType The type of bill run selected
   */
 const cookieForm = request => {
+  const { csrfToken } = request.view;
   const f = formFactory(request.path, 'POST');
 
   // Radio field should default to "No"
@@ -39,14 +40,22 @@ const cookieForm = request => {
     choices
   }, value));
   f.fields.push(fields.hidden('redirectPath', {}, request.query.redirectPath));
+
+  if (request.auth.credentials) {
+    f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
+  }
+
   f.fields.push(fields.button(null, { label: 'Save cookie settings' }));
 
   return f;
 };
 
-const cookieFormSchema = () => Joi.object({
+const cookieFormSchema = request => Joi.object({
   acceptAnalyticsCookies: Joi.boolean().required(),
-  redirectPath: Joi.string().allow('')
+  redirectPath: Joi.string().allow(''),
+  ...request.auth.credentials && {
+    csrf_token: Joi.string().guid().required()
+  }
 });
 
 exports.form = cookieForm;

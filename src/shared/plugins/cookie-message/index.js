@@ -124,7 +124,7 @@ function setCookiePreferences (isAnalyticsAccepted) {
 const getCookieOptions = () => ({
   isSecure: process.env.NODE_ENV !== 'local',
   isHttpOnly: true,
-  ttl: 28 * 24 * 60 * 60 * 1000,
+  ttl: 365 * 24 * 60 * 60 * 1000,
   isSameSite: 'Lax'
 });
 

@@ -64,7 +64,7 @@ experiment('plugins/cookie-message/index', () => {
         {
           isSecure: true,
           isHttpOnly: true,
-          ttl: 2419200000,
+          ttl: 365 * 24 * 60 * 60 * 1000,
           isSameSite: 'Lax'
         }
       )).to.be.true();

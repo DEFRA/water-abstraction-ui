@@ -204,12 +204,16 @@ const updateDraftChargeInformation = async (request, h) => {
 
   const preparedChargeInfo = prepareChargeInformation(id, draftChargeInformation);
   preparedChargeInfo.chargeVersion['status'] = 'draft';
-
+  const { user_id: userId, user_name: userName } = get(request, 'defra.user');
+  const patchObject = {
+    status: 'review',
+    approverComments: preparedChargeInfo.chargeVersion.approverComments,
+    chargeVersion: preparedChargeInfo.chargeVersion,
+    createdBy: { id: userId, email: userName }
+  };
   await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(
     preparedChargeInfo.chargeVersion.chargeVersionWorkflowId,
-    'review',
-    preparedChargeInfo.chargeVersion.approverComments,
-    preparedChargeInfo.chargeVersion
+    patchObject
   );
   const route = routing.getSubmitted(id, { chargeable: isChargeable });
   return h.redirect(route);
@@ -224,12 +228,15 @@ const submitDraftChargeInformation = async (request, h) => {
   if (isEmpty(chargeVersionWorkflowId)) {
     await services.water.chargeVersionWorkflows.postChargeVersionWorkflow(preparedChargeInfo);
   } else {
+    const patchObject = {
+      status: 'review',
+      approverComments: null,
+      chargeVersion: preparedChargeInfo.chargeVersion,
+      createdBy: { id: userId, email: userName }
+    };
     await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(
       chargeVersionWorkflowId,
-      'review',
-      null,
-      preparedChargeInfo.chargeVersion,
-      { id: userId, email: userName }
+      patchObject
     );
   }
   await applyFormResponse(request, {}, actions.clearData);

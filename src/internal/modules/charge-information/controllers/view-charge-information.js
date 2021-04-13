@@ -44,7 +44,6 @@ const getReviewChargeInformation = async (request, h) => {
   const isApprover = hasScope(request, chargeVersionWorkflowReviewer);
   const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount);
   const validatedDraftChargeVersion = chargeInformationValidator.addValidation(draftChargeInformation);
-
   return h.view('nunjucks/charge-information/view', {
     ...getDefaultView(request, backLink),
     pageTitle: `Check charge information`,
@@ -88,11 +87,16 @@ const postReviewChargeInformation = async (request, h) => {
     if (request.payload.reviewOutcome === 'approve') {
       await services.water.chargeVersions.postCreateFromWorkflow(request.params.chargeVersionWorkflowId);
     } else {
+      const { user_id: userId, user_name: userName } = get(request, 'defra.user');
+      const patchObject = {
+        status: request.payload.reviewOutcome,
+        approverComments: request.payload.reviewerComments,
+        chargeVersion: {},
+        createdBy: { id: userId, email: userName }
+      };
       await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(
         request.params.chargeVersionWorkflowId,
-        request.payload.reviewOutcome,
-        request.payload.reviewerComments,
-        {}
+        patchObject
       );
     }
     // Clear session

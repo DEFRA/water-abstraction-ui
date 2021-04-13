@@ -13,7 +13,7 @@ module.exports = {
         headers: Joi.object({
           authorization: Joi.string().required().example('Bearer {{JWT_TOKEN}}')
         }).unknown(true),
-        payload: {
+        payload: Joi.object({
           id: Joi.string().required().guid(),
           reference: Joi.any(),
           to: Joi.string(),
@@ -21,8 +21,10 @@ module.exports = {
           created_at: Joi.date().iso(),
           completed_at: Joi.date().iso(),
           sent_at: Joi.date().iso(),
-          notification_type: Joi.string().valid('sms', 'email')
-        }
+          notification_type: Joi.string().valid('sms', 'email'),
+          template_id: Joi.string().guid(),
+          template_version: Joi.number()
+        })
       }
     }
   }

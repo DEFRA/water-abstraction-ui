@@ -102,8 +102,8 @@ experiment('plugins/cookie-message/index', () => {
         expect(request.view.cookieBanner).to.equal({
           isAnalyticsCookiesEnabled: null,
           isVisible: true,
-          acceptPath: '/set-cookie-preferences?redirectPath=%2Ftest%2Fpath%3Ffoo%3Dbar&acceptAnalytics=1',
-          rejectPath: '/set-cookie-preferences?redirectPath=%2Ftest%2Fpath%3Ffoo%3Dbar&acceptAnalytics=0',
+          acceptPath: '/set-cookie-preferences?redirectPath=%2Ftest%2Fpath%3Ffoo%3Dbar&acceptAnalytics=true',
+          rejectPath: '/set-cookie-preferences?redirectPath=%2Ftest%2Fpath%3Ffoo%3Dbar&acceptAnalytics=false',
           flashMessage: undefined,
           cookiesPagePath: '/cookies?redirectPath=%2Ftest%2Fpath%3Ffoo%3Dbar'
         });

@@ -28,7 +28,9 @@ experiment('plugins/cookie-message/controller', () => {
         get: sandbox.stub(),
         set: sandbox.stub(),
         flash: sandbox.stub()
-      }
+      },
+      view: {},
+      auth: {}
     };
   });
 

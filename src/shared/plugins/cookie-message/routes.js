@@ -38,7 +38,7 @@ module.exports = {
       description: 'View cookie details and set choices',
       validate: {
         query: Joi.object({
-          acceptAnalytics: Joi.boolean().truthy('1').falsy('0'),
+          acceptAnalytics: Joi.boolean().truthy('true').falsy('false'),
           redirectPath: Joi.string().max(256).optional()
         })
       }

@@ -41,7 +41,7 @@ const getPreferencesPath = (request, isAccepted) => {
   const redirectPath = getCurrentPath(request);
   const query = qs.stringify({
     redirectPath,
-    acceptAnalytics: isAccepted
+    acceptAnalytics: isAccepted ? 'true' : 'false'
   });
   return `/set-cookie-preferences?${query}`;
 };

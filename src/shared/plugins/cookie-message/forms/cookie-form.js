@@ -31,6 +31,8 @@ const cookieForm = request => {
 
   f.fields.push(fields.radio('acceptAnalyticsCookies', {
     label: 'Do you want to accept analytics cookies?',
+    heading: true,
+    size: 'm',
     mapper: 'booleanMapper',
     errors: {
       'any.required': {

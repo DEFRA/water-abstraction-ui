@@ -1,10 +1,11 @@
 'use strict';
 
-const server = require('../../../../server-internal');
 const { expect } = require('@hapi/code');
-const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
+const { experiment, test, beforeEach, afterEach, before } = exports.lab = require('@hapi/lab').script();
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
+const serverFactory = require('../../../lib/server-factory');
+const routes = require('internal/modules/notifications/routes');
 
 const {
   getStep
@@ -13,6 +14,14 @@ const services = require('internal/lib/connectors/services');
 
 if (process.env.TEST_MODE) {
   experiment('findLastEmail', () => {
+    let server;
+
+    before(async () => {
+      server = await serverFactory.createServer(
+        routes.findEmailByAddress
+      );
+    });
+
     beforeEach(async () => {
       sandbox.stub(services.water.notifications, 'getLatestEmailByAddress');
     });

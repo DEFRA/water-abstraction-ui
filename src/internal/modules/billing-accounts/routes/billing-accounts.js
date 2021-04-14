@@ -31,7 +31,8 @@ module.exports = {
         }
       },
       pre: [
-        { method: preHandlers.loadBillingAccount, assign: 'billingAccount' }
+        { method: preHandlers.loadBillingAccount, assign: 'billingAccount' },
+        { method: preHandlers.getBillingAccountBills, assign: 'bills' }
       ]
     }
   }

@@ -27,8 +27,12 @@ const getBillingAccountRedirectLink = request => {
 };
 
 const getBillingAccount = (request, h) => {
-  const { billingAccount } = request.pre;
+  const { billingAccountId } = request.params;
+  const { billingAccount, bills } = request.pre;
   const { back } = request.query;
+
+  const moreBillsLink = (bills.pagination.pageCount > 1) &&
+    `/billing-accounts/${billingAccountId}/bills`;
 
   return h.view('nunjucks/billing-accounts/view', {
     ...request.view,
@@ -37,7 +41,9 @@ const getBillingAccount = (request, h) => {
     back,
     currentAddress: getCurrentAddress(billingAccount),
     billingAccount,
-    changeAddressLink: getBillingAccountRedirectLink(request)
+    changeAddressLink: getBillingAccountRedirectLink(request),
+    bills: bills.data,
+    moreBillsLink
   });
 };
 

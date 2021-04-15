@@ -1,0 +1,67 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "crm/company.njk" import company as crmCompany %}
+{% from "crm/address.njk" import address as crmAddress %}
+{% from "crm/contact.njk" import contact as crmContact %}
+{% from "forms/index.njk" import formRender,
+formErrorSummary %}
+
+{% block content %}
+ 
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+       {{ title(pageTitle, caption) }}
+
+      <section>
+        <dl class="govuk-summary-list">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Reissue from
+            </dt>
+            <dd class="govuk-summary-list__value">
+              {{ fromDate | date }}
+            </dd>
+            <dd class="govuk-summary-list__actions ">
+              <a class="govuk-link" href="{{ links.changeDate }}">
+                Change
+                <span class="govuk-visually-hidden">date</span>
+              </a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row ">
+            <dt class="govuk-summary-list__key">
+              Bills
+            </dt>
+            <dd class="govuk-summary-list__value">
+              <ul class="govuk-list">
+              {% for bill in bills %}
+              <li>{{ bill.invoiceNumber }}</li>
+              {% endfor %}
+              </ul>
+            </dd>
+            <dd class="govuk-summary-list__actions ">
+              <a class="govuk-link" href="{{ links.selectBills }}">
+                Change<span class="govuk-visually-hidden">
+                  bills</span>
+              </a>
+            </dd>
+          </div>
+
+          <div class="govuk-summary-list__row govuk-summary-list__row--last">
+            <dt class="govuk-summary-list__key">
+              Billing address
+            </dt>
+            <dd class="govuk-summary-list__value">
+            
+            </dd>
+            <dd class="govuk-summary-list__actions ">
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      {{ formRender(form) }}
+    </div>
+  </div>
+
+{% endblock %}

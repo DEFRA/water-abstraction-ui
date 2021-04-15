@@ -67,12 +67,30 @@ const getBillingAccountLicences = async request => {
 
 /**
  * Get sent invoices for the billing account
- * @return {Promise} { data, pagination }
+ * @return {Promise<Object>} { data, pagination }
  */
 const getBillingAccountBills = request => {
   const { billingAccountId } = request.params;
   const { page = 1, perPage = 10 } = request.query;
   return water.invoiceAccounts.getInvoiceAccountInvoices(billingAccountId, page, perPage);
+};
+
+/**
+ * @todo this needs to also filter out any bills that are themselves rebills
+ * @param {Object} bill
+ * @returns {Boolean}
+ */
+const isRebillableBill = bill =>
+  bill.batch.source === 'wrls';
+
+/**
+ * Gets a list of bills which can be re-billed for the current billing account
+ * @return {Promise<Array>}
+ */
+const getBillingAccountRebillableBills = async request => {
+  const { billingAccountId } = request.params;
+  const { data } = await water.invoiceAccounts.getInvoiceAccountInvoices(billingAccountId, 1, Number.MAX_SAFE_INTEGER);
+  return data.filter(isRebillableBill);
 };
 
 exports.loadBillingAccount = loadBillingAccount;
@@ -81,3 +99,4 @@ exports.getBillingAccounts = getBillingAccounts;
 exports.getAccount = getAccount;
 exports.getBillingAccountLicences = getBillingAccountLicences;
 exports.getBillingAccountBills = getBillingAccountBills;
+exports.getBillingAccountRebillableBills = getBillingAccountRebillableBills;

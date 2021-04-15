@@ -46,7 +46,8 @@ const getBillingAccount = (request, h) => {
     billingAccount,
     changeAddressLink: getBillingAccountRedirectLink(request),
     bills: bills.data,
-    moreBillsLink
+    moreBillsLink,
+    rebillingLink: `/billing-accounts/${billingAccountId}/rebilling`
   });
 };
 

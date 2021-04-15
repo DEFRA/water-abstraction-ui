@@ -1,6 +1,7 @@
 'use strict';
 
 const Joi = require('@hapi/joi');
+const { get } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms/');
 const routing = require('../lib/routing');
 
@@ -48,15 +49,18 @@ const reviewForm = (request, reviewOutcome, reviewComments) => {
   return f;
 };
 
-const reviewFormSchema = () => ({
-  csrf_token: Joi.string().uuid().required(),
-  approval_notice: Joi.any(),
-  reviewOutcome: Joi.string().required().allow('approve', 'changes_requested'),
-  reviewerComments: Joi.when('reviewOutcome', {
-    is: 'changes_requested',
-    then: Joi.string().required()
-  })
-});
+const reviewFormSchema = (request) => {
+  const draftChargeInformationStatus = get(request, 'pre.draftChargeInformation.status', null);
+  return {
+    csrf_token: Joi.string().uuid().required(),
+    approval_notice: Joi.any(),
+    reviewOutcome: draftChargeInformationStatus === 'changes_requested' ? Joi.string() : Joi.string().required().allow('approve', 'changes_requested'),
+    reviewerComments: Joi.when('reviewOutcome', {
+      is: 'changes_requested',
+      then: Joi.string().required()
+    })
+  };
+};
 
 exports.reviewForm = reviewForm;
 exports.reviewFormSchema = reviewFormSchema;

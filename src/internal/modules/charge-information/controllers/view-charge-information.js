@@ -55,6 +55,7 @@ const getReviewChargeInformation = async (request, h) => {
     isApprover,
     isChargeable,
     chargeVersionWorkflowId,
+    action: `/licences/${licence.id}/charge-information/check?chargeVersionWorkflowId=${request.params.chargeVersionWorkflowId}`,
     reviewForm: reviewForm(request)
   });
 };
@@ -68,7 +69,7 @@ const postReviewChargeInformation = async (request, h) => {
   const form = forms.handleRequest(
     reviewForm(request),
     request,
-    reviewFormSchema()
+    reviewFormSchema(request)
   );
   if (!form.isValid) {
     return h.view('nunjucks/charge-information/view', {

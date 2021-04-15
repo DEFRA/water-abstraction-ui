@@ -244,9 +244,10 @@ const submitDraftChargeInformation = async (request, h) => {
   return h.redirect(route);
 };
 
-const redirectToCancelPage = (request, h) =>
-  h.redirect(routing.getCancelData(request.params.licenceId));
-
+const redirectToCancelPage = (request, h) => {
+  const { chargeVersionWorkflowId } = request.query;
+  return h.redirect(routing.getCancelData(request.params.licenceId, { chargeVersionWorkflowId }));
+};
 const redirectToStartOfElementFlow = (request, h) => {
   const { licenceId } = request.params;
   // need to generate new id for new charge element
@@ -272,12 +273,11 @@ const postCheckData = async (request, h) => {
   return checkDataButtonActions[action](request, h);
 };
 
-const getCancelData = (request, h) =>
-  h.view('nunjucks/charge-information/cancel.njk', {
-    ...getDefaultView(request, routing.getCheckData, forms.deleteChargeInfo),
-    pageTitle: 'You\'re about to cancel this charge information',
-    draftChargeInformation: request.pre.draftChargeInformation
-  });
+const getCancelData = (request, h) => h.view('nunjucks/charge-information/cancel.njk', {
+  ...getDefaultView(request, routing.getCheckData, forms.deleteChargeInfo),
+  pageTitle: 'You\'re about to cancel this charge information',
+  draftChargeInformation: request.pre.draftChargeInformation
+});
 
 const postCancelData = async (request, h) => {
   const { licence, draftChargeInformation: { chargeVersionWorkflowId } } = request.pre;

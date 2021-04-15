@@ -11,3 +11,5 @@ jsconfig.json
 .DS_Store
 /temp/
 /driver-logs/wdio-chromedriver.log
+/cypress/videos/
+/cypress/screenshots/

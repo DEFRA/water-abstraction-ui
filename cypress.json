@@ -1,0 +1,12 @@
+{
+    "chromeWebSecurity": false,
+    "projectId": "tidgxq",
+    "baseUrl": "http://localhost:8008",
+    "env": {
+    },
+    "integrationFolder": "./cypress/integration",
+    "videosFolder": "./cypress/videos",
+    "screenshotsFolder": "./cypress/screenshots",
+    "supportFile": "./cypress/support/index.js",
+    "pluginsFile": "./cypress/plugins/index.js"
+}

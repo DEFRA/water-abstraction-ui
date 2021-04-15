@@ -49,7 +49,7 @@ const reviewForm = (request, reviewOutcome, reviewComments) => {
   return f;
 };
 
-const reviewFormSchema = (request) => {
+const reviewFormSchema = request => {
   const draftChargeInformationStatus = get(request, 'pre.draftChargeInformation.status', null);
   return {
     csrf_token: Joi.string().uuid().required(),

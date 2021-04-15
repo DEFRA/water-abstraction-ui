@@ -7,9 +7,9 @@ const routing = require('../lib/routing');
 const deleteChargeInformationForm = (request, isCancelData = true) => {
   const { csrfToken } = request.view;
   const chargeVersionWorkflowId = get(request, 'query.chargeVersionWorkflowId', null);
-
+  const qp = chargeVersionWorkflowId ? { chargeVersionWorkflowId } : null;
   const action = isCancelData
-    ? routing.getCancelData(request.params.licenceId, chargeVersionWorkflowId ? { chargeVersionWorkflowId } : null)
+    ? routing.getCancelData(request.params.licenceId, qp)
     : `/charge-information-workflow/${request.params.chargeVersionWorkflowId}/remove`;
   const f = formFactory(action, 'POST');
 

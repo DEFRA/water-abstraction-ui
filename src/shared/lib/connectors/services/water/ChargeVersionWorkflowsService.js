@@ -56,6 +56,8 @@ class ChargeVersionWorkflowsService extends ServiceClient {
     chargeVersion: {},
     createdBy: {}
   }) {
+    console.log('§§§§§§vvvvv');
+    console.log(chargeVersionWorkflowId);
     const { status, approverComments, chargeVersion, createdBy } = patchObject;
     const url = this.joinUrl('charge-version-workflows', chargeVersionWorkflowId);
     const body = {

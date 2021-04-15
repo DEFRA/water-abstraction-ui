@@ -26,6 +26,9 @@ const getBillingAccountRedirectLink = request => {
   return request.billingAccountEntryRedirect(data);
 };
 
+/**
+ * View billing account
+ */
 const getBillingAccount = (request, h) => {
   const { billingAccountId } = request.params;
   const { billingAccount, bills } = request.pre;
@@ -47,4 +50,24 @@ const getBillingAccount = (request, h) => {
   });
 };
 
+/**
+ * View all bills for billing account
+ */
+const getBillingAccountBills = (request, h) => {
+  const { billingAccountId } = request.params;
+  const { billingAccount, bills: { data: bills, pagination } } = request.pre;
+
+  return h.view('nunjucks/billing-accounts/view-bills', {
+    ...request.view,
+    caption: getBillingAccountCaption(billingAccount),
+    pageTitle: `Sent bills for ${titleCase(billingAccount.company.name)}`,
+    back: `/billing-accounts/${billingAccountId}`,
+    billingAccount,
+    bills,
+    pagination,
+    path: request.path
+  });
+};
+
 exports.getBillingAccount = getBillingAccount;
+exports.getBillingAccountBills = getBillingAccountBills;

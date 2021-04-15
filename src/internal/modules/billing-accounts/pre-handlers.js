@@ -67,9 +67,9 @@ const getBillingAccountLicences = async request => {
 
 /**
  * Get sent invoices for the billing account
- * @return {Promise}
+ * @return {Promise} { data, pagination }
  */
-const getBillingAccountBills = async request => {
+const getBillingAccountBills = request => {
   const { billingAccountId } = request.params;
   const { page = 1, perPage = 10 } = request.query;
   return water.invoiceAccounts.getInvoiceAccountInvoices(billingAccountId, page, perPage);

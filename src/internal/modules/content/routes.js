@@ -24,28 +24,6 @@ module.exports = {
     handler: controller.staticPage
   },
 
-  cookies: {
-    method: 'GET',
-    path: '/cookies',
-    config: {
-      description: 'Displays cookie information',
-      auth: {
-        strategy: 'standard',
-        mode: 'try'
-      },
-      plugins: {
-        viewContext: {
-          pageTitle: 'Cookies',
-          back: '/licences'
-        },
-        config: {
-          view: 'nunjucks/content/cookies'
-        }
-      }
-    },
-    handler: controller.staticPage
-  },
-
   feedback: {
     method: 'GET',
     path: '/feedback',

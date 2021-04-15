@@ -1,4 +1,4 @@
-describe('Page loading', () => {
+describe('Page title verification', () => {
   it('the login page loads', () => {
     cy.visit(Cypress.env('USER_URI'));
 

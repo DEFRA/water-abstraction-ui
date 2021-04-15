@@ -1,6 +1,6 @@
 const { setUp, tearDown } = require('../../support/setup');
 
-describe('User Login', () => {
+describe('User Login and Log out', () => {
   before(() => {
     tearDown();
     setUp('barebones');
@@ -10,7 +10,7 @@ describe('User Login', () => {
     tearDown();
   });
 
-  it('Try to login', () => {
+  it('User login and logout', () => {
     //  cy.visit to visit the URL
     cy.visit(Cypress.env('USER_URI'));
 
@@ -33,6 +33,6 @@ describe('User Login', () => {
     cy.get('#signout').click();
 
     //  assert the signout
-    cy.contains('You are signed out');
+    cy.contains('You are signed out').should('be.visible');
   });
 });

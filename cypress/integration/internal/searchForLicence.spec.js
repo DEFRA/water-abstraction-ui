@@ -1,6 +1,6 @@
 const { setUp, tearDown } = require('../../support/setup');
 
-describe('User Login', () => {
+describe('search for licences as internal user', () => {
   before(() => {
     tearDown();
     setUp('billing-data');
@@ -10,7 +10,7 @@ describe('User Login', () => {
     tearDown();
   });
 
-  it('Try to login', () => {
+  it('user logs in and searches for a License', () => {
     // cy.visit to visit the URL
     cy.visit(Cypress.env('ADMIN_URI'));
 
@@ -28,8 +28,13 @@ describe('User Login', () => {
 
     // search for a license
     cy.get('#query').type('Anglian').should('be.visible');
-
     cy.get('.search__button').click();
-    cy.contains('Licences');
+    cy.contains('Licences').should('be.visible');
+
+    //  Click Sign out Button
+    cy.get('#signout').click();
+
+    //  assert the signout
+    cy.contains('You are signed out');
   });
 });

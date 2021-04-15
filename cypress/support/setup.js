@@ -3,10 +3,6 @@
 /**
  * Contains methods to set up/tear down acceptance test data in water service
  */
-const rp = require('request-promise-native').defaults({
-  proxy: null,
-  strictSSL: false
-});
 const urlJoin = require('url-join');
 
 /**

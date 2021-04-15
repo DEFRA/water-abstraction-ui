@@ -16,6 +16,7 @@ const createServer = async (route) => {
     ...config.hapiAuthCookie,
     validateFunc: () => {}
   });
+  server.auth.default('standard');
 
   if (route) {
     server.route(route);
@@ -24,4 +25,10 @@ const createServer = async (route) => {
   return server;
 };
 
+const createRouteWithNoOpHandler = route => ({
+  ...route,
+  handler: () => 'ok'
+});
+
 exports.createServer = createServer;
+exports.createRouteWithNoOpHandler = createRouteWithNoOpHandler;

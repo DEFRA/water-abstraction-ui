@@ -62,7 +62,6 @@ const getBillingAccountBills = (request, h) => {
     caption: getBillingAccountCaption(billingAccount),
     pageTitle: `Sent bills for ${titleCase(billingAccount.company.name)}`,
     back: `/billing-accounts/${billingAccountId}`,
-    billingAccount,
     bills,
     pagination,
     path: request.path

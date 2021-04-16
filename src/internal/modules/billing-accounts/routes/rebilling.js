@@ -9,10 +9,10 @@ const allowedScopes = [manageBillingAccounts];
 const { createRoutePair } = require('shared/lib/route-helpers');
 
 const getOptions = description => ({
+  description,
   auth: {
     scope: allowedScopes
   },
-  description,
   plugins: {
     viewContext: {
       activeNavLink: 'view'

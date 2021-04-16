@@ -12,7 +12,7 @@ const getMostRecentBill = bills =>
 
 const getMaxDate = bills => {
   const mostRecentBill = getMostRecentBill(bills);
-  return moment(mostRecentBill.dateCreated);
+  return moment(mostRecentBill.batch.dateCreated);
 };
 
 /**
@@ -42,8 +42,8 @@ const form = request => {
       'any.required': {
         message: 'Enter a date'
       },
-      'date.base': {
-        message: 'Enter real date'
+      'date.isoDate': {
+        message: 'Enter a real date'
       },
       'date.max': {
         message: `Enter a date on or before ${maxDate}`
@@ -60,7 +60,7 @@ const form = request => {
 const schema = request => {
   const maxDate = getMaxDate(request.pre.rebillableBills).format('YYYY-MM-DD');
   return Joi.object({
-    fromDate: Joi.date().max(maxDate).required(),
+    fromDate: Joi.date().iso().max(maxDate).required(),
     csrf_token: Joi.string().guid().required()
   });
 };

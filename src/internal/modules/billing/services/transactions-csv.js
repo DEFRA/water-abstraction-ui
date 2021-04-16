@@ -13,17 +13,26 @@ const getAbsStartAndEnd = absPeriod => ({
   'Abstraction period end date': moment().month(absPeriod.endMonth - 1).date(absPeriod.endDay).format('D MMM')
 });
 
-const getAgreementsString = agreements => agreements.map(agreement => agreement.code).join(', ');
+const findAgreementValue = (agreements, code) => {
+  const value = (agreements || []).filter(agreement => agreement.code.indexOf(code) > -1);
+  return value && value.length > 0 ? `S${value[0].code}` : null;
+};
 
 const getChargeElementData = trans => {
   if (trans.isMinimumCharge) return {};
   return {
-    'Authorised annual quantity': trans.chargeElement.authorisedAnnualQuantity,
-    'Billable annual quantity': trans.chargeElement.billableAnnualQuantity,
-    'Source': trans.chargeElement.source,
-    'Adjusted source': trans.chargeElement.eiucSource,
+    'Standard Unit Charge (SUC) (£/1000 cubic metres)': trans.calcSucFactor,
+    'Environmental Improvement Unit Charge (EIUC) (£/1000 cubic metres)': trans.calcEiucFactor,
+    'Authorised annual quantity (megalitres)': trans.chargeElement.authorisedAnnualQuantity,
+    'Billable annual quantity (megalitres)': trans.chargeElement.billableAnnualQuantity,
+    'Source type': trans.chargeElement.source,
+    'Source factor': trans.calcSourceFactor,
+    'Adjusted source type': trans.chargeElement.eiucSource,
+    'Adjusted source factor': trans.calcEiucSourceFactor,
     'Season': trans.chargeElement.season,
+    'Season factor': trans.calcSeasonFactor,
     'Loss': trans.chargeElement.loss,
+    'Loss factor': trans.calcLossFactor,
     'Purpose code': trans.chargeElement.purposeUse.code,
     'Purpose name': trans.chargeElement.purposeUse.name,
     ...getAbsStartAndEnd(trans.chargeElement.abstractionPeriod)
@@ -34,13 +43,18 @@ const getTransactionData = trans => ({
   description: trans.description,
   'Compensation charge': trans.isCompensationCharge ? 'Y' : 'N',
   ...getChargeElementData(trans),
-  'Agreement code': getAgreementsString(trans.agreements),
   'Charge period start date': trans.chargePeriod.startDate,
   'Charge period end date': trans.chargePeriod.endDate,
   'Authorised days': trans.authorisedDays,
   'Billable days': trans.billableDays,
   'Calculated quantity': trans.billingVolume ? trans.billingVolume.calculatedVolume : null,
-  'Quantity': trans.volume
+  'Quantity': trans.volume,
+  'S126 agreement (Y/N)': trans.calcS126FactorValue ? 'Y' : 'N',
+  'S126 agreement value': trans.calcS126FactorValue || null,
+  'S127 agreement (Y/N)': trans.calcS127FactorValue ? 'Y' : 'N',
+  'S127 agreement value': trans.calcS127FactorValue || null,
+  'S130 agreement': findAgreementValue(trans.agreements, '130'),
+  'S130 agreement value': null
 });
 
 const getInvoiceAccountData = invoiceAccount => ({
@@ -98,6 +112,7 @@ const createCSV = async (invoices, chargeVersions) => {
     invoice.invoiceLicences.forEach(invLic => {
       const { isDeMinimis } = invoice;
       invLic.transactions.forEach(trans => {
+        console.log(trans);
         const { description, ...transactionData } = getTransactionData(trans);
         const csvLine = {
           ...getInvoiceAccountData(invoice.invoiceAccount),

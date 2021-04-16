@@ -70,7 +70,7 @@ const getCheckAnswers = (request, h) => {
   return h.view('nunjucks/billing-accounts/rebilling-check-answers', {
     ...request.view,
     back: `/billing-accounts/${request.params.billingAccountId}/rebilling`,
-    form: forms.confirm.form(request),
+    form: forms.confirm.form(request, 'Confirm'),
     fromDate,
     bills: getSelectedBills(request),
     pageTitle: getCheckAnswersPageTitle(request),

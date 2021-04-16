@@ -11,6 +11,7 @@ const sandbox = require('sinon').createSandbox();
 const uuid = require('uuid').v4;
 
 const controller = require('internal/modules/billing-accounts/controllers/rebilling');
+const services = require('internal/lib/connectors/services');
 
 const billingAccountId = 'test-billing-account-id';
 const accountNumber = 'A00000000A';
@@ -69,11 +70,16 @@ const createRequest = () => ({
         dateCreated: '2020-01-01 15:33:21',
         type: 'supplementary'
       }
-    }]
+    }],
+    rebillingState: {
+      fromDate: '2019-01-01',
+      selectedBillIds: [ 'test-bill-id-1' ]
+    }
   },
   yar: {
     get: sandbox.stub(),
-    set: sandbox.stub()
+    set: sandbox.stub(),
+    clear: sandbox.stub()
   }
 });
 
@@ -86,6 +92,8 @@ experiment('internal/modules/billing-accounts/controllers/rebilling', () => {
       postRedirectGet: sandbox.stub(),
       redirect: sandbox.stub()
     };
+
+    sandbox.stub(services.water.billingInvoices, 'patchFlagForRebilling');
   });
   afterEach(async () => sandbox.restore());
 
@@ -234,12 +242,136 @@ experiment('internal/modules/billing-accounts/controllers/rebilling', () => {
         await controller.postRebillingStartDate(request, h);
       });
 
+      test('the state is stored in the session', async () => {
+        const [key, state] = request.yar.set.lastCall.args;
+        expect(key).to.equal(`rebilling.${billingAccountId}`);
+        expect(state).to.equal({
+          fromDate: '2019-01-01',
+          selectedBillIds: [ 'test-bill-id-1' ]
+        });
+      });
+
       test('the user is redirected to the check answers page', async () => {
         expect(h.postRedirectGet.called).to.be.false();
         expect(h.redirect.calledWith(
           `/billing-accounts/${billingAccountId}/rebilling/check-answers`
         )).to.be.true();
       });
+    });
+  });
+
+  experiment('.getCheckAnswers', () => {
+    experiment('when there is 1 bill selected', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        await controller.getCheckAnswers(request, h);
+      });
+
+      test('uses the correct template', async () => {
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/billing-accounts/rebilling-check-answers');
+      });
+
+      test('sets a back link', async () => {
+        const [, { back }] = h.view.lastCall.args;
+        expect(back).to.equal(`/billing-accounts/${billingAccountId}/rebilling`);
+      });
+
+      test('sets a form', async () => {
+        const [, { form }] = h.view.lastCall.args;
+        expect(form).to.be.an.object();
+      });
+
+      test('sets a page title', async () => {
+        const [, { pageTitle }] = h.view.lastCall.args;
+        expect(pageTitle).to.equal('There is 1 bill available for reissue to Test Company');
+      });
+
+      test('sets a caption', async () => {
+        const [, { caption }] = h.view.lastCall.args;
+        expect(caption).to.equal(`Billing account ${accountNumber}`);
+      });
+
+      test('the form defines a csrf token field', async () => {
+        const [, { form }] = h.view.lastCall.args;
+        const field = findField(form, 'csrf_token');
+        expect(field.value).to.equal(csrfToken);
+      });
+
+      test('the form defines a button', async () => {
+        const [, { form }] = h.view.lastCall.args;
+        const field = findButton(form);
+        expect(field.options.label).to.equal('Confirm');
+      });
+
+      test('sets a links to change selected values', async () => {
+        const [, { links }] = h.view.lastCall.args;
+        expect(links.changeDate).to.equal(`/billing-accounts/${billingAccountId}/rebilling`);
+        expect(links.selectBills).to.equal(`/billing-accounts/${billingAccountId}/rebilling/select-bills`);
+      });
+
+      test('sets the current billing account address', async () => {
+        const [, { currentAddress }] = h.view.lastCall.args;
+        expect(currentAddress).to.equal(request.pre.billingAccount.invoiceAccountAddresses[1]);
+      });
+
+      test('sets the billing account', async () => {
+        const [, { billingAccount }] = h.view.lastCall.args;
+        expect(billingAccount).to.equal(request.pre.billingAccount);
+      });
+    });
+
+    experiment('when there are 2 or more bills selected', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.pre.rebillingState.selectedBillIds = [ 'test-bill-id-1', 'test-bill-id-1' ];
+        await controller.getCheckAnswers(request, h);
+      });
+
+      test('sets a plural page title', async () => {
+        const [, { pageTitle }] = h.view.lastCall.args;
+        expect(pageTitle).to.equal('There are 2 bills available for reissue to Test Company');
+      });
+    });
+  });
+
+  experiment('.postCheckAnswers', () => {
+    beforeEach(async () => {
+      request = createRequest();
+      await controller.postCheckAnswers(request, h);
+    });
+
+    test('uses the correct template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/billing-accounts/rebilling-confirmation');
+    });
+
+    test('calls the API endpoint for each invoice selected', async () => {
+      expect(services.water.billingInvoices.patchFlagForRebilling.callCount).to.equal(1);
+      expect(services.water.billingInvoices.patchFlagForRebilling.calledWith(
+        'test-bill-id-1'
+      )).to.be.true();
+    });
+
+    test('clears the session storage', async () => [
+      expect(request.yar.clear.calledWith(
+        `rebilling.${billingAccountId}`
+      )).to.be.true()
+    ]);
+
+    test('sets a page title', async () => {
+      const [, { pageTitle }] = h.view.lastCall.args;
+      expect(pageTitle).to.equal('You’ve marked 1 bill for reissue');
+    });
+
+    test('sets a bill count', async () => {
+      const [, { billCount }] = h.view.lastCall.args;
+      expect(billCount).to.equal(1);
+    });
+
+    test('sets a list of bills affected', async () => {
+      const [, { bills }] = h.view.lastCall.args;
+      expect(bills).to.be.an.array().length(1);
     });
   });
 });

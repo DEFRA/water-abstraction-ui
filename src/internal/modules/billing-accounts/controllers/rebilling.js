@@ -92,7 +92,7 @@ const postCheckAnswers = async (request, h) => {
 
   // Patch invoices in water service to flag for re-billing
   const { rebillingState: { selectedBillIds } } = request.pre;
-  for (let id of selectedBillIds) {
+  for (const id of selectedBillIds) {
     await services.water.billingInvoices.patchFlagForRebilling(id);
   }
 

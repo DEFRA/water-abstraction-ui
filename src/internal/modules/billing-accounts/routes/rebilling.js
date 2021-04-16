@@ -8,73 +8,41 @@ const allowedScopes = [manageBillingAccounts];
 
 const { createRoutePair } = require('shared/lib/route-helpers');
 
-const pre = [
-  { method: preHandlers.getRebillingState, assign: 'rebillingState' },
-  { method: preHandlers.loadBillingAccount, assign: 'billingAccount' },
-  { method: preHandlers.getBillingAccountRebillableBills, assign: 'rebillableBills' }
-];
+const getOptions = description => ({
+  auth: {
+    scope: allowedScopes
+  },
+  description,
+  plugins: {
+    viewContext: {
+      activeNavLink: 'view'
+    }
+  },
+  validate: {
+    params: {
+      billingAccountId: VALID_GUID
+    }
+  },
+  pre: [
+    { method: preHandlers.getRebillingState, assign: 'rebillingState' },
+    { method: preHandlers.loadBillingAccount, assign: 'billingAccount' },
+    { method: preHandlers.getBillingAccountRebillableBills, assign: 'rebillableBills' }
+  ]
+});
 
 module.exports = {
   ...createRoutePair(controller, 'rebillingStartDate', {
     path: '/billing-accounts/{billingAccountId}/rebilling',
-    options: {
-      auth: {
-        scope: allowedScopes
-      },
-      description: 'Get the start date for re-billing',
-      plugins: {
-        viewContext: {
-          activeNavLink: 'view'
-        }
-      },
-      validate: {
-        params: {
-          billingAccountId: VALID_GUID
-        }
-      },
-      pre
-    }
+    options: getOptions('Get the start date for re-billing')
   }),
 
   ...createRoutePair(controller, 'checkAnswers', {
     path: '/billing-accounts/{billingAccountId}/rebilling/check-answers',
-    options: {
-      auth: {
-        scope: allowedScopes
-      },
-      description: 'Check answers for re-billing',
-      plugins: {
-        viewContext: {
-          activeNavLink: 'view'
-        }
-      },
-      validate: {
-        params: {
-          billingAccountId: VALID_GUID
-        }
-      },
-      pre
-    }
+    options: getOptions('Check answers for re-billing')
   }),
 
   ...createRoutePair(controller, 'selectBills', {
     path: '/billing-accounts/{billingAccountId}/rebilling/select-bills',
-    options: {
-      auth: {
-        scope: allowedScopes
-      },
-      description: 'Select bills for re-billing',
-      plugins: {
-        viewContext: {
-          activeNavLink: 'view'
-        }
-      },
-      validate: {
-        params: {
-          billingAccountId: VALID_GUID
-        }
-      },
-      pre
-    }
+    options: getOptions('Select bills for re-billing')
   })
 };

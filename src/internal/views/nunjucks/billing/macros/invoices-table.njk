@@ -188,6 +188,10 @@
       <a href="/billing/batch/{{ row.batch.id }}/invoice/{{ row.invoice.id }}">
         {{row.invoice.displayLabel}}
       </a>
+
+      {% if row.invoice.isFlaggedForRebilling %}
+      <p class="govuk-body-s govuk-!-margin-bottom-0">Marked for reissue</p>
+      {% endif %}
     </td>
   {% endmacro %}
 

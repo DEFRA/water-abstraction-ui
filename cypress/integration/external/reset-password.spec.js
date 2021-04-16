@@ -1,5 +1,3 @@
-import '../../support/notifications';
-const { getPersonalisation } = require('../../support/notifications');
 const { setUp, tearDown } = require('../../support/setup');
 
 describe('Reset password', () => {
@@ -47,23 +45,17 @@ describe('Reset password', () => {
 
   it('clicks the link in the confirmation email', () => {
     cy.fixture('users.json').then(users => {
-      const email = getPersonalisation(Cypress.env('USER_URI'), users.external, 'reset_url');
-      cy.log(email);
-
-      const lastNotification = email ? email.body ? email.body.data[0] : {} : {};
-
-      const personalisation = lastNotification ? lastNotification.personalisation ? lastNotification.personalisation['reset_url'] : null : null;
-      cy.visit(personalisation);
-    });
-
-    // const resetUrl = await getPersonalisation(baseUrl, EMAIL_ADDRESS, 'reset_url');
-    // const pageTitle = await getPageTitle();
-
-    // browser.url(resetUrl);
-    // expect(browser).toHaveUrlContaining('/reset_password_change_password?');
-    // expect(pageTitle).toHaveText('Change your password');
+      cy.getPasswordResetUrl(Cypress.env('USER_URI'), users.external, 'reset_url').then(response => {
+        console.log(response);
+        cy.visit(response);
+      });
+    }
+    );
   });
 
+  it('checks the page title is visible and correct', () => {
+    cy.contains('Change your password').should('be.visible');
+  });
   /*
   it('shows the change password fields', async () => {
     const passwordFieldLabel = await $('label[for="password"]');

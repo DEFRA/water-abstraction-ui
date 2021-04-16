@@ -85,6 +85,7 @@
     "ajv": "^6.12.3",
     "app-module-path": "^2.2.0",
     "archiver": "^3.1.1",
+    "axios": "^0.21.1",
     "blankie": "^4.1.1",
     "blipp": "^4.0.1",
     "bluebird": "^3.7.2",

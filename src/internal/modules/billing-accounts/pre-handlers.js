@@ -5,6 +5,7 @@ const { get } = require('lodash');
 const { water } = require('../../lib/connectors/services');
 
 const session = require('./lib/session');
+const rebillingStore = require('./lib/rebilling/store');
 
 const errorHandler = (err, message) => {
   if (err.statusCode === 404) {
@@ -100,3 +101,4 @@ exports.getAccount = getAccount;
 exports.getBillingAccountLicences = getBillingAccountLicences;
 exports.getBillingAccountBills = getBillingAccountBills;
 exports.getBillingAccountRebillableBills = getBillingAccountRebillableBills;
+exports.getRebillingState = rebillingStore.getState;

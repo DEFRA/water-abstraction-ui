@@ -1,10 +1,6 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
-{% from "crm/company.njk" import company as crmCompany %}
-{% from "crm/address.njk" import address as crmAddress %}
-{% from "crm/contact.njk" import contact as crmContact %}
-{% from "forms/index.njk" import formRender,
-formErrorSummary %}
+{% from "crm/invoice-address.njk" import invoiceAddress %}
+{% from "forms/index.njk" import formRender %}
 
 {% block content %}
  
@@ -52,9 +48,11 @@ formErrorSummary %}
               Billing address
             </dt>
             <dd class="govuk-summary-list__value">
-            
+              {{ invoiceAddress(currentAddress, billingAccount.company) }}
             </dd>
             <dd class="govuk-summary-list__actions ">
+              Last updated:
+              <br />{{ currentAddress.dateRange.startDate | date }}
             </dd>
           </div>
         </dl>

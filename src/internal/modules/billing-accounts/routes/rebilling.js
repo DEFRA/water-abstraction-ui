@@ -27,6 +27,7 @@ module.exports = {
         }
       },
       pre: [
+        { method: preHandlers.getRebillingState, assign: 'rebillingState' },
         { method: preHandlers.loadBillingAccount, assign: 'billingAccount' },
         { method: preHandlers.getBillingAccountRebillableBills, assign: 'rebillableBills' }
       ]
@@ -51,6 +52,32 @@ module.exports = {
         }
       },
       pre: [
+        { method: preHandlers.getRebillingState, assign: 'rebillingState' },
+        { method: preHandlers.loadBillingAccount, assign: 'billingAccount' },
+        { method: preHandlers.getBillingAccountRebillableBills, assign: 'rebillableBills' }
+      ]
+    }
+  }),
+
+  ...createRoutePair(controller, 'selectBills', {
+    path: '/billing-accounts/{billingAccountId}/rebilling/select-bills',
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      description: 'Select bills for re-billing',
+      plugins: {
+        viewContext: {
+          activeNavLink: 'view'
+        }
+      },
+      validate: {
+        params: {
+          billingAccountId: VALID_GUID
+        }
+      },
+      pre: [
+        { method: preHandlers.getRebillingState, assign: 'rebillingState' },
         { method: preHandlers.loadBillingAccount, assign: 'billingAccount' },
         { method: preHandlers.getBillingAccountRebillableBills, assign: 'rebillableBills' }
       ]

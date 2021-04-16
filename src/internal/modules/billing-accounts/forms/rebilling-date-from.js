@@ -2,10 +2,8 @@
 
 const { isoToReadable } = require('@envage/water-abstraction-helpers').nald.dates;
 const moment = require('moment');
-const { sortBy } = require('lodash');
+const { sortBy, get } = require('lodash');
 const Joi = require('@hapi/joi');
-
-const session = require('../lib/rebilling/session');
 
 const { formFactory, fields } = require('shared/lib/forms/');
 
@@ -21,7 +19,7 @@ const getMaxDate = bills => {
  * Gets form to select agreement signed date
  */
 const form = request => {
-  const { fromDate } = session.getData(request);
+  const fromDate = get(request.pre.rebillingState, 'fromDate');
 
   const { csrfToken } = request.view;
 

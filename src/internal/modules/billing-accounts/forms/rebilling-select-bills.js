@@ -41,7 +41,6 @@ const form = request => {
     hint: `Bills created on or after ${isoToReadable(fromDate)}`,
     heading: true,
     size: 'l',
-    type: 'date',
     mapper: 'arrayMapper',
     controlClass: 'form-control form-control--small',
     choices: selectableBills.map(mapBillToChoice),

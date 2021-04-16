@@ -374,4 +374,121 @@ experiment('internal/modules/billing-accounts/controllers/rebilling', () => {
       expect(bills).to.be.an.array().length(1);
     });
   });
+
+  experiment('.getSelectBills', () => {
+    beforeEach(async () => {
+      request = createRequest();
+      await controller.getSelectBills(request, h);
+    });
+
+    test('uses the correct template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/form');
+    });
+
+    test('sets a back link', async () => {
+      const [, { back }] = h.view.lastCall.args;
+      expect(back).to.equal(`/billing-accounts/${billingAccountId}/check-answers`);
+    });
+
+    test('sets a form', async () => {
+      const [, { form }] = h.view.lastCall.args;
+      expect(form).to.be.an.object();
+    });
+
+    test('sets a page title', async () => {
+      const [, { pageTitle }] = h.view.lastCall.args;
+      expect(pageTitle).to.equal('Select the bills you need to reissue');
+    });
+
+    test('the form defines a checkbox field', async () => {
+      const [, { form }] = h.view.lastCall.args;
+      const field = findField(form, 'selectedBillIds');
+      expect(field.options.label).to.equal('Select the bills you need to reissue');
+      expect(field.options.caption).to.equal(`Billing account ${accountNumber}`);
+      expect(field.options.hint).to.equal(`Bills created on or after 1 January 2019`);
+      expect(field.options.heading).to.be.true();
+      expect(field.options.size).to.equal('l');
+      expect(field.options.mapper).to.equal('arrayMapper');
+      expect(field.options.widget).to.equal('checkbox');
+    });
+
+    test('the date field has the correct error messages', async () => {
+      const [, { form }] = h.view.lastCall.args;
+      const field = findField(form, 'selectedBillIds');
+      expect(field.options.errors).to.equal({
+        'array.min': { message: 'Select the bills you need to reissue' }
+      });
+    });
+
+    test('the form defines a csrf token field', async () => {
+      const [, { form }] = h.view.lastCall.args;
+      const field = findField(form, 'csrf_token');
+      expect(field.value).to.equal(csrfToken);
+    });
+
+    test('the form defines a button', async () => {
+      const [, { form }] = h.view.lastCall.args;
+      const field = findButton(form);
+      expect(field.options.label).to.equal('Continue');
+    });
+  });
+
+  experiment('.postSelectBills', () => {
+    experiment('when no checkboxes are selected', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.method = 'post';
+        request.payload = {
+          csrf_token: csrfToken
+        };
+        await controller.postSelectBills(request, h);
+      });
+
+      test('the user is redirected to the form with errors', async () => {
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+
+      test('the correct error message is set', async () => {
+        const { errors } = h.postRedirectGet.lastCall.args[0];
+        expect(errors[0].name).to.equal('selectedBillIds');
+        expect(errors[0].message).to.equal('Select the bills you need to reissue');
+      });
+    });
+
+    experiment('when checkboxes are selected', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.method = 'post';
+        request.payload = {
+          csrf_token: csrfToken,
+          selectedBillIds: ['test-bill-id-1']
+        };
+        request.yar.get.returns({
+          fromDate: '2019-01-01'
+        });
+        await controller.postSelectBills(request, h);
+      });
+
+      test('the user is not redirected to the form', async () => {
+        expect(h.postRedirectGet.called).to.be.false();
+      });
+
+      test('the state is stored in the session', async () => {
+        const [key, state] = request.yar.set.lastCall.args;
+        expect(key).to.equal(`rebilling.${billingAccountId}`);
+        expect(state).to.equal({
+          fromDate: '2019-01-01',
+          selectedBillIds: [ 'test-bill-id-1' ]
+        });
+      });
+
+      test('the user is redirected to the check answers page', async () => {
+        expect(h.postRedirectGet.called).to.be.false();
+        expect(h.redirect.calledWith(
+          `/billing-accounts/${billingAccountId}/rebilling/check-answers`
+        )).to.be.true();
+      });
+    });
+  });
 });

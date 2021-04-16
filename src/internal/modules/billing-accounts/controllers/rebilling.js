@@ -97,14 +97,18 @@ const postCheckAnswers = async (request, h) => {
     await services.water.billingInvoices.patchFlagForRebilling(id);
   }
 
-  const billCount = selectedBillIds.length;
+  const bills = getSelectedBills(request);
+  const billCount = bills.length;
+
+  // Clear the session 
+  store.clearState(request);
 
   // Display confirmation page
   return h.view('nunjucks/billing-accounts/rebilling-confirmation', {
     ...request.view,
-    bills: getSelectedBills(request),
-    pageTitle: `You’ve marked ${ billCount } ${ pluralize('bill', billCount) } for reissue`,
+    bills,
     billCount,
+    pageTitle: `You’ve marked ${ billCount } ${ pluralize('bill', billCount) } for reissue`,
     links: {
       billingAccount: `/billing-accounts/${billingAccountId}`,
       createBillRun: `/billing/batch/type`

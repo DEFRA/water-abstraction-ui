@@ -1,0 +1,43 @@
+{% from 'nunjucks/billing/macros/invoices-table.njk' import invoiceLink, dateCreatedCell, batchTypeCell, billRunNumberCell, financialYearFromInvoiceCell, amountCell %}
+
+{% macro tableHeader() %}
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">Bill number</th>
+      <th class="govuk-table__header" scope="col">Date created</th>
+      <th class="govuk-table__header" scope="col">Bill run type</th>
+      <th class="govuk-table__header govuk-table__header--numeric" scope="col">Bill run number</th>
+      <th class="govuk-table__header govuk-table__header--numeric" scope="col">Financial year</th>
+      <th class="govuk-table__header govuk-table__header--numeric" scope="col">Bill total</th>
+    </tr>
+  </thead>
+{% endmacro %}
+
+{% macro tableRow(bill) %}
+  {% set row = { invoice : bill, batch: bill.batch } %}
+
+  <tr class="govuk-table__row">
+      {{ invoiceLink(row) }}
+      {{ dateCreatedCell(row) }}
+      {{ batchTypeCell(bill.batch) }}
+      {{ billRunNumberCell(bill.batch) }}
+      {{ financialYearFromInvoiceCell(bill) }}
+      {{ amountCell(bill) }}
+  </tr>
+{% endmacro %}
+
+{% macro billsTable(bills, caption) %}
+  <table class="govuk-table">
+    {% if caption %}
+    <caption class="govuk-table__caption govuk-heading-l">
+      {{ caption }}
+    </caption>
+    {% endif %}
+    {{ tableHeader() }}
+    <tbody class="govuk-table__body">
+      {% for bill in bills %}
+        {{ tableRow(bill) }}
+      {% endfor %}
+    </tbody>
+  </table>
+{% endmacro %}

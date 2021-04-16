@@ -4,6 +4,7 @@ require('dotenv').config();
 const testMode = parseInt(process.env.TEST_MODE) === 1;
 
 const isLocal = process.env.NODE_ENV === 'local';
+const isTest = process.env.NODE_ENV === 'test';
 
 const { internal } = require('./lib/constants').scope;
 
@@ -52,7 +53,7 @@ module.exports = {
     password: process.env.COOKIE_SECRET,
     isSecure: !isLocal,
     isSameSite: 'Lax',
-    ttl: 24 * 60 * 60 * 1000, // Set session to 1 day,
+    ttl: 2 * 60 * 60 * 1000, // Set session to 2 hours,
     redirectTo: '/signin',
     isHttpOnly: true,
     keepAlive: true // ttl restarts after each request
@@ -131,7 +132,8 @@ module.exports = {
     port: process.env.REDIS_PORT || 6379,
     password: process.env.REDIS_PASSWORD || '',
     ...!isLocal && { tls: {} },
-    db: 1
+    db: 1,
+    lazyConnect: isTest
   },
 
   featureToggles: {

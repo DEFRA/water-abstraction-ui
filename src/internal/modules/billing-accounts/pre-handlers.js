@@ -65,8 +65,19 @@ const getBillingAccountLicences = async request => {
   return [];
 };
 
+/**
+ * Get sent invoices for the billing account
+ * @return {Promise} { data, pagination }
+ */
+const getBillingAccountBills = request => {
+  const { billingAccountId } = request.params;
+  const { page = 1, perPage = 10 } = request.query;
+  return water.invoiceAccounts.getInvoiceAccountInvoices(billingAccountId, page, perPage);
+};
+
 exports.loadBillingAccount = loadBillingAccount;
 exports.getSessionData = getSessionData;
 exports.getBillingAccounts = getBillingAccounts;
 exports.getAccount = getAccount;
 exports.getBillingAccountLicences = getBillingAccountLicences;
+exports.getBillingAccountBills = getBillingAccountBills;

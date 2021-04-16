@@ -6,6 +6,7 @@
 {% from "forms/index.njk" import formRender, formErrorSummary %}
 {% from "title.njk" import title %}
 {% from "google-analytics.njk" import googleMeasurementSnippet %}
+{% from "cookie-banner.njk" import cookieBanner as cookieBannerMacro %}
 
 {% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
 
@@ -29,11 +30,7 @@
 {% endblock %}
 
 {% block header %}
-  {% if showCookieMessage %}
-    <div class="cookie-message">
-      GOV.UK use cookies to make the site simpler. <a href="/cookies">Find out more about cookies.</a>
-    </div>
-  {% endif %}
+  {{ cookieBannerMacro(cookieBanner) }}
 
   {{ govukHeader({
     homepageUrl: "https://www.gov.uk",
@@ -105,7 +102,9 @@
   <script nonce="{{ nonces.script }}">window.GOVUKFrontend.initAll()</script>
 
   <!-- Google Analytics -->
-  {{ googleMeasurementSnippet(nonces.script, tracking, gaUrl, gaPageTitle) }}
+  {% if cookieBanner.isAnalyticsCookiesEnabled %}
+    {{ googleMeasurementSnippet(nonces.script, tracking, gaUrl, gaPageTitle) }}
+  {% endif %}
   <!-- End Google Analytics -->
 
 {% endblock %}

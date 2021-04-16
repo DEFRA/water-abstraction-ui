@@ -34,6 +34,23 @@ class InvoiceAccountService extends ServiceClient {
     const uri = this.joinUrl(pathPrefix, invoiceAccountId, 'licences');
     return this.serviceRequest.get(uri);
   }
+
+  /**
+   * Get invoices for invoice account by ID
+   * @param {String} invoiceAccountId
+   * @param {Number} page - the current page number for pagination
+   * @param {Number} perPage - the number of results per page
+   * @returns {Promise<Object>} { data : [], pagination }
+   */
+  getInvoiceAccountInvoices (invoiceAccountId, page = 1, perPage = 10) {
+    const uri = this.joinUrl(pathPrefix, invoiceAccountId, 'invoices');
+    return this.serviceRequest.get(uri, {
+      qs: {
+        page,
+        perPage
+      }
+    });
+  }
 }
 
 module.exports = InvoiceAccountService;

@@ -2,7 +2,6 @@
 
 const { get } = require('lodash');
 const Joi = require('@hapi/joi');
-const { getActionUrl } = require('../lib/form-helpers');
 const { formFactory, fields } = require('shared/lib/forms/');
 const routing = require('../lib/routing');
 
@@ -19,7 +18,7 @@ const selectReasonForm = request => {
   const { changeReasons, licence, draftChargeInformation } = request.pre;
 
   const changeReasonId = get(draftChargeInformation, 'changeReason.id');
-  const action = getActionUrl(request, routing.getNonChargeableReason(licence.id));
+  const action = routing.getNonChargeableReason(licence.id, request.query);
 
   const f = formFactory(action, 'POST');
 

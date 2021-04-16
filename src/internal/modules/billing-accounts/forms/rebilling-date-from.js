@@ -19,7 +19,7 @@ const getMaxDate = bills => {
  * Gets form to select agreement signed date
  */
 const form = request => {
-  const fromDate = get(request.pre.rebillingState, 'fromDate');
+  const fromDate = get(request.pre.rebillingState, 'fromDate', null);
 
   const { csrfToken } = request.view;
 

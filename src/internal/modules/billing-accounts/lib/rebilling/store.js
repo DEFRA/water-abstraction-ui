@@ -19,8 +19,8 @@ const getState = request => {
 
 const clearState = request => {
   const sessionKey = getSessionKey(request);
-  return request.yar.clear(sessionKey)
-}
+  return request.yar.clear(sessionKey);
+};
 
 exports.dispatch = dispatch;
 exports.getState = getState;

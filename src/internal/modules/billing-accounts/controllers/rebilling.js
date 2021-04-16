@@ -1,6 +1,5 @@
 'use strict';
 
-
 const titleCase = require('title-case');
 const pluralize = require('pluralize');
 const { getValues } = require('shared/lib/forms');
@@ -92,15 +91,15 @@ const postCheckAnswers = async (request, h) => {
   const { billingAccountId } = request.params;
 
   // Patch invoices in water service to flag for re-billing
-  const { rebillingState : { selectedBillIds }} = request.pre;
-  for(let id of selectedBillIds) {
+  const { rebillingState: { selectedBillIds } } = request.pre;
+  for (let id of selectedBillIds) {
     await services.water.billingInvoices.patchFlagForRebilling(id);
   }
 
   const bills = getSelectedBills(request);
   const billCount = bills.length;
 
-  // Clear the session 
+  // Clear the session
   store.clearState(request);
 
   // Display confirmation page
@@ -108,14 +107,13 @@ const postCheckAnswers = async (request, h) => {
     ...request.view,
     bills,
     billCount,
-    pageTitle: `You’ve marked ${ billCount } ${ pluralize('bill', billCount) } for reissue`,
+    pageTitle: `You’ve marked ${billCount} ${pluralize('bill', billCount)} for reissue`,
     links: {
       billingAccount: `/billing-accounts/${billingAccountId}`,
       createBillRun: `/billing/batch/type`
-    }  
+    }
   });
 };
-
 
 /**
  * Form to allow user to select individual bills within the date range
@@ -126,7 +124,6 @@ const getSelectBills = async (request, h) => h.view('nunjucks/form', {
   form: handleFormRequest(request, forms.selectBills),
   pageTitle: 'Select the bills you need to reissue'
 });
-
 
 /**
  * Post handler for selecting bills

@@ -5,7 +5,7 @@ const { actionTypes } = require('./actions');
 
 const getBillId = bill => bill.id;
 
-const reducer = (state = {}, action) => {
+const reducer = (state, action) => {
   switch (action.type) {
     case actionTypes.setSelectedBills:
       const { selectedBillIds } = action.payload;
@@ -23,8 +23,10 @@ const reducer = (state = {}, action) => {
         fromDate,
         selectedBillIds: selectedBills.map(getBillId)
       };
+
+    default:
+      return state;
   }
-  return state;
 };
 
 module.exports = reducer;

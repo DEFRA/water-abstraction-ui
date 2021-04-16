@@ -82,9 +82,9 @@ const getBillingAccountBills = request => {
  * @returns {Boolean}
  */
 const isRebillableBill = bill =>
-  (bill.batch.source === 'wrls')
-  && !bill.isDeMinimis
-  && (bill.netTotal !== 0);
+  (bill.batch.source === 'wrls') &&
+  !bill.isDeMinimis &&
+  (bill.netTotal !== 0);
 
 /**
  * Gets a list of bills which can be re-billed for the current billing account

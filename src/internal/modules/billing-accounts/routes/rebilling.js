@@ -8,6 +8,12 @@ const allowedScopes = [manageBillingAccounts];
 
 const { createRoutePair } = require('shared/lib/route-helpers');
 
+const pre = [
+  { method: preHandlers.getRebillingState, assign: 'rebillingState' },
+  { method: preHandlers.loadBillingAccount, assign: 'billingAccount' },
+  { method: preHandlers.getBillingAccountRebillableBills, assign: 'rebillableBills' }
+];
+
 module.exports = {
   ...createRoutePair(controller, 'rebillingStartDate', {
     path: '/billing-accounts/{billingAccountId}/rebilling',
@@ -26,11 +32,7 @@ module.exports = {
           billingAccountId: VALID_GUID
         }
       },
-      pre: [
-        { method: preHandlers.getRebillingState, assign: 'rebillingState' },
-        { method: preHandlers.loadBillingAccount, assign: 'billingAccount' },
-        { method: preHandlers.getBillingAccountRebillableBills, assign: 'rebillableBills' }
-      ]
+      pre
     }
   }),
 
@@ -51,11 +53,7 @@ module.exports = {
           billingAccountId: VALID_GUID
         }
       },
-      pre: [
-        { method: preHandlers.getRebillingState, assign: 'rebillingState' },
-        { method: preHandlers.loadBillingAccount, assign: 'billingAccount' },
-        { method: preHandlers.getBillingAccountRebillableBills, assign: 'rebillableBills' }
-      ]
+      pre
     }
   }),
 
@@ -76,11 +74,7 @@ module.exports = {
           billingAccountId: VALID_GUID
         }
       },
-      pre: [
-        { method: preHandlers.getRebillingState, assign: 'rebillingState' },
-        { method: preHandlers.loadBillingAccount, assign: 'billingAccount' },
-        { method: preHandlers.getBillingAccountRebillableBills, assign: 'rebillableBills' }
-      ]
+      pre
     }
   })
 };

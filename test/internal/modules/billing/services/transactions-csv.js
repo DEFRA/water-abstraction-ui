@@ -27,7 +27,7 @@ const invoice =
           {
             value: 4005,
             isCredit: false,
-            agreements: [{ code: '130W' }],
+            agreements: [{ code: 'S130W' }],
             status: 'charge_created',
             id: '6ae19381-7f2b-4504-be94-429c78a71b5c',
             authorisedDays: 152,
@@ -245,7 +245,7 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
     test('handles multiple agreements', async () => {
       const transactionData = transactionsCSV._getTransactionData({
         ...transaction,
-        agreements: [{ code: '130W' }]
+        agreements: [{ code: 'S130W' }]
       });
       expect(transactionData['S126 agreement (Y/N)']).to.equal('Y');
       expect(transactionData['S126 agreement value']).to.equal(1.0);

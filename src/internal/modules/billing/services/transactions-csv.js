@@ -15,7 +15,7 @@ const getAbsStartAndEnd = absPeriod => ({
 
 const findAgreementValue = (agreements, code) => {
   const value = (agreements || []).filter(agreement => agreement.code.indexOf(code) > -1);
-  return value && value.length > 0 ? `S${value[0].code}` : null;
+  return value && value.length > 0 ? value[0].code : null;
 };
 
 const getChargeElementData = trans => {
@@ -112,7 +112,6 @@ const createCSV = async (invoices, chargeVersions) => {
     invoice.invoiceLicences.forEach(invLic => {
       const { isDeMinimis } = invoice;
       invLic.transactions.forEach(trans => {
-        console.log(trans);
         const { description, ...transactionData } = getTransactionData(trans);
         const csvLine = {
           ...getInvoiceAccountData(invoice.invoiceAccount),

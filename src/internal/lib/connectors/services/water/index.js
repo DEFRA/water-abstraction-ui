@@ -17,6 +17,7 @@ const InternalSearchService = require('./InternalSearchService');
 const InvoiceAccountService = require('./InvoiceAccountService');
 const AddressSearchService = require('./AddressSearchService');
 const BillingBatchService = require('./BillingBatchService');
+const BillingInvoiceService = require('./BillingInvoiceService');
 const BillingInvoiceLicenceService = require('./BillingInvoiceLicenceService');
 const BillingVolumesService = require('./BillingVolumeService');
 const ServiceStatusService = require('internal/lib/connectors/services/water/ServiceStatusService');
@@ -51,6 +52,7 @@ module.exports = config => ({
   agreements: new AgreementsService(config.services.water, logger),
   batchNotifications: new BatchNotificationsService(config.services.water, logger),
   billingBatches: new BillingBatchService(config.services.water, logger),
+  billingInvoices: new BillingInvoiceService(config.services.water, logger),
   billingInvoiceLicences: new BillingInvoiceLicenceService(config.services.water, logger),
   billingVolumes: new BillingVolumesService(config.services.water, logger),
   changeReasons: new ChangeReasonsService(config.services.water, logger),

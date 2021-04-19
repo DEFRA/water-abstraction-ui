@@ -88,7 +88,6 @@ const postReviewChargeInformation = async (request, h) => {
     if (request.payload.reviewOutcome === 'approve') {
       await services.water.chargeVersions.postCreateFromWorkflow(request.params.chargeVersionWorkflowId);
     } else {
-      const { user_id: userId, user_name: userName } = get(request, 'defra.user');
       const patchObject = {
         status: request.payload.reviewOutcome,
         approverComments: request.payload.reviewerComments,

@@ -351,11 +351,7 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
           expect(services.water.chargeVersionWorkflows.patchChargeVersionWorkflow.calledWith(workflowId, {
             status: 'changes_requested',
             approverComments: 'Terrible job',
-            chargeVersion: {},
-            createdBy: {
-              id: 123,
-              email: '123@defra.gov.uk'
-            }
+            chargeVersion: {}
           })).to.be.true();
         });
       });

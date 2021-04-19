@@ -110,7 +110,7 @@
           <th class="govuk-table__header govuk-!-width-one-third" scope="col">Date</th>    
           <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter" scope="col">Number recorded</th>    
           <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter" scope="col">Paper forms requests</th>    
-          <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter" scope="col">Sent notifications</th> 
+          <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter" scope="col">Sent forms</th> 
         </tr>
       </thead>
       <tbody class="govuk-table__body">
@@ -210,14 +210,12 @@
             </tr>
           </tbody>
         </table>
-
-
         <p>
           Digital take-up {{ cycle.completedDigitalCount | percentage(cycle.completedCount) }}
         </p>
-  
       </div>
     </div>
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
     {% endfor %}
 
  

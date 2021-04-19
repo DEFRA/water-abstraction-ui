@@ -208,8 +208,7 @@ const updateDraftChargeInformation = async (request, h) => {
   const patchObject = {
     status: 'review',
     approverComments: preparedChargeInfo.chargeVersion.approverComments,
-    chargeVersion: preparedChargeInfo.chargeVersion,
-    createdBy: { id: userId, email: userName }
+    chargeVersion: preparedChargeInfo.chargeVersion
   };
   await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(
     preparedChargeInfo.chargeVersion.chargeVersionWorkflowId,

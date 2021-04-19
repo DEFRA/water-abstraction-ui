@@ -92,8 +92,7 @@ const postReviewChargeInformation = async (request, h) => {
       const patchObject = {
         status: request.payload.reviewOutcome,
         approverComments: request.payload.reviewerComments,
-        chargeVersion: {},
-        createdBy: { id: userId, email: userName }
+        chargeVersion: {}
       };
       await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(
         request.params.chargeVersionWorkflowId,

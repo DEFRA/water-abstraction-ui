@@ -16,11 +16,11 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-quarter">
         <span class="govuk-caption-l">Total</span>
-        <h3 class="govuk-heading-l">{{ registrations.totals.allTime }}</h3>
+        <h3 class="govuk-heading-l">{{ registrations.totals.allTime | number }}</h3>
       </div>
       <div class="govuk-grid-column-one-quarter">
         <span class="govuk-caption-l">Total year to date</span>
-        <h3 class="govuk-heading-l">{{ registrations.totals.ytd }}</h3>
+        <h3 class="govuk-heading-l">{{ registrations.totals.ytd | number }}</h3>
       </div>
     </div>
     <table class="govuk-table">
@@ -42,8 +42,8 @@
           {% for month in registrations.monthly %}
             <tr class="govuk-table__row">
               <th class="govuk-table__header" scope="row">{{ month.month + ' ' + month.year }}</th>
-              <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.external }}</td>
-              <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.internal }}</td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.external | number }}</td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.internal | number }}</td>
             </tr>
           {% endfor %}
         </tbody>
@@ -57,11 +57,11 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-quarter">
         <span class="govuk-caption-l">Total</span>
-        <h3 class="govuk-heading-l">{{ delegatedAccess.totals.allTime }}</h3>
+        <h3 class="govuk-heading-l">{{ delegatedAccess.totals.allTime | number }}</h3>
       </div>
       <div class="govuk-grid-column-one-quarter">
         <span class="govuk-caption-l">Total year to date</span>
-        <h3 class="govuk-heading-l">{{ delegatedAccess.totals.ytd }}</h3>
+        <h3 class="govuk-heading-l">{{ delegatedAccess.totals.ytd | number }}</h3>
       </div>
     </div>
     <table class="govuk-table">
@@ -81,7 +81,7 @@
         {% for month in delegatedAccess.monthly %}
           <tr class="govuk-table__row">
             <th class="govuk-table__header" scope="row">{{ month.month + ' ' + month.year }}</th>
-            <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.total }}</td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.total | number }}</td>
             <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.change | fixed(2) }}%</td>
           </tr>
         {% endfor %}    
@@ -96,11 +96,11 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-quarter">
         <span class="govuk-caption-l">Total</span>
-        <h3 class="govuk-heading-l">{{ returnsMonthly.totals.allTime }}</h3>
+        <h3 class="govuk-heading-l">{{ returnsMonthly.totals.allTime | number }}</h3>
       </div>
       <div class="govuk-grid-column-one-quarter">
         <span class="govuk-caption-l">Total year to date</span>
-        <h3 class="govuk-heading-l">{{ returnsMonthly.totals.ytd }}</h3>
+        <h3 class="govuk-heading-l">{{ returnsMonthly.totals.ytd | number }}</h3>
       </div>
     </div>
     <table class="govuk-table">
@@ -117,9 +117,9 @@
       {% for month in returnsMonthly.monthly %}
         <tr class="govuk-table__row">
           <th class="govuk-table__header" scope="row">{{ month.month + ' ' + month.currentYear }}</th>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.returnCount }}</td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.paperFormCount }}</td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.sentNotificationCount }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.returnCount | number }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.paperFormCount | number }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.sentNotificationCount | number }}</td>
         </tr>
       {% endfor %}
       </tbody>
@@ -232,11 +232,11 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-quarter">
         <span class="govuk-caption-l">Total</span>
-        <h3 class="govuk-heading-l">{{ licenceNames.totals.allTime }}</h3>
+        <h3 class="govuk-heading-l">{{ licenceNames.totals.allTime | number }}</h3>
       </div>
       <div class="govuk-grid-column-one-quarter">
         <span class="govuk-caption-l">Total year to date</span>
-        <h3 class="govuk-heading-l">{{ licenceNames.totals.ytd }}</h3>
+        <h3 class="govuk-heading-l">{{ licenceNames.totals.ytd | number }}</h3>
       </div>
     </div>
     <table class="govuk-table">  
@@ -254,9 +254,9 @@
       {% for month in licenceNames.monthly %}    
         <tr class="govuk-table__row">
           <th class="govuk-table__header" scope="row">{{ month.month + ' ' + month.year }}</th>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.named }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.named | number }}</td>
           <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.namedChange | fixed(2) }}%</td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.renamed }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.renamed | number }}</td>
           <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.renamedChange | fixed(2) }}%</td>
         </tr>
       {% endfor %}

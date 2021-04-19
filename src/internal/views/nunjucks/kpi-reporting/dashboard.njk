@@ -108,16 +108,18 @@
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
           <th class="govuk-table__header govuk-!-width-one-third" scope="col">Date</th>    
-          <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-third" scope="col">Number recorded</th>    
-          <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-third" scope="col">Number of paper forms requested</th>    
+          <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter" scope="col">Number recorded</th>    
+          <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter" scope="col">Paper forms requests</th>    
+          <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter" scope="col">Sent notifications</th> 
         </tr>
       </thead>
       <tbody class="govuk-table__body">
       {% for month in returnsMonthly.monthly %}
         <tr class="govuk-table__row">
           <th class="govuk-table__header" scope="row">{{ month.month + ' ' + month.currentYear }}</th>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.return }}</td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.request }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.returnCount }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.paperFormCount }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.sentNotificationCount }}</td>
         </tr>
       {% endfor %}
       </tbody>
@@ -131,7 +133,7 @@
       <div class="govuk-grid-column-full">
 
         <table class="govuk-table">
-          <caption class="govuk-table__caption govuk-table__caption--m">Returns cycle ending {{ cycle.endDate | date }}</caption>
+          <caption class="govuk-table__caption">Returns cycle ending {{ cycle.endDate | date }}</caption>
           <thead class="govuk-table__head">
             <tr class="govuk-table__row">
               <th class="govuk-table__header govuk-!-width-one-third" scope="col"></th>    

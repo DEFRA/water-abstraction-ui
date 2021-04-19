@@ -45,44 +45,28 @@ describe('Reset password', () => {
 
   it('clicks the link in the confirmation email', () => {
     cy.fixture('users.json').then(users => {
-      cy.getPasswordResetUrl(Cypress.env('USER_URI'), users.external, 'reset_url').then(response => {
-        console.log(response);
+      cy.getPasswordResetUrl(Cypress.env('USER_URI'), users.external).then(response => {
         cy.visit(response);
       });
-    }
-    );
+    });
   });
 
-  it('checks the page title is visible and correct', () => {
+  it('check the title and shows the change password fields', () => {
     cy.contains('Change your password').should('be.visible');
-  });
-  /*
-  it('shows the change password fields', async () => {
-    const passwordFieldLabel = await $('label[for="password"]');
-    const passwordFieldInput = await $('input#password');
-    const confirmPasswordFieldLabel = await $('label[for="confirm-password"]');
-    const confirmPasswordFieldInput = await $('input#confirm-password');
-
-    expect(passwordFieldLabel).toHaveText('Enter a new password');
-    expect(passwordFieldInput).toBeVisible();
-    expect(confirmPasswordFieldLabel).toHaveText('Confirm your password');
-    expect(confirmPasswordFieldInput).toBeVisible();
+    cy.contains('Enter a new password').should('be.visible');
+    cy.contains('Confirm your password').should('be.visible');
   });
 
-  it('changes the password and signs in', async () => {
-    const passwordFieldInput = await $('input#password');
-    const confirmPasswordFieldInput = await $('input#confirm-password');
-    const changePasswordButton = await getButton('Change password');
-
-    await passwordFieldInput.setValue('P@55word');
-    await confirmPasswordFieldInput.setValue('P@55word');
-
-    await changePasswordButton.click();
+  it('changes the password and signs in', () => {
+    cy.get('[id=password]').type('P@55word');
+    cy.get('[id=confirm-password]').type('P@55word');
+    cy.get('button.govuk-button').click();
   });
 
-  it('is redirected to the add licences page', async () => {
-    expect(browser).toHaveUrlContaining('/licences');
-    expect(browser).toHaveUrlContaining('/add-licences');
-    expect(getPageTitle()).toHaveText('Add your licences to the service');
-  }); */
+  it('is redirected to the your licences page', () => {
+    cy.contains('View licences').should('have.attr', 'href', '/licences');
+    cy.contains('Manage returns').should('have.attr', 'href', '/returns');
+    cy.contains('Add licences or give access').should('have.attr', 'href', '/manage_licences');
+    cy.contains('Your licences').should('have.class', 'govuk-heading-l');
+  });
 });

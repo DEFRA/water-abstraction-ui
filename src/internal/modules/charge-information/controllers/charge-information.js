@@ -204,7 +204,6 @@ const updateDraftChargeInformation = async (request, h) => {
 
   const preparedChargeInfo = prepareChargeInformation(id, draftChargeInformation);
   preparedChargeInfo.chargeVersion['status'] = 'draft';
-  const { user_id: userId, user_name: userName } = get(request, 'defra.user');
   const patchObject = {
     status: 'review',
     approverComments: preparedChargeInfo.chargeVersion.approverComments,

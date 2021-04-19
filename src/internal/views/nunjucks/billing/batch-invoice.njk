@@ -11,6 +11,8 @@ invoiceDebitsTotal %}
 {% from "./nunjucks/billing/macros/batch-metadata.njk" import batchMetadata %}
 {% from "./nunjucks/billing/macros/batch-buttons.njk" import removeInvoiceFromBatchButton %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+
 
 {% macro invoiceErrors(errors) %}
   {% if errors.length %}
@@ -51,6 +53,15 @@ invoiceDebitsTotal %}
 
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-two-thirds">
+
+
+      {% if invoice.isFlaggedForRebilling %}
+        {{ govukWarningText({
+          text: "This bill is marked for reissue",
+          iconFallbackText: "Warning"
+        }) }}
+      {% endif %}
+
       <div class="govuk-!-margin-bottom-6">
         {{ title(pageTitle, caption, false, true, true) }}
       </div>

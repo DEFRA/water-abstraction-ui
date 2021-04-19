@@ -299,4 +299,58 @@ experiment('internal/modules/billing-accounts/pre-handlers', () => {
       });
     });
   });
+
+  experiment('.getBillingAccountRebillableBills', () => {
+    let response;
+    const billingAccountId = uuid();
+
+    const createBill = (overrides = {}) => ({
+      id: overrides.id || uuid(),
+      isDeMinimis: overrides.isDeMinimis || false,
+      netTotal: overrides.isNetZero ? 0 : 345,
+      invoiceNumber: overrides.invoiceNumber || 'A1234',
+      batch: {
+        source: overrides.source || 'wrls'
+      },
+      originalBillingInvoiceId: overrides.originalBillingInvoiceId || null
+    });
+
+    const apiResponse = {
+      data: [
+        createBill({ id: 'valid-id-1', invoiceNumber: 'A1112' }),
+        createBill({ id: 'valid-id-2', invoiceNumber: 'A1111' }),
+        createBill({ source: 'nald' }),
+        createBill({ isDeMinimis: true }),
+        createBill({ isNetZero: true }),
+        createBill({ originalBillingInvoiceId: uuid() })
+      ],
+      pagination: {
+        page: 1
+      }
+    };
+
+    beforeEach(async () => {
+      services.water.invoiceAccounts.getInvoiceAccountInvoices.resolves(apiResponse);
+      request = {
+        params: {
+          billingAccountId
+        }
+      };
+      response = await preHandlers.getBillingAccountRebillableBills(request);
+    });
+
+    test('calls the expected API connector', async () => {
+      expect(services.water.invoiceAccounts.getInvoiceAccountInvoices.calledWith(
+        billingAccountId, 1, Number.MAX_SAFE_INTEGER
+      )).to.be.true();
+    });
+
+    test('only responds with bills that can be re-billed, sorted by invoice number', async () => {
+      const ids = response.map(row => row.id);
+      expect(ids).to.equal([
+        'valid-id-2',
+        'valid-id-1'
+      ]);
+    });
+  });
 });

@@ -27,7 +27,7 @@ const invoice =
           {
             value: 4005,
             isCredit: false,
-            agreements: [{ code: '130W' }],
+            agreements: [{ code: 'S130W' }],
             status: 'charge_created',
             id: '6ae19381-7f2b-4504-be94-429c78a71b5c',
             authorisedDays: 152,
@@ -65,7 +65,15 @@ const invoice =
             billingVolume: {
               calculatedVolume: 10.3,
               volume: 9.1
-            }
+            },
+            calcEiucFactor: 1,
+            calcSucFactor: 1,
+            calcSourceFactor: 0.5,
+            calcSeasonFactor: 0.5,
+            calcLossFactor: 0.5,
+            calcEiucSourceFactor: 0.5,
+            calcS126FactorValue: 1.0,
+            calcS127FactorValue: 0.5
           },
           {
             value: 4006,
@@ -108,7 +116,15 @@ const invoice =
               calculatedVolume: null,
               volume: 9.1
             },
-            isDeMinimis: true
+            isDeMinimis: true,
+            calcEiucFactor: 1,
+            calcSucFactor: 1,
+            calcSourceFactor: 0.5,
+            calcSeasonFactor: 0.5,
+            calcLossFactor: 0.5,
+            calcEiucSourceFactor: 0.5,
+            calcS126FactorValue: 1.0,
+            calcS127FactorValue: 0.5
           }
         ],
         licence: {
@@ -185,12 +201,18 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
     });
 
     test('charge element data to user friendly headings', () => {
-      expect(transactionData['Authorised annual quantity']).to.equal(transaction.chargeElement.authorisedAnnualQuantity);
-      expect(transactionData['Billable annual quantity']).to.equal(transaction.chargeElement.billableAnnualQuantity);
-      expect(transactionData['Source']).to.equal(transaction.chargeElement.source);
-      expect(transactionData['Adjusted source']).to.equal(transaction.chargeElement.eiucSource);
+      expect(transactionData['Standard Unit Charge (SUC) (£/1000 cubic metres)']).to.equal(transaction.calcSucFactor);
+      expect(transactionData['Environmental Improvement Unit Charge (EIUC) (£/1000 cubic metres)']).to.equal(transaction.calcEiucFactor);
+      expect(transactionData['Authorised annual quantity (megalitres)']).to.equal(transaction.chargeElement.authorisedAnnualQuantity);
+      expect(transactionData['Billable annual quantity (megalitres)']).to.equal(transaction.chargeElement.billableAnnualQuantity);
+      expect(transactionData['Source type']).to.equal(transaction.chargeElement.source);
+      expect(transactionData['Source factor']).to.equal(transaction.calcSourceFactor);
+      expect(transactionData['Adjusted source type']).to.equal(transaction.chargeElement.eiucSource);
+      expect(transactionData['Adjusted source factor']).to.equal(transaction.calcEiucSourceFactor);
       expect(transactionData['Season']).to.equal(transaction.chargeElement.season);
+      expect(transactionData['Season factor']).to.equal(transaction.calcSeasonFactor);
       expect(transactionData['Loss']).to.equal(transaction.chargeElement.loss);
+      expect(transactionData['Loss factor']).to.equal(transaction.calcLossFactor);
       expect(transactionData['Purpose code']).to.equal(transaction.chargeElement.purposeUse.code);
       expect(transactionData['Purpose name']).to.equal(transaction.chargeElement.purposeUse.name);
       expect(transactionData['Abstraction period start date']).to.equal('1 Nov');
@@ -198,7 +220,8 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
     });
 
     test('agreement to user friendly heading', () => {
-      expect(transactionData['Agreement code']).to.equal('130W');
+      expect(transactionData['S130 agreement']).to.equal('S130W');
+      expect(transactionData['S130 agreement value']).to.equal(null);
     });
 
     test('charge period to user friendly headings', () => {
@@ -222,9 +245,14 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
     test('handles multiple agreements', async () => {
       const transactionData = transactionsCSV._getTransactionData({
         ...transaction,
-        agreements: [{ code: '126' }, { code: '127' }, { code: '130W' }]
+        agreements: [{ code: 'S130W' }]
       });
-      expect(transactionData['Agreement code']).to.equal('126, 127, 130W');
+      expect(transactionData['S126 agreement (Y/N)']).to.equal('Y');
+      expect(transactionData['S126 agreement value']).to.equal(1.0);
+      expect(transactionData['S127 agreement (Y/N)']).to.equal('Y');
+      expect(transactionData['S127 agreement value']).to.equal(0.5);
+      expect(transactionData['S130 agreement']).to.equal('S130W');
+      expect(transactionData['S130 agreement value']).to.equal(null);
     });
 
     test('handles undefined billing volume', async () => {
@@ -257,7 +285,12 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
       const transactionData = transactionsCSV._getTransactionData(minChargeTransaction);
       expect(transactionData.description).to.equal(minChargeTransaction.description);
       expect(transactionData['Compensation charge']).to.equal('N');
-      expect(transactionData['Agreement code']).to.equal('');
+      expect(transactionData['S126 agreement (Y/N)']).to.equal('N');
+      expect(transactionData['S126 agreement value']).to.equal(null);
+      expect(transactionData['S127 agreement (Y/N)']).to.equal('N');
+      expect(transactionData['S127 agreement value']).to.equal(null);
+      expect(transactionData['S130 agreement']).to.equal(null);
+      expect(transactionData['S130 agreement value']).to.equal(null);
       expect(transactionData['Charge period start date']).to.equal(minChargeTransaction.chargePeriod.startDate);
       expect(transactionData['Charge period end date']).to.equal(minChargeTransaction.chargePeriod.endDate);
     });

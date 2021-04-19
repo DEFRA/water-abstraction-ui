@@ -958,12 +958,12 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the data is submitted in the expected format', async () => {
-        const [workflowId, status, comments, chargeVersion, user] = services.water.chargeVersionWorkflows.patchChargeVersionWorkflow.lastCall.args;
+        const [workflowId, patchObject] = services.water.chargeVersionWorkflows.patchChargeVersionWorkflow.lastCall.args;
         expect(workflowId).to.equal('test-workflow-id');
-        expect(status).to.equal('review');
-        expect(comments).to.equal(null);
-        expect(chargeVersion).to.equal(request.pre.draftChargeInformation);
-        expect(user).to.equal({ id: 19, email: 'test@test.test' });
+        expect(patchObject.status).to.equal('review');
+        expect(patchObject.approverComments).to.equal(null);
+        expect(patchObject.chargeVersion).to.equal(request.pre.draftChargeInformation);
+        expect(patchObject.createdBy).to.equal({ id: 19, email: 'test@test.test' });
       });
 
       test('the session data is cleared', async () => {

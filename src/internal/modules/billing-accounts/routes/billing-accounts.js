@@ -31,7 +31,38 @@ module.exports = {
         }
       },
       pre: [
-        { method: preHandlers.loadBillingAccount, assign: 'billingAccount' }
+        { method: preHandlers.loadBillingAccount, assign: 'billingAccount' },
+        { method: preHandlers.getBillingAccountBills, assign: 'bills' }
+      ]
+    }
+  },
+
+  getBillingAccountBills: {
+    method: 'GET',
+    path: '/billing-accounts/{billingAccountId}/bills',
+    handler: controller.getBillingAccountBills,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      description: 'View all bills for a billing account',
+      plugins: {
+        viewContext: {
+          activeNavLink: 'view'
+        }
+      },
+      validate: {
+        params: {
+          billingAccountId: VALID_GUID
+        },
+        query: {
+          page: Joi.number().min(1),
+          perPage: Joi.number().min(1).default(50)
+        }
+      },
+      pre: [
+        { method: preHandlers.loadBillingAccount, assign: 'billingAccount' },
+        { method: preHandlers.getBillingAccountBills, assign: 'bills' }
       ]
     }
   }

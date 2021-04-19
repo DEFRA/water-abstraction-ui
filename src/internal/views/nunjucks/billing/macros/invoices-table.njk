@@ -197,6 +197,12 @@
     </td>
   {% endmacro %}
 
+  {% macro billRunNumberCell(batch) %}
+    <td class="govuk-table__cell govuk-table__cell--numeric">
+      {{ batch.billRunNumber }}
+    </td>
+  {% endmacro %}
+
   {% macro tableRowLicenceInvoices(row) %}
     <tr class="govuk-table__row">
       {{ invoiceLink(row) }}

@@ -8,12 +8,13 @@ const {
   afterEach
 } = exports.lab = require('@hapi/lab').script();
 const sandbox = require('sinon').createSandbox();
+const uuid = require('uuid').v4;
 
 const controller = require('internal/modules/billing-accounts/controllers/billing-accounts');
 
 const addressChangeLink = '/test/link';
 
-const createRequest = query => ({
+const createRequest = (query = {}) => ({
   view: {
     csrf_token: 'csrf-token'
   },
@@ -52,9 +53,20 @@ const createRequest = query => ({
       company: {
         name: 'Test Company'
       }
+    },
+    bills: {
+      data: [{
+        id: uuid()
+      }],
+      pagination: {
+        page: 1,
+        perPage: 10,
+        totalRows: 30,
+        pageCount: 3
+      }
     }
   },
-  query: query || {},
+  query,
   billingAccountEntryRedirect: sandbox.stub().returns(addressChangeLink)
 });
 
@@ -115,6 +127,17 @@ experiment('internal/modules/billing-accounts/controllers/billing-accounts', () 
       expect(changeAddressLink).to.equal(addressChangeLink);
     });
 
+    test('includes the bills', () => {
+      const [, { bills }] = h.view.lastCall.args;
+      expect(bills).to.equal(request.pre.bills.data);
+    });
+
+    test('includes a "more bills" link', () => {
+      const { billingAccountId } = request.params;
+      const [, { moreBillsLink }] = h.view.lastCall.args;
+      expect(moreBillsLink).to.equal(`/billing-accounts/${billingAccountId}/bills`);
+    });
+
     experiment('back link', () => {
       test('is undefined if one is not specified', () => {
         const [, view] = h.view.lastCall.args;
@@ -127,6 +150,44 @@ experiment('internal/modules/billing-accounts/controllers/billing-accounts', () 
         const [, view] = h.view.lastCall.args;
         expect(view.back).to.equal('/back-link');
       });
+    });
+  });
+
+  experiment('.getBillingAccountBills', () => {
+    beforeEach(() => {
+      request = createRequest();
+      controller.getBillingAccountBills(request, h);
+    });
+
+    test('uses the correct template', () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/billing-accounts/view-bills');
+    });
+
+    test('has the correct page title', () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.pageTitle).to.equal(`Sent bills for Test Company`);
+    });
+
+    test('has the correct caption', () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.caption).to.equal('Billing account A12345678A');
+    });
+
+    test('includes the bills', () => {
+      const [, { bills }] = h.view.lastCall.args;
+      expect(bills).to.equal(request.pre.bills.data);
+    });
+
+    test('includes the pagination object', () => {
+      const [, { pagination }] = h.view.lastCall.args;
+      expect(pagination).to.equal(request.pre.bills.pagination);
+    });
+
+    test('includes a back link', () => {
+      const { billingAccountId } = request.params;
+      const [, { back }] = h.view.lastCall.args;
+      expect(back).to.equal(`/billing-accounts/${billingAccountId}`);
     });
   });
 });

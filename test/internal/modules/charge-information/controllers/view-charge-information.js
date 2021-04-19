@@ -27,6 +27,12 @@ const createRequest = () => ({
     foo: 'bar',
     csrfToken: uuid()
   },
+  defra: {
+    user: {
+      user_id: 123,
+      user_name: '123@defra.gov.uk'
+    }
+  },
   pre: {
     licence: {
       id: 'test-licence-id',
@@ -270,6 +276,7 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
         });
       });
     });
+
     experiment('when the form is valid', () => {
       experiment('when the review outcome is approve', () => {
         beforeEach(async () => {
@@ -315,7 +322,8 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
             csrf_token: request.view.csrfToken,
             chargeVersionWorkflowId: workflowId,
             reviewOutcome: 'changes_requested',
-            reviewerComments: 'Terrible job'
+            reviewerComments: 'Terrible job',
+            createdBy: { id: 19, email: 'test@test.test' }
           };
           request.auth = { credentials: {
             scope: chargeVersionWorkflowReviewer
@@ -340,7 +348,11 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
         });
 
         test('calls the service method to update the charge version workflow', async () => {
-          expect(services.water.chargeVersionWorkflows.patchChargeVersionWorkflow.calledWith(workflowId, 'changes_requested', 'Terrible job', {})).to.be.true();
+          expect(services.water.chargeVersionWorkflows.patchChargeVersionWorkflow.calledWith(workflowId, {
+            status: 'changes_requested',
+            approverComments: 'Terrible job',
+            chargeVersion: {}
+          })).to.be.true();
         });
       });
     });

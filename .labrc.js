@@ -7,12 +7,11 @@ require('app-module-path').addPath(require('path').join(__dirname, 'src/'));
 module.exports = {
   // This version global seems to be introduced by sinon.
   globals: 'version,fetch,Response,Headers,Request',
-  paths: ['test/internal', 'test/external'],
+  paths: ['test/internal', 'test/external', 'test/shared'],
   'coverage-exclude': [
     'data',
     'govuk_modules',
     'node_modules',
-    'public',
-    'test'
+    'public'
   ]
 };

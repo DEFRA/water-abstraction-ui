@@ -204,12 +204,14 @@ const updateDraftChargeInformation = async (request, h) => {
 
   const preparedChargeInfo = prepareChargeInformation(id, draftChargeInformation);
   preparedChargeInfo.chargeVersion['status'] = 'draft';
-
+  const patchObject = {
+    status: 'review',
+    approverComments: preparedChargeInfo.chargeVersion.approverComments,
+    chargeVersion: preparedChargeInfo.chargeVersion
+  };
   await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(
     preparedChargeInfo.chargeVersion.chargeVersionWorkflowId,
-    'review',
-    preparedChargeInfo.chargeVersion.approverComments,
-    preparedChargeInfo.chargeVersion
+    patchObject
   );
   const route = routing.getSubmitted(id, { chargeable: isChargeable });
   return h.redirect(route);
@@ -224,12 +226,15 @@ const submitDraftChargeInformation = async (request, h) => {
   if (isEmpty(chargeVersionWorkflowId)) {
     await services.water.chargeVersionWorkflows.postChargeVersionWorkflow(preparedChargeInfo);
   } else {
+    const patchObject = {
+      status: 'review',
+      approverComments: null,
+      chargeVersion: preparedChargeInfo.chargeVersion,
+      createdBy: { id: userId, email: userName }
+    };
     await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(
       chargeVersionWorkflowId,
-      'review',
-      null,
-      preparedChargeInfo.chargeVersion,
-      { id: userId, email: userName }
+      patchObject
     );
   }
   await applyFormResponse(request, {}, actions.clearData);
@@ -237,9 +242,10 @@ const submitDraftChargeInformation = async (request, h) => {
   return h.redirect(route);
 };
 
-const redirectToCancelPage = (request, h) =>
-  h.redirect(routing.getCancelData(request.params.licenceId));
-
+const redirectToCancelPage = (request, h) => {
+  const { chargeVersionWorkflowId } = request.query;
+  return h.redirect(routing.getCancelData(request.params.licenceId, { chargeVersionWorkflowId }));
+};
 const redirectToStartOfElementFlow = (request, h) => {
   const { licenceId } = request.params;
   // need to generate new id for new charge element
@@ -265,12 +271,11 @@ const postCheckData = async (request, h) => {
   return checkDataButtonActions[action](request, h);
 };
 
-const getCancelData = (request, h) =>
-  h.view('nunjucks/charge-information/cancel.njk', {
-    ...getDefaultView(request, routing.getCheckData, forms.deleteChargeInfo),
-    pageTitle: 'You\'re about to cancel this charge information',
-    draftChargeInformation: request.pre.draftChargeInformation
-  });
+const getCancelData = (request, h) => h.view('nunjucks/charge-information/cancel.njk', {
+  ...getDefaultView(request, routing.getCheckData, forms.deleteChargeInfo),
+  pageTitle: 'You\'re about to cancel this charge information',
+  draftChargeInformation: request.pre.draftChargeInformation
+});
 
 const postCancelData = async (request, h) => {
   const { licence, draftChargeInformation: { chargeVersionWorkflowId } } = request.pre;

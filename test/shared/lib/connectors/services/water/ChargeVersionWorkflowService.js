@@ -8,6 +8,7 @@ const {
   test
 } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
+const uuid = require('uuid/v4');
 
 const ChargeVersionWorkflowsService = require('shared/lib/connectors/services/water/ChargeVersionWorkflowsService');
 const { serviceRequest } = require('@envage/water-abstraction-helpers');
@@ -17,6 +18,7 @@ experiment('services/water/ChargeVersionsService', () => {
     sandbox.stub(serviceRequest, 'get');
     sandbox.stub(serviceRequest, 'post');
     sandbox.stub(serviceRequest, 'delete');
+    sandbox.stub(serviceRequest, 'patch');
   });
 
   afterEach(async () => {
@@ -84,6 +86,32 @@ experiment('services/water/ChargeVersionsService', () => {
       await service.postChargeVersionWorkflow({ foo: 'bar' });
       const [, options] = serviceRequest.post.lastCall.args;
       expect(options.body).to.equal({ foo: 'bar' });
+    });
+  });
+
+  experiment('.patchChargeVersionWorkflow', () => {
+    const tempGuid = uuid();
+    const tempGuid2 = uuid();
+
+    const expectedPatchObject = {
+      approverComments: 'Pull up your socks',
+      chargeVersion: tempGuid2,
+      status: 'changes_requested'
+    };
+
+    test('passes the expected URL to the service request', async () => {
+      const service = new ChargeVersionWorkflowsService('http://127.0.0.1:8001/water/1.0');
+      await service.patchChargeVersionWorkflow(tempGuid, expectedPatchObject);
+      const expectedUrl = `http://127.0.0.1:8001/water/1.0/charge-version-workflows/${tempGuid}`;
+      const [url] = serviceRequest.patch.lastCall.args;
+      expect(url).to.equal(expectedUrl);
+    });
+
+    test('passes the expected options to the service request', async () => {
+      const service = new ChargeVersionWorkflowsService('http://127.0.0.1:8001/water/1.0');
+      await service.patchChargeVersionWorkflow(tempGuid, expectedPatchObject);
+      const [, options] = serviceRequest.patch.lastCall.args;
+      expect(options.body).to.equal(expectedPatchObject);
     });
   });
 

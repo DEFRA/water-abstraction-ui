@@ -40,13 +40,13 @@ const form = request => {
     controlClass: 'form-control form-control--small',
     errors: {
       'any.required': {
-        message: 'Enter a date'
+        message: 'Enter the date you need to reissue a bill from'
       },
       'date.isoDate': {
         message: 'Enter a real date'
       },
       'date.max': {
-        message: `Enter a date on or before ${maxDate}`
+        message: `There are no bills available for reissue for this date.  Enter a date on or before ${maxDate}.`
       }
     }
   }, fromDate));

@@ -46,7 +46,7 @@ const form = request => {
     choices: selectableBills.map(mapBillToChoice),
     errors: {
       'array.min': {
-        message: 'Select the bills you need to reissue'
+        message: 'You need to select at least one bill to reissue'
       }
     }
   }, selectedBillIds));

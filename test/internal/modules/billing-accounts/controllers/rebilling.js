@@ -139,9 +139,9 @@ experiment('internal/modules/billing-accounts/controllers/rebilling', () => {
       const [, { form }] = h.view.lastCall.args;
       const field = findField(form, 'fromDate');
       expect(field.options.errors).to.equal({
-        'any.required': { message: 'Enter a date' },
+        'any.required': { message: 'Enter the date you need to reissue a bill from' },
         'date.isoDate': { message: 'Enter a real date' },
-        'date.max': { message: 'Enter a date on or before 1 January 2020' }
+        'date.max': { message: 'There are no bills available for reissue for this date.  Enter a date on or before 1 January 2020.' }
       });
     });
 
@@ -176,7 +176,7 @@ experiment('internal/modules/billing-accounts/controllers/rebilling', () => {
       test('the correct error message is set', async () => {
         const { errors } = h.postRedirectGet.lastCall.args[0];
         expect(errors[0].name).to.equal('fromDate');
-        expect(errors[0].message).to.equal('Enter a date');
+        expect(errors[0].message).to.equal('Enter the date you need to reissue a bill from');
       });
     });
 
@@ -225,7 +225,7 @@ experiment('internal/modules/billing-accounts/controllers/rebilling', () => {
       test('the correct error message is set', async () => {
         const { errors } = h.postRedirectGet.lastCall.args[0];
         expect(errors[0].name).to.equal('fromDate');
-        expect(errors[0].message).to.equal('Enter a date on or before 1 January 2020');
+        expect(errors[0].message).to.equal('There are no bills available for reissue for this date.  Enter a date on or before 1 January 2020.');
       });
     });
 
@@ -417,7 +417,7 @@ experiment('internal/modules/billing-accounts/controllers/rebilling', () => {
       const [, { form }] = h.view.lastCall.args;
       const field = findField(form, 'selectedBillIds');
       expect(field.options.errors).to.equal({
-        'array.min': { message: 'Select the bills you need to reissue' }
+        'array.min': { message: 'You need to select at least one bill to reissue' }
       });
     });
 
@@ -452,7 +452,7 @@ experiment('internal/modules/billing-accounts/controllers/rebilling', () => {
       test('the correct error message is set', async () => {
         const { errors } = h.postRedirectGet.lastCall.args[0];
         expect(errors[0].name).to.equal('selectedBillIds');
-        expect(errors[0].message).to.equal('Select the bills you need to reissue');
+        expect(errors[0].message).to.equal('You need to select at least one bill to reissue');
       });
     });
 

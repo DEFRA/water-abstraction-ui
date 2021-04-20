@@ -44,7 +44,6 @@ const getReviewChargeInformation = async (request, h) => {
   const isApprover = hasScope(request, chargeVersionWorkflowReviewer);
   const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount);
   const validatedDraftChargeVersion = chargeInformationValidator.addValidation(draftChargeInformation);
-
   return h.view('nunjucks/charge-information/view', {
     ...getDefaultView(request, backLink),
     pageTitle: `Check charge information`,
@@ -56,6 +55,7 @@ const getReviewChargeInformation = async (request, h) => {
     isApprover,
     isChargeable,
     chargeVersionWorkflowId,
+    action: `/licences/${licence.id}/charge-information/check?chargeVersionWorkflowId=${request.params.chargeVersionWorkflowId}`,
     reviewForm: reviewForm(request)
   });
 };
@@ -69,7 +69,7 @@ const postReviewChargeInformation = async (request, h) => {
   const form = forms.handleRequest(
     reviewForm(request),
     request,
-    reviewFormSchema()
+    reviewFormSchema(request)
   );
   if (!form.isValid) {
     return h.view('nunjucks/charge-information/view', {
@@ -88,11 +88,14 @@ const postReviewChargeInformation = async (request, h) => {
     if (request.payload.reviewOutcome === 'approve') {
       await services.water.chargeVersions.postCreateFromWorkflow(request.params.chargeVersionWorkflowId);
     } else {
+      const patchObject = {
+        status: request.payload.reviewOutcome,
+        approverComments: request.payload.reviewerComments,
+        chargeVersion: {}
+      };
       await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(
         request.params.chargeVersionWorkflowId,
-        request.payload.reviewOutcome,
-        request.payload.reviewerComments,
-        {}
+        patchObject
       );
     }
     // Clear session

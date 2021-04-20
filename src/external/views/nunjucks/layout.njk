@@ -1,11 +1,14 @@
 {% extends "govuk/template.njk" %}
 {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/cookie-banner/macro.njk" import govukCookieBanner %}
+
 
 {% from "main-nav.njk" import mainNav %}
 {% from "forms/index.njk" import formRender, formErrorSummary %}
 {% from "title.njk" import title %}
 {% from "google-analytics.njk" import googleMeasurementSnippet, crossSiteTracking %}
+{% from "cookie-banner.njk" import cookieBanner as cookieBannerMacro %}
 
 {% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
 
@@ -29,11 +32,8 @@
 {% endblock %}
 
 {% block header %}
-  {% if showCookieMessage %}
-    <div class="cookie-message">
-      GOV.UK use cookies to make the site simpler. <a href="/cookies">Find out more about cookies.</a>
-    </div>
-  {% endif %}
+
+  {{ cookieBannerMacro(cookieBanner) }}
 
   {{ govukHeader({
     homepageUrl: "https://www.gov.uk",
@@ -105,7 +105,9 @@
   <script nonce="{{ nonces.script }}">window.GOVUKFrontend.initAll()</script>
 
   <!-- Google Analytics -->
-  {{ googleMeasurementSnippet(nonces.script, tracking, gaUrl, gaPageTitle) }}
-  {{ crossSiteTracking(nonces.script, gaUrl, gaPageTitle) }}
+  {% if cookieBanner.isAnalyticsCookiesEnabled %}
+    {{ googleMeasurementSnippet(nonces.script, tracking, gaUrl, gaPageTitle) }}
+    {{ crossSiteTracking(nonces.script, gaUrl, gaPageTitle) }}
+  {% endif %}
   <!-- End Google Analytics -->
 {% endblock %}

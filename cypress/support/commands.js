@@ -12,6 +12,6 @@ Cypress.Commands.add('getPasswordResetUrl', async (baseUrl, email) => {
 Cypress.Commands.add('getUserRegistrationUrl', async (baseUrl, email) => {
   const url = `${baseUrl}notifications/last?${querystring.encode({ email })}`;
   const req = await axios.get(url);
-  const personalisation = get(req, `data.data[0].personalisation['registration_url']`, null);
+  const personalisation = get(req, `data.data[0].personalisation['reset_link']`, null);
   return personalisation.replace((/^http?:\/\/[^/]+\//g).exec(personalisation), baseUrl);
 });

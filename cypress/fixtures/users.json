@@ -1,5 +1,6 @@
 {
     "external": "acceptance-test.external@example.com",
+    "externalNew": "acceptance-test.external-new@example.com",
     "agent": "acceptance-test.agent@example.com",
     "returnsAgent": "acceptance-test.returns-agent@example.com",
     "notifyCallbackTestEmail": "notify-callback-test@example.com",

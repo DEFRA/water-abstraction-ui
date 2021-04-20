@@ -9,51 +9,48 @@ describe('User registration', () => {
   after(() => {
     tearDown();
   });
-
 });
 
 it('redirects to the welcome page', () => {
   cy.visit(Cypress.env('USER_URI'));
-  cy.contains('Sign in or create an account').should('have.class','govuk-heading-l');
+  cy.contains('Sign in or create an account').should('have.class', 'govuk-heading-l');
 });
 
 it('navigates to the start page', () => {
   cy.get('.govuk-button').eq(2).click();
-  cy.contains('Create an account to manage your water abstraction licence online').should('have.class','govuk-heading-l')
+  cy.contains('Create an account to manage your water abstraction licence online').should('have.class', 'govuk-heading-l');
 });
 
 it('navigates to the create account page', () => {
   cy.contains('Create account').should('be.visible');
-  cy.get('.govuk-button--start').click({force:true});
-  cy.contains('Create an acount').should('have.class','govuk-heading-l');
+  cy.get('.govuk-button--start').click({ force: true });
+  cy.contains('Create an acount').should('have.class', 'govuk-heading-l');
 });
 
 it('shows a validation message if the email field is empty', () => {
   cy.get('input#email').type(' ');
   cy.get('button.govuk-button').click();
-  cy.contains('Enter an email address in the right format').should('have.attr','href','#email');
+  cy.contains('Enter an email address in the right format').should('have.attr', 'href', '#email');
 });
 
 it('shows a validation message if the email field is invalid', () => {
   cy.get('input#email').type('not a valid email ');
   cy.get('button.govuk-button').click();
-  cy.contains('Enter an email address in the right format').should('have.attr','href','#email');
-  
+  cy.contains('Enter an email address in the right format').should('have.attr', 'href', '#email');
 });
 
 it('navigates to the success page if the email address is valid', () => {
   cy.get('input#email').clear();
   cy.fixture('users.json').then(users => {
-    cy.get('input#email').type(users.external);
+    cy.get('input#email').type(users.externalNew);
   });
   cy.get('button.govuk-button').click();
- cy.contains('Confirm your email address').should('have.class','govuk-heading-l');
+  cy.contains('Confirm your email address').should('have.class', 'govuk-heading-l');
 });
 
 it('clicks the link in the confirmation email', () => {
-
   cy.fixture('users.json').then(users => {
-    cy.getUserRegistrationUrl(Cypress.env('USER_URI'), users.external).then(response => {
+    cy.getUserRegistrationUrl(Cypress.env('USER_URI'), users.externalNew).then(response => {
       cy.visit(response);
     });
   });
@@ -187,4 +184,4 @@ describe('external user registration', () => {
    * @todo flow where user enters email twice
    * @todo flow where user is already registered
    */
-//});
+// });

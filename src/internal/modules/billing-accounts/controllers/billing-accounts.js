@@ -2,13 +2,10 @@
 
 const { pick } = require('lodash');
 const titleCase = require('title-case');
+const { getCurrentAddress } = require('../lib/helpers');
 
 const getBillingAccountCaption = billingAccount =>
   `Billing account ${billingAccount.accountNumber}`;
-
-const getCurrentAddress = billingAccount =>
-  billingAccount.invoiceAccountAddresses.find(accountAddress =>
-    accountAddress.dateRange.endDate === null);
 
 const getBillingAccountRedirectLink = request => {
   const { billingAccountId } = request.params;
@@ -46,7 +43,8 @@ const getBillingAccount = (request, h) => {
     billingAccount,
     changeAddressLink: getBillingAccountRedirectLink(request),
     bills: bills.data,
-    moreBillsLink
+    moreBillsLink,
+    rebillingLink: `/billing-accounts/${billingAccountId}/rebilling`
   });
 };
 

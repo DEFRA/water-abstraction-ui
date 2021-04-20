@@ -1,0 +1,41 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "crm/invoice-address.njk" import invoiceAddress %}
+{% from "forms/index.njk" import formRender %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+
+{% block content %}
+ 
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      {% set html %}
+        The next supplementary bill run you create will include a credit note and invoice for 
+        {{ 'this bill' if billCount===1 else 'these bills' }}
+      {% endset %}    
+
+      {{ govukPanel({
+        titleText: pageTitle,
+        html: html
+      }) }}
+
+      <p class="govuk-body">Bill marked for reissue:</p>
+      <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-7">
+      {% for bill in bills %}
+        <li>{{ bill.invoiceNumber }}</li>
+      {% endfor %}
+      </ul>
+
+      <a href="{{ links.createBillRun }}" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+        Create a supplementary bill run
+      </a>
+
+      <p class="govuk-body">or</p>
+      <p class="govuk-body">
+        <a class="govuk-link" href="{{ links.billingAccount }}">Return to billing account</a>
+      </p>
+
+    </div>
+  </div>
+
+{% endblock %}

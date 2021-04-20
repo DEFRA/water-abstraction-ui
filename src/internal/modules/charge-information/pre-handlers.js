@@ -47,7 +47,7 @@ const loadChargeableChangeReasons = () => getFilteredChangeReasons('new_chargeab
 const loadNonChargeableChangeReasons = () => getFilteredChangeReasons('new_non_chargeable_charge_version');
 
 const loadIsChargeable = async request => {
-  const { changeReason: { type } } = request.getDraftChargeInformation(request.params.licenceId, getChargeVersionWorkflowId(request));
+  const type = get(request.getDraftChargeInformation(request.params.licenceId, getChargeVersionWorkflowId(request)), 'changeReason.type', null);
   return type === 'new_chargeable_charge_version';
 };
 

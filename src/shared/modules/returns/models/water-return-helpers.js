@@ -76,7 +76,8 @@ const getReturnTotal = (lines) => {
   if (!lines) {
     return null;
   }
-  const filteredLines = lines.filter(line => line.quantity !== null);
+  const filteredLines = lines.filter(line => line.quantity !== null && line.quantity !== undefined);
+
   return filteredLines.length === 0 ? null : filteredLines.reduce((acc, line) => {
     return acc + parseFloat(line.quantity);
   }, 0);

@@ -12,6 +12,10 @@ module.exports = {
     path: '/',
     handler: controller.index,
     config: {
+      auth: {
+        strategy: 'standard',
+        mode: 'try'
+      },
       validate: {
         // this is a potential entry point from
         // https://www.gov.uk/guidance/manage-your-water-abstraction-or-impoundment-licences-online

@@ -1,5 +1,6 @@
 'use strict';
 
+const moment = require('moment');
 const { sortBy } = require('lodash');
 const { isoToReadable } = require('@envage/water-abstraction-helpers').nald.dates;
 
@@ -8,6 +9,9 @@ const csv = require('internal/lib/csv-download');
 const mappers = require('./lib/mappers');
 
 const getStartDate = returnCycle => returnCycle.dateRange.startDate;
+
+const isPastCycle = returnCycle =>
+  moment(returnCycle.dateRange.endDate).isSameOrBefore(Date.now(), 'day');
 
 /**
  * Gets a list of returns cycles that are active within the service
@@ -18,6 +22,7 @@ const getReturnCycles = async (request, h) => {
 
   // Sort by date descending
   const [currentCycle, ...cycles] = sortBy(data, getStartDate)
+    .filter(isPastCycle)
     .reverse()
     .map(mappers.mapCycle);
 

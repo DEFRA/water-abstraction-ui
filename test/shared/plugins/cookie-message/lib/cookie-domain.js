@@ -4,7 +4,7 @@ const { getAnalyticsCookieDomain } = require('shared/plugins/cookie-message/lib/
 
 experiment('plugins/cookie-message/lib/cookie-domain', () => {
   test('leaves localhost unchanged', () => {
-    expect(getAnalyticsCookieDomain('localhost:8000'))
+    expect(getAnalyticsCookieDomain('localhost'))
       .to.equal('localhost');
   });
 

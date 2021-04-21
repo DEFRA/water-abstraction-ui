@@ -26,7 +26,7 @@ describe('View Licences as external user', () => {
     cy.get('.govuk-button.govuk-button--start').click();
 
     // assert the page title
-    cy.contains('Manage your water abstraction or impoundment licence').should('have.attr', 'href', '/');
+    cy.contains('Manage your water abstraction or impoundment licence');
 
     // assert Your licences text on the licences table
     cy.contains('Your licences').should('have.class', 'govuk-heading-l');

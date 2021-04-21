@@ -70,10 +70,3 @@
   </div>
 
 {% endblock %}
-
-{% if error %}
-  {% block bodyEnd %}
-    {{ super() }}
-    {{ sendEvent(nonces.script, 'register_email_invalid_email_address') }}
-  {% endblock %}
-{% endif %}

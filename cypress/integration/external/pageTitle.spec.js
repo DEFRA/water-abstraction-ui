@@ -3,6 +3,6 @@ describe('Page title verification', () => {
     cy.visit(Cypress.env('USER_URI'));
 
     //  finding the site title
-    cy.contains('Manage your water abstraction or impoundment licence').should('have.attr', 'href', '/');
+    cy.contains('Manage your water abstraction or impoundment licence');
   });
 });

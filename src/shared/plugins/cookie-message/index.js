@@ -112,7 +112,7 @@ function setCookiePreferences (isAnalyticsAccepted) {
   if (!isAnalyticsAccepted) {
     ['_ga', '_gid', '_gat', '_gat_govuk_shared'].forEach(cookieName => {
       this.unstate(cookieName, {
-        domain: getAnalyticsCookieDomain(this.request.info.host)
+        domain: getAnalyticsCookieDomain(this.request.info.hostname)
       });
     });
   }

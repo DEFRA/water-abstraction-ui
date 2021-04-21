@@ -4,6 +4,7 @@ const { set, isEmpty } = require('lodash');
 const routes = require('./routes');
 const constants = require('./lib/constants');
 const qs = require('querystring');
+const { getAnalyticsCookieDomain } = require('./lib/cookie-domain');
 
 /**
  * HAPI Cookie Message plugin
@@ -110,7 +111,9 @@ function setCookiePreferences (isAnalyticsAccepted) {
   // Clear analytics cookies
   if (!isAnalyticsAccepted) {
     ['_ga', '_gid', '_gat', '_gat_govuk_shared'].forEach(cookieName => {
-      this.unstate(cookieName);
+      this.unstate(cookieName, {
+        domain: getAnalyticsCookieDomain(this.request.info.host)
+      });
     });
   }
 }

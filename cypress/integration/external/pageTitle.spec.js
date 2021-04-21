@@ -3,6 +3,6 @@ describe('Page title verification', () => {
     cy.visit(Cypress.env('USER_URI'));
 
     //  finding the site title
-    cy.contains('.govuk-header__link--service-name', 'Manage your water abstraction or impoundment licence');
+    cy.contains('Manage your water abstraction or impoundment licence');
   });
 });

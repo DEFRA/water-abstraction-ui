@@ -94,9 +94,11 @@
 
 {% macro actionsCell(batch, invoice) %}
   <td class="govuk-table__cell govuk-table__cell--numeric">
-    <a class="govuk-link" href="/billing/batch/{{batch.id}}/invoice/{{invoice.id}}">View<span class="govuk-visually-hidden">
-        invoice for
-        {{ invoice.accountNumber }}</span></a>
+    {% if invoice.netTotal %}
+      <a class="govuk-link" href="/billing/batch/{{batch.id}}/invoice/{{invoice.id}}">View<span class="govuk-visually-hidden">
+          invoice for
+          {{ invoice.accountNumber }}</span></a>
+    {% endif %}
   </td>
 {% endmacro %}
 

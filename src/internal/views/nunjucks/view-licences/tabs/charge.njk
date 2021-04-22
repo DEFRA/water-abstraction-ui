@@ -3,7 +3,12 @@
 <h2 class="govuk-heading-l">Charge information</h2>
 
 {% macro chargeVersionLink(chargeVersion) %}
-  {% if chargeVersion.status == 'review' or chargeVersion.status == 'changes_requested' %}
+
+  {% if chargeVersion.status == 'to_setup' %}
+    <a class="govuk-link" href="/licences/{{ licenceId }}/charge-information/create?chargeVersionWorkflowId={{ chargeVersion.id }}">Set up</a> 
+    | 
+    <a class="govuk-link" href="/charge-information-workflow/{{ chargeVersion.id }}/remove">Remove</a> 
+  {% elif chargeVersion.status == 'review' or chargeVersion.status == 'changes_requested' %}
     <a class="govuk-link" href="/licences/{{ licenceId }}/charge-information/{{ chargeVersion.id }}/review">Review</a>
   {% else %}
     <a class="govuk-link" href="/licences/{{ licenceId }}/charge-information/{{ chargeVersion.id }}/view">View</a>
@@ -58,10 +63,10 @@
 {% macro chargeVersionRow(chargeVersion) %}
   <tr class="govuk-table__row">
     <td class="govuk-table__cell">
-      {{ chargeVersion.dateRange.startDate | date }}
+      {{ chargeVersion.dateRange.startDate | date | default('-') }}
     </td>
     <td class="govuk-table__cell">
-      {{ chargeVersion.dateRange.endDate | date }}
+      {{ chargeVersion.dateRange.endDate | date | default('-') }}
     </td>
     <td class="govuk-table__cell">
       {{ chargeVersion.changeReason.description }}

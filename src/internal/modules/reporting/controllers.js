@@ -1,5 +1,11 @@
 const services = require('../../lib/connectors/services');
 
+/**
+ * Loads the Charging Reports page
+ * @param request {Object} The request object
+ * @param h {Object} The response object
+ * @returns {Object} h.view Object containing page details
+ */
 const getChargingForecastReportsPage = (request, h) => {
   return h.view('nunjucks/reporting/charging-forecast-reports', {
     ...request.view,
@@ -8,12 +14,18 @@ const getChargingForecastReportsPage = (request, h) => {
   });
 };
 
+/**
+ * Loads a specific report by making a request to the backend
+ * @param request {Object} The request object
+ * @param h {Object} The response object
+ * @returns {Object} h.response Response body
+ */
 const getDownloadableReport = async (request, h) => {
   const { reportIdentifier } = request.params;
   // get signed url
-  const stringifiedReport = await services.water.reporting.getReport(reportIdentifier);
+  const report = await services.water.reporting.getReport(request, h);
 
-  return h.response(stringifiedReport)
+  return h.response(report)
     .header('Content-type', 'text/csv')
     .header('Content-disposition', `attachment; filename="${reportIdentifier}.csv"`);
 };

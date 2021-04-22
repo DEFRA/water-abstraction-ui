@@ -22,8 +22,9 @@ const getChargingForecastReportsPage = (request, h) => {
  */
 const getDownloadableReport = async (request, h) => {
   const { reportIdentifier } = request.params;
+  const { userId } = request.defra;
   // get signed url
-  const report = await services.water.reporting.getReport(request, h);
+  const report = await services.water.reporting.getReport(userId, reportIdentifier);
 
   return h.response(report)
     .header('Content-type', 'text/csv')

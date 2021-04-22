@@ -4,16 +4,16 @@ const got = require('got');
 class ReportingService extends ServiceClient {
   /**
    * Requests a report from the API
-   * @param request {Object} The request object
+   * @param userId {string} The user number
+   * @param reportIdentifier {string} The report identifier
    * @returns {Request} Request body
    */
-  getReport (request) {
-    const { reportIdentifier } = request.params;
+  getReport (userId, reportIdentifier) {
     const uri = this.joinUrl('report/', reportIdentifier);
     const options = {
       headers: {
         Authorization: `Bearer ${process.env.JWT_TOKEN}`,
-        'defra-internal-user-id': request.defra.userId
+        'defra-internal-user-id': `${userId}`
       }
     };
 

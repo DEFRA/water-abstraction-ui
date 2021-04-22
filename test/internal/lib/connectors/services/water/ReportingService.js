@@ -26,14 +26,7 @@ experiment('services/water/ReportingService', () => {
   experiment('.getReport', () => {
     beforeEach(async () => {
       const service = new ReportingService('http://127.0.0.1:8001/water/1.0');
-      await service.getReport({
-        params: {
-          reportIdentifier: 'SomeReportEh'
-        },
-        defra: {
-          userId: '10101010'
-        }
-      });
+      await service.getReport(10101010, 'SomeReportEh');
     });
 
     test('calls the correct endpoint with the Got module', async () => {

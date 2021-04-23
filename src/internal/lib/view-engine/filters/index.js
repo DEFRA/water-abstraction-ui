@@ -19,6 +19,7 @@ module.exports = {
   ...require('shared/view/nunjucks/filters/merge'),
   ...require('shared/view/nunjucks/filters/number'),
   ...require('shared/view/nunjucks/filters/is-object'),
+  ...require('shared/view/nunjucks/filters/percentage'),
   ...require('shared/view/nunjucks/filters/pluralize'),
   ...require('shared/view/nunjucks/filters/query-string'),
   ...require('shared/view/nunjucks/filters/return-badge'),

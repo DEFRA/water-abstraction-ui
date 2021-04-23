@@ -9,7 +9,8 @@ const styles = {
   superseded: 'inactive',
   invalid: 'error',
   review: 'warning',
-  'change request': 'todo'
+  'change request': 'todo',
+  to_setup: 'todo'
 };
 
 //  Map the backend statuses to the desired front-end labels from acceptance criteria.
@@ -22,7 +23,8 @@ const displayedTextTransformer = {
   superseded: 'replaced',
   invalid: 'invalid',
   review: 'review',
-  changes_requested: 'change request'
+  changes_requested: 'change request',
+  to_setup: 'to set up'
 };
 
 /**

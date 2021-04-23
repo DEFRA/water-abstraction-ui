@@ -16,11 +16,11 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-quarter">
         <span class="govuk-caption-l">Total</span>
-        <h3 class="govuk-heading-l">{{ registrations.totals.allTime }}</h3>
+        <h3 class="govuk-heading-l">{{ registrations.totals.allTime | number }}</h3>
       </div>
       <div class="govuk-grid-column-one-quarter">
         <span class="govuk-caption-l">Total year to date</span>
-        <h3 class="govuk-heading-l">{{ registrations.totals.ytd }}</h3>
+        <h3 class="govuk-heading-l">{{ registrations.totals.ytd | number }}</h3>
       </div>
     </div>
     <table class="govuk-table">
@@ -42,8 +42,8 @@
           {% for month in registrations.monthly %}
             <tr class="govuk-table__row">
               <th class="govuk-table__header" scope="row">{{ month.month + ' ' + month.year }}</th>
-              <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.external }}</td>
-              <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.internal }}</td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.external | number }}</td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.internal | number }}</td>
             </tr>
           {% endfor %}
         </tbody>
@@ -57,11 +57,11 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-quarter">
         <span class="govuk-caption-l">Total</span>
-        <h3 class="govuk-heading-l">{{ delegatedAccess.totals.allTime }}</h3>
+        <h3 class="govuk-heading-l">{{ delegatedAccess.totals.allTime | number }}</h3>
       </div>
       <div class="govuk-grid-column-one-quarter">
         <span class="govuk-caption-l">Total year to date</span>
-        <h3 class="govuk-heading-l">{{ delegatedAccess.totals.ytd }}</h3>
+        <h3 class="govuk-heading-l">{{ delegatedAccess.totals.ytd | number }}</h3>
       </div>
     </div>
     <table class="govuk-table">
@@ -81,7 +81,7 @@
         {% for month in delegatedAccess.monthly %}
           <tr class="govuk-table__row">
             <th class="govuk-table__header" scope="row">{{ month.month + ' ' + month.year }}</th>
-            <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.total }}</td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.total | number }}</td>
             <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.change | fixed(2) }}%</td>
           </tr>
         {% endfor %}    
@@ -96,11 +96,11 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-quarter">
         <span class="govuk-caption-l">Total</span>
-        <h3 class="govuk-heading-l">{{ returnsMonthly.totals.allTime }}</h3>
+        <h3 class="govuk-heading-l">{{ returnsMonthly.totals.allTime | number }}</h3>
       </div>
       <div class="govuk-grid-column-one-quarter">
         <span class="govuk-caption-l">Total year to date</span>
-        <h3 class="govuk-heading-l">{{ returnsMonthly.totals.ytd }}</h3>
+        <h3 class="govuk-heading-l">{{ returnsMonthly.totals.ytd | number }}</h3>
       </div>
     </div>
     <table class="govuk-table">
@@ -108,85 +108,119 @@
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
           <th class="govuk-table__header govuk-!-width-one-third" scope="col">Date</th>    
-          <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-third" scope="col">Number recorded</th>    
-          <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-third" scope="col">Number of paper forms requested</th>    
+          <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter" scope="col">Number recorded</th>    
+          <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter" scope="col">Paper forms requests</th>    
+          <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter" scope="col">Sent forms</th> 
         </tr>
       </thead>
       <tbody class="govuk-table__body">
       {% for month in returnsMonthly.monthly %}
         <tr class="govuk-table__row">
           <th class="govuk-table__header" scope="row">{{ month.month + ' ' + month.currentYear }}</th>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.return }}</td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.request }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.returnCount | number }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.paperFormCount | number }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.sentNotificationCount | number }}</td>
         </tr>
       {% endfor %}
       </tbody>
     </table>
 
     <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+
+
+    {% for cycle in returnCycles %}
     <div class="govuk-grid-row">
-      <div class="govuk-grid-column-one-quarter">
-        <span class="govuk-caption-l">Total</span>
-        <h3 class="govuk-heading-l">{{ returnsMonthly.totals.allTime }}</h3>
-      </div>
-      <div class="govuk-grid-column-one-quarter">
-        <span class="govuk-caption-l">Total year to date</span>
-        <h3 class="govuk-heading-l">
-          {% if (returnsCycle1.total + returnsCycle2.total)   %}
-            {{ returnsCycle1.total + returnsCycle2.total }}</h3>
-          {% else %}
-            0
-          {% endif %}
+      <div class="govuk-grid-column-full">
+
+        <table class="govuk-table">
+          <caption class="govuk-table__caption">Returns cycle ending {{ cycle.endDate | date }}</caption>
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header govuk-!-width-one-third" scope="col"></th>    
+              <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter" scope="col">Digital</th>    
+              <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter" scope="col">Non-digital</th>   
+              <th class="govuk-table__header govuk-table__header--numeric govuk-!-width-one-quarter" scope="col">All channels</th>  
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header govuk-!-width-one-third" scope="row">Completed on time</th>
+              <td class="govuk-table__cell govuk-table__cell--numeric">
+                {{ cycle.completedDigitalOnTimeCount | number }}
+                ({{ cycle.completedDigitalOnTimeCount | percentage(cycle.totalExcludingVoid) }})
+              </td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">
+                {{ cycle.completedNonDigitalOnTimeCount | number }}
+                ({{ cycle.completedNonDigitalOnTimeCount | percentage(cycle.totalExcludingVoid) }})
+              </td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">
+                {{ cycle.completedOnTimeCount | number }}
+                ({{ cycle.completedOnTimeCount | percentage(cycle.totalExcludingVoid) }})
+              </td>
+            </tr>
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header govuk-!-width-one-third" scope="row">Completed late</th>
+              <td class="govuk-table__cell govuk-table__cell--numeric">
+                {{ cycle.completedDigitalLateCount | number }}
+                ({{ cycle.completedDigitalLateCount | percentage(cycle.totalExcludingVoid) }})
+              </td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">
+                {{ cycle.completedNonDigitalLateCount | number }}
+                ({{ cycle.completedNonDigitalLateCount | percentage(cycle.totalExcludingVoid) }})
+              </td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">
+                {{ cycle.completedLateCount | number }}
+                ({{ cycle.completedLateCount | percentage(cycle.totalExcludingVoid) }})
+              </td>
+            </tr>
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header govuk-!-width-one-third" scope="row">Total completed</th>
+              <td class="govuk-table__cell govuk-table__cell--numeric govuk-!-font-weight-bold">
+                {{ cycle.completedDigitalCount | number }}
+                ({{ cycle.completedDigitalCount | percentage(cycle.totalExcludingVoid) }})
+              </td>
+              <td class="govuk-table__cell govuk-table__cell--numeric govuk-!-font-weight-bold">
+                {{ cycle.completedNonDigitalCount | number }}
+                ({{ cycle.completedNonDigitalCount | percentage(cycle.totalExcludingVoid) }})
+              </td>
+              <td class="govuk-table__cell govuk-table__cell--numeric govuk-!-font-weight-bold">
+                {{ cycle.completedCount | number }}
+                ({{ cycle.completedCount | percentage(cycle.totalExcludingVoid) }})
+              </td>
+            </tr>
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header govuk-!-width-one-third" scope="row">Received, but not entered</th>
+              <td class="govuk-table__cell govuk-table__cell--numeric" colspan="3">
+                {{ cycle.receivedCount | number }}
+                ({{ cycle.receivedCount | percentage(cycle.totalExcludingVoid) }})
+              </td>
+            </tr>
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header govuk-!-width-one-third" scope="row">Due</th>
+              <td class="govuk-table__cell govuk-table__cell--numeric" colspan="3">
+                {{ cycle.dueCount | number }}
+                ({{ cycle.dueCount | percentage(cycle.totalExcludingVoid) }})
+              </td>
+            </tr>
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header govuk-!-width-one-third" scope="row">Total</th>
+              <td class="govuk-table__cell govuk-table__cell--numeric govuk-!-font-weight-bold" colspan="3">
+                {{ cycle.totalExcludingVoid | number }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          Digital take-up {{ cycle.completedDigitalCount | percentage(cycle.completedCount) }}
+        </p>
       </div>
     </div>
-    <table class="govuk-table">  
-      <caption class="govuk-table__caption">Returns submitted by cycle date</caption>
-      <thead class="govuk-table__head">
-      <tr class="govuk-table__row">    
-        <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Returns cycle date</th>    
-        <th class="govuk-table__header govuk-table__header--numeric" scope="col">Total due</th>    
-        <th class="govuk-table__header govuk-table__header--numeric" scope="col">Number by post</th>    
-        <th class="govuk-table__header govuk-table__header--numeric" scope="col">Number by digital</th>    
-      </tr>
-      </thead>  
-      <tbody class="govuk-table__body">
-        {% if returnsCycle1.endDate %}    
-        <tr class="govuk-table__row">      
-          <th class="govuk-table__header" scope="row">          
-            {% if returnsCycle1.isSummer %}
-              13 October {{ returnsCycle1.endDate.slice(0,4) }}
-            {% else %}
-              28 April {{ returnsCycle1.endDate.slice(0,4) }}
-            {% endif %}
-          </th>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ returnsCycle1.due }}</td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">
-            On time {{ returnsCycle1.internalOnTime }}<br>Late {{ returnsCycle1.internalLate }}
-          </td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">
-            On time {{ returnsCycle1.externalOnTime }}<br>Late {{ returnsCycle1.externalLate }}
-          </td>    
-        </tr>
-        {% endif %}
-        {% if returnsCycle2.endDate %}
-        <tr class="govuk-table__row">      
-          <th class="govuk-table__header" scope="row">          
-            {% if returnsCycle2.isSummer %}
-              13 October {{ returnsCycle2.endDate.slice(0,4) }}
-            {% else %}
-              28 April {{ returnsCycle2.endDate.slice(0,4) }}</th>
-            {% endif %}          
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ returnsCycle2.due }}</td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">
-            On time {{ returnsCycle2.internalOnTime }}<br>Late {{ returnsCycle2.internalLate }}
-          </td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">
-            On time {{ returnsCycle2.externalOnTime }}<br>Late {{ returnsCycle2.externalLate }}
-          </td>   
-        </tr>
-        {% endif %}
-      </tbody>
-    </table>
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+    {% endfor %}
+
+ 
+
+  
   </div>
 </div>
 
@@ -196,11 +230,11 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-quarter">
         <span class="govuk-caption-l">Total</span>
-        <h3 class="govuk-heading-l">{{ licenceNames.totals.allTime }}</h3>
+        <h3 class="govuk-heading-l">{{ licenceNames.totals.allTime | number }}</h3>
       </div>
       <div class="govuk-grid-column-one-quarter">
         <span class="govuk-caption-l">Total year to date</span>
-        <h3 class="govuk-heading-l">{{ licenceNames.totals.ytd }}</h3>
+        <h3 class="govuk-heading-l">{{ licenceNames.totals.ytd | number }}</h3>
       </div>
     </div>
     <table class="govuk-table">  
@@ -218,9 +252,9 @@
       {% for month in licenceNames.monthly %}    
         <tr class="govuk-table__row">
           <th class="govuk-table__header" scope="row">{{ month.month + ' ' + month.year }}</th>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.named }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.named | number }}</td>
           <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.namedChange | fixed(2) }}%</td>
-          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.renamed }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.renamed | number }}</td>
           <td class="govuk-table__cell govuk-table__cell--numeric">{{ month.renamedChange | fixed(2) }}%</td>
         </tr>
       {% endfor %}

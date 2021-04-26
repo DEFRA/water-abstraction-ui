@@ -197,7 +197,7 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
     });
 
     test('compensation charge as Y/N to user friendly heading', () => {
-      expect(transactionData['Compensation charge']).to.equal('N');
+      expect(transactionData['Compensation charge Y/N']).to.equal('N');
     });
 
     test('charge element data to user friendly headings', () => {
@@ -284,7 +284,7 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
 
       const transactionData = transactionsCSV._getTransactionData(minChargeTransaction);
       expect(transactionData.description).to.equal(minChargeTransaction.description);
-      expect(transactionData['Compensation charge']).to.equal('N');
+      expect(transactionData['Compensation charge Y/N']).to.equal('N');
       expect(transactionData['S126 agreement (Y/N)']).to.equal('N');
       expect(transactionData['S126 agreement value']).to.equal(null);
       expect(transactionData['S127 agreement (Y/N)']).to.equal('N');
@@ -408,19 +408,19 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
     });
 
     test('de minimis is mapped to user friendly heading', async () => {
-      expect(csvData[0]['De minimis rule']).to.equal('N');
+      expect(csvData[0]['De minimis rule Y/N']).to.equal('N');
     });
 
     test('description is mapped to user friendly heading', async () => {
-      expect(csvData[0]['Description']).to.equal('The description - with 007');
+      expect(csvData[0]['Transaction Description']).to.equal('The description - with 007');
     });
 
     test('water company is mapped to user friendly heading', async () => {
-      expect(csvData[0]['Water company']).to.equal('N');
+      expect(csvData[0]['Water company Y/N']).to.equal('N');
     });
 
     test('DeMinimis is mapped to user friendly heading', async () => {
-      expect(csvData[0]['De minimis rule']).to.equal('N');
+      expect(csvData[0]['De minimis rule Y/N']).to.equal('N');
     });
 
     test('historical area is mapped to user friendly heading', async () => {

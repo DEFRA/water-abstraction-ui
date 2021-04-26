@@ -412,7 +412,7 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
     });
 
     test('description is mapped to user friendly heading', async () => {
-      expect(csvData[0]['Transaction Description']).to.equal('The description - with 007');
+      expect(csvData[0]['Transaction description']).to.equal('The description - with 007');
     });
 
     test('water company is mapped to user friendly heading', async () => {

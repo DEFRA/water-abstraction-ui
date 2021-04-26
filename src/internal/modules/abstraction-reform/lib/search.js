@@ -76,15 +76,13 @@ const loadAbstractionReformLicences = async (crmLicences) => {
   return data;
 };
 
-const search = async (q) => {
+const search = async (q, page) => {
   let filter = {};
   if (q.match('@')) {
     filter.email = q.trim();
   } else {
     filter.string = q.trim();
   }
-
-  const page = 1;
 
   const sort = {
     system_external_id: +1

@@ -24,6 +24,7 @@ const manageTabSkeleton = {
     createLink('Notices', '/notifications/report', scope.allNotifications),
     createLink('Returns cycles', '/returns-reports', scope.returns),
     createLink('Digitise!', '/digitise/report', scope.abstractionReformApprover),
+    createLink('Charging forecast report', '/reporting/charging-forecast-reports', scope.billing),
     createLink('Key performance indicators', '/reporting/kpi-reporting', scope.hasManageTab)
   ],
   returnNotifications: [

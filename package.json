@@ -7,9 +7,8 @@
     "type": "git",
     "url": "https://github.com/DEFRA/water-abstraction-ui"
   },
-  
   "scripts": {
-    "clean:reports": "rm -rf cypress/reports && rm -rf cypress/TestReport",
+    "clean:reports": "rm -rf cypress/reports/* && rm -rf cypress/TestReport/*",
     "pretest": "npm run clean:reports",
     "install-assets": "gulp build",
     "test:ci": "lab -t 55 -m 0 -r lcov -o coverage/lcov.info -r console -o stdout",
@@ -32,7 +31,7 @@
     "combine-reports": "mochawesome-merge cypress/reports/mocha/*.json > cypress/reports/mocha/combined-report.json",
     "generate-report": "marge --reportDir TestReport cypress/reports/mocha/combined-report.json",
     "posttest": "npm run combine-reports && npm run generate-report",
-    "testreport": "npm run test:cypress-silently || npm run posttest"
+    "test1": "npm run test:cypress-silently || npm run posttest"
   },
   "author": "",
   "license": "ISC",

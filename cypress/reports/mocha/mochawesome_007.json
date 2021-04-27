@@ -2,23 +2,23 @@
   "stats": {
     "suites": 1,
     "tests": 1,
-    "passes": 0,
+    "passes": 1,
     "pending": 0,
-    "failures": 1,
-    "start": "2021-04-26T22:14:11.197Z",
-    "end": "2021-04-26T22:14:12.876Z",
-    "duration": 1679,
+    "failures": 0,
+    "start": "2021-04-27T11:23:36.463Z",
+    "end": "2021-04-27T11:23:42.557Z",
+    "duration": 6094,
     "testsRegistered": 1,
-    "passPercent": 0,
+    "passPercent": 100,
     "pendingPercent": 0,
-    "other": 1,
-    "hasOther": true,
+    "other": 0,
+    "hasOther": false,
     "skipped": 0,
     "hasSkipped": false
   },
   "results": [
     {
-      "uuid": "731287d6-f4c0-4847-9b9c-a92c32b8134a",
+      "uuid": "2c313524-bd0b-4cb1-8dc1-4e42c5999776",
       "title": "",
       "fullFile": "cypress/integration/internal/searchForLicence.spec.js",
       "file": "cypress/integration/internal/searchForLicence.spec.js",
@@ -27,7 +27,7 @@
       "tests": [],
       "suites": [
         {
-          "uuid": "5d2a7bf3-fb2c-4011-a1f3-0ea5482d3ed8",
+          "uuid": "84f9f9c4-11cd-4514-b061-76457231a3e6",
           "title": "search for licences as internal user",
           "fullFile": "",
           "file": "",
@@ -38,33 +38,29 @@
               "title": "user logs in and searches for a License",
               "fullTitle": "search for licences as internal user user logs in and searches for a License",
               "timedOut": null,
-              "duration": 804,
-              "state": "failed",
-              "speed": null,
-              "pass": false,
-              "fail": true,
+              "duration": 4530,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
               "pending": false,
               "context": null,
               "code": "// cy.visit to visit the URL\ncy.visit(Cypress.env('ADMIN_URI')); // Enter the user name and Password\ncy.fixture('users.json').then(function (users) {\n  cy.get('input#email').type(users.psc);\n});\ncy.get('#password').type(Cypress.env('DEFAULT_PASSWORD')); // Click Sign in Button\ncy.get('.govuk-button.govuk-button--start').click(); // assert once the user is signed in\ncy.contains('Licences, users and returns'); // search for a license\ncy.get('#query').type('Anglian').should('be.visible');\ncy.get('.search__button').click();\ncy.contains('Licences').should('be.visible'); //  Click Sign out Button\ncy.get('#signout').click(); //  assert the signout\ncy.contains('You are signed out');",
-              "err": {
-                "message": "CypressError: `cy.request()` failed trying to load:\n\nhttp://127.0.0.1:8001/water/1.0/acceptance-tests/tear-down\n\nWe attempted to make an http request to this URL but the request failed without a response.\n\nWe received this error at the network level:\n\n  > Error: connect ECONNREFUSED 127.0.0.1:8001\n\n-----------------------------------------------------------\n\nThe request we sent was:\n\nMethod: POST\nURL: http://127.0.0.1:8001/water/1.0/acceptance-tests/tear-down\n\n-----------------------------------------------------------\n\nCommon situations why this would fail:\n  - you don't have internet access\n  - you forgot to run / boot your web server\n  - your web server isn't accessible\n  - you have weird network configuration settings on your computer\n\nhttps://on.cypress.io/request\n\nBecause this error occurred during a `after all` hook we are skipping the remaining tests in the current suite: `search for licences as inte...`",
-                "estack": "CypressError: `cy.request()` failed trying to load:\n\nhttp://127.0.0.1:8001/water/1.0/acceptance-tests/tear-down\n\nWe attempted to make an http request to this URL but the request failed without a response.\n\nWe received this error at the network level:\n\n  > Error: connect ECONNREFUSED 127.0.0.1:8001\n\n-----------------------------------------------------------\n\nThe request we sent was:\n\nMethod: POST\nURL: http://127.0.0.1:8001/water/1.0/acceptance-tests/tear-down\n\n-----------------------------------------------------------\n\nCommon situations why this would fail:\n  - you don't have internet access\n  - you forgot to run / boot your web server\n  - your web server isn't accessible\n  - you have weird network configuration settings on your computer\n\nhttps://on.cypress.io/request\n\nBecause this error occurred during a `after all` hook we are skipping the remaining tests in the current suite: `search for licences as inte...`\n    at http://localhost:8008/__cypress/runner/cypress_runner.js:160339:19\n    at tryCatcher (http://localhost:8008/__cypress/runner/cypress_runner.js:10765:23)\n    at http://localhost:8008/__cypress/runner/cypress_runner.js:5904:37\n    at tryCatcher (http://localhost:8008/__cypress/runner/cypress_runner.js:10765:23)\n    at Promise._settlePromiseFromHandler (http://localhost:8008/__cypress/runner/cypress_runner.js:8700:31)\n    at Promise._settlePromise (http://localhost:8008/__cypress/runner/cypress_runner.js:8757:18)\n    at Promise._settlePromise0 (http://localhost:8008/__cypress/runner/cypress_runner.js:8802:10)\n    at Promise._settlePromises (http://localhost:8008/__cypress/runner/cypress_runner.js:8878:18)\n    at _drainQueueStep (http://localhost:8008/__cypress/runner/cypress_runner.js:5472:12)\n    at _drainQueue (http://localhost:8008/__cypress/runner/cypress_runner.js:5465:9)\n    at Async.../../node_modules/bluebird/js/release/async.js.Async._drainQueues (http://localhost:8008/__cypress/runner/cypress_runner.js:5481:5)\n    at Async.drainQueues (http://localhost:8008/__cypress/runner/cypress_runner.js:5351:14)\nFrom Your Spec Code:\n    at waterRequest (http://localhost:8008/__cypress/tests?p=cypress/integration/internal/searchForLicence.spec.js:160:6)\n    at tearDown (http://localhost:8008/__cypress/tests?p=cypress/integration/internal/searchForLicence.spec.js:185:10)\n    at Context.eval (http://localhost:8008/__cypress/tests?p=cypress/integration/internal/searchForLicence.spec.js:109:5)\n\nFrom Node.js Internals:\n  RequestError: Error: connect ECONNREFUSED 127.0.0.1:8001\n      at new RequestError (/Users/srujanchada/Library/Caches/Cypress/6.9.1/Cypress.app/Contents/Resources/app/packages/server/node_modules/request-promise-core/lib/errors.js:14:15)\n      at Request.plumbing.callback (/Users/srujanchada/Library/Caches/Cypress/6.9.1/Cypress.app/Contents/Resources/app/packages/server/node_modules/request-promise-core/lib/plumbing.js:87:29)\n      at Request.RP$callback [as _callback] (/Users/srujanchada/Library/Caches/Cypress/6.9.1/Cypress.app/Contents/Resources/app/packages/server/node_modules/request-promise-core/lib/plumbing.js:46:31)\n      at self.callback (/Users/srujanchada/Library/Caches/Cypress/6.9.1/Cypress.app/Contents/Resources/app/packages/server/node_modules/@cypress/request/request.js:185:22)\n      at Request.emit (events.js:315:20)\n      at Request.onRequestError (/Users/srujanchada/Library/Caches/Cypress/6.9.1/Cypress.app/Contents/Resources/app/packages/server/node_modules/@cypress/request/request.js:877:8)\n      at ClientRequest.emit (events.js:327:22)\n      at Socket.socketErrorListener (_http_client.js:426:9)\n      at Socket.emit (events.js:315:20)\n      at emitErrorNT (internal/streams/destroy.js:92:8)\n      at emitErrorAndCloseNT (internal/streams/destroy.js:60:3)\n      at processTicksAndRejections (internal/process/task_queues.js:84:21)\n  ",
-                "diff": null
-              },
-              "uuid": "5075ac1b-b8b9-45c4-bd67-992dd1fd1848",
-              "parentUUID": "5d2a7bf3-fb2c-4011-a1f3-0ea5482d3ed8",
+              "err": {},
+              "uuid": "40654021-04cc-451d-9d07-22923d96578d",
+              "parentUUID": "84f9f9c4-11cd-4514-b061-76457231a3e6",
               "isHook": false,
               "skipped": false
             }
           ],
           "suites": [],
-          "passes": [],
-          "failures": [
-            "5075ac1b-b8b9-45c4-bd67-992dd1fd1848"
+          "passes": [
+            "40654021-04cc-451d-9d07-22923d96578d"
           ],
+          "failures": [],
           "pending": [],
           "skipped": [],
-          "duration": 804,
+          "duration": 4530,
           "root": false,
           "rootEmpty": false,
           "_timeout": 2000

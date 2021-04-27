@@ -6,10 +6,10 @@
   "reporterOptions": {
     "reporterEnabled": "mochawesome",
     "mochawesomeReporterOptions": {
-      "reportDir": "cypress/reports/mocha",
-      "quiet": true,
+      "reportDir": "./cypress/reports/mocha",
+      "quiet": false,
       "overwrite": false,
-      "html": false,
+      "html": true,
       "json": true
     }
   },

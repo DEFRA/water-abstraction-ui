@@ -12,7 +12,7 @@
       "html": false,
       "json": true
     }
-  }
+  },
   "env": {
   },
   "integrationFolder": "./cypress/integration",

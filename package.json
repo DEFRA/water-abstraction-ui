@@ -7,7 +7,10 @@
     "type": "git",
     "url": "https://github.com/DEFRA/water-abstraction-ui"
   },
+  
   "scripts": {
+    "clean:reports": "rm -rf cypress/reports && rm -rf cypress/TestReport",
+    "pretest": "npm run clean:reports",
     "install-assets": "gulp build",
     "test:ci": "lab -t 55 -m 0 -r lcov -o coverage/lcov.info -r console -o stdout",
     "test": "lab",
@@ -25,7 +28,11 @@
     "sass:watch": "gulp sass:watch",
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect",
-    "version": "auto-changelog -p --commit-limit false && git add CHANGELOG.md"
+    "version": "auto-changelog -p --commit-limit false && git add CHANGELOG.md",
+    "combine-reports": "mochawesome-merge cypress/reports/mocha/*.json > cypress/reports/mocha/combined-report.json",
+    "generate-report": "marge --reportDir TestReport cypress/reports/mocha/combined-report.json",
+    "posttest": "npm run combine-reports && npm run generate-report",
+    "testreport": "npm run test:cypress-silently || npm run posttest"
   },
   "author": "",
   "license": "ISC",
@@ -47,6 +54,7 @@
     "chromedriver": "^89.0.0",
     "codecov": "^3.7.1",
     "cypress": "^6.8.0",
+    "cypress-multi-reporters": "^1.5.0",
     "del": "^3.0.0",
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
@@ -60,7 +68,10 @@
     "gulp-sass": "^4.1.0",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-uglify": "^3.0.2",
-    "mocha": "^8.2.1",
+    "mocha": "^8.3.2",
+    "mochawesome": "^6.2.2",
+    "mochawesome-merge": "^4.2.0",
+    "mochawesome-report-generator": "^5.2.0",
     "sinon": "^4.2.2",
     "snyk": "^1.483.0",
     "wdio-chromedriver-service": "^6.0.4",
@@ -114,6 +125,7 @@
     "marked": "^0.7.0",
     "minimatch": "^3.0.4",
     "mkdirp": "^0.5.5",
+    "mocha": "^8.3.2",
     "moment": "^2.26.0",
     "moment-range": "^4.0.2",
     "moment-timezone": "^0.5.33",

@@ -1,0 +1,111 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 0,
+    "pending": 0,
+    "failures": 1,
+    "start": "2021-04-26T22:14:03.771Z",
+    "end": "2021-04-26T22:14:05.415Z",
+    "duration": 1644,
+    "testsRegistered": 1,
+    "passPercent": 0,
+    "pendingPercent": 0,
+    "other": 1,
+    "hasOther": true,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "27ff7093-f533-4111-97a3-840b60b9a403",
+      "title": "",
+      "fullFile": "cypress/integration/external/view-licences.spec.js",
+      "file": "cypress/integration/external/view-licences.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "660c7eef-e0d2-44f1-8692-aad50a2754d5",
+          "title": "View Licences as external user",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "View licenses and verify them",
+              "fullTitle": "View Licences as external user View licenses and verify them",
+              "timedOut": null,
+              "duration": 779,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "//  cy.visit to visit the URL\ncy.visit(Cypress.env('USER_URI')); // tap the sign in button on the welcome page\ncy.get('a[href*=\"/signin\"]').click(); //  Enter the user name and Password\ncy.fixture('users.json').then(function (users) {\n  cy.get('input#email').type(users.external);\n});\ncy.get('input#password').type(Cypress.env('DEFAULT_PASSWORD')); //  Click Sign in Button\ncy.get('.govuk-button.govuk-button--start').click(); // assert the page title\ncy.contains('Manage your water abstraction or impoundment licence'); // assert Your licences text on the licences table\ncy.contains('Your licences').should('have.class', 'govuk-heading-l'); // assert the licences in the table\n// all searches are automatically rooted to the found tr element\ncy.contains('AT/CURR/DAILY/01').should('be.visible');\ncy.contains('AT/CURR/WEEKLY/01').should('be.visible');\ncy.contains('AT/CURR/MONTHLY/01').should('be.visible');\ncy.contains('AT/CURR/MONTHLY/02').should('be.visible'); //  Click Sign out Button\ncy.get('#signout').click(); //  assert the signout\ncy.contains('You are signed out');",
+              "err": {
+                "message": "CypressError: `cy.request()` failed trying to load:\n\nhttp://127.0.0.1:8001/water/1.0/acceptance-tests/tear-down\n\nWe attempted to make an http request to this URL but the request failed without a response.\n\nWe received this error at the network level:\n\n  > Error: connect ECONNREFUSED 127.0.0.1:8001\n\n-----------------------------------------------------------\n\nThe request we sent was:\n\nMethod: POST\nURL: http://127.0.0.1:8001/water/1.0/acceptance-tests/tear-down\n\n-----------------------------------------------------------\n\nCommon situations why this would fail:\n  - you don't have internet access\n  - you forgot to run / boot your web server\n  - your web server isn't accessible\n  - you have weird network configuration settings on your computer\n\nhttps://on.cypress.io/request\n\nBecause this error occurred during a `after all` hook we are skipping the remaining tests in the current suite: `View Licences as external user`",
+                "estack": "CypressError: `cy.request()` failed trying to load:\n\nhttp://127.0.0.1:8001/water/1.0/acceptance-tests/tear-down\n\nWe attempted to make an http request to this URL but the request failed without a response.\n\nWe received this error at the network level:\n\n  > Error: connect ECONNREFUSED 127.0.0.1:8001\n\n-----------------------------------------------------------\n\nThe request we sent was:\n\nMethod: POST\nURL: http://127.0.0.1:8001/water/1.0/acceptance-tests/tear-down\n\n-----------------------------------------------------------\n\nCommon situations why this would fail:\n  - you don't have internet access\n  - you forgot to run / boot your web server\n  - your web server isn't accessible\n  - you have weird network configuration settings on your computer\n\nhttps://on.cypress.io/request\n\nBecause this error occurred during a `after all` hook we are skipping the remaining tests in the current suite: `View Licences as external user`\n    at http://localhost:8008/__cypress/runner/cypress_runner.js:160339:19\n    at tryCatcher (http://localhost:8008/__cypress/runner/cypress_runner.js:10765:23)\n    at http://localhost:8008/__cypress/runner/cypress_runner.js:5904:37\n    at tryCatcher (http://localhost:8008/__cypress/runner/cypress_runner.js:10765:23)\n    at Promise._settlePromiseFromHandler (http://localhost:8008/__cypress/runner/cypress_runner.js:8700:31)\n    at Promise._settlePromise (http://localhost:8008/__cypress/runner/cypress_runner.js:8757:18)\n    at Promise._settlePromise0 (http://localhost:8008/__cypress/runner/cypress_runner.js:8802:10)\n    at Promise._settlePromises (http://localhost:8008/__cypress/runner/cypress_runner.js:8878:18)\n    at _drainQueueStep (http://localhost:8008/__cypress/runner/cypress_runner.js:5472:12)\n    at _drainQueue (http://localhost:8008/__cypress/runner/cypress_runner.js:5465:9)\n    at Async.../../node_modules/bluebird/js/release/async.js.Async._drainQueues (http://localhost:8008/__cypress/runner/cypress_runner.js:5481:5)\n    at Async.drainQueues (http://localhost:8008/__cypress/runner/cypress_runner.js:5351:14)\nFrom Your Spec Code:\n    at waterRequest (http://localhost:8008/__cypress/tests?p=cypress/integration/external/view-licences.spec.js:166:6)\n    at tearDown (http://localhost:8008/__cypress/tests?p=cypress/integration/external/view-licences.spec.js:191:10)\n    at Context.eval (http://localhost:8008/__cypress/tests?p=cypress/integration/external/view-licences.spec.js:109:5)\n\nFrom Node.js Internals:\n  RequestError: Error: connect ECONNREFUSED 127.0.0.1:8001\n      at new RequestError (/Users/srujanchada/Library/Caches/Cypress/6.9.1/Cypress.app/Contents/Resources/app/packages/server/node_modules/request-promise-core/lib/errors.js:14:15)\n      at Request.plumbing.callback (/Users/srujanchada/Library/Caches/Cypress/6.9.1/Cypress.app/Contents/Resources/app/packages/server/node_modules/request-promise-core/lib/plumbing.js:87:29)\n      at Request.RP$callback [as _callback] (/Users/srujanchada/Library/Caches/Cypress/6.9.1/Cypress.app/Contents/Resources/app/packages/server/node_modules/request-promise-core/lib/plumbing.js:46:31)\n      at self.callback (/Users/srujanchada/Library/Caches/Cypress/6.9.1/Cypress.app/Contents/Resources/app/packages/server/node_modules/@cypress/request/request.js:185:22)\n      at Request.emit (events.js:315:20)\n      at Request.onRequestError (/Users/srujanchada/Library/Caches/Cypress/6.9.1/Cypress.app/Contents/Resources/app/packages/server/node_modules/@cypress/request/request.js:877:8)\n      at ClientRequest.emit (events.js:327:22)\n      at Socket.socketErrorListener (_http_client.js:426:9)\n      at Socket.emit (events.js:315:20)\n      at emitErrorNT (internal/streams/destroy.js:92:8)\n      at emitErrorAndCloseNT (internal/streams/destroy.js:60:3)\n      at processTicksAndRejections (internal/process/task_queues.js:84:21)\n  ",
+                "diff": null
+              },
+              "uuid": "9753da75-71e3-4dba-b4fe-bc52d8b4071b",
+              "parentUUID": "660c7eef-e0d2-44f1-8692-aad50a2754d5",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": [
+            "9753da75-71e3-4dba-b4fe-bc52d8b4071b"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 779,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": true,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.2.2"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "reportDir": "cypress/reports/mocha",
+        "quiet": true,
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "5.2.0"
+    }
+  }
+}

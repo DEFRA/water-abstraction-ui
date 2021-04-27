@@ -6,9 +6,9 @@ describe('search for licences as internal user', () => {
     setUp('billing-data');
   });
 
-  after(() => {
-    tearDown();
-  });
+  // after(() => {
+  //   tearDown();
+  // });
 
   it('user logs in and searches for a License', () => {
     // cy.visit to visit the URL
@@ -29,15 +29,10 @@ describe('search for licences as internal user', () => {
     cy.get('.search__button').click();
     cy.contains('Licences').should('be.visible');
   });
-  //it('navigates to the licence page', () => {
+  it('navigates to the licence page', () => {
     //cy.get('td').first().click();
 
-    //expect(browser).toHaveUrlContaining('/licences/');
-    //expect(getPageTitle()).toHaveText(LICENCE_NUMBER);
-  //});
-
-
-
-
-  
+    // expect(browser).toHaveUrlContaining('/licences/');
+    // expect(getPageTitle()).toHaveText(LICENCE_NUMBER);
+  });
 });

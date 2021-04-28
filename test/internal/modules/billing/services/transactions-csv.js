@@ -421,15 +421,17 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
 
     test('water company when true is mapped to user friendly heading', async () => {
       invoice.invoiceLicences[0].licence.isWaterUndertaker = true;
-      csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
+      csvData = await transactionsCSV.createCSV([invoice], chargeVersions);
       expect(csvData[0]['Water company Y/N']).to.equal('Y');
     });
 
     test('DeMinimis is mapped to user friendly heading', async () => {
-      csvData = await transactionsCSV.createCSV([{
-        ...invoice,
-      isDeMinimis: true
-      }], chargeVersions);
+      csvData = await transactionsCSV.createCSV([
+        {
+          ...invoice,
+          isDeMinimis: true
+        }
+      ], chargeVersions);
       expect(csvData[0]['De minimis rule Y/N']).to.equal('Y');
     });
 

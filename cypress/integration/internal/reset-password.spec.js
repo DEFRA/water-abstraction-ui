@@ -26,9 +26,6 @@ describe('internal user resetting their password:', () => {
     cy.get('button.govuk-button.govuk-button--start').click();
     cy.contains('Enter an email address').should('have.attr', 'href', '#email');
   });
-
-  
-
   it('shows a validation message if the email field is invalid', () => {
     cy.get('input#email').type('invalid....email');
     cy.get('button.govuk-button.govuk-button--start').click();
@@ -36,7 +33,6 @@ describe('internal user resetting their password:', () => {
     cy.get('input#email').clear();
   });
 
-  
   it('navigates to success page if the email address is valid', () => {
     cy.fixture('users.json').then(users => {
       cy.get('input#email').type(users.psc);
@@ -47,10 +43,9 @@ describe('internal user resetting their password:', () => {
   });
 
   it('shows a link to resend the reset password email', () => {
-    cy.contains('Has the email not arrived?').should('have.attr','href','/reset_password_resend_email');
+    cy.contains('Has the email not arrived?').should('have.attr', 'href', '/reset_password_resend_email');
   });
 
-  
   it('clicks the link in the confirmation email', () => {
     cy.fixture('users.json').then(users => {
       cy.getPasswordResetUrl(Cypress.env('ADMIN_URI'), users.psc).then(response => {
@@ -60,14 +55,12 @@ describe('internal user resetting their password:', () => {
     });
   });
 
-  
   it('check the title and shows the change password fields', () => {
     cy.contains('Change your password').should('be.visible');
     cy.contains('Enter a new password').should('be.visible');
     cy.contains('Confirm your password').should('be.visible');
   });
 
-  
   it('changes the password and signs in', () => {
     cy.get('[id=password]').type('P@55word');
     cy.get('[id=confirm-password]').type('P@55word');

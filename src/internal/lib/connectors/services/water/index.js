@@ -24,6 +24,7 @@ const ServiceStatusService = require('internal/lib/connectors/services/water/Ser
 const RegionsService = require('./RegionsService');
 const AgreementsService = require('./AgreementsService');
 const KpiReportingService = require('./KpiReportingService');
+const ReportingService = require('./ReportingService');
 
 // Shared API Clients
 const EventsApiClient = require('shared/lib/connectors/services/water/EventsApiClient');
@@ -64,6 +65,7 @@ module.exports = config => ({
   serviceStatus: new ServiceStatusService(config.services.water, logger),
   returnsNotifications: new ReturnsNotificationsService(config.services.water, logger),
   kpiReporting: new KpiReportingService(config.services.water, logger),
+  reporting: new ReportingService(config.services.water, logger),
 
   // Shared API Clients
   abstractionReformAnalysis: new AbstractionReformAnalysisApiClient(config, logger),

@@ -70,9 +70,13 @@
 {% endmacro %}
 
 {% macro gaugingStationLink(station) %}
-  <a href="/gauging-stations/{{ station.gauging_station_id }}">
-    {{ station.label }}
-  </a>
+  {% if station.gauging_station_id %}
+      <a href="/monitoring-stations/{{ station.gauging_station_id }}">
+        {{ station.label }}
+      </a>
+  {% else %}
+      {{ station.label }}
+  {% endif %}
 {% endmacro %}
 
 {% block content %}

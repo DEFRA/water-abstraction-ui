@@ -5,9 +5,9 @@
 {% macro chargeVersionLink(chargeVersion) %}
 
   {% if chargeVersion.status == 'to_setup' %}
-    <a class="govuk-link" href="/licences/{{ licenceId }}/charge-information/create?chargeVersionWorkflowId={{ chargeVersion.id }}">Set up</a> 
-    | 
-    <a class="govuk-link" href="/charge-information-workflow/{{ chargeVersion.id }}/remove">Remove</a> 
+    <a class="govuk-link" href="/licences/{{ licenceId }}/charge-information/create?chargeVersionWorkflowId={{ chargeVersion.id }}">Set up</a>
+    |
+    <a class="govuk-link" href="/charge-information-workflow/{{ chargeVersion.id }}/remove">Remove</a>
   {% elif chargeVersion.status == 'review' or chargeVersion.status == 'changes_requested' %}
     <a class="govuk-link" href="/licences/{{ licenceId }}/charge-information/{{ chargeVersion.id }}/review">Review</a>
   {% else %}
@@ -128,7 +128,7 @@
 {% endif %}
 
 <a href="/licences/{{ licenceId }}/charge-information/create" role="button" draggable="false" class="govuk-button govuk-!-margin-right-3" data-module="govuk-button">
-  Setup a new charge
+  Set up a new charge
 </a>
 
 <a href="/licences/{{ licenceId }}/charge-information/non-chargeable-reason?start=1" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">

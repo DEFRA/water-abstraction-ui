@@ -1,4 +1,5 @@
 const { setUp, tearDown } = require('../../support/setup');
+const uuid = require('uuid/v4');
 
 describe('creating an internal user:', () => {
   before(() => {
@@ -10,89 +11,46 @@ describe('creating an internal user:', () => {
     tearDown();
   });
 
-  it('navigates to the new internal user form and taps on the manage tab', () => {
-    cy.visit(Cypress.env('USER_URI'));
-    cy.get('a[href*="/signin"]').click();
+  it('navigates to the new internal user form and creates an internal account', () => {
+    cy.visit(Cypress.env('ADMIN_URI'));
     cy.fixture('users.json').then(users => {
       cy.get('input#email').type(users.super);
     });
+
     cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
     cy.get('.govuk-button.govuk-button--start').click();
     cy.get('#navbar-notifications').click();
-  });
+    // sees the page header
+    cy.get('.govuk-heading-l').should('contain.text', 'Manage reports and notices');
 
-  /*
-  it('sees the page header', () => {
-    cy.get('.govuk-heading-l').should('have.text', 'Manage reports and notices');
-  });
+    // verifies the create an internal account link exists
+    cy.get('.govuk-list').children(12).should('contain.text', 'Create an internal account');
+    // clicks on the create user button
+    cy.get('.govuk-link').eq(16).click();
 
-  it('sees the button to create a user', () => {
-    cy.get('.govuk-heading-l').should('have.text', 'Create an internal account');
-  });
+    describe('verifies the contents on the create user page', () => {
+      cy.get('form').should('be.visible');
+      cy.get('.govuk-label').should('contain.text', 'Enter a gov.uk email address');
+      cy.get('input#email').should('be.visible');
+      cy.get('.govuk-button').should('contain.text', 'Continue');
+    });
+    describe('populates the email field and submits the form', () => {
+      let tempEmail = `regression.tests.${uuid()}@defra.gov.uk`;
+      cy.get('input#email').type(tempEmail);
+      cy.get('form > .govuk-button').click();
+    });
 
-  it('clicks on the create user button', () => {
-    cy.get(a[href = '/account/create-user']).click();
-  });
+    describe('verify the contents on the page', () => {
+      // expect($('form[action="/account/create-user/set-permissions"]')).toBeVisible();
+      cy.get('form[action="/account/create-user/set-permissions"]').should('be.visible');
+      cy.get('div.govuk-radios').children().should('have.length', 8);
+      cy.get('form > .govuk-button').should('contain.text', 'Continue');
+    });
 
-  // loads the email form:
-  it('contains the form on the page', () => {
-    cy.get('form').should('be.visible');
+    describe('select a permission level and click on continue', () => {
+      cy.get('#permission').check();
+      cy.get('form > .govuk-button').click();
+      cy.get('h1.govuk-heading-l').should('contain.text', 'New account created');
+    });
   });
-
-  it('has an email field label', () => {
-    cy.get('label.govuk-label').should('have.text', 'Enter a gov.uk email address');
-  });
-
-  it('has an email field', () => {
-    cy.get('input#email').should('be.visible');
-  });
-
-  it('has a submit button', () => {
-    cy.get('button.govuk-button').should('have.text', 'Continue');
-  });
-
-  // submit the email form
-  // tempId = await uuid();
-  // let tempEmail
-  it('sees the email field', () => {
-    cy.get('input#email').should('be.visible');
-  });
-
-  it('populates the email field', () => {
-    tempEmail = `regression.tests.${tempId}@defra.gov.uk`;
-    cy.get('input#email').type(tempEmail);
-  });
-  it('submits the form', () => {
-    cy.get('button.govuk-button').click();
-  });
-
-  // loads the permission form:
-  it('contains the form on the page', () => {
-    // expect($('form[action="/account/create-user/set-permissions"]')).toBeVisible();
-    cy.get('form').should('be.visible');
-  });
-
-  it('has eight options', () => {
-    cy.get('div.govuk-radios').children().should('have.length', 8);
-  });
-
-  it('has a submit button', () => {
-    cy.get('button.govuk-button').should('have.text', 'Continue');
-  });
-
-  // submits the permissions form:
-  it('can see the permission option', () => {
-    cy.get('#permission').should('be.visible');
-  });
-  it('selects a permission level', () => {
-    cy.get('#permission').click();
-  });
-  it('has a submit button', () => {
-    cy.get('button.govuk-button').should('have.text', 'Continue');
-  });
-  it('submits the form', () => {
-    cy.wait(300);
-    cy.get('button.govuk-button').click();
-    cy.wait(300);
-  });*/
 });

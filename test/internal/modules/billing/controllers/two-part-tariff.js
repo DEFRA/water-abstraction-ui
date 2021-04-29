@@ -98,6 +98,10 @@ const getBillingVolumeReviewRequest = payload => (
         calculatedVolume: 3.5,
         twoPartTariffError: true,
         twoPartTariffStatus: 20,
+        isSummer: false,
+        financialYear: {
+          yearEnding: 2022
+        },
         chargeElement: {
           id: 'test-charge-element-id',
           description: 'Test description',
@@ -577,6 +581,11 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
         expect(returnsLink).to.equal('/licences/test-document_id/returns');
       });
 
+      test('sets the return cycle in the view', async () => {
+        const [, { returnCycle }] = h.view.lastCall.args;
+        expect(returnCycle).to.equal('Winter and all year 2022');
+      });
+
       experiment('view.aggregateConditions', () => {
         let aggregateConditions;
         beforeEach(async () => {
@@ -828,6 +837,11 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     test('outputs the quantity to the view', async () => {
       const [, { quantity }] = h.view.lastCall.args;
       expect(quantity).to.equal(request.query.quantity);
+    });
+
+    test('sets the return cycle in the view', async () => {
+      const [, { returnCycle }] = h.view.lastCall.args;
+      expect(returnCycle).to.equal('Winter and all year 2022');
     });
 
     test('outputs the licence to the view', async () => {

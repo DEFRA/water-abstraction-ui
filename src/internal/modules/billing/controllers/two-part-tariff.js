@@ -107,7 +107,8 @@ const getBillingVolumeReview = async (request, h, form) => {
     ...licenceData,
     billingVolume,
     form: form || twoPartTariffQuantityForm.form(request, billingVolume),
-    back: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}`
+    back: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}`,
+    returnCycle: mappers.mapReturnCycle(billingVolume)
   });
 };
 
@@ -161,7 +162,8 @@ const getConfirmQuantity = async (request, h) => {
     form,
     pageTitle: `You're about to set the billable quantity to ${quantity}ML`,
     caption: `Licence ${licence.licenceNumber}`,
-    back: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}/billing-volume/${billingVolume.id}`
+    back: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}/billing-volume/${billingVolume.id}`,
+    returnCycle: mappers.mapReturnCycle(billingVolume)
   });
 };
 

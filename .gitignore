@@ -13,3 +13,4 @@ jsconfig.json
 /driver-logs/wdio-chromedriver.log
 /cypress/videos/
 /cypress/screenshots/
+/cypress/reports/

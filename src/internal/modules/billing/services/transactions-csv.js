@@ -41,7 +41,7 @@ const getChargeElementData = trans => {
 
 const getTransactionData = trans => ({
   description: trans.description,
-  'Compensation charge': trans.isCompensationCharge ? 'Y' : 'N',
+  'Compensation charge Y/N': trans.isCompensationCharge ? 'Y' : 'N',
   ...getChargeElementData(trans),
   'Charge period start date': trans.chargePeriod.startDate,
   'Charge period end date': trans.chargePeriod.endDate,
@@ -120,9 +120,9 @@ const createCSV = async (invoices, chargeVersions) => {
           ...getTransactionAmounts(trans),
           'Charge information reason': getChangeReason(chargeVersions, trans),
           'Region': invLic.licence.region.displayName,
-          'De minimis rule': isDeMinimis ? 'Y' : 'N',
-          'Description': description,
-          'Water company': invLic.licence.isWaterUndertaker ? 'Y' : 'N',
+          'De minimis rule Y/N': isDeMinimis ? 'Y' : 'N',
+          'Transaction description': description,
+          'Water company Y/N': invLic.licence.isWaterUndertaker ? 'Y' : 'N',
           'Historical area': invLic.licence.historicalArea.code,
           ...transactionData
         };

@@ -1,12 +1,23 @@
 {
-    "chromeWebSecurity": false,
-    "projectId": "tidgxq",
-    "baseUrl": "http://localhost:8008",
-    "env": {
-    },
-    "integrationFolder": "./cypress/integration",
-    "videosFolder": "./cypress/videos",
-    "screenshotsFolder": "./cypress/screenshots",
-    "supportFile": "./cypress/support/index.js",
-    "pluginsFile": "./cypress/plugins/index.js"
+  "chromeWebSecurity": false,
+  "projectId": "tidgxq",
+  "baseUrl": "http://localhost:8008",
+  "reporter": "cypress-multi-reporters",
+  "reporterOptions": {
+    "reporterEnabled": "mochawesome",
+    "mochawesomeReporterOptions": {
+      "reportDir": "./cypress/reports/mocha",
+      "quiet": false,
+      "overwrite": false,
+      "html": true,
+      "json": true
+    }
+  },
+  "env": {
+  },
+  "integrationFolder": "./cypress/integration",
+  "videosFolder": "./cypress/videos",
+  "screenshotsFolder": "./cypress/screenshots",
+  "supportFile": "./cypress/support/index.js",
+  "pluginsFile": "./cypress/plugins/index.js"
 }

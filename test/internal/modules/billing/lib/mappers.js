@@ -426,4 +426,26 @@ experiment('modules/billing/lib/mappers', () => {
       }]);
     });
   });
+
+  experiment('.mapReturnCycle', () => {
+    test('maps a winter/all year billing volume', async () => {
+      const str = mappers.mapReturnCycle({
+        isSummer: false,
+        financialYear: {
+          yearEnding: 2022
+        }
+      });
+      expect(str).to.equal('Winter and all year 2022');
+    });
+
+    test('maps a summer billing volume', async () => {
+      const str = mappers.mapReturnCycle({
+        isSummer: true,
+        financialYear: {
+          yearEnding: 2022
+        }
+      });
+      expect(str).to.equal('Summer 2022');
+    });
+  });
 });

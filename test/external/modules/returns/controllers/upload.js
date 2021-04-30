@@ -167,7 +167,6 @@ experiment('external/modules/returns/controllers/upload', () => {
     });
 
     test('redirects to same page with no file message if no filename is provided', async () => {
-      uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.NO_FILE);
       await controller.postBulkUpload({
         ...request,
         payload: {
@@ -180,6 +179,22 @@ experiment('external/modules/returns/controllers/upload', () => {
       }, h);
       const [path] = h.redirect.lastCall.args;
       expect(path).to.equal('/returns/upload?error=no-file');
+    });
+
+    test('does not redirect a no file page if the filename is set', async () => {
+      uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.INVALID_TYPE);
+      await controller.postBulkUpload({
+        ...request,
+        payload: {
+          file: {
+            hapi: {
+              filename: 'test.csv'
+            }
+          }
+        }
+      }, h);
+      const [path] = h.redirect.lastCall.args;
+      expect(path).to.equal('/returns/upload?error=invalid-type');
     });
 
     test('calls the water returns upload API with the correct file type', async () => {

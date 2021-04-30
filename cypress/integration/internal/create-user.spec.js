@@ -41,7 +41,6 @@ describe('creating an internal user:', () => {
     });
 
     describe('verify the contents on the page', () => {
-      // expect($('form[action="/account/create-user/set-permissions"]')).toBeVisible();
       cy.get('form[action="/account/create-user/set-permissions"]').should('be.visible');
       cy.get('div.govuk-radios').children().should('have.length', 8);
       cy.get('form > .govuk-button').should('contain.text', 'Continue');

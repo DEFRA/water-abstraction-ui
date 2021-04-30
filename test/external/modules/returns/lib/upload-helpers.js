@@ -89,6 +89,18 @@ experiment('upload Helpers', () => {
       const output = await uploadHelpers.applyFormError(form, error, errorMessages);
       expect(output).to.equal(updated);
     });
+    test('Form is returned with no-file error message', async () => {
+      const error = 'no-file';
+      const updated = {
+        ...form,
+        errors: [{
+          message: 'Please select a CSV or XML file',
+          name: 'file'
+        }]
+      };
+      const output = await uploadHelpers.applyFormError(form, error, errorMessages);
+      expect(output).to.equal(updated);
+    });
   });
   experiment('uploadFile', () => {
     test('read pipes to write', async () => {

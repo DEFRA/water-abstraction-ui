@@ -21,7 +21,7 @@ const getErrorMessage = key => {
     'invalid-xml': 'The selected file must use the template',
     'invalid-csv': 'The selected file must use the template',
     'invalid-type': 'The selected file must be a CSV or XML file',
-    'no-file': 'Please select a CSV or XML file',
+    'no-file': 'Select a CSV or XML file',
     virus: 'The selected file contains a virus',
     empty: 'The selected file has no returns data in it',
     'invalid-date-format': 'The date format must only include DD/MM/YYYY'

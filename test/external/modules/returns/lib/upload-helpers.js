@@ -94,7 +94,7 @@ experiment('upload Helpers', () => {
       const updated = {
         ...form,
         errors: [{
-          message: 'Please select a CSV or XML file',
+          message: 'Select a CSV or XML file',
           name: 'file'
         }]
       };

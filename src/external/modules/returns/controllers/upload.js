@@ -71,7 +71,7 @@ const getRedirectPath = (status, eventId) => {
 async function postBulkUpload (request, h) {
   let eventId, redirectPath;
 
-  if (request.payload.file.hapi && (!request.payload.file.hapi.filename || request.payload.file.hapi.filename === '')) {
+  if (request.payload.file.hapi && !request.payload.file.hapi.filename) {
     return h.redirect(getRedirectPath(uploadHelpers.fileStatuses.NO_FILE));
   }
 

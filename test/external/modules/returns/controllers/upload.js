@@ -166,6 +166,22 @@ experiment('external/modules/returns/controllers/upload', () => {
       expect(path).to.equal('/returns/upload?error=invalid-type');
     });
 
+    test('redirects to same page with no file message if no filename is provided', async () => {
+      uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.NO_FILE);
+      await controller.postBulkUpload({
+        ...request,
+        payload: {
+          file: {
+            hapi: {
+              filename: ''
+            }
+          }
+        }
+      }, h);
+      const [path] = h.redirect.lastCall.args;
+      expect(path).to.equal('/returns/upload?error=no-file');
+    });
+
     test('calls the water returns upload API with the correct file type', async () => {
       uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.OK);
       fileCheck.detectFileType.resolves('csv');

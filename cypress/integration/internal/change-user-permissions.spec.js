@@ -25,6 +25,7 @@ describe('change internal user permissions as B&D user', () => {
 
       describe('navigates to the user page', () => {
         cy.url().should('contain', '/user/');
+        cy.url().should('contain', '/status');
         cy.contains('Internal').should('be.visible');
         cy.get('.govuk-heading-l').eq(0).should('contain', EMAIL_ADDRESS);
         cy.get('.govuk-heading-l').eq(1).should('have.text', 'Set permissions');
@@ -32,7 +33,7 @@ describe('change internal user permissions as B&D user', () => {
       describe('changes the user permissions and navigates to the success page', () => {
         cy.get('#permission-4').check();
         cy.get('form > .govuk-button').click();
-        cy.url().should('contain', '/user/');
+        cy.url().should('include', '/update-permissions/success');
         cy.get('.govuk-heading-l').should('contain.text', 'Account permissions are updated');
         cy.get('p.govuk-body').eq(1).should('contain', 'National Permitting Service permissions');
       });

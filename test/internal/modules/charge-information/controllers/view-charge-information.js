@@ -194,11 +194,18 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
     });
 
     experiment('sets isEditable flag', () => {
-      test('to false if the charge information draft is in review', async () => {
-        request.pre.draftChargeInformation['status'] = 'review';
+      test('to false if the charge information draft is in current', async () => {
+        request.pre.draftChargeInformation['status'] = 'current';
         await controller.getReviewChargeInformation(request, h);
         const { isEditable } = h.view.lastCall.args[1];
         expect(isEditable).to.be.false();
+      });
+
+      test('to true if the charge information draft is in review', async () => {
+        request.pre.draftChargeInformation['status'] = 'review';
+        await controller.getReviewChargeInformation(request, h);
+        const { isEditable } = h.view.lastCall.args[1];
+        expect(isEditable).to.be.true();
       });
 
       test('to true if the charge information draft has changes_requested status', async () => {
@@ -261,11 +268,18 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
       });
 
       experiment('sets isEditable flag', () => {
+        test('to false if the charge information draft is in current', async () => {
+          request.pre.draftChargeInformation['status'] = 'current';
+          await controller.getReviewChargeInformation(request, h);
+          const { isEditable } = h.view.lastCall.args[1];
+          expect(isEditable).to.be.false();
+        });
+
         test('to false if the charge information draft is in review', async () => {
           request.pre.draftChargeInformation['status'] = 'review';
           await controller.getReviewChargeInformation(request, h);
           const { isEditable } = h.view.lastCall.args[1];
-          expect(isEditable).to.be.false();
+          expect(isEditable).to.be.true();
         });
 
         test('to true if the charge information draft has changes_requested status', async () => {

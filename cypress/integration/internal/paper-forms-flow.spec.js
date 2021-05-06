@@ -49,10 +49,10 @@ const moment = require('moment');
     const button = $('button[class="govuk-button"]');
     button.click();
   });
-};*/
+}; */
 
 // check the address is correctly displayed on the returns details page
-/*const checkAddress = (address) => {
+/* const checkAddress = (address) => {
   it('check the address has been changed correctly', () => {
     cy.get('.govuk-heading-l').should('contain.text', 'Check returns details');
    cy.get('form').should('be.visible');
@@ -137,17 +137,16 @@ describe('Step through the returns paper forms flow:', function () {
       cy.get('div.govuk-summary-list__row').eq(0).should('contain.text', 'Licence holder');
       cy.get('div.govuk-summary-list__row').eq(0).children(1).should('contain.text', 'Big Farm Co Ltd');
       cy.get('div.govuk-summary-list__row').eq(1).contains('Returns reference number');
-      cy.screenshot();
+      cy.screenshot('temp/2.png');
       cy.get('div.govuk-summary-list__row').eq(1).children(3).should('contain.text', 'Change');
     });
 
     describe('the licence address details are displayed in the list', () => {
       cy.get('div.govuk-summary-list__row').eq(2).contains('Address');
-      cy.get('div.govuk-summary-list__row').eq(2).children(1).should('contain.text','Big Farm Co Ltd');
+      cy.get('div.govuk-summary-list__row').eq(2).children(1).should('contain.text', 'Big Farm Co Ltd');
     });
     // check the address is displayed correctly
     describe('check the address is correct', () => {
-      
       cy.get('div.govuk-summary-list__row').eq(2).children(1).contains('Big Farm');
       cy.get('div.govuk-summary-list__row').eq(2).children(1).contains('Windy road');
       cy.get('div.govuk-summary-list__row').eq(2).children(1).contains('Buttercup meadow');
@@ -155,143 +154,102 @@ describe('Step through the returns paper forms flow:', function () {
       cy.get('div.govuk-summary-list__row').eq(2).children(1).contains('Testington');
       cy.get('div.govuk-summary-list__row').eq(2).children(1).contains('TT1 1TT');
       cy.get('div.govuk-summary-list__row').eq(2).children(1).contains('UK');
-      
-
     });
 
-  });
-});
-
-
-    
-
-    
-    
-/*
-
-  describe('change the returns selected for a licence', () => {
-    before('click on the change returns link', () => {
-      const changeLink = $('[href*="/select-returns"]');
-      changeLink.click();
+    describe('change the returns selected for a licence,verify the correct form and page title are displayed', () => {
+      cy.get('[href*="/select-returns"]').click();
+      cy.get('.govuk-fieldset__heading').contains('Which returns need a form?');
+      cy.get('.govuk-caption-l').contains('Licence AT/CURR/MONTHLY/02');
+      cy.get('form').should('be.visible');
     });
-
-    it('check the correct form and page title is displayed', () => {
-      const pageTitle = getPageTitle();
-      expect(pageTitle).toHaveTextContaining('Which returns need a form?');
-      expect(pageTitle).toHaveTextContaining('Licence AT/CURR/MONTHLY/02');
-      expect($('form')).toBeVisible();
+    describe('remove one returns reference and click continue', () => {
+      cy.screenshot('temp/1.png');
+      cy.get('input[id="returnIds-3"]').uncheck();
+      cy.get('input[id="returnIds-2"]').check();
+      cy.get('button[class="govuk-button"]').click();
     });
-
-    it('remove one returns reference and click continue', () => {
-      browser.saveScreenshot(`temp/1.png`);
-      const returnId2 = $('input[id="returnIds-2"]');
-      returnId2.click();
-      const button = $('button[class="govuk-button"]');
-      button.click();
-    });
-
-    it('check returns details now contains only one returns reference', () => {
+    describe('check returns details now contains only one returns reference', () => {
       const dueDate = moment('2021-01-28').format('DD MMMM YYYY');
-      const licenceDetails = $('//main/div/div/dl[1]');
-      licenceDetails.scrollIntoView();
-      browser.saveScreenshot(`temp/3.png`);
-      expect(licenceDetails.$('//div[2]/dd[1]/div/div[1]/div[1]')).toHaveText('9999991');
-      expect(licenceDetails.$('//div[2]/dd[1]/div/div[1]/div[2]')).toHaveText(`Due ${dueDate}`);
-      expect(licenceDetails.$('//div[2]/dd[1]/div/div[2]')).not.toBeVisible();
+      cy.screenshot('temp/3.png');
+      cy.get('.meta__key').contains('9999991');
+      cy.get('.meta__value').should('contain', 'Due ' + dueDate);
+      cy.get(':nth-child(2) > .govuk-summary-list__value').should('have.length', '1');
     });
-  }); */
-
-/**
+    /**
    * ∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞
    * Check warning messages for address change subflow
    * ∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞
    */
-/* describe('change address - check form error messages', () => {
+    // change address - check form error messages
+
+    describe('navigates to the change address subflow', () => {
     // click on the change address link and set the FAO name
-    it('navigates to the change address subflow', () => {
-      const changeLink = $('[href*="/select-address"]');
-      changeLink.click();
+      cy.get('[href*="/select-address"]').click();
     });
 
-    it('select option to setup address', () => {
-      const pageTitle = getPageTitle();
-      expect(pageTitle).toHaveTextContaining('Select where to send the form');
-      const radioButton2 = $('[value="createOneTimeAddress"]');
-      const label2 = radioButton2.getElementComputedLabel(radioButton2.elementId);
-      expect(label2).toEqual('Set up a one time address');
-      radioButton2.click();
-      const button = $('button[class="govuk-button"]');
-      button.click();
+    describe('select option to setup address', () => {
+      cy.get('.govuk-fieldset__heading').contains('Select where to send the form');
+      cy.get('div.govuk-radios').children(2).contains('Set up a one time address');
+      cy.get('#selectedRole-3').check();
+      cy.get('button.govuk-button').click();
+
     });
 
-    it('checks correct page is displayed', () => {
-      const pageTitle = getPageTitle();
-      expect(pageTitle).toHaveTextContaining('Who should receive the form?');
-      expect($('form')).toBeVisible();
-      const textBox = $('input[name="fullName"]');
-      expect(textBox).toBeVisible();
-
+    describe('checks correct page is displayed', () => {
+      cy.get('.govuk-label').contains('Who should receive the form?');
+      cy.get('form').should('be.visible');
+      cy.get('input[name="fullName"]').should('be.visible');
       // enter an empty string and continue
-      textBox.setValue('');
-      const button = $('button[class="govuk-button"]');
-      button.click();
+      cy.get('input[name="fullName"]').type(' ');      
+      cy.get('button.govuk-button').click();
     });
 
-    it('checks the correct error message is displayed', () => {
-      const pageTitle = getPageTitle();
-      expect(pageTitle).toHaveTextContaining('Who should receive the form?');
-      const errorSummary = $('.govuk-error-summary');
-      const errorSummaryTitle = $('.govuk-error-summary__title');
-      const errorSummaryBody = $('.govuk-error-summary__body');
-      const textBoxError = $('#fullName-error');
-      expect(textBoxError).toHaveTextContaining('Enter a full name');
-      expect(errorSummary).toBeVisible();
-      expect(errorSummaryTitle).toHaveText('There is a problem');
-      expect(errorSummaryBody).toHaveText('Enter a full name');
+    describe('checks the correct error message is displayed', () => {
+      cy.get('.govuk-label').contains('Who should receive the form?');
+      cy.get('.govuk-error-summary').should('be.visible');
+      cy.get('.govuk-error-summary__title').should('contain','There is a problem');
+      cy.get('.govuk-error-summary__body').should('contain','Enter a full name');
+      cy.get('#fullName-error').should('contain','Enter a full name');
     });
 
-    it('enters a full name and continues', () => {
-      const textBox = $('input[name="fullName"]');
-      expect(textBox).toBeVisible();
+    describe('enters a full name and continues', () => {
+      cy.get('input[name="fullName"]').should('be.visible');
+      cy.get('input[name="fullName"]').type('Tester2 Oosthuizen');
+      cy.get('button.govuk-button').click();
+    });
 
+    describe('check enter post code form is correct', () => {
+      cy.get('h1.govuk-heading-l').contains('Enter the UK postcode');
+      
+      cy.get('form').should('be.visible');
+      cy.get('input[name="postcode"]').should('be.visible');
       // enter an empty string and continue
-      textBox.setValue('Tester2 Oosthuizen');
-      const button = $('button[class="govuk-button"]');
-      button.click();
+      cy.get('input[name="postcode"]').type(' ');
+      cy.get('button.govuk-button').click();
     });
 
-    it('check enter post code form is correct', () => {
-      const pageTitle = getPageTitle();
-      expect(pageTitle).toHaveTextContaining('Enter the UK postcode');
-      expect($('form')).toBeVisible();
-      const textBox = $('input[name="postcode"]');
-      expect(textBox).toBeVisible();
-
-      // enter an empty string and continue
-      textBox.setValue('');
-      const button = $('button[class="govuk-button"]');
-      button.click();
-    });
-    it('checks the correct error message is displayed on the postcode entry form', () => {
-      const pageTitle = getPageTitle();
-      expect(pageTitle).toHaveTextContaining('Enter the UK postcode');
-      const errorSummary = $('.govuk-error-summary');
-      const errorSummaryTitle = $('.govuk-error-summary__title');
-      const errorSummaryBody = $('.govuk-error-summary__body');
-      const textBoxError = $('#postcode-error');
-      expect(textBoxError).toHaveTextContaining('Enter a UK postcode');
-      expect(errorSummary).toBeVisible();
-      expect(errorSummaryTitle).toHaveText('There is a problem');
-      expect(errorSummaryBody).toHaveText('Enter a UK postcode');
+    describe('checks the correct error message is displayed on the postcode entry form', () => {
+      cy.get('.govuk-heading-l').contains('Enter the UK postcode');
+      cy.get('h1.govuk-heading-l')
+      cy.get('.govuk-error-summary').should('be.visible');
+      cy.get('.govuk-error-summary__title').should('contain','There is a problem');
+      cy.get('.govuk-error-summary__body').should('contain','Enter a UK postcode');
+      cy.get('#postcode-error').should('contain','Enter a UK postcode');
     });
 
-    it('enters a postcode and continue', () => {
-      const textBox = $('input[name="postcode"]');
-      expect(textBox).toBeVisible();
-      textBox.setValue('EX1 1QA');
-      const button = $('button[class="govuk-button"]');
-      button.click();
+    describe('enters a postcode and continue', () => {
+      cy.get('input[name="postcode"]').should('be.visible');
+      cy.get('input[name="postcode"]').type('EX1 1QA');
+      cy.get('button.govuk-button').click();
     });
+  });
+});
+
+/*
+
+    
+
+    
 
     it('do not select an address from the list, click continue and checks the errors', () => {
       // click contiinue without selecting an address

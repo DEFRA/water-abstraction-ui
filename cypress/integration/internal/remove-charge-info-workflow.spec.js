@@ -34,9 +34,6 @@ describe('remove charge info workflow as B&D user', () => {
     });
 
     describe('sees the expected workflow in the table', () => {
-      // cy.get('.govuk-table__row').eq(0).should('contain.text','AT/CURR/DAILY/01');
-      // cy.get('.govuk-table__row').eq(1).should('contain.text','Big Farm Co Ltd');
-      // cy.get('.govuk-table__row').eq(3).should('contain.text','1 April 1920');
       cy.get(firstRowSelector).should('contain.text', 'AT/CURR/DAILY/01');
       cy.get(firstRowSelector).should('contain.text', 'Big Farm Co Ltd');
       cy.get(firstRowSelector).should('contain.text', '1 March 2020');

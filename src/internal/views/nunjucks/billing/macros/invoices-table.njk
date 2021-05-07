@@ -94,9 +94,11 @@
 
 {% macro actionsCell(batch, invoice) %}
   <td class="govuk-table__cell govuk-table__cell--numeric">
-    <a class="govuk-link" href="/billing/batch/{{batch.id}}/invoice/{{invoice.id}}">View<span class="govuk-visually-hidden">
-        invoice for
-        {{ invoice.accountNumber }}</span></a>
+    {% if invoice.netTotal %}
+      <a class="govuk-link" href="/billing/batch/{{batch.id}}/invoice/{{invoice.id}}">View<span class="govuk-visually-hidden">
+          invoice for
+          {{ invoice.accountNumber }}</span></a>
+    {% endif %}
   </td>
 {% endmacro %}
 
@@ -188,12 +190,22 @@
       <a href="/billing/batch/{{ row.batch.id }}/invoice/{{ row.invoice.id }}">
         {{row.invoice.displayLabel}}
       </a>
+
+      {% if row.invoice.isFlaggedForRebilling %}
+      <p class="govuk-body-s govuk-!-margin-bottom-0">Marked for reissue</p>
+      {% endif %}
     </td>
   {% endmacro %}
 
   {% macro batchTypeCell(batch) %}
     <td class="govuk-table__cell">
       {{ batch.type | sentenceCase }}
+    </td>
+  {% endmacro %}
+
+  {% macro billRunNumberCell(batch) %}
+    <td class="govuk-table__cell govuk-table__cell--numeric">
+      {{ batch.billRunNumber }}
     </td>
   {% endmacro %}
 

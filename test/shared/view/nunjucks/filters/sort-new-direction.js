@@ -3,36 +3,18 @@
 const { experiment, test } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
 
-const { sortNewDirection } = require('shared/view/nunjucks/filters/sort-new-direction');
+const { percentage } = require('shared/view/nunjucks/filters/percentage');
 
-experiment('Nunjucks filters: sortNewDirection', () => {
-  test('sets the new direction to -1 if the field is currently being sorted', async () => {
-    const query = {
-      direction: 1,
-      sort: 'test-field'
-    };
-
-    const newDirection = sortNewDirection(query, 'test-field');
-    expect(newDirection).to.equal(-1);
+experiment('shared/view/nunjucks/filters/percentage', () => {
+  test('returns a percentage to 2 decimal places', () => {
+    expect(percentage(10, 100)).to.equal('10.00%');
   });
 
-  test('sets the new direction to 1 if the field is not being sorted', async () => {
-    const query = {
-      direction: -1,
-      sort: 'test-field'
-    };
-
-    const newDirection = sortNewDirection(query, 'test-field');
-    expect(newDirection).to.equal(1);
+  test('a third parameter can be supplied to set the number of decimal places', () => {
+    expect(percentage(10, 100, 3)).to.equal('10.000%');
   });
 
-  test('sets the new direction to 1 if the field is not currently being sorted', async () => {
-    const query = {
-      direction: -1,
-      sort: 'test-field'
-    };
-
-    const newDirection = sortNewDirection(query, 'another-field');
-    expect(newDirection).to.equal(1);
+  test('returns null if the denominator is undefined', () => {
+    expect(percentage(10, 0)).to.equal(null);
   });
 });

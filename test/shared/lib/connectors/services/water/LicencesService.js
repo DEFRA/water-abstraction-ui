@@ -246,9 +246,11 @@ experiment('services/water/LicencesService', () => {
 
   experiment('.getInvoicesByLicenceId', () => {
     test('makes a get request to the expected URL', async () => {
-      await service.getInvoicesByLicenceId('licence-id', { page: 1, perPage: 10 });
-      const [url] = serviceRequest.get.lastCall.args;
-      expect(url).to.equal('https://example.com/api/licences/licence-id/invoices?page=1&perPage=10');
+      const pagination = { page: 1, perPage: 10 };
+      await service.getInvoicesByLicenceId('licence-id', pagination);
+      const [url, options] = serviceRequest.get.lastCall.args;
+      expect(url).to.equal('https://example.com/api/licences/licence-id/invoices');
+      expect(options).to.equal({ qs: pagination });
     });
   });
 

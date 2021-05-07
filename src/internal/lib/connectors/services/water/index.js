@@ -17,12 +17,14 @@ const InternalSearchService = require('./InternalSearchService');
 const InvoiceAccountService = require('./InvoiceAccountService');
 const AddressSearchService = require('./AddressSearchService');
 const BillingBatchService = require('./BillingBatchService');
+const BillingInvoiceService = require('./BillingInvoiceService');
 const BillingInvoiceLicenceService = require('./BillingInvoiceLicenceService');
 const BillingVolumesService = require('./BillingVolumeService');
 const ServiceStatusService = require('internal/lib/connectors/services/water/ServiceStatusService');
 const RegionsService = require('./RegionsService');
 const AgreementsService = require('./AgreementsService');
 const KpiReportingService = require('./KpiReportingService');
+const ReportingService = require('./ReportingService');
 
 // Shared API Clients
 const EventsApiClient = require('shared/lib/connectors/services/water/EventsApiClient');
@@ -51,6 +53,7 @@ module.exports = config => ({
   agreements: new AgreementsService(config.services.water, logger),
   batchNotifications: new BatchNotificationsService(config.services.water, logger),
   billingBatches: new BillingBatchService(config.services.water, logger),
+  billingInvoices: new BillingInvoiceService(config.services.water, logger),
   billingInvoiceLicences: new BillingInvoiceLicenceService(config.services.water, logger),
   billingVolumes: new BillingVolumesService(config.services.water, logger),
   changeReasons: new ChangeReasonsService(config.services.water, logger),
@@ -62,6 +65,7 @@ module.exports = config => ({
   serviceStatus: new ServiceStatusService(config.services.water, logger),
   returnsNotifications: new ReturnsNotificationsService(config.services.water, logger),
   kpiReporting: new KpiReportingService(config.services.water, logger),
+  reporting: new ReportingService(config.services.water, logger),
 
   // Shared API Clients
   abstractionReformAnalysis: new AbstractionReformAnalysisApiClient(config, logger),

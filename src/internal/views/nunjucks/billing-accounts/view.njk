@@ -2,11 +2,12 @@
 {% from "title.njk" import title %}
 {% from "crm/invoice-address.njk" import invoiceAddress %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "./nunjucks/billing-accounts/macros/bills-table.njk" import billsTable %}
 
 {% block content %}
   {{ title(pageTitle, caption) }}
 
-  <div class="govuk-grid-row">
+  <div class="govuk-grid-row govuk-!-margin-bottom-6">
     <div class="govuk-grid-column-two-thirds">
 
       <h2 class="govuk-heading-m">
@@ -25,4 +26,35 @@
 
     </div>
   </div>
+
+
+
+{% if bills.length %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+
+    {{ billsTable(bills, "Sent bills") }}
+
+    {% if moreBillsLink %}
+    <p>
+      <a href="{{ moreBillsLink }}">View all sent bills 
+    </p>
+    {% endif %}
+
+    
+    <p>
+    {{ govukButton({
+      text: "Reissue a bill",
+      href: rebillingLink,
+      classes: "govuk-button--secondary"
+    }) }}
+    </p>
+  
+
+  </div>
+</div>
+
+{% endif %}
+  
 {% endblock %}

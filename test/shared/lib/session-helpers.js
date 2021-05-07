@@ -48,12 +48,14 @@ experiment('shared/lib/session-helpers', () => {
 
     test('returns the correct data', async () => {
       const dataToAdd = { band: 'Led Zeppelin' };
+      request.yar.set.returns({ name: 'Jimmy Stage', ...dataToAdd });
       const result = sessionHelpers.saveToSession(request, 'sessionKey', dataToAdd);
       expect(result).to.equal({ name: 'Jimmy Stage', ...dataToAdd });
     });
 
     test('returns the correct data when new data overwrites old data', async () => {
       const dataToAdd = { band: 'Led Zeppelin', name: 'Jimmy Page' };
+      request.yar.set.returns({ name: 'Jimmy Stage', ...dataToAdd });
       const result = sessionHelpers.saveToSession(request, 'sessionKey', dataToAdd);
       expect(result).to.equal(dataToAdd);
     });

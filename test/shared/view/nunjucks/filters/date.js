@@ -21,8 +21,23 @@ experiment('date Nunjucks filter', () => {
     expect(result).to.equal('14 December 2018');
   });
 
-  test('It should return null if an invalid date is supplied', async () => {
+  test('It should return undefined if an invalid date is supplied', async () => {
     const result = date('Some nonsense in here');
-    expect(result).to.equal(null);
+    expect(result).to.equal(undefined);
+  });
+
+  test('It should return undefined if an invalid date is supplied', async () => {
+    const result = date('2020-13-01');
+    expect(result).to.equal(undefined);
+  });
+
+  test('It should return undefined if an empty string is supplied', async () => {
+    const result = date('');
+    expect(result).to.equal(undefined);
+  });
+
+  test('It should return undefined if null is supplied', async () => {
+    const result = date(null);
+    expect(result).to.equal(undefined);
   });
 });

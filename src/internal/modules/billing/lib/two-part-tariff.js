@@ -53,7 +53,7 @@ const getBillingVolumeGroup = billingVolume => {
 };
 
 const getBillingVolumeError = billingVolume =>
-  billingVolume.twoPartTariffError ? statusMessages.get(billingVolume.twoPartTariffStatus) : null;
+  statusMessages.get(billingVolume.twoPartTariffStatus);
 
 /**
  * Decorates transactions with edit link and error message,

@@ -19,6 +19,9 @@ const chargeInformationValidator = require('../lib/charge-information-validator'
 const { CHARGE_ELEMENT_FIRST_STEP, CHARGE_ELEMENT_STEPS } = require('../lib/charge-elements/constants');
 const services = require('../../../lib/connectors/services');
 const { reducer } = require('../lib/reducer');
+const { reviewForm } = require('../forms/review');
+const { chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope;
+const { hasScope } = require('internal/lib/permissions');
 
 /**
  * Select the reason for the creation of a new charge version
@@ -178,6 +181,7 @@ const getCheckData = async (request, h) => {
     ? routing.getUseAbstractionData(licenceId, request.query)
     : routing.getEffectiveDate(licenceId, request.query);
 
+  const isApprover = hasScope(request, chargeVersionWorkflowReviewer);
   const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount);
   const editChargeVersionWarning = await isOverridingChargeVersion(request, draftChargeInformation.dateRange.startDate);
   const action = routing.getCheckData(licenceId, request.query);
@@ -193,7 +197,9 @@ const getCheckData = async (request, h) => {
     isChargeable,
     isEditable: true,
     isXlHeading: true,
-    editChargeVersionWarning
+    editChargeVersionWarning,
+    isApprover,
+    reviewForm: reviewForm(request)
   };
 
   return h.view('nunjucks/charge-information/view.njk', view);

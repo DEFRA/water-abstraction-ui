@@ -86,7 +86,7 @@ class AuthConfig {
       const { error, data: user } = await this.connectors.idm.users.findOne(userId);
       throwIfError(error);
 
-      if (user && !user.enabled) {
+      if (!user.enabled) {
         return { valid: false, credentials: {} };
       }
 

@@ -16,13 +16,13 @@
     <table class="govuk-table govuk-!-margin-bottom-9">
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
-          <th scope="col" class="govuk-table__header">Returns cycle</th>
+          <th scope="col" class="govuk-table__header">Charge period</th>
           <th scope="col" class="govuk-table__header govuk-table__header--numeric">Billable quantity</th>
         </tr>
       </thead>
       <tbody class="govuk-table__body">
         <tr class="govuk-table__row">
-          <td class="govuk-table__cell">{{ returnCycle }}</td>
+          <td class="govuk-table__cell">{{ billingVolume.chargePeriod.startDate | date }} to {{ billingVolume.chargePeriod.endDate | date}}</td>
           <td class="govuk-table__cell govuk-table__cell--numeric">{{ quantity }}ML</td>
         </tr>
       </tbody>

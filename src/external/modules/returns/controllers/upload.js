@@ -57,6 +57,7 @@ const getRedirectPath = (status, eventId) => {
   const paths = {
     [uploadHelpers.fileStatuses.VIRUS]: '/returns/upload?error=virus',
     [uploadHelpers.fileStatuses.INVALID_TYPE]: '/returns/upload?error=invalid-type',
+    [uploadHelpers.fileStatuses.NO_FILE]: '/returns/upload?error=no-file',
     [uploadHelpers.fileStatuses.OK]: `/returns/processing-upload/processing/${eventId}`
   };
   return paths[status];
@@ -69,6 +70,11 @@ const getRedirectPath = (status, eventId) => {
  */
 async function postBulkUpload (request, h) {
   let eventId, redirectPath;
+
+  if (request.payload.file.hapi && !request.payload.file.hapi.filename) {
+    return h.redirect(getRedirectPath(uploadHelpers.fileStatuses.NO_FILE));
+  }
+
   const localPath = uploadHelpers.getFile();
 
   try {

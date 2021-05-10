@@ -146,16 +146,6 @@ const mapBatchLevelErrors = (batch, invoices) => invoices
 const isCreditDebitBlockVisible = batch =>
   batch.source === 'wrls' && batch.type === 'supplementary';
 
-/**
- * Maps a billing volume model to a string for the return cycle
- * @param {Object} billingVolume
- * @returns {String}
- */
-const mapReturnCycle = billingVolume => {
-  const prefix = billingVolume.isSummer ? 'Summer' : 'Winter and all year';
-  return `${prefix} ${billingVolume.financialYear.yearEnding}`;
-};
-
 exports.mapBatchListRow = mapBatchListRow;
 exports.mapInvoiceLicences = mapInvoiceLicences;
 exports.mapBatchType = mapBatchType;
@@ -164,4 +154,3 @@ exports.mapInvoices = mapInvoices;
 exports.mapInvoiceLevelErrors = mapInvoiceLevelErrors;
 exports.mapBatchLevelErrors = mapBatchLevelErrors;
 exports.isCreditDebitBlockVisible = isCreditDebitBlockVisible;
-exports.mapReturnCycle = mapReturnCycle;

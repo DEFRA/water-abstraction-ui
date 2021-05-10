@@ -86,8 +86,8 @@ class AuthConfig {
       const { error, data: user } = await this.connectors.idm.users.findOne(userId);
       throwIfError(error);
 
-      if (!user.enabled) {
-        return { valid: false };
+      if (user && !user.enabled) {
+        return { valid: false, credentials: {} };
       }
 
       // Get user data and augment request

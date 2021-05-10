@@ -51,7 +51,8 @@ experiment('AuthConfig base class', () => {
     const user = {
       user_id: userId,
       user_name: userName,
-      roles: ['internal', 'returns']
+      roles: ['internal', 'returns'],
+      enabled: true
     };
     if (withEntity) {
       user.external_id = entityId;
@@ -225,6 +226,17 @@ experiment('AuthConfig base class', () => {
         expect(request.defra.user).to.equal(user);
         expect(request.defra.entityId).to.equal(entityId);
         expect(request.defra.userScopes).to.equal(user.roles);
+      });
+
+      test('rejects if the user is not enabled', async () => {
+        connectors.idm.users.findOne.resolves({ error: null,
+          data: {
+            ...user,
+            enabled: false
+          }
+        });
+        await authConfig.validateFunc(request, { userId });
+        expect(request.defra).to.equal(undefined);
       });
     });
 

@@ -248,13 +248,6 @@ formErrorSummary %}
                 value: 'update',
                 classes: 'govuk-!-margin-right-6'
               }) }}
-          {% elif chargeVersion.status == 'review' %}
-            {{ govukButton({
-                text: 'Update',
-                name: 'buttonAction',
-                value: 'update',
-                classes: 'govuk-!-margin-right-6'
-              }) }}
           {% else %}
             {{ govukButton({
                   text: 'Confirm',

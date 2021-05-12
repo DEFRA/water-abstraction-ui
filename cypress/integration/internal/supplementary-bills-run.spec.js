@@ -4,7 +4,7 @@ const LICENCE_NUMBER = 'AT/CURR/DAILY/01';
 describe('supplementary bill run', () => {
   before(() => {
     tearDown();
-    setUp('billing-data');
+    setUp('supplementary-billing');
   });
 
   after(() => {
@@ -25,12 +25,25 @@ describe('supplementary bill run', () => {
       // user clicks on manage link to set up the supplementary bill run
       describe('user clicks on Manage link', () => {
         cy.get('#navbar-notifications').click();
+      });
+
+      describe('user enters the create a new bill flow', () => {
         cy.get('.govuk-link').eq(12).contains('Create a bill run').click();
+      });
+
+      describe('user selects supplementary billing type', () => {
         cy.get('#selectedBillingType').click();
         cy.get('button.govuk-button').click();
-        cy.get('#selectedBillingRegion').click();
+      });
+
+      describe('user selects the test region', () => {
+        cy.get('.govuk-radios__item').last().children().first().click();
         cy.get('button.govuk-button').click();
-        
+      });
+
+      describe('user waits for batch to finish generating', () => {
+        cy.wait(10000);
+        cy.url().should('contain', '/summary');
       });
     });
   });

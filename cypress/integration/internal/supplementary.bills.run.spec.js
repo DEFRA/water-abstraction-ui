@@ -21,14 +21,17 @@ describe('supplementary bill run', () => {
       cy.get('.govuk-button.govuk-button--start').click();
       // assert once the user is signed in
       cy.contains('Licences, users and returns');
-      
-// user clicks on manage link to set up the supplementary bill run
-        describe('user clicks on Manage link', () => {
-            cy.get('#navbar-notifications').click();
-            cy.get('.govuk-link').eq(12).contains('Create a bill run').click();
-          });
-        
-        });
-    });
-});
 
+      // user clicks on manage link to set up the supplementary bill run
+      describe('user clicks on Manage link', () => {
+        cy.get('#navbar-notifications').click();
+        cy.get('.govuk-link').eq(12).contains('Create a bill run').click();
+        cy.get('#selectedBillingType').click();
+        cy.get('button.govuk-button').click();
+        cy.get('#selectedBillingRegion').click();
+        cy.get('button.govuk-button').click();
+        
+      });
+    });
+  });
+});

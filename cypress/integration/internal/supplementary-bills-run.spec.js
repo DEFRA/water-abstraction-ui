@@ -64,9 +64,8 @@ describe('supplementary bill run', () => {
 
       describe('verify the bill run is sent successfully', () => {
         cy.get('.govuk-heading-l', { timeout: 40000 }).contains('supplementary bill run');
-        cy.wait(10000);
+        cy.get('.govuk-panel__title', { timeout: 40000 }).contains('Bill run sent');
         cy.url().should('contain', '/confirm');
-        cy.get('.govuk-panel__title').contains('Bill run sent');
         cy.get('div.govuk-grid-column-two-thirds').eq(1).contains('Download the bill run');
       });
     });

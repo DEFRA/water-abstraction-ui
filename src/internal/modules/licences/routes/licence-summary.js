@@ -41,6 +41,8 @@ module.exports = {
         method: preHandlers.loadNotifications, assign: 'notifications'
       }, {
         method: preHandlers.loadSummary, assign: 'summary'
+      }, {
+        method: preHandlers.loadPrimaryUser, assign: 'primaryUser'
       }]
     }
   }

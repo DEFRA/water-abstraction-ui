@@ -42,3 +42,5 @@ exports.canShowCharging = request => permissions.isCharging(request);
  * @type {Object}
  */
 exports.featureToggles = config.featureToggles;
+
+exports.isSummaryPageEnabled = false;

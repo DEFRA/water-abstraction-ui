@@ -7,7 +7,7 @@ const preHandlers = require('shared/lib/pre-handlers/licences');
 module.exports = {
   getLicenceSummary: {
     method: 'GET',
-    path: '/licences/{licenceId}/new',
+    path: '/licences/{licenceId}',
     handler: controller.getLicenceSummary,
     config: {
       description: 'Gets summary details about a particular licence',

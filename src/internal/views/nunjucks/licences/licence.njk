@@ -1,15 +1,11 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "govuk/components/tabs/macro.njk" import govukTabs %}
-{% from "nunjucks/licences/macros/verifications-alert.njk" import verificationsAlert %}
 {% from "badge.njk" import badge %}
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
-
 
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-
-      {{ verificationsAlert(verifications) }}
 
       {% if not primaryUser %}
         {{ title(licence.licenceNumber, 'Unregistered licence') }}

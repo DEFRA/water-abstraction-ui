@@ -30,6 +30,8 @@ module.exports = {
       }, {
         method: preHandlers.loadChargeVersions, assign: 'chargeVersions'
       }, {
+        method: preHandlers.loadChargeVersionWorkflows, assign: 'chargeVersionWorkflows'
+      }, {
         method: preHandlers.loadBills, assign: 'bills'
       }, {
         method: preHandlers.loadAgreements, assign: 'agreements'

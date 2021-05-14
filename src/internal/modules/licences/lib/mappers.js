@@ -1,6 +1,8 @@
 'use strict';
 
 const moment = require('moment');
+const { sortBy } = require('lodash');
+const agreementMapper = require('shared/lib/mappers/agreements');
 
 const validityMessageMap = new Map()
   .set('expiredDate', 'expired on')
@@ -25,4 +27,25 @@ const getValidityNotice = (licence, refDate) => {
   }
 };
 
+const mapChargeVersions = (chargeVersions, chargeVersionWorkflows) => {
+  if (!chargeVersions) {
+    return null;
+  }
+  return [
+    ...chargeVersionWorkflows.data,
+    ...sortBy(chargeVersions.data, ['dateRange.startDate', 'versionNumber']).reverse()
+  ];
+};
+
+const mapLicenceAgreement = licenceAgreement => ({
+  ...licenceAgreement,
+  agreement: agreementMapper.mapAgreement(licenceAgreement.agreement)
+});
+
+const mapLicenceAgreements = licenceAgreements =>
+  licenceAgreements && licenceAgreements.map(mapLicenceAgreement);
+
 exports.getValidityNotice = getValidityNotice;
+exports.mapChargeVersions = mapChargeVersions;
+exports.mapLicenceAgreement = mapLicenceAgreement;
+exports.mapLicenceAgreements = mapLicenceAgreements;

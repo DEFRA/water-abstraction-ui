@@ -1,7 +1,5 @@
 'use strict';
 
-// const waterLicencesConnector = require('../connectors/v2/water/licences');
-
 /**
  * Predicate to check if supplied licence version has "current" status
  *
@@ -31,8 +29,9 @@ const compareFunction = (a, b) => {
 };
 
 class LicenceDataService {
-  constructor (licencesApiConnector) {
-    this.licencesApiConnector = licencesApiConnector;
+  constructor (waterApiConnector) {
+    this.licencesApiConnector = waterApiConnector.licences;
+    this.chargeVersionWorkflowsApiConnector = waterApiConnector.chargeVersionWorkflows;
   }
 
   getLicenceById (licenceId) {
@@ -64,6 +63,10 @@ class LicenceDataService {
 
   getChargeVersionsByLicenceId (licenceId) {
     return this.licencesApiConnector.getChargeVersionsByLicenceId(licenceId);
+  }
+
+  getChargeVersionWorkflowsByLicenceId (licenceId) {
+    return this.chargeVersionWorkflowsApiConnector.getChargeVersionWorkflowsForLicence(licenceId);
   }
 
   getInvoicesByLicenceId (licenceId, page, perPage) {

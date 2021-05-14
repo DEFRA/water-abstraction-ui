@@ -4,25 +4,14 @@
  * @module shared pre-handlers for loading licence data
  */
 
-const { partialRight, get } = require('lodash');
+const { partialRight } = require('lodash');
 const { errorHandler } = require('./lib/error-handler');
 const LicenceDataService = require('../services/LicenceDataService');
 const { hasScope } = require('internal/lib/permissions');
 const { scope } = require('internal/lib/constants');
 
-const buildServiceRequest = (request, options = {}) => {
-  const user = {
-    id: get(request, 'defra.user_id'),
-    type: get(request, 'defra.user_data.usertype')
-  };
-  return {
-    ...options,
-    user
-  };
-};
-
 const createPreHandler = async (request, h, methodName, errorString, allowedScopes) => {
-  const service = new LicenceDataService(request.services.water.licences);
+  const service = new LicenceDataService(request.services.water);
 
   // Check scope
   if (allowedScopes && !hasScope(request, allowedScopes)) {
@@ -62,7 +51,12 @@ const loadDefaultLicenceVersion = partialRight(createPreHandler, 'getDefaultLice
 /**
  * Get charge versions for given licence ID
  */
-const loadChargeVersions = partialRight(createPreHandler, 'getChargeVersionsByLicenceId', 'Default licence version for licence', scope.charging);
+const loadChargeVersions = partialRight(createPreHandler, 'getChargeVersionsByLicenceId', 'Charge versions for licence', scope.charging);
+
+/**
+ * Get charge version workflows for given licence ID
+ */
+const loadChargeVersionWorkflows = partialRight(createPreHandler, 'getChargeVersionWorkflowsByLicenceId', 'Charge version workflows for licence', [scope.chargeVersionWorkflowEditor, scope.chargeVersionWorkflowReviewer]);
 
 /**
  * Get bills for given licence ID
@@ -88,6 +82,7 @@ exports.loadLicence = loadLicence;
 exports.loadLicenceDocument = loadLicenceDocument;
 exports.loadDefaultLicenceVersion = loadDefaultLicenceVersion;
 exports.loadChargeVersions = loadChargeVersions;
+exports.loadChargeVersionWorkflows = loadChargeVersionWorkflows;
 exports.loadBills = loadBills;
 exports.loadAgreements = loadAgreements;
 exports.loadReturns = loadReturns;

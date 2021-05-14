@@ -4,7 +4,7 @@
   {% if return.path %}
   <a href="{{ return.path }}">
     <span class="govuk-visually-hidden">{{ return.badge.text }} return</span>
-    {{ return.return_requirement }}
+     {{ return.returnRequirement.legacyId }}
     <span class="govuk-visually-hidden">due {{ return.dueDate | date }}</span>
   </a>
   {% else %}
@@ -79,6 +79,6 @@
 
 {% if returns.pagination | hasMorePages %}
 <p>
-  <a href="/licences/{{ documentId }}/returns">View all returns</a>
+  <a href="{{ links.returns }}">View all returns</a>
 </p>
 {% endif %}

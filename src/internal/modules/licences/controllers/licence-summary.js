@@ -7,27 +7,35 @@ const { scope } = require('../../../lib/constants');
 const { hasScope } = require('../../../lib/permissions');
 const { featureToggles } = require('../../../config');
 
+const getDocumentId = doc => doc.document_id;
+
 const getLicenceSummary = async (request, h) => {
   const { licenceId } = request.params;
-  const { agreements, chargeVersions, chargeVersionWorkflows, licence } = request.pre;
+  const { agreements, chargeVersions, chargeVersionWorkflows, licence, returns, document } = request.pre;
+
+  // Get CRM v1 doc ID
+  const documentId = getDocumentId(document);
 
   const view = {
     ...request.view,
     pageTitle: `Licence ${licence.licenceNumber}`,
     featureToggles,
     licenceId,
-    ...pick(request.pre, ['licence', 'bills', 'returns', 'notifications']),
+    documentId,
+    ...pick(request.pre, ['licence', 'bills', 'notifications']),
     chargeVersions: mappers.mapChargeVersions(chargeVersions, chargeVersionWorkflows),
     agreements: mappers.mapLicenceAgreements(agreements),
+    returns: mappers.mapReturns(request, returns),
     links: {
-      bills: `/licences/${licenceId}/bills`
+      bills: `/licences/${licenceId}/bills`,
+      returns: `/licences/${documentId}/returns`
     },
     isChargingUser: hasScope(request, scope.charging),
     validityMessage: mappers.getValidityNotice(licence),
     back: '/licences'
   };
 
-  console.log(view);
+  console.log(view.returns);
 
   return h.view('nunjucks/licences/licence.njk', view);
 };

@@ -44,9 +44,10 @@ class LicenceDataService {
 
   /**
    * Gets default licence version given a licence ID
+   * The default is either "current", or the last version
    *
    * @param {String} licenceId
-   * @returns {Promise<Object}
+   * @returns {Promise<Object>}
    */
   async getDefaultLicenceVersionByLicenceId (licenceId) {
     // Load all licence versions

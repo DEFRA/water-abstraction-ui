@@ -78,6 +78,25 @@ const loadReturns = partialRight(createPreHandler, 'getReturnsByLicenceId', 'Ret
  */
 const loadNotifications = partialRight(createPreHandler, 'getNotificationsByLicenceId', 'Notifications for licence');
 
+/**
+ * Get licence summary data
+ * Note: this depends on permit repo data
+ */
+const loadSummary = async request => {
+  const { licence, document: { document_id: documentId } } = request.pre;
+
+  console.log(licence);
+
+  // Skip if licence is not active, as only the "current" version of a licence
+  // is currently supported
+  if (!licence.isActive) {
+    return null;
+  }
+
+  const { data } = await request.services.water.licences.getSummaryByDocumentId(documentId);
+  return data;
+};
+
 exports.loadLicence = loadLicence;
 exports.loadLicenceDocument = loadLicenceDocument;
 exports.loadDefaultLicenceVersion = loadDefaultLicenceVersion;
@@ -87,3 +106,4 @@ exports.loadBills = loadBills;
 exports.loadAgreements = loadAgreements;
 exports.loadReturns = loadReturns;
 exports.loadNotifications = loadNotifications;
+exports.loadSummary = loadSummary;

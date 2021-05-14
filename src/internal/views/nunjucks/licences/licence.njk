@@ -33,10 +33,14 @@
       <div class="govuk-tabs" data-module="govuk-tabs">
         <h2 class="govuk-tabs__title">Contents</h2>
 
+      
         <ul class="govuk-tabs__list">
+
+          {% if summary %}
           <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
             <a class="govuk-tabs__tab" href="#summary">Summary</a>
           </li>
+          {% endif %}
     
           <li class="govuk-tabs__list-item">
             <a class="govuk-tabs__tab" href="#returns">Returns</a>
@@ -59,9 +63,11 @@
           {% endif %}
         </ul>
 
+      {% if summary %}
         <section class="govuk-tabs__panel" id="summary">
           {% include "nunjucks/licences/tabs/summary.njk" %}
         </section>
+      {% endif %}
        
         <section class="govuk-tabs__panel" id="returns">
           {% include "nunjucks/licences/tabs/returns.njk" %}

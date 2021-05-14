@@ -39,6 +39,8 @@ module.exports = {
         method: preHandlers.loadReturns, assign: 'returns'
       }, {
         method: preHandlers.loadNotifications, assign: 'notifications'
+      }, {
+        method: preHandlers.loadSummary, assign: 'summary'
       }]
     }
   }

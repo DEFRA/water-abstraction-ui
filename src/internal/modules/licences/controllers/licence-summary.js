@@ -11,7 +11,7 @@ const getDocumentId = doc => doc.document_id;
 
 const getLicenceSummary = async (request, h) => {
   const { licenceId } = request.params;
-  const { agreements, chargeVersions, chargeVersionWorkflows, licence, returns, document } = request.pre;
+  const { agreements, chargeVersions, chargeVersionWorkflows, licence, returns, document, summary } = request.pre;
 
   // Get CRM v1 doc ID
   const documentId = getDocumentId(document);
@@ -20,6 +20,7 @@ const getLicenceSummary = async (request, h) => {
     ...request.view,
     pageTitle: `Licence ${licence.licenceNumber}`,
     featureToggles,
+    summary,
     licenceId,
     documentId,
     ...pick(request.pre, ['licence', 'bills', 'notifications']),
@@ -34,8 +35,6 @@ const getLicenceSummary = async (request, h) => {
     validityMessage: mappers.getValidityNotice(licence),
     back: '/licences'
   };
-
-  console.log(view.returns);
 
   return h.view('nunjucks/licences/licence.njk', view);
 };

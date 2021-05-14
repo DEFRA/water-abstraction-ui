@@ -1,0 +1,29 @@
+{% macro abstractionPeriod(period) %}
+  {{ period.periodStart | abstractionPeriod }} to {{ period.periodEnd | abstractionPeriod }}
+{% endmacro %}
+
+{% macro periods(periods, link) %}
+{% if periods.length %}
+<div class="govuk-summary-list__row">
+  <dt class="govuk-summary-list__key">
+    {{ 'Period' | pluralize(periods) }} of abstraction
+  </dt>
+  <dd class="govuk-summary-list__value">
+    {% if periods.length > 5 %}
+      You have {{ periods.length }} abstraction periods
+      <br />
+    {% elseif periods.length > 1 %}
+    <ul class="govuk-list govuk-!-margin-0">
+      {% for period in periods %}
+      <li>{{ abstractionPeriod(period) }}</li>
+      {% endfor %}
+    </ul>
+    {% else %}
+      {{ abstractionPeriod(periods[0]) }}
+      <br />
+    {% endif %}
+    {{ link | safe }}
+  </dd>
+</div>
+{% endif %}
+{% endmacro %}

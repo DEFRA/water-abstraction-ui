@@ -11,7 +11,6 @@ const returnsReports = require('./returns-reports/routes');
 const internalSearch = require('./internal-search/routes');
 const waiting = require('./waiting/routes');
 const batchNotifications = require('./batch-notifications/routes');
-const viewLicences = require('./view-licences/routes');
 const accountRoutes = require('./account/routes');
 const unlinkLicenceRoutes = require('./unlink-licence/routes');
 const billingRoutes = require('./billing/routes');
@@ -35,7 +34,6 @@ module.exports = [
   ...Object.values(internalSearch),
   ...Object.values(waiting),
   ...Object.values(batchNotifications),
-  ...Object.values(viewLicences),
   ...require('./manage/routes'),
   ...Object.values(accountRoutes),
   ...Object.values(unlinkLicenceRoutes),

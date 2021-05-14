@@ -1,0 +1,5 @@
+{% macro pointString(point) %}
+  {% set length %} {{(point.length - 2) / 2}} {%endset%}
+  {% set secondIndex %} {{((point.length - 2) / 2) + 2}} {%endset%}
+  {{ point.substring(0, 2) }} {{ point.substr(2, length) }} {{ point.substr(secondIndex, length) }}
+{% endmacro %}

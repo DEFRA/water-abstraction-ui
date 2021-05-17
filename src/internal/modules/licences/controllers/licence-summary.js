@@ -29,7 +29,8 @@ const getLicenceSummary = async (request, h) => {
     returns: mappers.mapReturns(request, returns),
     links: {
       bills: `/licences/${licenceId}/bills`,
-      returns: `/licences/${documentId}/returns`
+      returns: `/licences/${documentId}/returns`,
+      addAgreement: `/licences/${licenceId}/agreements/select-type`
     },
     isChargingUser: hasScope(request, scope.charging),
     validityMessage: mappers.getValidityNotice(licence),

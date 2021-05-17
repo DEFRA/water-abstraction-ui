@@ -122,13 +122,13 @@ const postConfirmEndAgreement = async (request, h) => {
  * Page 1: Add agreement flow - select agreement type
  */
 const getSelectAgreementType = async (request, h) => {
-  const { document_id: documentId } = request.pre.document;
+  const { id } = request.pre.licence;
 
   const view = {
     ...getDefaultView(request),
     pageTitle: 'Select agreement',
     form: sessionForms.get(request, selectAgreementType.form(request)),
-    back: `/licences/${documentId}#charge`
+    back: `/licences/${id}#charge`
   };
   return h.view('nunjucks/agreements/form', view);
 };
@@ -200,13 +200,13 @@ const getCheckAnswers = async (request, h) => {
 
 const postCheckAnswers = async (request, h) => {
   const { licenceId } = request.params;
-  const { flowState, document } = request.pre;
+  const { flowState } = request.pre;
 
   await water.licences.createAgreement(licenceId, omit(flowState, 'isDateSignedKnown'));
 
   clearAddAgreementSessionData(request);
 
-  return h.redirect(`/licences/${document.document_id}#charge`);
+  return h.redirect(`/licences/${licenceId}#charge`);
 };
 
 exports.getDeleteAgreement = getDeleteAgreement;

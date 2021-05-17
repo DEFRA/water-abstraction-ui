@@ -29,45 +29,71 @@ describe('annual bill run', () => {
         cy.get('.govuk-link').eq(12).contains('Create a bill run').click();
       });
 
-      describe('user selects supplementary billing type', () => {
-        cy.get('#selectedBillingType-2').click();
+      describe('user selects annual billing type', () => {
+        cy.get('#selectedBillingType').click();
         cy.get('button.govuk-button').click();
       });
 
-      describe('user selects the test region', () => {
+      describe('user cancels the bill after generating it', () => {
         cy.get('.govuk-radios__item').last().children().first().click();
         cy.get('button.govuk-button').click();
-      });
-
-      describe('user waits for batch to finish generating', () => {
-        cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Supplementary bill run');
+        cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Annual bill run');
         cy.url().should('contain', '/summary');
-      });
-
-      describe('user verifys the generated bill', () => {
-        cy.get('.govuk-link').eq(4).click();
-        cy.url().should('contain', '/billing/batch/');
-        cy.get('.govuk-caption-l').contains('Billing account');
-        cy.get('div.meta__row').eq(1).contains('Test Region');
-        // click on back
-        cy.get('.govuk-back-link').click();
-      });
-
-      describe('user confirms the bill', () => {
+        cy.get('div.govuk-grid-column-two-thirds').eq(3).children(1).contains('Cancel bill run').click();
+        cy.get('form > .govuk-button').click();
+        cy.get('.pagination__link').click();
+        cy.get('.pagination__link').click();
+        cy.get('#main-content > a.govuk-button').click();
+      }); 
+      
+      describe('user generates the annual bill ', () => {
+        cy.get('#selectedBillingType').click();
+        cy.get('form > .govuk-button').click();
+        cy.get('.govuk-radios__item').last().children().first().click();
+        cy.get('button.govuk-button').click();
+        cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Annual bill run');
+        cy.url().should('contain', '/summary');
         cy.get('div.govuk-grid-column-two-thirds').eq(3).children(0).contains('Confirm bill run').click();
-      });
+        cy.get('.govuk-heading-l').should('contain', 'You are about to send this bill run');
+        cy.get('form > .govuk-button').click();
+        cy.get('.govuk-panel__title', { timeout: 20000 }).contains('Bill run sent');
+        cy.get('.govuk-grid-column-two-thirds > :nth-child(4) > a').click();
+        cy.get('.govuk-heading-xl').contains('Annual bill run');
+      }); 
 
-      describe('send the bill run', () => {
+      describe('user verifies the annual bill ', () => {
+        cy.get('#navbar-notificationsType').click();
+        //cy.get('form > .govuk-button').click();
+        //cy.get('.govuk-radios__item').last().children().first().click();
+        //cy.get('button.govuk-button').click();
+        //cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Annual bill run');
+        //cy.url().should('contain', '/summary');
+        //cy.get('div.govuk-grid-column-two-thirds').eq(3).children(0).contains('Confirm bill run').click();
+  
+      }); 
+
+
+      /*describe('user verifys the generated bill', () => {
+        cy.get('.govuk-grid-column-two-thirds > :nth-child(4) > a').click();
+        cy.get('.govuk-heading-xl').contatins('Annual bill run');
+        //cy.get('.govuk-body > .govuk-tag').contains('SENT');
+      });*/
+
+      /* describe('user confirms the bill', () => {
+        cy.get('div.govuk-grid-column-two-thirds').eq(3).children(0).contains('Confirm bill run').click();
+      }); */
+
+      /* describe('send the bill run', () => {
         cy.get('.govuk-heading-l').contains('You are about to send this bill run');
         cy.get('button.govuk-button').contains('Send bill run').click();
-      });
+      }); */
 
-      describe('verify the bill run is sent successfully', () => {
+      /* describe('verify the bill run is sent successfully', () => {
         cy.get('.govuk-heading-l', { timeout: 40000 }).contains('supplementary bill run');
         cy.get('.govuk-panel__title', { timeout: 40000 }).contains('Bill run sent');
         cy.url().should('contain', '/confirm');
         cy.get('div.govuk-grid-column-two-thirds').eq(1).contains('Download the bill run');
-      });
+      }); */
     });
   });
 });

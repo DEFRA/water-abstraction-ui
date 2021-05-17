@@ -23,29 +23,40 @@ module.exports = {
           activeNavLink: 'view'
         }
       },
-      pre: [{
-        method: preHandlers.loadLicence, assign: 'licence'
-      }, {
-        method: preHandlers.loadDefaultLicenceVersion, assign: 'licenceVersion'
-      }, {
-        method: preHandlers.loadLicenceDocument, assign: 'document'
-      }, {
-        method: preHandlers.loadChargeVersions, assign: 'chargeVersions'
-      }, {
-        method: preHandlers.loadChargeVersionWorkflows, assign: 'chargeVersionWorkflows'
-      }, {
-        method: preHandlers.loadBills, assign: 'bills'
-      }, {
-        method: preHandlers.loadAgreements, assign: 'agreements'
-      }, {
-        method: preHandlers.loadReturns, assign: 'returns'
-      }, {
-        method: preHandlers.loadNotifications, assign: 'notifications'
-      }, {
-        method: preHandlers.loadSummary, assign: 'summary'
-      }, {
-        method: preHandlers.loadPrimaryUser, assign: 'primaryUser'
-      }]
+      pre: [
+        [
+          {
+            method: preHandlers.loadLicence, assign: 'licence'
+          }
+        ],
+        [
+          {
+            method: preHandlers.loadDefaultLicenceVersion, assign: 'licenceVersion'
+          }, {
+            method: preHandlers.loadLicenceDocument, assign: 'document'
+          }, {
+            method: preHandlers.loadChargeVersions, assign: 'chargeVersions'
+          }, {
+            method: preHandlers.loadChargeVersionWorkflows, assign: 'chargeVersionWorkflows'
+          }, {
+            method: preHandlers.loadBills, assign: 'bills'
+          }, {
+            method: preHandlers.loadAgreements, assign: 'agreements'
+          }, {
+            method: preHandlers.loadReturns, assign: 'returns'
+          }, {
+            method: preHandlers.loadNotifications, assign: 'notifications'
+          }
+        ],
+        [
+          {
+            method: preHandlers.loadPrimaryUser, assign: 'primaryUser'
+          },
+          {
+            method: preHandlers.loadSummary, assign: 'summary'
+          }
+        ]
+      ]
     }
   },
 

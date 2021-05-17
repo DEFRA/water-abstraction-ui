@@ -20,8 +20,7 @@ const createPreHandler = async (request, h, methodName, errorString, allowedScop
 
   const { licenceId } = request.params;
   try {
-    const data = await service[methodName](licenceId);
-    return data;
+    return await service[methodName](licenceId);
   } catch (err) {
     return errorHandler(err, `${errorString} ${licenceId} not found`);
   }
@@ -56,7 +55,12 @@ const loadChargeVersions = partialRight(createPreHandler, 'getChargeVersionsByLi
 /**
  * Get charge version workflows for given licence ID
  */
-const loadChargeVersionWorkflows = partialRight(createPreHandler, 'getChargeVersionWorkflowsByLicenceId', 'Charge version workflows for licence', [scope.chargeVersionWorkflowEditor, scope.chargeVersionWorkflowReviewer]);
+const loadChargeVersionWorkflows = partialRight(
+  createPreHandler,
+  'getChargeVersionWorkflowsByLicenceId',
+  'Charge version workflows for licence',
+  [scope.chargeVersionWorkflowEditor, scope.chargeVersionWorkflowReviewer]
+);
 
 /**
  * Get bills for given licence ID

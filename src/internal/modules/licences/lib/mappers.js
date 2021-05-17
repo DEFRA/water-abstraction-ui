@@ -26,6 +26,7 @@ const getValidityNotice = (licence, refDate) => {
   if (moment(refDate).isAfter(endDate, 'day')) {
     return `This licence ${validityMessageMap.get(endDateReason)} ${formatDate(endDate)}`;
   }
+  return null;
 };
 
 const mapChargeVersions = (chargeVersions, chargeVersionWorkflows) => {

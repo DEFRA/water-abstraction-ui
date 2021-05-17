@@ -60,7 +60,7 @@ class LicenceDataService {
       ...licenceVersion,
       licenceVersions
     };
-  };
+  }
 
   getChargeVersionsByLicenceId (licenceId) {
     return this.licencesApiConnector.getChargeVersionsByLicenceId(licenceId);

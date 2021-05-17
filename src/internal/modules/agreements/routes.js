@@ -32,8 +32,7 @@ if (config.featureToggles.manageAgreements) {
         },
         pre: [
           { method: preHandlers.loadAgreement, assign: 'agreement' },
-          { method: sharedPreHandlers.loadLicence, assign: 'licence' },
-          { method: sharedPreHandlers.loadLicenceDocument, assign: 'document' }
+          { method: sharedPreHandlers.loadLicence, assign: 'licence' }
         ]
       }
     },
@@ -54,7 +53,7 @@ if (config.featureToggles.manageAgreements) {
           }
         },
         pre: [
-          { method: sharedPreHandlers.loadLicenceDocument, assign: 'document' }
+          { method: sharedPreHandlers.loadLicence, assign: 'licence' }
         ]
       }
     },
@@ -246,8 +245,7 @@ if (config.featureToggles.manageAgreements) {
         },
         pre: [
           { method: preHandlers.loadAgreement, assign: 'agreement' },
-          { method: sharedPreHandlers.loadLicence, assign: 'licence' },
-          { method: sharedPreHandlers.loadLicenceDocument, assign: 'document' }
+          { method: sharedPreHandlers.loadLicence, assign: 'licence' }
         ]
       }
     },
@@ -274,8 +272,7 @@ if (config.featureToggles.manageAgreements) {
         },
         pre: [
           { method: preHandlers.loadAgreement, assign: 'agreement' },
-          { method: sharedPreHandlers.loadLicence, assign: 'licence' },
-          { method: sharedPreHandlers.loadLicenceDocument, assign: 'document' }
+          { method: sharedPreHandlers.loadLicence, assign: 'licence' }
         ]
       }
     },
@@ -301,8 +298,7 @@ if (config.featureToggles.manageAgreements) {
         },
         pre: [
           { method: preHandlers.loadAgreement, assign: 'agreement' },
-          { method: sharedPreHandlers.loadLicence, assign: 'licence' },
-          { method: sharedPreHandlers.loadLicenceDocument, assign: 'document' }
+          { method: sharedPreHandlers.loadLicence, assign: 'licence' }
         ]
       }
     },
@@ -329,8 +325,7 @@ if (config.featureToggles.manageAgreements) {
         },
         pre: [
           { method: preHandlers.loadAgreement, assign: 'agreement' },
-          { method: sharedPreHandlers.loadLicence, assign: 'licence' },
-          { method: sharedPreHandlers.loadLicenceDocument, assign: 'document' }
+          { method: sharedPreHandlers.loadLicence, assign: 'licence' }
         ]
       }
     }

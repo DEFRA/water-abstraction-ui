@@ -87,7 +87,7 @@ experiment('internal/modules/agreements/controller', () => {
 
     test('has the correct back link', () => {
       const [, view] = h.view.lastCall.args;
-      expect(view.back).to.equal('/licences/test-document-id#charge');
+      expect(view.back).to.equal('/licences/test-licence-id#charge');
     });
 
     test('has the correct verb for the warning message', () => {
@@ -119,7 +119,7 @@ experiment('internal/modules/agreements/controller', () => {
 
     test('redirects back to the licence page', () => {
       const [redirectPath] = h.redirect.lastCall.args;
-      expect(redirectPath).to.equal('/licences/test-document-id#charge');
+      expect(redirectPath).to.equal('/licences/test-licence-id#charge');
     });
 
     experiment('when an error occurs', () => {
@@ -132,7 +132,7 @@ experiment('internal/modules/agreements/controller', () => {
 
       test('redirects back to licence page', () => {
         const [redirectPath] = h.redirect.lastCall.args;
-        expect(redirectPath).to.equal('/licences/test-document-id#charge');
+        expect(redirectPath).to.equal('/licences/test-licence-id#charge');
       });
     });
   });
@@ -160,7 +160,7 @@ experiment('internal/modules/agreements/controller', () => {
 
     test('has the correct back link', () => {
       const [, view] = h.view.lastCall.args;
-      expect(view.back).to.equal('/licences/test-document-id#charge');
+      expect(view.back).to.equal('/licences/test-licence-id#charge');
     });
 
     test('contains the agreement', () => {
@@ -272,7 +272,7 @@ experiment('internal/modules/agreements/controller', () => {
         water.agreements.endAgreement.resolves();
       });
       test('redirects the client', () => {
-        expect(h.redirect.calledWith(`/licences/test-document-id#charge`)).to.be.true();
+        expect(h.redirect.calledWith(`/licences/test-licence-id#charge`)).to.be.true();
       });
     });
   });

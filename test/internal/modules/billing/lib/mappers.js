@@ -1,6 +1,7 @@
 'use strict';
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
+const uuid = require('uuid/v4');
 
 const mappers = require('internal/modules/billing/lib/mappers');
 
@@ -32,12 +33,14 @@ const batch = {
 
 const LICENCE_1 = '01/123/456/A';
 const LICENCE_2 = '02/345/678/B';
+const LICENCE_ID = uuid();
 
 const invoice = {
   invoiceLicences: [
     {
       id: 'test-invoice-licence-id-1',
       licence: {
+        id: LICENCE_ID,
         licenceNumber: LICENCE_1
       },
       transactions: [{
@@ -247,7 +250,7 @@ experiment('modules/billing/lib/mappers', () => {
         data = result[0];
       });
       test('has the correct link', async () => {
-        expect(data.link).to.equal('/licences/7d6a672f-1d3a-414a-81f7-69e66ff1381c');
+        expect(data.link).to.equal(`/licences/${LICENCE_ID}`);
       });
 
       test('has 1 x charge element', async () => {

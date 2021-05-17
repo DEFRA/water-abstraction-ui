@@ -340,7 +340,7 @@ experiment('internal/modules/agreements/controller', () => {
 
       test('sets the correct back link in the view', async () => {
         const [, { back }] = h.view.lastCall.args;
-        expect(back).to.equal(`/licences/${documentId}#charge`);
+        expect(back).to.equal(`/licences/${licenceId}#charge`);
       });
 
       test('defines a form', async () => {
@@ -635,7 +635,7 @@ experiment('internal/modules/agreements/controller', () => {
 
       test('redirects back to licence page', () => {
         const [redirectPath] = h.redirect.lastCall.args;
-        expect(redirectPath).to.equal(`/licences/${documentId}#charge`);
+        expect(redirectPath).to.equal(`/licences/${licenceId}#charge`);
       });
     });
   });

@@ -90,13 +90,6 @@ experiment('internal/modules/agreements/routes', () => {
         method: sharedPreHandlers.loadLicence, assign: 'licence'
       });
     });
-
-    test('uses the loadLicenceDocument pre handler', async () => {
-      const { pre } = routes.getSelectAgreementType.options;
-      expect(pre).to.include({
-        method: sharedPreHandlers.loadLicenceDocument, assign: 'document'
-      });
-    });
   });
 
   experiment('.postSelectAgreementType', () => {
@@ -120,13 +113,6 @@ experiment('internal/modules/agreements/routes', () => {
       const { pre } = routes.postSelectAgreementType.options;
       expect(pre).to.include({
         method: sharedPreHandlers.loadLicence, assign: 'licence'
-      });
-    });
-
-    test('uses the loadLicenceDocument pre handler', async () => {
-      const { pre } = routes.postSelectAgreementType.options;
-      expect(pre).to.include({
-        method: sharedPreHandlers.loadLicenceDocument, assign: 'document'
       });
     });
   });
@@ -256,13 +242,6 @@ experiment('internal/modules/agreements/routes', () => {
       const { pre } = routes.postCheckAnswers.options;
       expect(pre).to.include({
         method: preHandlers.getFlowState, assign: 'flowState'
-      });
-    });
-
-    test('uses the loadLicenceDocument pre handler', async () => {
-      const { pre } = routes.postCheckAnswers.options;
-      expect(pre).to.include({
-        method: sharedPreHandlers.loadLicenceDocument, assign: 'document'
       });
     });
   });

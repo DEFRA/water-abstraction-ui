@@ -23,7 +23,7 @@ const createPreHandler = async (request, h, methodName, errorString, allowedScop
     const data = await service[methodName](licenceId);
     return data;
   } catch (err) {
-    return errorHandler(err, `${errorString} ${licenceId} ${methodName} not found`);
+    return errorHandler(err, `${errorString} ${licenceId} not found`);
   }
 };
 

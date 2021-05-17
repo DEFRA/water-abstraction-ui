@@ -17,7 +17,7 @@ const getDocumentId = doc => doc.document_id;
  */
 const getLicenceSummary = async (request, h) => {
   const { licenceId } = request.params;
-  const { agreements, chargeVersions, chargeVersionWorkflows, licence, returns, document, summary } = request.pre;
+  const { agreements, chargeVersions, chargeVersionWorkflows, licence, returns, document } = request.pre;
 
   // Get CRM v1 doc ID
   const documentId = getDocumentId(document);
@@ -26,10 +26,9 @@ const getLicenceSummary = async (request, h) => {
     ...request.view,
     pageTitle: `Licence ${licence.licenceNumber}`,
     featureToggles,
-    summary,
     licenceId,
     documentId,
-    ...pick(request.pre, ['licence', 'bills', 'notifications', 'primaryUser']),
+    ...pick(request.pre, ['licence', 'bills', 'notifications', 'primaryUser', 'summary']),
     chargeVersions: mappers.mapChargeVersions(chargeVersions, chargeVersionWorkflows),
     agreements: mappers.mapLicenceAgreements(agreements),
     returns: mappers.mapReturns(request, returns),

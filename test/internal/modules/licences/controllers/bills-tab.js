@@ -38,7 +38,13 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
       view: {},
       params: {
         licenceId: tempLicenceId
-
+      },
+      pre: {
+        document: {
+          metadata: {
+            Name: 'test-name'
+          }
+        }
       },
       query: {
         page: 1
@@ -48,9 +54,6 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
       await controllers.getBillsForLicence(request, h);
     });
 
-    test('calls getDocumentByLicenceId', () => {
-      expect(services.water.licences.getDocumentByLicenceId.calledWith(tempLicenceId)).to.be.true();
-    });
     test('calls getLicenceInvoices', () => {
       expect(viewLicenceLib.getLicenceInvoices.calledWith(tempLicenceId, 1)).to.be.true();
     });

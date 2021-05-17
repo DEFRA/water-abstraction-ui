@@ -1,7 +1,6 @@
 'use strict';
 
 const viewLicenceLib = require('../../../lib/view-licence-config');
-const services = require('../../../lib/connectors/services');
 
 /**
  * Get a list of bills for a particular licence
@@ -11,8 +10,7 @@ const services = require('../../../lib/connectors/services');
 const getBillsForLicence = async (request, h) => {
   const { licenceId } = request.params;
   const { page } = request.query;
-
-  const document = await services.water.licences.getDocumentByLicenceId(licenceId);
+  const { document } = request.pre;
 
   const { data, pagination } = await viewLicenceLib.getLicenceInvoices(licenceId, page);
 
@@ -24,7 +22,7 @@ const getBillsForLicence = async (request, h) => {
     bills: data,
     pagination,
     licenceId,
-    back: `/licences/${document.document_id}#bills`
+    back: `/licences/${licenceId}#bills`
   });
 };
 

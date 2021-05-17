@@ -3,6 +3,7 @@
 const Joi = require('@hapi/joi');
 const controller = require('../controllers/bills-tab');
 const { scope } = require('../../../lib/constants');
+const preHandlers = require('shared/lib/pre-handlers/licences');
 
 const allowedScopes = [scope.billing];
 
@@ -28,7 +29,10 @@ module.exports = {
         viewContext: {
           activeNavLink: 'view'
         }
-      }
+      },
+      pre: [{
+        method: preHandlers.loadLicenceDocument, assign: 'document'
+      }]
     }
   }
 };

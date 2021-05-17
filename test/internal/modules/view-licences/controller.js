@@ -10,8 +10,7 @@ const {
 const sandbox = require('sinon').createSandbox();
 const uuid = require('uuid/v4');
 
-const controllers = require('internal/modules/licences/controllers/bills-tab');
-const viewLicenceLib = require('internal/lib/view-licence-config');
+const controllers = require('internal/modules/view-licences/controller');
 const services = require('internal/lib/connectors/services');
 
 experiment('internal/modules/billing/controllers/bills-tab', () => {
@@ -20,7 +19,6 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
       metadata: {},
       system_external_id: 'test id'
     });
-    sandbox.stub(viewLicenceLib, 'getLicenceInvoices').resolves({ data: [] });
   });
 
   after(async () => {
@@ -44,7 +42,10 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
           metadata: {
             Name: 'test-name'
           }
-        }
+        },
+        bills: [
+
+        ]
       },
       query: {
         page: 1
@@ -54,9 +55,6 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
       await controllers.getBillsForLicence(request, h);
     });
 
-    test('calls getLicenceInvoices', () => {
-      expect(viewLicenceLib.getLicenceInvoices.calledWith(tempLicenceId, 1)).to.be.true();
-    });
     test('returns the correct view data objects', async () => {
       const keys = Object.keys(h.view.lastCall.args[1]);
 

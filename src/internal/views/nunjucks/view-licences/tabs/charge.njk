@@ -165,6 +165,8 @@
   <p>No agreements for this licence.</p>
 {% endif %}
 
-<a href="/licences/{{ licenceId }}/agreements/select-type" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
-  Set up a new agreement
-</a>
+{{ govukButton({
+  href : links.addAgreement,
+  text: 'Set up a new agreement',
+  classes: 'govuk-button--secondary'
+})}}

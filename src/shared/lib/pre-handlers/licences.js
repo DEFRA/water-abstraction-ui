@@ -65,7 +65,19 @@ const loadChargeVersionWorkflows = partialRight(
 /**
  * Get bills for given licence ID
  */
-const loadBills = partialRight(createPreHandler, 'getInvoicesByLicenceId', 'Bills for licence', scope.charging);
+const loadBills = async request => {
+  if (!hasScope(request, scope.charging)) {
+    return null;
+  }
+
+  // Allow pagination to be controlled via query params
+  const { licenceId } = request.params;
+  const { page = 1, perPage = 10 } = request.query;
+
+  // Create licence data service and fetch data
+  const service = new LicenceDataService(request.services.water);
+  return service.getInvoicesByLicenceId(licenceId, page, perPage);
+};
 
 /**
  * Get agreements for given licence ID

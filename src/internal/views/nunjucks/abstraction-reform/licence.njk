@@ -41,237 +41,238 @@
     }) }}
   {% endif %}
 
-  <!-- Licence Data -->
   <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
-  <div class="govuk-accordion__section" id="licence-{{ data.licence.base.ID }}">
-    <div class="govuk-accordion__section-header">
-      <h2 class="govuk-accordion__section-heading">
-        <span class="govuk-accordion__section-button" id="accordion-default-heading-licencedata-{{ data.licence.base.ID }}">
-          Licence data
-        </span>
-      </h2>
-    </div>
-
-    <div id="accordion-default-content-licensedata-{{ data.licence.base.ID }}" class="govuk-accordion__section-content" aria-labelledby="accordion-default-heading-licencedata-{{ data.licence.base.ID }}">
-      {% if canEdit %}
-        <p>
-          <a href="/digitise/licence/{{ documentId }}/edit/licence/{{ data.licence.base.ID }}">Edit licence data</a>
-        </p>
-      {% endif %}
-      {{ arComparisonTable(data.licence) }}
-
-    </div>
-  </div>
-
-  <!-- Licence version -->
-  <div class="govuk-accordion__section" id="version-{{ data.currentVersion.base.ISSUE_NO }}_{{ data.currentVersion.base.INCR_NO }}">
-    <div class="govuk-accordion__section-header">
-      <h2 class="govuk-accordion__section-heading">
-        <span class="govuk-accordion__section-button" id="accordion-default-heading-version-{{ data.currentVersion.base.ISSUE_NO }}_{{ data.currentVersion.base.INCR_NO }}">
-          Current licence version
-        </span>
-      </h2>
-    </div>
-    <div id="accordion-default-content-licenseversion-{{ data.licence.base.ID }}" class="govuk-accordion__section-content" aria-labelledby="accordion-default-heading-version-{{ data.currentVersion.base.ISSUE_NO }}_{{ data.currentVersion.base.INCR_NO }}">
-   
-      <!-- Current licence version -->
-      {% if canEdit %}
-        <p>
-          <a href="/digitise/licence/{{ documentId }}/edit/version/{{ data.currentVersion.base.ISSUE_NO }}_{{ data.currentVersion.base.INCR_NO }}">Edit current licence version</a>
-        </p>
-      {% endif %}
-      {{ arComparisonTable(data.currentVersion) }}
-
-    </div>
-  </div>
-
-  <!-- Licence holder -->
-  <div class="govuk-accordion__section" id="party-{{ data.party.base.ID }}">
-    <div class="govuk-accordion__section-header">
-      <h2 class="govuk-accordion__section-heading">
-        <span class="govuk-accordion__section-button" id="accordion-default-heading-party-{{ data.party.base.ID }}">
-           Licence holder party
-        </span>
-      </h2>
-    </div>
-    <div id="accordion-default-content-party-{{ data.party.base.ID }}" class="govuk-accordion__section-content" aria-labelledby="accordion-default-heading-party-{{ data.party.base.ID }}">
-
-      {% if canEdit %}
-        <p>
-          <a href="/digitise/licence/{{ documentId }}/edit/party/{{ data.party.base.ID }}">Edit licence holder party</a>
-        </p>
-      {% endif %}
-      {{ arComparisonTable(data.party) }}
-
-    </div>
-  </div>
-
-  <!-- Licence holder address -->
-  <div class="govuk-accordion__section" id="address-{{ data.address.base.ID }}">
-    <div class="govuk-accordion__section-header">
-      <h2 class="govuk-accordion__section-heading">
-        <span class="govuk-accordion__section-button" id="accordion-default-heading-address-{{ data.address.base.ID }}">
-           Licence holder address
-        </span>
-      </h2>
-    </div>
-    <div id="accordion-default-content-address-{{ data.address.base.ID }}" class="govuk-accordion__section-content" aria-labelledby="accordion-default-heading-address-{{ data.address.base.ID }}">
-
-      {% if canEdit %}
-        <p>
-          <a href="/digitise/licence/{{ documentId }}/edit/address/{{ data.address.base.ID }}">Edit licence holder address</a>
-        </p>
-      {% endif %}
-      {{ arComparisonTable(data.address) }}
-
-    </div>
-  </div>
-
-
-  <!-- Purposes -->
-  {% for purpose in data.purposes %}
-  
-  <div class="govuk-accordion__section" id="purpose-{{ purpose.base.ID }}">
-    <div class="govuk-accordion__section-header">
-      <h2 class="govuk-accordion__section-heading">
-        <span class="govuk-accordion__section-button" id="accordion-default-heading-purpose-{{ purpose.base.ID }}">
-          Purpose {{ purpose.base.ID }}
-        </span>
-      </h2>
-    </div>
-    <div id="accordion-default-content-purpose-{{ purpose.base.ID }}" class="govuk-accordion__section-content" aria-labelledby="accordion-default-heading-purpose-{{ purpose.base.ID }}">
- 
-    <!-- Purposes -->
-    {% if canEdit %}
-      <p>
-        <a href="/digitise/licence/{{ documentId }}/edit/purpose/{{ purpose.base.ID }}">Edit <span aria-hidden="true">this</span> purpose
-          <span class="govuk-visually-hidden">{{ purpose.base.ID }}</span>
-        </a>
-      </p>
-    {% endif %}
-    {{ arComparisonTable(purpose) }}
-
-    </div>
-  </div>
-  {% endfor %}
-
-
-  <!-- Points -->
-  {% for point in data.points %}
-  <div class="govuk-accordion__section" id="point-{{ point.base.ID }}">
-    <div class="govuk-accordion__section-header">
-      <h2 class="govuk-accordion__section-heading">
-        <span class="govuk-accordion__section-button" id="accordion-default-heading-point-{{ point.base.ID }}">
-          Point {{ point.base.ID }}
-        </span>
-      </h2>
-    </div>
-    <div id="accordion-default-content-point-{{ point.base.ID }}" class="govuk-accordion__section-content" aria-labelledby="accordion-default-heading-point-{{ purpose.base.ID }}">
-
-    {% if canEdit %}
-      <p>
-        <a href="/digitise/licence/{{ documentId }}/edit/point/{{ point.base.ID }}">Edit <span aria-hidden="true">this</span> point
-          <span class="govuk-visually-hidden">{{ point.base.ID }}</span>
-        </a>
-      </p>
-    {% endif %}
-    {{ arComparisonTable(point) }}
-
-    </div>
-  </div>
-  {% endfor %}
-
-  <!-- Condition -->
-  {% for condition in data.conditions %}
-  <div class="govuk-accordion__section" id="condition-{{ condition.base.ID }}">
-    <div class="govuk-accordion__section-header">
-      <h2 class="govuk-accordion__section-heading">
-        <span class="govuk-accordion__section-button" id="accordion-default-heading-condition-{{ condition.base.ID }}">
-          Condition {{ condition.base.ID }}
-        </span>
-      </h2>
-    </div>
-    <div id="accordion-default-content-condition-{{ condition.base.ID }}" class="govuk-accordion__section-content" aria-labelledby="accordion-default-heading-condition-{{ condition.base.ID }}">
-    {% if canEdit %}
-      <p>
-        <a href="/digitise/licence/{{ documentId }}/edit/condition/{{ condition.base.ID }}">Edit <span aria-hidden="true">this</span> condition
-          <span class="govuk-visually-hidden">{{ condition.base.ID }}</span>
-        </a>
-      </p>
-    {% endif %}
-    {{ arComparisonTable(condition) }}
-
-    </div>
-  </div>
-  {% endfor %}
-
-
-  <!-- Further conditions -->
-  {% if data.arData.length %}
-    {% for item in data.arData %}
-
-  <div class="govuk-accordion__section" id="condition-{{ item.naldConditionId }}">
-    <div class="govuk-accordion__section-header">
-      <h2 class="govuk-accordion__section-heading">
-        <span class="govuk-accordion__section-button" id="accordion-default-heading-further-condition-{{ item.naldConditionId }}">
-          Further conditions
-        </span>      
-      </h2>
-    </div>
-    <div id="accordion-default-content-further-condition-{{ item.naldConditionId }}" class="govuk-accordion__section-content" aria-labelledby="accordion-default-heading-further-condition-{{ item.naldConditionId }}">
-
-      <div class="govuk-grid-row" id="{{ item.id }}">
-        <div class="govuk-grid-column-one-third">
-          <p>{{ item.title }}
-            <br />
-            Linked to
-            <a href="/digitise/licence/{{ documentId }}#condition-{{ item.naldConditionId }}">
-              <span class="govuk-visually-hidden">NALD condition</span> {{ item.naldConditionId }}
-            </a>
-          </p>
-
-          {%if canEdit %}
-            <ul class="govuk-list">
-              <li>
-                <a  class="govuk-link" href="/digitise/licence/{{ documentId }}/edit-data/{{ item.id }}#">
-                  Change condition <span class="govuk-visually-hidden">{{ item.title | lower }}</span>
-                </a>
-              </li>
-              <li>
-                <a  class="govuk-link" href="/digitise/licence/{{ documentId }}/delete/{{ item.id }}#">
-                  Remove condition <span class="govuk-visually-hidden">{{ item.title | lower }}</span>
-                </a>
-              </li>
-            </ul>
-          {% endif %}
-        </div>
-        <div class="govuk-grid-column-two-thirds govuk-body">
-          {{ wr22Condition(item) }}
-        </div>
+    
+    <!-- Licence Data -->
+    <div class="govuk-accordion__section" id="licence-{{ data.licence.base.ID }}">
+      <div class="govuk-accordion__section-header">
+        <h2 class="govuk-accordion__section-heading">
+          <span class="govuk-accordion__section-button" id="accordion-default-heading-licencedata-{{ data.licence.base.ID }}">
+            Licence data
+          </span>
+        </h2>
       </div>
 
-      <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--m">
+      <div id="accordion-default-content-licensedata-{{ data.licence.base.ID }}" class="govuk-accordion__section-content" aria-labelledby="accordion-default-heading-licencedata-{{ data.licence.base.ID }}">
+        {% if canEdit %}
+          <p>
+            <a href="/digitise/licence/{{ documentId }}/edit/licence/{{ data.licence.base.ID }}">Edit licence data</a>
+          </p>
+        {% endif %}
+        {{ arComparisonTable(data.licence) }}
 
-
+      </div>
     </div>
-  </div>
-</div>
-    {% endfor %}
-  {% else %}
-    <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--m">
-    <p>No further conditions.</p>
-  {% endif %}
 
-  {%if canEdit and data.conditions.length %}
-    <p>
-      <a href="/digitise/licence/{{ documentId }}/select-schema-category">Add a condition</a>
-    </p>
-  {% endif %}
+    <!-- Licence version -->
+    <div class="govuk-accordion__section" id="version-{{ data.currentVersion.base.ISSUE_NO }}_{{ data.currentVersion.base.INCR_NO }}">
+      <div class="govuk-accordion__section-header">
+        <h2 class="govuk-accordion__section-heading">
+          <span class="govuk-accordion__section-button" id="accordion-default-heading-version-{{ data.currentVersion.base.ISSUE_NO }}_{{ data.currentVersion.base.INCR_NO }}">
+            Current licence version
+          </span>
+        </h2>
+      </div>
+      <div id="accordion-default-content-licenseversion-{{ data.licence.base.ID }}" class="govuk-accordion__section-content" aria-labelledby="accordion-default-heading-version-{{ data.currentVersion.base.ISSUE_NO }}_{{ data.currentVersion.base.INCR_NO }}">
+    
+        <!-- Current licence version -->
+        {% if canEdit %}
+          <p>
+            <a href="/digitise/licence/{{ documentId }}/edit/version/{{ data.currentVersion.base.ISSUE_NO }}_{{ data.currentVersion.base.INCR_NO }}">Edit current licence version</a>
+          </p>
+        {% endif %}
+        {{ arComparisonTable(data.currentVersion) }}
 
+      </div>
+    </div>
+
+    <!-- Licence holder -->
+    <div class="govuk-accordion__section" id="party-{{ data.party.base.ID }}">
+      <div class="govuk-accordion__section-header">
+        <h2 class="govuk-accordion__section-heading">
+          <span class="govuk-accordion__section-button" id="accordion-default-heading-party-{{ data.party.base.ID }}">
+            Licence holder party
+          </span>
+        </h2>
+      </div>
+      <div id="accordion-default-content-party-{{ data.party.base.ID }}" class="govuk-accordion__section-content" aria-labelledby="accordion-default-heading-party-{{ data.party.base.ID }}">
+
+        {% if canEdit %}
+          <p>
+            <a href="/digitise/licence/{{ documentId }}/edit/party/{{ data.party.base.ID }}">Edit licence holder party</a>
+          </p>
+        {% endif %}
+        {{ arComparisonTable(data.party) }}
+
+      </div>
+    </div>
+
+    <!-- Licence holder address -->
+    <div class="govuk-accordion__section" id="address-{{ data.address.base.ID }}">
+      <div class="govuk-accordion__section-header">
+        <h2 class="govuk-accordion__section-heading">
+          <span class="govuk-accordion__section-button" id="accordion-default-heading-address-{{ data.address.base.ID }}">
+            Licence holder address
+          </span>
+        </h2>
+      </div>
+      <div id="accordion-default-content-address-{{ data.address.base.ID }}" class="govuk-accordion__section-content" aria-labelledby="accordion-default-heading-address-{{ data.address.base.ID }}">
+
+        {% if canEdit %}
+          <p>
+            <a href="/digitise/licence/{{ documentId }}/edit/address/{{ data.address.base.ID }}">Edit licence holder address</a>
+          </p>
+        {% endif %}
+        {{ arComparisonTable(data.address) }}
+
+      </div>
+    </div>
+
+
+    <!-- Purposes -->
+    {% for purpose in data.purposes %}
+    
+    <div class="govuk-accordion__section" id="purpose-{{ purpose.base.ID }}">
+      <div class="govuk-accordion__section-header">
+        <h2 class="govuk-accordion__section-heading">
+          <span class="govuk-accordion__section-button" id="accordion-default-heading-purpose-{{ purpose.base.ID }}">
+            Purpose {{ purpose.base.ID }}
+          </span>
+        </h2>
+      </div>
+      <div id="accordion-default-content-purpose-{{ purpose.base.ID }}" class="govuk-accordion__section-content" aria-labelledby="accordion-default-heading-purpose-{{ purpose.base.ID }}">
   
-  <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--m">
+      <!-- Purposes -->
+      {% if canEdit %}
+        <p>
+          <a href="/digitise/licence/{{ documentId }}/edit/purpose/{{ purpose.base.ID }}">Edit <span aria-hidden="true">this</span> purpose
+            <span class="govuk-visually-hidden">{{ purpose.base.ID }}</span>
+          </a>
+        </p>
+      {% endif %}
+      {{ arComparisonTable(purpose) }}
+
+      </div>
+    </div>
+    {% endfor %}
 
 
+    <!-- Points -->
+    {% for point in data.points %}
+    <div class="govuk-accordion__section" id="point-{{ point.base.ID }}">
+      <div class="govuk-accordion__section-header">
+        <h2 class="govuk-accordion__section-heading">
+          <span class="govuk-accordion__section-button" id="accordion-default-heading-point-{{ point.base.ID }}">
+            Point {{ point.base.ID }}
+          </span>
+        </h2>
+      </div>
+      <div id="accordion-default-content-point-{{ point.base.ID }}" class="govuk-accordion__section-content" aria-labelledby="accordion-default-heading-point-{{ purpose.base.ID }}">
+
+      {% if canEdit %}
+        <p>
+          <a href="/digitise/licence/{{ documentId }}/edit/point/{{ point.base.ID }}">Edit <span aria-hidden="true">this</span> point
+            <span class="govuk-visually-hidden">{{ point.base.ID }}</span>
+          </a>
+        </p>
+      {% endif %}
+      {{ arComparisonTable(point) }}
+
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- Condition -->
+    {% for condition in data.conditions %}
+    <div class="govuk-accordion__section" id="condition-{{ condition.base.ID }}">
+      <div class="govuk-accordion__section-header">
+        <h2 class="govuk-accordion__section-heading">
+          <span class="govuk-accordion__section-button" id="accordion-default-heading-condition-{{ condition.base.ID }}">
+            Condition {{ condition.base.ID }}
+          </span>
+        </h2>
+      </div>
+      <div id="accordion-default-content-condition-{{ condition.base.ID }}" class="govuk-accordion__section-content" aria-labelledby="accordion-default-heading-condition-{{ condition.base.ID }}">
+      {% if canEdit %}
+        <p>
+          <a href="/digitise/licence/{{ documentId }}/edit/condition/{{ condition.base.ID }}">Edit <span aria-hidden="true">this</span> condition
+            <span class="govuk-visually-hidden">{{ condition.base.ID }}</span>
+          </a>
+        </p>
+      {% endif %}
+      {{ arComparisonTable(condition) }}
+
+      </div>
+    </div>
+    {% endfor %}
+
+
+    <!-- Further conditions -->
+    {% if data.arData.length %}
+      {% for item in data.arData %}
+
+      <div class="govuk-accordion__section" id="condition-{{ item.naldConditionId }}">
+        <div class="govuk-accordion__section-header">
+          <h2 class="govuk-accordion__section-heading">
+            <span class="govuk-accordion__section-button" id="accordion-default-heading-further-condition-{{ item.naldConditionId }}">
+              Further conditions
+            </span>      
+          </h2>
+        </div>
+        
+        <div id="accordion-default-content-further-condition-{{ item.naldConditionId }}" class="govuk-accordion__section-content" aria-labelledby="accordion-default-heading-further-condition-{{ item.naldConditionId }}">
+
+          <div class="govuk-grid-row" id="{{ item.id }}">
+            <div class="govuk-grid-column-one-third">
+              <p>{{ item.title }}
+                <br />
+                Linked to
+                <a href="/digitise/licence/{{ documentId }}#condition-{{ item.naldConditionId }}">
+                  <span class="govuk-visually-hidden">NALD condition</span> {{ item.naldConditionId }}
+                </a>
+              </p>
+
+              {%if canEdit %}
+                <ul class="govuk-list">
+                  <li>
+                    <a  class="govuk-link" href="/digitise/licence/{{ documentId }}/edit-data/{{ item.id }}#">
+                      Change condition <span class="govuk-visually-hidden">{{ item.title | lower }}</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a  class="govuk-link" href="/digitise/licence/{{ documentId }}/delete/{{ item.id }}#">
+                      Remove condition <span class="govuk-visually-hidden">{{ item.title | lower }}</span>
+                    </a>
+                  </li>
+                </ul>
+              {% endif %}
+            </div>
+            <div class="govuk-grid-column-two-thirds govuk-body">
+              {{ wr22Condition(item) }}
+            </div>
+          </div>
+
+          <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--m">
+
+        </div>
+      
+      </div>
+
+      {% endfor %}
+    {% else %}
+      <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--m">
+      <p>No further conditions.</p>
+    {% endif %}
+
+    {%if canEdit and data.conditions.length %}
+      <p>
+        <a href="/digitise/licence/{{ documentId }}/select-schema-category">Add a condition</a>
+      </p>
+    {% endif %}
+
+  <!-- End data-module govuk-accordion -->
+  </div>  
+  
   {%if canSubmit or canApprove %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">

@@ -84,7 +84,7 @@ describe('annual bill run', () => {
       cy.get('td.govuk-table__cell').last().children(0).click({ force: true });
       describe('user verifys the generated bill', () => {
         cy.get('.govuk-caption-l').should('contain', 'Billing account A99999999A');
-        cy.get('.govuk-grid-column-full > :nth-child(4)').click();
+        cy.get('.govuk-grid-column-full > :nth-child(4) > a').click();
       });
     });
   });

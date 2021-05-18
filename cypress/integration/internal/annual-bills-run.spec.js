@@ -40,15 +40,14 @@ describe('annual bill run', () => {
         cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Annual bill run');
         cy.url().should('contain', '/summary');
         cy.get('div.govuk-grid-column-two-thirds').eq(3).children(1).contains('Cancel bill run').click();
-        cy.get('form > .govuk-button').click();
-        cy.get('.pagination__link').click();
-        cy.get('.pagination__link').click();
-        cy.get('#main-content > a.govuk-button').click();
+        cy.get('button.govuk-button').click();
+        cy.get('a.govuk-button').eq(2).click();
+
       });
 
       describe('user generates the annual bill ', () => {
         cy.get('#selectedBillingType').click();
-        cy.get('form > .govuk-button').click();
+        cy.get('button.govuk-button').click();
         cy.get('.govuk-radios__item').last().children().first().click();
         cy.get('button.govuk-button').click();
         cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Annual bill run');
@@ -56,9 +55,9 @@ describe('annual bill run', () => {
         cy.get('#tab_other-abstractors').click();
         cy.get('div.govuk-grid-column-two-thirds').eq(3).children(0).contains('Confirm bill run').click();
         cy.get('.govuk-heading-l').should('contain', 'You are about to send this bill run');
-        cy.get('form > .govuk-button').click();
+        cy.get('button.govuk-button').click();
         cy.get('.govuk-panel__title', { timeout: 20000 }).contains('Bill run sent');
-        cy.get('.govuk-grid-column-two-thirds > :nth-child(4) > a').click();
+        cy.get('div.govuk-grid-column-two-thirds').eq(1).children(3).contains('Go to bill run').click();
         cy.get('.govuk-heading-xl').contains('Annual bill run');
       });
     });
@@ -82,11 +81,10 @@ describe('annual bill run', () => {
       // verify the data
       cy.get('.govuk-table__row').eq(1).should('contain', 'A99999999A');
       cy.get('.govuk-table__row').eq(1).should('contain', 'Big Farm Co Ltd');
-      // cy.get('.govuk-link').contains('view').click();
       cy.get('td.govuk-table__cell').last().children(0).click({ force: true });
       describe('user verifys the generated bill', () => {
         cy.get('.govuk-caption-l').should('contain', 'Billing account A99999999A');
-        cy.get('.govuk-grid-column-full > :nth-child(4) > a').click();
+        cy.get('.govuk-grid-column-full > :nth-child(4)').click();
       });
     });
   });

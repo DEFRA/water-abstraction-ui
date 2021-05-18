@@ -34,7 +34,7 @@
       {% if doc.documentName %}
         <span class="govuk-caption-m link--no-underline">{{ doc.documentName }}</span>
       {% endif %}
-      {{ documentLink(doc) }}
+      {{ licenceLink(doc) }}
     </h3>
     <p>{{ doc.licenceHolder }}</p>
 </div>
@@ -52,10 +52,14 @@
   </div>
 {% endmacro %}
 
-{% macro documentLink(doc) %}
+{% macro licenceLink(doc) %}
+  {% if doc.licence.id %}
   <a href="/licences/{{ doc.licence.id }}">
     {{ doc.licenceNumber }}
   </a>
+  {% else %}
+    {{ doc.licenceNumber }}
+  {% endif %}
 {% endmacro %}
 
 {% macro mobileGaugingStation(station) %}
@@ -169,7 +173,7 @@
           <tbody class="govuk-table__body">
             {% for doc in documents %}
             <tr class="govuk-table__row">
-              <td class="govuk-table__cell">{{ documentLink(doc) }}</td>
+              <td class="govuk-table__cell">{{ licenceLink(doc) }}</td>
               <td class="govuk-table__cell">{{ doc.documentName }}</td>
               <td class="govuk-table__cell">{{ doc.licenceHolder }}</td>
               <td class="govuk-table__cell">

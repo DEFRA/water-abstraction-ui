@@ -197,7 +197,7 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
     });
 
     test('compensation charge as Y/N to user friendly heading', () => {
-      expect(transactionData['Compensation charge']).to.equal('N');
+      expect(transactionData['Compensation charge Y/N']).to.equal('N');
     });
 
     test('charge element data to user friendly headings', () => {
@@ -274,7 +274,7 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
         externalId: 'b97b7fe2-8704-4efa-9f39-277d8df997a0',
         description:
          'Minimum Charge Calculation - raised under Schedule 23 of the Environment Act 1995',
-        isCompensationCharge: false,
+        isCompensationCharge: true,
         isMinimumCharge: true,
         isNewLicence: true,
         chargePeriod: {
@@ -284,7 +284,7 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
 
       const transactionData = transactionsCSV._getTransactionData(minChargeTransaction);
       expect(transactionData.description).to.equal(minChargeTransaction.description);
-      expect(transactionData['Compensation charge']).to.equal('N');
+      expect(transactionData['Compensation charge Y/N']).to.equal('Y');
       expect(transactionData['S126 agreement (Y/N)']).to.equal('N');
       expect(transactionData['S126 agreement value']).to.equal(null);
       expect(transactionData['S127 agreement (Y/N)']).to.equal('N');
@@ -408,19 +408,31 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
     });
 
     test('de minimis is mapped to user friendly heading', async () => {
-      expect(csvData[0]['De minimis rule']).to.equal('N');
+      expect(csvData[0]['De minimis rule Y/N']).to.equal('N');
     });
 
     test('description is mapped to user friendly heading', async () => {
-      expect(csvData[0]['Description']).to.equal('The description - with 007');
+      expect(csvData[0]['Transaction description']).to.equal('The description - with 007');
     });
 
-    test('water company is mapped to user friendly heading', async () => {
-      expect(csvData[0]['Water company']).to.equal('N');
+    test('water company when false is mapped to user friendly heading', async () => {
+      expect(csvData[0]['Water company Y/N']).to.equal('N');
+    });
+
+    test('water company when true is mapped to user friendly heading', async () => {
+      invoice.invoiceLicences[0].licence.isWaterUndertaker = true;
+      csvData = await transactionsCSV.createCSV([invoice], chargeVersions);
+      expect(csvData[0]['Water company Y/N']).to.equal('Y');
     });
 
     test('DeMinimis is mapped to user friendly heading', async () => {
-      expect(csvData[0]['De minimis rule']).to.equal('N');
+      csvData = await transactionsCSV.createCSV([
+        {
+          ...invoice,
+          isDeMinimis: true
+        }
+      ], chargeVersions);
+      expect(csvData[0]['De minimis rule Y/N']).to.equal('Y');
     });
 
     test('historical area is mapped to user friendly heading', async () => {

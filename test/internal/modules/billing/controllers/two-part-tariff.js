@@ -98,6 +98,10 @@ const getBillingVolumeReviewRequest = payload => (
         calculatedVolume: 3.5,
         twoPartTariffError: true,
         twoPartTariffStatus: 20,
+        isSummer: false,
+        financialYear: {
+          yearEnding: 2022
+        },
         chargeElement: {
           id: 'test-charge-element-id',
           description: 'Test description',

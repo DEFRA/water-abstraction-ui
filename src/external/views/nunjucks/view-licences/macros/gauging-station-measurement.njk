@@ -1,6 +1,5 @@
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 
-{% macro gaugingStationMeasurement(measure, riverLevel) %}
 <div class="govuk-grid-column-two-thirds">
   <div class="data">
   {% if measure.unitName == 'm3/s'%}
@@ -32,11 +31,6 @@
       </select>
     </div>
   </div>
-  {% else %}
-    <span class="govuk-body govuk-!-font-size-80 govuk-body govuk-!-font-weight-bold">
-      {{ measure | gaugingStationValue(riverLevel.stageScale) }}
-    </span>
-
   {% endif %}
 
   <p class="govuk-body govuk-body govuk-!-margin-bottom-0">
@@ -45,17 +39,6 @@
       {{ measure.latestReading.dateTime | date('H:MMa') }} on {{ measure.latestReading.dateTime | date }}
     </span>
   </p>
-
-  {% if showFlowLink %}
-  <p>
-    <a href="/licences/{{ documentHeader.document_id }}/station/{{ stationReference }}?measure=flow">See flow data at this gauging station</a>
-  </p>
-  {% endif %}
-  {% if showLevelLink %}
-  <p>
-    <a href="/licences/{{ documentHeader.document_id }}/station/{{ stationReference }}?measure=level">See level data at this gauging station</a>
-  </p>
-  {% endif %}
   </div>
 </div>
 

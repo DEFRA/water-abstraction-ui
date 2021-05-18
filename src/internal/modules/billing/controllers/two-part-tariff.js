@@ -161,7 +161,8 @@ const getConfirmQuantity = async (request, h) => {
     form,
     pageTitle: `You're about to set the billable quantity to ${quantity}ML`,
     caption: `Licence ${licence.licenceNumber}`,
-    back: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}/billing-volume/${billingVolume.id}`
+    back: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}/billing-volume/${billingVolume.id}`,
+    billingVolume
   });
 };
 

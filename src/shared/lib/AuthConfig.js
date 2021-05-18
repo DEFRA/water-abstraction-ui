@@ -86,6 +86,10 @@ class AuthConfig {
       const { error, data: user } = await this.connectors.idm.users.findOne(userId);
       throwIfError(error);
 
+      if (!user.enabled) {
+        return { valid: false, credentials: {} };
+      }
+
       // Get user data and augment request
       const data = await this._mapUserRequestData(request, user);
 

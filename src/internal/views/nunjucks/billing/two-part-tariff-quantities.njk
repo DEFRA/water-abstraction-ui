@@ -94,9 +94,7 @@
         </thead>
         <tbody class="govuk-table__body">
           <tr class="govuk-table__row">
-            <td class="govuk-table__cell">{{ transaction.chargePeriod.startDate | date }}
-              to
-              {{ transaction.chargePeriod.endDate | date }}</td>
+            <td class="govuk-table__cell">{{ billingVolume.chargePeriod.startDate | date }} to {{ billingVolume.chargePeriod.endDate | date}}</td>
             <td class="govuk-table__cell">{{ chargeElementQuantity(billingVolume.chargeElement) }}</td>
             <td class="govuk-table__cell">{{ reportedVolume(billingVolume) }}</td>
             <td class="govuk-table__cell">{{ billableVolume(billingVolume) }}</td>

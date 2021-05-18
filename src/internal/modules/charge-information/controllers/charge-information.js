@@ -257,9 +257,18 @@ const redirectToCancelPage = (request, h) => {
   return h.redirect(routing.getCancelData(request.params.licenceId, { chargeVersionWorkflowId }));
 };
 const redirectToStartOfElementFlow = (request, h) => {
+  const { chargeVersionWorkflowId } = request.query;
   const { licenceId } = request.params;
-  // need to generate new id for new charge element
-  return h.redirect(routing.getChargeElementStep(licenceId, uuid(), CHARGE_ELEMENT_FIRST_STEP, request.query));
+  const { draftChargeInformation: currentState } = request.pre;
+
+  // Create new element to edit in the session state
+  const chargeElementId = uuid();
+  const action = actions.createChargeElement(chargeElementId);
+  const nextState = reducer(currentState, action);
+  request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, nextState);
+
+  // Enter charge element setup flow
+  return h.redirect(routing.getChargeElementStep(licenceId, chargeElementId, CHARGE_ELEMENT_FIRST_STEP, request.query));
 };
 
 const removeElement = async (request, h) => {

@@ -121,7 +121,7 @@ experiment('internal/modules/charge-information/controller', () => {
         request.query = { start: 0 };
         await controller.getNonChargeableReason(request, h);
         const { back } = h.view.lastCall.args[1];
-        expect(back).to.equal('/licences/test-licence-id/charge-information/create?start=0');
+        expect(back).to.equal('/licences/test-licence-id/charge-information/create');
       });
     });
 

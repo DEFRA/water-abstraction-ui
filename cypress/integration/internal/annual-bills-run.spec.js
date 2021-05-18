@@ -42,7 +42,6 @@ describe('annual bill run', () => {
         cy.get('div.govuk-grid-column-two-thirds').eq(3).children(1).contains('Cancel bill run').click();
         cy.get('button.govuk-button').click();
         cy.get('a.govuk-button').eq(2).click();
-
       });
 
       describe('user generates the annual bill ', () => {
@@ -65,7 +64,6 @@ describe('annual bill run', () => {
 
   it('user verifies the data in other abstractors', () => {
     cy.visit(Cypress.env('ADMIN_URI'));
-    // Enter the user name and Password
     cy.fixture('users.json').then(users => {
       cy.get('input#email').type(users.billingAndData);
       cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
@@ -78,14 +76,10 @@ describe('annual bill run', () => {
       cy.get('button.govuk-button').click();
       cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Annual bill run');
       cy.get('#tab_other-abstractors').click();
-      // verify the data
       cy.get('.govuk-table__row').eq(1).should('contain', 'A99999999A');
       cy.get('.govuk-table__row').eq(1).should('contain', 'Big Farm Co Ltd');
       cy.get('td.govuk-table__cell').last().children(0).click({ force: true });
-      describe('user verifys the generated bill', () => {
-        cy.get('.govuk-caption-l').should('contain', 'Billing account A99999999A');
-        cy.get('.govuk-grid-column-full > :nth-child(4) > a').click();
-      });
+      cy.get('.govuk-caption-l').should('contain', 'Billing account A99999999A');
     });
   });
 });

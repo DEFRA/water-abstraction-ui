@@ -39,6 +39,9 @@ const getRedirectPath = (request, nextPageInFlowUrl) => {
   const { returnToCheckData, chargeVersionWorkflowId } = request.query;
   const isChargeInformationPage = isUrlChargeInformationPage(nextPageInFlowUrl);
   if (returnToCheckData && isChargeInformationPage) {
+    if (request.draftChargeInfomration.status === 'review') {
+      return routing.getReview(request.params.licenceId, { chargeVersionWorkflowId });
+    }
     return routing.getCheckData(request.params.licenceId, { chargeVersionWorkflowId });
   }
   return nextPageInFlowUrl;

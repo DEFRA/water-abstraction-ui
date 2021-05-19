@@ -23,6 +23,9 @@ const getRedirectPath = request => {
   const { step, licenceId, elementId } = request.params;
   const { chargeVersionWorkflowId, returnToCheckData } = request.query;
   if (returnToCheckData || step === CHARGE_ELEMENT_LAST_STEP) {
+    if (request.pre.draftChargeInformation.status === 'review') {
+      return routing.postReview(chargeVersionWorkflowId, licenceId);
+    }
     return routing.getCheckData(licenceId, { chargeVersionWorkflowId });
   }
   return routing.getChargeElementStep(licenceId, elementId, ROUTING_CONFIG[step].nextStep, { chargeVersionWorkflowId });

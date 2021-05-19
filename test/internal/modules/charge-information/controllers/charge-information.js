@@ -170,7 +170,7 @@ experiment('internal/modules/charge-information/controller', () => {
 
     test('sets a back link', async () => {
       const { back } = h.view.lastCall.args[1];
-      expect(back).to.equal('/licences/test-doc-id#charge');
+      expect(back).to.equal('/licences/test-licence-id#charge');
     });
 
     test('has the page title', async () => {
@@ -1101,7 +1101,7 @@ experiment('internal/modules/charge-information/controller', () => {
 
       test('the user is redirected to the expected page', async () => {
         expect(h.redirect.calledWith(
-          '/licences/test-doc-id#charge'
+          '/licences/test-licence-id#charge'
         )).to.be.true();
       });
     });
@@ -1124,7 +1124,7 @@ experiment('internal/modules/charge-information/controller', () => {
 
       test('the user is redirected to the expected page', async () => {
         expect(h.redirect.calledWith(
-          '/licences/test-doc-id#charge'
+          '/licences/test-licence-id#charge'
         )).to.be.true();
       });
     });

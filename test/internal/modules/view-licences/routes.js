@@ -3,8 +3,8 @@
 const { expect } = require('@hapi/code');
 const { experiment, test } = exports.lab = require('@hapi/lab').script();
 const { scope } = require('internal/lib/constants');
-const routes = require('internal/modules/licences/routes/bills-tab');
-const controller = require('internal/modules/licences/controllers/bills-tab');
+const routes = require('internal/modules/view-licences/routes');
+const controller = require('internal/modules/view-licences/controller');
 
 experiment('internal/modules/billing/routes/bills-tab', () => {
   experiment('.getBillsForLicence', () => {
@@ -18,7 +18,7 @@ experiment('internal/modules/billing/routes/bills-tab', () => {
       expect(routes.getBillsForLicence.handler).to.equal(controller.getBillsForLicence);
     });
     test('is available to billing folks', () => {
-      expect(routes.getBillsForLicence.config.auth).to.equal({ scope: [scope.billing] });
+      expect(routes.getBillsForLicence.config.auth).to.equal({ scope: scope.billing });
     });
   });
 });

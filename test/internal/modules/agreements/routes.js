@@ -38,32 +38,12 @@ experiment('internal/modules/agreements/routes', () => {
       expect(routes.getDeleteAgreement.options.pre[1].assign)
         .to.equal('licence');
     });
-
-    test('uses the loadDocument pre handler', async () => {
-      expect(routes.getDeleteAgreement.options.pre[2].method)
-        .to.equal(sharedPreHandlers.loadLicenceDocument);
-    });
-
-    test('saves document to expected place', async () => {
-      expect(routes.getDeleteAgreement.options.pre[2].assign)
-        .to.equal('document');
-    });
   });
 
   experiment('.postDeleteAgreement', () => {
     test('limits scope to users with delete agreements role', async () => {
       expect(routes.postDeleteAgreement.options.auth.scope)
         .to.only.include([scope.deleteAgreements]);
-    });
-
-    test('uses the loadDocument pre handler', async () => {
-      expect(routes.postDeleteAgreement.options.pre[0].method)
-        .to.equal(sharedPreHandlers.loadLicenceDocument);
-    });
-
-    test('saves document to expected place', async () => {
-      expect(routes.postDeleteAgreement.options.pre[0].assign)
-        .to.equal('document');
     });
   });
 
@@ -90,13 +70,6 @@ experiment('internal/modules/agreements/routes', () => {
         method: sharedPreHandlers.loadLicence, assign: 'licence'
       });
     });
-
-    test('uses the loadLicenceDocument pre handler', async () => {
-      const { pre } = routes.getSelectAgreementType.options;
-      expect(pre).to.include({
-        method: sharedPreHandlers.loadLicenceDocument, assign: 'document'
-      });
-    });
   });
 
   experiment('.postSelectAgreementType', () => {
@@ -120,13 +93,6 @@ experiment('internal/modules/agreements/routes', () => {
       const { pre } = routes.postSelectAgreementType.options;
       expect(pre).to.include({
         method: sharedPreHandlers.loadLicence, assign: 'licence'
-      });
-    });
-
-    test('uses the loadLicenceDocument pre handler', async () => {
-      const { pre } = routes.postSelectAgreementType.options;
-      expect(pre).to.include({
-        method: sharedPreHandlers.loadLicenceDocument, assign: 'document'
       });
     });
   });
@@ -256,13 +222,6 @@ experiment('internal/modules/agreements/routes', () => {
       const { pre } = routes.postCheckAnswers.options;
       expect(pre).to.include({
         method: preHandlers.getFlowState, assign: 'flowState'
-      });
-    });
-
-    test('uses the loadLicenceDocument pre handler', async () => {
-      const { pre } = routes.postCheckAnswers.options;
-      expect(pre).to.include({
-        method: sharedPreHandlers.loadLicenceDocument, assign: 'document'
       });
     });
   });

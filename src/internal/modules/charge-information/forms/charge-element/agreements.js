@@ -31,8 +31,7 @@ const getRadioField = (licenceNumber, value) => fields.radio('isSection127Agreem
  * disabled at element level
  *
  * @param {Object} request The Hapi request object
- * @param {Boolean}  data object containing selected and default options for the form
-  */
+ */
 const form = request => {
   const { csrfToken } = request.view;
   const { licence: { licenceNumber } } = request.pre;

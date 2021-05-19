@@ -1,6 +1,5 @@
 'use-strict';
 
-const { pickBy, identity } = require('lodash');
 const cleanObject = require('../lib/clean-object');
 
 const forms = require('../forms/charge-element/index');

@@ -322,7 +322,7 @@ experiment('modules/billing/lib/mappers', () => {
           expect(data.transactionGroups.length).to.equal(2);
         });
 
-        experiment('the first charge element', async () => {
+        experiment('the first charge element', () => {
           test('has 1 x transaction', async () => {
             expect(data.transactionGroups[0].transactions).to.have.length(1);
           });

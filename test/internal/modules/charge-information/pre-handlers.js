@@ -282,7 +282,7 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
   });
 
   experiment('loadChargeVersionWorkflows', () => {
-    experiment('when the service response is valid', async () => {
+    experiment('when the service response is valid', () => {
       beforeEach(async () => {
         result = await preHandlers.loadChargeVersionWorkflows(request);
       });
@@ -294,7 +294,7 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
         expect(result[1]).to.equal({ licence: { startDate: '2002-05-03' } });
       });
     });
-    experiment('when the service response is invalid', async () => {
+    experiment('when the service response is invalid', () => {
       beforeEach(async () => {
         const err = new Error();
         err.statusCode = 404;

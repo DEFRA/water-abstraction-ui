@@ -57,7 +57,7 @@ experiment('Meter', () => {
     });
   });
 
-  experiment('constructor', async () => {
+  experiment('constructor', () => {
     let meter, data;
 
     beforeEach(async () => {
@@ -82,8 +82,8 @@ experiment('Meter', () => {
     });
   });
 
-  experiment('toObject', async () => {
-    experiment('when the reading type is oneMeter', async () => {
+  experiment('toObject', () => {
+    experiment('when the reading type is oneMeter', () => {
       let meter, data, result;
 
       beforeEach(async () => {

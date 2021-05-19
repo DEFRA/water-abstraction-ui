@@ -155,7 +155,7 @@ experiment('internal/modules/billing/controller', () => {
   });
 
   experiment('.getBillingBatchSummary', () => {
-    experiment('when the batch type is annual', async () => {
+    experiment('when the batch type is annual', () => {
       beforeEach(async () => {
         request.pre.batch.type = 'annual';
         await controller.getBillingBatchSummary(request, h);
@@ -188,7 +188,7 @@ experiment('internal/modules/billing/controller', () => {
       });
     });
 
-    experiment('when the batch type is not annual', async () => {
+    experiment('when the batch type is not annual', () => {
       beforeEach(async () => {
         await controller.getBillingBatchSummary(request, h);
       });

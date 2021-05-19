@@ -1,6 +1,5 @@
 const Boom = require('@hapi/boom');
 const { trim, sortBy } = require('lodash');
-const { selectRiverLevelMeasure } = require('./lib/river-level');
 const { getLicencePageTitle, getCommonViewContext } = require('./lib/view-helpers');
 const { getCommonBackLink } = require('shared/lib/view-licence-helpers');
 const { getHoFTypes } = require('./lib/conditions');
@@ -43,19 +42,6 @@ const validateGaugingStation = request => {
   }
 };
 
-const getRiverLevel = async (request, h) => {
-  const { gaugingStation } = request.params;
-  const { getRiverLevel } = h.realm.pluginOptions;
-  try {
-    const data = await getRiverLevel(gaugingStation);
-    return data;
-  } catch (err) {
-    if (err.statusCode !== 404) {
-      throw err;
-    }
-  }
-};
-
 /**
  * Displays a gauging station flow/level data, along with HoF conditions
  * for the selected licence
@@ -63,10 +49,6 @@ const getRiverLevel = async (request, h) => {
 const getLicenceGaugingStation = async (request, h) => {
   // Validate that gauging station is associated with this licence
   validateGaugingStation(request);
-
-  const hofTypes = getHoFTypes(request.licence.summary.conditions);
-  const riverLevel = await getRiverLevel(request, h);
-  const measure = selectRiverLevelMeasure(riverLevel, hofTypes);
 
   // Get gauging station data
   const { gaugingStation } = request.params;
@@ -78,10 +60,7 @@ const getLicenceGaugingStation = async (request, h) => {
     ...getCommonViewContext(request),
     ...getCommonBackLink(request),
     pageTitle,
-    riverLevel,
-    measure,
-    gaugingStation,
-    hasGaugingStationMeasurement: riverLevel && riverLevel.active && measure
+    gaugingStation
   };
 
   return h.view('nunjucks/view-licences/gauging-station', view);

@@ -41,7 +41,7 @@ describe('remove charge info workflow as B&D user', () => {
     describe('sees the action links against the workflow and clicks the Remove link ', () => {
       cy.get(firstRowSelector).should('contain.text', 'Set up');
       cy.get(firstRowSelector).should('contain.text', 'Remove');
-      cy.get('a[href*="/remove"]').click();
+      cy.get('a[href*="/remove"]').first().click();
       cy.url().should('include', '/charge-information-workflow');
       cy.url().should('include', '/remove');
       cy.get('.govuk-heading-xl').should('contain.text', 'about to remove this licence from the workflow');

@@ -127,9 +127,12 @@
   <p>No charge information for this licence.</p>
 {% endif %}
 
+
+{% if licence.isActive %}
 <a href="/licences/{{ licenceId }}/charge-information/create" role="button" draggable="false" class="govuk-button govuk-!-margin-right-3" data-module="govuk-button">
   Set up a new charge
 </a>
+{% endif %}
 
 <a href="/licences/{{ licenceId }}/charge-information/non-chargeable-reason?start=1" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
   Make licence non-chargeable

@@ -138,6 +138,11 @@ const getHandleBillingAccount = async (request, h) => {
   request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, nextState);
 
   // Redirect to next page in flow
+
+  if (returnToCheckData && request.draftChargeInfomration.status === 'review') {
+    return h.redirect(routing.getReview());
+  }
+
   const path = returnToCheckData
     ? routing.getCheckData(licenceId, { chargeVersionWorkflowId })
     : routing.getUseAbstractionData(licenceId, { chargeVersionWorkflowId });
@@ -219,6 +224,7 @@ const updateDraftChargeInformation = async (request, h) => {
     preparedChargeInfo.chargeVersion.chargeVersionWorkflowId,
     patchObject
   );
+  request.clearDraftChargeInformation(id, preparedChargeInfo.chargeVersion.chargeVersionWorkflowId);
   const route = routing.getSubmitted(id, { chargeable: isChargeable });
   return h.redirect(route);
 };

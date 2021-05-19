@@ -11,6 +11,7 @@ const { chargeVersionWorkflowReviewer } = require('internal/lib/constants').scop
 const { reviewForm, reviewFormSchema } = require('../forms/review');
 const { hasScope } = require('internal/lib/permissions');
 const moment = require('moment');
+const preHandlers = require('../pre-handlers');
 
 const formatDateForPageTitle = startDate =>
   moment(startDate).format('D MMMM YYYY');
@@ -38,6 +39,12 @@ const getViewChargeInformation = async (request, h) => {
 };
 
 const getReviewChargeInformation = async (request, h) => {
+  if (request.pre.draftChargeInformation.changeReason === null) {
+    request.pre.draftChargeInformation = await preHandlers.loadChargeInformation(request);
+    request.pre.billingAccount = await preHandlers.loadBillingAccount(request);
+    request.pre.isChargeable = await preHandlers.loadIsChargeable(request);
+  }
+
   const { draftChargeInformation, licence, isChargeable, billingAccount } = request.pre;
   const { chargeVersionWorkflowId } = request.params;
   const backLink = await getLicencePageUrl(licence, true);
@@ -55,7 +62,7 @@ const getReviewChargeInformation = async (request, h) => {
     isApprover,
     isChargeable,
     chargeVersionWorkflowId,
-    action: `/licences/${licence.id}/charge-information/check?chargeVersionWorkflowId=${request.params.chargeVersionWorkflowId}`,
+    action: `/licences/${licence.id}/charge-information/check?chargeVersionWorkflowId=${chargeVersionWorkflowId}`,
     reviewForm: reviewForm(request)
   });
 };
@@ -91,7 +98,7 @@ const postReviewChargeInformation = async (request, h) => {
       const patchObject = {
         status: request.payload.reviewOutcome,
         approverComments: request.payload.reviewerComments,
-        chargeVersion: {}
+        chargeVersion: draftChargeInformation.chargeVersion
       };
       await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(
         request.params.chargeVersionWorkflowId,

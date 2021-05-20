@@ -24,6 +24,7 @@ const getBackLink = request => {
 const getRedirectPath = request => {
   const { step, licenceId, elementId } = request.params;
   const { chargeVersionWorkflowId, returnToCheckData } = request.query;
+  console.log(returnToCheckData, step, request.pre.draftChargeInformation.status);
   if (returnToCheckData || step === CHARGE_ELEMENT_LAST_STEP) {
     if (request.pre.draftChargeInformation.status === 'review') {
       return routing.postReview(chargeVersionWorkflowId, licenceId);
@@ -43,6 +44,7 @@ const getChargeElementStep = async (request, h) => {
 
 const postChargeElementStep = async (request, h) => {
   const { step, licenceId, elementId } = request.params;
+
   const form = getPostedForm(request, forms[step]);
 
   if (form.isValid) {

@@ -365,7 +365,7 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
           expect(services.water.chargeVersionWorkflows.patchChargeVersionWorkflow.calledWith(workflowId, {
             status: 'changes_requested',
             approverComments: 'Terrible job',
-            chargeVersion: {}
+            chargeVersion: undefined
           })).to.be.true();
         });
       });

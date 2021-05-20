@@ -111,7 +111,7 @@ experiment('internal/modules/charge-information/routes/view-charge-information',
       expect(routes.getReviewChargeInformation.options.pre.length).to.equal(4);
       expect(routes.getReviewChargeInformation.options.pre[0].method).to.equal(preHandlers.loadLicence);
       expect(routes.getReviewChargeInformation.options.pre[0].assign).to.equal('licence');
-      expect(routes.getReviewChargeInformation.options.pre[1].method).to.equal(preHandlers.loadChargeInformation);
+      expect(routes.getReviewChargeInformation.options.pre[1].method).to.equal(preHandlers.loadDraftChargeInformation);
       expect(routes.getReviewChargeInformation.options.pre[1].assign).to.equal('draftChargeInformation');
       expect(routes.getReviewChargeInformation.options.pre[2].method).to.equal(preHandlers.loadIsChargeable);
       expect(routes.getReviewChargeInformation.options.pre[2].assign).to.equal('isChargeable');

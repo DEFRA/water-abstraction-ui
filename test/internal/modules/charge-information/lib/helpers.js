@@ -9,6 +9,7 @@ const {
 
 const { expect } = require('@hapi/code');
 const sandbox = require('sinon').createSandbox();
+const Joi = require('joi');
 
 const sessionForms = require('shared/lib/session-forms');
 const helpers = require('internal/modules/charge-information/lib/helpers');
@@ -119,6 +120,71 @@ experiment('internal/modules/charge-information/lib/helpers', () => {
       test('returns undefined', () => {
         const result = helpers.getCurrentBillingAccountAddress(billingAccountWithoutAddresses);
         expect(result).to.equal(undefined);
+      });
+    });
+  });
+
+  experiment('.createPostHandler', () => {
+    const formContainer = {
+      form: () => ({
+        action: '/test/path',
+        method: 'POST',
+        fields: [{
+          name: 'foo',
+          options: {
+
+          }
+        }],
+        validationType: 'joi'
+      }),
+      schema: () => Joi.object({
+        foo: Joi.string().valid('bar')
+      })
+    };
+
+    const actionCreator = (request, formValues) => ({
+      type: 'test',
+      payload: formValues
+    });
+
+    const redirectPathFunc = (request, formValues) => 'charge-information';
+
+    const redirect = sandbox.stub();
+
+    const h = {
+      view: sandbox.spy(),
+      postRedirectGet: sandbox.stub(),
+      redirect
+    };
+
+    const request = {
+      yar: {
+        set: sandbox.stub(),
+        get: sandbox.stub(),
+        clear: sandbox.stub()
+      },
+      payload: {
+        csrf_token: '00000000-0000-0000-0000-000000000000'
+      },
+      pre: {
+      },
+      params: {
+      },
+      query: {
+        returnToCheckData: true
+      },
+      draftChargeInfomration: {
+        status: 'review'
+      }
+    };
+    request.clearDraftChargeInformation = sandbox.stub().resolves();
+
+    experiment('when returnToCheckData is present', () => {
+      experiment('when chargeVersionWorkflowId is present', () => {
+        test('returns the review path', () => {
+          const result = helpers.createPostHandler(formContainer, actionCreator, redirectPathFunc)(request, h);
+          result.then(() => expect(redirect.calledWith('/licences/undefined/charge-information/review')).to.be.true());
+        });
       });
     });
   });

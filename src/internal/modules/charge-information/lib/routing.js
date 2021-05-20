@@ -24,6 +24,7 @@ exports.postReview = (chargeVersionWorkflowId, licenceId) => createUrl(`${charge
 exports.getHandleBillingAccount = createUrl('set-billing-account');
 exports.getSubmitted = createUrl('submitted');
 exports.getCheckData = createUrl('check');
+exports.getReview = createUrl('review');
 exports.getReason = createUrl('create');
 exports.getStartDate = createUrl('start-date');
 exports.getSelectBillingAccount = createUrl('billing-account');

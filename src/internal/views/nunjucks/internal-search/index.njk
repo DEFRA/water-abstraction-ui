@@ -58,6 +58,27 @@
   </a>
 {% endmacro %}
 
+{% macro mobileGaugingStation(station) %}
+  <div class="phone--show">
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+    <h3 class="govuk-heading-m govuk-!-margin-bottom-1">
+      {{ gaugingStationLink(station) }}
+    </h3>
+    <p>{{ station.river_name }}</p>
+    <p>{{ station.catchment_name }}</p>
+</div>
+{% endmacro %}
+
+{% macro gaugingStationLink(station) %}
+  {% if station.gauging_station_id %}
+      <a href="/monitoring-stations/{{ station.gauging_station_id }}">
+        {{ station.label }}
+      </a>
+  {% else %}
+      {{ station.label }}
+  {% endif %}
+{% endmacro %}
+
 {% block content %}
 
   {{ formErrorSummary(form) }}
@@ -159,6 +180,36 @@
           </tbody>
         </table>
       {% endif %}
+
+
+      <!-- Gauging Stations -->
+      {% if gaugingStations %}
+        <h2 class="govuk-heading-m">Monitoring stations</h2>
+
+        {% for doc in documents %}
+          {{ mobileLicence(doc) }}
+        {% endfor %}
+
+        <table class="govuk-table phone--hide">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header" scope="col">Station name</th>
+              <th class="govuk-table__header" scope="col">River name</th>
+              <th class="govuk-table__header" scope="col">Catchment name</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            {% for station in gaugingStations %}
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">{{ gaugingStationLink(station) }}</td>
+              <td class="govuk-table__cell">{{ station.river_name }}</td>
+              <td class="govuk-table__cell">{{ station.catchment_name }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+
 
       {{ paginate(pagination, '/licences', { query : form.fields[0].value }) }}
     </div>

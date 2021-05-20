@@ -15,7 +15,7 @@
 {% endmacro %}
 
 {% macro billableVolume(billingVolume) %}
-{% if billingVolume.volume > 0 and billingVolume.volume | isFinite %}
+{% if billingVolume.volume | isFinite %}
   {{ billingVolume.volume + 'ML' }}
   {% if billingVolume.volume != billingVolume.calculatedVolume and billingVolume.calculatedVolume | isFinite %}
     {{ ' - edited' }}

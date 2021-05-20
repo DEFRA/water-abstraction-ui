@@ -272,4 +272,18 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
       });
     });
   });
+
+  experiment('when the charge is in review', () => {
+    beforeEach(async () => {
+      request = createRequest('loss', validPayload['loss']);
+      request.pre.draftChargeInformation.status = 'review';
+      request.query.returnToCheckData = true;
+      request.query.chargeVersionWorkflowId = '1';
+      await controller.postChargeElementStep(request, h);
+    });
+
+    test('the user is redirected to the expected page', async () => {
+      expect(h.redirect.calledWith('/licences/test-licence-id/charge-information/1/review')).to.be.true();
+    });
+  });
 });

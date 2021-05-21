@@ -208,7 +208,10 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
         ...request.pre.draftChargeInformation,
         status: 'review'
       });
-      request.pre.chargeInformation = request.pre.draftChargeInformation;
+      request.pre.chargeInformation = {
+        ...request.pre.draftChargeInformation,
+        status: 'review'
+      };
       request.pre.draftChargeInformation.changeReason = null;
       request.pre.draftChargeInformation.status = 'review';
       request.query.chargeVersionWorkflowId = 1;
@@ -227,7 +230,10 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
         ...request.pre.draftChargeInformation,
         status: 'changes_requested'
       });
-      request.pre.chargeInformation = request.pre.draftChargeInformation;
+      request.pre.chargeInformation = {
+        ...request.pre.draftChargeInformation,
+        status: 'changes_requested'
+      };
       request.pre.draftChargeInformation.changeReason = null;
       request.pre.draftChargeInformation.status = 'changes_requested';
       request.query.chargeVersionWorkflowId = 1;

@@ -58,7 +58,7 @@ const getReviewChargeInformation = async (request, h) => {
     billingAccount,
     billingAccountAddress,
     licenceId: licence.id,
-    isEditable: draftChargeInformation.status === 'changes_requested' || draftChargeInformation.status === 'review',
+    isEditable: draftChargeInformation && (draftChargeInformation.status === 'changes_requested' || draftChargeInformation.status === 'review'),
     isApprover,
     isChargeable,
     chargeVersionWorkflowId,

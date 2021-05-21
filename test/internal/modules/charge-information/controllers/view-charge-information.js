@@ -198,8 +198,20 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
       expect(chargeVersion.chargeElements[0].validationWarnings).to.be.an.array();
     });
 
-    test('loads data from cache when draftChargeInformation is not set', async () => {
-      sandbox.stub(preHandlers, 'loadChargeInformation');
+    test('loads data from cache when draftChargeInformation is not set and licence is in review', async () => {
+      sandbox.stub(preHandlers, 'loadChargeInformation').returns(request.pre.draftChargeInformation);
+      sandbox.stub(chargeInformationValidator, 'addValidation');
+      request.getDraftChargeInformation = sandbox.stub().returns(request.pre.chargeInformation);
+      request.pre.chargeInformation = request.pre.draftChargeInformation;
+      request.pre.draftChargeInformation.changeReason = null;
+      request.query.chargeVersionWorkflowId = 1;
+      await controller.getReviewChargeInformation(request, h);
+      const chargeVersion = h.view.lastCall.args[1];
+      expect(chargeVersion.licenceId).to.equal('test-licence-id');
+    });
+
+    test('loads data from cache when draftChargeInformation is not set and licence is in changes_requested', async () => {
+      sandbox.stub(preHandlers, 'loadChargeInformation').returns(request.pre.draftChargeInformation);
       sandbox.stub(chargeInformationValidator, 'addValidation');
       request.getDraftChargeInformation = sandbox.stub().returns(request.pre.chargeInformation);
       request.pre.chargeInformation = request.pre.draftChargeInformation;

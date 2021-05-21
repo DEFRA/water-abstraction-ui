@@ -204,9 +204,13 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
         status: 'review'
       });
       sandbox.stub(chargeInformationValidator, 'addValidation');
-      request.getDraftChargeInformation = sandbox.stub().returns(request.pre.chargeInformation);
+      request.getDraftChargeInformation = sandbox.stub().returns({
+        ...request.pre.draftChargeInformation,
+        status: 'review'
+      });
       request.pre.chargeInformation = request.pre.draftChargeInformation;
       request.pre.draftChargeInformation.changeReason = null;
+      request.pre.draftChargeInformation.status = 'review';
       request.query.chargeVersionWorkflowId = 1;
       await controller.getReviewChargeInformation(request, h);
       const chargeVersion = h.view.lastCall.args[1];
@@ -219,9 +223,13 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
         status: 'changes_requested'
       });
       sandbox.stub(chargeInformationValidator, 'addValidation');
-      request.getDraftChargeInformation = sandbox.stub().returns(request.pre.chargeInformation);
+      request.getDraftChargeInformation = sandbox.stub().returns({
+        ...request.pre.draftChargeInformation,
+        status: 'changes_requested'
+      });
       request.pre.chargeInformation = request.pre.draftChargeInformation;
       request.pre.draftChargeInformation.changeReason = null;
+      request.pre.draftChargeInformation.status = 'changes_requested';
       request.query.chargeVersionWorkflowId = 1;
       await controller.getReviewChargeInformation(request, h);
       const chargeVersion = h.view.lastCall.args[1];

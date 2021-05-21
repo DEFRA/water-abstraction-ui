@@ -90,4 +90,11 @@ experiment('internal/modules/charge-information/lib/routing', () => {
       expect(url).to.equal('/licences/test-licence-id/charge-information/cancel');
     });
   });
+
+  experiment('.getReview', () => {
+    test('returns the correct url', async () => {
+      const url = routing.getReview(licence.id);
+      expect(url).to.equal('/licences/test-licence-id/charge-information/review');
+    });
+  });
 });

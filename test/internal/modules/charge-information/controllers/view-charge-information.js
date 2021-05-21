@@ -15,6 +15,9 @@ const services = require('../../../../../src/internal/lib/connectors/services');
 const { chargeVersionWorkflowReviewer } = require('../../../../../src/internal/lib/constants').scope;
 const controller = require('../../../../../src/internal/modules/charge-information/controllers/view-charge-information');
 
+const preHandlers = require('../../../../../src/internal/modules/charge-information/pre-handlers');
+const chargeInformationValidator = require('../../../../../src/internal/modules/charge-information/lib/charge-information-validator');
+
 const workflowId = uuid();
 const licenceId = uuid();
 
@@ -158,6 +161,8 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
       await controller.getReviewChargeInformation(request, h);
     });
 
+    afterEach(() => sandbox.restore());
+
     test('uses the correct template', async () => {
       const [template] = h.view.lastCall.args;
       expect(template).to.equal('nunjucks/charge-information/view');
@@ -191,6 +196,18 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
     test('has the draft charge information with validation messages', async () => {
       const { chargeVersion } = h.view.lastCall.args[1];
       expect(chargeVersion.chargeElements[0].validationWarnings).to.be.an.array();
+    });
+
+    test('loads data from cache when draftChargeInformation is not set', async () => {
+      sandbox.stub(preHandlers, 'loadChargeInformation');
+      sandbox.stub(chargeInformationValidator, 'addValidation');
+      request.getDraftChargeInformation = sandbox.stub().returns(request.pre.chargeInformation);
+      request.pre.chargeInformation = request.pre.draftChargeInformation;
+      request.pre.draftChargeInformation.changeReason = null;
+      request.query.chargeVersionWorkflowId = 1;
+      await controller.getReviewChargeInformation(request, h);
+      const chargeVersion = h.view.lastCall.args[1];
+      expect(chargeVersion.licenceId).to.equal('test-licence-id');
     });
 
     experiment('sets isEditable flag', () => {

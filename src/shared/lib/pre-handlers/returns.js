@@ -1,7 +1,7 @@
 'use strict';
 
-const Boom = require('@hapi/boom');
 const { identity } = require('lodash');
+const { errorHandler } = require('./lib/error-handler');
 
 /**
  * Pre handler to load Return service model
@@ -13,12 +13,11 @@ const getReturnById = async request => {
     request.query.returnId
   ].find(identity);
 
-  const ret = request.services.water.returns.getReturnById(returnId);
-
-  if (!ret) {
-    return Boom.notFound(`Return ${returnId} not found`);
+  try {
+    return await request.services.water.returns.getReturnById(returnId);
+  } catch (err) {
+    return errorHandler(err, `Return ${returnId} not found`);
   }
-  return ret;
 };
 
 exports.getReturnById = getReturnById;

@@ -202,4 +202,14 @@ experiment('services/water/ReturnsService', () => {
       expect(response).to.equal(responses.multi.data);
     });
   });
+
+  experiment('.getReturnById', () => {
+    test('passes the expected URL to the service request', async () => {
+      const service = new ReturnsService('http://127.0.0.1:8001/water/1.0');
+      await service.getReturnById('return-1');
+      expect(serviceRequest.get.calledWith(
+        `http://127.0.0.1:8001/water/1.0/returns/return-1`
+      )).to.be.true();
+    });
+  });
 });

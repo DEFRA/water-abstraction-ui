@@ -39,7 +39,7 @@ const testData = isCurrent => {
     } };
 };
 
-experiment('internal view controller', async () => {
+experiment('internal view controller', () => {
   beforeEach(() => {
     sandbox.stub(helpers, 'getReturnsViewData');
     sandbox.stub(helpers, 'getLicenceNumbers');
@@ -49,7 +49,7 @@ experiment('internal view controller', async () => {
 
   afterEach(async () => { sandbox.restore(); });
 
-  experiment('getReturnsForLicence', async () => {
+  experiment('getReturnsForLicence', () => {
     test('correct template is passed', async () => {
       helpers.getReturnsViewData.returns({ document: { system_external_id: 'lic-1234' } });
       await controller.getReturnsForLicence(request, h);
@@ -78,7 +78,7 @@ experiment('internal view controller', async () => {
     });
   });
 
-  experiment('getReturn', async () => {
+  experiment('getReturn', () => {
     beforeEach(async () => {
       helpers.getLicenceNumbers.returns([{ documentHeader: 'test-doc-header' }]);
       returnHelpers.getLinesWithReadings.returns([{ test: 'lines' }]);

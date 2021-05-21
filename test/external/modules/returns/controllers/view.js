@@ -45,7 +45,7 @@ const testData = isCurrent => {
   };
 };
 
-experiment('external view controller', async () => {
+experiment('external view controller', () => {
   beforeEach(() => {
     sandbox.stub(helpers, 'getReturnsViewData');
     sandbox.stub(helpers, 'getLicenceNumbers');
@@ -55,7 +55,7 @@ experiment('external view controller', async () => {
 
   afterEach(async () => { sandbox.restore(); });
 
-  experiment('getReturns', async () => {
+  experiment('getReturns', () => {
     beforeEach(async () => {
       helpers.getReturnsViewData.returns({ test: 'data' });
       await controller.getReturns(request, h);
@@ -67,7 +67,7 @@ experiment('external view controller', async () => {
     });
   });
 
-  experiment('getReturnsForLicence', async () => {
+  experiment('getReturnsForLicence', () => {
     test('correct template is passed', async () => {
       helpers.getReturnsViewData.returns({ document: { system_external_id: 'lic-1234' } });
       await controller.getReturnsForLicence(request, h);
@@ -96,7 +96,7 @@ experiment('external view controller', async () => {
     });
   });
 
-  experiment('getReturn', async () => {
+  experiment('getReturn', () => {
     beforeEach(async () => {
       helpers.getLicenceNumbers.returns([{ documentHeader: 'test-doc-header' }]);
       WaterReturn.prototype.constructor.returns({ metadata: { isCurrent: true } });

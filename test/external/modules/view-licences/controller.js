@@ -128,7 +128,7 @@ experiment('getLicences', () => {
       });
     });
 
-    experiment('when the request is valid', async () => {
+    experiment('when the request is valid', () => {
       let request;
 
       beforeEach(async () => {
@@ -174,7 +174,7 @@ experiment('getLicences', () => {
   });
 });
 
-experiment('rename a licence', async () => {
+experiment('rename a licence', () => {
   const h = {
     view: sandbox.stub(),
     response: sandbox.stub(),
@@ -207,7 +207,7 @@ experiment('rename a licence', async () => {
     sandbox.restore();
   });
 
-  experiment('getLicenceRename', async () => {
+  experiment('getLicenceRename', () => {
     beforeEach(async () => {
       await controller.getLicenceRename(request, h, form);
     });
@@ -226,7 +226,7 @@ experiment('rename a licence', async () => {
     });
   });
 
-  experiment('postLicenceRename', async () => {
+  experiment('postLicenceRename', () => {
     beforeEach(async () => {
       sandbox.stub(services.water.documents, 'postLicenceRename').resolves({ error: null });
       await controller.postLicenceRename(request, h);

@@ -86,7 +86,7 @@ experiment('Shared EntitiesApiClient', () => {
       expect(result).to.equal(entity);
     });
 
-    experiment('if CRM entity not found', async () => {
+    experiment('if CRM entity not found', () => {
       beforeEach(async () => {
         client.findMany.resolves({ error: null, data: [] });
       });

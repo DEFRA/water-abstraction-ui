@@ -306,7 +306,7 @@ experiment('WaterReturn', () => {
     });
   });
 
-  experiment('getAbstractionPeriod', async () => {
+  experiment('getAbstractionPeriod', () => {
     let waterReturn;
     beforeEach(async () => {
       waterReturn = new WaterReturn(createReturn());
@@ -334,14 +334,14 @@ experiment('WaterReturn', () => {
     });
   });
 
-  experiment('getReturnTotal', async () => {
+  experiment('getReturnTotal', () => {
     test('returns total volume of all lines', async () => {
       const waterReturn = new WaterReturn(createReturn());
       expect(waterReturn.getReturnTotal()).to.equal(123);
     });
   });
 
-  experiment('isNilReturn', async () => {
+  experiment('isNilReturn', () => {
     let waterReturn;
     beforeEach(async () => {
       waterReturn = new WaterReturn(createReturn());

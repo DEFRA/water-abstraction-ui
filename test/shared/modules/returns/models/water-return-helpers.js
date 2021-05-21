@@ -46,7 +46,7 @@ experiment('water returns helpers:', () => {
     });
   });
 
-  experiment('mapMeterLinesToVolumes', async () => {
+  experiment('mapMeterLinesToVolumes', () => {
     const startReading = 10;
     const readings = {
       '2019-04-01_2019-04-30': 12.5,
@@ -107,7 +107,7 @@ experiment('water returns helpers:', () => {
     });
   });
 
-  experiment('getReturnTotal', async () => {
+  experiment('getReturnTotal', () => {
     test('returns null if no lines supplied', async () => {
       expect(getReturnTotal()).to.equal(null);
     });

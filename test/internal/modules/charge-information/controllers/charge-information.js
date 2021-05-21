@@ -8,7 +8,7 @@ const {
   afterEach
 } = exports.lab = require('@hapi/lab').script();
 const sinon = require('sinon');
-const { find, trimEnd, toUpper } = require('lodash');
+const { find } = require('lodash');
 const moment = require('moment');
 
 const uuid = require('uuid/v4');

@@ -4,7 +4,7 @@
  * @module shared pre-handlers for loading licence data
  */
 
-const { partialRight } = require('lodash');
+const { partialRight, identity } = require('lodash');
 const { errorHandler } = require('./lib/error-handler');
 const LicenceDataService = require('../services/LicenceDataService');
 const { hasScope } = require('internal/lib/permissions');
@@ -132,7 +132,12 @@ const getLicenceNumberFromReturnId = returnId =>
  */
 const getLicenceByReturnId = async request => {
   // Get return ID from either params/query
-  const returnId = request.params.returnId || request.query.returnId || request.query.id;
+  const returnId = [
+    request.params.returnId,
+    request.query.returnId,
+    request.query.id
+  ].find(identity);
+
   const licenceNumber = getLicenceNumberFromReturnId(returnId);
 
   try {

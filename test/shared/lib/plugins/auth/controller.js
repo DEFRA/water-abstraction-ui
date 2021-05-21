@@ -97,7 +97,7 @@ experiment('Auth plugin controller', () => {
   });
 
   experiment('getSignedOut', () => {
-    experiment('for an anonymous user type', async () => {
+    experiment('for an anonymous user type', () => {
       beforeEach(async () => {
         const request = createRequest();
         await controller.getSignedOut(request, h);
@@ -144,7 +144,7 @@ experiment('Auth plugin controller', () => {
       expect(h.realm.pluginOptions.signOut.callCount).to.equal(1);
     });
 
-    experiment('when payload is valid', async () => {
+    experiment('when payload is valid', () => {
       test('the authenticate method is called', async () => {
         await controller.postSignin(request, h);
         const { email, password } = request.payload;
@@ -180,7 +180,7 @@ experiment('Auth plugin controller', () => {
       });
     });
 
-    experiment('when payload is invalid', async () => {
+    experiment('when payload is invalid', () => {
       beforeEach(async () => {
         request = createRequest();
         request.payload.email = 'not_an_email';

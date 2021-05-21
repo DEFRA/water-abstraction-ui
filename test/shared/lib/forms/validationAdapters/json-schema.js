@@ -50,7 +50,7 @@ experiment('createSchemaFromForm', () => {
   });
 });
 
-experiment('formatErrors', async () => {
+experiment('formatErrors', () => {
   const error = {
     errors: [ { keyword: 'required',
       dataPath: '',
@@ -120,7 +120,7 @@ const nestedSchema = {
   }
 };
 
-experiment('getPathMap', async () => {
+experiment('getPathMap', () => {
   test('It should create a map of property names to their positions in the object heirarchy', async () => {
     const map = adapter.getPathMap(nestedSchema);
     expect(map).to.equal({
@@ -131,7 +131,7 @@ experiment('getPathMap', async () => {
   });
 });
 
-experiment('mapValue', async () => {
+experiment('mapValue', () => {
   test('It should convert an empty string to undefined', async () => {
     expect(adapter.mapValue('')).to.equal(undefined);
   });
@@ -147,7 +147,7 @@ experiment('mapValue', async () => {
   });
 });
 
-experiment('mapRequestData', async () => {
+experiment('mapRequestData', () => {
   test('It should map an HTTP request to an object for validation with JSON schema', async () => {
     const result = adapter.mapRequestData({
       age: 25,

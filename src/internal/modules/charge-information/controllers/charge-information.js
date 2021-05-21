@@ -27,7 +27,7 @@ const { hasScope } = require('internal/lib/permissions');
  * Select the reason for the creation of a new charge version
  */
 const getReason = async (request, h) => {
-  const licenceUrl = await getLicencePageUrl(request.pre.licence, true);
+  const licenceUrl = getLicencePageUrl(request.pre.licence);
   return h.view('nunjucks/form.njk', {
     ...getDefaultView(request, licenceUrl, forms.reason),
     pageTitle: 'Select reason for new charge information'
@@ -303,13 +303,14 @@ const postCancelData = async (request, h) => {
 const getSubmitted = async (request, h) => {
   const { licence } = request.pre;
   const { chargeable: isChargeable } = request.query;
-  const licencePageUrl = await getLicencePageUrl(licence, true);
+  const licencePageUrl = getLicencePageUrl(licence);
 
   return h.view('nunjucks/charge-information/submitted.njk', {
     ...getDefaultView(request),
     pageTitle: 'Charge information complete',
     licencePageUrl,
-    isChargeable
+    isChargeable,
+    createAgreementUrl: `/licences/${licence.id}/agreements/select-type`
   });
 };
 

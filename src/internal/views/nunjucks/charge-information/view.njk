@@ -195,6 +195,7 @@ formErrorSummary %}
 {% endmacro %}
 
 {% macro nonChargeableData(drafChargeInformation, licence) %}
+<div class="govuk-grid-column-full">
   <section class="govuk-!-margin-bottom-7">
     <dl class="govuk-summary-list">
       {% if not chargeVersionWorkflowId %}
@@ -208,6 +209,7 @@ formErrorSummary %}
       }}
     </dl>
   </section>
+</div>
 {% endmacro %}
 
 {% block content %}

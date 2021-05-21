@@ -44,7 +44,7 @@ experiment('findLatestReturn', () => {
   });
 });
 
-experiment('filterReturn', async () => {
+experiment('filterReturn', () => {
   const retA = {
     return_id: 'v1:123'
   };
@@ -79,7 +79,7 @@ experiment('filterReturn', async () => {
   });
 });
 
-experiment('getRecentReturns', async () => {
+experiment('getRecentReturns', () => {
   const returnData = {
     return_id: '123:456:789',
     licence_ref: '123/456/789',

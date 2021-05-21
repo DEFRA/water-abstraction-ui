@@ -96,7 +96,7 @@ const createRequest = () => ({
   }
 });
 
-const licencePageUrl = '/licences/test-document-id#charge';
+const licencePageUrl = '/licences/test-licence-id#charge';
 
 experiment('internal/modules/charge-information/controllers/view-charge-information', () => {
   let request, h;

@@ -75,6 +75,14 @@ class ReturnsService extends ServiceClient {
     const response = await this.serviceRequest.get(uri, { qs });
     return responseHandler(response);
   }
+
+  /**
+   * Get return service model by ID
+   */
+  getReturnById (returnId) {
+    const uri = this.joinUrl('returns', returnId);
+    return this.serviceRequest.get(uri);
+  }
 }
 
 module.exports = ReturnsService;

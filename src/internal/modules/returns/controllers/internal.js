@@ -62,6 +62,7 @@ const updateReturn = async (request, waterReturn, isUnderQuery, receivedDate) =>
  */
 const getInternalRouting = async (request, h, form) => {
   const { returnId } = request.query;
+  const { return: { licence } } = request.pre;
 
   const waterReturn = await loadWaterReturn(returnId);
   const data = waterReturn.toObject();
@@ -71,7 +72,10 @@ const getInternalRouting = async (request, h, form) => {
     ...view,
     form: form || internalRoutingForm(request, data),
     return: data,
-    back: STEP_LICENCES
+    back: STEP_LICENCES,
+    links: {
+      licence: `/licences/${licence.id}`
+    }
   });
 };
 

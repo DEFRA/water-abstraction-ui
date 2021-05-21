@@ -8,7 +8,14 @@ const services = require('internal/lib/connectors/services');
 const FlowStorageAdapter = require('shared/modules/returns/FlowStorageAdapter');
 const storageAdapter = new FlowStorageAdapter(services.water.returns);
 
+const returnsPreHandlers = require('shared/lib/pre-handlers/returns');
+
 const { createRoute: sharedCreateRoute } = require('shared/modules/returns/route-helpers');
+
+const pre = [{
+  method: returnsPreHandlers.getReturnById,
+  assign: 'return'
+}];
 
 const createRoute = (...args) => {
   const route = sharedCreateRoute(...args);
@@ -138,7 +145,8 @@ module.exports = [
   createRoute('GET', steps.STEP_CONFIRM, controller.getConfirm, {
     pageTitle: 'Abstraction return - check the information before submitting',
     form: require('../forms/confirm').form,
-    showMeta: true
+    showMeta: true,
+    pre
   }),
 
   createRoute('POST', steps.STEP_CONFIRM, controller.postConfirm, {

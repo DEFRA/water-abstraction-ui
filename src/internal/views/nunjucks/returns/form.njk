@@ -1,9 +1,9 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "forms/index.njk" import formRender, formErrorSummary %}
-{% from "returns/return-header.njk" import returnHeader %}
+{% from "./nunjucks/returns/macros/return-header.njk" import returnHeader %}
 
 {% block content %}
   {{ formErrorSummary(form) }}
-  {{ returnHeader(data, documentHeader, showMeta, true) }}
+  {{ returnHeader(data, documentHeader, showMeta, links) }}
   {{ formRender(form) }}
 {% endblock %}

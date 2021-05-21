@@ -124,6 +124,24 @@ const loadPrimaryUser = async request => {
   return data || null;
 };
 
+const getLicenceNumberFromReturnId = returnId =>
+  returnId.split(/:/g)[2];
+
+/**
+ * Pre handler to load Return service model
+ */
+const getLicenceByReturnId = async request => {
+  // Get return ID from either params/query
+  const returnId = request.params.returnId || request.query.returnId || request.query.id;
+  const licenceNumber = getLicenceNumberFromReturnId(returnId);
+
+  try {
+    return await request.services.water.licences.getLicenceByLicenceNumber(licenceNumber);
+  } catch (err) {
+    return errorHandler(err, `Licence ${licenceNumber} for return ${returnId} not found`);
+  }
+};
+
 exports.loadLicence = loadLicence;
 exports.loadLicenceDocument = loadLicenceDocument;
 exports.loadDefaultLicenceVersion = loadDefaultLicenceVersion;
@@ -135,3 +153,4 @@ exports.loadReturns = loadReturns;
 exports.loadNotifications = loadNotifications;
 exports.loadSummary = loadSummary;
 exports.loadPrimaryUser = loadPrimaryUser;
+exports.getLicenceByReturnId = getLicenceByReturnId;

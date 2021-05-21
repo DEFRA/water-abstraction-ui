@@ -153,6 +153,15 @@ class LicencesService extends ServiceClient {
       }
     });
   }
+
+  getLicenceByLicenceNumber (licenceNumber) {
+    const url = this.joinUrl('licences');
+    return this.serviceRequest.get(url, {
+      qs: {
+        licenceNumber
+      }
+    });
+  }
 }
 
 module.exports = LicencesService;

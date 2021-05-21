@@ -62,7 +62,7 @@ const updateReturn = async (request, waterReturn, isUnderQuery, receivedDate) =>
  */
 const getInternalRouting = async (request, h, form) => {
   const { returnId } = request.query;
-  const { return: { licence } } = request.pre;
+  const { licence } = request.pre;
 
   const waterReturn = await loadWaterReturn(returnId);
   const data = waterReturn.toObject();

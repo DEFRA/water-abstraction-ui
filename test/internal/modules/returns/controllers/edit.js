@@ -93,10 +93,8 @@ const createRequest = (isValid = true) => ({
     clear: sandbox.stub()
   },
   pre: {
-    return: {
-      licence: {
-        id: licenceId
-      }
+    licence: {
+      id: licenceId
     }
   }
 });

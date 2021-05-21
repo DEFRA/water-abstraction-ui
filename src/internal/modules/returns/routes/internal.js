@@ -5,11 +5,11 @@ const controller = require('../controllers/internal');
 const constants = require('../../../lib/constants');
 const returns = constants.scope.returns;
 const { VALID_GUID } = require('shared/lib/validators');
-const preHandlers = require('shared/lib/pre-handlers/returns');
+const licencePreHandlers = require('shared/lib/pre-handlers/licences');
 
 const pre = [{
-  method: preHandlers.getReturnById,
-  assign: 'return'
+  method: licencePreHandlers.getLicenceByReturnId,
+  assign: 'licence'
 }];
 
 module.exports = {

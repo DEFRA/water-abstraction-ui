@@ -7,14 +7,13 @@ const steps = require('shared/modules/returns/steps');
 const services = require('internal/lib/connectors/services');
 const FlowStorageAdapter = require('shared/modules/returns/FlowStorageAdapter');
 const storageAdapter = new FlowStorageAdapter(services.water.returns);
-
-const returnsPreHandlers = require('shared/lib/pre-handlers/returns');
+const licencePreHandlers = require('shared/lib/pre-handlers/licences');
 
 const { createRoute: sharedCreateRoute } = require('shared/modules/returns/route-helpers');
 
 const pre = [{
-  method: returnsPreHandlers.getReturnById,
-  assign: 'return'
+  method: licencePreHandlers.getLicenceByReturnId,
+  assign: 'licence'
 }];
 
 const createRoute = (...args) => {

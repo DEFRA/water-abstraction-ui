@@ -322,7 +322,7 @@ const getConfirm = async (request, h) => {
     makeChangeText: `Edit these ${model.reading.isOneMeter() ? 'meter readings' : 'volumes'}`,
     makeChangePath: addQuery(request, path),
     links: {
-      licence: `/licences/${request.pre.return.licence.id}`
+      licence: `/licences/${request.pre.licence.id}`
     }
   };
 

@@ -184,8 +184,8 @@ const chargeVersions = [{
   }
 }];
 
-experiment('internal/modules/billing/services/transactions-csv', async () => {
-  experiment('_getTransactionData maps', async () => {
+experiment('internal/modules/billing/services/transactions-csv', () => {
+  experiment('_getTransactionData maps', () => {
     let transaction, transactionData;
     beforeEach(() => {
       transaction = invoice.invoiceLicences[0].transactions[0];
@@ -296,7 +296,7 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
     });
   });
 
-  experiment('_getInvoiceData', async () => {
+  experiment('_getInvoiceData', () => {
     let invoiceData;
     beforeEach(() => {
       invoiceData = transactionsCSV._getInvoiceData(invoice);
@@ -358,7 +358,7 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
     });
   });
 
-  experiment('_getInvoiceAccountData', async () => {
+  experiment('_getInvoiceAccountData', () => {
     let invoiceAccount, invoiceAccountData;
     beforeEach(() => {
       invoiceAccount = invoice.invoiceAccount;
@@ -374,7 +374,7 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
     });
   });
 
-  experiment('_getTransactionAmounts', async () => {
+  experiment('_getTransactionAmounts', () => {
     test('when value is a number, value is mapped to relevant line', async () => {
       const transactionLines = transactionsCSV._getTransactionAmounts({ value: 123456, isCredit: false });
       expect(transactionLines['Net transaction line amount(debit)']).to.equal('1,234.56');
@@ -388,7 +388,7 @@ experiment('internal/modules/billing/services/transactions-csv', async () => {
     });
   });
 
-  experiment('.createCSV', async () => {
+  experiment('.createCSV', () => {
     let csvData;
 
     beforeEach(async () => {

@@ -1,16 +1,8 @@
 'use strict';
 
 const queryString = require('querystring');
-const { isEmpty, isUndefined } = require('lodash');
-
-const cleanObject = obj => {
-  for (const key in obj) {
-    if (isUndefined(obj[key]) || obj[key].length === 0) {
-      delete obj[key];
-    }
-  }
-  return obj;
-};
+const { isEmpty } = require('lodash');
+const cleanObject = require('./clean-object');
 
 const createUrl = urlTail => (licenceId, queryParams = null) => {
   const url = `/licences/${licenceId}/charge-information/${urlTail}`;

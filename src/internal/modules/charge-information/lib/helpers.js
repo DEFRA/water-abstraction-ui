@@ -82,10 +82,7 @@ const prepareChargeInformation = (licenceId, chargeData) => ({
   }
 });
 
-const getLicencePageUrl = async (licence, includeExpired = false) => {
-  const document = await services.crm.documents.getWaterLicence(licence.licenceNumber, includeExpired);
-  return `/licences/${document.document_id}#charge`;
-};
+const getLicencePageUrl = licence => `/licences/${licence.id}#charge`;
 
 const isCurrentAddress = invoiceAccountAddress => invoiceAccountAddress.dateRange.endDate === null;
 
@@ -108,5 +105,4 @@ exports.applyFormResponse = applyFormResponse;
 exports.createPostHandler = createPostHandler;
 exports.getDefaultView = getDefaultView;
 exports.prepareChargeInformation = prepareChargeInformation;
-exports.getLicencePageUrl = getLicencePageUrl;
 exports.getCurrentBillingAccountAddress = getCurrentBillingAccountAddress;

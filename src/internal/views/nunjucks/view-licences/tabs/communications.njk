@@ -1,11 +1,11 @@
 {% macro messageLink(message) %}
   {% if message.isPdf %}
-    {{ message.notificationType }}
-    <span class="govuk-visually-hidden"> sent {{ message.data | date }} via {{ message.messageType }}</span>
+    {{ message.event.metadata.name }}
+    <span class="govuk-visually-hidden"> sent {{ message.event.created | date }} via {{ message.messageType }}</span>
   {% else %}
-    <a href="/licences/{{ documentId }}/communications/{{ message.notificationId }}">
-      {{ message.notificationType }}
-      <span class="govuk-visually-hidden"> sent {{ message.data | date }} via {{ message.messageType }}</span>
+    <a href="/licences/{{ documentId }}/communications/{{ message.id }}">
+      {{ message.event.metadata.name }}
+      <span class="govuk-visually-hidden"> sent {{ message.event.created | date }} via {{ message.messageType }}</span>
     </a>
   {% endif %}
 {% endmacro %}
@@ -16,13 +16,13 @@
     {{ messageLink(message) }}
   </td>
   <td class="govuk-table__cell">
-    {{ message.date | date }}
+    {{ message.event.created | date }}
   </td>
   <td class="govuk-table__cell">
-    {{ message.sender }}
+    {{ message.event.issuer }}
   </td>
   <td class="govuk-table__cell">
-    {{ message.messageType }}
+    {{ message.messageType | sentenceCase }}
   </td>
 </tr>
 {% endmacro %}
@@ -44,7 +44,7 @@
 
 <h2 class="govuk-heading-l">Communications</h2>
 
-{% if communications.length %}
+{% if notifications.data.length %}
 
   {% for message in communications %}
     {{ messageRowMobile(message) }}
@@ -60,7 +60,7 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body">
-      {% for message in communications %}
+      {% for message in notifications.data %}
         {{ messageRow(message) }}
       {% endfor %}
     </tbody>

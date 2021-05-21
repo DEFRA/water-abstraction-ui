@@ -131,7 +131,7 @@ experiment('AuthConfig base class', () => {
       expect(request.yar.set.calledWith('ip', request.info.remoteAddress)).to.equal(true);
     });
 
-    experiment('when IDM user has external_id', async () => {
+    experiment('when IDM user has external_id', () => {
       test('does not create a CRM entity', async () => {
         expect(connectors.crm.entities.getOrCreateIndividual.callCount).to.equal(0);
       });
@@ -141,7 +141,7 @@ experiment('AuthConfig base class', () => {
       });
     });
 
-    experiment('when IDM user does not have external_id', async () => {
+    experiment('when IDM user does not have external_id', () => {
       beforeEach(async () => {
         user = createUser(false);
         request = createRequest();

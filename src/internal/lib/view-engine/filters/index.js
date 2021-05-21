@@ -15,6 +15,7 @@ module.exports = {
   ...require('shared/view/nunjucks/filters/flow-converter'),
   ...require('shared/view/nunjucks/filters/form'),
   ...require('shared/view/nunjucks/filters/gauging-station-value'),
+  ...require('shared/view/nunjucks/filters/has-more-pages'),
   ...require('shared/view/nunjucks/filters/markdown'),
   ...require('shared/view/nunjucks/filters/merge'),
   ...require('shared/view/nunjucks/filters/number'),

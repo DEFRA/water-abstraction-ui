@@ -1,5 +1,7 @@
 'use-strict';
 
+const cleanObject = require('../lib/clean-object');
+
 const forms = require('../forms/charge-element/index');
 const routing = require('../lib/routing');
 const { getDefaultView, getPostedForm, applyFormResponse } = require('../lib/helpers');
@@ -49,7 +51,9 @@ const postChargeElementStep = async (request, h) => {
     return h.redirect(getRedirectPath(request));
   }
 
-  return h.postRedirectGet(form, routing.getChargeElementStep(licenceId, elementId, step, request.query));
+  const queryParams = cleanObject(request.query);
+
+  return h.postRedirectGet(form, routing.getChargeElementStep(licenceId, elementId, step), queryParams);
 };
 
 exports.getChargeElementStep = getChargeElementStep;

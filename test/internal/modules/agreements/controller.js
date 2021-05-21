@@ -175,7 +175,7 @@ experiment('internal/modules/agreements/controller', () => {
   });
 
   experiment('.postEndAgreement', () => {
-    experiment('when the form is valid', async () => {
+    experiment('when the form is valid', () => {
       let modifiedRequest;
       beforeEach(async () => {
         request = createRequest();
@@ -193,7 +193,7 @@ experiment('internal/modules/agreements/controller', () => {
         expect(h.redirect.calledWith(`/licences/${modifiedRequest.pre.licence.id}/agreements/${modifiedRequest.params.agreementId}/end/confirm`));
       });
     });
-    experiment('when the form is invalid', async () => {
+    experiment('when the form is invalid', () => {
       let modifiedRequest;
       beforeEach(async () => {
         request = createRequest();
@@ -432,7 +432,7 @@ experiment('internal/modules/agreements/controller', () => {
     });
 
     experiment('.getCheckStartDate', () => {
-      experiment('when the agreement start date = the licence start date', async () => {
+      experiment('when the agreement start date = the licence start date', () => {
         beforeEach(async () => {
           request.yar.get.onFirstCall().returns({
             startDate: '2020-02-01'
@@ -500,7 +500,7 @@ experiment('internal/modules/agreements/controller', () => {
         });
       });
 
-      experiment('when the agreement start date = the financial year start', async () => {
+      experiment('when the agreement start date = the financial year start', () => {
         beforeEach(async () => {
           request.yar.get.onFirstCall().returns({
             startDate: '2020-04-01'
@@ -516,7 +516,7 @@ experiment('internal/modules/agreements/controller', () => {
         });
       });
 
-      experiment('when the agreement start date is neither the financial year or licence start date', async () => {
+      experiment('when the agreement start date is neither the financial year or licence start date', () => {
         beforeEach(async () => {
           request.yar.get.onFirstCall().returns({
             startDate: '2020-04-02'

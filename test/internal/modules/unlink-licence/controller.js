@@ -40,7 +40,7 @@ experiment('modules/unlink-licence/controller', () => {
 
   afterEach(async () => { sandbox.restore(); });
 
-  experiment('.getUnlinkLicence', async () => {
+  experiment('.getUnlinkLicence', () => {
     beforeEach(async () => {
       await controller.getUnlinkLicence(request, h);
     });
@@ -78,7 +78,7 @@ experiment('modules/unlink-licence/controller', () => {
     });
   });
 
-  experiment('.postUnlinkLicence', async () => {
+  experiment('.postUnlinkLicence', () => {
     test('calls handleRequest with the expected arguments', async () => {
       forms.handleRequest.returns({ isValid: true });
       await controller.postUnlinkLicence(request, h);
@@ -88,7 +88,7 @@ experiment('modules/unlink-licence/controller', () => {
       expect(schema).to.be.an.object();
     });
 
-    experiment('when the form is valid', async () => {
+    experiment('when the form is valid', () => {
       beforeEach(async () => {
         forms.handleRequest.returns({ isValid: true });
         await controller.postUnlinkLicence(request, h);
@@ -110,7 +110,7 @@ experiment('modules/unlink-licence/controller', () => {
       });
     });
 
-    experiment('when the form is not valid', async () => {
+    experiment('when the form is not valid', () => {
       test('the confirm unlink licence template is replayed', async () => {
         const [template] = h.view.lastCall.args;
         expect(template).to.equal('nunjucks/unlink-licence/confirm-unlink-licence');
@@ -118,7 +118,7 @@ experiment('modules/unlink-licence/controller', () => {
     });
   });
 
-  experiment('.getUnlinkLicenceSuccess', async () => {
+  experiment('.getUnlinkLicenceSuccess', () => {
     beforeEach(async () => {
       await controller.getUnlinkLicenceSuccess(request, h);
     });

@@ -62,7 +62,7 @@ experiment('DocumentsApiClient', () => {
     });
   });
 
-  experiment('.getWaterLicence', async () => {
+  experiment('.getWaterLicence', () => {
     beforeEach(async () => {
       client.findMany.resolves({
         error: null,
@@ -85,7 +85,7 @@ experiment('DocumentsApiClient', () => {
     });
   });
 
-  experiment('.getDocumentIdMap', async () => {
+  experiment('.getDocumentIdMap', () => {
     let map;
     const LICENCE_A = '01/123';
     const LICENCE_B = '02/345';

@@ -199,7 +199,10 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
     });
 
     test('loads data from cache when draftChargeInformation is not set and licence is in review', async () => {
-      sandbox.stub(preHandlers, 'loadChargeInformation').returns(request.pre.draftChargeInformation);
+      sandbox.stub(preHandlers, 'loadChargeInformation').returns({
+        ...request.pre.draftChargeInformation,
+        status: 'review'
+      });
       sandbox.stub(chargeInformationValidator, 'addValidation');
       request.getDraftChargeInformation = sandbox.stub().returns(request.pre.chargeInformation);
       request.pre.chargeInformation = request.pre.draftChargeInformation;
@@ -211,7 +214,10 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
     });
 
     test('loads data from cache when draftChargeInformation is not set and licence is in changes_requested', async () => {
-      sandbox.stub(preHandlers, 'loadChargeInformation').returns(request.pre.draftChargeInformation);
+      sandbox.stub(preHandlers, 'loadChargeInformation').returns({
+        ...request.pre.draftChargeInformation,
+        status: 'changes_requested'
+      });
       sandbox.stub(chargeInformationValidator, 'addValidation');
       request.getDraftChargeInformation = sandbox.stub().returns(request.pre.chargeInformation);
       request.pre.chargeInformation = request.pre.draftChargeInformation;

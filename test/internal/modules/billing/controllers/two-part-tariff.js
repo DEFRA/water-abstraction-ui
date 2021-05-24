@@ -472,7 +472,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       request = getBillingVolumeReviewRequest();
     });
 
-    experiment('when the billingVolume is present in the request', async () => {
+    experiment('when the billingVolume is present in the request', () => {
       beforeEach(async () => {
         services.crm.documents.getWaterLicence.resolves({
           document_id: 'test-document_id'
@@ -655,7 +655,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
           expect(field.value).to.equal(request.view.csrfToken);
         });
 
-        experiment('has a radio field', async () => {
+        experiment('has a radio field', () => {
           let field;
           beforeEach(async () => {
             field = form.fields.find(row => row.name === 'quantity');
@@ -695,7 +695,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
   experiment('.postBillingVolumeReview', () => {
     let request;
 
-    experiment('when no radio button is selected', async () => {
+    experiment('when no radio button is selected', () => {
       beforeEach(async () => {
         request = getBillingVolumeReviewRequest({
           csrf_token: '00000000-0000-0000-0000-000000000000'
@@ -718,7 +718,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       });
     });
 
-    experiment('when a custom quantity is <0', async () => {
+    experiment('when a custom quantity is <0', () => {
       beforeEach(async () => {
         request = getBillingVolumeReviewRequest({
           csrf_token: '00000000-0000-0000-0000-000000000000',
@@ -743,7 +743,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       });
     });
 
-    experiment('when a custom quantity is > annual authorised volume', async () => {
+    experiment('when a custom quantity is > annual authorised volume', () => {
       beforeEach(async () => {
         request = getBillingVolumeReviewRequest({
           csrf_token: '00000000-0000-0000-0000-000000000000',
@@ -768,7 +768,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       });
     });
 
-    experiment('when the annual authorised quantity is selected', async () => {
+    experiment('when the annual authorised quantity is selected', () => {
       beforeEach(async () => {
         request = getBillingVolumeReviewRequest({
           csrf_token: '00000000-0000-0000-0000-000000000000',
@@ -783,7 +783,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       });
     });
 
-    experiment('when a valid custom quantity is selected', async () => {
+    experiment('when a valid custom quantity is selected', () => {
       beforeEach(async () => {
         request = getBillingVolumeReviewRequest({
           csrf_token: '00000000-0000-0000-0000-000000000000',
@@ -930,7 +930,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       });
     });
 
-    experiment('when the quantity is invalid', async () => {
+    experiment('when the quantity is invalid', () => {
       let result;
 
       beforeEach(async () => {

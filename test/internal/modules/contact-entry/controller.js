@@ -104,7 +104,7 @@ experiment('src/internal/modules/contact-entry/controller', () => {
       request.path = `/contact-entry/${KEY}/select-contact`;
     });
 
-    experiment('when the form is invalid', async () => {
+    experiment('when the form is invalid', () => {
       beforeEach(async () => {
         await controller.postSelectContact(request, h);
       });
@@ -114,8 +114,8 @@ experiment('src/internal/modules/contact-entry/controller', () => {
       });
     });
 
-    experiment('when the form is valid', async () => {
-      experiment('and an existing contact is selected', async () => {
+    experiment('when the form is valid', () => {
+      experiment('and an existing contact is selected', () => {
         beforeEach(async () => {
           request.payload = {
             selectedContact: CONTACT_ID,
@@ -138,7 +138,7 @@ experiment('src/internal/modules/contact-entry/controller', () => {
         });
       });
 
-      experiment('and a new person is being created', async () => {
+      experiment('and a new person is being created', () => {
         beforeEach(async () => {
           request.payload = {
             selectedContact: CONTACT_TYPES.person,
@@ -156,7 +156,7 @@ experiment('src/internal/modules/contact-entry/controller', () => {
         });
       });
 
-      experiment('and a new department is being created', async () => {
+      experiment('and a new department is being created', () => {
         beforeEach(async () => {
           request.payload = {
             selectedContact: CONTACT_TYPES.department,
@@ -208,7 +208,7 @@ experiment('src/internal/modules/contact-entry/controller', () => {
       request.method = 'post';
     });
 
-    experiment('when the form is invalid', async () => {
+    experiment('when the form is invalid', () => {
       beforeEach(async () => {
         await controller.postCreateContact(request, h);
       });
@@ -218,7 +218,7 @@ experiment('src/internal/modules/contact-entry/controller', () => {
       });
     });
 
-    experiment('when the form is valid', async () => {
+    experiment('when the form is valid', () => {
       beforeEach(async () => {
         request.payload = {
           ...CONTACT,

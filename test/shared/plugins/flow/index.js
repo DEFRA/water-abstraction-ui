@@ -183,7 +183,7 @@ experiment('shared flow plugin: ', () => {
       });
     });
 
-    experiment('on POST routes', async () => {
+    experiment('on POST routes', () => {
       beforeEach(async () => {
         request.method = 'post';
         request.payload = {

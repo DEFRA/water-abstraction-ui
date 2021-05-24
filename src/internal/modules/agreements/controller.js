@@ -31,12 +31,12 @@ const getDefaultView = request => ({
 });
 
 const getDeleteAgreement = (request, h) => {
-  const { agreement, licence, document } = request.pre;
+  const { agreement, licence } = request.pre;
   return h.view('nunjucks/agreements/confirm-end-or-delete', {
     ...getDefaultView(request),
     pageTitle: 'You\'re about to delete this agreement',
     verb: 'delete',
-    back: `/licences/${document.document_id}#charge`,
+    back: `/licences/${licence.id}#charge`,
     agreement,
     licenceId: licence.id,
     form: deleteAgreementForm(request)
@@ -45,23 +45,23 @@ const getDeleteAgreement = (request, h) => {
 
 const postDeleteAgreement = async (request, h) => {
   const { agreementId } = request.params;
-  const { document } = request.pre;
+  const { licence } = request.pre;
   try {
     await water.agreements.deleteAgreement(agreementId);
   } catch (err) {
     logger.info(`Did not successfully delete agreement ${agreementId}`);
   }
-  return h.redirect(`/licences/${document.document_id}#charge`);
+  return h.redirect(`/licences/${licence.id}#charge`);
 };
 
 const getEndAgreement = async (request, h) => {
-  const { agreement, licence, document } = request.pre;
+  const { agreement, licence } = request.pre;
   const { agreementId } = request.params;
   const { endDate } = helpers.endAgreementSessionManager(request, agreementId);
   return h.view('nunjucks/form', {
     ...getDefaultView(request),
     pageTitle: 'Set agreement end date',
-    back: `/licences/${document.document_id}#charge`,
+    back: `/licences/${licence.id}#charge`,
     agreement,
     licenceId: licence.id,
     form: sessionForms.get(request, endAgreementForm(request, endDate))
@@ -107,12 +107,12 @@ const getConfirmEndAgreement = async (request, h) => {
 
 const postConfirmEndAgreement = async (request, h) => {
   const { agreementId } = request.params;
-  const { document } = request.pre;
+  const { licence } = request.pre;
   const { endDate } = await helpers.endAgreementSessionManager(request, agreementId);
   try {
     await water.agreements.endAgreement(agreementId, { endDate });
     await helpers.clearEndAgreementSessionData(request, agreementId);
-    return h.redirect(`/licences/${document.document_id}#charge`);
+    return h.redirect(`/licences/${licence.id}#charge`);
   } catch (err) {
     logger.info(`Did not successfully end agreement ${agreementId}`);
   }
@@ -122,13 +122,13 @@ const postConfirmEndAgreement = async (request, h) => {
  * Page 1: Add agreement flow - select agreement type
  */
 const getSelectAgreementType = async (request, h) => {
-  const { document_id: documentId } = request.pre.document;
+  const { id } = request.pre.licence;
 
   const view = {
     ...getDefaultView(request),
     pageTitle: 'Select agreement',
     form: sessionForms.get(request, selectAgreementType.form(request)),
-    back: `/licences/${documentId}#charge`
+    back: `/licences/${id}#charge`
   };
   return h.view('nunjucks/agreements/form', view);
 };
@@ -200,13 +200,13 @@ const getCheckAnswers = async (request, h) => {
 
 const postCheckAnswers = async (request, h) => {
   const { licenceId } = request.params;
-  const { flowState, document } = request.pre;
+  const { flowState } = request.pre;
 
   await water.licences.createAgreement(licenceId, omit(flowState, 'isDateSignedKnown'));
 
   clearAddAgreementSessionData(request);
 
-  return h.redirect(`/licences/${document.document_id}#charge`);
+  return h.redirect(`/licences/${licenceId}#charge`);
 };
 
 exports.getDeleteAgreement = getDeleteAgreement;

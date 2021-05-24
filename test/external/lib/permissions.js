@@ -45,7 +45,7 @@ experiment('permissions', () => {
     });
   });
 
-  experiment('isPrimaryUser', async () => {
+  experiment('isPrimaryUser', () => {
     test('returns true if primary user in scope', async () => {
       const request = createRequest([scope.external, scope.licenceHolder]);
       expect(permissions.isPrimaryUser(request)).to.equal(true);
@@ -57,7 +57,7 @@ experiment('permissions', () => {
     });
   });
 
-  experiment('isReturnsUser', async () => {
+  experiment('isReturnsUser', () => {
     test('returns true if primary user in scope', async () => {
       const request = createRequest([scope.licenceHolder]);
       expect(permissions.isReturnsUser(request)).to.equal(true);

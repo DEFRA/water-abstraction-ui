@@ -101,13 +101,7 @@ const postReviewChargeInformation = async (request, h) => {
     // Clear session
     request.clearDraftChargeInformation(licence.id);
 
-    const document = await services.water.licences.getDocumentByLicenceId(licence.id, true);
-    if (document.metadata.IsCurrent) {
-      return h.redirect(`/licences/${document.document_id}#charge`);
-    } else {
-      // redirect to the licence expired page for future dated licences
-      return h.redirect(`/expired-licences/${document.document_id}`);
-    }
+    return h.redirect(`/licences/${licence.id}#charge`);
   }
 };
 

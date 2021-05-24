@@ -50,9 +50,6 @@ describe('two-part-tariff bill run', () => {
         cy.url().should('contain', '/billing/batch/');
         cy.get('.govuk-heading-xl').contains('Review returns data issues for L1');
         cy.get(':nth-child(6) > a').contains('Change').click();
-
-        // click on back
-       // cy.get('.govuk-back-link').click();
       });
 
       describe('user verifys the review bill', () => {
@@ -60,24 +57,18 @@ describe('two-part-tariff bill run', () => {
         cy.url().should('contain', '/billing/batch/');
         cy.get('.govuk-heading-xl').contains('Review quantity to bill for CE2');
         cy.get('.govuk-button').contains('Continue').click();
-        // click on back
-       // cy.get('.govuk-back-link').click();
       });
  
       describe('user confirms the review bill', () => {
         cy.url().should('contain', '/billing/batch/');
         cy.get('.govuk-caption-l').contains('Licence L1');
         cy.get('.govuk-button').contains('Continue').click();
-       // click on back
-       // cy.get('.govuk-back-link').click();
       });
 
       describe('user reviews licenses for bill', () => {
         cy.url().should('contain', '/billing/batch/');
         cy.get('.govuk-heading-xl').contains('Review licences with returns data issues');
         cy.get('.govuk-button').contains('Continue').click();
-       // click on back
-       // cy.get('.govuk-back-link').click();
       });
   
       describe('user genrates the bill', () => {
@@ -103,7 +94,6 @@ describe('two-part-tariff bill run', () => {
       });
 
       describe('verify the bill run is sent successfully', () => {
-        // cy.get('.govuk-heading-l', { timeout: 40000 }).contains('Two-part tariff bill run');
         cy.get('.govuk-panel__title', { timeout: 40000 }).contains('Bill run sent');
         cy.url().should('contain', '/confirm');
         cy.get('div.govuk-grid-column-two-thirds').eq(1).contains('Download the bill run');

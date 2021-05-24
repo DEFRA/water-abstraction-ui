@@ -82,26 +82,28 @@ describe('two-part-tariff bill run', () => {
   
       describe('user genrates the bill', () => {
         cy.url().should('contain', '/billing/batch/');
-<<<<<<< Updated upstream
         cy.get('.govuk-heading-l',{ timeout: 20000 }).contains('You are about to generate the two-part tariff bills');
-=======
-        cy.get('.govuk-heading-l',{ timeout: 40000 }).contains('You are about to generate the two-part tariff bills');
->>>>>>> Stashed changes
         cy.get('.govuk-button').contains('Confirm').click();
-        
-      });
+        });
+
+        describe('user waits for batch to generate', () => {
+           cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Two-part tariff bill run');
+          cy.url().should('contain', '/billing/batch/');
+        });
 
       describe('user confirms the bill', () => {
+        cy.url().should('contain', '/billing/batch/');
+         cy.get('.govuk-heading-xl',{ timeout: 20000 }).contains('Two-part tariff bill run');
         cy.get('.govuk-button').contains('Confirm bill run').click();
       });
 
       describe('send the bill run', () => {
         cy.get('.govuk-heading-l').contains('You are about to send this bill run');
-        cy.get('button.govuk-button').contains('Send bill run').click();
+        cy.get('.govuk-button').contains('Send bill run').click();
       });
 
       describe('verify the bill run is sent successfully', () => {
-        cy.get('.govuk-heading-l', { timeout: 40000 }).contains('supplementary bill run');
+        // cy.get('.govuk-heading-l', { timeout: 40000 }).contains('Two-part tariff bill run');
         cy.get('.govuk-panel__title', { timeout: 40000 }).contains('Bill run sent');
         cy.url().should('contain', '/confirm');
         cy.get('div.govuk-grid-column-two-thirds').eq(1).contains('Download the bill run');

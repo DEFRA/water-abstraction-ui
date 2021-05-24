@@ -11,12 +11,13 @@ const createUrl = urlTail => (licenceId, queryParams = null) => {
 };
 
 exports.getChargeElementStep = (licenceId, elementId, step, queryParams) => createUrl(`charge-element/${elementId}/${step}`)(licenceId, queryParams);
+
 exports.postReview = (chargeVersionWorkflowId, licenceId) => createUrl(`${chargeVersionWorkflowId}/review`)(licenceId);
+exports.getReview = (chargeVersionWorkflowId, licenceId) => createUrl(`${chargeVersionWorkflowId}/review`)(licenceId);
 
 exports.getHandleBillingAccount = createUrl('set-billing-account');
 exports.getSubmitted = createUrl('submitted');
 exports.getCheckData = createUrl('check');
-exports.getReview = createUrl('review');
 exports.getReason = createUrl('create');
 exports.getStartDate = createUrl('start-date');
 exports.getSelectBillingAccount = createUrl('billing-account');

@@ -139,8 +139,8 @@ const getHandleBillingAccount = async (request, h) => {
 
   // Redirect to next page in flow
 
-  if (returnToCheckData && request.draftChargeInfomration.status === 'review') {
-    return h.redirect(routing.getReview());
+  if (returnToCheckData && currentState.status === 'review') {
+    return h.redirect(routing.getReview(chargeVersionWorkflowId, licenceId));
   }
 
   const path = returnToCheckData

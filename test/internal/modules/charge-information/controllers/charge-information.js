@@ -752,12 +752,15 @@ experiment('internal/modules/charge-information/controller', () => {
 
     test('redirects to the review page when status is review', async () => {
       request = createRequest();
-      request.query = { returnToCheckData: true };
-      request.draftChargeInfomration = {
+      request.query = {
+        returnToCheckData: true,
+        chargeVersionWorkflowId: 'test-workflow-id'
+      };
+      request.pre.draftChargeInformation = {
         status: 'review'
       };
       await controller.getHandleBillingAccount(request, h);
-      const redirectPath = '/licences/undefined/charge-information/review';
+      const redirectPath = '/licences/test-licence-id/charge-information/test-workflow-id/review';
       expect(h.redirect.lastCall.args[0]).to.equal(redirectPath);
     });
   });

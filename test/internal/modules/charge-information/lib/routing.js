@@ -20,7 +20,6 @@ experiment('internal/modules/charge-information/lib/routing', () => {
       }
     };
     chargeVersionWorkflowId = 'test-workflow-id';
-
   });
 
   experiment('.getChargeElementStep', () => {

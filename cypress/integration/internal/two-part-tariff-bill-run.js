@@ -44,7 +44,7 @@ describe('two-part-tariff bill run', () => {
         cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Review licences with returns data issues');
         cy.url().should('contain', '/two-part-tariff-review');
       });
-      
+
       describe('user view returns data', () => {
         cy.get('.govuk-link').contains('Review').click();
         cy.url().should('contain', '/billing/batch/');
@@ -58,7 +58,7 @@ describe('two-part-tariff bill run', () => {
         cy.get('.govuk-heading-xl').contains('Review quantity to bill for CE2');
         cy.get('.govuk-button').contains('Continue').click();
       });
- 
+
       describe('user confirms the review bill', () => {
         cy.url().should('contain', '/billing/batch/');
         cy.get('.govuk-caption-l').contains('Licence L1');
@@ -70,21 +70,21 @@ describe('two-part-tariff bill run', () => {
         cy.get('.govuk-heading-xl').contains('Review licences with returns data issues');
         cy.get('.govuk-button').contains('Continue').click();
       });
-  
+
       describe('user genrates the bill', () => {
         cy.url().should('contain', '/billing/batch/');
-        cy.get('.govuk-heading-l',{ timeout: 20000 }).contains('You are about to generate the two-part tariff bills');
+        cy.get('.govuk-heading-l', { timeout: 20000 }).contains('You are about to generate the two-part tariff bills');
         cy.get('.govuk-button').contains('Confirm').click();
-        });
+      });
 
-        describe('user waits for batch to generate', () => {
-           cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Two-part tariff bill run');
-          cy.url().should('contain', '/billing/batch/');
-        });
+      describe('user waits for batch to generate', () => {
+        cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Two-part tariff bill run');
+        cy.url().should('contain', '/billing/batch/');
+      });
 
       describe('user confirms the bill', () => {
         cy.url().should('contain', '/billing/batch/');
-         cy.get('.govuk-heading-xl',{ timeout: 20000 }).contains('Two-part tariff bill run');
+        cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Two-part tariff bill run');
         cy.get('.govuk-button').contains('Confirm bill run').click();
       });
 
@@ -99,5 +99,5 @@ describe('two-part-tariff bill run', () => {
         cy.get('div.govuk-grid-column-two-thirds').eq(1).contains('Download the bill run');
       });
     });
-   });
   });
+});

@@ -128,6 +128,7 @@ module.exports = {
         })
       },
       pre: [
+        { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' }
       ]
     }
@@ -173,7 +174,10 @@ module.exports = {
           returnToCheckData: Joi.boolean().default(false),
           chargeVersionWorkflowId: Joi.string().uuid().optional().default('')
         })
-      }
+      },
+      pre: [
+        { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' }
+      ]
     }
   },
 

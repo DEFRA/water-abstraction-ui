@@ -71,7 +71,7 @@ describe('B&D user able to view bills tab', () => {
       cy.contains(LICENCE_NUMBER).should('be.visible');
     });
   });
-  it('sees the licence tabs and the returns tab is not shown', () => {
+  it('sees the licence tabs Summary, returns, communications, bills and charge information', () => {
     cy.get('ul.govuk-tabs__list').children().should('have.length', '5');
     cy.get('#tab_summary').should('have.text', 'Summary');
     cy.get('#tab_returns').should('have.text', 'Returns');

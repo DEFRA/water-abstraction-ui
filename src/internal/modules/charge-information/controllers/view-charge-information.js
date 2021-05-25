@@ -1,7 +1,8 @@
 const {
   getDefaultView,
   getLicencePageUrl,
-  getCurrentBillingAccountAddress
+  getCurrentBillingAccountAddress,
+  prepareChargeInformation
 } = require('../lib/helpers');
 const { get } = require('lodash');
 const forms = require('shared/lib/forms');
@@ -11,7 +12,6 @@ const { chargeVersionWorkflowReviewer } = require('internal/lib/constants').scop
 const { reviewForm, reviewFormSchema } = require('../forms/review');
 const { hasScope } = require('internal/lib/permissions');
 const moment = require('moment');
-const preHandlers = require('../pre-handlers');
 
 const formatDateForPageTitle = startDate =>
   moment(startDate).format('D MMMM YYYY');
@@ -39,12 +39,6 @@ const getViewChargeInformation = async (request, h) => {
 };
 
 const getReviewChargeInformation = async (request, h) => {
-  if (request.pre.draftChargeInformation.changeReason === null) {
-    request.pre.draftChargeInformation = await preHandlers.loadChargeInformation(request);
-    request.pre.billingAccount = await preHandlers.loadBillingAccount(request);
-    request.pre.isChargeable = await preHandlers.loadIsChargeable(request);
-  }
-
   const { draftChargeInformation, licence, isChargeable, billingAccount } = request.pre;
   const { chargeVersionWorkflowId } = request.params;
   const backLink = await getLicencePageUrl(licence, true);
@@ -92,21 +86,23 @@ const postReviewChargeInformation = async (request, h) => {
       reviewForm: form
     });
   } else {
+    const preparedChargeInfo = prepareChargeInformation(licence.id, draftChargeInformation);
+    preparedChargeInfo.chargeVersion['status'] = 'draft';
+    const patchObject = {
+      status: request.payload.reviewOutcome === 'approve' ? 'review' : request.payload.reviewOutcome,
+      approverComments: request.payload.reviewerComments || 'review',
+      chargeVersion: preparedChargeInfo.chargeVersion
+    };
+
+    await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(
+      request.params.chargeVersionWorkflowId,
+      patchObject
+    );
     if (request.payload.reviewOutcome === 'approve') {
       await services.water.chargeVersions.postCreateFromWorkflow(request.params.chargeVersionWorkflowId);
-    } else {
-      const patchObject = {
-        status: request.payload.reviewOutcome,
-        approverComments: request.payload.reviewerComments,
-        chargeVersion: draftChargeInformation.chargeVersion
-      };
-      await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(
-        request.params.chargeVersionWorkflowId,
-        patchObject
-      );
     }
     // Clear session
-    request.clearDraftChargeInformation(licence.id);
+    request.clearDraftChargeInformation(licence.id, chargeVersionWorkflowId);
 
     return h.redirect(`/licences/${licence.id}#charge`);
   }

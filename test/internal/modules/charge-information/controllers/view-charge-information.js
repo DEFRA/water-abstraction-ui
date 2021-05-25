@@ -10,7 +10,7 @@ const {
 const sinon = require('sinon');
 const uuid = require('uuid/v4');
 const sandbox = sinon.createSandbox();
-
+const { omit } = require('lodash');
 const services = require('../../../../../src/internal/lib/connectors/services');
 const { chargeVersionWorkflowReviewer } = require('../../../../../src/internal/lib/constants').scope;
 const controller = require('../../../../../src/internal/modules/charge-information/controllers/view-charge-information');
@@ -359,7 +359,7 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
             chargeVersionWorkflowId: workflowId
           };
           request.clearDraftChargeInformation = sandbox.stub().resolves();
-
+          await sandbox.stub(services.water.chargeVersionWorkflows, 'patchChargeVersionWorkflow').resolves();
           await sandbox.stub(services.water.chargeVersions, 'postCreateFromWorkflow').resolves();
           await sandbox.stub(services.water.licences, 'getDocumentByLicenceId').resolves({
             document_id: uuid(),
@@ -411,11 +411,23 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
         });
 
         test('calls the service method to update the charge version workflow', async () => {
-          expect(services.water.chargeVersionWorkflows.patchChargeVersionWorkflow.calledWith(workflowId, {
-            status: 'changes_requested',
-            approverComments: 'Terrible job',
-            chargeVersion: undefined
-          })).to.be.true();
+          expect(services.water.chargeVersionWorkflows.patchChargeVersionWorkflow.lastCall.args)
+            .to.equal([
+              workflowId,
+              {
+                status: 'changes_requested',
+                approverComments: 'Terrible job',
+                chargeVersion: {
+                  id: workflowId,
+                  dateRange: { startDate: '2019-04-01' },
+                  chargeElements: [omit(request.pre.draftChargeInformation.chargeElements[0], 'id')],
+                  invoiceAccount: {
+                    invoiceAccountAddress: 'test-invoice-account-address-2',
+                    invoiceAccountAddresses: request.pre.draftChargeInformation.invoiceAccount.invoiceAccountAddresses
+                  },
+                  status: 'draft'
+                }
+              }]);
         });
       });
     });

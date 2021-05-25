@@ -19,6 +19,11 @@ const request = {
   },
   defra: {
     entityId: 'test-entity-id'
+  },
+  pre: {
+    licence: {
+      id: 'test-licence-id'
+    }
   }
 };
 
@@ -95,6 +100,7 @@ experiment('internal view controller', () => {
       expect(view.data.metadata).to.equal(returnData.metadata);
       expect(view.lines).to.equal([{ test: 'lines' }]);
       expect(view.documentHeader).to.equal({ documentHeader: 'test-doc-header' });
+      expect(view.links.licence).to.equal('/licences/test-licence-id');
     });
 
     test('Boom error is thrown if !canView', async () => {

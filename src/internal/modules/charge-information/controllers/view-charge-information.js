@@ -87,7 +87,6 @@ const postReviewChargeInformation = async (request, h) => {
     });
   } else {
     const preparedChargeInfo = prepareChargeInformation(licence.id, draftChargeInformation);
-    preparedChargeInfo.chargeVersion['status'] = 'draft';
     const patchObject = {
       status: request.payload.reviewOutcome === 'approve' ? 'review' : request.payload.reviewOutcome,
       approverComments: request.payload.reviewerComments || 'review',

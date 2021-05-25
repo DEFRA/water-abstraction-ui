@@ -214,7 +214,6 @@ const updateDraftChargeInformation = async (request, h) => {
   const { licence: { id }, draftChargeInformation, isChargeable } = request.pre;
 
   const preparedChargeInfo = prepareChargeInformation(id, draftChargeInformation);
-  preparedChargeInfo.chargeVersion['status'] = 'draft';
   const patchObject = {
     status: 'review',
     approverComments: preparedChargeInfo.chargeVersion.approverComments,
@@ -233,7 +232,6 @@ const submitDraftChargeInformation = async (request, h) => {
   const { licence: { id }, draftChargeInformation, isChargeable } = request.pre;
   const { chargeVersionWorkflowId } = request.query;
   const preparedChargeInfo = prepareChargeInformation(id, draftChargeInformation);
-  preparedChargeInfo.chargeVersion['status'] = 'draft';
   const { user_id: userId, user_name: userName } = get(request, 'defra.user');
   if (isEmpty(chargeVersionWorkflowId)) {
     await services.water.chargeVersionWorkflows.postChargeVersionWorkflow(preparedChargeInfo);

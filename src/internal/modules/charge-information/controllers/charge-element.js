@@ -1,6 +1,6 @@
 'use-strict';
 
-const cleanObject = require('../lib/clean-object');
+const cleanObject = require('../../../../shared/lib/clean-object');
 
 const forms = require('../forms/charge-element/index');
 const routing = require('../lib/routing');
@@ -25,6 +25,9 @@ const getRedirectPath = request => {
   const { step, licenceId, elementId } = request.params;
   const { chargeVersionWorkflowId, returnToCheckData } = request.query;
   if (returnToCheckData || step === CHARGE_ELEMENT_LAST_STEP) {
+    if (request.pre.draftChargeInformation.status === 'review') {
+      return routing.postReview(chargeVersionWorkflowId, licenceId);
+    }
     return routing.getCheckData(licenceId, { chargeVersionWorkflowId });
   }
   return routing.getChargeElementStep(licenceId, elementId, ROUTING_CONFIG[step].nextStep, { chargeVersionWorkflowId });
@@ -40,6 +43,7 @@ const getChargeElementStep = async (request, h) => {
 
 const postChargeElementStep = async (request, h) => {
   const { step, licenceId, elementId } = request.params;
+
   const form = getPostedForm(request, forms[step]);
 
   if (form.isValid) {

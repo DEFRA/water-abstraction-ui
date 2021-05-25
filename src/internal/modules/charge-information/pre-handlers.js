@@ -143,12 +143,14 @@ const loadChargeVersionWorkflow = async request => {
 const loadChargeInformation = async request => {
   const { licenceId } = request.params;
   const chargeVersionWorkflowId = getChargeVersionWorkflowId(request);
+  let draftChargeInfo = await loadDraftChargeInformation(request);
   try {
-    const chargeVersionWorkflow = await getChargeVersionWorkflow(chargeVersionWorkflowId);
-    const chargeVersion = decorateChargeVersion(chargeVersionWorkflow);
-
-    request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, { ...chargeVersion, chargeVersionWorkflowId });
-    return chargeVersion;
+    if (!draftChargeInfo.changeReason) {
+      const chargeVersionWorkflow = await getChargeVersionWorkflow(chargeVersionWorkflowId);
+      draftChargeInfo = decorateChargeVersion(chargeVersionWorkflow);
+      request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, { ...draftChargeInfo, chargeVersionWorkflowId });
+    }
+    return draftChargeInfo;
   } catch (err) {
     return errorHandler(err, `Cannot load charge version workflow ${chargeVersionWorkflowId}`);
   }

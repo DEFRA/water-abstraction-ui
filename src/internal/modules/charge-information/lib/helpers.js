@@ -39,6 +39,9 @@ const getRedirectPath = (request, nextPageInFlowUrl) => {
   const { returnToCheckData, chargeVersionWorkflowId } = request.query;
   const isChargeInformationPage = isUrlChargeInformationPage(nextPageInFlowUrl);
   if (returnToCheckData && isChargeInformationPage) {
+    if (request.pre.draftChargeInformation.status === 'review') {
+      return routing.getReview(chargeVersionWorkflowId, request.params.licenceId);
+    }
     return routing.getCheckData(request.params.licenceId, { chargeVersionWorkflowId });
   }
   return nextPageInFlowUrl;
@@ -75,7 +78,8 @@ const prepareChargeInformation = (licenceId, chargeData) => ({
   licenceId,
   chargeVersion: {
     ...chargeData,
-    chargeElements: chargeData.chargeElements.map(element => omit(element, 'id'))
+    chargeElements: chargeData.chargeElements.map(element => omit(element, 'id')),
+    status: 'draft'
   }
 });
 

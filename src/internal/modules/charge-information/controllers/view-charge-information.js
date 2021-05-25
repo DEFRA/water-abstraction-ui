@@ -1,7 +1,8 @@
 const {
   getDefaultView,
   getLicencePageUrl,
-  getCurrentBillingAccountAddress
+  getCurrentBillingAccountAddress,
+  prepareChargeInformation
 } = require('../lib/helpers');
 const { get } = require('lodash');
 const forms = require('shared/lib/forms');
@@ -51,11 +52,11 @@ const getReviewChargeInformation = async (request, h) => {
     billingAccount,
     billingAccountAddress,
     licenceId: licence.id,
-    isEditable: draftChargeInformation.status === 'changes_requested',
+    isEditable: draftChargeInformation.status === 'changes_requested' || draftChargeInformation.status === 'review',
     isApprover,
     isChargeable,
     chargeVersionWorkflowId,
-    action: `/licences/${licence.id}/charge-information/check?chargeVersionWorkflowId=${request.params.chargeVersionWorkflowId}`,
+    action: `/licences/${licence.id}/charge-information/check?chargeVersionWorkflowId=${chargeVersionWorkflowId}`,
     reviewForm: reviewForm(request)
   });
 };
@@ -85,21 +86,22 @@ const postReviewChargeInformation = async (request, h) => {
       reviewForm: form
     });
   } else {
+    const preparedChargeInfo = prepareChargeInformation(licence.id, draftChargeInformation);
+    const patchObject = {
+      status: request.payload.reviewOutcome === 'approve' ? 'review' : request.payload.reviewOutcome,
+      approverComments: request.payload.reviewerComments || 'review',
+      chargeVersion: preparedChargeInfo.chargeVersion
+    };
+
+    await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(
+      request.params.chargeVersionWorkflowId,
+      patchObject
+    );
     if (request.payload.reviewOutcome === 'approve') {
       await services.water.chargeVersions.postCreateFromWorkflow(request.params.chargeVersionWorkflowId);
-    } else {
-      const patchObject = {
-        status: request.payload.reviewOutcome,
-        approverComments: request.payload.reviewerComments,
-        chargeVersion: {}
-      };
-      await services.water.chargeVersionWorkflows.patchChargeVersionWorkflow(
-        request.params.chargeVersionWorkflowId,
-        patchObject
-      );
     }
     // Clear session
-    request.clearDraftChargeInformation(licence.id);
+    request.clearDraftChargeInformation(licence.id, chargeVersionWorkflowId);
 
     return h.redirect(`/licences/${licence.id}#charge`);
   }

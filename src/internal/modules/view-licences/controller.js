@@ -7,6 +7,18 @@ const { scope } = require('../../lib/constants');
 const { hasScope } = require('../../lib/permissions');
 const { featureToggles } = require('../../config');
 
+const Entities = require('html-entities').AllHtmlEntities;
+const htmlEntityEncoder = new Entities();
+
+const htmlDecodeLicenceHolder = (obj) => {
+
+  if (obj.summary.hasOwnProperty('licenceHolderFullName')) {
+    obj.summary.licenceHolderFullName = htmlEntityEncoder.decode(obj.summary.licenceHolderFullName);
+  }
+
+  return obj;
+};
+
 const getDocumentId = doc => doc.document_id;
 
 /**
@@ -28,7 +40,8 @@ const getLicenceSummary = async (request, h) => {
     featureToggles,
     licenceId,
     documentId,
-    ...pick(request.pre, ['licence', 'bills', 'notifications', 'primaryUser', 'summary']),
+    ...pick(request.pre, ['licence', 'bills', 'notifications', 'primaryUser']),
+    ...htmlDecodeLicenceHolder(pick(request.pre, ['summary'])),
     chargeVersions: mappers.mapChargeVersions(chargeVersions, chargeVersionWorkflows),
     agreements: mappers.mapLicenceAgreements(agreements),
     returns: mappers.mapReturns(request, returns),

@@ -2,7 +2,7 @@
 
 const queryString = require('querystring');
 const { isEmpty } = require('lodash');
-const cleanObject = require('./clean-object');
+const cleanObject = require('../../../../shared/lib/clean-object');
 
 const createUrl = urlTail => (licenceId, queryParams = null) => {
   const url = `/licences/${licenceId}/charge-information/${urlTail}`;

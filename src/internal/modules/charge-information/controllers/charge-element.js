@@ -1,6 +1,6 @@
 'use-strict';
 
-const cleanObject = require('../lib/clean-object');
+const cleanObject = require('../../../../shared/lib/clean-object');
 
 const forms = require('../forms/charge-element/index');
 const routing = require('../lib/routing');

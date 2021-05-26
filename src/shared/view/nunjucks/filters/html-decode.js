@@ -9,8 +9,8 @@ const htmlEntityEncoder = new Entities();
  */
 
 const htmlDecode = str => {
-    console.log(JSON.stringify(str));
-    return htmlEntityEncoder.decode(str);
+  console.log(JSON.stringify(str));
+  return htmlEntityEncoder.decode(str);
 };
 
 exports.htmlDecode = htmlDecode;

@@ -37,13 +37,12 @@ const getDates = licence => {
   const startDate = moment(licence.startDate);
   const minDate = moment().subtract(6, 'years');
   const isLicenceStart = startDate.isAfter(minDate);
-  const ret = {
+  return {
     licenceStartDate: licence.startDate,
     minDate: isLicenceStart ? licence.startDate : minDate.format(ISO_FORMAT),
     minType: isLicenceStart ? MIN_LICENCE_START : MIN_6_YEARS,
     maxDate: licence.endDate || '3000-01-01'
   };
-  return ret;
 };
 
 const minErrors = {

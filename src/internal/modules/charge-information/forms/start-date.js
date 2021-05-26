@@ -37,12 +37,13 @@ const getDates = licence => {
   const startDate = moment(licence.startDate);
   const minDate = moment().subtract(6, 'years');
   const isLicenceStart = startDate.isAfter(minDate);
-  return {
+  const ret = {
     licenceStartDate: licence.startDate,
     minDate: isLicenceStart ? licence.startDate : minDate.format(ISO_FORMAT),
     minType: isLicenceStart ? MIN_LICENCE_START : MIN_6_YEARS,
     maxDate: licence.endDate || '3000-01-01'
   };
+  return ret;
 };
 
 const minErrors = {
@@ -111,6 +112,8 @@ const getChoices = (dates, values, refDate, isChargeable) => {
         : getCustomEffectiveDateField(dates, values.customDate)
     ]
   }];
+  // if it is a future dated licence remove the today option
+  if (moment(dates.licenceStartDate).isAfter(moment())) allChoices.shift();
 
   return dates.minType === MIN_LICENCE_START ? allChoices : pullAt(allChoices, [0, 3]);
 };

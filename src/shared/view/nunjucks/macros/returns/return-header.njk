@@ -58,11 +58,15 @@
           Abstraction period
         </dt>
         <dd class="meta__value">
-          {{ return.metadata.nald.periodStartDay }}
-          {{ return.metadata.nald.periodStartMonth | date('MMMM') }}
-          to
-          {{ return.metadata.nald.periodEndDay }}
-          {{ return.metadata.nald.periodEndMonth | date('MMMM') }}
+          {% if (return.metadata.nald.periodStartDay == "null" or return.metadata.nald.periodStartMonth == "null") %}
+            Not given
+          {% else %}
+            {{ return.metadata.nald.periodStartDay }}
+            {{ return.metadata.nald.periodStartMonth | date('MMMM') }}
+            to
+            {{ return.metadata.nald.periodEndDay }}
+            {{ return.metadata.nald.periodEndMonth | date('MMMM') }}
+          {% endif %}
         </dd>
       </div>
       <div class="meta__row">

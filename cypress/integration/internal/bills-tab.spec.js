@@ -32,10 +32,10 @@ describe('non-charging user unable to view bills tab', () => {
     });
   });
   it('sees the licence tabs and the bills tab is not shown', () => {
-    cy.get('ul.govuk-tabs__list').children().should('have.length', '2');
+    cy.get('ul.govuk-tabs__list').children().should('have.length', '3');
     cy.get('#tab_summary').should('have.text', 'Summary');
+    cy.get('#tab_returns').should('have.text', 'Returns');
     cy.get('#tab_communications').should('have.text', 'Communications');
-    cy.get('ul.govuk-tabs__list').children().should('not.contain', 'Returns');
     cy.get('ul.govuk-tabs__list').children().should('not.contain', 'Bills');
     cy.get('ul.govuk-tabs__list').children().should('not.contain', 'Charge Information');
   });
@@ -71,11 +71,11 @@ describe('B&D user able to view bills tab', () => {
       cy.contains(LICENCE_NUMBER).should('be.visible');
     });
   });
-  it('sees the licence tabs and the returns tab is not shown', () => {
-    cy.get('ul.govuk-tabs__list').children().should('have.length', '4');
+  it('sees the licence tabs Summary, returns, communications, bills and charge information', () => {
+    cy.get('ul.govuk-tabs__list').children().should('have.length', '5');
     cy.get('#tab_summary').should('have.text', 'Summary');
+    cy.get('#tab_returns').should('have.text', 'Returns');
     cy.get('#tab_communications').should('have.text', 'Communications');
-    cy.get('ul.govuk-tabs__list').children().should('not.contain', 'Returns');
     cy.get('ul.govuk-tabs__list').children().should('be.visible', 'Bills');
     cy.get('ul.govuk-tabs__list').children().should('be.visible', 'Charge Information');
   });

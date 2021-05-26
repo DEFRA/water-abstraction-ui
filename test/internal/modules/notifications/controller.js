@@ -127,7 +127,7 @@ const configData = {
   },
   subtype: 'hof-stop'
 };
-experiment('modules/notifications/controller', async () => {
+experiment('modules/notifications/controller', () => {
   beforeEach(() => {
     sandbox.stub(services.water.taskConfigs, 'findOne').resolves({ data: configData });
     sandbox.stub(services.idm.users, 'findOne').resolves({ data: { user_data: userData } });
@@ -135,7 +135,7 @@ experiment('modules/notifications/controller', async () => {
   afterEach(async () => {
     await sandbox.restore();
   });
-  experiment('.getStep', async () => {
+  experiment('.getStep', () => {
     test('returns the expected template and view context when start is undefined', async () => {
       const request = getRequest({});
       await getStep(request, h);
@@ -148,7 +148,7 @@ experiment('modules/notifications/controller', async () => {
       expect(view.pageTitle).to.equal(configData.config.title);
     });
   });
-  experiment('.getStartFlow', async () => {
+  experiment('.getStartFlow', () => {
     test('redirects to expected url if contact details not set', async () => {
       const request = getRequest({ start: 1 });
       await getStep(request, h);

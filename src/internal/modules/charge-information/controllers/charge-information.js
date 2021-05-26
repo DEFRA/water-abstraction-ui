@@ -19,12 +19,15 @@ const chargeInformationValidator = require('../lib/charge-information-validator'
 const { CHARGE_ELEMENT_FIRST_STEP, CHARGE_ELEMENT_STEPS } = require('../lib/charge-elements/constants');
 const services = require('../../../lib/connectors/services');
 const { reducer } = require('../lib/reducer');
+const { reviewForm } = require('../forms/review');
+const { chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope;
+const { hasScope } = require('internal/lib/permissions');
 
 /**
  * Select the reason for the creation of a new charge version
  */
 const getReason = async (request, h) => {
-  const licenceUrl = await getLicencePageUrl(request.pre.licence, true);
+  const licenceUrl = getLicencePageUrl(request.pre.licence);
   return h.view('nunjucks/form.njk', {
     ...getDefaultView(request, licenceUrl, forms.reason),
     pageTitle: 'Select reason for new charge information'
@@ -135,6 +138,11 @@ const getHandleBillingAccount = async (request, h) => {
   request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, nextState);
 
   // Redirect to next page in flow
+
+  if (returnToCheckData && currentState.status === 'review') {
+    return h.redirect(routing.getReview(chargeVersionWorkflowId, licenceId));
+  }
+
   const path = returnToCheckData
     ? routing.getCheckData(licenceId, { chargeVersionWorkflowId })
     : routing.getUseAbstractionData(licenceId, { chargeVersionWorkflowId });
@@ -178,6 +186,7 @@ const getCheckData = async (request, h) => {
     ? routing.getUseAbstractionData(licenceId, request.query)
     : routing.getEffectiveDate(licenceId, request.query);
 
+  const isApprover = hasScope(request, chargeVersionWorkflowReviewer);
   const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount);
   const editChargeVersionWarning = await isOverridingChargeVersion(request, draftChargeInformation.dateRange.startDate);
   const action = routing.getCheckData(licenceId, request.query);
@@ -193,7 +202,9 @@ const getCheckData = async (request, h) => {
     isChargeable,
     isEditable: true,
     isXlHeading: true,
-    editChargeVersionWarning
+    editChargeVersionWarning,
+    isApprover,
+    reviewForm: reviewForm(request)
   };
 
   return h.view('nunjucks/charge-information/view.njk', view);
@@ -203,7 +214,6 @@ const updateDraftChargeInformation = async (request, h) => {
   const { licence: { id }, draftChargeInformation, isChargeable } = request.pre;
 
   const preparedChargeInfo = prepareChargeInformation(id, draftChargeInformation);
-  preparedChargeInfo.chargeVersion['status'] = 'draft';
   const patchObject = {
     status: 'review',
     approverComments: preparedChargeInfo.chargeVersion.approverComments,
@@ -213,6 +223,7 @@ const updateDraftChargeInformation = async (request, h) => {
     preparedChargeInfo.chargeVersion.chargeVersionWorkflowId,
     patchObject
   );
+  request.clearDraftChargeInformation(id, preparedChargeInfo.chargeVersion.chargeVersionWorkflowId);
   const route = routing.getSubmitted(id, { chargeable: isChargeable });
   return h.redirect(route);
 };
@@ -221,7 +232,6 @@ const submitDraftChargeInformation = async (request, h) => {
   const { licence: { id }, draftChargeInformation, isChargeable } = request.pre;
   const { chargeVersionWorkflowId } = request.query;
   const preparedChargeInfo = prepareChargeInformation(id, draftChargeInformation);
-  preparedChargeInfo.chargeVersion['status'] = 'draft';
   const { user_id: userId, user_name: userName } = get(request, 'defra.user');
   if (isEmpty(chargeVersionWorkflowId)) {
     await services.water.chargeVersionWorkflows.postChargeVersionWorkflow(preparedChargeInfo);
@@ -291,13 +301,14 @@ const postCancelData = async (request, h) => {
 const getSubmitted = async (request, h) => {
   const { licence } = request.pre;
   const { chargeable: isChargeable } = request.query;
-  const licencePageUrl = await getLicencePageUrl(licence, true);
+  const licencePageUrl = getLicencePageUrl(licence);
 
   return h.view('nunjucks/charge-information/submitted.njk', {
     ...getDefaultView(request),
     pageTitle: 'Charge information complete',
     licencePageUrl,
-    isChargeable
+    isChargeable,
+    createAgreementUrl: `/licences/${licence.id}/agreements/select-type`
   });
 };
 

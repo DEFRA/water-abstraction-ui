@@ -53,9 +53,6 @@ const getBillingBatchInvoice = async (request, h) => {
     services.water.billingBatches.getBatchInvoice(batchId, invoiceId)
   ]);
 
-  const licenceNumbers = invoice.invoiceLicences.map(invoiceLicence => invoiceLicence.licence.licenceNumber);
-  const documentIds = await services.crm.documents.getDocumentIdMap(licenceNumbers);
-
   return h.view('nunjucks/billing/batch-invoice', {
     ...request.view,
     back: `/billing/batch/${batchId}/summary`,
@@ -64,7 +61,7 @@ const getBillingBatchInvoice = async (request, h) => {
     financialYearEnding: invoice.financialYear.yearEnding,
     batch,
     batchType: mappers.mapBatchType(batch.type),
-    invoiceLicences: mappers.mapInvoiceLicences(invoice, documentIds),
+    invoiceLicences: mappers.mapInvoiceLicences(invoice),
     isCredit: get(invoice, 'totals.netTotal', 0) < 0,
     caption: `Billing account ${invoice.invoiceAccount.accountNumber}`,
     errors: mappers.mapInvoiceLevelErrors(invoice),

@@ -9,6 +9,6 @@ module.exports = {
     server.dependency('licenceDataPlugin');
 
     // Import routes
-    server.route(routes(options.allowedScopes));
+    server.route(routes(options.allowedScopes, options.isSummaryPageEnabled));
   }
 };

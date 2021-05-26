@@ -1,14 +1,14 @@
-{% from "returns/return-purposes.njk" import returnPurposes %}
+{% from "returns/return-purposes.njk" import returnRequirementPurposes %}
 
 {% macro returnLink(return) %}
   {% if return.path %}
   <a href="{{ return.path }}">
     <span class="govuk-visually-hidden">{{ return.badge.text }} return</span>
-    {{ return.return_requirement }}
-    <span class="govuk-visually-hidden">due {{ return.due_date | date }}</span>
+     {{ return.returnRequirement.legacyId }}
+    <span class="govuk-visually-hidden">due {{ return.dueDate | date }}</span>
   </a>
   {% else %}
-    {{ return.return_requirement }}
+    {{ return.returnRequirement.legacyId }}
   {% endif %}
 {% endmacro %}
 
@@ -19,10 +19,10 @@
     {{ returnLink(return) }}
   </td>
   <td class="govuk-table__cell">
-    {{ returnPurposes(return) }}
+    {{ returnRequirementPurposes(return) }}
   </td>
   <td class="govuk-table__cell">
-    {{ return.due_date | date }}
+    {{ return.dueDate | date }}
   </td>
   <td class="govuk-table__cell">
     {{ badge(return | returnBadge) }}
@@ -37,7 +37,7 @@
     {{ returnLink(return) }}
   </h3>
 
-  <p>{{ returnPurposes(return) }}
+  <p>{{ returnRequirementPurposes(return) }}
     <br /><span class="govuk-caption-m link--no-underline">Due {{ return.due_date | date }}</span>
   </p>
 
@@ -47,10 +47,12 @@
 
 <h2 class="govuk-heading-l">Returns</h2>
 
-{% for return in returns %}
+{% for return in returns.data %}
   {{ returnRowMobile(return) }}
 {% endfor %}
 
+
+{% if returns.data.length %}
 
 <table class="govuk-table phone--hide">
   <thead class="govuk-table__head">
@@ -62,17 +64,21 @@
     </tr>
   </thead>
   <tbody class="govuk-table__body">
-    {% for return in returns %}
+    {% for return in returns.data %}
       {{ returnRow(return) }}
     {% endfor %}
   </tbody>
 </table>
 
+{% else %}
+  <p>No returns for this licence.</p>
+{% endif %}
 
 <hr class="phone--show govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
-{% if hasMoreReturns %}
+
+{% if returns.pagination | hasMorePages %}
 <p>
-  <a href="/licences/{{ documentId }}/returns">View all returns</a>
+  <a href="{{ links.returns }}">View all returns</a>
 </p>
 {% endif %}

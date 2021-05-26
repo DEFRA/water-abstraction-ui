@@ -95,7 +95,7 @@ experiment('src/internal/modules/address-entry/controller.js', () => {
       request.path = `/address-entry/${KEY}/postcode`;
     });
 
-    experiment('when the postcode form is not submitted', async () => {
+    experiment('when the postcode form is not submitted', () => {
       beforeEach(async () => {
         await controller.getPostcode(request, h);
       });
@@ -114,7 +114,7 @@ experiment('src/internal/modules/address-entry/controller.js', () => {
       });
     });
 
-    experiment('when the postcode form is valid', async () => {
+    experiment('when the postcode form is valid', () => {
       beforeEach(async () => {
         request.query.postcode = POSTCODE;
         await controller.getPostcode(request, h);
@@ -141,7 +141,7 @@ experiment('src/internal/modules/address-entry/controller.js', () => {
       request.path = `/address-entry/${KEY}/postcode`;
     });
 
-    experiment('when the form is invalid', async () => {
+    experiment('when the form is invalid', () => {
       beforeEach(async () => {
         await controller.postSelectAddress(request, h);
       });
@@ -151,7 +151,7 @@ experiment('src/internal/modules/address-entry/controller.js', () => {
       });
     });
 
-    experiment('when the form is valid', async () => {
+    experiment('when the form is valid', () => {
       beforeEach(async () => {
         request.payload = {
           uprn: UPRN,
@@ -202,7 +202,7 @@ experiment('src/internal/modules/address-entry/controller.js', () => {
       request.method = 'post';
     });
 
-    experiment('when the form is invalid', async () => {
+    experiment('when the form is invalid', () => {
       beforeEach(async () => {
         await controller.postManualAddressEntry(request, h);
       });
@@ -212,7 +212,7 @@ experiment('src/internal/modules/address-entry/controller.js', () => {
       });
     });
 
-    experiment('when the form is valid', async () => {
+    experiment('when the form is valid', () => {
       beforeEach(async () => {
         request.payload = {
           ...ADDRESS,
@@ -242,7 +242,7 @@ experiment('src/internal/modules/address-entry/controller.js', () => {
   });
 
   experiment('.getSelectCompanyAddress', () => {
-    experiment('when there are no addresses for the company', async () => {
+    experiment('when there are no addresses for the company', () => {
       beforeEach(async () => {
         request.pre.addresses = [];
         await controller.getSelectCompanyAddress(request, h);
@@ -255,7 +255,7 @@ experiment('src/internal/modules/address-entry/controller.js', () => {
       });
     });
 
-    experiment('when there are >0 addresses for the company', async () => {
+    experiment('when there are >0 addresses for the company', () => {
       beforeEach(async () => {
         await controller.getSelectCompanyAddress(request, h);
       });
@@ -280,7 +280,7 @@ experiment('src/internal/modules/address-entry/controller.js', () => {
       request.method = 'post';
     });
 
-    experiment('when the form is invalid', async () => {
+    experiment('when the form is invalid', () => {
       beforeEach(async () => {
         await controller.postSelectCompanyAddress(request, h);
       });
@@ -290,7 +290,7 @@ experiment('src/internal/modules/address-entry/controller.js', () => {
       });
     });
 
-    experiment('when the selected address is an existing address', async () => {
+    experiment('when the selected address is an existing address', () => {
       beforeEach(async () => {
         request.payload = {
           selectedAddress: ADDRESS_ID,
@@ -315,7 +315,7 @@ experiment('src/internal/modules/address-entry/controller.js', () => {
       });
     });
 
-    experiment('when the option to enter a new address is selected', async () => {
+    experiment('when the option to enter a new address is selected', () => {
       beforeEach(async () => {
         request.payload = {
           selectedAddress: 'new_address',
@@ -360,7 +360,7 @@ experiment('src/internal/modules/address-entry/controller.js', () => {
       request.method = 'post';
     });
 
-    experiment('when the form is invalid', async () => {
+    experiment('when the form is invalid', () => {
       beforeEach(async () => {
         await controller.postUseRegisteredAddress(request, h);
       });
@@ -370,7 +370,7 @@ experiment('src/internal/modules/address-entry/controller.js', () => {
       });
     });
 
-    experiment('when the user selects "yes"', async () => {
+    experiment('when the user selects "yes"', () => {
       beforeEach(async () => {
         request.payload = {
           useRegisteredAddress: 'true',
@@ -392,7 +392,7 @@ experiment('src/internal/modules/address-entry/controller.js', () => {
       });
     });
 
-    experiment('when the user selects "no"', async () => {
+    experiment('when the user selects "no"', () => {
       beforeEach(async () => {
         request.payload = {
           useRegisteredAddress: 'false',

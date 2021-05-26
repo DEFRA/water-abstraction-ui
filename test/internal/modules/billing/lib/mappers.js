@@ -1,6 +1,7 @@
 'use strict';
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
+const uuid = require('uuid/v4');
 
 const mappers = require('internal/modules/billing/lib/mappers');
 
@@ -32,12 +33,14 @@ const batch = {
 
 const LICENCE_1 = '01/123/456/A';
 const LICENCE_2 = '02/345/678/B';
+const LICENCE_ID = uuid();
 
 const invoice = {
   invoiceLicences: [
     {
       id: 'test-invoice-licence-id-1',
       licence: {
+        id: LICENCE_ID,
         licenceNumber: LICENCE_1
       },
       transactions: [{
@@ -247,7 +250,7 @@ experiment('modules/billing/lib/mappers', () => {
         data = result[0];
       });
       test('has the correct link', async () => {
-        expect(data.link).to.equal('/licences/7d6a672f-1d3a-414a-81f7-69e66ff1381c');
+        expect(data.link).to.equal(`/licences/${LICENCE_ID}`);
       });
 
       test('has 1 x charge element', async () => {
@@ -319,7 +322,7 @@ experiment('modules/billing/lib/mappers', () => {
           expect(data.transactionGroups.length).to.equal(2);
         });
 
-        experiment('the first charge element', async () => {
+        experiment('the first charge element', () => {
           test('has 1 x transaction', async () => {
             expect(data.transactionGroups[0].transactions).to.have.length(1);
           });
@@ -424,28 +427,6 @@ experiment('modules/billing/lib/mappers', () => {
         accountNumber: 'B00000000B',
         financialYearEnding: 2019
       }]);
-    });
-  });
-
-  experiment('.mapReturnCycle', () => {
-    test('maps a winter/all year billing volume', async () => {
-      const str = mappers.mapReturnCycle({
-        isSummer: false,
-        financialYear: {
-          yearEnding: 2022
-        }
-      });
-      expect(str).to.equal('Winter and all year 2022');
-    });
-
-    test('maps a summer billing volume', async () => {
-      const str = mappers.mapReturnCycle({
-        isSummer: true,
-        financialYear: {
-          yearEnding: 2022
-        }
-      });
-      expect(str).to.equal('Summer 2022');
     });
   });
 });

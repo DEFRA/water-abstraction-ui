@@ -4,3 +4,10 @@
     {{ purpose.alias | titleCase if purpose.alias else purpose.tertiary.description | titleCase }}
   {% endfor %}
 {% endmacro %}
+
+{% macro returnRequirementPurposes(return) %}
+  {% for purpose in return.returnRequirement.returnRequirementPurposes %}
+    {{ ', ' if not loop.first }}
+    {{ purpose.purposeAlias | titleCase if purpose.purposeAlias else purpose.purposeUse.name | titleCase }}
+  {% endfor %}
+{% endmacro %}

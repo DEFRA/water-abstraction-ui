@@ -146,8 +146,9 @@ experiment('internal/modules/charge-information/routes', () => {
     });
 
     test('has the expected pre handlers', async () => {
-      expect(routes.postStartDate.options.pre[0].method).to.equal(preHandlers.loadLicence);
-      expect(routes.postStartDate.options.pre[0].assign).to.equal('licence');
+      expect(routes.postStartDate.options.pre[0].method).to.equal(preHandlers.loadDraftChargeInformation);
+      expect(routes.postStartDate.options.pre[1].method).to.equal(preHandlers.loadLicence);
+      expect(routes.postStartDate.options.pre[1].assign).to.equal('licence');
     });
   });
 

@@ -1,6 +1,9 @@
+'use strict';
+
 const Joi = require('@hapi/joi');
 const controller = require('../controllers/view');
 const { scope } = require('../../../lib/constants');
+const licencePreHandlers = require('shared/lib/pre-handlers/licences');
 
 const allowedScopes = [scope.licenceHolder, scope.colleague, scope.colleagueWithReturns];
 
@@ -49,7 +52,11 @@ module.exports = {
           activeNavLink: 'returns',
           showMeta: true
         }
-      }
+      },
+      pre: [{
+        method: licencePreHandlers.getLicenceByReturnId,
+        assign: 'licence'
+      }]
     }
   }
 };

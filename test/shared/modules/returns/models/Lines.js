@@ -67,7 +67,7 @@ const createInvalidLines = () => createLines().map(line => ({
 }));
 
 experiment('Lines model', () => {
-  experiment('constructor', async () => {
+  experiment('constructor', () => {
     test('generates required lines if none supplied', async () => {
       const lines = new Lines([], createOptions());
       expect(lines.lines.length).to.equal(12);
@@ -117,7 +117,7 @@ experiment('Lines model', () => {
     });
   });
 
-  experiment('setLines', async () => {
+  experiment('setLines', () => {
     let lines;
 
     const abstractionPeriod = {

@@ -112,7 +112,7 @@ const getChoices = (dates, values, refDate, isChargeable) => {
     ]
   }];
   // if it is a future dated licence remove the today option
-  if (moment(dates.licenceStartDate).isAfter(moment())) allChoices.shift();
+  if (moment(dates.licenceStartDate).isAfter(moment())) { allChoices.shift(); }
 
   return dates.minType === MIN_LICENCE_START ? allChoices : pullAt(allChoices, [0, 3]);
 };

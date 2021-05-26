@@ -6,8 +6,9 @@ const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').scri
 const { form, schema } = require('internal/modules/charge-information/forms/start-date');
 const { findField, findButton } = require('../../../../lib/form-test');
 const Joi = require('@hapi/joi');
+const moment = require('moment');
 
-const createRequest = (startDate, isChargeable = true) => ({
+const createRequest = (startDate, isChargeable = true, licenceStart = '2016-04-01') => ({
   view: {
     csrfToken: 'token'
   },
@@ -15,7 +16,7 @@ const createRequest = (startDate, isChargeable = true) => ({
   pre: {
     licence: {
       id: 'test-licence-id',
-      startDate: '2016-04-01',
+      startDate: licenceStart,
       endDate: '2030-03-31'
     },
     draftChargeInformation: {
@@ -80,6 +81,14 @@ experiment('internal/modules/charge-information/forms/start-date', () => {
       });
     });
 
+    experiment('when the licence start date is in the future', () => {
+      test('the today start option is removed', () => {
+        const dateForm = form(createRequest(moment(), true, moment().add(1, 'months').format('YYYY-MM-DD')));
+        const radio = findField(dateForm, 'startDate');
+        expect(radio.options.choices[0].label === 'Today').to.be.false();
+      });
+    });
+
     experiment('when the licence is set to be non-chargeable', () => {
       let dateForm;
 
@@ -130,6 +139,14 @@ experiment('internal/modules/charge-information/forms/start-date', () => {
           expect(errors['date.base'].message).to.equal('Enter a real date for the effective date');
           expect(errors['date.min'].message).to.equal('You must enter a date after the licence start date');
           expect(errors['date.max'].message).to.equal('You must enter a date before the licence end date');
+        });
+
+        experiment('when the licence start date is in the future', () => {
+          test('the today start option is removed', () => {
+            const dateForm = form(createRequest(moment(), false, moment().add(1, 'months').format('YYYY-MM-DD')));
+            const radio = findField(dateForm, 'startDate');
+            expect(radio.options.choices[0].label === 'Today').to.be.false();
+          });
         });
       });
     });

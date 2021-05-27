@@ -150,7 +150,7 @@ experiment('internal/modules/charge-information/forms/start-date', () => {
         });
         experiment('when the licence end date is in the past i.e. expired', () => {
           test('the today start option is removed', () => {
-            const dateForm = form(createRequest(moment(), false, moment().add(-1, 'years').format('YYYY-MM-DD'), moment().add(-1, 'months').format('YYYY-MM-DD')));
+            const dateForm = form(createRequest(moment(), false, moment().subtract(1, 'years').format('YYYY-MM-DD'), moment().subtract(1, 'months').format('YYYY-MM-DD')));
             const radio = findField(dateForm, 'startDate');
             expect(radio.options.choices[0].label === 'Today').to.be.false();
           });

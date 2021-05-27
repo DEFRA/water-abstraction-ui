@@ -112,11 +112,20 @@ const getChoices = (dates, values, refDate, isChargeable) => {
     ]
   }];
   // if it is a future dated licence remove the today option
-  if (moment(dates.licenceStartDate).isAfter(moment())) {
+  if (moment(dates.licenceStartDate).isAfter(moment()) || moment(dates.maxDate).isBefore(moment())) {
     allChoices.shift();
   }
 
-  return dates.minType === MIN_LICENCE_START ? allChoices : pullAt(allChoices, [0, 3]);
+  if (dates.minType === MIN_LICENCE_START) {
+    return allChoices;
+  } else {
+    if (allChoices[0].value === 'licenceStartDate') {
+      allChoices[2].label = 'Custom date';
+      return [allChoices[2]];
+    } else {
+      return pullAt(allChoices, [0, 3]);
+    }
+  }
 };
 
 /**

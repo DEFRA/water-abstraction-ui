@@ -8,7 +8,7 @@ const { findField, findButton } = require('../../../../lib/form-test');
 const Joi = require('@hapi/joi');
 const moment = require('moment');
 
-const createRequest = (startDate, isChargeable = true, licenceStart = '2016-04-01') => ({
+const createRequest = (startDate, isChargeable = true, licenceStart = '2016-04-01', licenceEnd = '2030-03-31') => ({
   view: {
     csrfToken: 'token'
   },
@@ -17,7 +17,7 @@ const createRequest = (startDate, isChargeable = true, licenceStart = '2016-04-0
     licence: {
       id: 'test-licence-id',
       startDate: licenceStart,
-      endDate: '2030-03-31'
+      endDate: licenceEnd
     },
     draftChargeInformation: {
       dateRange: {
@@ -144,6 +144,13 @@ experiment('internal/modules/charge-information/forms/start-date', () => {
         experiment('when the licence start date is in the future', () => {
           test('the today start option is removed', () => {
             const dateForm = form(createRequest(moment(), false, moment().add(1, 'months').format('YYYY-MM-DD')));
+            const radio = findField(dateForm, 'startDate');
+            expect(radio.options.choices[0].label === 'Today').to.be.false();
+          });
+        });
+        experiment('when the licence end date is in the past i.e. expired', () => {
+          test('the today start option is removed', () => {
+            const dateForm = form(createRequest(moment(), false, moment().add(-1, 'years').format('YYYY-MM-DD'), moment().add(-1, 'months').format('YYYY-MM-DD')));
             const radio = findField(dateForm, 'startDate');
             expect(radio.options.choices[0].label === 'Today').to.be.false();
           });

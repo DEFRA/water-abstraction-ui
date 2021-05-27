@@ -31,7 +31,7 @@ const getLicenceSummary = async (request, h) => {
     documentId,
     ...pick(request.pre, ['licence', 'bills', 'notifications', 'primaryUser', 'summary']),
     chargeVersions: mappers.mapChargeVersions(chargeVersions, chargeVersionWorkflows),
-    createChargeVersions: moment(licence.endDate).isAfter(moment().subtract(6, 'years')),
+    createChargeVersions: moment(licence.endDate).isAfter(moment().subtract(6, 'years')) || licence.endDate === null,
     agreements: mappers.mapLicenceAgreements(agreements),
     returns: mappers.mapReturns(request, returns),
     links: {

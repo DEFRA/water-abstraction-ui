@@ -89,6 +89,22 @@ experiment('internal/modules/charge-information/forms/start-date', () => {
       });
     });
 
+    experiment('when the licence end date is in the past i.e. expired', () => {
+      test('the today start option is removed', () => {
+        const dateForm = form(createRequest(moment(), true, moment().subtract(8, 'years').format('YYYY-MM-DD'), moment().subtract(1, 'months').format('YYYY-MM-DD')));
+        const radio = findField(dateForm, 'startDate');
+        expect(radio.options.choices[0].label === 'Today').to.be.false();
+      });
+    });
+
+    experiment('when the licence is not future dated or expired', () => {
+      test('the today start option is available', () => {
+        const dateForm = form(createRequest(moment(), true, moment().subtract(8, 'years').format('YYYY-MM-DD'), moment().add(1, 'months').format('YYYY-MM-DD')));
+        const radio = findField(dateForm, 'startDate');
+        expect(radio.options.choices[0].label === 'Today').to.be.true();
+      });
+    });
+
     experiment('when the licence is set to be non-chargeable', () => {
       let dateForm;
 

@@ -7,6 +7,7 @@ const {
   before
 } = exports.lab = require('@hapi/lab').script();
 
+const moment = require('moment');
 const sandbox = require('sinon').createSandbox();
 const uuid = require('uuid/v4');
 
@@ -200,6 +201,22 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
     test('includes a back link', async () => {
       const [, { back }] = h.view.lastCall.args;
       expect(back).to.equal('/licences');
+    });
+    experiment('when the licence has ended less than 6 years ago', () => {
+      test('createChargeVersions flag is true', async () => {
+        request.pre.licence.endDate = moment().add(-5, 'years');
+        await controller.getLicenceSummary(request, h);
+        const [, { createChargeVersions }] = h.view.lastCall.args;
+        expect(createChargeVersions).to.be.true();
+      });
+    });
+    experiment('when the licence has ended more than 6 years ago', () => {
+      test('createChargeVersions flag is false', async () => {
+        request.pre.licence.endDate = moment().add(-7, 'years');
+        await controller.getLicenceSummary(request, h);
+        const [, { createChargeVersions }] = h.view.lastCall.args;
+        expect(createChargeVersions).to.be.false();
+      });
     });
   });
 

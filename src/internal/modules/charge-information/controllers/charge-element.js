@@ -1,12 +1,10 @@
 'use-strict';
 
-<<<<<<< HEAD
+const { get } = require('lodash');
+
 const cleanObject = require('../../../../shared/lib/clean-object');
 
-=======
-const { get } = require('lodash');
 const { getChargeElementData } = require('../lib/form-helpers');
->>>>>>> Allow TPT agreement to be overridden at element level
 const forms = require('../forms/charge-element/index');
 const routing = require('../lib/routing');
 const { getDefaultView, getPostedForm, applyFormResponse } = require('../lib/helpers');

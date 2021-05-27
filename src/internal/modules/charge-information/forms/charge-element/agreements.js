@@ -3,6 +3,8 @@
 const Joi = require('@hapi/joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const { getChargeElementData } = require('../../lib/form-helpers');
+const { CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants');
+const { getChargeElementActionUrl } = require('../../lib/form-helpers');
 
 const getRadioChoices = () => [{
   value: true,
@@ -36,7 +38,8 @@ const form = request => {
   const { csrfToken } = request.view;
   const { licence: { licenceNumber } } = request.pre;
 
-  const f = formFactory(request.path, 'POST');
+  const action = getChargeElementActionUrl(request, CHARGE_ELEMENT_STEPS.agreements);
+  const f = formFactory(action, 'POST');
 
   const { isSection127AgreementEnabled } = getChargeElementData(request);
   f.fields.push(

@@ -7,6 +7,7 @@ const ChargeVersionsService = require('shared/lib/connectors/services/water/Char
 const ChargeVersionWorkflowsService = require('shared/lib/connectors/services/water/ChargeVersionWorkflowsService');
 
 // Internal services (possibly unique, or overriding shared)
+const ApplicationStateService = require('./ApplicationStateService');
 const ReturnsService = require('./ReturnsService');
 const BatchNotificationsService = require('./BatchNotificationsService');
 const ChangeReasonsService = require('./ChangeReasonsService');
@@ -49,6 +50,7 @@ module.exports = config => ({
   // Internal services
   addressSearch: new AddressSearchService(config.services.water, logger),
   agreements: new AgreementsService(config.services.water, logger),
+  applicationState: new ApplicationStateService(config.services.water, logger),
   batchNotifications: new BatchNotificationsService(config.services.water, logger),
   billingBatches: new BillingBatchService(config.services.water, logger),
   billingInvoices: new BillingInvoiceService(config.services.water, logger),

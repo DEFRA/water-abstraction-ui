@@ -19,6 +19,7 @@ const agreementsRoutes = require('./agreements/routes');
 const reportingRoutes = require('./reporting/routes');
 const kpiReporting = require('../../internal/modules/kpi-reporting/routes');
 const viewLicences = require('./view-licences/routes');
+const settingsRoutes = require('./settings/routes');
 
 module.exports = [
   ...Object.values(coreRoutes),
@@ -42,5 +43,6 @@ module.exports = [
   ...Object.values(agreementsRoutes),
   ...Object.values(reportingRoutes),
   ...Object.values(kpiReporting),
-  ...Object.values(viewLicences)
+  ...Object.values(viewLicences),
+  ...Object.values(settingsRoutes)
 ];

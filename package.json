@@ -1,6 +1,6 @@
 {
   "name": "water-abstraction-ui",
-  "version": "1.73.0",
+  "version": "1.74.0",
   "description": "Web app for Water Abstraction service",
   "main": "index.js",
   "repository": {
@@ -118,6 +118,7 @@
     "moment-range": "^4.0.2",
     "moment-timezone": "^0.5.33",
     "nunjucks": "^3.2.3",
+    "parse-domain": "^3.0.3",
     "path": "^0.12.7",
     "pg": "^7.18.2",
     "pg-boss": "^3.2.2",

@@ -5,8 +5,8 @@ const { isEmpty } = require('lodash');
 const cleanObject = require('../../../../shared/lib/clean-object');
 
 const createUrl = urlTail => (licenceId, queryParams = null) => {
-  const url = `/licences/${licenceId}/charge-information/${urlTail}`;
   const qp = cleanObject(queryParams);
+  const url = `/licences/${licenceId}/charge-information/${urlTail}`;
   return isEmpty(qp) ? url : `${url}?${queryString.stringify(qp)}`;
 };
 

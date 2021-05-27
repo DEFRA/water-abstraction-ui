@@ -17,7 +17,7 @@ experiment('getSearchForm', () => {
   const baseRequest = {
     auth: {
       credentials: {
-        scope: [scope.internal, scope.returns]
+        scope: [scope.internal, scope.returns, scope.billing]
       }
     },
     query: {},
@@ -77,8 +77,26 @@ experiment('getSearchForm', () => {
     const request = set(cloneDeep(baseRequest), 'query.query', returnId);
     await controller.getSearchForm(request, h);
 
-    const [ path ] = h.redirect.firstCall.args;
+    const [path] = h.redirect.firstCall.args;
     expect(path).to.equal(`/return/internal?returnId=${returnId}`);
+  });
+
+  test('It should redirect if user searches for exact billing account ref', async () => {
+    const billingAccountRef = 'Y12232313A';
+    const invoiceAccountId = 'some-guid';
+    sandbox.restore();
+    sandbox.stub(services.water.internalSearch, 'getInternalSearchResults').resolves({
+      billingAccount: {
+        invoiceAccountId
+      }
+    });
+
+    const request = set(cloneDeep(baseRequest), 'query.query', billingAccountRef);
+    await controller.getSearchForm(request, h);
+
+    const [path] = h.redirect.firstCall.args;
+
+    expect(path).to.equal(`/billing-accounts/${invoiceAccountId}`);
   });
 });
 
@@ -192,7 +210,8 @@ experiment('postUpdatePermissions', () => {
       },
       view: {
         csrfToken: '12345678-0000-test-0000-000000000000'
-      } };
+      }
+    };
 
     h = {
       view: sandbox.spy(),
@@ -237,7 +256,8 @@ experiment('getUpdateSuccessful', () => {
       },
       payload: {
         permission: 'billing_and_data'
-      } };
+      }
+    };
 
     h = {
       view: sandbox.spy()
@@ -261,7 +281,11 @@ experiment('getUpdateSuccessful', () => {
   });
 
   test('view contains email and permissions of updated user', async () => {
-    services.idm.users.findOneById.resolves({ user_name: 'test@defra.gov.uk', roles: [], groups: ['billing_and_data'] });
+    services.idm.users.findOneById.resolves({
+      user_name: 'test@defra.gov.uk',
+      roles: [],
+      groups: ['billing_and_data']
+    });
     await controller.getUpdateSuccessful(request, h);
     const [permissionLabelText] = permissionsChoices.filter(choice => choice.value === request.payload.permission);
     const [, view] = h.view.lastCall.args;

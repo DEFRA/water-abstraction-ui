@@ -708,7 +708,7 @@ experiment('internal/modules/charge-information/controller', () => {
       expect(args.back).to.equal('/licences/test-licence-id/charge-information/start-date');
       expect(args.caption).to.equal('Licence 01/123');
       expect(args.key).to.equal('charge-information-test-licence-id-test-cv-workflow-id');
-      expect(args.redirectPath).to.equal('/licences/test-licence-id/charge-information/set-billing-account?chargeVersionWorkflowId=test-cv-workflow-id');
+      expect(args.redirectPath).to.equal('/licences/test-licence-id/charge-information/set-billing-account?returnToCheckData=false&chargeVersionWorkflowId=test-cv-workflow-id');
     });
   });
 

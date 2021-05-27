@@ -76,16 +76,16 @@ const getTransactionGroups = transactions => {
    * @param {Object} invoice - payload from water service invoice detail call
    * @param {Map} documentIds - map of licence numbers / CRM document IDs
    */
-const mapInvoiceLicences = (invoice, documentIds) =>
+const mapInvoiceLicences = invoice =>
   invoice.invoiceLicences.map(invoiceLicence => {
-    const { licenceNumber } = invoiceLicence.licence;
+    const { licenceNumber, id: licenceId } = invoiceLicence.licence;
     const { id, hasTransactionErrors, transactions } = invoiceLicence;
 
     return {
       id,
       licenceNumber,
       hasTransactionErrors,
-      link: `/licences/${documentIds.get(licenceNumber)}`,
+      link: `/licences/${licenceId}`,
       minimumChargeTransactions: transactions.filter(isMinimimChargeTransaction),
       transactionGroups: getTransactionGroups(transactions)
     };
@@ -146,16 +146,6 @@ const mapBatchLevelErrors = (batch, invoices) => invoices
 const isCreditDebitBlockVisible = batch =>
   batch.source === 'wrls' && batch.type === 'supplementary';
 
-/**
- * Maps a billing volume model to a string for the return cycle
- * @param {Object} billingVolume
- * @returns {String}
- */
-const mapReturnCycle = billingVolume => {
-  const prefix = billingVolume.isSummer ? 'Summer' : 'Winter and all year';
-  return `${prefix} ${billingVolume.financialYear.yearEnding}`;
-};
-
 exports.mapBatchListRow = mapBatchListRow;
 exports.mapInvoiceLicences = mapInvoiceLicences;
 exports.mapBatchType = mapBatchType;
@@ -164,4 +154,3 @@ exports.mapInvoices = mapInvoices;
 exports.mapInvoiceLevelErrors = mapInvoiceLevelErrors;
 exports.mapBatchLevelErrors = mapBatchLevelErrors;
 exports.isCreditDebitBlockVisible = isCreditDebitBlockVisible;
-exports.mapReturnCycle = mapReturnCycle;

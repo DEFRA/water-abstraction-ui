@@ -51,7 +51,7 @@ experiment('modules/account/controller', () => {
 
   afterEach(async () => sandbox.restore());
 
-  experiment('.getCreateAccount', async () => {
+  experiment('.getCreateAccount', () => {
     test('uses the expected template', async () => {
       await controller.getCreateAccount(request, h);
       const [template] = h.view.lastCall.args;

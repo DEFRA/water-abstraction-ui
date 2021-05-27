@@ -24,7 +24,7 @@ experiment('billing/forms/cancel-or-confirm-batch .form', () => {
     expect(form.method).to.equal('POST');
   });
 
-  experiment('cancel batch', async () => {
+  experiment('cancel batch', () => {
     let form;
     beforeEach(async () => {
       form = cancelOrConfirmBatchForm(request, 'cancel');
@@ -40,7 +40,7 @@ experiment('billing/forms/cancel-or-confirm-batch .form', () => {
     });
   });
 
-  experiment('confirm batch', async () => {
+  experiment('confirm batch', () => {
     let form;
     beforeEach(async () => {
       form = cancelOrConfirmBatchForm(request, 'confirm');

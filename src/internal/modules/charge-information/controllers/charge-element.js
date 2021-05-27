@@ -1,5 +1,7 @@
 'use-strict';
 
+const cleanObject = require('../../../../shared/lib/clean-object');
+
 const forms = require('../forms/charge-element/index');
 const routing = require('../lib/routing');
 const { getDefaultView, getPostedForm, applyFormResponse } = require('../lib/helpers');
@@ -23,6 +25,9 @@ const getRedirectPath = request => {
   const { step, licenceId, elementId } = request.params;
   const { chargeVersionWorkflowId, returnToCheckData } = request.query;
   if (returnToCheckData || step === CHARGE_ELEMENT_LAST_STEP) {
+    if (request.pre.draftChargeInformation.status === 'review') {
+      return routing.postReview(chargeVersionWorkflowId, licenceId);
+    }
     return routing.getCheckData(licenceId, { chargeVersionWorkflowId });
   }
   return routing.getChargeElementStep(licenceId, elementId, ROUTING_CONFIG[step].nextStep, { chargeVersionWorkflowId });
@@ -38,6 +43,7 @@ const getChargeElementStep = async (request, h) => {
 
 const postChargeElementStep = async (request, h) => {
   const { step, licenceId, elementId } = request.params;
+
   const form = getPostedForm(request, forms[step]);
 
   if (form.isValid) {
@@ -45,7 +51,9 @@ const postChargeElementStep = async (request, h) => {
     return h.redirect(getRedirectPath(request));
   }
 
-  return h.postRedirectGet(form, routing.getChargeElementStep(licenceId, elementId, step, request.query));
+  const queryParams = cleanObject(request.query);
+
+  return h.postRedirectGet(form, routing.getChargeElementStep(licenceId, elementId, step), queryParams);
 };
 
 exports.getChargeElementStep = getChargeElementStep;

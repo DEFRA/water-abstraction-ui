@@ -87,7 +87,7 @@ experiment('internal/modules/agreements/controller', () => {
 
     test('has the correct back link', () => {
       const [, view] = h.view.lastCall.args;
-      expect(view.back).to.equal('/licences/test-document-id#charge');
+      expect(view.back).to.equal('/licences/test-licence-id#charge');
     });
 
     test('has the correct verb for the warning message', () => {
@@ -119,7 +119,7 @@ experiment('internal/modules/agreements/controller', () => {
 
     test('redirects back to the licence page', () => {
       const [redirectPath] = h.redirect.lastCall.args;
-      expect(redirectPath).to.equal('/licences/test-document-id#charge');
+      expect(redirectPath).to.equal('/licences/test-licence-id#charge');
     });
 
     experiment('when an error occurs', () => {
@@ -132,7 +132,7 @@ experiment('internal/modules/agreements/controller', () => {
 
       test('redirects back to licence page', () => {
         const [redirectPath] = h.redirect.lastCall.args;
-        expect(redirectPath).to.equal('/licences/test-document-id#charge');
+        expect(redirectPath).to.equal('/licences/test-licence-id#charge');
       });
     });
   });
@@ -160,7 +160,7 @@ experiment('internal/modules/agreements/controller', () => {
 
     test('has the correct back link', () => {
       const [, view] = h.view.lastCall.args;
-      expect(view.back).to.equal('/licences/test-document-id#charge');
+      expect(view.back).to.equal('/licences/test-licence-id#charge');
     });
 
     test('contains the agreement', () => {
@@ -175,7 +175,7 @@ experiment('internal/modules/agreements/controller', () => {
   });
 
   experiment('.postEndAgreement', () => {
-    experiment('when the form is valid', async () => {
+    experiment('when the form is valid', () => {
       let modifiedRequest;
       beforeEach(async () => {
         request = createRequest();
@@ -193,7 +193,7 @@ experiment('internal/modules/agreements/controller', () => {
         expect(h.redirect.calledWith(`/licences/${modifiedRequest.pre.licence.id}/agreements/${modifiedRequest.params.agreementId}/end/confirm`));
       });
     });
-    experiment('when the form is invalid', async () => {
+    experiment('when the form is invalid', () => {
       let modifiedRequest;
       beforeEach(async () => {
         request = createRequest();
@@ -272,7 +272,7 @@ experiment('internal/modules/agreements/controller', () => {
         water.agreements.endAgreement.resolves();
       });
       test('redirects the client', () => {
-        expect(h.redirect.calledWith(`/licences/test-document-id#charge`)).to.be.true();
+        expect(h.redirect.calledWith(`/licences/test-licence-id#charge`)).to.be.true();
       });
     });
   });
@@ -340,7 +340,7 @@ experiment('internal/modules/agreements/controller', () => {
 
       test('sets the correct back link in the view', async () => {
         const [, { back }] = h.view.lastCall.args;
-        expect(back).to.equal(`/licences/${documentId}#charge`);
+        expect(back).to.equal(`/licences/${licenceId}#charge`);
       });
 
       test('defines a form', async () => {
@@ -432,7 +432,7 @@ experiment('internal/modules/agreements/controller', () => {
     });
 
     experiment('.getCheckStartDate', () => {
-      experiment('when the agreement start date = the licence start date', async () => {
+      experiment('when the agreement start date = the licence start date', () => {
         beforeEach(async () => {
           request.yar.get.onFirstCall().returns({
             startDate: '2020-02-01'
@@ -500,7 +500,7 @@ experiment('internal/modules/agreements/controller', () => {
         });
       });
 
-      experiment('when the agreement start date = the financial year start', async () => {
+      experiment('when the agreement start date = the financial year start', () => {
         beforeEach(async () => {
           request.yar.get.onFirstCall().returns({
             startDate: '2020-04-01'
@@ -516,7 +516,7 @@ experiment('internal/modules/agreements/controller', () => {
         });
       });
 
-      experiment('when the agreement start date is neither the financial year or licence start date', async () => {
+      experiment('when the agreement start date is neither the financial year or licence start date', () => {
         beforeEach(async () => {
           request.yar.get.onFirstCall().returns({
             startDate: '2020-04-02'
@@ -635,7 +635,7 @@ experiment('internal/modules/agreements/controller', () => {
 
       test('redirects back to licence page', () => {
         const [redirectPath] = h.redirect.lastCall.args;
-        expect(redirectPath).to.equal(`/licences/${documentId}#charge`);
+        expect(redirectPath).to.equal(`/licences/${licenceId}#charge`);
       });
     });
   });

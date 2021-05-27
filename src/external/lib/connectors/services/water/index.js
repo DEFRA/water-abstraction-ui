@@ -5,7 +5,6 @@ const CompaniesService = require('shared/lib/connectors/services/water/Companies
 const DocumentsService = require('shared/lib/connectors/services/water/DocumentsService');
 const LicencesService = require('shared/lib/connectors/services/water/LicencesService');
 const ReturnsService = require('shared/lib/connectors/services/water/ReturnsService');
-const RiverLevelsService = require('shared/lib/connectors/services/water/RiverLevelsService');
 const UsersService = require('shared/lib/connectors/services/water/UsersService');
 const NotifyService = require('shared/lib/connectors/services/water/NotifyService');
 
@@ -30,7 +29,6 @@ module.exports = config => ({
   documents: new DocumentsService(config.services.water, logger),
   licences: new LicencesService(config.services.water, logger),
   returns: new ReturnsService(config.services.water, logger),
-  riverLevels: new RiverLevelsService(config.services.water, logger),
   users: new UsersService(config.services.water, logger),
   notify: new NotifyService(config.services.water, logger),
 

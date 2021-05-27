@@ -3,7 +3,7 @@
  */
 const moment = require('moment');
 
-const getReturnId = ret => ret.returnId || ret.return_id;
+const getReturnId = ret => ret.returnId || ret.return_id || ret.id;
 const getEndDate = ret => ret.endDate || ret.end_date;
 const isCompleted = ret => (ret.status === 'completed');
 const isDue = ret => (ret.status === 'due');

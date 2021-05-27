@@ -6,9 +6,13 @@ const forms = require('shared/lib/forms');
 const services = require('../../lib/connectors/services');
 const { mapResponseToView } = require('./lib/api-response-mapper');
 const { isReturnId } = require('shared/lib/returns/strings');
+const { isBillingAccountReference } = require('shared/lib/billing-accounts/validators');
 const { redirectToReturn } = require('./lib/redirect-to-return');
+const { redirectToBillingAccount } = require('./lib/redirect-to-billing-account');
 const { isManageAccounts } = require('../../lib/permissions');
 const { setPermissionsForm, setPermissionsSchema, permissionsChoices } = require('../account/forms/set-permissions');
+const { hasScope } = require('../../lib/permissions');
+const { scope } = require('internal/lib/constants');
 
 /**
  * Renders a search form and results pages for internal users to search
@@ -31,11 +35,12 @@ const getSearchForm = async (request, h) => {
       const { page } = request.query;
 
       const response = await services.water.internalSearch.getInternalSearchResults(query, page);
-
       Object.assign(view, mapResponseToView(response, request), { query });
 
       if (isReturnId(query)) {
         return redirectToReturn(query, view, h);
+      } else if (isBillingAccountReference(query) && hasScope(request, scope.billing)) {
+        return redirectToBillingAccount(query, view, h);
       }
     }
   }

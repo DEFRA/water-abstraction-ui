@@ -39,6 +39,9 @@ const getRedirectPath = (request, nextPageInFlowUrl) => {
   const { returnToCheckData, chargeVersionWorkflowId } = request.query;
   const isChargeInformationPage = isUrlChargeInformationPage(nextPageInFlowUrl);
   if (returnToCheckData && isChargeInformationPage) {
+    if (request.pre.draftChargeInformation.status === 'review') {
+      return routing.getReview(chargeVersionWorkflowId, request.params.licenceId);
+    }
     return routing.getCheckData(request.params.licenceId, { chargeVersionWorkflowId });
   }
   return nextPageInFlowUrl;
@@ -75,14 +78,12 @@ const prepareChargeInformation = (licenceId, chargeData) => ({
   licenceId,
   chargeVersion: {
     ...chargeData,
-    chargeElements: chargeData.chargeElements.map(element => omit(element, 'id'))
+    chargeElements: chargeData.chargeElements.map(element => omit(element, 'id')),
+    status: 'draft'
   }
 });
 
-const getLicencePageUrl = async (licence, includeExpired = false) => {
-  const document = await services.crm.documents.getWaterLicence(licence.licenceNumber, includeExpired);
-  return `/licences/${document.document_id}#charge`;
-};
+const getLicencePageUrl = licence => `/licences/${licence.id}#charge`;
 
 const isCurrentAddress = invoiceAccountAddress => invoiceAccountAddress.dateRange.endDate === null;
 
@@ -105,5 +106,4 @@ exports.applyFormResponse = applyFormResponse;
 exports.createPostHandler = createPostHandler;
 exports.getDefaultView = getDefaultView;
 exports.prepareChargeInformation = prepareChargeInformation;
-exports.getLicencePageUrl = getLicencePageUrl;
 exports.getCurrentBillingAccountAddress = getCurrentBillingAccountAddress;

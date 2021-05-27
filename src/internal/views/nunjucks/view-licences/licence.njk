@@ -1,18 +1,23 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "govuk/components/tabs/macro.njk" import govukTabs %}
-{% from "nunjucks/view-licences/macros/verifications-alert.njk" import verificationsAlert %}
 {% from "badge.njk" import badge %}
-{% from 'nunjucks/billing/macros/invoices-table.njk' import licenceInvoicesView %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
 
-      {{ verificationsAlert(verifications) }}
-
       {% if not primaryUser %}
-        {{ title(summary.licenceNumber, 'Unregistered licence') }}
+        {{ title(licence.licenceNumber, 'Unregistered licence') }}
       {% else %}
         {{ title('Licence number ' + summary.licenceNumber, summary.documentName ) }}
+      {% endif %}
+
+      {% if validityMessage %}
+        {{ govukWarningText({
+          text: validityMessage,
+          iconFallbackText: 'Warning'
+        }) }}
       {% endif %}
 
       {% if primaryUser %}
@@ -22,28 +27,28 @@
       <div class="govuk-tabs" data-module="govuk-tabs">
         <h2 class="govuk-tabs__title">Contents</h2>
 
+      
         <ul class="govuk-tabs__list">
+
           <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
             <a class="govuk-tabs__tab" href="#summary">Summary</a>
           </li>
-
-          {% if returns.length %}
-            <li class="govuk-tabs__list-item">
-              <a class="govuk-tabs__tab" href="#returns">Returns</a>
-            </li>
-          {% endif %}
+    
+          <li class="govuk-tabs__list-item">
+            <a class="govuk-tabs__tab" href="#returns">Returns</a>
+          </li>
 
           <li class="govuk-tabs__list-item">
             <a class="govuk-tabs__tab" href="#communications">Communications</a>
           </li>
 
-        {% if isChargingUser %}
+        {% if bills %}
           <li class="govuk-tabs__list-item">
               <a class="govuk-tabs__tab" href="#bills">Bills</a>
           </li>
         {% endif %}
 
-          {% if showChargeVersions %}
+          {% if chargeVersions %}
             <li class="govuk-tabs__list-item">
               <a class="govuk-tabs__tab" href="#charge">Charge information</a>
             </li>
@@ -53,29 +58,20 @@
         <section class="govuk-tabs__panel" id="summary">
           {% include "nunjucks/view-licences/tabs/summary.njk" %}
         </section>
-
-        {% if returns.length %}
-          <section class="govuk-tabs__panel" id="returns">
-            {% include "nunjucks/view-licences/tabs/returns.njk" %}
-          </section>
-        {% endif %}
-
+     
+        <section class="govuk-tabs__panel" id="returns">
+          {% include "nunjucks/view-licences/tabs/returns.njk" %}
+        </section>
+  
         <section class="govuk-tabs__panel" id="communications">
           {% include "nunjucks/view-licences/tabs/communications.njk" %}
         </section>
-      {% if isChargingUser %}
+      {% if bills %}
         <section class="govuk-tabs__panel" id="bills">
-        <h2 class="govuk-heading-l">Bills</h2>
-          {{ licenceInvoicesView(bills) }}
-
-          {% if hasMoreBills %}
-          <p>
-            <a href="/licences/{{ licenceId }}/bills">View all sent bills</a>
-          </p>  
-          {% endif %}
+          {% include "nunjucks/view-licences/tabs/bills.njk" %}
         </section>
       {% endif %}
-        {% if showChargeVersions %}
+        {% if chargeVersions %}
           <section class="govuk-tabs__panel" id="charge">
             {% include "nunjucks/view-licences/tabs/charge.njk" %}
           </section>

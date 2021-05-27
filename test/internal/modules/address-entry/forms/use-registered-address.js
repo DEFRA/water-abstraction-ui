@@ -70,7 +70,7 @@ experiment('internal/modules/address-entry/forms/use-registered-address', () => 
       expect(button.options.label).to.equal('Continue');
     });
 
-    experiment('when the registered address is selected', async () => {
+    experiment('when the registered address is selected', () => {
       let form;
 
       beforeEach(async () => {
@@ -88,7 +88,7 @@ experiment('internal/modules/address-entry/forms/use-registered-address', () => 
       });
     });
 
-    experiment('when a different address is selected', async () => {
+    experiment('when a different address is selected', () => {
       let form;
 
       beforeEach(async () => {

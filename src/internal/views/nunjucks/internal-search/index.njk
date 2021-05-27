@@ -34,7 +34,7 @@
       {% if doc.documentName %}
         <span class="govuk-caption-m link--no-underline">{{ doc.documentName }}</span>
       {% endif %}
-      {{ documentLink(doc) }}
+      {{ licenceLink(doc) }}
     </h3>
     <p>{{ doc.licenceHolder }}</p>
 </div>
@@ -52,10 +52,35 @@
   </div>
 {% endmacro %}
 
-{% macro documentLink(doc) %}
-  <a href="/{{ "expired-" if not doc.isCurrent }}licences/{{ doc.documentId }}">
+{% macro licenceLink(doc) %}
+  {% if doc.licence.id %}
+  <a href="/licences/{{ doc.licence.id }}">
     {{ doc.licenceNumber }}
   </a>
+  {% else %}
+    {{ doc.licenceNumber }}
+  {% endif %}
+{% endmacro %}
+
+{% macro mobileGaugingStation(station) %}
+  <div class="phone--show">
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+    <h3 class="govuk-heading-m govuk-!-margin-bottom-1">
+      {{ gaugingStationLink(station) }}
+    </h3>
+    <p>{{ station.river_name }}</p>
+    <p>{{ station.catchment_name }}</p>
+</div>
+{% endmacro %}
+
+{% macro gaugingStationLink(station) %}
+  {% if station.gauging_station_id %}
+      <a href="/monitoring-stations/{{ station.gauging_station_id }}">
+        {{ station.label }}
+      </a>
+  {% else %}
+      {{ station.label }}
+  {% endif %}
 {% endmacro %}
 
 {% block content %}
@@ -148,7 +173,7 @@
           <tbody class="govuk-table__body">
             {% for doc in documents %}
             <tr class="govuk-table__row">
-              <td class="govuk-table__cell">{{ documentLink(doc) }}</td>
+              <td class="govuk-table__cell">{{ licenceLink(doc) }}</td>
               <td class="govuk-table__cell">{{ doc.documentName }}</td>
               <td class="govuk-table__cell">{{ doc.licenceHolder }}</td>
               <td class="govuk-table__cell">
@@ -159,6 +184,36 @@
           </tbody>
         </table>
       {% endif %}
+
+
+      <!-- Gauging Stations -->
+      {% if gaugingStations %}
+        <h2 class="govuk-heading-m">Monitoring stations</h2>
+
+        {% for doc in documents %}
+          {{ mobileLicence(doc) }}
+        {% endfor %}
+
+        <table class="govuk-table phone--hide">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header" scope="col">Station name</th>
+              <th class="govuk-table__header" scope="col">River name</th>
+              <th class="govuk-table__header" scope="col">Catchment name</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            {% for station in gaugingStations %}
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">{{ gaugingStationLink(station) }}</td>
+              <td class="govuk-table__cell">{{ station.river_name }}</td>
+              <td class="govuk-table__cell">{{ station.catchment_name }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+
 
       {{ paginate(pagination, '/licences', { query : form.fields[0].value }) }}
     </div>

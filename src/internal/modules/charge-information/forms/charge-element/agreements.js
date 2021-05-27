@@ -21,7 +21,7 @@ const getRadioField = (licenceNumber, value) => fields.radio('isSection127Agreem
   hint: 'Normally, an agreement will apply to all elements',
   errors: {
     'any.required': {
-      message: 'Select a loss category'
+      message: 'Select if agreements should apply to this element'
     }
   },
   choices: getRadioChoices(),

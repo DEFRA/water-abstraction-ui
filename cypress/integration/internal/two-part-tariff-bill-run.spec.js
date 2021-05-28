@@ -37,7 +37,7 @@ describe('two-part-tariff bill run', () => {
       });
 
       describe('user selects the test region', () => {
-        cy.get('.govuk-radios__item').last().children().first().click();
+        cy.get('#selectedBillingRegion-9').click();
         cy.get('button.govuk-button').click();
       });
 

@@ -6,6 +6,7 @@ const mappers = require('./lib/mappers');
 const { scope } = require('../../lib/constants');
 const { hasScope } = require('../../lib/permissions');
 const { featureToggles } = require('../../config');
+const moment = require('moment');
 
 const getDocumentId = doc => doc.document_id;
 
@@ -30,6 +31,7 @@ const getLicenceSummary = async (request, h) => {
     documentId,
     ...pick(request.pre, ['licence', 'bills', 'notifications', 'primaryUser', 'summary']),
     chargeVersions: mappers.mapChargeVersions(chargeVersions, chargeVersionWorkflows),
+    createChargeVersions: moment(licence.endDate).isAfter(moment().subtract(6, 'years')) || licence.endDate === null,
     agreements: mappers.mapLicenceAgreements(agreements),
     returns: mappers.mapReturns(request, returns),
     links: {

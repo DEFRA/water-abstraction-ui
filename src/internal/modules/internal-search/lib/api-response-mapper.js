@@ -8,13 +8,14 @@ const { mapReturns } = require('../../returns/lib/helpers');
  * @return {Object}          - view data
  */
 const mapResponseToView = (response, request) => {
-  const { documents, returns, users, gaugingStations } = response;
-  const noResults = !(documents || returns || users || gaugingStations);
+  const { documents, returns, users, gaugingStations, billingAccounts } = response;
+  const noResults = !(documents || returns || users || gaugingStations || billingAccounts);
 
   return {
     ...response,
     noResults,
-    returns: returns ? mapReturns(returns, request) : null
+    returns: returns ? mapReturns(returns, request) : null,
+    billingAccounts: billingAccounts || null
   };
 };
 

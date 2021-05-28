@@ -18,6 +18,9 @@ const createError = code => {
   return error;
 };
 
+const licenceId = 'test-licence-id';
+const licenceNumber = '01/123/ABC';
+
 experiment('shared/lib/pre-handlers/licences', () => {
   let request, h;
 
@@ -26,11 +29,15 @@ experiment('shared/lib/pre-handlers/licences', () => {
     request = {
       params: {
         licenceId: 'test-licence-id'
+      },
+      query: {
+
       }
     };
     const licencesStub = {
-      getLicenceById: sandbox.stub().resolves({ id: 'test-licence-id' }),
-      getDocumentByLicenceId: sandbox.stub().resolves({ document_id: 'test-document-id' })
+      getLicenceById: sandbox.stub().resolves({ id: licenceId }),
+      getDocumentByLicenceId: sandbox.stub().resolves({ document_id: 'test-document-id' }),
+      getLicenceByLicenceNumber: sandbox.stub().resolves({ id: licenceId })
     };
 
     set(request, 'services.water.licences', licencesStub);
@@ -115,6 +122,49 @@ experiment('shared/lib/pre-handlers/licences', () => {
 
       test('a Boom notFound error is returned', () => {
         const func = () => preHandlers.loadLicence(request, h);
+        expect(func()).to.reject();
+      });
+    });
+  });
+
+  experiment('.getLicenceByReturnId', () => {
+    let result;
+    const returnId = `v1:1:${licenceNumber}:1234:2020-04-01:2021:03-31`;
+    beforeEach(async () => {
+      request.params.returnId = returnId;
+      result = await preHandlers.getLicenceByReturnId(request, h);
+    });
+
+    test('gets the licence for the return', () => {
+      expect(
+        request.services.water.licences.getLicenceByLicenceNumber.calledWith(licenceNumber)
+      ).to.be.true();
+    });
+
+    test('returns the licence', () => {
+      expect(result).to.equal({ id: licenceId });
+    });
+
+    experiment('when the licence is not found', () => {
+      beforeEach(async () => {
+        request.services.water.licences.getLicenceByLicenceNumber.throws(createError(404));
+        result = await preHandlers.getLicenceByReturnId(request, h);
+      });
+
+      test('a Boom notFound error is returned', () => {
+        expect(result.isBoom).to.be.true();
+        expect(result.output.payload.error).to.equal('Not Found');
+        expect(result.message).to.equal(`Licence ${licenceNumber} for return ${returnId} not found`);
+      });
+    });
+
+    experiment('unexpected errors are rethrown', () => {
+      beforeEach(async () => {
+        request.services.water.licences.getLicenceByLicenceNumber.throws(createError(500));
+      });
+
+      test('a Boom notFound error is returned', () => {
+        const func = () => preHandlers.getLicenceByReturnId(request, h);
         expect(func()).to.reject();
       });
     });

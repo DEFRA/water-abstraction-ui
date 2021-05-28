@@ -70,6 +70,8 @@ const createModel = () => {
   return model;
 };
 
+const licenceId = 'test-licence-id';
+
 const createRequest = (isValid = true) => ({
   defra: {
     userName: 'bob@example.com',
@@ -89,6 +91,11 @@ const createRequest = (isValid = true) => ({
     set: sandbox.stub(),
     get: sandbox.stub(),
     clear: sandbox.stub()
+  },
+  pre: {
+    licence: {
+      id: licenceId
+    }
   }
 });
 
@@ -883,6 +890,7 @@ experiment('returns edit controller: ', () => {
       expect(view.back).to.be.a.string();
       expect(view.total).to.equal(999);
       expect(view.endReading).to.equal(55);
+      expect(view.links.licence).to.equal(`/licences/${licenceId}`);
     });
 
     test('back link is to start of flow if nil return', async () => {

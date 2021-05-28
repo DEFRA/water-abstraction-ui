@@ -111,8 +111,23 @@ const getChoices = (dates, values, refDate, isChargeable) => {
         : getCustomEffectiveDateField(dates, values.customDate)
     ]
   }];
+  // if it is a future dated licence or the licence is expired remove the today option
+  if (moment(dates.licenceStartDate).isAfter(moment()) || moment(dates.maxDate).isBefore(moment())) {
+    allChoices.shift();
+  }
 
-  return dates.minType === MIN_LICENCE_START ? allChoices : pullAt(allChoices, [0, 3]);
+  if (dates.minType === MIN_LICENCE_START) {
+    return allChoices;
+  } else {
+    if (allChoices[0].value === 'licenceStartDate') {
+      // rename label and only display Custom date
+      allChoices[2].label = 'Custom date';
+      return [allChoices[2]];
+    } else {
+      // if today's date is included as an option then pick 'today' and 'custom date' as radio options
+      return pullAt(allChoices, [0, 3]);
+    }
+  }
 };
 
 /**

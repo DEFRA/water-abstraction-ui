@@ -4,9 +4,9 @@
 {% macro invoiceAddress(invoice, company) %}
 
   {% if invoice.agentCompany %}
-    {{ invoice.agentCompany.name | titleCase }}
+    {{ invoice.agentCompany.name }}
   {% else %}
-    {{ company.name | titleCase }}
+    {{ company.name }}
   {% endif %}
     <br/>
 

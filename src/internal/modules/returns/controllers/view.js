@@ -34,6 +34,7 @@ const getReturnsForLicence = async (request, h) => {
  * @param {String} request.query.id - the return ID to display
  */
 const getReturn = async (request, h) => {
+  const { licence } = request.pre;
   const { id, version } = request.query;
   const { entityId } = request.defra;
 
@@ -64,7 +65,10 @@ const getReturn = async (request, h) => {
     editButtonPath: getEditButtonPath(data, request),
     showVersions,
     isVoid: data.status === 'void',
-    endReading: get(data, `meters[0].readings.${helpers.endReadingKey(data)}`)
+    endReading: get(data, `meters[0].readings.${helpers.endReadingKey(data)}`),
+    links: {
+      licence: `/licences/${licence.id}`
+    }
   };
 
   return h.view('nunjucks/returns/return', view);

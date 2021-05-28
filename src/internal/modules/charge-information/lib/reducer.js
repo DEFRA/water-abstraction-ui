@@ -30,6 +30,18 @@ const reducer = (state, action) => {
         chargeElements: action.payload
       };
 
+    case ACTION_TYPES.createChargeElement:
+      return {
+        ...state,
+        chargeElements: [
+          ...state.chargeElements,
+          {
+            id: action.payload.id,
+            isSection127AgreementEnabled: true
+          }
+        ]
+      };
+
     case ACTION_TYPES.clearData:
       return {};
   }

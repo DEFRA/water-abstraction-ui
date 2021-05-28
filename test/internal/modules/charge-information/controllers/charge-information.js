@@ -659,7 +659,7 @@ experiment('internal/modules/charge-information/controller', () => {
 
       test('an error is displayed', async () => {
         const [ form ] = h.postRedirectGet.lastCall.args;
-        const field = find(form.fields, { name: 'startDate' }).options.choices[3].fields[0];
+        const field = find(form.fields, { name: 'startDate' }).options.choices[2].fields[0];
         expect(field.errors[0].message).to.equal('You must enter a date before the licence end date');
       });
     });
@@ -728,6 +728,39 @@ experiment('internal/modules/charge-information/controller', () => {
 
     test('redirects to the correct page', async () => {
       const redirectPath = '/licences/test-licence-id/charge-information/use-abstraction-data?chargeVersionWorkflowId=test-cv-workflow-id';
+      expect(h.redirect.lastCall.args[0]).to.equal(redirectPath);
+    });
+
+    test('does not redirect to the review page when returnToCheckData is not set', async () => {
+      request = createRequest();
+      request.query = { returnToCheckData: undefined };
+      await controller.getHandleBillingAccount(request, h);
+      const redirectPath = '/licences/test-licence-id/charge-information/use-abstraction-data';
+      expect(h.redirect.lastCall.args[0]).to.equal(redirectPath);
+    });
+
+    test('does not redirect to the review page when status is not review', async () => {
+      request = createRequest();
+      request.query = { returnToCheckData: true };
+      request.draftChargeInfomration = {
+        status: 'foo'
+      };
+      await controller.getHandleBillingAccount(request, h);
+      const redirectPath = '/licences/test-licence-id/charge-information/check';
+      expect(h.redirect.lastCall.args[0]).to.equal(redirectPath);
+    });
+
+    test('redirects to the review page when status is review', async () => {
+      request = createRequest();
+      request.query = {
+        returnToCheckData: true,
+        chargeVersionWorkflowId: 'test-workflow-id'
+      };
+      request.pre.draftChargeInformation = {
+        status: 'review'
+      };
+      await controller.getHandleBillingAccount(request, h);
+      const redirectPath = '/licences/test-licence-id/charge-information/test-workflow-id/review';
       expect(h.redirect.lastCall.args[0]).to.equal(redirectPath);
     });
   });

@@ -66,6 +66,14 @@ formErrorSummary %}
   }) }}
 {% endmacro %}
 
+{% macro agreementsApplyText(isEnabled) %}
+  {% if isEnabled %}
+    Yes, agreements should apply to this element
+  {% else %}
+    No, exclude this element from two-part tariff agreements 
+  {% endif %}
+{% endmacro %}
+
 {% macro chargeableData(drafChargeInformation, invoiceAccountAddress) %}
   <div class="govuk-grid-column-full">
     {% if chargeVersion.status == 'changes_requested' and chargeVersion.approverComments %}
@@ -156,6 +164,7 @@ formErrorSummary %}
               {% endif %}
             </div>
 
+
             {% set timeLimited = 'No' %}
             {% if chargeElement.timeLimitedPeriod %}
               {% set timeLimited %}
@@ -163,11 +172,18 @@ formErrorSummary %}
               {% endset %}
             {% endif %}
             {{ summaryListRow('Time limit', timeLimited, changeLink('/time', chargeElement.id)) }}
-
             {{ summaryListRow('Source', chargeElement.source | title, changeLink('/source', chargeElement.id)) }}
             {{ summaryListRow('Season', chargeElement.season | title, changeLink('/season', chargeElement.id)) }}
             {{ summaryListRow('Loss', chargeElement.loss | title, changeLink('/loss', chargeElement.id)) }}
             {{ summaryListRow('Environmental Improvement Unit Charge', chargeElement.eiucSource | title) }}
+
+            {% if chargeElement.purposeUse.isTwoPartTariff %}
+              {{ summaryListRow(
+                'Agreements apply', 
+                agreementsApplyText(chargeElement.isSection127AgreementEnabled), 
+                changeLink('/agreements', chargeElement.id)
+              )}}
+            {% endif %}
           </dl>
           {% if isEditable %}
             <div class="govuk-grid-row">
@@ -248,7 +264,7 @@ formErrorSummary %}
                 value: 'update',
                 classes: 'govuk-!-margin-right-6'
               }) }}
-          {% else %}
+          {% elif chargeVersion.status != 'review' %}
             {{ govukButton({
                   text: 'Confirm',
                   name: 'buttonAction',

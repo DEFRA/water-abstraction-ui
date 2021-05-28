@@ -24,7 +24,6 @@ describe('creating an internal user:', () => {
     cy.get('.govuk-heading-l').should('contain.text', 'Manage reports and notices');
 
     // verifies the create an internal account link exists
-    
     cy.get('.govuk-list').should('contain.text', 'Create an internal account');
     // clicks on the create user button
     cy.get(':nth-child(11) > li > .govuk-link').click();

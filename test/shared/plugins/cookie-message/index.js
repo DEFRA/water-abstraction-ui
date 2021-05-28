@@ -21,7 +21,7 @@ experiment('plugins/cookie-message/index', () => {
       continue: 'continue',
       request: {
         info: {
-          host: 'subdomain.domain.gov.uk'
+          hostname: 'subdomain.domain.gov.uk'
         }
       }
     };

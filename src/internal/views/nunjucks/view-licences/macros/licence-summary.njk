@@ -33,7 +33,7 @@
       Licence holder
     </dt>
     <dd class="govuk-summary-list__value">
-      {{ summary.licenceHolderFullName }}
+      {{ summary.licenceHolderFullName | htmlDecode }}
       <br />
       <a href="/licences/{{ documentId }}/contact">
         View licence contact details

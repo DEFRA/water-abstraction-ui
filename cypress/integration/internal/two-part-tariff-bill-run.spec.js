@@ -26,17 +26,17 @@ describe('two-part-tariff bill run', () => {
       });
 
       describe('user enters the create a new bill flow', () => {
-        cy.get('.govuk-link').eq(12).contains('Create a bill run').click();
+        cy.get(':nth-child(9) > :nth-child(1) > .govuk-link').click();
       });
 
       describe('user selects two-part-tariff billing type', () => {
         cy.get('#selectedBillingType-3').click();
-        cy.get('#twoPartTariffSeason-2').click();
+        cy.get('#twoPartTariffSeason').click();
         cy.get('button.govuk-button').click();
       });
 
       describe('user selects the test region', () => {
-        cy.get('.govuk-radios__item').last().children().first().click();
+        cy.get('#selectedBillingRegion-9').click();
         cy.get('button.govuk-button').click();
       });
 

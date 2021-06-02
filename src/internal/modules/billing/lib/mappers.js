@@ -1,10 +1,11 @@
 'use strict';
 
 const Decimal = require('decimal.js-light');
-const { omit, sortBy, groupBy, pick, mapValues, isNull } = require('lodash');
+const { sortBy, groupBy, pick, mapValues, isNull, get } = require('lodash');
 const sentenceCase = require('sentence-case');
 const routing = require('./routing');
 const { transactionStatuses } = require('shared/lib/constants');
+const agreementsMapper = require('shared/lib/mappers/agreements');
 
 const getBillCount = batch => [batch.invoiceCount, batch.creditNoteCount].reduce((acc, value) =>
   isNull(value) ? acc : (acc || 0) + value
@@ -21,16 +22,6 @@ const mapBatchListRow = batch => ({
   batchType: mapBatchType(batch.type),
   billCount: getBillCount(batch),
   link: routing.getBillingBatchRoute(batch, { isBackEnabled: true })
-});
-
-const isTransactionEdited = transaction => {
-  if (!transaction.billingVolume) return false;
-  return transaction.billingVolume.calculatedVolume !== transaction.billingVolume.volume;
-};
-
-const mapTransaction = transaction => ({
-  ...omit(transaction, ['chargeElement']),
-  isEdited: isTransactionEdited(transaction)
 });
 
 const isTransactionInErrorStatus = transaction => transaction.status === transactionStatuses.error;
@@ -56,20 +47,12 @@ const getTransactionTotals = transactions => {
   return mapValues(totals, val => val.toNumber());
 };
 
-const isMinimimChargeTransaction = trans => trans.isMinimumCharge;
-const isNotMinimumChargeTransaction = trans => !isMinimimChargeTransaction(trans);
+const getSortKey = trans => `${get(trans, 'chargeElement.id')}_${trans.isCompensationCharge ? 1 : 0}`;
 
-const mapTransactionGroup = transactions => ({
-  chargeElement: transactions[0].chargeElement,
-  transactions: transactions.map(mapTransaction),
-  totals: getTransactionTotals(transactions)
+const mapTransaction = trans => ({
+  ...trans,
+  agreements: trans.agreements.map(agreementsMapper.mapAgreement)
 });
-
-const getTransactionGroups = transactions => {
-  const arr = transactions.filter(isNotMinimumChargeTransaction);
-  const grouped = groupBy(arr, trans => trans.chargeElement.id);
-  return Object.values(grouped).map(mapTransactionGroup);
-};
 
 /**
    *
@@ -86,8 +69,8 @@ const mapInvoiceLicences = invoice =>
       licenceNumber,
       hasTransactionErrors,
       link: `/licences/${licenceId}`,
-      minimumChargeTransactions: transactions.filter(isMinimimChargeTransaction),
-      transactionGroups: getTransactionGroups(transactions)
+      transactions: sortBy(transactions, getSortKey).map(mapTransaction),
+      totals: getTransactionTotals(transactions)
     };
   });
 

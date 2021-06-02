@@ -28,7 +28,7 @@
   {% if batch.status == 'ready' %}
     {{
     govukButton({
-      text: "Remove from bill run",
+      text: "Remove bill",
       href: '/billing/batch/' + batch.id + '/delete-invoice/' + invoice.id,
       classes: "govuk-button--secondary"
     })

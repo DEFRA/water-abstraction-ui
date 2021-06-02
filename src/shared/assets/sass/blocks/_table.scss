@@ -29,6 +29,11 @@
     width: 10%;
 }
 
+.table__header--width-15 {
+  @extend .govuk-table__header;
+  width: 15%;
+}
+
 .table__header--width-20 {
   @extend .govuk-table__header;
   

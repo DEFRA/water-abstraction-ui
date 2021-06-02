@@ -1,5 +1,8 @@
 $('.govuk-back-link:not([data-no-js])').on('click', function (ev) {
-  window.history.back();
-  ev.preventDefault();
-  return false;
+  if (!ev.target.href) {
+    window.history.back();
+    ev.preventDefault();
+    return false;
+  }
+  return true;
 });

@@ -179,7 +179,7 @@ experiment('modules/account/controller', () => {
       });
     });
 
-    experiment('when the water API returns a locked status', async () => {
+    experiment('when the water API returns a locked status', () => {
       beforeEach(async () => {
         const request = {
           view: { csrfToken: 'token' },
@@ -204,7 +204,7 @@ experiment('modules/account/controller', () => {
       });
     });
 
-    experiment('when the water API throws an error', async () => {
+    experiment('when the water API throws an error', () => {
       let request;
       beforeEach(async () => {
         request = {

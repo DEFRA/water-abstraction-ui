@@ -6,7 +6,13 @@
 
 <h2 class="govuk-heading-l">Summary</h2>
 
-{{ licenceSummary(documentId, summary, false) }}
+
+{% if summary %}
+  {{ licenceSummary(documentId, summary, false) }}
+{% else %}
+  <p>No summary for this licence.</p>
+{% endif %}
+
 
 <div class="govuk-grid-row">
 

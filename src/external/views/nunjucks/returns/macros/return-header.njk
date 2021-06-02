@@ -1,0 +1,16 @@
+{% from "returns/return-header.njk" import returnHeaderCommonMeta, returnHeaderTitle %}
+
+{% macro returnHeader(return, documentHeader, showMeta, links) %}
+
+  {{ returnHeaderTitle(documentHeader) }}
+
+  {%if showMeta %}
+  <dl class="meta govuk-!-margin-bottom-4">
+    {{ returnHeaderCommonMeta(return) }}
+  </dl>
+
+  <p class="govuk-!-margin-bottom-7">
+    <a href="/licences/{{ documentHeader.document_id }}">View this licence</a>
+  </p>
+  {% endif %}
+{% endmacro %}

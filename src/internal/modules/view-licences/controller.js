@@ -1,39 +1,74 @@
-const moment = require('moment');
-const services = require('../../lib/connectors/services');
-const titleCase = require('title-case');
-const { getReturnPath } = require('../../lib/return-path');
+'use strict';
 
-const pagination = { page: 1, perPage: 10 };
+const { pick } = require('lodash');
+
+const mappers = require('./lib/mappers');
+const { scope } = require('../../lib/constants');
+const { hasScope } = require('../../lib/permissions');
+const { featureToggles } = require('../../config');
+const moment = require('moment');
+
+const getDocumentId = doc => doc.document_id;
 
 /**
- * View summary information for an expired licence, including returns
- * and communications
+ * Main licence summary page
+ * All data is loaded via shared pre-handlers
+ *
+ * @param {String} request.params.licenceId - licence guid
  */
-const getExpiredLicence = async (request, h) => {
-  const { licence, primaryUser, communications } = request.licence;
-  const { licence_ref: licenceNumber } = licence;
+const getLicenceSummary = async (request, h) => {
+  const { licenceId } = request.params;
+  const { agreements, chargeVersions, chargeVersionWorkflows, licence, returns, document } = request.pre;
 
-  const { data: returns } = await services.returns.returns.getLicenceReturns([licenceNumber], pagination);
+  // Get CRM v1 doc ID
+  const documentId = getDocumentId(document);
 
   const view = {
-    documentId: request.params.documentId,
     ...request.view,
-    communications,
-    licence: {
-      primaryUser,
-      licenceNumber,
-      expiryDate: moment(licence.earliestEndDate).format('D MMMM YYYY'),
-      expiryReason: licence.earliestEndDateReason
+    pageTitle: `Licence ${licence.licenceNumber}`,
+    featureToggles,
+    licenceId,
+    documentId,
+    ...pick(request.pre, ['licence', 'bills', 'notifications', 'primaryUser', 'summary']),
+    chargeVersions: mappers.mapChargeVersions(chargeVersions, chargeVersionWorkflows),
+    createChargeVersions: moment(licence.endDate).isAfter(moment().subtract(6, 'years')) || licence.endDate === null,
+    agreements: mappers.mapLicenceAgreements(agreements),
+    returns: mappers.mapReturns(request, returns),
+    links: {
+      bills: `/licences/${licenceId}/bills`,
+      returns: `/licences/${documentId}/returns`,
+      addAgreement: `/licences/${licenceId}/agreements/select-type`
     },
-    // removing charge information tab for expired licences until we move
-    // internal licences to use the licence id instead of the document id
-    showChargeVersions: false,
-    returns: returns.map(ret => ({ ...ret, ...getReturnPath(ret, request) })),
-    pageTitle: `${titleCase(licence.earliestEndDateReason)} licence ${licenceNumber}`,
+    isChargingUser: hasScope(request, scope.charging),
+    validityMessage: mappers.getValidityNotice(licence),
     back: '/licences'
   };
 
-  return h.view('nunjucks/view-licences/expired-licence', view);
+  return h.view('nunjucks/view-licences/licence.njk', view);
 };
 
-exports.getExpiredLicence = getExpiredLicence;
+/**
+ * Get a list of bills for a particular licence
+ * @param {String} request.params.documentId - the CRM doc ID for the licence
+ * @param {Number} request.query.page - the page number for paginated results
+ */
+const getBillsForLicence = async (request, h) => {
+  const { licenceId } = request.params;
+  const { document } = request.pre;
+
+  const { data, pagination } = request.pre.bills;
+
+  return h.view('nunjucks/billing/bills', {
+    ...request.view,
+    pageTitle: document.metadata.Name,
+    caption: document.system_external_id,
+    tableCaption: 'All sent bills',
+    bills: data,
+    pagination,
+    licenceId,
+    back: `/licences/${licenceId}#bills`
+  });
+};
+
+exports.getLicenceSummary = getLicenceSummary;
+exports.getBillsForLicence = getBillsForLicence;

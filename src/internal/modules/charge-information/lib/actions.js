@@ -9,7 +9,8 @@ const ACTION_TYPES = {
   setBillingAccount: 'set.invoiceAccount',
   setReason: 'set.reason',
   setStartDate: 'set.startDate',
-  setChargeElementData: 'set.chargeElementData'
+  setChargeElementData: 'set.chargeElementData',
+  createChargeElement: 'create.chargeElement'
 };
 
 const setChangeReason = (request, formValues) => {
@@ -104,6 +105,13 @@ const clearData = () => {
   };
 };
 
+const createChargeElement = id => ({
+  type: ACTION_TYPES.createChargeElement,
+  payload: {
+    id
+  }
+});
+
 exports.ACTION_TYPES = ACTION_TYPES;
 
 exports.clearData = clearData;
@@ -113,3 +121,4 @@ exports.setChangeReason = setChangeReason;
 exports.setStartDate = setStartDate;
 exports.setChargeElementData = setChargeElementData;
 exports.removeChargeElement = removeChargeElement;
+exports.createChargeElement = createChargeElement;

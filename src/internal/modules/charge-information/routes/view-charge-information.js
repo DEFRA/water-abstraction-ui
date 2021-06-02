@@ -4,6 +4,7 @@ const { VALID_GUID } = require('shared/lib/validators');
 const { charging, chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope;
 const allowedScopes = [charging];
 const allowedScopesForApproval = [chargeVersionWorkflowReviewer];
+const Joi = require('@hapi/joi');
 
 module.exports = {
   getViewChargeInformation: {
@@ -21,10 +22,10 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object({
           licenceId: VALID_GUID,
           chargeVersionId: VALID_GUID
-        }
+        })
       },
       pre: [
         { method: preHandlers.loadLicence, assign: 'licence' },
@@ -49,10 +50,15 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object({
           licenceId: VALID_GUID,
           chargeVersionWorkflowId: VALID_GUID
-        }
+        }),
+        query:
+          Joi.object({
+            form: VALID_GUID.optional(),
+            returnToCheckData: Joi.boolean().default(false)
+          })
       },
       pre: [
         { method: preHandlers.loadLicence, assign: 'licence' },
@@ -78,14 +84,14 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object({
           licenceId: VALID_GUID,
           chargeVersionWorkflowId: VALID_GUID
-        }
+        })
       },
       pre: [
         { method: preHandlers.loadLicence, assign: 'licence' },
-        { method: preHandlers.loadChargeInformation, assign: 'draftChargeInformation' },
+        { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadIsChargeable, assign: 'isChargeable' },
         { method: preHandlers.loadBillingAccount, assign: 'billingAccount' }
       ]

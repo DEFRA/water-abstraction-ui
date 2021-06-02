@@ -1,25 +1,19 @@
 'use strict';
 
 const queryString = require('querystring');
-const { isEmpty, isUndefined } = require('lodash');
-
-const cleanObject = obj => {
-  for (const key in obj) {
-    if (isUndefined(obj[key]) || obj[key].length === 0) {
-      delete obj[key];
-    }
-  }
-  return obj;
-};
+const { isEmpty } = require('lodash');
+const cleanObject = require('../../../../shared/lib/clean-object');
 
 const createUrl = urlTail => (licenceId, queryParams = null) => {
-  const url = `/licences/${licenceId}/charge-information/${urlTail}`;
   const qp = cleanObject(queryParams);
+  const url = `/licences/${licenceId}/charge-information/${urlTail}`;
   return isEmpty(qp) ? url : `${url}?${queryString.stringify(qp)}`;
 };
 
 exports.getChargeElementStep = (licenceId, elementId, step, queryParams) => createUrl(`charge-element/${elementId}/${step}`)(licenceId, queryParams);
+
 exports.postReview = (chargeVersionWorkflowId, licenceId) => createUrl(`${chargeVersionWorkflowId}/review`)(licenceId);
+exports.getReview = (chargeVersionWorkflowId, licenceId) => createUrl(`${chargeVersionWorkflowId}/review`)(licenceId);
 
 exports.getHandleBillingAccount = createUrl('set-billing-account');
 exports.getSubmitted = createUrl('submitted');

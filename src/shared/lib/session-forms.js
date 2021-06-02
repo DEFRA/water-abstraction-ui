@@ -3,7 +3,7 @@
 const { get } = require('lodash');
 const uuid = require('uuid/v4');
 const queryString = require('querystring');
-
+const cleanObject = require('../lib/clean-object');
 /**
  * Gets a form from the session, or uses the default one if none found
  * @param {Object} request - hapi request
@@ -51,7 +51,7 @@ const postRedirectGet = function (form, customPath, customParams = null) {
 
   const path = customPath || getPath(form.action);
   const params = {
-    ...customParams || this.request.query,
+    ...customParams || cleanObject(this.request.query),
     form: key
   };
 

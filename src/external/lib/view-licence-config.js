@@ -25,3 +25,5 @@ exports.getCommunication = services.water.communications.getCommunication.bind(s
  * @returns {Boolean} True if this user can see charging details
  */
 exports.canShowCharging = request => false;
+
+exports.isSummaryPageEnabled = true;

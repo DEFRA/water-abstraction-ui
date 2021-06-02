@@ -277,4 +277,15 @@ experiment('services/water/LicencesService', () => {
       expect(url).to.equal('https://example.com/api/licences/licence-id/valid-documents/2019-04-01');
     });
   });
+
+  experiment('.getLicenceByLicenceNumber', () => {
+    const licenceNumber = '01/123/ABC';
+
+    test('makes a get request to the expected URL', async () => {
+      await service.getLicenceByLicenceNumber(licenceNumber);
+      const [uri, options] = serviceRequest.get.lastCall.args;
+      expect(uri).to.equal('https://example.com/api/licences');
+      expect(options.qs.licenceNumber).to.equal(licenceNumber);
+    });
+  });
 });

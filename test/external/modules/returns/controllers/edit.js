@@ -133,7 +133,7 @@ experiment('returns edit controller: ', () => {
   });
 
   experiment('postAmounts', () => {
-    experiment('when nil return is true', async () => {
+    experiment('when nil return is true', () => {
       let request;
       beforeEach(async () => {
         request = createRequest();
@@ -154,7 +154,7 @@ experiment('returns edit controller: ', () => {
       });
     });
 
-    experiment('when nil return is false', async () => {
+    experiment('when nil return is false', () => {
       let request;
       beforeEach(async () => {
         request = createRequest();
@@ -175,7 +175,7 @@ experiment('returns edit controller: ', () => {
       });
     });
 
-    experiment('when form is invalid', async () => {
+    experiment('when form is invalid', () => {
       beforeEach(async () => {
         const request = createRequest(false);
         await controller.postAmounts(request, h);
@@ -243,7 +243,7 @@ experiment('returns edit controller: ', () => {
         .to.equal(true);
     });
 
-    experiment('when form is invalid', async () => {
+    experiment('when form is invalid', () => {
       beforeEach(async () => {
         const request = createRequest(false);
         await controller.postMethod(request, h);
@@ -310,7 +310,7 @@ experiment('returns edit controller: ', () => {
         .to.equal(true);
     });
 
-    experiment('when form is invalid', async () => {
+    experiment('when form is invalid', () => {
       beforeEach(async () => {
         const request = createRequest(false);
         await controller.postUnits(request, h);
@@ -374,7 +374,7 @@ experiment('returns edit controller: ', () => {
         .to.equal(true);
     });
 
-    experiment('when form is invalid', async () => {
+    experiment('when form is invalid', () => {
       beforeEach(async () => {
         const request = createRequest(false);
         await controller.postQuantities(request, h);
@@ -460,7 +460,7 @@ experiment('returns edit controller: ', () => {
         .to.equal(true);
     });
 
-    experiment('when form is invalid', async () => {
+    experiment('when form is invalid', () => {
       beforeEach(async () => {
         const request = createRequest(false);
         await controller.postMeterDetails(request, h);
@@ -506,7 +506,7 @@ experiment('returns edit controller: ', () => {
       expect(back).to.equal(`${STEP_QUANTITIES}?returnId=${returnId}`);
     });
 
-    experiment('for meter readings', async () => {
+    experiment('for meter readings', () => {
       beforeEach(async () => {
         request.model.reading.isOneMeter.returns(true);
         await controller.getConfirm(request, h);
@@ -523,7 +523,7 @@ experiment('returns edit controller: ', () => {
       });
     });
 
-    experiment('for volumes', async () => {
+    experiment('for volumes', () => {
       beforeEach(async () => {
         request.model.reading.isOneMeter.returns(false);
         await controller.getConfirm(request, h);
@@ -541,7 +541,7 @@ experiment('returns edit controller: ', () => {
     });
   });
 
-  experiment('postConfirm', async () => {
+  experiment('postConfirm', () => {
     let request;
     beforeEach(async () => {
       request = createRequest();
@@ -571,7 +571,7 @@ experiment('returns edit controller: ', () => {
         .to.equal(true);
     });
 
-    experiment('when form is invalid', async () => {
+    experiment('when form is invalid', () => {
       beforeEach(async () => {
         const request = createRequest(false);
         await controller.postConfirm(request, h);
@@ -637,7 +637,7 @@ experiment('returns edit controller: ', () => {
       });
     });
 
-    experiment('when form is invalid', async () => {
+    experiment('when form is invalid', () => {
       beforeEach(async () => {
         const request = createRequest(false);
         await controller.postMeterReset(request, h);
@@ -661,7 +661,7 @@ experiment('returns edit controller: ', () => {
     });
   });
 
-  experiment('postMeterReadings', async () => {
+  experiment('postMeterReadings', () => {
     let request;
     beforeEach(async () => {
       request = createRequest();
@@ -694,7 +694,7 @@ experiment('returns edit controller: ', () => {
         .to.equal(true);
     });
 
-    experiment('when form is invalid', async () => {
+    experiment('when form is invalid', () => {
       beforeEach(async () => {
         const request = createRequest(false);
         await controller.postMeterReadings(request, h);

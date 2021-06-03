@@ -1,0 +1,36 @@
+{% from "returns/return-header.njk" import returnHeaderCommonMeta, returnHeaderTitle %}
+
+{% macro returnHeader(return, documentHeader, showMeta, links) %}
+
+  {{ returnHeaderTitle(documentHeader) }}
+
+  {%if showMeta %}
+  <dl class="meta govuk-!-margin-bottom-4">
+
+    {% if isAdmin %}
+      <div class="meta__row">
+        <dt class="meta__key">
+          Return reference
+        </dt>
+        <dd class="meta__value">
+          {{ return.metadata.nald.formatId }}
+        </dd>
+      </div>
+      <div class="meta__row">
+        <dt class="meta__key">
+          Region
+        </dt>
+        <dd class="meta__value">
+          {{ return.metadata.nald.regionCode }}
+        </dd>
+      </div>
+    {% endif %}
+
+    {{ returnHeaderCommonMeta(return) }}
+  </dl>
+
+  <p class="govuk-!-margin-bottom-7">
+    <a href="{{ links.licence }}">View this licence</a>
+  </p>
+  {% endif %}
+{% endmacro %}

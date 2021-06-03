@@ -15,6 +15,7 @@ module.exports = {
   ...require('shared/view/nunjucks/filters/flow-converter'),
   ...require('shared/view/nunjucks/filters/form'),
   ...require('shared/view/nunjucks/filters/gauging-station-value'),
+  ...require('shared/view/nunjucks/filters/has-more-pages'),
   ...require('shared/view/nunjucks/filters/markdown'),
   ...require('shared/view/nunjucks/filters/merge'),
   ...require('shared/view/nunjucks/filters/number'),
@@ -31,5 +32,6 @@ module.exports = {
   ...require('shared/view/nunjucks/filters/tag'),
   ...require('shared/view/nunjucks/filters/title-case'),
   ...require('shared/view/nunjucks/filters/unit-conversion'),
-  ...require('shared/view/nunjucks/filters/units')
+  ...require('shared/view/nunjucks/filters/units'),
+  ...require('shared/view/nunjucks/filters/html-decode')
 };

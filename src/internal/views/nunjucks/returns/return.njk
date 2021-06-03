@@ -1,7 +1,7 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "returns/not-current-version-warning.njk" import notCurrentVersionWarning %}
 {% from "returns/meter-details-inset-text.njk" import meterDetailsInsetText %}
-{% from "returns/return-header.njk" import returnHeader %}
+{% from "./nunjucks/returns/macros/return-header.njk" import returnHeader %}
 {% from "returns/return-quantities-table.njk" import returnQuantitiesTable %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
@@ -10,7 +10,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       {{ notCurrentVersionWarning(data) }}
-      {{ returnHeader(data, documentHeader, showMeta, true) }}
+      {{ returnHeader(data, documentHeader, showMeta, links) }}
     </div>
 
     <div class="govuk-grid-column-full">

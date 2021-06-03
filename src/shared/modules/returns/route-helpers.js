@@ -8,7 +8,8 @@ const optionsSchema = {
   showMeta: Joi.boolean(),
   form: Joi.func().required(),
   schema: Joi.func(),
-  submit: Joi.boolean()
+  submit: Joi.boolean(),
+  pre: Joi.array().optional()
 };
 
 const createPluginsOptions = options => ({
@@ -42,7 +43,8 @@ const createRoute = (method, path, handler, options) => {
           error: OPTIONAL_GUID
         }
       },
-      plugins: createPluginsOptions(options)
+      plugins: createPluginsOptions(options),
+      pre: options.pre
     }
   };
 };

@@ -111,7 +111,7 @@ experiment('internal/modules/charge-information/controller', () => {
         request.query = { start: 1 };
         await controller.getNonChargeableReason(request, h);
         const { back } = h.view.lastCall.args[1];
-        expect(back).to.equal('/licences/test-doc-id#charge');
+        expect(back).to.equal('/licences/test-licence-id#charge');
       });
     });
 
@@ -312,7 +312,7 @@ experiment('internal/modules/charge-information/controller', () => {
 
     test('an error is displayed', async () => {
       const [ form ] = h.postRedirectGet.lastCall.args;
-      const field = find(form.fields, { name: 'startDate' }).options.choices[3].fields[0];
+      const field = find(form.fields, { name: 'startDate' }).options.choices[2].fields[0];
       expect(field.errors[0].message).to.equal('You must enter a date before the licence end date');
     });
   });

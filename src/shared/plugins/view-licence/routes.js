@@ -1,16 +1,16 @@
+'use strict';
+
+const { cloneDeep, set } = require('lodash');
 const Joi = require('@hapi/joi');
 const controller = require('./controller');
 const { VALID_GUID, VALID_GAUGING_STATION } = require('shared/lib/validators');
 
-module.exports = allowedScopes => [
-  {
+const allRoutes = {
+  getLicence: {
     method: 'GET',
     path: '/licences/{documentId}',
     handler: controller.getLicence,
     config: {
-      auth: {
-        scope: allowedScopes
-      },
       description: 'View a single licence',
       validate: {
         params: {
@@ -32,14 +32,11 @@ module.exports = allowedScopes => [
       }
     }
   },
-  {
+  getLicenceContacts: {
     method: 'GET',
     path: '/licences/{documentId}/contact',
     handler: controller.getLicenceDetail,
     config: {
-      auth: {
-        scope: allowedScopes
-      },
       description: 'View contact info for licence',
       validate: {
         params: {
@@ -61,14 +58,11 @@ module.exports = allowedScopes => [
       }
     }
   },
-  {
+  getLicencePurposes: {
     method: 'GET',
     path: '/licences/{documentId}/purposes',
     handler: controller.getLicenceDetail,
     config: {
-      auth: {
-        scope: allowedScopes
-      },
       description: 'View abstraction purposes for licence',
       validate: {
         params: {
@@ -90,14 +84,11 @@ module.exports = allowedScopes => [
       }
     }
   },
-  {
+  getLicencePoints: {
     method: 'GET',
     path: '/licences/{documentId}/points',
     handler: controller.getLicenceDetail,
     config: {
-      auth: {
-        scope: allowedScopes
-      },
       description: 'View abstraction points for licence',
       validate: {
         params: {
@@ -119,14 +110,11 @@ module.exports = allowedScopes => [
       }
     }
   },
-  {
+  getLicenceConditions: {
     method: 'GET',
     path: '/licences/{documentId}/conditions',
     handler: controller.getLicenceDetail,
     config: {
-      auth: {
-        scope: allowedScopes
-      },
       description: 'View abstraction conditions info for licence',
       validate: {
         params: {
@@ -148,14 +136,11 @@ module.exports = allowedScopes => [
       }
     }
   },
-  {
+  getLicenceGaugingStation: {
     method: 'GET',
     path: '/licences/{documentId}/station/{gaugingStation}',
     handler: controller.getLicenceGaugingStation,
     config: {
-      auth: {
-        scope: allowedScopes
-      },
       description: 'View abstraction conditions info for licence',
       validate: {
         params: {
@@ -181,14 +166,11 @@ module.exports = allowedScopes => [
       }
     }
   },
-  {
+  getLicenceCommunication: {
     method: 'GET',
     path: '/licences/{documentId}/communications/{communicationId}',
     handler: controller.getLicenceCommunication,
     config: {
-      auth: {
-        scope: allowedScopes
-      },
       description: 'Look at the content of a message sent to the user regarding the licence',
       validate: {
         params: {
@@ -203,4 +185,16 @@ module.exports = allowedScopes => [
       }
     }
   }
-];
+};
+
+module.exports = (allowedScopes, isSummaryPageEnabled) => {
+  const routes = cloneDeep(allRoutes);
+
+  if (!isSummaryPageEnabled) {
+    delete routes.getLicence;
+  }
+
+  return Object.values(routes).map(route =>
+    set(route, 'config.auth.scope', allowedScopes)
+  );
+};

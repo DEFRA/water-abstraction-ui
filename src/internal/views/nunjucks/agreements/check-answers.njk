@@ -1,4 +1,5 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 {% extends "./nunjucks/layout.njk" %}
 {% from "forms/index.njk" import formRender,
 formErrorSummary %}
@@ -9,6 +10,10 @@ formErrorSummary %}
     <div class="govuk-grid-column-two-thirds">
 
       {{ title(pageTitle, caption)}}
+
+      {{ govukInsetText({
+        text: 'Go to the charge information to check which elements this agreement applies to.'
+      })}}
 
       {{ govukSummaryList(answers | checkAnswers) }}
 

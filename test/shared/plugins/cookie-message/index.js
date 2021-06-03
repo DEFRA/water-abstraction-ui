@@ -18,7 +18,12 @@ experiment('plugins/cookie-message/index', () => {
     h = {
       state: sandbox.stub(),
       unstate: sandbox.stub(),
-      continue: 'continue'
+      continue: 'continue',
+      request: {
+        info: {
+          hostname: 'subdomain.domain.gov.uk'
+        }
+      }
     };
 
     request = {
@@ -216,10 +221,10 @@ experiment('plugins/cookie-message/index', () => {
       });
 
       test('unset any analytics cookies', async () => {
-        expect(h.unstate.calledWith('_ga')).to.be.true();
-        expect(h.unstate.calledWith('_gid')).to.be.true();
-        expect(h.unstate.calledWith('_gat')).to.be.true();
-        expect(h.unstate.calledWith('_gat_govuk_shared')).to.be.true();
+        expect(h.unstate.calledWith('_ga', { domain: '.domain.gov.uk' })).to.be.true();
+        expect(h.unstate.calledWith('_gid', { domain: '.domain.gov.uk' })).to.be.true();
+        expect(h.unstate.calledWith('_gat', { domain: '.domain.gov.uk' })).to.be.true();
+        expect(h.unstate.calledWith('_gat_govuk_shared', { domain: '.domain.gov.uk' })).to.be.true();
       });
     });
   });

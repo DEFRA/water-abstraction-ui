@@ -6,11 +6,11 @@ const CHARGE_ELEMENT_STEPS = {
   timeLimit: 'time',
   source: 'source',
   season: 'season',
-  loss: 'loss'
+  loss: 'loss',
+  agreements: 'agreements'
 };
 
 const CHARGE_ELEMENT_FIRST_STEP = CHARGE_ELEMENT_STEPS.purpose;
-const CHARGE_ELEMENT_LAST_STEP = CHARGE_ELEMENT_STEPS.loss;
 
 /**
  * flowConfig is used to define the
@@ -25,7 +25,8 @@ const ROUTING_CONFIG = {
   time: { pageTitle: 'Set time limit?', nextStep: CHARGE_ELEMENT_STEPS.source, back: CHARGE_ELEMENT_STEPS.quantities },
   source: { pageTitle: 'Select source', nextStep: CHARGE_ELEMENT_STEPS.season, back: CHARGE_ELEMENT_STEPS.timeLimit },
   season: { pageTitle: 'Select season', nextStep: CHARGE_ELEMENT_STEPS.loss, back: CHARGE_ELEMENT_STEPS.source },
-  loss: { pageTitle: 'Select loss category', back: CHARGE_ELEMENT_STEPS.season }
+  loss: { pageTitle: 'Select loss category', nextStep: CHARGE_ELEMENT_STEPS.agreements, back: CHARGE_ELEMENT_STEPS.season },
+  agreements: { pageTitle: 'Should agreements apply to this element?', back: CHARGE_ELEMENT_STEPS.loss }
 };
 
 const LOSS_HIGH = 'high';
@@ -54,4 +55,3 @@ exports.EIUC_SOURCE_OTHER = EIUC_SOURCE_OTHER;
 exports.ROUTING_CONFIG = ROUTING_CONFIG;
 exports.CHARGE_ELEMENT_STEPS = CHARGE_ELEMENT_STEPS;
 exports.CHARGE_ELEMENT_FIRST_STEP = CHARGE_ELEMENT_FIRST_STEP;
-exports.CHARGE_ELEMENT_LAST_STEP = CHARGE_ELEMENT_LAST_STEP;

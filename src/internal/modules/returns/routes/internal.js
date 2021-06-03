@@ -1,8 +1,16 @@
+'use strict';
+
 const Joi = require('@hapi/joi');
 const controller = require('../controllers/internal');
 const constants = require('../../../lib/constants');
 const returns = constants.scope.returns;
 const { VALID_GUID } = require('shared/lib/validators');
+const licencePreHandlers = require('shared/lib/pre-handlers/licences');
+
+const pre = [{
+  method: licencePreHandlers.getLicenceByReturnId,
+  assign: 'licence'
+}];
 
 module.exports = {
 
@@ -26,7 +34,8 @@ module.exports = {
           activeNavLink: 'view',
           showMeta: true
         }
-      }
+      },
+      pre
     }
   },
 
@@ -55,7 +64,8 @@ module.exports = {
             csrf_token: VALID_GUID
           }
         }
-      }
+      },
+      pre
     }
   },
 

@@ -10,7 +10,7 @@ const {
 const routing = require('internal/modules/charge-information/lib/routing');
 
 experiment('internal/modules/charge-information/lib/routing', () => {
-  let licence;
+  let licence, chargeVersionWorkflowId;
 
   beforeEach(async () => {
     licence = {
@@ -19,6 +19,7 @@ experiment('internal/modules/charge-information/lib/routing', () => {
         id: 'test-region-id'
       }
     };
+    chargeVersionWorkflowId = 'test-workflow-id';
   });
 
   experiment('.getChargeElementStep', () => {
@@ -88,6 +89,13 @@ experiment('internal/modules/charge-information/lib/routing', () => {
     test('returns the correct url', async () => {
       const url = routing.getCancelData(licence.id);
       expect(url).to.equal('/licences/test-licence-id/charge-information/cancel');
+    });
+  });
+
+  experiment('.getReview', () => {
+    test('returns the correct url', async () => {
+      const url = routing.getReview(chargeVersionWorkflowId, licence.id);
+      expect(url).to.equal('/licences/test-licence-id/charge-information/test-workflow-id/review');
     });
   });
 });

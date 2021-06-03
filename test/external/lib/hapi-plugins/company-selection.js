@@ -39,7 +39,7 @@ const getTestRequest = (overrides = {}) => {
   return request;
 };
 
-experiment('plugin', async () => {
+experiment('plugin', () => {
   test('is configured correctly', async () => {
     expect(plugin.pkg.name).to.equal('companySelection');
     expect(plugin.pkg.version).to.equal('2.0.0');

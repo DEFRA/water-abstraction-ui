@@ -17,11 +17,15 @@ const controller = require('../../../../../src/internal/modules/charge-informati
 const { ROUTING_CONFIG, CHARGE_ELEMENT_STEPS } = require('../../../../../src/internal/modules/charge-information/lib/charge-elements/constants');
 
 const PURPOSE_USE_ID = uuid();
+
+const licenceId = 'test-licence-id';
+const elementId = 'test-element-id';
+
 const createRequest = (step, payload) => ({
   params: {
-    licenceId: 'test-licence-id',
+    licenceId,
     step,
-    elementId: 'test-element-id'
+    elementId
   },
   payload: {
     csrf_token: uuid(),
@@ -65,36 +69,6 @@ const createRequest = (step, payload) => ({
   clearDraftChargeInformation: sandbox.stub()
 });
 
-const getExpectedChargeElementUrl = (request, step) => {
-  const { licenceId, elementId, step: reqStep } = request.params;
-  const { chargeVersionWorkflowId } = request.query;
-  return chargeVersionWorkflowId
-    ? `/licences/${licenceId}/charge-information/charge-element/${elementId}/${step || reqStep}?chargeVersionWorkflowId=${request.query.chargeVersionWorkflowId}`
-    : `/licences/${licenceId}/charge-information/charge-element/${elementId}/${step || reqStep}`;
-};
-
-const getExpectedBackLink = request => {
-  const { licenceId, step } = request.params;
-  const { chargeVersionWorkflowId } = request.query;
-  if (step === 'purpose') {
-    return chargeVersionWorkflowId
-      ? `/licences/${licenceId}/charge-information/use-abstraction-data?chargeVersionWorkflowId=${chargeVersionWorkflowId}`
-      : `/licences/${licenceId}/charge-information/use-abstraction-data`;
-  }
-  return getExpectedChargeElementUrl(request, ROUTING_CONFIG[step].back);
-};
-
-const getExpectedRedirectLink = request => {
-  const { licenceId, step } = request.params;
-  const { chargeVersionWorkflowId } = request.query;
-  if (step === 'loss') {
-    return chargeVersionWorkflowId
-      ? `/licences/${licenceId}/charge-information/check?chargeVersionWorkflowId=${chargeVersionWorkflowId}`
-      : `/licences/${licenceId}/charge-information/check`;
-  }
-  return getExpectedChargeElementUrl(request, ROUTING_CONFIG[step].nextStep);
-};
-
 const validPayload = {
   purpose: {
     purpose: PURPOSE_USE_ID
@@ -123,24 +97,10 @@ const validPayload = {
   },
   loss: {
     loss: 'high'
+  },
+  agreements: {
+    isSection127AgreementEnabled: 'true'
   }
-};
-
-const formErrors = {
-  purpose: 'Select a purpose use',
-  description: 'Enter a description of the element',
-  abstraction: 'Enter a real start date',
-  quantities: 'Enter an authorised quantity',
-  time: 'Select yes if you want to set a time limit. Select no to continue',
-  source: 'Select a source',
-  season: 'Select a season',
-  loss: 'Select a loss category'
-};
-
-const getChargeElementDataForStep = (data, step) => {
-  const chargeElement = data.chargeElements[0];
-  if (step === 'purpose') return chargeElement.purposeUse.id;
-  return chargeElement[step];
 };
 
 experiment('internal/modules/charge-information/controllers/charge-element', () => {
@@ -156,120 +116,108 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
   afterEach(() => sandbox.restore());
 
   experiment('.getChargeElementStep', () => {
-    Object.values(CHARGE_ELEMENT_STEPS).forEach(step => {
-      experiment(`for step: ${step}`, () => {
-        beforeEach(async () => {
-          request = createRequest(step);
-          await controller.getChargeElementStep(request, h);
-        });
-
-        test('uses the correct template', async () => {
-          const [template] = h.view.lastCall.args;
-          expect(template).to.equal('nunjucks/form');
-        });
-
-        test('sets a back link', async () => {
-          const { back } = h.view.lastCall.args[1];
-          expect(back).to.equal(getExpectedBackLink(request));
-        });
-
-        test('has the page title', async () => {
-          const { pageTitle } = h.view.lastCall.args[1];
-          expect(pageTitle).to.equal(ROUTING_CONFIG[step].pageTitle);
-        });
-
-        test('has a caption', async () => {
-          const { caption } = h.view.lastCall.args[1];
-          expect(caption).to.equal('Licence 01/123');
-        });
-
-        test('passes through request.view', async () => {
-          const { foo } = h.view.lastCall.args[1];
-          expect(foo).to.equal(request.view.foo);
-        });
-
-        test('has the expected form', async () => {
-          const [, view] = h.view.lastCall.args;
-          expect(view.form.action).to.equal(getExpectedChargeElementUrl(request));
-          expect(view.form.method).to.equal('POST');
-        });
+    experiment('for selecting a purpose use', () => {
+      beforeEach(async () => {
+        request = createRequest(CHARGE_ELEMENT_STEPS.purpose);
+        await controller.getChargeElementStep(request, h);
       });
-      experiment(`for step: ${step} with a charge version workflow id query param`, () => {
+
+      test('uses the correct template', async () => {
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+      });
+
+      test('sets a back link to the previous page in the flow', async () => {
+        const { back } = h.view.lastCall.args[1];
+        expect(back).to.equal(`/licences/${licenceId}/charge-information/use-abstraction-data`);
+      });
+
+      test('has the page title', async () => {
+        const { pageTitle } = h.view.lastCall.args[1];
+        expect(pageTitle).to.equal(ROUTING_CONFIG[CHARGE_ELEMENT_STEPS.purpose].pageTitle);
+      });
+
+      test('has a caption', async () => {
+        const { caption } = h.view.lastCall.args[1];
+        expect(caption).to.equal('Licence 01/123');
+      });
+
+      test('passes through request.view', async () => {
+        const { foo } = h.view.lastCall.args[1];
+        expect(foo).to.equal(request.view.foo);
+      });
+
+      test('defines a form object', async () => {
+        const [, view] = h.view.lastCall.args;
+        expect(view.form).to.be.an.object();
+        expect(view.form.method).to.equal('POST');
+        expect(view.form.action).to.equal(`/licences/${licenceId}/charge-information/charge-element/${elementId}/purpose`);
+      });
+    });
+
+    experiment('when the returnToCheckData query param is set', () => {
+      beforeEach(async () => {
+        request = createRequest(CHARGE_ELEMENT_STEPS.purpose);
+        request.query.returnToCheckData = 1;
+        await controller.getChargeElementStep(request, h);
+      });
+
+      test('the back link is to the check answers page', async () => {
+        const { back } = h.view.lastCall.args[1];
+        expect(back).to.equal(`/licences/${licenceId}/charge-information/check`);
+      });
+    });
+
+    experiment('for a step mid-way through the flow', () => {
+      beforeEach(async () => {
+        request = createRequest(CHARGE_ELEMENT_STEPS.loss);
+        await controller.getChargeElementStep(request, h);
+      });
+
+      test('sets a back link to the previous step', async () => {
+        const { back } = h.view.lastCall.args[1];
+        expect(back).to.equal(`/licences/${licenceId}/charge-information/charge-element/${elementId}/${CHARGE_ELEMENT_STEPS.season}`);
+      });
+    });
+
+    experiment('.postChargeElementStep', () => {
+      experiment('when a valid payload is posted', () => {
         beforeEach(async () => {
-          request = createRequest(step);
-          request.query = { chargeVersionWorkflowId: uuid() };
-          await controller.getChargeElementStep(request, h);
+          request = createRequest(CHARGE_ELEMENT_STEPS.loss, validPayload.loss);
+          await controller.postChargeElementStep(request, h);
         });
 
-        test('sets a back link', async () => {
-          const { back } = h.view.lastCall.args[1];
-          expect(back).to.equal(getExpectedBackLink(request));
+        test('the draft charge information is updated with the step data', async () => {
+          const [id, cvWorkflowId, data] = request.setDraftChargeInformation.lastCall.args;
+          expect(cvWorkflowId).to.equal(undefined);
+          expect(id).to.equal('test-licence-id');
+          expect(data.dateRange).to.equal(request.pre.draftChargeInformation.dateRange);
+
+          // Check element updated
+          const chargeElement = data.chargeElements.find(row => row.id === elementId);
+          expect(chargeElement.loss).to.equal(validPayload.loss.loss);
+        });
+
+        test('the user is redirected to the expected page', async () => {
+          expect(h.redirect.calledWith(
+            `/licences/test-licence-id/charge-information/charge-element/${elementId}/${CHARGE_ELEMENT_STEPS.season}`
+          ));
         });
       });
     });
   });
 
-  experiment('.postChargeElementStep', () => {
-    Object.values(CHARGE_ELEMENT_STEPS).forEach(step => {
-      experiment(`for step: ${step}`, () => {
-        experiment('when a valid payload is posted', () => {
-          beforeEach(async () => {
-            request = createRequest(step, validPayload[step]);
-            await controller.postChargeElementStep(request, h);
-          });
+  experiment('when the charge is in review', () => {
+    beforeEach(async () => {
+      request = createRequest('loss', validPayload['loss']);
+      request.pre.draftChargeInformation.status = 'review';
+      request.query.returnToCheckData = true;
+      request.query.chargeVersionWorkflowId = '1';
+      await controller.postChargeElementStep(request, h);
+    });
 
-          test('the draft charge information is updated with the step data', async () => {
-            const [id, cvWorkflowId, data] = request.setDraftChargeInformation.lastCall.args;
-            const stepData = getChargeElementDataForStep(data, step);
-            expect(cvWorkflowId).to.equal(undefined);
-            expect(id).to.equal('test-licence-id');
-            expect(stepData).to.equal(request.payload[step]);
-          });
-
-          test('the user is redirected to the expected page', async () => {
-            const expectedNextPageUrl = getExpectedRedirectLink(request);
-            expect(h.redirect.calledWith(expectedNextPageUrl)).to.be.true();
-          });
-        });
-
-        experiment('when a valid payload is posted with a charge version workflow id ', () => {
-          beforeEach(async () => {
-            request = createRequest(step, validPayload[step]);
-            request.query = { chargeVersionWorkflowId: uuid() };
-            await controller.postChargeElementStep(request, h);
-          });
-
-          test('the draft charge information is updated with the step data', async () => {
-            const [id, cvWorkflowId, data] = request.setDraftChargeInformation.lastCall.args;
-            const stepData = getChargeElementDataForStep(data, step);
-            expect(cvWorkflowId).to.equal(request.query.chargeVersionWorkflowId);
-            expect(id).to.equal('test-licence-id');
-            expect(stepData).to.equal(request.payload[step]);
-          });
-
-          test('the user is redirected to the expected page', async () => {
-            const expectedNextPageUrl = getExpectedRedirectLink(request);
-            expect(h.redirect.calledWith(expectedNextPageUrl)).to.be.true();
-          });
-        });
-
-        experiment('when an invalid payload is posted', () => {
-          beforeEach(async () => {
-            request = createRequest(step);
-            await controller.postChargeElementStep(request, h);
-          });
-
-          test('the draft charge information is not updated', async () => {
-            expect(request.setDraftChargeInformation.called).to.be.false();
-          });
-
-          test('the form in error state is passed to the post-redirect-get handler', async () => {
-            const [form, redirectPath] = h.postRedirectGet.lastCall.args;
-            expect(form.errors[0].message).to.equal(formErrors[step]);
-            expect(redirectPath).to.equal(getExpectedChargeElementUrl(request));
-          });
-        });
-      });
+    test('the user is redirected to the expected page', async () => {
+      expect(h.redirect.calledWith('/licences/test-licence-id/charge-information/1/review')).to.be.true();
     });
   });
 });

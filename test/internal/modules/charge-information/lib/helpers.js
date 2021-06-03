@@ -9,7 +9,9 @@ const {
 
 const { expect } = require('@hapi/code');
 const sandbox = require('sinon').createSandbox();
+const Joi = require('joi');
 
+const forms = require('../../../../../src/shared/lib/forms');
 const sessionForms = require('shared/lib/session-forms');
 const helpers = require('internal/modules/charge-information/lib/helpers');
 const services = require('internal/lib/connectors/services');
@@ -119,6 +121,77 @@ experiment('internal/modules/charge-information/lib/helpers', () => {
       test('returns undefined', () => {
         const result = helpers.getCurrentBillingAccountAddress(billingAccountWithoutAddresses);
         expect(result).to.equal(undefined);
+      });
+    });
+  });
+
+  experiment('.createPostHandler', () => {
+    const request = {
+      yar: {
+        set: sandbox.stub(),
+        get: sandbox.stub(),
+        clear: sandbox.stub()
+      },
+      payload: {
+        csrf_token: '00000000-0000-0000-0000-000000000000'
+      },
+      pre: {
+        draftChargeInformation: {
+          status: 'review'
+        }
+      },
+      params: {
+        licenceId: 'test-licence-id'
+      },
+      query: {
+        returnToCheckData: true,
+        chargeVersionWorkflowId: 'test-workflow-id'
+      },
+      clearDraftChargeInformation: sandbox.stub(),
+      setDraftChargeInformation: sandbox.stub()
+    };
+
+    const h = {
+      view: sandbox.spy(),
+      postRedirectGet: sandbox.stub(),
+      redirect: sandbox.stub()
+    };
+
+    beforeEach(async => {
+      sandbox.stub(helpers, 'getPostedForm').resolves({ isValid: true });
+      sandbox.stub(forms, 'handleRequest').returns({ isValid: true });
+    });
+
+    const formContainer = {
+      form: () => ({
+        action: '/test/path',
+        method: 'POST',
+        fields: [{
+          name: 'foo',
+          options: {
+
+          }
+        }],
+        validationType: 'joi'
+      }),
+      schema: () => Joi.object({
+        foo: Joi.string().valid('bar')
+      })
+    };
+
+    const actionCreator = (request, formValues) => ({
+      type: 'test',
+      payload: formValues
+    });
+
+    const redirectPathFunc = (request, formValues) => 'charge-information';
+
+    experiment('when returnToCheckData is present', () => {
+      experiment('when chargeVersionWorkflowId is present', () => {
+        test('returns the review path', async () => {
+          await helpers.createPostHandler(formContainer, actionCreator, redirectPathFunc)(request, h);
+          expect(h.redirect.lastCall.args[0]).to.equal('/licences/test-licence-id/charge-information/test-workflow-id/review');
+        });
       });
     });
   });

@@ -14,7 +14,7 @@ const entityRoles = [
   { company_entity_id: 'entity-id-2' }
 ];
 
-experiment('external/lib/AuthConfig', async () => {
+experiment('external/lib/AuthConfig', () => {
   let authConfig, connectors, request, h;
 
   beforeEach(async () => {
@@ -60,7 +60,7 @@ experiment('external/lib/AuthConfig', async () => {
     });
   });
 
-  experiment('.onSignIn', async () => {
+  experiment('.onSignIn', () => {
     test('calls h.metaRedirect with output from loginHelpers.getLoginRedirectPath', async () => {
       const user = { user_id: 25, user_name: 'test@example.com' };
       await authConfig.onSignIn(request, h, user);
@@ -87,8 +87,8 @@ experiment('external/lib/AuthConfig', async () => {
     });
   });
 
-  experiment('._mapUserRequestData', async () => {
-    experiment('user data', async () => {
+  experiment('._mapUserRequestData', () => {
+    experiment('user data', () => {
       const user = {
         user_id: 'test-user-id',
         user_name: 'test@example.com',

@@ -58,7 +58,7 @@ experiment('modules/billing/lib/session-forms', () => {
         });
       });
 
-      experiment('and the form is found in the cache', async () => {
+      experiment('and the form is found in the cache', () => {
         beforeEach(async () => {
           request.yar.get.returns(formB);
           result = sessionForms.get(request, formA);
@@ -73,7 +73,7 @@ experiment('modules/billing/lib/session-forms', () => {
         });
       });
 
-      experiment('and the form is not found in the cache', async () => {
+      experiment('and the form is not found in the cache', () => {
         beforeEach(async () => {
           request.yar.get.returns(undefined);
           result = sessionForms.get(request, formA);
@@ -121,7 +121,7 @@ experiment('modules/billing/lib/session-forms', () => {
       expect(plugin.register).to.be.a.function();
     });
 
-    experiment('when the register function is called with the server', async () => {
+    experiment('when the register function is called with the server', () => {
       let server;
 
       beforeEach(async () => {

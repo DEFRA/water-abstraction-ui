@@ -23,6 +23,9 @@ const getError = (key) => {
     },
     afterLicenceExpired: {
       message: 'Enter an end date that is on or before the licence end date'
+    },
+    beforeElementStart: {
+      message: 'Enter an end date that is after the start date'
     }
   };
 };
@@ -49,7 +52,8 @@ const getDateField = (key, data) => {
       'date.max': getError(key).afterLicenceExpired,
       'any.required': getError(key).empty,
       'date.isoDate': getError(key).invalid,
-      'date.base': getError(key).invalid
+      'date.base': getError(key).invalid,
+      'date.greater': getError(key).beforeElementStart
     }
   }, getDates(data)[key + 'Date']);
 };
@@ -108,11 +112,11 @@ const schema = (request) => {
     timeLimitedPeriod: Joi.string().required().valid(['yes', 'no']),
     startDate: Joi.when('timeLimitedPeriod', {
       is: 'yes',
-      then: Joi.date().iso().min(startDate)
+      then: Joi.date().iso().min(startDate).required()
     }),
     endDate: Joi.when('timeLimitedPeriod', {
       is: 'yes',
-      then: Joi.date().iso().greater(startDate).max(expiredDate)
+      then: Joi.date().iso().greater(Joi.ref('startDate')).max(expiredDate).required()
     })
   };
 };

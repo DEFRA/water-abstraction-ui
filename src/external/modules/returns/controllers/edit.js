@@ -18,10 +18,16 @@ const { mapLines, mapMeterDetails } = require('shared/modules/returns/form-mappe
 /**
  * Renders form for "Have you abstracted water in this return period?"
  */
-const getAmounts = async (request, h) => h.view('nunjucks/returns/form', {
-  ...request.view,
-  back: STEP_RETURNS
-});
+const getAmounts = async (request, h) => {
+  if (request.model.receivedDate) {
+    return h.redirect(STEP_RETURNS);
+  }
+
+  return h.view('nunjucks/returns/form', {
+    ...request.view,
+    back: STEP_RETURNS
+  });
+};
 
 /**
  * Post handler for "Have you abstracted water in this return period?"

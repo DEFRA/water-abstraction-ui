@@ -121,6 +121,15 @@ experiment('returns edit controller: ', () => {
       const [, { back }] = h.view.lastCall.args;
       expect(back).to.equal(STEP_RETURNS);
     });
+
+    test('redirects to returns if return is completed', async () => {
+      const request = createRequest();
+      request.model.receivedDate = new Date();
+
+      await controller.getAmounts(request, h);
+      expect(h.redirect.calledWith(STEP_RETURNS))
+        .to.equal(true);
+    });
   });
 
   experiment('postAmounts', () => {

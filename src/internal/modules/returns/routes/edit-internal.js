@@ -7,8 +7,14 @@ const steps = require('shared/modules/returns/steps');
 const services = require('internal/lib/connectors/services');
 const FlowStorageAdapter = require('shared/modules/returns/FlowStorageAdapter');
 const storageAdapter = new FlowStorageAdapter(services.water.returns);
+const licencePreHandlers = require('shared/lib/pre-handlers/licences');
 
 const { createRoute: sharedCreateRoute } = require('shared/modules/returns/route-helpers');
+
+const pre = [{
+  method: licencePreHandlers.getLicenceByReturnId,
+  assign: 'licence'
+}];
 
 const createRoute = (...args) => {
   const route = sharedCreateRoute(...args);
@@ -138,7 +144,8 @@ module.exports = [
   createRoute('GET', steps.STEP_CONFIRM, controller.getConfirm, {
     pageTitle: 'Abstraction return - check the information before submitting',
     form: require('../forms/confirm').form,
-    showMeta: true
+    showMeta: true,
+    pre
   }),
 
   createRoute('POST', steps.STEP_CONFIRM, controller.postConfirm, {

@@ -95,7 +95,7 @@ experiment('src/internal/modules/account-entry/controller.js', () => {
   experiment('.getSelectExistingAccount', () => {
     const PATH = `/account-entry/${KEY}/select-existing-account`;
 
-    experiment('when there are 0 existing companies', async () => {
+    experiment('when there are 0 existing companies', () => {
       beforeEach(async () => {
         request = createRequest({ path: PATH, companies: [] });
         await controller.getSelectExistingAccount(request, h);
@@ -108,7 +108,7 @@ experiment('src/internal/modules/account-entry/controller.js', () => {
       });
     });
 
-    experiment('when there are 1+ companies', async () => {
+    experiment('when there are 1+ companies', () => {
       beforeEach(async () => {
         request = createRequest({ path: PATH });
         await controller.getSelectExistingAccount(request, h);
@@ -181,7 +181,7 @@ experiment('src/internal/modules/account-entry/controller.js', () => {
   experiment('.postSelectExistingAccount', () => {
     const PATH = `/account-entry/${KEY}/select-existing-account`;
 
-    experiment('when the form has validation errors', async () => {
+    experiment('when the form has validation errors', () => {
       beforeEach(async () => {
         request = createPostRequest({
           path: PATH,
@@ -197,7 +197,7 @@ experiment('src/internal/modules/account-entry/controller.js', () => {
       });
     });
 
-    experiment('when an existing company is selected', async () => {
+    experiment('when an existing company is selected', () => {
       beforeEach(async () => {
         request = createPostRequest({
           path: PATH,
@@ -226,7 +226,7 @@ experiment('src/internal/modules/account-entry/controller.js', () => {
       });
     });
 
-    experiment('when a new company is selected', async () => {
+    experiment('when a new company is selected', () => {
       beforeEach(async () => {
         request = createPostRequest({
           path: PATH,
@@ -331,7 +331,7 @@ experiment('src/internal/modules/account-entry/controller.js', () => {
   experiment('.postSelectAccountType', () => {
     const PATH = `/account-entry/${KEY}/select-account-type`;
 
-    experiment('when the form has validation errors', async () => {
+    experiment('when the form has validation errors', () => {
       beforeEach(async () => {
         request = createPostRequest({
           path: PATH,
@@ -398,7 +398,7 @@ experiment('src/internal/modules/account-entry/controller.js', () => {
   experiment('.getCompanySearch', () => {
     const PATH = `/account-entry/${KEY}/company-search`;
 
-    experiment('when the form has not been submitted', async () => {
+    experiment('when the form has not been submitted', () => {
       beforeEach(async () => {
         request = createRequest({
           path: PATH

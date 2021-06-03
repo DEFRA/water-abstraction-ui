@@ -16,7 +16,7 @@ const request = {
   }
 };
 
-experiment('internal/lib/AuthConfig', async () => {
+experiment('internal/lib/AuthConfig', () => {
   let h, authConfig;
 
   beforeEach(async () => {

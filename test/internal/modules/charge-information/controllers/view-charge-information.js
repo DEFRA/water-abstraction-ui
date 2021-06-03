@@ -10,10 +10,13 @@ const {
 const sinon = require('sinon');
 const uuid = require('uuid/v4');
 const sandbox = sinon.createSandbox();
-
+const { omit } = require('lodash');
 const services = require('../../../../../src/internal/lib/connectors/services');
 const { chargeVersionWorkflowReviewer } = require('../../../../../src/internal/lib/constants').scope;
 const controller = require('../../../../../src/internal/modules/charge-information/controllers/view-charge-information');
+
+const preHandlers = require('../../../../../src/internal/modules/charge-information/pre-handlers');
+const chargeInformationValidator = require('../../../../../src/internal/modules/charge-information/lib/charge-information-validator');
 
 const workflowId = uuid();
 const licenceId = uuid();
@@ -96,7 +99,7 @@ const createRequest = () => ({
   }
 });
 
-const licencePageUrl = '/licences/test-document-id#charge';
+const licencePageUrl = '/licences/test-licence-id#charge';
 
 experiment('internal/modules/charge-information/controllers/view-charge-information', () => {
   let request, h;
@@ -158,6 +161,8 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
       await controller.getReviewChargeInformation(request, h);
     });
 
+    afterEach(() => sandbox.restore());
+
     test('uses the correct template', async () => {
       const [template] = h.view.lastCall.args;
       expect(template).to.equal('nunjucks/charge-information/view');
@@ -193,12 +198,63 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
       expect(chargeVersion.chargeElements[0].validationWarnings).to.be.an.array();
     });
 
+    test('loads data from cache when draftChargeInformation is not set and licence is in review', async () => {
+      sandbox.stub(preHandlers, 'loadChargeInformation').returns({
+        ...request.pre.draftChargeInformation,
+        status: 'review'
+      });
+      sandbox.stub(chargeInformationValidator, 'addValidation');
+      request.getDraftChargeInformation = sandbox.stub().returns({
+        ...request.pre.draftChargeInformation,
+        status: 'review'
+      });
+      request.pre.chargeInformation = {
+        ...request.pre.draftChargeInformation,
+        status: 'review'
+      };
+      request.pre.draftChargeInformation.changeReason = null;
+      request.pre.draftChargeInformation.status = 'review';
+      request.query.chargeVersionWorkflowId = 1;
+      await controller.getReviewChargeInformation(request, h);
+      const chargeVersion = h.view.lastCall.args[1];
+      expect(chargeVersion.licenceId).to.equal('test-licence-id');
+    });
+
+    test('loads data from cache when draftChargeInformation is not set and licence is in changes_requested', async () => {
+      sandbox.stub(preHandlers, 'loadChargeInformation').returns({
+        ...request.pre.draftChargeInformation,
+        status: 'changes_requested'
+      });
+      sandbox.stub(chargeInformationValidator, 'addValidation');
+      request.getDraftChargeInformation = sandbox.stub().returns({
+        ...request.pre.draftChargeInformation,
+        status: 'changes_requested'
+      });
+      request.pre.chargeInformation = {
+        ...request.pre.draftChargeInformation,
+        status: 'changes_requested'
+      };
+      request.pre.draftChargeInformation.changeReason = null;
+      request.pre.draftChargeInformation.status = 'changes_requested';
+      request.query.chargeVersionWorkflowId = 1;
+      await controller.getReviewChargeInformation(request, h);
+      const chargeVersion = h.view.lastCall.args[1];
+      expect(chargeVersion.licenceId).to.equal('test-licence-id');
+    });
+
     experiment('sets isEditable flag', () => {
-      test('to false if the charge information draft is in review', async () => {
-        request.pre.draftChargeInformation['status'] = 'review';
+      test('to false if the charge information draft is in current', async () => {
+        request.pre.draftChargeInformation['status'] = 'current';
         await controller.getReviewChargeInformation(request, h);
         const { isEditable } = h.view.lastCall.args[1];
         expect(isEditable).to.be.false();
+      });
+
+      test('to true if the charge information draft is in review', async () => {
+        request.pre.draftChargeInformation['status'] = 'review';
+        await controller.getReviewChargeInformation(request, h);
+        const { isEditable } = h.view.lastCall.args[1];
+        expect(isEditable).to.be.true();
       });
 
       test('to true if the charge information draft has changes_requested status', async () => {
@@ -261,11 +317,18 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
       });
 
       experiment('sets isEditable flag', () => {
+        test('to false if the charge information draft is in current', async () => {
+          request.pre.draftChargeInformation['status'] = 'current';
+          await controller.getReviewChargeInformation(request, h);
+          const { isEditable } = h.view.lastCall.args[1];
+          expect(isEditable).to.be.false();
+        });
+
         test('to false if the charge information draft is in review', async () => {
           request.pre.draftChargeInformation['status'] = 'review';
           await controller.getReviewChargeInformation(request, h);
           const { isEditable } = h.view.lastCall.args[1];
-          expect(isEditable).to.be.false();
+          expect(isEditable).to.be.true();
         });
 
         test('to true if the charge information draft has changes_requested status', async () => {
@@ -296,7 +359,7 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
             chargeVersionWorkflowId: workflowId
           };
           request.clearDraftChargeInformation = sandbox.stub().resolves();
-
+          await sandbox.stub(services.water.chargeVersionWorkflows, 'patchChargeVersionWorkflow').resolves();
           await sandbox.stub(services.water.chargeVersions, 'postCreateFromWorkflow').resolves();
           await sandbox.stub(services.water.licences, 'getDocumentByLicenceId').resolves({
             document_id: uuid(),
@@ -348,11 +411,23 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
         });
 
         test('calls the service method to update the charge version workflow', async () => {
-          expect(services.water.chargeVersionWorkflows.patchChargeVersionWorkflow.calledWith(workflowId, {
-            status: 'changes_requested',
-            approverComments: 'Terrible job',
-            chargeVersion: {}
-          })).to.be.true();
+          expect(services.water.chargeVersionWorkflows.patchChargeVersionWorkflow.lastCall.args)
+            .to.equal([
+              workflowId,
+              {
+                status: 'changes_requested',
+                approverComments: 'Terrible job',
+                chargeVersion: {
+                  id: workflowId,
+                  dateRange: { startDate: '2019-04-01' },
+                  chargeElements: [omit(request.pre.draftChargeInformation.chargeElements[0], 'id')],
+                  invoiceAccount: {
+                    invoiceAccountAddress: 'test-invoice-account-address-2',
+                    invoiceAccountAddresses: request.pre.draftChargeInformation.invoiceAccount.invoiceAccountAddresses
+                  },
+                  status: 'draft'
+                }
+              }]);
         });
       });
     });

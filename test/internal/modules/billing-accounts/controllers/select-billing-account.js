@@ -220,7 +220,7 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
   });
 
   experiment('.postSelectExistingBillingAccount', () => {
-    experiment('when the form has validation errors', async () => {
+    experiment('when the form has validation errors', () => {
       beforeEach(async () => {
         request = createPostRequest({
           payload: {
@@ -235,7 +235,7 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
       });
     });
 
-    experiment('when the "new billing account" option is selected', async () => {
+    experiment('when the "new billing account" option is selected', () => {
       beforeEach(async () => {
         request = createPostRequest({
           payload: {
@@ -265,7 +265,7 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
       });
     });
 
-    experiment('when an existing billing account is selected', async () => {
+    experiment('when an existing billing account is selected', () => {
       beforeEach(async () => {
         request = createPostRequest({
           payload: {
@@ -370,7 +370,7 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
   });
 
   experiment('.postSelectAccount', () => {
-    experiment('when the form has validation errors', async () => {
+    experiment('when the form has validation errors', () => {
       beforeEach(async () => {
         request = createPostRequest({
           payload: {
@@ -594,7 +594,7 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
   });
 
   experiment('.postSelectFaoRequired', () => {
-    experiment('when the form has validation errors', async () => {
+    experiment('when the form has validation errors', () => {
       beforeEach(async () => {
         request = createPostRequest({
           payload: {
@@ -609,7 +609,7 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
       });
     });
 
-    experiment('when an fao is required', async () => {
+    experiment('when an fao is required', () => {
       beforeEach(async () => {
         request = createPostRequest({
           payload: {
@@ -635,7 +635,7 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
       });
     });
 
-    experiment('when an fao is not required', async () => {
+    experiment('when an fao is not required', () => {
       beforeEach(async () => {
         request = createPostRequest({
           payload: {

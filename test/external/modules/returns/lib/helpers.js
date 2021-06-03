@@ -164,7 +164,7 @@ experiment('getLicenceNumbers', () => {
   });
 });
 
-experiment('getReturnsViewData', async () => {
+experiment('getReturnsViewData', () => {
   let request;
   beforeEach(async () => {
     request = {

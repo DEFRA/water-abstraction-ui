@@ -137,9 +137,9 @@ module.exports = {
   },
 
   featureToggles: {
-    manageAgreements: ['local', 'dev', 'development', 'test', 'qa', 'preprod'].includes(process.env.NODE_ENV),
-    chargeInformation: ['local', 'dev', 'development', 'test', 'qa', 'preprod'].includes(process.env.NODE_ENV),
-    manageInvoiceAccounts: ['local', 'dev', 'development', 'test', 'qa', 'preprod'].includes(process.env.NODE_ENV),
+    manageAgreements: true,
+    chargeInformation: true,
+    manageInvoiceAccounts: true,
     deleteAllBillingData: ['local', 'dev', 'development', 'test', 'qa'].includes(process.env.NODE_ENV)
   }
 };

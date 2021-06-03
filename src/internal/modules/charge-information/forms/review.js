@@ -8,7 +8,7 @@ const routing = require('../lib/routing');
 const reviewForm = (request, reviewOutcome, reviewComments) => {
   const { csrfToken } = request.view;
 
-  const action = routing.postReview(request.params.chargeVersionWorkflowId, request.params.licenceId);
+  const action = routing.postReview(request.params.chargeVersionWorkflowId || request.query.chargeVersionWorkflowId, request.params.licenceId);
 
   const f = formFactory(action, 'POST');
 

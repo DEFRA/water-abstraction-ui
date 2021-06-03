@@ -1,7 +1,7 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "returns/not-current-version-warning.njk" import notCurrentVersionWarning %}
 {% from "returns/meter-details-inset-text.njk" import meterDetailsInsetText %}
-{% from "returns/return-header.njk" import returnHeader %}
+{% from "./nunjucks/returns/macros/return-header.njk" import returnHeader %}
 {% from "returns/return-quantities-table.njk" import returnQuantitiesTable %}
 {% from "contact-details.njk" import contactDetails %}
 {% from "govuk/components/details/macro.njk" import govukDetails %}

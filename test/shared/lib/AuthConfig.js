@@ -51,7 +51,8 @@ experiment('AuthConfig base class', () => {
     const user = {
       user_id: userId,
       user_name: userName,
-      roles: ['internal', 'returns']
+      roles: ['internal', 'returns'],
+      enabled: true
     };
     if (withEntity) {
       user.external_id = entityId;
@@ -130,7 +131,7 @@ experiment('AuthConfig base class', () => {
       expect(request.yar.set.calledWith('ip', request.info.remoteAddress)).to.equal(true);
     });
 
-    experiment('when IDM user has external_id', async () => {
+    experiment('when IDM user has external_id', () => {
       test('does not create a CRM entity', async () => {
         expect(connectors.crm.entities.getOrCreateIndividual.callCount).to.equal(0);
       });
@@ -140,7 +141,7 @@ experiment('AuthConfig base class', () => {
       });
     });
 
-    experiment('when IDM user does not have external_id', async () => {
+    experiment('when IDM user does not have external_id', () => {
       beforeEach(async () => {
         user = createUser(false);
         request = createRequest();
@@ -225,6 +226,17 @@ experiment('AuthConfig base class', () => {
         expect(request.defra.user).to.equal(user);
         expect(request.defra.entityId).to.equal(entityId);
         expect(request.defra.userScopes).to.equal(user.roles);
+      });
+
+      test('rejects if the user is not enabled', async () => {
+        connectors.idm.users.findOne.resolves({ error: null,
+          data: {
+            ...user,
+            enabled: false
+          }
+        });
+        await authConfig.validateFunc(request, { userId });
+        expect(request.defra).to.equal(undefined);
       });
     });
 

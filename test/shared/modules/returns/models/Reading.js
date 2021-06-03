@@ -247,7 +247,7 @@ experiment('Reading', () => {
     });
   });
 
-  experiment('getUnits', async () => {
+  experiment('getUnits', () => {
     let reading;
 
     beforeEach(async () => {
@@ -259,7 +259,7 @@ experiment('Reading', () => {
     });
   });
 
-  experiment('isVolumes', async () => {
+  experiment('isVolumes', () => {
     test('returns true when method is volumes', async () => {
       const reading = new Reading({ method: METHOD_VOLUMES });
       expect(reading.isVolumes()).to.equal(true);
@@ -271,7 +271,7 @@ experiment('Reading', () => {
     });
   });
 
-  experiment('isOneMeter', async () => {
+  experiment('isOneMeter', () => {
     test('returns true when method is oneMeter', async () => {
       const reading = new Reading({ method: METHOD_ONE_METER });
       expect(reading.isOneMeter()).to.equal(true);
@@ -283,7 +283,7 @@ experiment('Reading', () => {
     });
   });
 
-  experiment('isSingleTotal', async () => {
+  experiment('isSingleTotal', () => {
     test('returns true when total flag is set', async () => {
       const reading = new Reading({ totalFlag: true });
       expect(reading.isSingleTotal()).to.equal(true);
@@ -295,7 +295,7 @@ experiment('Reading', () => {
     });
   });
 
-  experiment('isMeasured', async () => {
+  experiment('isMeasured', () => {
     test('returns true when reading type measured', async () => {
       const reading = new Reading({ type: READING_TYPE_MEASURED });
       expect(reading.isMeasured()).to.equal(true);

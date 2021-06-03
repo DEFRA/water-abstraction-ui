@@ -1,0 +1,10 @@
+{% from 'nunjucks/billing/macros/invoices-table.njk' import licenceInvoicesView %}
+
+<h2 class="govuk-heading-l">Bills</h2>
+{{ licenceInvoicesView(bills.data) }}
+
+{% if bills.pagination | hasMorePages %}
+<p>
+  <a href="{{ links.bills }}">View all sent bills</a>
+</p>  
+{% endif %}

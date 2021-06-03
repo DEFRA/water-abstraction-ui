@@ -1,11 +1,16 @@
 'use-strict';
 
+const { get } = require('lodash');
+
+const cleanObject = require('../../../../shared/lib/clean-object');
+
+const { getChargeElementData } = require('../lib/form-helpers');
 const forms = require('../forms/charge-element/index');
 const routing = require('../lib/routing');
 const { getDefaultView, getPostedForm, applyFormResponse } = require('../lib/helpers');
 const { ROUTING_CONFIG,
   CHARGE_ELEMENT_FIRST_STEP,
-  CHARGE_ELEMENT_LAST_STEP } = require('../lib/charge-elements/constants');
+  CHARGE_ELEMENT_STEPS } = require('../lib/charge-elements/constants');
 const actions = require('../lib/actions');
 
 const getBackLink = request => {
@@ -21,8 +26,18 @@ const getBackLink = request => {
 
 const getRedirectPath = request => {
   const { step, licenceId, elementId } = request.params;
+
+  // For TPT purposes only, show the element-level agreements override page
+  const chargeElement = getChargeElementData(request);
+  const lastStep = get(chargeElement, 'purposeUse.isTwoPartTariff')
+    ? CHARGE_ELEMENT_STEPS.agreements
+    : CHARGE_ELEMENT_STEPS.loss;
+
   const { chargeVersionWorkflowId, returnToCheckData } = request.query;
-  if (returnToCheckData || step === CHARGE_ELEMENT_LAST_STEP) {
+  if (returnToCheckData || step === lastStep) {
+    if (request.pre.draftChargeInformation.status === 'review') {
+      return routing.postReview(chargeVersionWorkflowId, licenceId);
+    }
     return routing.getCheckData(licenceId, { chargeVersionWorkflowId });
   }
   return routing.getChargeElementStep(licenceId, elementId, ROUTING_CONFIG[step].nextStep, { chargeVersionWorkflowId });
@@ -38,6 +53,7 @@ const getChargeElementStep = async (request, h) => {
 
 const postChargeElementStep = async (request, h) => {
   const { step, licenceId, elementId } = request.params;
+
   const form = getPostedForm(request, forms[step]);
 
   if (form.isValid) {
@@ -45,7 +61,9 @@ const postChargeElementStep = async (request, h) => {
     return h.redirect(getRedirectPath(request));
   }
 
-  return h.postRedirectGet(form, routing.getChargeElementStep(licenceId, elementId, step, request.query));
+  const queryParams = cleanObject(request.query);
+
+  return h.postRedirectGet(form, routing.getChargeElementStep(licenceId, elementId, step), queryParams);
 };
 
 exports.getChargeElementStep = getChargeElementStep;

@@ -4,7 +4,6 @@
 {% from "nunjucks/view-licences/macros/periods.njk" import periods %}
 {% from "nunjucks/view-licences/macros/points.njk" import points %}
 {% from "nunjucks/view-licences/macros/purposes.njk" import purposes %}
-{% from "nunjucks/view-licences/macros/gauging-stations.njk" import gaugingStations %}
 
 {% macro licenceSummary(documentId, summary, showName=true, showRename=true) %}
 
@@ -33,7 +32,7 @@
       Licence holder
     </dt>
     <dd class="govuk-summary-list__value">
-      {{ summary.licenceHolderFullName }}
+      {{ summary.licenceHolderFullName | htmlDecode }}
       <br />
       <a href="/licences/{{ documentId }}/contact">
         View licence contact details
@@ -87,8 +86,6 @@
   </a>
   {% endset %}
 
-  {% set baseUrl %}/licences/{{ documentId }}{% endset %}
-  {{ gaugingStations(summary.gaugingStations, baseUrl) }}
   {{ conditions(summary.conditions, link) }}
   {{ amounts(summary.aggregateQuantity) }}
 </dl>

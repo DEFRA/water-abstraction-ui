@@ -320,7 +320,10 @@ const getConfirm = async (request, h) => {
     total: model.getReturnTotal(),
     endReading: model.meter.getEndReading(),
     makeChangeText: `Edit these ${model.reading.isOneMeter() ? 'meter readings' : 'volumes'}`,
-    makeChangePath: addQuery(request, path)
+    makeChangePath: addQuery(request, path),
+    links: {
+      licence: `/licences/${request.pre.licence.id}`
+    }
   };
 
   return h.view('nunjucks/returns/confirm', view);

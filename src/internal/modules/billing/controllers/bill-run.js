@@ -61,7 +61,7 @@ const getBillingBatchInvoice = async (request, h) => {
     financialYearEnding: invoice.financialYear.yearEnding,
     batch,
     batchType: mappers.mapBatchType(batch.type),
-    invoiceLicences: mappers.mapInvoiceLicences(invoice),
+    invoiceLicences: invoice.invoiceLicences.map(mappers.mapInvoiceLicence),
     isCredit: get(invoice, 'totals.netTotal', 0) < 0,
     caption: `Billing account ${invoice.invoiceAccount.accountNumber}`,
     errors: mappers.mapInvoiceLevelErrors(invoice),

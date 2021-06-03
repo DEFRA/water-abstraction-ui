@@ -55,24 +55,22 @@ const mapTransaction = trans => ({
 });
 
 /**
-   *
-   * @param {Object} invoice - payload from water service invoice detail call
-   * @param {Map} documentIds - map of licence numbers / CRM document IDs
-   */
-const mapInvoiceLicences = invoice =>
-  invoice.invoiceLicences.map(invoiceLicence => {
-    const { licenceNumber, id: licenceId } = invoiceLicence.licence;
-    const { id, hasTransactionErrors, transactions } = invoiceLicence;
-
-    return {
-      id,
-      licenceNumber,
-      hasTransactionErrors,
-      link: `/licences/${licenceId}`,
-      transactions: sortBy(transactions, getSortKey).map(mapTransaction),
-      totals: getTransactionTotals(transactions)
-    };
-  });
+ * Map invoice to view model
+ *
+ * @param {Object} invoice - payload from water service invoice detail call
+ */
+const mapInvoiceLicence = invoiceLicence => {
+  const { licenceNumber, id: licenceId } = invoiceLicence.licence;
+  const { id, hasTransactionErrors, transactions } = invoiceLicence;
+  return {
+    id,
+    licenceNumber,
+    hasTransactionErrors,
+    link: `/licences/${licenceId}`,
+    transactions: sortBy(transactions, getSortKey).map(mapTransaction),
+    totals: getTransactionTotals(transactions)
+  };
+};
 
 const mapBatchType = (type) => type === 'two_part_tariff' ? 'Two-part tariff' : sentenceCase(type);
 
@@ -130,7 +128,7 @@ const isCreditDebitBlockVisible = batch =>
   batch.source === 'wrls' && batch.type === 'supplementary';
 
 exports.mapBatchListRow = mapBatchListRow;
-exports.mapInvoiceLicences = mapInvoiceLicences;
+exports.mapInvoiceLicence = mapInvoiceLicence;
 exports.mapBatchType = mapBatchType;
 exports.mapConditions = mapConditions;
 exports.mapInvoices = mapInvoices;

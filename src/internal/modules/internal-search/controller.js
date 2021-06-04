@@ -39,8 +39,8 @@ const getSearchForm = async (request, h) => {
 
       if (isReturnId(query)) {
         return redirectToReturn(query, view, h);
-      } else if (isBillingAccountReference(query) && hasScope(request, scope.billing)) {
-        return redirectToBillingAccount(query, view, h);
+      } else if (isBillingAccountReference(query.toUpperCase()) && hasScope(request, scope.billing)) {
+        return redirectToBillingAccount(query.toUpperCase(), view, h);
       }
     }
   }

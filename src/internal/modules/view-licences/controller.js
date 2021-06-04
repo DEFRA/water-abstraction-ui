@@ -1,12 +1,13 @@
 'use strict';
 
 const { pick } = require('lodash');
+const moment = require('moment');
 
 const mappers = require('./lib/mappers');
 const { scope } = require('../../lib/constants');
 const { hasScope } = require('../../lib/permissions');
 const { featureToggles } = require('../../config');
-const moment = require('moment');
+const returnsMapper = require('../../lib/mappers/returns');
 
 const getDocumentId = doc => doc.document_id;
 
@@ -33,7 +34,10 @@ const getLicenceSummary = async (request, h) => {
     chargeVersions: mappers.mapChargeVersions(chargeVersions, chargeVersionWorkflows),
     createChargeVersions: moment(licence.endDate).isAfter(moment().subtract(6, 'years')) || licence.endDate === null,
     agreements: mappers.mapLicenceAgreements(agreements),
-    returns: mappers.mapReturns(request, returns),
+    returns: {
+      pagination: returns.pagination,
+      data: returnsMapper.mapReturns(returns.data, request)
+    },
     links: {
       bills: `/licences/${licenceId}/bills`,
       returns: `/licences/${documentId}/returns`,

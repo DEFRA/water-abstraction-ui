@@ -145,7 +145,7 @@
                 </td>
                 <td class="govuk-table__cell">{{ return.licence_ref }}</td>
                 <td class="govuk-table__cell">{{ return.region }}</td>
-                <td class="govuk-table__cell">{{ badge(return.badge.text, return.badge.status) }}</td>
+                <td class="govuk-table__cell">{{ badge(return | returnBadge) }}</td>
               </tr>
               {% endfor %}
             </tbody>

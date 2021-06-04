@@ -125,7 +125,6 @@ experiment('src/internal/modules/contact-entry/controller', () => {
         });
 
         test('the contact id is stored in the session', async () => {
-          console.log(session.merge.lastCall.args);
           expect(session.merge.calledWith(
             request, KEY, {
               data: request.pre.companyContacts[0]

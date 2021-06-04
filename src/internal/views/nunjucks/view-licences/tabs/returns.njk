@@ -38,7 +38,7 @@
   </h3>
 
   <p>{{ returnRequirementPurposes(return) }}
-    <br /><span class="govuk-caption-m link--no-underline">Due {{ return.due_date | date }}</span>
+    <br /><span class="govuk-caption-m link--no-underline">Due {{ return.dueDate | date }}</span>
   </p>
 
   {{ badge(return | returnBadge) }}

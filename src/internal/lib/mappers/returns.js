@@ -34,9 +34,8 @@ const mapReturn = (ret, request) => {
  * @param {Object} request - HAPI request interface
  * @return {Array} returns with isEditable flag added
  */
-const mapReturns = (returns, request) => {
-  return returns.map(row => mapReturn(row, request));
-};
+const mapReturns = (returns, request) =>
+  returns.map(row => mapReturn(row, request));
 
 exports.mapReturn = mapReturn;
 exports.mapReturns = mapReturns;

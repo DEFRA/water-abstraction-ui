@@ -6,23 +6,25 @@
  *          {Boolean} isBackEnabled - whether back should be enabled on processing page
  *          {Boolean} isErrorRoutesIncluded - whether to include error/empty batch routes
  *          {Boolean} showSuccessPage - whether to show success or summary page for sent batch
+ *          {String} invoiceId - set if user should be redirected to invoice page when batch ready
  * @return {String} the link
  */
 const getBillingBatchRoute = (batch, opts = {}) => {
   const { id } = batch;
-  const links = {
-    processing: `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`,
-    ready: `/billing/batch/${id}/summary`,
-    sent: opts.showSuccessPage ? `/billing/batch/${id}/confirm/success` : `/billing/batch/${id}/summary`,
-    review: `/billing/batch/${id}/two-part-tariff-review`
-  };
+
+  const routeMap = new Map()
+    .set('processing', `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`)
+    .set('ready', opts.invoiceId ? `/billing/batch/${id}/invoice/${opts.invoiceId}` : `/billing/batch/${id}/summary`)
+    .set('sent', opts.showSuccessPage ? `/billing/batch/${id}/confirm/success` : `/billing/batch/${id}/summary`)
+    .set('review', `/billing/batch/${id}/two-part-tariff-review`);
+
   if (opts.isErrorRoutesIncluded) {
-    Object.assign(links, {
-      error: `/billing/batch/${id}/processing`,
-      empty: `/billing/batch/${id}/empty`
-    });
+    routeMap
+      .set('error', `/billing/batch/${id}/processing`)
+      .set('empty', `/billing/batch/${id}/empty`);
   }
-  return links[batch.status];
+
+  return routeMap.get(batch.status);
 };
 
 const getTwoPartTariffLicenceReviewRoute = (batch, invoiceLicenceId, action) => {

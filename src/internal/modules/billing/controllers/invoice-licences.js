@@ -3,9 +3,6 @@
 const confirmForm = require('shared/lib/forms/confirm-form');
 const mappers = require('../lib/mappers');
 
-/**
- * Remove an invoice licence from the bill run
- */
 const getDeleteInvoiceLicence = async (request, h) => {
   const { batchId, invoiceLicenceId } = request.params;
   const { batch, invoice } = request.pre;
@@ -25,4 +22,11 @@ const getDeleteInvoiceLicence = async (request, h) => {
   });
 };
 
+const postDeleteInvoiceLicence = async (request, h) => {
+  const { batchId, invoiceId, invoiceLicenceId } = request.params;
+  await request.services.water.billingInvoiceLicences.deleteInvoiceLicence(invoiceLicenceId);
+  return h.redirect(`/billing/batch/${batchId}/processing?invoiceId=${invoiceId}`);
+};
+
 exports.getDeleteInvoiceLicence = getDeleteInvoiceLicence;
+exports.postDeleteInvoiceLicence = postDeleteInvoiceLicence;

@@ -20,6 +20,7 @@ const types = {
 
 const createEnumsObject = (items, iteratee) => ({
   type: 'object',
+  defaultEmpty: true,
   enum: items.map(iteratee)
 });
 

@@ -143,6 +143,7 @@ experiment('dereference can resolve licence conditions', () => {
       properties: {
         conditions: {
           type: 'object',
+          defaultEmpty: true,
           enum: [
             { id: 'id-1', value: 'id-1: Aggregate condition purpose to purpose within a licence' },
             { id: 'id-2', value: 'id-2: Complex condition' }
@@ -187,6 +188,7 @@ experiment('dereference can resolve licence points', () => {
       properties: {
         points: {
           type: 'object',
+          defaultEmpty: true,
           enum: [
             { id: 1, value: 'Point 1' },
             { id: 2, value: 'Point 2' }

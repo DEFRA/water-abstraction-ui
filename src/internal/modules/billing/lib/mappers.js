@@ -54,16 +54,30 @@ const mapTransaction = trans => ({
   agreements: trans.agreements.map(agreementsMapper.mapAgreement)
 });
 
-const mapInvoiceLicence = invoiceLicence => {
+const isDeleteInvoiceLicenceLinkVisible = (batch, invoice) =>
+  batch.status === 'ready' && (invoice.invoiceLicences.length > 1);
+
+/**
+ * Map invoice to view model
+ * @param {Object} batch - water service batch model
+ * @param {Object} invoice - payload from water service invoice detail call
+ */
+const mapInvoiceLicence = (batch, invoice, invoiceLicence) => {
   const { licenceNumber, id: licenceId } = invoiceLicence.licence;
   const { id, hasTransactionErrors, transactions } = invoiceLicence;
+  const deleteLink = isDeleteInvoiceLicenceLinkVisible(batch, invoice)
+    ? `/billing/batch/${batch.id}/invoice/${invoiceLicence.invoiceId}/delete-licence/${invoiceLicence.id}`
+    : null;
   return {
     id,
     licenceNumber,
     hasTransactionErrors,
-    link: `/licences/${licenceId}`,
     transactions: sortBy(transactions, getSortKey).map(mapTransaction),
-    totals: getTransactionTotals(transactions)
+    totals: getTransactionTotals(transactions),
+    links: {
+      view: `/licences/${licenceId}`,
+      delete: deleteLink
+    }
   };
 };
 

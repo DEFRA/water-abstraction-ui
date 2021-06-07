@@ -205,11 +205,10 @@ const getRemoveLicence = async (request, h) => {
   const action = `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}/remove`;
   const form = confirmForm.form(request, 'Remove licence', action);
 
-  return h.view('nunjucks/billing/confirm-page-with-metadata', {
+  return h.view('nunjucks/billing/confirm-licence', {
     ...request.view,
     ...request.pre,
     form,
-    metadataType: 'licence',
     pageTitle: `You are about to remove this licence from the bill run`,
     back: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}`
   });
@@ -235,11 +234,10 @@ const getApproveReview = (request, h) => {
   const action = `/billing/batch/${batch.id}/approve-review`;
   const form = confirmForm.form(request, 'Confirm', action);
 
-  return h.view('nunjucks/billing/confirm-page-with-metadata', {
+  return h.view('nunjucks/billing/confirm-batch', {
     ...request.view,
     batch,
     form,
-    metadataType: 'batch',
     pageTitle: 'You are about to generate the two-part tariff bills',
     back: `/billing/batch/${batch.id}/two-part-tariff-ready`
   });

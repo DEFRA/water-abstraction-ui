@@ -1,0 +1,22 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "./nunjucks/billing/macros/batch-title.njk" import batchTitle %}
+{% from "./nunjucks/billing/macros/metadata.njk" import invoiceMetadata %} 
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      {{ batchTitle(pageTitle, batch, false) }}
+
+      <p>The {{ 'licence' | pluralize(invoice.invoiceLicences) }} will go into the next supplementary bill run.</p>
+
+      <div class="govuk-!-margin-bottom-6">
+        {{ invoiceMetadata(invoice) }}
+      </div>
+
+      {{ formRender(form) }}
+    </div>
+  </div>
+
+{% endblock %}

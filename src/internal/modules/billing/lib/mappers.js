@@ -58,7 +58,7 @@ const mapInvoiceLicence = (batch, invoice, invoiceLicence) => {
   const { licenceNumber, id: licenceId } = invoiceLicence.licence;
   const { id, hasTransactionErrors, transactions } = invoiceLicence;
   const deleteLink = isDeleteInvoiceLicenceLinkVisible(batch, invoice)
-    ? `/billing/batch/${batch.id}/invoice/${invoiceLicence.invoiceId}/delete-licence/${invoiceLicence.id}`
+    ? `/billing/batch/${batch.id}/invoice/${invoice.id}/delete-licence/${invoiceLicence.id}`
     : null;
   return {
     id,

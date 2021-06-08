@@ -45,6 +45,10 @@ const getBillingBatchSummary = async (request, h) => {
   });
 };
 
+const getCaption = invoice => invoice.invoiceNumber
+  ? `Bill ${invoice.invoiceNumber}`
+  : `Billing account ${invoice.invoiceAccount.accountNumber}`;
+
 const getBillingBatchInvoice = async (request, h) => {
   const { batchId, invoiceId } = request.params;
 
@@ -61,11 +65,14 @@ const getBillingBatchInvoice = async (request, h) => {
     financialYearEnding: invoice.financialYear.yearEnding,
     batch,
     batchType: mappers.mapBatchType(batch.type),
-    invoiceLicences: mappers.mapInvoiceLicences(invoice),
+    invoiceLicences: invoice.invoiceLicences.map(mappers.mapInvoiceLicence),
     isCredit: get(invoice, 'totals.netTotal', 0) < 0,
-    caption: `Billing account ${invoice.invoiceAccount.accountNumber}`,
+    caption: getCaption(invoice),
     errors: mappers.mapInvoiceLevelErrors(invoice),
-    isCreditDebitBlockVisible: mappers.isCreditDebitBlockVisible(batch)
+    isCreditDebitBlockVisible: mappers.isCreditDebitBlockVisible(batch),
+    links: {
+      billingAccount: `/billing-accounts/${invoice.invoiceAccount.id}`
+    }
   });
 };
 

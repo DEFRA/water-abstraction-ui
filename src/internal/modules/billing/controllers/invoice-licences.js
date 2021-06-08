@@ -1,19 +1,13 @@
 'use strict';
 
-const Boom = require('@hapi/boom');
 const confirmForm = require('shared/lib/forms/confirm-form');
 const mappers = require('../lib/mappers');
 
 const getDeleteInvoiceLicence = async (request, h) => {
-  const { batchId, invoiceLicenceId } = request.params;
-  const { batch, invoice } = request.pre;
+  const { batchId } = request.params;
+  const { batch, invoice, invoiceLicence } = request.pre;
 
   const batchType = mappers.mapBatchType(batch.type).toLowerCase();
-
-  const invoiceLicence = invoice.invoiceLicences.find(invoiceLicence => invoiceLicence.id === invoiceLicenceId);
-  if (!invoiceLicence) {
-    return Boom.notFound(`Invoice licence not found`);
-  }
 
   return h.view('nunjucks/billing/confirm-invoice-licence.njk', {
     ...request.view,

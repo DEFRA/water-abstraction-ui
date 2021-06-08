@@ -30,7 +30,8 @@ module.exports = {
       pre: [
         { method: preHandlers.loadBatch, assign: 'batch' },
         { method: preHandlers.loadInvoice, assign: 'invoice' },
-        preHandlers.checkBatchStatusIsReady
+        preHandlers.checkBatchStatusIsReady,
+        { method: preHandlers.loadInvoiceLicence, assign: 'invoiceLicence' }
       ]
     }
   })

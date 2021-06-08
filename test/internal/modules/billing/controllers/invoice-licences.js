@@ -51,11 +51,13 @@ experiment('internal/modules/billing/controllers/invoice-licences', () => {
       path: `/billing/batch/${batchId}/invoice/${invoiceId}/delete-licence/${invoiceLicenceId}`,
       params: {
         batchId,
+        invoiceId,
         invoiceLicenceId
       },
       pre: {
         batch,
-        invoice
+        invoice,
+        invoicelicence: invoice.invoiceLicences[0]
       },
       view: {
         csrfToken
@@ -100,7 +102,7 @@ experiment('internal/modules/billing/controllers/invoice-licences', () => {
 
       test('sets the invoiceLicence in the view', async () => {
         const [, { invoiceLicence }] = h.view.lastCall.args;
-        expect(invoiceLicence).to.equal(request.pre.invoice.invoiceLicences[0]);
+        expect(invoiceLicence).to.equal(request.pre.invoiceLicence);
       });
 
       test('sets the confirm form object in the view', async () => {
@@ -115,20 +117,6 @@ experiment('internal/modules/billing/controllers/invoice-licences', () => {
       test('sets the back button link', async () => {
         const [, { back }] = h.view.lastCall.args;
         expect(back).to.equal(`/billing/batch/${batchId}/invoice/${invoiceId}`);
-      });
-    });
-
-    experiment('when the invoice licence does not exist', () => {
-      let result;
-
-      beforeEach(async () => {
-        request.params.invoiceLicenceId = 'some-other-id';
-        result = await controller.getDeleteInvoiceLicence(request, h);
-      });
-
-      test('returns a not found error', async () => {
-        expect(result.isBoom).to.be.true();
-        expect(result.output.statusCode).to.equal(404);
       });
     });
   });

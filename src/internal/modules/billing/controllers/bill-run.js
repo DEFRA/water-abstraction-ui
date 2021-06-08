@@ -45,6 +45,8 @@ const getBillingBatchSummary = async (request, h) => {
   });
 };
 
+const getOriginalInvoice = invoice => invoice.linkedInvoices.find(linkedInvoice => linkedInvoice.id === invoice.originalInvoiceId);
+
 const getBillingBatchInvoice = async (request, h) => {
   const { batchId, invoiceId } = request.params;
 
@@ -52,6 +54,10 @@ const getBillingBatchInvoice = async (request, h) => {
     services.water.billingBatches.getBatch(batchId),
     services.water.billingBatches.getBatchInvoice(batchId, invoiceId)
   ]);
+
+  if (invoice.originalInvoiceId !== null) {
+    invoice.originalInvoice = getOriginalInvoice(invoice);
+  }
 
   return h.view('nunjucks/billing/batch-invoice', {
     ...request.view,
@@ -152,13 +158,21 @@ const getBillingBatchDeleteInvoice = async (request, h) => {
   const { batch, invoice } = request.pre;
 
   const batchType = mappers.mapBatchType(batch.type).toLowerCase();
+  const formText = { title: '', button: '' };
+  if (invoice.rebillingState !== null) {
+    formText.title = `You're about to cancel the reissue of ${getOriginalInvoice(invoice).displayLabel}`;
+    formText.button = 'Cancel this reissue';
+  } else {
+    formText.title = `You're about to remove this bill from the ${batchType} bill run`;
+    formText.button = 'Remove bill';
+  }
 
   return h.view('nunjucks/billing/confirm-page-with-metadata', {
     ...request.view,
-    pageTitle: `You're about to remove this bill from the ${batchType} bill run`,
+    pageTitle: formText.title,
     batch,
     invoice,
-    form: confirmForm.form(request, 'Remove bill'),
+    form: confirmForm.form(request, formText.button),
     metadataType: 'invoice',
     back: `/billing/batch/${batchId}/summary`
   });

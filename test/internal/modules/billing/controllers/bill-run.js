@@ -59,7 +59,9 @@ const invoice = {
   },
   financialYear: {
     yearEnding: 2020
-  }
+  },
+  originalInvoiceId: null,
+  rebillingState: null
 };
 
 const batchInvoicesResult = [

@@ -54,11 +54,6 @@ const mapTransaction = trans => ({
   agreements: trans.agreements.map(agreementsMapper.mapAgreement)
 });
 
-/**
- * Map invoice to view model
- *
- * @param {Object} invoice - payload from water service invoice detail call
- */
 const mapInvoiceLicence = invoiceLicence => {
   const { licenceNumber, id: licenceId } = invoiceLicence.licence;
   const { id, hasTransactionErrors, transactions } = invoiceLicence;

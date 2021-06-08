@@ -132,4 +132,37 @@ experiment('internal/modules/billing/controllers/invoice-licences', () => {
       });
     });
   });
+
+  experiment('.postDeleteInvoiceLicence', () => {
+    beforeEach(async () => {
+      request = {
+        params: {
+          batchId,
+          invoiceId,
+          invoiceLicenceId
+        },
+        services: {
+          water: {
+            billingInvoiceLicences: {
+              deleteInvoiceLicence: sandbox.stub()
+            }
+          }
+        }
+      };
+
+      await controller.postDeleteInvoiceLicence(request, h);
+    });
+
+    test('calls the service method', async () => {
+      expect(request.services.water.billingInvoiceLicences.deleteInvoiceLicence.calledWith(
+        invoiceLicenceId
+      )).to.be.true();
+    });
+
+    test('redirects to the "processing" page', async () => {
+      expect(h.redirect.calledWith(
+        `/billing/batch/${batchId}/processing?invoiceId=${invoiceId}`
+      )).to.be.true();
+    });
+  });
 });

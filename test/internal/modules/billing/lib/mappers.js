@@ -245,7 +245,7 @@ experiment('modules/billing/lib/mappers', () => {
       const [ invoiceLicence ] = invoice.invoiceLicences;
 
       beforeEach(async () => {
-        result = mappers.mapInvoiceLicence(invoiceLicence);
+        result = mappers.mapInvoiceLicence(batch, invoice, invoiceLicence);
       });
 
       test('includes the id', async () => {
@@ -261,7 +261,7 @@ experiment('modules/billing/lib/mappers', () => {
       });
 
       test('includes a link to the licence page', async () => {
-        expect(result.link).to.equal(`/licences/${invoiceLicence.licence.id}`);
+        expect(result.links.view).to.equal(`/licences/${invoiceLicence.licence.id}`);
       });
 
       test('includes the transactions', async () => {

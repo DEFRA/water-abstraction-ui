@@ -978,7 +978,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     test('the correct template is used', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/billing/confirm-page-with-metadata');
+      expect(template).to.equal('nunjucks/billing/confirm-licence');
     });
 
     test('passes through data from request.view', async () => {
@@ -1062,7 +1062,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     test('uses the correct template', () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/billing/confirm-page-with-metadata');
+      expect(template).to.equal('nunjucks/billing/confirm-batch');
     });
 
     test('passes the form to the view context', () => {
@@ -1073,11 +1073,6 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     test('passes the correct page title to the view context', () => {
       const [, view] = h.view.lastCall.args;
       expect(view.pageTitle).to.equal('You are about to generate the two-part tariff bills');
-    });
-
-    test('passes metadata type to the view context', () => {
-      const [, view] = h.view.lastCall.args;
-      expect(view.metadataType).to.equal('batch');
     });
 
     test('passes back link to the view context', () => {

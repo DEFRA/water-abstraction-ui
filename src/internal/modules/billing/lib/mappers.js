@@ -54,14 +54,6 @@ const mapTransaction = trans => ({
   agreements: trans.agreements.map(agreementsMapper.mapAgreement)
 });
 
-const isDeleteInvoiceLicenceLinkVisible = (batch, invoice) =>
-  batch.status === 'ready' && (invoice.invoiceLicences.length > 1);
-
-/**
- * Map invoice to view model
- * @param {Object} batch - water service batch model
- * @param {Object} invoice - payload from water service invoice detail call
- */
 const mapInvoiceLicence = (batch, invoice, invoiceLicence) => {
   const { licenceNumber, id: licenceId } = invoiceLicence.licence;
   const { id, hasTransactionErrors, transactions } = invoiceLicence;
@@ -80,6 +72,17 @@ const mapInvoiceLicence = (batch, invoice, invoiceLicence) => {
     }
   };
 };
+
+const isDeleteInvoiceLicenceLinkVisible = (batch, invoice) =>
+  isReadyBatch(batch) &&
+  !isRebilledInvoice(invoice) &&
+  isInvoiceWithMultipleLicences(invoice);
+
+const isReadyBatch = batch => batch.status === 'ready';
+
+const isRebilledInvoice = invoice => invoice.rebillingState !== null;
+
+const isInvoiceWithMultipleLicences = invoice => invoice.invoiceLicences.length > 1;
 
 const mapBatchType = (type) => type === 'two_part_tariff' ? 'Two-part tariff' : sentenceCase(type);
 

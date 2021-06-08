@@ -25,10 +25,16 @@
 {% endmacro %}
 
 {% macro removeInvoiceFromBatchButton(batch, invoice) %}
-  {% if batch.status == 'ready' %}
+  {% if invoice.rebillingState in['reversal', 'rebill'] %}
+    {% set buttonText = "Cancel this reissue" %}
+  {% else %}
+    {% set buttonText = "Remove from bill run" %}
+  {% endif %}
+
+  {% if batch.status == 'ready' %}  
     {{
     govukButton({
-      text: "Remove bill",
+      text: buttonText,
       href: '/billing/batch/' + batch.id + '/delete-invoice/' + invoice.id,
       classes: "govuk-button--secondary"
     })

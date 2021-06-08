@@ -118,6 +118,13 @@ invoiceDebitsTotal %}
     </div>
   {% endif %}
 
+  {% if invoice.linkedInvoices.length > 0 %}
+    {{ govukWarningText({
+          text: "This bill is linked to the reissue of " + invoice.originalInvoice.displayLabel,
+          iconFallbackText: "Warning"
+        }) }}
+  {% endif %}
+
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-two-thirds">
       {{ removeInvoiceFromBatchButton(batch, invoice) }}

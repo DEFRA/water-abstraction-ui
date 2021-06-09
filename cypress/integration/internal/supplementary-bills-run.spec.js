@@ -26,7 +26,7 @@ describe('supplementary bill run', () => {
       });
 
       describe('user enters the create a new bill flow', () => {
-        cy.get('.govuk-link').eq(12).contains('Create a bill run').click();
+        cy.get('.govuk-link').eq(11).contains('Create a bill run').click();
       });
 
       describe('user selects supplementary billing type', () => {

@@ -3,7 +3,6 @@
 const moment = require('moment');
 const { sortBy } = require('lodash');
 const agreementMapper = require('shared/lib/mappers/agreements');
-const { getReturnPath } = require('../../../lib/return-path');
 
 const validityMessageMap = new Map()
   .set('expiredDate', 'expired on')
@@ -47,22 +46,7 @@ const mapLicenceAgreement = licenceAgreement => ({
 const mapLicenceAgreements = licenceAgreements =>
   licenceAgreements && licenceAgreements.map(mapLicenceAgreement);
 
-const mapReturns = (request, returns) => {
-  if (!returns) {
-    return null;
-  }
-  const { data, pagination } = returns;
-  return {
-    pagination,
-    data: data.map(ret => ({
-      ...ret,
-      ...getReturnPath(ret, request)
-    }))
-  };
-};
-
 exports.getValidityNotice = getValidityNotice;
 exports.mapChargeVersions = mapChargeVersions;
 exports.mapLicenceAgreement = mapLicenceAgreement;
 exports.mapLicenceAgreements = mapLicenceAgreements;
-exports.mapReturns = mapReturns;

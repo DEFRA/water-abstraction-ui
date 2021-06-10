@@ -1,6 +1,6 @@
-{% extends "./nunjucks/layout.njk" %}
-{% from "./nunjucks/billing/macros/batch-title.njk" import batchTitle %}
-{% from "./nunjucks/billing/macros/metadata.njk" import batchMetadata %} 
+{% extends "nunjucks/layout.njk" %}
+{% from "nunjucks/billing/macros/batch-title.njk" import batchTitle %}
+{% from "nunjucks/billing/macros/metadata.njk" import batchMetadata %} 
 
 {% block content %}
 
@@ -9,8 +9,12 @@
 
       {{ batchTitle(pageTitle, batch, false) }}
 
+      {% block notice %}{% endblock %}
+
       <div class="govuk-!-margin-bottom-6">
-        {{ batchMetadata(batch) }}
+        {% block metadata %}
+          {{ batchMetadata(batch) }}
+        {% endblock %}
       </div>
 
       {{ formRender(form) }}

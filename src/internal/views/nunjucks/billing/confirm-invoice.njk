@@ -1,0 +1,10 @@
+{% extends "./nunjucks/billing/confirm-batch.njk" %}
+{% from "nunjucks/billing/macros/metadata.njk" import invoiceMetadata %} 
+
+{% block notice %}
+  <p>The {{ 'licence' | pluralize(invoice.invoiceLicences) }} will go into the next supplementary bill run.</p>
+{% endblock %}
+
+{% block metadata %}
+  {{ invoiceMetadata(invoice) }}
+{% endblock %}

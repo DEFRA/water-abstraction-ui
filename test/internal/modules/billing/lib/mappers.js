@@ -6,9 +6,11 @@ const { pick } = require('lodash');
 
 const mappers = require('internal/modules/billing/lib/mappers');
 
+const batchId = uuid();
+
 const batch = {
   'invoices': [],
-  'id': '31780260-864d-4cb9-8444-0f00848d2680',
+  'id': batchId,
   'type': 'two_part_tariff',
   'season': 'all year',
   'status': 'ready',
@@ -32,17 +34,28 @@ const batch = {
   'netTotal': '2003'
 };
 
-const LICENCE_1 = '01/123/456/A';
-const LICENCE_2 = '02/345/678/B';
-const LICENCE_ID = uuid();
+const licenceNumbers = [
+  '01/123/456/A',
+  '02/345/678/B'
+];
+const licenceIds = [
+  uuid(),
+  uuid()
+];
+const invoiceId = uuid();
+const invoiceLicenceIds = [
+  uuid(),
+  uuid()
+];
 
 const invoice = {
+  id: invoiceId,
   invoiceLicences: [
     {
-      id: 'test-invoice-licence-id-1',
+      id: invoiceLicenceIds[0],
       licence: {
-        id: LICENCE_ID,
-        licenceNumber: LICENCE_1
+        id: licenceIds[0],
+        licenceNumber: licenceNumbers[0]
       },
       transactions: [{
         value: 924,
@@ -72,9 +85,10 @@ const invoice = {
       hasTransactionErrors: true
     },
     {
-      id: 'test-invoice-licence-id-2',
+      id: invoiceLicenceIds[1],
       licence: {
-        licenceNumber: LICENCE_2
+        id: licenceIds[1],
+        licenceNumber: licenceNumbers[1]
       },
       transactions: [{
         value: 1234,
@@ -155,12 +169,13 @@ const invoice = {
         agreements: []
       }],
       hasTransactionErrors: false
-    }]
+    }],
+  rebillingState: null
 };
 
 const documentIdMap = new Map();
-documentIdMap.set(LICENCE_1, '7d6a672f-1d3a-414a-81f7-69e66ff1381c');
-documentIdMap.set(LICENCE_2, '80b8e0a7-2057-45a4-aad5-fefae0faa43d');
+documentIdMap.set(licenceNumbers[0], '7d6a672f-1d3a-414a-81f7-69e66ff1381c');
+documentIdMap.set(licenceNumbers[1], '80b8e0a7-2057-45a4-aad5-fefae0faa43d');
 
 const batchInvoices = [{
   id: 'test-invoice-id-1',
@@ -240,12 +255,12 @@ experiment('modules/billing/lib/mappers', () => {
     });
   });
 
-  experiment('.mapInvoiceLicences', () => {
+  experiment('.mapInvoiceLicence', () => {
     experiment('for the first invoice licence', () => {
       const [ invoiceLicence ] = invoice.invoiceLicences;
 
       beforeEach(async () => {
-        result = mappers.mapInvoiceLicence(invoiceLicence);
+        result = mappers.mapInvoiceLicence(batch, invoice, invoiceLicence);
       });
 
       test('includes the id', async () => {
@@ -261,7 +276,13 @@ experiment('modules/billing/lib/mappers', () => {
       });
 
       test('includes a link to the licence page', async () => {
-        expect(result.link).to.equal(`/licences/${invoiceLicence.licence.id}`);
+        expect(result.links.view).to.equal(`/licences/${invoiceLicence.licence.id}`);
+      });
+
+      test('includes a link to delete the invoice licence', async () => {
+        expect(result.links.delete).to.equal(
+          `/billing/batch/${batchId}/invoice/${invoiceId}/delete-licence/${invoiceLicenceIds[0]}`
+        );
       });
 
       test('includes the transactions', async () => {
@@ -293,6 +314,54 @@ experiment('modules/billing/lib/mappers', () => {
       test('the second transaction agreements are an empty array', async () => {
         const [, { agreements }] = result.transactions;
         expect(agreements).to.equal([]);
+      });
+    });
+
+    experiment('when the invoice is a rebilling invoice', () => {
+      const [ invoiceLicence ] = invoice.invoiceLicences;
+
+      beforeEach(async () => {
+        result = mappers.mapInvoiceLicence(batch, {
+          ...invoice,
+          rebillingState: 'rebill'
+        }, invoiceLicence);
+      });
+
+      test('the link to delete the invoice licence is null', async () => {
+        expect(result.links.delete).to.be.null();
+      });
+    });
+
+    experiment('when the batch is not ready', () => {
+      const [ invoiceLicence ] = invoice.invoiceLicences;
+
+      beforeEach(async () => {
+        result = mappers.mapInvoiceLicence({
+          ...batch,
+          status: 'sent'
+        }, invoice, invoiceLicence);
+      });
+
+      test('the link to delete the invoice licence is null', async () => {
+        expect(result.links.delete).to.be.null();
+      });
+    });
+
+    experiment('when the invoice has only 1 licence', () => {
+      const [ invoiceLicence ] = invoice.invoiceLicences;
+
+      beforeEach(async () => {
+        const invoiceWithSingleLicence = {
+          ...invoice,
+          invoiceLicences: [
+            invoice.invoiceLicences[0]
+          ]
+        };
+        result = mappers.mapInvoiceLicence(batch, invoiceWithSingleLicence, invoiceLicence);
+      });
+
+      test('the link to delete the invoice licence is null', async () => {
+        expect(result.links.delete).to.be.null();
       });
     });
   });
@@ -356,7 +425,7 @@ experiment('modules/billing/lib/mappers', () => {
 
     test('maps to an array of error objects for invoice licences with errors', async () => {
       expect(result).to.equal([{
-        id: 'test-invoice-licence-id-1',
+        id: invoiceLicenceIds[0],
         message: 'There are problems with transactions on licence 01/123/456/A'
       }]);
     });

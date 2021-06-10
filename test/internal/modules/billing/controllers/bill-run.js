@@ -465,14 +465,14 @@ experiment('internal/modules/billing/controller', () => {
 
     test('passes the expected view template', async () => {
       const [view] = h.view.lastCall.args;
-      expect(view).to.equal('nunjucks/billing/confirm-page-with-metadata');
+      expect(view).to.equal('nunjucks/billing/confirm-batch');
     });
 
     test('passes the expected data in the view context', async () => {
       const [, context] = h.view.lastCall.args;
       expect(context).to.contain({ foo: 'bar' });
       expect(context.batch).to.equal(batchData);
-      expect(context.pageTitle).to.equal('You are about to cancel this bill run');
+      expect(context.pageTitle).to.equal(`You're about to cancel this bill run`);
       expect(context.secondTitle).to.equal(`Supplementary bill run`);
       expect(context.form).to.be.an.object();
       expect(context.form.action).to.equal(`/billing/batch/${request.params.batchId}/cancel`);
@@ -509,14 +509,14 @@ experiment('internal/modules/billing/controller', () => {
 
     test('passes the expected view template', async () => {
       const [view] = h.view.lastCall.args;
-      expect(view).to.equal('nunjucks/billing/confirm-page-with-metadata');
+      expect(view).to.equal('nunjucks/billing/confirm-batch');
     });
 
     test('passes the expected data in the view context', async () => {
       const [, context] = h.view.lastCall.args;
       expect(context).to.contain({ foo: 'bar' });
       expect(context.batch).to.equal(batchData);
-      expect(context.pageTitle).to.equal('You are about to send this bill run');
+      expect(context.pageTitle).to.equal(`You're about to send this bill run`);
       expect(context.secondTitle).to.equal(`Supplementary bill run`);
       expect(context.form).to.be.an.object();
       expect(context.form.action).to.equal(`/billing/batch/${request.params.batchId}/confirm`);
@@ -612,7 +612,7 @@ experiment('internal/modules/billing/controller', () => {
 
     test('configures the expected view template', async () => {
       const [view] = h.view.lastCall.args;
-      expect(view).to.equal('nunjucks/billing/confirm-page-with-metadata');
+      expect(view).to.equal('nunjucks/billing/confirm-invoice');
     });
 
     test('sets the correct view data', async () => {

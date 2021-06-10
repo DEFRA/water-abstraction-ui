@@ -9,7 +9,7 @@ invoiceDebitsTotal %}
 {% from "badge.njk" import badge %}
 {% from "crm/invoice-address.njk" import invoiceAddress %}
 {% from "./nunjucks/billing/macros/batch-metadata.njk" import batchMetadata %}
-{% from "./nunjucks/billing/macros/batch-buttons.njk" import removeInvoiceFromBatchButton %}
+{% from "./nunjucks/billing/macros/batch-buttons.njk" import removeInvoiceFromBatchButton, removeLicenceFromBatchButton %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 
@@ -138,12 +138,18 @@ invoiceDebitsTotal %}
           <div class="govuk-form-group govuk-form-group--error">
           {% endif %}
 
-          <h3 class="govuk-heading-l govuk-!-margin-bottom-0" id="{{ invoiceLicence.id }}">Licence
+          <h3 class="govuk-heading-l govuk-!-margin-bottom-3" id="{{ invoiceLicence.id }}">Licence
             {{ invoiceLicence.licenceNumber }}</h3>
 
-          <p>
-            <a href="{{ invoiceLicence.link }}">View licence</a>
-          </p>
+          <div class="govuk-button-group">
+            {% if invoiceLicence.links.delete %}
+              {#
+              -- Uncomment when deleting invoice licence fully implemented
+              {{ removeLicenceFromBatchButton(invoiceLicence.links.delete) }}
+              #}
+            {% endif %}
+            <a class="govuk-link" href="{{ invoiceLicence.links.view }}">View licence</a>
+          </div>
 
           {% if invoiceLicence.hasTransactionErrors%}
             {{ licenceErrors() }}

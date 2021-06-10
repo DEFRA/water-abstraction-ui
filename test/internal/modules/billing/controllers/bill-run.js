@@ -269,14 +269,6 @@ experiment('internal/modules/billing/controller', () => {
   });
 
   experiment('.getBillingBatchInvoice', () => {
-    let docIds;
-
-    beforeEach(async () => {
-      docIds = new Map();
-      docIds.set('12/34/56', 'test-document-id');
-      sandbox.stub(services.crm.documents, 'getDocumentIdMap').resolves(docIds);
-    });
-
     experiment('for a WRLS supplementary batch', () => {
       beforeEach(async () => {
         await controller.getBillingBatchInvoice(request, h);
@@ -316,6 +308,23 @@ experiment('internal/modules/billing/controller', () => {
       test('credit debit summary block is displayed', async () => {
         const [, view] = h.view.lastCall.args;
         expect(view.isCreditDebitBlockVisible).to.be.true();
+      });
+    });
+
+    experiment('when a bill has an invoiceNumber set', () => {
+      const invoiceNumber = 'A12345';
+
+      beforeEach(async () => {
+        services.water.billingBatches.getBatchInvoice.resolves({
+          ...invoice,
+          invoiceNumber
+        });
+        await controller.getBillingBatchInvoice(request, h);
+      });
+
+      test('the caption includes the invoice number', async () => {
+        const [, view] = h.view.lastCall.args;
+        expect(view.caption).to.equal(`Bill ${invoiceNumber}`);
       });
     });
 

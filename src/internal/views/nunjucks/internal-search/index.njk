@@ -74,8 +74,8 @@
 {% endmacro %}
 
 {% macro gaugingStationLink(station) %}
-  {% if station.gauging_station_id %}
-      <a href="/monitoring-stations/{{ station.gauging_station_id }}">
+  {% if station.gaugingStationId %}
+      <a href="/water/1.0/gauging-stations/{{ station.gaugingStationId }}/licences">
         {{ station.label }}
       </a>
   {% else %}

@@ -1,10 +1,11 @@
 'use strict';
 
 const Decimal = require('decimal.js-light');
-const { omit, sortBy, groupBy, pick, mapValues, isNull } = require('lodash');
+const { sortBy, groupBy, pick, mapValues, isNull, get } = require('lodash');
 const sentenceCase = require('sentence-case');
 const routing = require('./routing');
 const { transactionStatuses } = require('shared/lib/constants');
+const agreementsMapper = require('shared/lib/mappers/agreements');
 
 const getBillCount = batch => [batch.invoiceCount, batch.creditNoteCount].reduce((acc, value) =>
   isNull(value) ? acc : (acc || 0) + value
@@ -21,16 +22,6 @@ const mapBatchListRow = batch => ({
   batchType: mapBatchType(batch.type),
   billCount: getBillCount(batch),
   link: routing.getBillingBatchRoute(batch, { isBackEnabled: true })
-});
-
-const isTransactionEdited = transaction => {
-  if (!transaction.billingVolume) return false;
-  return transaction.billingVolume.calculatedVolume !== transaction.billingVolume.volume;
-};
-
-const mapTransaction = transaction => ({
-  ...omit(transaction, ['chargeElement']),
-  isEdited: isTransactionEdited(transaction)
 });
 
 const isTransactionInErrorStatus = transaction => transaction.status === transactionStatuses.error;
@@ -56,40 +47,42 @@ const getTransactionTotals = transactions => {
   return mapValues(totals, val => val.toNumber());
 };
 
-const isMinimimChargeTransaction = trans => trans.isMinimumCharge;
-const isNotMinimumChargeTransaction = trans => !isMinimimChargeTransaction(trans);
+const getSortKey = trans => `${get(trans, 'chargeElement.id')}_${trans.isCompensationCharge ? 1 : 0}`;
 
-const mapTransactionGroup = transactions => ({
-  chargeElement: transactions[0].chargeElement,
-  transactions: transactions.map(mapTransaction),
-  totals: getTransactionTotals(transactions)
+const mapTransaction = trans => ({
+  ...trans,
+  agreements: trans.agreements.map(agreementsMapper.mapAgreement)
 });
 
-const getTransactionGroups = transactions => {
-  const arr = transactions.filter(isNotMinimumChargeTransaction);
-  const grouped = groupBy(arr, trans => trans.chargeElement.id);
-  return Object.values(grouped).map(mapTransactionGroup);
+const mapInvoiceLicence = (batch, invoice, invoiceLicence) => {
+  const { licenceNumber, id: licenceId } = invoiceLicence.licence;
+  const { id, hasTransactionErrors, transactions } = invoiceLicence;
+  const deleteLink = isDeleteInvoiceLicenceLinkVisible(batch, invoice)
+    ? `/billing/batch/${batch.id}/invoice/${invoice.id}/delete-licence/${invoiceLicence.id}`
+    : null;
+  return {
+    id,
+    licenceNumber,
+    hasTransactionErrors,
+    transactions: sortBy(transactions, getSortKey).map(mapTransaction),
+    totals: getTransactionTotals(transactions),
+    links: {
+      view: `/licences/${licenceId}`,
+      delete: deleteLink
+    }
+  };
 };
 
-/**
-   *
-   * @param {Object} invoice - payload from water service invoice detail call
-   * @param {Map} documentIds - map of licence numbers / CRM document IDs
-   */
-const mapInvoiceLicences = invoice =>
-  invoice.invoiceLicences.map(invoiceLicence => {
-    const { licenceNumber, id: licenceId } = invoiceLicence.licence;
-    const { id, hasTransactionErrors, transactions } = invoiceLicence;
+const isDeleteInvoiceLicenceLinkVisible = (batch, invoice) =>
+  isReadyBatch(batch) &&
+  !isRebilledInvoice(invoice) &&
+  isInvoiceWithMultipleLicences(invoice);
 
-    return {
-      id,
-      licenceNumber,
-      hasTransactionErrors,
-      link: `/licences/${licenceId}`,
-      minimumChargeTransactions: transactions.filter(isMinimimChargeTransaction),
-      transactionGroups: getTransactionGroups(transactions)
-    };
-  });
+const isReadyBatch = batch => batch.status === 'ready';
+
+const isRebilledInvoice = invoice => invoice.rebillingState !== null;
+
+const isInvoiceWithMultipleLicences = invoice => invoice.invoiceLicences.length > 1;
 
 const mapBatchType = (type) => type === 'two_part_tariff' ? 'Two-part tariff' : sentenceCase(type);
 
@@ -147,7 +140,7 @@ const isCreditDebitBlockVisible = batch =>
   batch.source === 'wrls' && batch.type === 'supplementary';
 
 exports.mapBatchListRow = mapBatchListRow;
-exports.mapInvoiceLicences = mapInvoiceLicences;
+exports.mapInvoiceLicence = mapInvoiceLicence;
 exports.mapBatchType = mapBatchType;
 exports.mapConditions = mapConditions;
 exports.mapInvoices = mapInvoices;

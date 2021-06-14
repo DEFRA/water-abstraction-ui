@@ -7,7 +7,6 @@ const {
 const uuid = require('uuid/v4');
 
 const mappers = require('internal/modules/view-licences/lib/mappers');
-const { scope } = require('internal/lib/constants');
 
 experiment('internal/modules/billing/controllers/lib/mappers', () => {
   experiment('.getValidityNotice', () => {
@@ -141,52 +140,6 @@ experiment('internal/modules/billing/controllers/lib/mappers', () => {
         id: agreements[0].id,
         agreement: { code: 'S127', description: 'Two-part tariff (S127)' }
       }]);
-    });
-  });
-
-  experiment('.mapReturns', () => {
-    const returns = {
-      data: [{
-        id: 'test-return-id-1',
-        status: 'due',
-        endDate: '2021-03-31'
-      }, {
-        id: 'test-return-id-2',
-        status: 'completed',
-        endDate: '2021-03-31'
-      }]
-    };
-
-    test('returns null when returns are null', async () => {
-      const result = mappers.mapReturns(null);
-      expect(result).to.be.null();
-    });
-
-    test('returns array of mapped returns when returns are not null', async () => {
-      const request = {
-        auth: {
-          credentials: {
-            scope: [scope.returns]
-          }
-        }
-      };
-      const result = mappers.mapReturns(request, returns);
-      expect(result.data).to.equal([
-        {
-          id: 'test-return-id-1',
-          status: 'due',
-          endDate: '2021-03-31',
-          path: '/return/internal?returnId=test-return-id-1',
-          isEdit: true
-        },
-        {
-          id: 'test-return-id-2',
-          status: 'completed',
-          endDate: '2021-03-31',
-          path: '/returns/return?id=test-return-id-2',
-          isEdit: false
-        }
-      ]);
     });
   });
 });

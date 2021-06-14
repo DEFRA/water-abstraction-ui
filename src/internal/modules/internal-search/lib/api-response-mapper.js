@@ -1,4 +1,5 @@
-const { mapReturns } = require('../../returns/lib/helpers');
+'use strict';
+const returnsMapper = require('../../../lib/mappers/returns');
 
 /**
  * Maps the response from the water service internal search API to a form
@@ -14,7 +15,7 @@ const mapResponseToView = (response, request) => {
   return {
     ...response,
     noResults,
-    returns: returns ? mapReturns(returns, request) : null,
+    returns: returns ? returnsMapper.mapReturns(returns, request) : null,
     billingAccounts: billingAccounts || null
   };
 };

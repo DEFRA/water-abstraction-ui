@@ -14,6 +14,7 @@ const SCOPE_MANAGE_AGREEMENTS = 'manage_agreements';
 const SCOPE_CHARGE_VERSION_WORKFLOW_REVIEWER = 'charge_version_workflow_reviewer';
 const SCOPE_CHARGE_VERSION_WORKFLOW_EDITOR = 'charge_version_workflow_editor';
 const SCOPE_MANAGE_BILLING_ACCOUNTS = 'manage_billing_accounts';
+const SCOPE_MANAGE_GAUGING_STATION_LICENCE_LINKS = 'manage_gauging_station_licence_links';
 
 module.exports = {
   scope: {
@@ -45,6 +46,7 @@ module.exports = {
     manageAgreements: SCOPE_MANAGE_AGREEMENTS,
     chargeVersionWorkflowReviewer: SCOPE_CHARGE_VERSION_WORKFLOW_REVIEWER,
     chargeVersionWorkflowEditor: SCOPE_CHARGE_VERSION_WORKFLOW_EDITOR,
-    manageBillingAccounts: SCOPE_MANAGE_BILLING_ACCOUNTS
+    manageBillingAccounts: SCOPE_MANAGE_BILLING_ACCOUNTS,
+    manageGaugingStationLicenceLinks: SCOPE_MANAGE_GAUGING_STATION_LICENCE_LINKS
   }
 };

@@ -19,5 +19,6 @@
   "videosFolder": "./cypress/videos",
   "screenshotsFolder": "./cypress/screenshots",
   "supportFile": "./cypress/support/index.js",
-  "pluginsFile": "./cypress/plugins/index.js"
+  "pluginsFile": "./cypress/plugins/index.js",
+  "downloadsFolder": "./cypress/fixtures/"
 }

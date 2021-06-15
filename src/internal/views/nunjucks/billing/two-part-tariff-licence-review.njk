@@ -6,15 +6,30 @@
 
 {% from "./nunjucks/billing/macros/totals.njk" import chargeOrDash %}
 {% from "./nunjucks/billing/macros/batch-title.njk" import batchTitle %}
-{% from "./nunjucks/billing/macros/batch-buttons.njk" import removeTPTLicenceFromBatchButton %}
-{% from "./nunjucks/billing/macros/two-part-tariff-review-quantities.njk" import chargeElementQuantity, reportedVolume, billableVolume %}
+{% from "./nunjucks/billing/macros/batch-buttons.njk" import removeLicenceFromBatchButton %}
+{% from "./nunjucks/billing/macros/two-part-tariff-review-quantities.njk" import authorisedQuantity, billableQuantity, reportedVolume, billableVolume %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
 
 {% block content %}
 
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-two-thirds">
       {{ batchTitle(pageTitle, batch) }}
-      {{ removeTPTLicenceFromBatchButton(batch, licence) }}
+      
+      {% set summaryHtml %}
+        <a href="#">Licence details</a>
+      {% endset %}
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        {{ govukDetails({
+        summaryText: "Licence details",
+        html: summaryHtml
+      }) }}
+      </div>
+    </div>
+      {{ removeLicenceFromBatchButton(batch, licence) }}
     </div>
   </div>
 
@@ -22,46 +37,33 @@
     <div class="govuk-grid-column-full">
 
       {% for group in billingVolumeGroups %}
-
-        {% set insetText %}
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-0">{{ group[0].chargeElement.purposeUse.name }}</h2>
-        <p class="govuk-body">{{ group[0].chargeElement.abstractionPeriod | abstractionPeriod }}</p>
-        {% endset %}
-
-        {{ govukInsetText({
-        html : insetText
-      }) }}
-
-        <table class="govuk-table">
-          <thead class="govuk-table__head">
-            <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header">Element description</th>
-              <th scope="col" class="govuk-table__header">Element quantity</th>
-              <th scope="col" class="govuk-table__header">Reported quantity</th>
-              <th scope="col" class="govuk-table__header">Billable quantity</th>
-              <th scope="col" class="govuk-table__header">Issue</th>
-              <th scope="col" class="govuk-table__header">Action</th>
-            </tr>
-          </thead>
-          <tbody class="govuk-table__body">
-            {% for billingVolume in group %}
-              <tr class="govuk-table__row">
-                <td scope="row" class="govuk-table__cell">{{ billingVolume.chargeElement.description }}</td>
-                <td class="govuk-table__cell">{{ chargeElementQuantity(billingVolume.chargeElement) }}</td>
-                <td class="govuk-table__cell">{{ reportedVolume(billingVolume) }}</td>
-                <td class="govuk-table__cell">{{ billableVolume(billingVolume) }}</td>
-                <td class="govuk-table__cell">{{ billingVolume.error | default ('-') }}</td>
-                <td class="govuk-table__cell">
-                  <a href="{{ billingVolume.editLink }}">Change<span class="govuk-visually-hidden">
-                      element
-                      {{ billingVolume.chargeElement.description }}</span></a>
-                </td>
-              </tr>
-            {% endfor %}
-
-          </tbody>
-        </table>
-
+      
+{% for billingVolume in group %}
+{{ govukTable({
+  firstCellIsHeader: true, 
+   rows: [
+    [ { text: "Issue", classes: "thick_black_underline" }, { text: billingVolume.error, classes: "thick_black_underline"  }, { text: "", classes: "thick_black_underline" } ],
+    [ { text: "Billable returns" }, { html: billableVolume(billingVolume) }, 
+      { html: "<a href='" + billingVolume.editLink + "'>
+                  Change
+                  <span class='govuk-visually-hidden'>
+                    element "
+                    + billingVolume.chargeElement.description +
+                  "</span>
+                </a>"
+      }
+    ],
+    [ { text: "Reported returns", classes: "thick_black_underline"  }, { text: reportedVolume(billingVolume), classes: "thick_black_underline" }, { text: "", classes: "thick_black_underline"  } ],
+    [ { text: "Billing Account" }, { text: "BA2423425235" }, { text: "" } ],
+    [ { text: "Purpose" }, { text: "Spray - Irrigation" }, { text: "" } ],
+    [ { text: "Description" }, { text: billingVolume.chargeElement.description }, { text: "" } ],
+    [ { text: "Charge period" }, { text: billingVolume.chargePeriod.startDate | date("D MMMM") + " to " + billingVolume.chargePeriod.endDate | date("D MMMM") }, { text: "" } ],
+    [ { text: "Abstraction period" }, { text: billingVolume.chargeElement.abstractionPeriod | abstractionPeriod }, { text: "" } ],
+    [ { text: "Authorised" }, { text: authorisedQuantity(billingVolume.chargeElement) }, { text: "" } ],
+    [ { text: "Billable" }, { text: billableQuantity(billingVolume.chargeElement) }, { text: "" } ]
+  ]
+}) }}
+{% endfor %}
       {% endfor %}
     </div>
   </div>

@@ -21,10 +21,10 @@ const getErrorString = errorCodes => errorCodes.reduce((acc, code) => {
   return acc ? 'Multiple errors' : statusMessages.get(code);
 }, null);
 
-const mapLicence = (batch, licence, action) => ({
+const mapLicence = (batch, licence) => ({
   ...licence,
   twoPartTariffStatuses: getErrorString(licence.twoPartTariffStatuses),
-  link: routing.getTwoPartTariffLicenceReviewRoute(batch, licence.licenceId, action)
+  link: routing.getTwoPartTariffLicenceReviewRoute(batch, licence.licenceId, (licence.twoPartTariffError ? 'review' : 'view'))
 });
 
 const getTotals = licences => {

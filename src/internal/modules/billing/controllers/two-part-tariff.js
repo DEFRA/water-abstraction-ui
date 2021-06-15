@@ -7,7 +7,7 @@ const routing = require('../lib/routing');
 
 const forms = require('shared/lib/forms');
 
-const getTwoPartTariffReview = async (request, h, action) => {
+const getTwoPartTariffReview = async (request, h) => {
   const { batch } = request.pre;
 
   const licencesData = await services.water.billingBatches.getBatchLicences(batch.id);

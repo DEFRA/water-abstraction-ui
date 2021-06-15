@@ -5,7 +5,6 @@ const LicencesService = require('shared/lib/connectors/services/water/LicencesSe
 const UsersService = require('shared/lib/connectors/services/water/UsersService');
 const ChargeVersionsService = require('shared/lib/connectors/services/water/ChargeVersionsService');
 const ChargeVersionWorkflowsService = require('shared/lib/connectors/services/water/ChargeVersionWorkflowsService');
-const GaugingStationsService = require('shared/lib/connectors/services/water/GaugingStationsService');
 
 // Internal services (possibly unique, or overriding shared)
 const ReturnsService = require('./ReturnsService');
@@ -46,7 +45,6 @@ module.exports = config => ({
   companies: new CompaniesService(config.services.water, logger),
   licences: new LicencesService(config.services.water, logger),
   users: new UsersService(config.services.water, logger),
-  GaugingStations: new GaugingStationsService(config.services.water, logger),
 
   // Internal services
   addressSearch: new AddressSearchService(config.services.water, logger),

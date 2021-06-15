@@ -5,5 +5,5 @@ It loads and parses a CSV source file of stations, and updates the JSON schema i
 Usage:
 
 ```
-./scripts/stations update path/to/stations-list.csv 
+node ./scripts/stations update path/to/stations-list.csv 
 ```

@@ -63,5 +63,17 @@ experiment('external/modules/returns/controllers/pre-handlers', () => {
         expect(h.takeover.called).to.be.true();
       });
     });
+
+    experiment('when the return is not present in the request', () => {
+      beforeEach(() => {
+        delete request.model;
+        response = preHandlers.assertReturnStatusIsDue(request, h);
+      });
+
+      test('a Boom not found error is returned', () => {
+        expect(response.isBoom).to.be.true();
+        expect(response.output.statusCode).to.equal(404);
+      });
+    });
   });
 });

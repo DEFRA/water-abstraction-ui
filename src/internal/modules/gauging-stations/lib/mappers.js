@@ -5,28 +5,24 @@ const formatDate = date => moment(date).format('D MMMM YYYY');
 
 /* Draft: Independent objects currently joined in frontend */
 const mapStations = (newData) => {
-  for (var rkey in newData.stations) {
+  for (let rkey in newData.stations) {
+    if (!newData.stations[rkey].wiskiId) {
+      newData.stations[rkey].wiskiId = 'n/a';
+    }
     if (!newData.stations[rkey].easting) {
       newData.stations[rkey].easting = 'n/a';
     }
     if (!newData.stations[rkey].northing) {
       newData.stations[rkey].northing = 'n/a';
     }
-    if (!newData.stations[rkey].wiskiId) {
-      newData.stations[rkey].wiskiId = 'n/a';
-    } else {
-      /* Rename to match template */
-      newData.stations[rkey].wiskiID = newData.stations[rkey].wiskiId;
-      delete newData.stations[rkey].wiskiId;
-    }
     newData.stations[rkey].tags = [];
     newData.stations[rkey].licences = [];
     newData.licences = [];
     if (newData.stations.hasOwnProperty(rkey)) {
-      let licenceObj = {};
+      const licenceObj = {};
       licenceObj.number = newData.stations[rkey].licenceRef;
       licenceObj.communications = [];
-      let comObj = {};
+      const comObj = {};
       if (!newData.stations[rkey].comstatus) {
         comObj.type = 'n/a';
       } else {
@@ -46,35 +42,35 @@ const mapStations = (newData) => {
 };
 
 const mapTags = (newData) => {
-  for (var rkey in newData.stations) {
+  for (let rkey in newData.stations) {
     if (newData.stations.hasOwnProperty(rkey)) {
-      let tagObj = {};
+      const tagObj = {};
       tagObj.licenceNumber = newData.stations[rkey].licenceRef;
       tagObj.tagValues = [];
-      let tagValueObj = {};
+      const tagValueObj = {};
       tagValueObj.licenceNumber = newData.stations[rkey].licenceRef;
-      let abstractionPeriod = { periodStart: '1/1', periodEnd: '31/12' };
+      const abstractionPeriod = { periodStart: '1/1', periodEnd: '31/12' };
       abstractionPeriod.periodStart = newData.stations[rkey].abstractionPeriodStartDay + '/' + newData.stations[rkey].abstractionPeriodStartMonth;
       abstractionPeriod.periodEnd = newData.stations[rkey].abstractionPeriodEndDay + '/' + newData.stations[rkey].abstractionPeriodEndMonth;
       if (!newData.stations[rkey].abstractionPeriodStartDay) {
-        abstractionPeriod = 'n/a';
+        abstractionPeriod.periodStart = 'n/a';
+      }
+      if (!newData.stations[rkey].abstractionPeriodStartMonth) {
+        abstractionPeriod.periodStart = 'n/a';
       }
       tagValueObj.abstractionPeriod = abstractionPeriod;
       if (!newData.stations[rkey].restrictionType) {
         newData.stations[rkey].restrictionType = 'n/a';
-      } else {
-        tagValueObj.conditionType = newData.stations[rkey].restrictionType;
       }
+      tagValueObj.conditionType = newData.stations[rkey].restrictionType;
       if (!newData.stations[rkey].thresholdValue) {
-        tagValueObj.thresholdValue = '0';
-      } else {
-        tagValueObj.thresholdValue = newData.stations[rkey].thresholdValue;
+        newData.stations[rkey].thresholdValue = '0';
       }
+      tagValueObj.thresholdValue = newData.stations[rkey].thresholdValue;
       if (!newData.stations[rkey].thresholdUnit) {
-        tagValueObj.thresholdUnits = 'Ml/d';
-      } else {
-        tagValueObj.thresholdUnits = newData.stations[rkey].thresholdUnit;
+        newData.stations[rkey].thresholdUnit = 'Ml/d';
       }
+      tagValueObj.thresholdUnits = newData.stations[rkey].thresholdUnit;
       tagObj.tagValues.push(tagValueObj);
       newData.stations[0].tags.push(tagObj);
     }
@@ -86,10 +82,10 @@ const mapStationsLicences = (data) => {
   if (!data) {
     return null;
   }
-  let newData = {};
+  const newData = {};
   newData.stations = [];
   newData.stationID = 0;
-  let newStations = JSON.parse(JSON.stringify(data));
+  const newStations = JSON.parse(JSON.stringify(data));
   newData.stations = newStations;
   return newData;
 };

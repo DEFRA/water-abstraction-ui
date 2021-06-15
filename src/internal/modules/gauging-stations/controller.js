@@ -11,7 +11,7 @@ const mappers = require('./lib/mappers');
 
 const getLicencesForGaugingStation = async (request, h) => {
   const { gaugingStationId } = request.params;
-  let { data } = request.pre.gaugingStations;
+  const { data } = request.pre.gaugingStations;
   let newData = mappers.mapStationsLicences(data);
   /* Format data for stations */
   if (newData.stations) {
@@ -21,14 +21,13 @@ const getLicencesForGaugingStation = async (request, h) => {
   if (newData.stations) {
     newData = mappers.mapTags(newData);
   }
-  if (newData.stations.length === 0) {
+  if ((newData.stations.length === 0) || (newData.stations[0].licenceRef === undefined)) {
     const view = {
       ...request.view,
       pageTitle: `We cannot find information for monitoring station with id ${gaugingStationId}`
     };
     return h
-      .view('nunjucks/errors/404', view)
-      .code(404);
+      .view('nunjucks/errors/404', view);
   }
   return h.view('nunjucks/gauging-stations/licences', {
     ...request.view,

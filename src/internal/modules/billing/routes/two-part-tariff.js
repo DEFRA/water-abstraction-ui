@@ -55,13 +55,7 @@ module.exports = {
           licenceId: VALID_GUID
         }
       }
-    },
-    validate: {
-      params: {
-        batchId: VALID_GUID,
-        licenceId: VALID_GUID
-      }
-    }
+    }  
   },
   getBillingVolumeReview: {
     method: 'GET',
@@ -78,6 +72,13 @@ module.exports = {
       plugins: {
         viewContext: {
           activeNavLink: 'notifications'
+        }
+      },
+      validate: {
+        params: {
+          batchId: VALID_GUID,
+          licenceId: VALID_GUID,
+          billingVolumeId: VALID_GUID
         }
       }
     }

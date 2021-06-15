@@ -55,9 +55,14 @@ module.exports = {
           licenceId: VALID_GUID
         }
       }
+    },
+    validate: {
+      params: {
+        batchId: VALID_GUID,
+        licenceId: VALID_GUID
+      }
     }
   },
-
   getBillingVolumeReview: {
     method: 'GET',
     path: '/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}/billing-volume/{billingVolumeId}',
@@ -74,64 +79,30 @@ module.exports = {
         viewContext: {
           activeNavLink: 'notifications'
         }
-      },
-      validate: {
-        params: {
-          batchId: VALID_GUID,
-          licenceId: VALID_GUID,
-          billingVolumeId: VALID_GUID
-        }
       }
-    }
-  },
+    },
 
-  postBillingVolumeReview: {
-    method: 'POST',
-    path: '/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}/billing-volume/{billingVolumeId}',
-    handler: controller.postBillingVolumeReview,
-    config: {
-      pre: [
-        ...pre,
-        { method: preHandlers.loadLicence, assign: 'licence' },
-        { method: preHandlers.loadBillingVolume, assign: 'billingVolume' }
-      ],
-      auth: { scope: allowedScopes },
-      description: 'review billing volume quantities in TPT batch',
-      plugins: {
-        viewContext: {
-          activeNavLink: 'notifications'
-        }
-      },
-      validate: {
-        params: {
-          batchId: VALID_GUID,
-          licenceId: VALID_GUID,
-          billingVolumeId: VALID_GUID
-        }
-      }
-    }
-  },
-
-  getRemoveLicence: {
-    method: 'GET',
-    path: '/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}/remove',
-    handler: controller.getRemoveLicence,
-    config: {
-      pre: [
-        ...pre,
-        { method: preHandlers.loadLicence, assign: 'licence' }
-      ],
-      auth: { scope: allowedScopes },
-      description: 'confirm remove licence from TPT batch',
-      plugins: {
-        viewContext: {
-          activeNavLink: 'notifications'
-        }
-      },
-      validate: {
-        params: {
-          batchId: VALID_GUID,
-          licenceId: VALID_GUID
+    getRemoveLicence: {
+      method: 'GET',
+      path: '/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}/remove',
+      handler: controller.getRemoveLicence,
+      config: {
+        pre: [
+          ...pre,
+          { method: preHandlers.loadLicence, assign: 'licence' }
+        ],
+        auth: { scope: allowedScopes },
+        description: 'confirm remove licence from TPT batch',
+        plugins: {
+          viewContext: {
+            activeNavLink: 'notifications'
+          }
+        },
+        validate: {
+          params: {
+            batchId: VALID_GUID,
+            licenceId: VALID_GUID
+          }
         }
       }
     }
@@ -208,5 +179,4 @@ module.exports = {
       }
     }
   }
-
 };

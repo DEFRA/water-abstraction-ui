@@ -17,7 +17,7 @@ const createRoute = (...args) => {
   set(route, 'options.auth.scope', allowedScopes);
   set(route, 'options.plugins.flow.adapter', storageAdapter);
   set(route, 'options.pre', [
-    preHandlers.assertReturnStatusIsDue
+    preHandlers.redirectIfReturnNotDue
   ]);
   return route;
 };

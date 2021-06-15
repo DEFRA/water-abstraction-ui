@@ -27,11 +27,11 @@ experiment('external/modules/returns/controllers/pre-handlers', () => {
     sandbox.restore();
   });
 
-  experiment('.assertReturnStatusIsDue', () => {
+  experiment('.redirectIfReturnNotDue', () => {
     experiment('when the return is due', () => {
       beforeEach(() => {
         request.model.status = 'due';
-        response = preHandlers.assertReturnStatusIsDue(request, h);
+        response = preHandlers.redirectIfReturnNotDue(request, h);
       });
 
       test('the pre-handler returns h.continue', () => {
@@ -50,7 +50,7 @@ experiment('external/modules/returns/controllers/pre-handlers', () => {
     experiment('when the return is completed', () => {
       beforeEach(() => {
         request.model.status = 'completed';
-        response = preHandlers.assertReturnStatusIsDue(request, h);
+        response = preHandlers.redirectIfReturnNotDue(request, h);
       });
 
       test('the user is redirected to the completed return page', () => {
@@ -67,7 +67,7 @@ experiment('external/modules/returns/controllers/pre-handlers', () => {
     experiment('when the return is not present in the request', () => {
       beforeEach(() => {
         delete request.model;
-        response = preHandlers.assertReturnStatusIsDue(request, h);
+        response = preHandlers.redirectIfReturnNotDue(request, h);
       });
 
       test('a Boom not found error is returned', () => {

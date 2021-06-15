@@ -5,7 +5,7 @@ const Boom = require('@hapi/boom');
 const { returnStatuses } = require('shared/lib/constants');
 const returnPath = require('external/lib/return-path');
 
-const assertReturnStatusIsDue = (request, h) => {
+const redirectIfReturnNotDue = (request, h) => {
   if (!requestHasReturnModel(request)) {
     return Boom.notFound('Return expected');
   }
@@ -22,4 +22,4 @@ const requestHasReturnModel = request => isObject(request.model);
 
 const isDueReturn = ret => ret.status === returnStatuses.due;
 
-exports.assertReturnStatusIsDue = assertReturnStatusIsDue;
+exports.redirectIfReturnNotDue = redirectIfReturnNotDue;

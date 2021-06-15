@@ -189,12 +189,13 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       expect(view.batch.region.name).to.equal('Anglian');
     });
 
-    test('returns the 2 licences with errors to the view', async () => {
+    test('returns the 4 licences with errors and no errors to the view', async () => {
       const [, view] = h.view.lastCall.args;
-      expect(view.licences).to.be.array().length(2);
-
+      expect(view.licences).to.be.array().length(4);
       expect(view.licences[0].licenceRef).to.equal('test-licence-ref-1');
       expect(view.licences[1].licenceRef).to.equal('test-licence-ref-2');
+      expect(view.licences[2].licenceRef).to.equal('test-licence-ref-3');
+      expect(view.licences[3].licenceRef).to.equal('test-licence-ref-4');
     });
 
     test('maps the first licence correctly', async () => {
@@ -207,7 +208,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       expect(licence.licenceHolder.firstName).to.equal('forename');
       expect(licence.licenceHolder.lastName).to.equal('surname');
       expect(licence.twoPartTariffStatuses).to.equal('Multiple errors');
-      expect(licence.link).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-licence-id-1/review');
+      expect(licence.link).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-licence-id-1');
     });
 
     test('maps the second licence correctly', async () => {
@@ -234,65 +235,10 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
         await controller.getTwoPartTariffReview(request, h);
       });
 
-      test('returns ready view template', () => {
+      test('returns review view template for both errors and non errored licences', () => {
         const [templateName] = h.view.lastCall.args;
-        expect(templateName).to.equal('nunjucks/billing/two-part-tariff-ready');
+        expect(templateName).to.equal('nunjucks/billing/two-part-tariff-review');
       });
-    });
-  });
-
-  experiment('.getTwoPartTariffReady', () => {
-    beforeEach(async () => {
-      services.water.billingBatches.getBatchLicences.resolves(batchLicences);
-      await controller.getTwoPartTariffViewReady(request, h);
-    });
-
-    test('uses the correct view template', async () => {
-      const [templateName] = h.view.lastCall.args;
-      expect(templateName).to.equal('nunjucks/billing/two-part-tariff-ready');
-    });
-
-    test('returns the correct view data objects', async () => {
-      const keys = Object.keys(h.view.lastCall.args[1]);
-      expect(keys).to.include(['batch', 'reviewLink', 'readyLink', 'licences', 'totals', 'back']);
-    });
-
-    test('the links are correct', async () => {
-      const { readyLink, reviewLink } = h.view.lastCall.args[1];
-      expect(readyLink).to.equal('/billing/batch/test-batch-id/two-part-tariff-ready');
-      expect(reviewLink).to.equal('/billing/batch/test-batch-id/two-part-tariff-review');
-    });
-
-    test('returns the correct batch data to the view', async () => {
-      const [, view] = h.view.lastCall.args;
-      expect(view.batch.id).to.equal('test-batch-id');
-      expect(view.batch.dateCreated).to.equal('2000-01-01T00:00:00.000Z');
-      expect(view.batch.type).to.equal('two-part-tariff');
-      expect(view.batch.region.name).to.equal('Anglian');
-    });
-
-    test('returns the correct licences to the view', async () => {
-      const [, view] = h.view.lastCall.args;
-      expect(view.licences).to.be.array().length(2);
-      expect(view.licences[0].licenceRef).to.equal('test-licence-ref-3');
-      expect(view.licences[1].licenceRef).to.equal('test-licence-ref-4');
-    });
-
-    test('returns the correct licence link', async () => {
-      const [licence] = h.view.lastCall.args[1].licences;
-      expect(licence.link).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-licence-id-3/view');
-    });
-
-    test('returns the correct totals to the view', async () => {
-      const [, view] = h.view.lastCall.args;
-      expect(view.totals.errors).to.equal(2);
-      expect(view.totals.ready).to.equal(2);
-      expect(view.totals.total).to.equal(4);
-    });
-
-    test('returns the correct back link to the view', async () => {
-      const [, view] = h.view.lastCall.args;
-      expect(view.back).to.equal('/billing/batch/list');
     });
   });
 
@@ -568,12 +514,12 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
       test('sets the page title', async () => {
         const [, { pageTitle }] = h.view.lastCall.args;
-        expect(pageTitle).to.equal('Review quantity to bill for Test description');
+        expect(pageTitle).to.equal('Set the billable returns quantity for this bill run');
       });
 
       test('sets the caption', async () => {
         const [, { caption }] = h.view.lastCall.args;
-        expect(caption).to.equal('Licence 01/123/ABC');
+        expect(caption).to.equal('Spritzing leeks, Test description');
       });
 
       test('sets a link to view returns', async () => {
@@ -770,6 +716,11 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     experiment('when the annual authorised quantity is selected', () => {
       beforeEach(async () => {
+        services.water.billingBatches.getBatchLicenceBillingVolumes.resolves([{
+          twoPartTariffError: false
+        }, {
+          twoPartTariffError: false
+        }]);
         request = getBillingVolumeReviewRequest({
           csrf_token: '00000000-0000-0000-0000-000000000000',
           quantity: 'authorised'
@@ -779,12 +730,17 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
       test('the user is redirected to a confirmation page', async () => {
         const [path] = h.redirect.lastCall.args;
-        expect(path).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-licence-id/billing-volume/test-billing-volume-id/confirm?quantity=25.3');
+        expect(path).to.equal('/billing/batch/test-batch-id/two-part-tariff-review');
       });
     });
 
     experiment('when a valid custom quantity is selected', () => {
       beforeEach(async () => {
+        services.water.billingBatches.getBatchLicenceBillingVolumes.resolves([{
+          twoPartTariffError: false
+        }, {
+          twoPartTariffError: false
+        }]);
         request = getBillingVolumeReviewRequest({
           csrf_token: '00000000-0000-0000-0000-000000000000',
           quantity: 'custom',
@@ -795,160 +751,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
       test('the user is redirected to a confirmation page', async () => {
         const [path] = h.redirect.lastCall.args;
-        expect(path).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-licence-id/billing-volume/test-billing-volume-id/confirm?quantity=12.43');
-      });
-    });
-  });
-
-  experiment('.getConfirmQuantity', () => {
-    let request;
-
-    beforeEach(async () => {
-      request = getBillingVolumeReviewRequest();
-      request.query = { quantity: 10.4 };
-      await controller.getConfirmQuantity(request, h);
-    });
-
-    test('renders the correct template', async () => {
-      const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/billing/two-part-tariff-quantities-confirm');
-    });
-
-    test('outputs the correct page title to the view', async () => {
-      const [, { pageTitle }] = h.view.lastCall.args;
-      expect(pageTitle).to.equal('You\'re about to set the billable quantity to 10.4ML');
-    });
-
-    test('sets the caption', async () => {
-      const [, { caption }] = h.view.lastCall.args;
-      expect(caption).to.equal('Licence 01/123/ABC');
-    });
-
-    test('outputs the correct back link to the view', async () => {
-      const [, { back }] = h.view.lastCall.args;
-      expect(back).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-licence-id/billing-volume/test-billing-volume-id');
-    });
-
-    test('outputs the quantity to the view', async () => {
-      const [, { quantity }] = h.view.lastCall.args;
-      expect(quantity).to.equal(request.query.quantity);
-    });
-
-    test('outputs the licence to the view', async () => {
-      const [, { licence }] = h.view.lastCall.args;
-      expect(licence).to.be.an.object();
-      expect(licence.id).to.equal('test-licence-id');
-    });
-
-    experiment('the form', () => {
-      let form;
-
-      beforeEach(async () => {
-        form = h.view.lastCall.args[1].form;
-      });
-
-      test('is an object', async () => {
-        expect(form).to.be.an.object();
-      });
-
-      test('has a hidden field for the CSRF token', async () => {
-        const field = form.fields.find(field => field.name === 'csrf_token');
-        expect(field.value).to.equal(request.view.csrfToken);
-      });
-
-      test('has a hidden field containing the quantity', async () => {
-        const field = form.fields.find(field => field.name === 'quantity');
-        expect(field.options.widget).to.equal('text');
-        expect(field.options.type).to.equal('hidden');
-        expect(field.value).to.equal(10.4);
-      });
-
-      test('has a continue button', async () => {
-        const field = form.fields.find(field => field.options.widget === 'button');
-        expect(field.options.label).to.equal('Continue');
-      });
-    });
-  });
-
-  experiment('.postConfirmQuantity', () => {
-    let request;
-
-    experiment('when the quantity is valid', () => {
-      beforeEach(async () => {
-        request = getBillingVolumeReviewRequest({
-          quantity: 10.4,
-          csrf_token: '00000000-0000-0000-0000-000000000000'
-        });
-      });
-
-      experiment('when there are still other transactions with two-part tariff errors', () => {
-        beforeEach(async () => {
-          services.water.billingBatches.getBatchLicenceBillingVolumes.resolves([{
-            twoPartTariffError: false
-          }, {
-            twoPartTariffError: true
-          }]);
-
-          await controller.postConfirmQuantity(request, h);
-        });
-
-        test('the transaction is updated', async () => {
-          expect(services.water.billingVolumes.updateVolume.calledWith(
-            request.params.billingVolumeId, request.payload.quantity
-          )).to.be.true();
-        });
-
-        test('the user is redirected back to the licence review screen', async () => {
-          expect(h.redirect.calledWith(
-            '/billing/batch/test-batch-id/two-part-tariff/licence/test-licence-id/review'
-          )).to.be.true();
-        });
-      });
-
-      experiment('when all the two-part tariff errors have been resolved', () => {
-        beforeEach(async () => {
-          services.water.billingBatches.getBatchLicenceBillingVolumes.resolves([{
-            twoPartTariffError: false
-          }, {
-            twoPartTariffError: false
-          }]);
-
-          await controller.postConfirmQuantity(request, h);
-        });
-
-        test('the transaction is updated', async () => {
-          expect(services.water.billingVolumes.updateVolume.calledWith(
-            request.params.billingVolumeId, request.payload.quantity
-          )).to.be.true();
-        });
-
-        test('the user is redirected back to the licence review screen', async () => {
-          expect(h.redirect.calledWith(
-            '/billing/batch/test-batch-id/two-part-tariff-review'
-          )).to.be.true();
-        });
-      });
-    });
-
-    experiment('when the quantity is invalid', () => {
-      let result;
-
-      beforeEach(async () => {
-        request = getBillingVolumeReviewRequest({
-          quantity: -24,
-          csrf_token: '00000000-0000-0000-0000-000000000000'
-        });
-
-        result = await controller.postConfirmQuantity(request, h);
-      });
-
-      test('the transaction is not updated', async () => {
-        expect(services.water.billingVolumes.updateVolume.called).to.be.false();
-      });
-
-      test('a bad request response is returned', async () => {
-        expect(result.isBoom).to.be.true();
-        expect(result.output.statusCode).to.equal(400);
+        expect(path).to.equal('/billing/batch/test-batch-id/two-part-tariff-review');
       });
     });
   });

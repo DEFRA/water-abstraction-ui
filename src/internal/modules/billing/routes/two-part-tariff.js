@@ -25,28 +25,7 @@ if (isAcceptanceTestTarget) {
         description: 'view list of 2PT returns data matching issues',
         plugins: {
           viewContext: {
-            pageTitle: 'Review licences with returns data issues',
-            activeNavLink: 'notifications'
-          }
-        },
-        validate: {
-          params: {
-            batchId: VALID_GUID
-          }
-        }
-      }
-    },
-    getBillingTwoPartTariffReady: {
-      method: 'GET',
-      path: '/billing/batch/{batchId}/two-part-tariff-ready',
-      handler: controller.getTwoPartTariffViewReady,
-      config: {
-        pre,
-        auth: { scope: allowedScopes },
-        description: 'view list of 2PT licences ready for billing',
-        plugins: {
-          viewContext: {
-            pageTitle: 'View licences ready for billing',
+            pageTitle: 'Review data issues',
             activeNavLink: 'notifications'
           }
         },
@@ -59,7 +38,7 @@ if (isAcceptanceTestTarget) {
     },
     getLicenceReview: {
       method: 'GET',
-      path: '/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}/{action}',
+      path: '/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}',
       handler: controller.getLicenceReview,
       config: {
         pre: [
@@ -76,8 +55,7 @@ if (isAcceptanceTestTarget) {
         validate: {
           params: {
             batchId: VALID_GUID,
-            licenceId: VALID_GUID,
-            action: Joi.string().allow(['review', 'view']).required()
+            licenceId: VALID_GUID
           }
         }
       }
@@ -131,67 +109,6 @@ if (isAcceptanceTestTarget) {
             batchId: VALID_GUID,
             licenceId: VALID_GUID,
             billingVolumeId: VALID_GUID
-          }
-        }
-      }
-    },
-
-    getConfirmQuantity: {
-      method: 'GET',
-      path: '/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}/billing-volume/{billingVolumeId}/confirm',
-      handler: controller.getConfirmQuantity,
-      config: {
-        pre: [
-          ...pre,
-          { method: preHandlers.loadLicence, assign: 'licence' },
-          { method: preHandlers.loadBillingVolume, assign: 'billingVolume' }
-        ],
-        auth: { scope: allowedScopes },
-        description: 'review billing volume quantities in TPT batch',
-        plugins: {
-          viewContext: {
-            activeNavLink: 'notifications'
-          }
-        },
-        validate: {
-          params: {
-            batchId: VALID_GUID,
-            licenceId: VALID_GUID,
-            billingVolumeId: VALID_GUID
-          },
-          query: {
-            quantity: Joi.number().min(0).required()
-          }
-        }
-      }
-    },
-
-    postConfirmQuantity: {
-      method: 'POST',
-      path: '/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}/billing-volume/{billingVolumeId}/confirm',
-      handler: controller.postConfirmQuantity,
-      config: {
-        pre: [
-          ...pre,
-          { method: preHandlers.loadLicence, assign: 'licence' },
-          { method: preHandlers.loadBillingVolume, assign: 'billingVolume' }
-        ],
-        auth: { scope: allowedScopes },
-        description: 'confirm review billing volume in TPT batch',
-        plugins: {
-          viewContext: {
-            activeNavLink: 'notifications'
-          }
-        },
-        validate: {
-          params: {
-            batchId: VALID_GUID,
-            licenceId: VALID_GUID,
-            billingVolumeId: VALID_GUID
-          },
-          payload: {
-            csrf_token: VALID_GUID,
-            quantity: Joi.number().min(0).required()
           }
         }
       }

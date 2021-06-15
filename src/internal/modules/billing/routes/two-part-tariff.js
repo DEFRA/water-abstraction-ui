@@ -55,7 +55,7 @@ module.exports = {
           licenceId: VALID_GUID
         }
       }
-    }  
+    }
   },
   getBillingVolumeReview: {
     method: 'GET',
@@ -83,7 +83,6 @@ module.exports = {
       }
     }
   },
-  
   postBillingVolumeReview: {
     method: 'POST',
     path: '/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}/billing-volume/{billingVolumeId}',
@@ -110,7 +109,6 @@ module.exports = {
       }
     }
   },
-
   getRemoveLicence: {
     method: 'GET',
     path: '/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}/remove',
@@ -159,7 +157,6 @@ module.exports = {
       }
     }
   },
-
   getApproveReview: {
     method: 'GET',
     path: '/billing/batch/{batchId}/approve-review',

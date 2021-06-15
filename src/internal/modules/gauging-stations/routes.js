@@ -8,7 +8,7 @@ module.exports = {
 
   getLicencesForGaugingStation: {
     method: 'GET',
-    path: '/water/1.0/gauging-stations/{gaugingStationId}/licences',
+    path: '/monitoring-stations/{gaugingStationId}/licences',
     handler: controller.getLicencesForGaugingStation,
     config: {
       description: 'Gets summary details about a particular gauging station',

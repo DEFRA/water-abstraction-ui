@@ -1,21 +1,30 @@
 'use strict';
 
-const SESSION_KEY = 'licenceTaggingProcess';
+const getSessionKey = request => `licenceTaggingProcess.${request.defra.entityId}`;
 
-const getSessionKey = userKey => `${SESSION_KEY}.${userKey}`;
+const get = (request) => {
+  const key = getSessionKey(request);
+  return request.yar.get(key) || {};
+};
 
-const get = (request, key) => request.yar.get(getSessionKey(key));
+const set = (request, data) => {
+  const key = getSessionKey(request);
+  return request.yar.set(key, data);
+};
 
-const set = (request, key, data) => request.yar.set(getSessionKey(key), data);
-
-const merge = (request, key, data) => {
-  const existingData = get(request, key);
-  return set(request, key, {
+const merge = (request, data) => {
+  const existingData = get(request);
+  return set(request, {
     ...existingData,
     ...data
   });
 };
 
+const clear = (request) => {
+  set(request, {});
+};
+
 exports.get = get;
 exports.set = set;
 exports.merge = merge;
+exports.clear = clear;

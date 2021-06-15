@@ -1,28 +1,34 @@
 const Joi = require('joi');
-
+const { get } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms/');
+const session = require('../lib/session');
 
-const alertTypeForm = request => {
+const conditionEntryForm = request => {
   const f = formFactory(request.path);
 
-  f.fields.push(fields.text('selectedLicenceNumber', {
+  const defaultCondition = get(session.get(request), 'condition.value');
+
+  f.fields.push(fields.text('condition', {
     controlClass: 'govuk-input govuk-input--width-10',
     errors: {
+      'any.empty': {
+        message: 'Select a condition'
+      },
       'any.required': {
-        message: 'Enter a valid licence number'
+        message: 'Select a condition'
       }
     }
-  }));
+  }, defaultCondition));
 
   f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
   return f;
 };
 
-const alertTypeSchema = () => Joi.object({
+const conditionEntrySchema = () => Joi.object({
   csrf_token: Joi.string().uuid().required(),
-  selectedLicenceNumber: Joi.string().required()
+  condition: Joi.string().uuid().allow(null, '')
 });
 
-exports.form = alertTypeForm;
-exports.schema = alertTypeSchema;
+exports.form = conditionEntryForm;
+exports.schema = conditionEntrySchema;

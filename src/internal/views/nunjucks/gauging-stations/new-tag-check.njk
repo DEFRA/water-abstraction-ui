@@ -1,0 +1,64 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "forms/index.njk" import formRender, formErrorSummary %}
+{% from "title.njk" import title %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+    {{ formErrorSummary(form) }}
+
+    {% if not form | isFirstFieldHeading %}
+      {{ title(pageTitle, caption) }}
+    {% endif %}
+    <script>
+        console.log({{ sessionData | dump | safe}})
+    </script>
+        <dl class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Threshold</dt>
+            <dd class="govuk-summary-list__value">{{sessionData.threshold.value}}{{sessionData.unit.value}}</dd>
+              <dd class="govuk-summary-list__actions">
+                  <a class="govuk-link" href="threshold-and-unit">
+                    Change<span class="govuk-visually-hidden"> tag threshold</span>
+                  </a>
+              </dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Type</dt>
+                <dd class="govuk-summary-list__value">{{sessionData.alertType.value | sentenceCase}}</dd>
+                <dd class="govuk-summary-list__actions">
+                  <a class="govuk-link" href="alert-type">
+                    Change<span class="govuk-visually-hidden"> tag type</span>
+                    </a>
+                </dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Licence number</dt>
+            <dd class="govuk-summary-list__value">{{sessionData.licenceNumber.value}}</dd>
+            <dd class="govuk-summary-list__actions">
+                <a class="govuk-link" href="licence-number">
+                Change<span class="govuk-visually-hidden"> licence numbers</span>
+                </a>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                  Licence condition
+                </dt>
+                <dd class="govuk-summary-list__value">
+                  {{sessionData.condition.value}}
+                </dd>
+                <dd class="govuk-summary-list__actions">
+                    <a class="govuk-link" href="conditions">
+                        Change<span class="govuk-visually-hidden"> linked conditions</span>
+                    </a>
+                </dd>
+          </div>
+        </dl>
+    </div>
+
+    <div class="govuk-grid-column-full">
+      {{ formRender(form) }}
+    </div>
+  </div>
+{% endblock %}

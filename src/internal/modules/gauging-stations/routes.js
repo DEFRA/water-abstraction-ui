@@ -7,6 +7,11 @@ const { manageGaugingStationLicenceLinks } = require('internal/lib/constants').s
 const allowedScopes = [manageGaugingStationLicenceLinks];
 
 module.exports = {
+  getNewFlow: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/new-link',
+    handler: controller.getNewFlow
+  },
 
   getThresholdAndUnit: {
     method: 'GET',
@@ -80,6 +85,90 @@ module.exports = {
     handler: controller.postLicenceNumber,
     config: {
       description: 'Takes a licence number, and forwards user to the next step in the flow',
+      auth: {
+        scope: allowedScopes
+      }
+    }
+  },
+
+  getCondition: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/condition',
+    handler: controller.getCondition,
+    config: {
+      description: 'Gets the form for selecting a relevant licence condition',
+      auth: {
+        scope: allowedScopes
+      }
+    }
+  },
+
+  postCondition: {
+    method: 'POST',
+    path: '/monitoring-stations/{gaugingStationId}/condition',
+    handler: controller.postCondition,
+    config: {
+      description: 'Takes input of the condition GUID. Accepts Null to indicate a linkage which is not condition-specific.',
+      auth: {
+        scope: allowedScopes
+      }
+    }
+  },
+
+  getManuallyDefinedAbstractionPeriod: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/abstraction-period',
+    handler: controller.getManuallyDefinedAbstractionPeriod,
+    config: {
+      description: 'Gets the form for inputting a manually-defined abstraction period',
+      auth: {
+        scope: allowedScopes
+      }
+    }
+  },
+
+  postManuallyDefinedAbstractionPeriod: {
+    method: 'POST',
+    path: '/monitoring-stations/{gaugingStationId}/abstraction-period',
+    handler: controller.postManuallyDefinedAbstractionPeriod,
+    config: {
+      description: 'Takes the input of a manually-defined abstraction period.',
+      auth: {
+        scope: allowedScopes
+      }
+    }
+  },
+
+  getCheckYourAnswers: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/check',
+    handler: controller.getCheckYourAnswers,
+    config: {
+      description: 'Gets the check your answers page',
+      auth: {
+        scope: allowedScopes
+      }
+    }
+  },
+
+  postCheckYourAnswers: {
+    method: 'POST',
+    path: '/monitoring-stations/{gaugingStationId}/check',
+    handler: controller.postCheckYourAnswers,
+    config: {
+      description: 'Posts the payload.',
+      auth: {
+        scope: allowedScopes
+      }
+    }
+  },
+
+  getFlowComplete: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/complete',
+    handler: controller.getFlowComplete,
+    config: {
+      description: 'Gets the completion confirmation page',
       auth: {
         scope: allowedScopes
       }

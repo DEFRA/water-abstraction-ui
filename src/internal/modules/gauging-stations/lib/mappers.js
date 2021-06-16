@@ -3,18 +3,21 @@
 const moment = require('moment');
 const formatDate = date => moment(date).format('D MMMM YYYY');
 
+const defaultToNA = (item) => {
+  return (!item) ? 'n/a' : item;
+};
+const defaultToZero = (item) => {
+  return (!item) ? '0' : item;
+};
+const defaultToMld = (item) => {
+  return (!item) ? 'Ml/d' : item;
+};
 /* Draft: Independent objects currently joined in frontend */
 const mapStations = (newData) => {
-  for (let rkey in newData.stations) {
-    if (!newData.stations[rkey].wiskiId) {
-      newData.stations[rkey].wiskiId = 'n/a';
-    }
-    if (!newData.stations[rkey].easting) {
-      newData.stations[rkey].easting = 'n/a';
-    }
-    if (!newData.stations[rkey].northing) {
-      newData.stations[rkey].northing = 'n/a';
-    }
+  for (const rkey in newData.stations) {
+    newData.stations[rkey].wiskiId = defaultToNA(newData.stations[rkey].wiskiId);
+    newData.stations[rkey].easting = defaultToNA(newData.stations[rkey].easting);
+    newData.stations[rkey].northing = defaultToNA(newData.stations[rkey].northing);
     newData.stations[rkey].tags = [];
     newData.stations[rkey].licences = [];
     newData.licences = [];
@@ -23,11 +26,7 @@ const mapStations = (newData) => {
       licenceObj.number = newData.stations[rkey].licenceRef;
       licenceObj.communications = [];
       const comObj = {};
-      if (!newData.stations[rkey].comstatus) {
-        comObj.type = 'n/a';
-      } else {
-        comObj.type = newData.stations[rkey].comstatus;
-      }
+      comObj.type = defaultToNA(newData.stations[rkey].comstatus);
       if (!newData.stations[rkey].dateStatusUpdated) {
         comObj.sent = 'n/a';
       } else {
@@ -42,35 +41,24 @@ const mapStations = (newData) => {
 };
 
 const mapTags = (newData) => {
-  for (let rkey in newData.stations) {
+  for (const rkey in newData.stations) {
     if (newData.stations.hasOwnProperty(rkey)) {
       const tagObj = {};
       tagObj.licenceNumber = newData.stations[rkey].licenceRef;
       tagObj.tagValues = [];
       const tagValueObj = {};
       tagValueObj.licenceNumber = newData.stations[rkey].licenceRef;
-      const abstractionPeriod = { periodStart: '1/1', periodEnd: '31/12' };
-      abstractionPeriod.periodStart = newData.stations[rkey].abstractionPeriodStartDay + '/' + newData.stations[rkey].abstractionPeriodStartMonth;
-      abstractionPeriod.periodEnd = newData.stations[rkey].abstractionPeriodEndDay + '/' + newData.stations[rkey].abstractionPeriodEndMonth;
-      if (!newData.stations[rkey].abstractionPeriodStartDay) {
-        abstractionPeriod.periodStart = 'n/a';
+      const abstractionPeriod = { periodStart: 'n/a', periodEnd: 'n/a' };
+      if (newData.stations[rkey].abstractionPeriodStartDay && newData.stations[rkey].abstractionPeriodStartMonth) {
+        abstractionPeriod.periodStart = newData.stations[rkey].abstractionPeriodStartDay + '/' + newData.stations[rkey].abstractionPeriodStartMonth;
       }
-      if (!newData.stations[rkey].abstractionPeriodStartMonth) {
-        abstractionPeriod.periodStart = 'n/a';
+      if (newData.stations[rkey].abstractionPeriodEndDay && newData.stations[rkey].abstractionPeriodEndMonth) {
+        abstractionPeriod.periodEnd = newData.stations[rkey].abstractionPeriodEndDay + '/' + newData.stations[rkey].abstractionPeriodEndMonth;
       }
       tagValueObj.abstractionPeriod = abstractionPeriod;
-      if (!newData.stations[rkey].restrictionType) {
-        newData.stations[rkey].restrictionType = 'n/a';
-      }
-      tagValueObj.conditionType = newData.stations[rkey].restrictionType;
-      if (!newData.stations[rkey].thresholdValue) {
-        newData.stations[rkey].thresholdValue = '0';
-      }
-      tagValueObj.thresholdValue = newData.stations[rkey].thresholdValue;
-      if (!newData.stations[rkey].thresholdUnit) {
-        newData.stations[rkey].thresholdUnit = 'Ml/d';
-      }
-      tagValueObj.thresholdUnits = newData.stations[rkey].thresholdUnit;
+      tagValueObj.conditionType = defaultToNA(newData.stations[rkey].restrictionType);
+      tagValueObj.thresholdValue = defaultToZero(newData.stations[rkey].thresholdValue);
+      tagValueObj.thresholdUnits = defaultToMld(newData.stations[rkey].thresholdUnit);
       tagObj.tagValues.push(tagValueObj);
       newData.stations[0].tags.push(tagObj);
     }

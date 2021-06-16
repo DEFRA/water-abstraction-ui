@@ -34,7 +34,8 @@ experiment('internal/modules/gauging-stations/controller', () => {
     restrictionType: 'flow',
     thresholdValue: '100',
     thresholdUnit: 'Ml',
-    stationReference: '1'
+    stationReference: '1',
+    comstatus: 'reduce'
   }];
 
   beforeEach(async () => {

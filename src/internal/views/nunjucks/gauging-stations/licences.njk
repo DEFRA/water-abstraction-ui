@@ -193,24 +193,22 @@
           <div class="govuk-button-group">
             {{ govukButton({
               text: "Tag a licence",
-              href: "licence-notices/tagging/enter-the-hands-off-flow-or-level-threshold?stationID=" + [data.stationID],
+              href: "monitoring-stations/" + [data.stationID] + "/new-tag",
               classes: "govuk-button--secondary"
             }) }}
 
             {{ govukButton({
               text: "Remove a tag",
-              href: "licence-notices/tagging/which-licence-do-you-want-to-remove-tags-for?stationID=" + [data.stationID],
+              href: "monitoring-stations/" + [data.stationID] + "/remove-tag",
               classes: "govuk-button--secondary"
             }) }}
           </div>
 
         {% else %}
-          
           <p class="govuk-body">There are no licences tagged with restrictions for this monitoring station</p>
-
           {{ govukButton({
             text: "Tag a licence",
-            href: "licence-notices/tagging/enter-the-hands-off-flow-or-level-threshold?stationID=" + [data.stationID],
+            href: "monitoring-stations/" + [data.stationID] + "/new-tag",
             classes: "govuk-button--secondary"
           }) }}
 

@@ -7,7 +7,7 @@ const alertTypeForm = request => {
   const f = formFactory(request.path);
 
   const defaultAlertType = get(session.get(request), 'alertType.value');
-  console.log(defaultAlertType);
+
   f.fields.push(fields.radio('alertType', {
     errors: {
       'any.required': {

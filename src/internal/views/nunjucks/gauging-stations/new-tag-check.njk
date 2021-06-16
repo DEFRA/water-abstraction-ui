@@ -10,9 +10,6 @@
     {% if not form | isFirstFieldHeading %}
       {{ title(pageTitle, caption) }}
     {% endif %}
-    <script>
-        console.log({{ sessionData | dump | safe}})
-    </script>
         <dl class="govuk-summary-list">
             <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key">Threshold</dt>

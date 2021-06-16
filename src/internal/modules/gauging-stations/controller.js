@@ -160,7 +160,7 @@ const postCheckYourAnswers = (request, h) => {
     return h.postRedirectGet(form);
   }
 
-  // session.merge(request, key, { data });
+  // eslint-disable-next-line no-useless-escape
   return h.redirect(request.path.replace(/\/[^\/]*$/, '/complete'));
 };
 

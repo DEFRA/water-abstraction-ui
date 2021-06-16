@@ -8,7 +8,7 @@ const redirectTo = (request, h, path) => {
     return h.redirect(request.path.replace(/\/[^\/]*$/, '/check'));
   } else {
     // eslint-disable-next-line no-useless-escape
-    return h.redirect(request.path.replace(/\/[^\/]*$/, '/alert-type'));
+    return h.redirect(request.path.replace(/\/[^\/]*$/, path));
   }
 };
 

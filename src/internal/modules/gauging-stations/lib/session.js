@@ -2,7 +2,7 @@
 
 const getSessionKey = request => `licenceTaggingProcess.${request.defra.entityId}`;
 
-const get = (request) => {
+const get = request => {
   const key = getSessionKey(request);
   return request.yar.get(key) || {};
 };
@@ -20,7 +20,7 @@ const merge = (request, data) => {
   });
 };
 
-const clear = (request) => {
+const clear = request => {
   set(request, {});
 };
 

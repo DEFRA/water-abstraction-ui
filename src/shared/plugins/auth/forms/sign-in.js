@@ -13,7 +13,8 @@ const createEmailField = () => {
       'string.email': {
         message: 'Enter an email address in the correct format, like name@example.com'
       }
-    }
+    },
+    autoComplete: 'off'
   });
 };
 
@@ -27,9 +28,7 @@ const createPasswordField = () => {
         message: 'Enter your password'
       }
     },
-    attr: {
-      autocomplete: 'off'
-    }
+    autoComplete: 'off'
   });
 };
 

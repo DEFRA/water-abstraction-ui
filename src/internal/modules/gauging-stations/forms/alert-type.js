@@ -23,6 +23,21 @@ const alertTypeForm = request => {
     }]
   }, defaultAlertType));
 
+  f.fields.push(fields.radio('volumeLimited', {
+    errors: {
+      'any.required': {
+        message: 'Specify whether the licence holder needs to stop abstraction when they have reached a certain amount.'
+      }
+    },
+    choices: [{
+      value: true,
+      label: 'Yes'
+    }, {
+      value: false,
+      label: 'No'
+    }]
+  }));
+
   f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
   return f;
@@ -30,7 +45,14 @@ const alertTypeForm = request => {
 
 const alertTypeSchema = () => Joi.object({
   csrf_token: Joi.string().uuid().required(),
-  alertType: Joi.string().required().allow('stop', 'reduce')
+  alertType: Joi.string().required().allow('stop', 'reduce'),
+  volumeLimited: Joi.boolean().when(
+    'alertType',
+    {
+      is: 'reduce',
+      then: Joi.boolean().required()
+    }
+  )
 });
 
 exports.form = alertTypeForm;

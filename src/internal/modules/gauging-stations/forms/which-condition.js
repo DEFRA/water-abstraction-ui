@@ -3,10 +3,17 @@ const { get } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms/');
 const session = require('../lib/session');
 
-const conditionEntryForm = request => {
+const conditionEntryForm = (request, h) => {
   const f = formFactory(request.path);
 
   const { conditionsForSelectedLicence } = request.pre;
+
+  const parsedConditions = conditionsForSelectedLicence.map((row, n) => {
+    return {
+      value: row.licenceVersionPurposeConditionId,
+      label: `Flow cessation condition ${row.notes}`
+    };
+  });
 
   const defaultCondition = get(session.get(request), 'condition.value');
 
@@ -20,12 +27,11 @@ const conditionEntryForm = request => {
         message: 'Select a condition'
       }
     },
-    choices: conditionsForSelectedLicence.map((row, n) => {
-      return {
-        value: row.licenceVersionPurposeConditionId,
-        label: `Flow cessation condition ${row.notes}`
-      };
-    })
+    choices: [
+      ...parsedConditions,
+      ...parsedConditions.length > 0 ? [{ divider: 'or' } ] : [],
+      { label: parsedConditions.length > 0 ? 'The condition is not listed for this licence' : 'No known flow conditions - Manually define an abstraction period', value: null }
+    ]
   }, defaultCondition));
 
   f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));

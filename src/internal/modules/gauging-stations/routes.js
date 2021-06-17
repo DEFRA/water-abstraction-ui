@@ -117,7 +117,10 @@ module.exports = {
       description: 'Takes input of the condition GUID. Accepts Null to indicate a linkage which is not condition-specific.',
       auth: {
         scope: allowedScopes
-      }
+      },
+      pre: [
+        { method: helpers.fetchConditionsForLicence, assign: 'conditionsForSelectedLicence' }
+      ]
     }
   },
 

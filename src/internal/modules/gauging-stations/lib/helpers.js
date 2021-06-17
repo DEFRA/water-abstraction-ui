@@ -28,11 +28,11 @@ const isLicenceNumberValid = async request => {
   }
 };
 
-const fetchConditionsForLicence = async request => {
+const fetchConditionsForLicence = async (request, h) => {
   try {
     const sessionData = session.get(request);
     const { data } = await services.water.licenceVersionPurposeConditionsService.getLicenceVersionPurposeConditionsByLicenceId(sessionData.fetchedLicence.id, { qs: { code: 'CES' } });
-    return data || [];
+    return data;
   } catch (err) {
     return [];
   }

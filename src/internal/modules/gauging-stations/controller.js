@@ -65,7 +65,7 @@ const getLicenceNumber = (request, h) => {
 
   return h.view('nunjucks/form', {
     ...request.view,
-    caption: 'You need to tag and add other licences with this threshold individually',
+    caption: '',
     pageTitle,
     back: '',
     form: handleFormRequest(request, linkageForms.whichLicence)

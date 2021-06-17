@@ -6,9 +6,11 @@ const session = require('../lib/session');
 const conditionEntryForm = request => {
   const f = formFactory(request.path);
 
+  const { conditionsForSelectedLicence } = request.pre;
+
   const defaultCondition = get(session.get(request), 'condition.value');
 
-  f.fields.push(fields.text('condition', {
+  f.fields.push(fields.radio('condition', {
     controlClass: 'govuk-input govuk-input--width-10',
     errors: {
       'any.empty': {
@@ -17,7 +19,13 @@ const conditionEntryForm = request => {
       'any.required': {
         message: 'Select a condition'
       }
-    }
+    },
+    choices: conditionsForSelectedLicence.map((row, n) => {
+      return {
+        value: row.licenceVersionPurposeConditionId,
+        label: `Flow cessation condition ${row.notes}`
+      };
+    })
   }, defaultCondition));
 
   f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));

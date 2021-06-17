@@ -1,7 +1,9 @@
 const linkageForms = require('./forms');
 const { handleFormRequest } = require('shared/lib/form-handler');
+const { applyErrors } = require('shared/lib/forms');
 const session = require('./lib/session');
 const { redirectTo } = require('./lib/helpers');
+const Boom = require('@hapi/boom');
 
 const getNewFlow = (request, h) => h.redirect(`${request.path}/../threshold-and-unit`);
 
@@ -72,13 +74,22 @@ const getLicenceNumber = (request, h) => {
 
 const postLicenceNumber = (request, h) => {
   const form = handleFormRequest(request, linkageForms.whichLicence);
+  const enteredLicenceNumber = form.fields.find(field => field.name === 'licenceNumber');
 
   if (!form.isValid) {
     return h.postRedirectGet(form);
   }
+  if (!request.pre.isLicenceNumberValid) {
+    const formWithErrors = applyErrors(form, [{
+      name: 'licenceNumber',
+      message: 'Licence could not be found',
+      summary: 'Licence could not be found'
+    }]);
+    return h.postRedirectGet(formWithErrors);
+  }
 
   session.merge(request, {
-    licenceNumber: form.fields.find(field => field.name === 'licenceNumber')
+    licenceNumber: enteredLicenceNumber
   });
 
   return redirectTo(request, h, '/condition');

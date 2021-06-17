@@ -2,7 +2,7 @@
 
 const Joi = require('@hapi/joi');
 const controller = require('./controller');
-
+const helpers = require('./lib/helpers');
 const { manageGaugingStationLicenceLinks } = require('internal/lib/constants').scope;
 const allowedScopes = [manageGaugingStationLicenceLinks];
 
@@ -87,7 +87,10 @@ module.exports = {
       description: 'Takes a licence number, and forwards user to the next step in the flow',
       auth: {
         scope: allowedScopes
-      }
+      },
+      pre: [
+        { method: helpers.isLicenceNumberValid, assign: 'isLicenceNumberValid' }
+      ]
     }
   },
 
@@ -99,7 +102,10 @@ module.exports = {
       description: 'Gets the form for selecting a relevant licence condition',
       auth: {
         scope: allowedScopes
-      }
+      },
+      pre: [
+        { method: helpers.fetchConditionsForLicence, assign: 'conditionsForSelectedLicence' }
+      ]
     }
   },
 

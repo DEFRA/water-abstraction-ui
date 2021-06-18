@@ -54,7 +54,8 @@ const postAlertType = (request, h) => {
   }
 
   session.merge(request, {
-    alertType: form.fields.find(field => field.name === 'alertType')
+    alertType: form.fields.find(field => field.name === 'alertType'),
+    volumeLimited: form.fields.find(field => field.name === 'volumeLimited')
   });
 
   return redirectTo(request, h, '/licence-number');
@@ -96,11 +97,12 @@ const postLicenceNumber = (request, h) => {
 };
 
 const getCondition = (request, h) => {
-  const pageTitle = 'Select the full condition for licence';
+  const sessionData = session.get(request);
+  const pageTitle = `Select the full condition for licence ${sessionData.licenceNumber.value}`;
 
   return h.view('nunjucks/form', {
     ...request.view,
-    caption: 'This is the licence condition recorded in NALD and stated on the licence.',
+    caption: '',
     pageTitle,
     back: '',
     form: handleFormRequest(request, linkageForms.whichCondition)
@@ -142,10 +144,8 @@ const postManuallyDefinedAbstractionPeriod = (request, h) => {
   }
 
   session.merge(request, {
-    periodStartDay: form.fields.find(field => field.name === 'periodStartDay'),
-    periodStartMonth: form.fields.find(field => field.name === 'periodStartMonth'),
-    periodEndDay: form.fields.find(field => field.name === 'periodEndDay'),
-    periodEndMonth: form.fields.find(field => field.name === 'periodEndMonth')
+    startDate: form.fields.find(field => field.name === 'startDate'),
+    endDate: form.fields.find(field => field.name === 'endDate')
   });
 
   return redirectTo(request, h, '/check');
@@ -177,7 +177,9 @@ const postCheckYourAnswers = (request, h) => {
 
 const getFlowComplete = (request, h) => {
   session.clear(request);
-  return h.view('nunjucks/gauging-stations/linking-complete');
+  return h.view('nunjucks/gauging-stations/new-tag-complete', {
+    pageTitle: `Licence added to monitoring station`
+  });
 };
 
 exports.getNewFlow = getNewFlow;

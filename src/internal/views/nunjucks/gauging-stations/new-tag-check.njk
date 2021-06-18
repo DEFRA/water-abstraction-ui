@@ -22,7 +22,10 @@
             </div>
             <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key">Type</dt>
-                <dd class="govuk-summary-list__value">{{sessionData.alertType.value | sentenceCase}}</dd>
+                <dd class="govuk-summary-list__value">
+                    {{ "Stop" if sessionData.alertType.value == 'stop' else '' }}
+                    {{ "Reduce" if sessionData.alertType.value == 'reduce' else ''}}
+                </dd>
                 <dd class="govuk-summary-list__actions">
                   <a class="govuk-link" href="alert-type">
                     Change<span class="govuk-visually-hidden"> tag type</span>
@@ -34,7 +37,7 @@
             <dd class="govuk-summary-list__value">{{sessionData.licenceNumber.value}}</dd>
             <dd class="govuk-summary-list__actions">
                 <a class="govuk-link" href="licence-number">
-                Change<span class="govuk-visually-hidden"> licence numbers</span>
+                Change<span class="govuk-visually-hidden"> licence number</span>
                 </a>
             </dd>
           </div>
@@ -43,14 +46,30 @@
                   Licence condition
                 </dt>
                 <dd class="govuk-summary-list__value">
-                  {{sessionData.condition.value}}
+                  {{sessionData.condition.value if sessionData.condition.value else "None"}}
                 </dd>
                 <dd class="govuk-summary-list__actions">
-                    <a class="govuk-link" href="conditions">
-                        Change<span class="govuk-visually-hidden"> linked conditions</span>
+                    <a class="govuk-link" href="condition">
+                        Change<span class="govuk-visually-hidden"> linked condition</span>
                     </a>
                 </dd>
           </div>
+          {% if not sessionData.condition.value and sessionData.startDate.value and sessionData.endDate.value %}
+          <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">
+                Abstraction period
+              </dt>
+              <dd class="govuk-summary-list__value">
+                {{ sessionData.condition.value if sessionData.condition.value else "" }}
+                {{ "Derived from the selected licence condition" if sessionData.condition.value else sessionData.startDate.value.split('-').reverse().join('-') + ' to ' + sessionData.endDate.value.split('-').reverse().join('-') }}
+              </dd>
+              <dd class="govuk-summary-list__actions">
+                  <a class="govuk-link" href="condition">
+                      Change<span class="govuk-visually-hidden"> linked condition</span>
+                  </a>
+              </dd>
+          </div>
+          {% endif %}
         </dl>
     </div>
 

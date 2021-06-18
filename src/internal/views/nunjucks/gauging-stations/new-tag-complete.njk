@@ -1,0 +1,33 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "crm/invoice-address.njk" import invoiceAddress %}
+{% from "forms/index.njk" import formRender %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      {% set html %}
+        You tagged <b>licence ref goes here</b> with restriction details for this station
+      {% endset %}
+
+      {{ govukPanel({
+        titleText: pageTitle,
+        html: html
+      }) }}
+
+      <a href="." role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+        Return to monitoring station
+      </a>
+
+      <p class="govuk-body">or</p>
+
+      <p class="govuk-body">
+        <a class="govuk-link" href="new-link">Create another tag</a>
+      </p>
+
+    </div>
+  </div>
+
+{% endblock %}

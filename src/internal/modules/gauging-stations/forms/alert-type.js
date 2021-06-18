@@ -19,24 +19,25 @@ const alertTypeForm = request => {
       label: 'Stop'
     }, {
       value: 'reduce',
-      label: 'Reduce'
+      label: 'Reduce',
+      fields: [fields.radio('volumeLimited', {
+        label: 'Does the licence holder need to stop abstraction when they reach a certain amount?',
+        hint: 'For example, you must not exceed 4000Ml in total from the start of your abstraction period.',
+        errors: {
+          'any.required': {
+            message: 'Specify whether the licence holder needs to stop abstraction when they have reached a certain amount.'
+          }
+        },
+        choices: [{
+          value: true,
+          label: 'Yes'
+        }, {
+          value: false,
+          label: 'No'
+        }]
+      })]
     }]
   }, defaultAlertType));
-
-  f.fields.push(fields.radio('volumeLimited', {
-    errors: {
-      'any.required': {
-        message: 'Specify whether the licence holder needs to stop abstraction when they have reached a certain amount.'
-      }
-    },
-    choices: [{
-      value: true,
-      label: 'Yes'
-    }, {
-      value: false,
-      label: 'No'
-    }]
-  }));
 
   f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));

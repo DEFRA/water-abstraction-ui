@@ -18,11 +18,9 @@ statusMessages.set(80, 'Too early to bill');
 statusMessages.set(90, 'Overlap of charge dates');
 statusMessages.set(100, 'No matching charge element');
 
-const getErrorString = errorCodes => {
-  return errorCodes.reduce((acc, code) => {
-    return acc ? 'Multiple errors' : statusMessages.get(code);
-  }, null);
-};
+const getErrorString = errorCodes => errorCodes.reduce((acc, code) => {
+  return acc ? 'Multiple errors' : statusMessages.get(code);
+}, null);
 
 /**
  * Creates a unique group string for the given billing volume, based on the
@@ -37,14 +35,6 @@ const getBillingVolumeGroup = billingVolume => {
 };
 
 const mapLicence = (batch, licenceGroup) => {
-  const licence = {
-    licenceId: '',
-    licenceRef: '',
-    billingContact: '',
-    twoPartTariffError: false,
-    twoPartTariffStatuses: [],
-    link: ''
-  };
   const mappedLicence = licenceGroup.reduce((acc, licence) => {
     acc.licenceId = licence.licenceId;
     acc.licenceRef = licence.licenceRef;
@@ -54,8 +44,16 @@ const mapLicence = (batch, licenceGroup) => {
     acc.twoPartTariffStatuses = [...acc.twoPartTariffStatuses, ...licence.twoPartTariffStatuses];
     acc.link = routing.getTwoPartTariffLicenceReviewRoute(batch, licence.licenceId, (licence.twoPartTariffError ? 'review' : 'view'));
     return acc;
-  }, licence);
-  mappedLicence.twoPartTariffStatuses = getErrorString(licence.twoPartTariffStatuses);
+  }, {
+    licenceId: '',
+    licenceRef: '',
+    billingContact: '',
+    twoPartTariffError: false,
+    twoPartTariffStatuses: [],
+    link: ''
+  });
+
+  mappedLicence.twoPartTariffStatuses = getErrorString(mappedLicence.twoPartTariffStatuses);
   return mappedLicence;
 };
 

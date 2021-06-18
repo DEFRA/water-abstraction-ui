@@ -38,7 +38,8 @@ const batchLicences = [
       salutation: null
     },
     twoPartTariffError: true,
-    twoPartTariffStatuses: [10, 20, 30]
+    twoPartTariffStatuses: [10, 20, 30],
+    billingVolumeEdited: true
   },
   {
     billingInvoiceLicenceId: 'invoice-licence-id-2',
@@ -52,7 +53,8 @@ const batchLicences = [
       salutation: null
     },
     twoPartTariffError: true,
-    twoPartTariffStatuses: [10]
+    twoPartTariffStatuses: [10],
+    billingVolumeEdited: false
   },
   {
     billingInvoiceLicenceId: 'invoice-licence-id-3',
@@ -62,7 +64,8 @@ const batchLicences = [
       id: 'licence-holder-3'
     },
     twoPartTariffError: false,
-    twoPartTariffStatuses: []
+    twoPartTariffStatuses: [],
+    billingVolumeEdited: true
   },
   {
     billingInvoiceLicenceId: 'invoice-licence-id-4',
@@ -72,7 +75,8 @@ const batchLicences = [
       id: 'licence-holder-4'
     },
     twoPartTariffError: false,
-    twoPartTariffStatuses: [20, 30]
+    twoPartTariffStatuses: [20, 30],
+    billingVolumeEdited: true
   }
 ];
 const secondHeader = sandbox.stub();
@@ -202,11 +206,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       const [licence] = h.view.lastCall.args[1].licences;
       expect(licence.licenceRef).to.equal('test-licence-ref-1');
       expect(licence.licenceId).to.equal('test-licence-id-1');
-      expect(licence.licenceHolder).to.be.an.object();
-      expect(licence.licenceHolder.salutation).to.equal(null);
-      expect(licence.licenceHolder.initials).to.equal('F S');
-      expect(licence.licenceHolder.firstName).to.equal('forename');
-      expect(licence.licenceHolder.lastName).to.equal('surname');
+      expect(licence.twoPartTariffError).to.be.true();
       expect(licence.twoPartTariffStatuses).to.equal('Multiple errors');
       expect(licence.link).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-licence-id-1');
     });
@@ -497,11 +497,6 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
         expect(template).to.equal('nunjucks/billing/two-part-tariff-quantities');
       });
 
-      test('sets an error message in the view', async () => {
-        const [, { error }] = h.view.lastCall.args;
-        expect(error).to.equal('Checking query');
-      });
-
       test('sets the invoice licence in the view', async () => {
         const [, { invoiceLicence }] = h.view.lastCall.args;
         expect(invoiceLicence).to.equal(request.pre.invoiceLicence);
@@ -520,52 +515,6 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       test('sets the caption', async () => {
         const [, { caption }] = h.view.lastCall.args;
         expect(caption).to.equal('Spritzing leeks, Test description');
-      });
-
-      test('sets a link to view returns', async () => {
-        const [, { returnsLink }] = h.view.lastCall.args;
-        expect(returnsLink).to.equal('/licences/test-document_id/returns');
-      });
-
-      experiment('view.aggregateConditions', () => {
-        let aggregateConditions;
-        beforeEach(async () => {
-          aggregateConditions = h.view.lastCall.args[1].aggregateConditions;
-        });
-
-        test('have non-aggregate conditions filtered out', async () => {
-          expect(aggregateConditions).to.be.an.array().length(2);
-        });
-
-        test('have a displayTitle with "Aggregate condition" removed and sentence-cased', async () => {
-          expect(aggregateConditions[0].title).to.equal('Link between licences');
-          expect(aggregateConditions[1].title).to.equal('Link between licences');
-        });
-
-        test('have a parameter1Label with "licence number" replaced with "licence"', async () => {
-          expect(aggregateConditions[0].parameter1Label).to.equal('Linked licence');
-          expect(aggregateConditions[1].parameter1Label).to.equal('Linked licence');
-        });
-
-        test('have the correct parameter1 value', async () => {
-          expect(aggregateConditions[0].parameter1).to.equal('01/123/ABC');
-          expect(aggregateConditions[1].parameter1).to.equal('02/345/ABC');
-        });
-
-        test('have the correct parameter2Label value', async () => {
-          expect(aggregateConditions[0].parameter2Label).to.equal('Aggregate quantity');
-          expect(aggregateConditions[1].parameter2Label).to.equal('Aggregate quantity');
-        });
-
-        test('have the correct parameter2 value', async () => {
-          expect(aggregateConditions[0].parameter2).to.equal('20,000M3/YEAR');
-          expect(aggregateConditions[1].parameter2).to.equal('800M3/DAY');
-        });
-
-        test('have the correct text', async () => {
-          expect(aggregateConditions[0].text).to.equal('AGGREGATE QTY SHALL NOT EXCEED 20,000M3/YEAR');
-          expect(aggregateConditions[1].text).to.equal('AGGREGATE QTY SHALL NOT EXCEED 800M3/DAY');
-        });
       });
 
       test('has the correct billingVolume', async () => {

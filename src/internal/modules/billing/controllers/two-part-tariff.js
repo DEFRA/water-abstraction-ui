@@ -1,9 +1,12 @@
+'use strict';
+
 const services = require('internal/lib/connectors/services');
 const twoPartTariffQuantityForm = require('../forms/two-part-tariff-quantity');
 const confirmForm = require('shared/lib/forms/confirm-form');
 const mappers = require('../lib/mappers');
 const twoPartTariff = require('../lib/two-part-tariff');
 const routing = require('../lib/routing');
+const { groupBy } = require('lodash');
 
 const forms = require('shared/lib/forms');
 
@@ -15,8 +18,10 @@ const getTwoPartTariffReview = async (request, h) => {
   // Get totals of licences with/without errors
   const totals = twoPartTariff.getTotals(licencesData);
 
+  // group by licence for mid year transfers or inversions
+  const licenceGroups = Object.values(groupBy(licencesData, 'licenceRef'));
   // gets 2pt matching error messages and define error types
-  const licences = licencesData.map(licence => twoPartTariff.mapLicence(batch, licence));
+  const licences = licenceGroups.map(licenceGroup => twoPartTariff.mapLicence(batch, licenceGroup));
 
   return h.view('nunjucks/billing/two-part-tariff-review', {
     ...request.view,
@@ -35,20 +40,23 @@ const getTwoPartTariffReview = async (request, h) => {
 const getLicenceReview = async (request, h) => {
   const { batch, licence } = request.pre;
   const { licenceId, action } = request.params;
+  const licenceData = await getCurrentLicenceData(licence.licenceNumber);
 
   const pageTitle = action === 'review'
     ? `Review returns data issues for ${licence.licenceNumber}`
     : `View returns data for ${licence.licenceNumber}`;
   const backLinkTail = action === 'review' ? 'review' : 'ready';
 
-  const billingVolumes = await services.water.billingBatches.getBatchLicenceBillingVolumes(batch.id, licenceId);
+  const billingVolumeData = await services.water.billingBatches.getBatchLicenceBillingVolumes(batch.id, licenceId);
+  const billingVolumeGroups = twoPartTariff.decorateBillingVolumes(batch, licence, billingVolumeData);
 
   return h.view('nunjucks/billing/two-part-tariff-licence-review', {
     ...request.view,
     pageTitle,
     batch,
     licence,
-    billingVolumeGroups: twoPartTariff.getBillingVolumeGroups(batch, licence, billingVolumes),
+    ...licenceData,
+    billingVolumeGroups,
     back: `/billing/batch/${batch.id}/two-part-tariff-${backLinkTail}`
   });
 };
@@ -62,9 +70,7 @@ const getCurrentLicenceData = async licenceRef => {
   const doc = await services.crm.documents.getWaterLicence(licenceRef);
   if (doc) {
     const summary = await services.water.licences.getSummaryByDocumentId(doc.document_id);
-
     const aggregateConditions = mappers.mapConditions(summary.data.conditions.filter(row => row.code === 'AGG'));
-
     return {
       returnsLink: `/licences/${doc.document_id}/returns`,
       aggregateConditions,
@@ -79,16 +85,11 @@ const getCurrentLicenceData = async licenceRef => {
  */
 const getBillingVolumeReview = async (request, h, form) => {
   const { batch, licence, billingVolume } = request.pre;
-
-  const licenceData = await getCurrentLicenceData(licence.licenceNumber);
-
   return h.view('nunjucks/billing/two-part-tariff-quantities', {
-    error: twoPartTariff.getBillingVolumeError(billingVolume),
     licence,
     ...request.view,
     pageTitle: 'Set the billable returns quantity for this bill run',
     caption: `${billingVolume.chargeElement.purposeUse.name}, ${billingVolume.chargeElement.description}`,
-    ...licenceData,
     billingVolume,
     form: form || twoPartTariffQuantityForm.form(request, billingVolume),
     back: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}`

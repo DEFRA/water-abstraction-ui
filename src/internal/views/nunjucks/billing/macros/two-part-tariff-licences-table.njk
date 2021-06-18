@@ -17,7 +17,7 @@
             {{ licence.licenceRef }}
           </td>
           <td class="govuk-table__cell">
-            {{ licence.billingContact }}
+            {{ licence.billingContact | escape | nl2br }}
           </td>
             <td class="govuk-table__cell">              
                 {{ licence.twoPartTariffStatuses }}              

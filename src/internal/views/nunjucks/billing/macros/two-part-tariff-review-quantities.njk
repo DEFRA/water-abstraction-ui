@@ -1,14 +1,14 @@
 {% macro billableQuantity(chargeElement) %}
   {% if chargeElement.billableAnnualQuantity | isFinite %}
-    {{ chargeElement.billableAnnualQuantity + 'ML'}}
+    {{ chargeElement.billableAnnualQuantity + 'ML billable'}}
   {% else %}
-    0ML
+    Billable not set
   {% endif %}
 {% endmacro %}
 
 {% macro authorisedQuantity(chargeElement) %}
   {% if chargeElement.authorisedAnnualQuantity | isFinite %}
-    {{ chargeElement.authorisedAnnualQuantity + 'ML'}}
+    {{ chargeElement.authorisedAnnualQuantity + 'ML authorised'}}
   {% else %}
     0ML
   {% endif %}

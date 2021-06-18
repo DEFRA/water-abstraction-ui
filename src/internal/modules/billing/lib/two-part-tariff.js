@@ -1,6 +1,7 @@
-const { groupBy } = require('lodash');
-const routing = require('./routing');
+'use strict';
 
+const routing = require('./routing');
+const { groupBy } = require('lodash');
 /**
  * Map of two-part tariff status codes to human-readable error messages
  * @type {Map}
@@ -17,27 +18,10 @@ statusMessages.set(80, 'Too early to bill');
 statusMessages.set(90, 'Overlap of charge dates');
 statusMessages.set(100, 'No matching charge element');
 
-const getErrorString = errorCodes => errorCodes.reduce((acc, code) => {
-  return acc ? 'Multiple errors' : statusMessages.get(code);
-}, null);
-
-const mapLicence = (batch, licence) => ({
-  ...licence,
-  twoPartTariffStatuses: getErrorString(licence.twoPartTariffStatuses),
-  link: routing.getTwoPartTariffLicenceReviewRoute(batch, licence.licenceId, (licence.twoPartTariffError ? 'review' : 'view'))
-});
-
-const getTotals = licences => {
-  const errors = licences.reduce((acc, row) => (
-    row.twoPartTariffError ? acc + 1 : acc
-  ), 0);
-
-  const totals = {
-    errors,
-    ready: licences.length - errors,
-    total: licences.length
-  };
-  return totals;
+const getErrorString = errorCodes => {
+  return errorCodes.reduce((acc, code) => {
+    return acc ? 'Multiple errors' : statusMessages.get(code);
+  }, null);
 };
 
 /**
@@ -52,24 +36,58 @@ const getBillingVolumeGroup = billingVolume => {
   return `${chargeElement.purposeUse.code}_${startDay}_${startMonth}_${endDay}_${endMonth}`;
 };
 
+const mapLicence = (batch, licenceGroup) => {
+  const licence = {
+    licenceId: '',
+    licenceRef: '',
+    billingContact: '',
+    twoPartTariffError: false,
+    twoPartTariffStatuses: [],
+    link: ''
+  };
+  const mappedLicence = licenceGroup.reduce((acc, licence) => {
+    acc.licenceId = licence.licenceId;
+    acc.licenceRef = licence.licenceRef;
+    acc.billingContact = `${licence.billingContact}\n${acc.billingContact}`;
+    acc.twoPartTariffError = acc.twoPartTariffError ? acc.twoPartTariffError : licence.twoPartTariffError;
+    acc.billingVolumeEdited = acc.billingVolumeEdited ? acc.billingVolumeEdited : licence.billingVolumeEdited;
+    acc.twoPartTariffStatuses = [...acc.twoPartTariffStatuses, ...licence.twoPartTariffStatuses];
+    acc.link = routing.getTwoPartTariffLicenceReviewRoute(batch, licence.licenceId, (licence.twoPartTariffError ? 'review' : 'view'));
+    return acc;
+  }, licence);
+  mappedLicence.twoPartTariffStatuses = getErrorString(licence.twoPartTariffStatuses);
+  return mappedLicence;
+};
+
+const getTotals = licences => {
+  const errors = licences.reduce((acc, row) => (
+    row.twoPartTariffError ? acc + 1 : acc
+  ), 0);
+
+  const totals = {
+    errors,
+    ready: licences.length - errors,
+    total: licences.length
+  };
+  return totals;
+};
+
 const getBillingVolumeError = billingVolume =>
   statusMessages.get(billingVolume.twoPartTariffStatus);
 
 /**
- * Decorates transactions with edit link and error message,
- * then groups them by purpose/abstraction period
+ * Decorates transactions with edit link and error message
  * @param {Object} batch
  * @param {Array} billingVolumes
  * @return {Array} an array of transaction objects
  */
-const getBillingVolumeGroups = (batch, licence, billingVolumes) => {
+const decorateBillingVolumes = (batch, licence, billingVolumes) => {
   // Add 2PT error message
   const arr = billingVolumes.map(billingVolume => ({
     ...billingVolume,
     editLink: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}/billing-volume/${billingVolume.id}`,
     error: getBillingVolumeError(billingVolume)
   }));
-
   // Group by purpose use and abs period
   return Object.values(
     groupBy(arr, getBillingVolumeGroup)
@@ -78,5 +96,5 @@ const getBillingVolumeGroups = (batch, licence, billingVolumes) => {
 
 exports.getTotals = getTotals;
 exports.mapLicence = mapLicence;
-exports.getBillingVolumeGroups = getBillingVolumeGroups;
+exports.decorateBillingVolumes = decorateBillingVolumes;
 exports.getBillingVolumeError = getBillingVolumeError;

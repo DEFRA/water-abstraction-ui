@@ -4,19 +4,17 @@
 {% from "govuk/components/details/macro.njk" import govukDetails %}
 
 {% block content %}
-
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
-    <section class="govuk-!-margin-bottom-6">
-        {{ title(pageTitle, caption, null, false, true) }}
-    </section>
-  </div>
-  <div class="govuk-inset-text">
-    Charge period: {{ billingVolume.chargePeriod.startDate | date }} to {{ billingVolume.chargePeriod.endDate | date}}
-  </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      {{ formRender(form) }}
+    <div class="govuk-grid-column-two-thirds">
+      {{ title(pageTitle, caption, null, false, true) }}
+      <div class="govuk-inset-text">
+        Charge period: {{ billingVolume.chargePeriod.startDate | date }} to {{ billingVolume.chargePeriod.endDate | date }}
+      </div>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          {{ formRender(form) }}
+        </div>
+      </div>
     </div>
   </div>
-
 {% endblock %}

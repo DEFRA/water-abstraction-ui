@@ -11,15 +11,36 @@
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "govuk/components/details/macro.njk" import govukDetails %}
 
-{% block content %}
+{% macro metaRow(key, value, includePadding) %}
+  <div class="meta__row">
+    <dt class="meta__key">{{ key }}</dt>
+    <dd class="meta__value{% if includePadding %} govuk-!-padding-bottom-3{% endif %}">{{ value }}</dd>
+  </div>
+{% endmacro %}
 
+{% block content %}
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-two-thirds">
       {{ batchTitle(pageTitle, batch) }}
-      
+     
       {% set summaryHtml %}
-        <a href="#">Licence details</a>
+        <dl class="meta">
+          {% for condition in aggregateConditions %}
+            {{ metaRow('Aggregate condition', condition.title) }}
+            {{ metaRow(condition.parameter1Label, condition.parameter1) }}
+            {{ metaRow(condition.parameter2Label, condition.parameter2, not condition.text) }}
+            {% if condition.text %}
+              {{ metaRow('Other information', condition.text, true) }}
+            {% endif %}
+          {% endfor %}    
+        </dl>
+
+        <p>
+          <a href="{{ returnsLink }}">View returns summary</a>
+        </p>
       {% endset %}
+      </div>
+    </div>
 
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
@@ -30,42 +51,45 @@
       </div>
     </div>
       {{ removeLicenceFromBatchButton(batch, licence) }}
-    </div>
-  </div>
-
-  <div class="govuk-grid-row govuk-!-margin-bottom-0">
-    <div class="govuk-grid-column-full">
-
-      {% for group in billingVolumeGroups %}
-      
-{% for billingVolume in group %}
-{{ govukTable({
-  firstCellIsHeader: true, 
-   rows: [
-    [ { text: "Issue", classes: "thick_black_underline" }, { text: billingVolume.error, classes: "thick_black_underline"  }, { text: "", classes: "thick_black_underline" } ],
-    [ { text: "Billable returns" }, { html: billableVolume(billingVolume) }, 
-      { html: "<a href='" + billingVolume.editLink + "'>
-                  Change
-                  <span class='govuk-visually-hidden'>
-                    element "
-                    + billingVolume.chargeElement.description +
-                  "</span>
-                </a>"
-      }
-    ],
-    [ { text: "Reported returns", classes: "thick_black_underline"  }, { text: reportedVolume(billingVolume), classes: "thick_black_underline" }, { text: "", classes: "thick_black_underline"  } ],
-    [ { text: "Billing Account" }, { text: "BA2423425235" }, { text: "" } ],
-    [ { text: "Purpose" }, { text: "Spray - Irrigation" }, { text: "" } ],
-    [ { text: "Description" }, { text: billingVolume.chargeElement.description }, { text: "" } ],
-    [ { text: "Charge period" }, { text: billingVolume.chargePeriod.startDate | date("D MMMM") + " to " + billingVolume.chargePeriod.endDate | date("D MMMM") }, { text: "" } ],
-    [ { text: "Abstraction period" }, { text: billingVolume.chargeElement.abstractionPeriod | abstractionPeriod }, { text: "" } ],
-    [ { text: "Authorised" }, { text: authorisedQuantity(billingVolume.chargeElement) }, { text: "" } ],
-    [ { text: "Billable" }, { text: billableQuantity(billingVolume.chargeElement) }, { text: "" } ]
-  ]
-}) }}
-{% endfor %}
+      {% for billingVolumes in billingVolumeGroups %}
+        {% for billingVolume in billingVolumes %}
+          <div class="govuk-grid-row govuk-!-margin-bottom-0">
+          <div class="govuk-grid-column-full">
+          {{ govukTable({
+            firstCellIsHeader: true, 
+            rows: [
+              [ { text: "Issue", classes: "thick_black_underline" }, { text: billingVolume.error, classes: "thick_black_underline"  }, { text: "", classes: "thick_black_underline" } ],
+              [ { text: "Billable returns" }, 
+                { text: billableVolume(billingVolume) }, 
+                { html: "<a href=" + billingVolume.editLink + ">
+                            Change
+                            <span class='govuk-visually-hidden'>
+                              element "
+                              + billingVolume.chargeElement.description +
+                            "</span>
+                          </a>"
+                }
+              ],
+              [ { text: "Reported returns", classes: "thick_black_underline"  }, { text: reportedVolume(billingVolume), classes: "thick_black_underline" }, { text: "", classes: "thick_black_underline"  } ],
+              [ { text: "Billing Account" }, { text: billingVolume.invoiceAccount.accountNumber }, { text: "" } ],
+              [ { text: "Purpose" }, { text: billingVolume.chargeElement.purposeUse.name }, { text: "" } ],
+              [ { text: "Description" }, { text: billingVolume.chargeElement.description }, { text: "" } ],
+              [ { text: "Charge period" }, { text: billingVolume.chargePeriod.startDate | date + " to " + billingVolume.chargePeriod.endDate | date }, { text: "" } ],
+              [ { text: "Abstraction period" }, { text: billingVolume.chargeElement.abstractionPeriod | abstractionPeriod }, { text: "" } ],
+              [ { text: "Annual quantities" }, 
+                { html: authorisedQuantity(billingVolume.chargeElement) + "<br>" +
+                        billableQuantity(billingVolume.chargeElement)
+                        },
+                { text: "" }
+              ],
+              [ { text: "Source" }, { text: billingVolume.chargeElement.source}, { text: "" } ],
+              [ { text: "Season" }, { text: billingVolume.chargeElement.season }, { text: "" } ],
+              [ { text: "Loss" }, { text: billingVolume.chargeElement.loss }, { text: "" } ]
+            ]
+          }) }}
+          </div>
+        </div>
       {% endfor %}
-    </div>
-  </div>
-
+    {% endfor %}
+      
 {% endblock %}

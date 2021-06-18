@@ -53,12 +53,12 @@
       {{ removeLicenceFromBatchButton(batch, licence) }}
       {% for billingVolumes in billingVolumeGroups %}
         {% for billingVolume in billingVolumes %}
-          <div class="govuk-grid-row govuk-!-margin-bottom-0">
+          <div class="govuk-grid-row">
           <div class="govuk-grid-column-full">
           {{ govukTable({
-            firstCellIsHeader: true, 
+            firstCellIsHeader: true,
             rows: [
-              [ { text: "Issue", classes: "thick_black_underline" }, { text: billingVolume.error, classes: "thick_black_underline"  }, { text: "", classes: "thick_black_underline" } ],
+              [ { text: "Issue", classes: "thick_black_underline govuk-!-width-one-quarter" }, { text: billingVolume.error, classes: "thick_black_underline"  }, { text: "", classes: "thick_black_underline" } ],
               [ { text: "Billable returns" }, 
                 { text: billableVolume(billingVolume) }, 
                 { html: "<a href=" + billingVolume.editLink + ">

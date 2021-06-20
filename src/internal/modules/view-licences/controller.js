@@ -19,11 +19,11 @@ const getDocumentId = doc => doc.document_id;
  */
 const getLicenceSummary = async (request, h) => {
   const { licenceId } = request.params;
-  const { agreements, chargeVersions, chargeVersionWorkflows, licence, returns, document } = request.pre;
+  const { agreements, chargeVersions, chargeVersionWorkflows, licence, returns, document, gaugingstationsdata } = request.pre;
 
   // Get CRM v1 doc ID
   const documentId = getDocumentId(document);
-
+  const gaugingStations = { stations: gaugingstationsdata.data };
   const view = {
     ...request.view,
     pageTitle: `Licence ${licence.licenceNumber}`,
@@ -31,6 +31,7 @@ const getLicenceSummary = async (request, h) => {
     licenceId,
     documentId,
     ...pick(request.pre, ['licence', 'bills', 'notifications', 'primaryUser', 'summary']),
+    gaugingstations: gaugingStations,
     chargeVersions: mappers.mapChargeVersions(chargeVersions, chargeVersionWorkflows),
     createChargeVersions: moment(licence.endDate).isAfter(moment().subtract(6, 'years')) || licence.endDate === null,
     agreements: mappers.mapLicenceAgreements(agreements),

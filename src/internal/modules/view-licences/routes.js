@@ -4,6 +4,7 @@ const Joi = require('@hapi/joi');
 const controller = require('./controller');
 const { scope } = require('../../lib/constants');
 const preHandlers = require('shared/lib/pre-handlers/licences');
+const preHandlersGS = require('shared/lib/pre-handlers/gaugingstations');
 
 module.exports = {
 
@@ -54,7 +55,10 @@ module.exports = {
           },
           {
             method: preHandlers.loadSummary, assign: 'summary'
+          }, {
+            method: preHandlersGS.loadGaugingStationsByLicenceId, assign: 'gaugingstationsdata'
           }
+
         ]
       ]
     }

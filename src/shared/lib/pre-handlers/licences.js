@@ -9,6 +9,7 @@ const { errorHandler } = require('./lib/error-handler');
 const LicenceDataService = require('../services/LicenceDataService');
 const { hasScope } = require('internal/lib/permissions');
 const { scope } = require('internal/lib/constants');
+const GaugingStationsService = require('shared/lib/connectors/services/water/GaugingStationsService');
 
 const createPreHandler = async (request, h, methodName, errorString, allowedScopes) => {
   const service = new LicenceDataService(request.services.water);
@@ -147,6 +148,18 @@ const getLicenceByReturnId = async request => {
   }
 };
 
+/**
+ * Loads gaugingstations from the water service using the {licenceId}
+ * route param
+ * @todo refactor to use this implementation throughout application
+ * @param {String} request.params.licenceId
+ */
+const loadGaugingStations = async request => {
+  const { licenceId } = request.params;
+  const service = new GaugingStationsService(request.services.water);
+  return service.getGaugingStationsByLicenceId(licenceId);
+};
+
 exports.loadLicence = loadLicence;
 exports.loadLicenceDocument = loadLicenceDocument;
 exports.loadDefaultLicenceVersion = loadDefaultLicenceVersion;
@@ -159,3 +172,4 @@ exports.loadNotifications = loadNotifications;
 exports.loadSummary = loadSummary;
 exports.loadPrimaryUser = loadPrimaryUser;
 exports.getLicenceByReturnId = getLicenceByReturnId;
+exports.loadGaugingStations = loadGaugingStations;

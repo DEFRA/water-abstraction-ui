@@ -14,3 +14,5 @@ jsconfig.json
 /cypress/videos/
 /cypress/screenshots/
 /cypress/reports/
+station-change-report.csv
+stations.csv

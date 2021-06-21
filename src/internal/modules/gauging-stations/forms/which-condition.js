@@ -8,10 +8,11 @@ const conditionEntryForm = (request, h) => {
 
   const { conditionsForSelectedLicence } = request.pre;
 
-  const parsedConditions = conditionsForSelectedLicence.map((row, n) => {
+  const parsedConditions = conditionsForSelectedLicence.filter(row => row.notes).map((row, n) => {
     return {
       value: row.licenceVersionPurposeConditionId,
-      label: `Flow cessation condition ${row.notes}`
+      label: `Flow cessation condition ${n + 1}`,
+      hint: row.notes
     };
   });
 

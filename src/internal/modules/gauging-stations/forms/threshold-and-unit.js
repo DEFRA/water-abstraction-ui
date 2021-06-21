@@ -24,7 +24,7 @@ const thresholdAndUnitForm = request => {
   const defaultUnit = get(session.get(request), 'unit.value');
 
   f.fields.push(fields.dropdown('unit', {
-    label: 'Unit',
+    label: 'Unit of measurement',
     errors: {
       'any.empty': {
         message: 'Select a valid unit'

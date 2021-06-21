@@ -1,11 +1,8 @@
 const Joi = require('joi');
-const { capitalize, has } = require('lodash');
+const { capitalize, get } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms/');
 
 const session = require('../lib/session');
-
-const VALID_DAY = Joi.number().integer().min(1).max(31).required();
-const VALID_MONTH = Joi.number().integer().min(1).max(12).required();
 
 const errors = {
   empty: {
@@ -37,7 +34,7 @@ const getFormField = (key, date) => {
   }, date);
 };
 
-const getSessionDates = (key, data) => data[`${key}Date`].value;
+const getSessionDates = (key, data) => get(data[`${key}Date`], 'value', null);
 
 const abstractionPeriodForm = request => {
   const f = formFactory(request.path);

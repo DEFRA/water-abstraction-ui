@@ -156,7 +156,10 @@ module.exports = {
       description: 'Gets the check your answers page',
       auth: {
         scope: allowedScopes
-      }
+      },
+      pre: [
+        { method: helpers.fetchConditionsForLicence, assign: 'conditionsForSelectedLicence' }
+      ]
     }
   },
 
@@ -168,7 +171,10 @@ module.exports = {
       description: 'Posts the payload.',
       auth: {
         scope: allowedScopes
-      }
+      },
+      pre: [
+        { method: helpers.fetchConditionsForLicence, assign: 'conditionsForSelectedLicence' }
+      ]
     }
   },
 

@@ -7,6 +7,7 @@ const alertTypeForm = request => {
   const f = formFactory(request.path);
 
   const defaultAlertType = get(session.get(request), 'alertType.value');
+  const defaultVolumeLimitedSelection = get(session.get(request), 'volumeLimited.value');
 
   f.fields.push(fields.radio('alertType', {
     errors: {
@@ -35,7 +36,7 @@ const alertTypeForm = request => {
           value: false,
           label: 'No'
         }]
-      })]
+      }, defaultVolumeLimitedSelection)]
     }]
   }, defaultAlertType));
 

@@ -15,7 +15,7 @@ const licenceEntryForm = request => {
         message: 'Enter a valid licence number'
       }
     },
-    label: 'You need to tag and add other licences with this threshold individually'
+    hint: 'You need to tag and add other licences with this threshold individually'
   }, defaultLicence));
 
   f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));

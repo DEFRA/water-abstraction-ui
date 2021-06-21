@@ -1,10 +1,11 @@
 const session = require('./session');
 const services = require('../../../lib/connectors/services');
+const { get } = require('lodash');
 
 const redirectTo = (request, h, path) => {
   const { checkStageReached } = session.get(request);
 
-  if (checkStageReached === true) {
+  if (checkStageReached === true && !request.path.includes('/condition')) {
     // eslint-disable-next-line no-useless-escape
     return h.redirect(request.path.replace(/\/[^\/]*$/, '/check'));
   } else {
@@ -38,6 +39,75 @@ const fetchConditionsForLicence = async (request, h) => {
   }
 };
 
+const getCaption = async request => {
+  const { gaugingStationId } = request.params;
+  const { label, catchmentName } = await services.water.gaugingStations.getGaugingStationbyId(gaugingStationId);
+  return `${label}${catchmentName.length > 2 ? ' at ' + catchmentName : ''}`;
+};
+
+const getSelectedConditionText = request => {
+  const { conditionsForSelectedLicence } = request.pre;
+  const sessionData = session.get(request);
+  const selectedCondition = get(sessionData, 'condition.value', null);
+
+  if (selectedCondition) {
+    return get(conditionsForSelectedLicence.find(x => x.licenceVersionPurposeConditionId === selectedCondition), 'notes', 'None');
+  } else {
+    return 'None';
+  }
+};
+
+const deduceRestrictionTypeFromUnit = unit => {
+  const flowUnits = [ 'Ml/d', 'm3/s', 'm3/d', 'l/s' ];
+  if (flowUnits.includes(unit)) {
+    return 'flow';
+  }
+  return 'level';
+};
+
+const handlePost = async request => {
+  const { gaugingStationId } = request.params;
+  const sessionData = session.get(request);
+  const { id: licenceId } = sessionData.fetchedLicence;
+  const licenceVersionPurposeConditionId = get(sessionData, 'condition.value', null);
+  const thresholdValue = get(sessionData, 'threshold.value');
+  const thresholdUnit = get(sessionData, 'unit.value');
+  const startDate = get(sessionData, 'startDate.value');
+  const startDay = startDate ? startDate.split('-')[1] : null;
+  const startMonth = startDate ? startDate.split('-')[0] : null;
+  const endDate = get(sessionData, 'endDate.value');
+  const endDay = endDate ? endDate.split('-')[1] : null;
+  const endMonth = endDate ? endDate.split('-')[0] : null;
+  const restrictionType = deduceRestrictionTypeFromUnit(thresholdUnit);
+  const alertType = get(sessionData, 'alertType.value');
+  const volumeLimited = get(sessionData, 'volumeLimited.value');
+  const conditionId = licenceVersionPurposeConditionId.length > 0 ? licenceVersionPurposeConditionId : null;
+  console.log(request.pre.conditionsForSelectedLicence);
+  const selectedCondition = conditionId && request.pre.conditionsForSelectedLicence.find(x => x.licenceVersionPurposeConditionId === conditionId);
+  console.log(selectedCondition);
+  return services.water.gaugingStations.postLicenceLinkage(gaugingStationId, licenceId, {
+    licenceVersionPurposeConditionId: conditionId,
+    thresholdUnit,
+    thresholdValue,
+    abstractionPeriod: (startDate && endDate && conditionId && {
+      startDay: parseInt(startDay),
+      startMonth: parseInt(startMonth),
+      endDay: parseInt(endDay),
+      endMonth: parseInt(endMonth)
+    }) || {
+      startDay: parseInt(startDay),
+      startMonth: parseInt(startMonth),
+      endDay: parseInt(endDay),
+      endMonth: parseInt(endMonth)
+    },
+    restrictionType,
+    alertType: alertType === 'stop' ? 'stop' : (volumeLimited === true ? 'stop_or_reduce' : 'reduce')
+  });
+};
+
 exports.redirectTo = redirectTo;
 exports.isLicenceNumberValid = isLicenceNumberValid;
 exports.fetchConditionsForLicence = fetchConditionsForLicence;
+exports.getCaption = getCaption;
+exports.getSelectedConditionText = getSelectedConditionText;
+exports.handlePost = handlePost;

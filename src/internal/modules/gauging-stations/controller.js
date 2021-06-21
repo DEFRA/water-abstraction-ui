@@ -2,19 +2,20 @@ const linkageForms = require('./forms');
 const { handleFormRequest } = require('shared/lib/form-handler');
 const { applyErrors } = require('shared/lib/forms');
 const session = require('./lib/session');
-const { redirectTo } = require('./lib/helpers');
-const Boom = require('@hapi/boom');
+const { handlePost, redirectTo, getCaption, getSelectedConditionText } = require('./lib/helpers');
 
 const getNewFlow = (request, h) => h.redirect(`${request.path}/../threshold-and-unit`);
 
-const getThresholdAndUnit = (request, h) => {
+const getThresholdAndUnit = async (request, h) => {
+  const caption = await getCaption(request);
   const pageTitle = 'What is the licence hands-off flow or level threshold?';
+  const { path } = request;
 
   return h.view('nunjucks/form', {
     ...request.view,
-    caption: '',
+    caption,
     pageTitle,
-    back: '',
+    back: path.replace(/\/[^/]*$/, ''),
     form: handleFormRequest(request, linkageForms.thresholdAndUnit)
   });
 };
@@ -34,14 +35,16 @@ const postThresholdAndUnit = (request, h) => {
   return redirectTo(request, h, '/alert-type');
 };
 
-const getAlertType = (request, h) => {
+const getAlertType = async (request, h) => {
   const pageTitle = 'Does the licence holder need to stop or reduce at this threshold?';
+  const caption = await getCaption(request);
+  const { path } = request;
 
   return h.view('nunjucks/form', {
     ...request.view,
-    caption: '',
+    caption,
     pageTitle,
-    back: '',
+    back: path.replace(/\/[^/]*$/, '/threshold-and-unit'),
     form: handleFormRequest(request, linkageForms.alertType)
   });
 };
@@ -55,20 +58,22 @@ const postAlertType = (request, h) => {
 
   session.merge(request, {
     alertType: form.fields.find(field => field.name === 'alertType'),
-    volumeLimited: form.fields.find(field => field.name === 'volumeLimited')
+    volumeLimited: form.fields.find(field => field.name === 'alertType').options.choices.find(field => field.value === 'reduce').fields.find(field => field.name === 'volumeLimited')
   });
 
   return redirectTo(request, h, '/licence-number');
 };
 
-const getLicenceNumber = (request, h) => {
+const getLicenceNumber = async (request, h) => {
   const pageTitle = 'Enter the licence number this threshold applies to';
+  const caption = await getCaption(request);
+  const { path } = request;
 
   return h.view('nunjucks/form', {
     ...request.view,
-    caption: '',
+    caption,
     pageTitle,
-    back: '',
+    back: path.replace(/\/[^/]*$/, '/alert-type'),
     form: handleFormRequest(request, linkageForms.whichLicence)
   });
 };
@@ -96,15 +101,17 @@ const postLicenceNumber = (request, h) => {
   return redirectTo(request, h, '/condition');
 };
 
-const getCondition = (request, h) => {
+const getCondition = async (request, h) => {
   const sessionData = session.get(request);
   const pageTitle = `Select the full condition for licence ${sessionData.licenceNumber.value}`;
+  const caption = await getCaption(request);
+  const { path } = request;
 
   return h.view('nunjucks/form', {
     ...request.view,
-    caption: '',
+    caption,
     pageTitle,
-    back: '',
+    back: path.replace(/\/[^/]*$/, '/licence-number'),
     form: handleFormRequest(request, linkageForms.whichCondition)
   });
 };
@@ -124,14 +131,16 @@ const postCondition = (request, h) => {
   return redirectTo(request, h, condition.value ? `/check` : '/abstraction-period');
 };
 
-const getManuallyDefinedAbstractionPeriod = (request, h) => {
+const getManuallyDefinedAbstractionPeriod = async (request, h) => {
   const pageTitle = 'Enter an abstraction period for licence';
+  const caption = await getCaption(request);
+  const { path } = request;
 
   return h.view('nunjucks/form', {
     ...request.view,
-    caption: '',
+    caption,
     pageTitle,
-    back: '',
+    back: path.replace(/\/[^/]*$/, '/condition'),
     form: handleFormRequest(request, linkageForms.manuallyDefinedAbstractionPeriod)
   });
 };
@@ -151,34 +160,48 @@ const postManuallyDefinedAbstractionPeriod = (request, h) => {
   return redirectTo(request, h, '/check');
 };
 
-const getCheckYourAnswers = (request, h) => {
+const getCheckYourAnswers = async (request, h) => {
   const pageTitle = 'Check the restriction details';
+  const caption = await getCaption(request);
+  const { path } = request;
+
+  session.merge(request, {
+    checkStageReached: true
+  });
+
+  const selectedConditionText = getSelectedConditionText(request);
 
   return h.view('nunjucks/gauging-stations/new-tag-check', {
     ...request.view,
-    caption: '',
+    caption,
     pageTitle,
-    back: '',
+    back: path.replace(/\/[^/]*$/, '/condition'),
     form: handleFormRequest(request, linkageForms.checkYourAnswers),
-    sessionData: session.get(request)
+    sessionData: session.get(request),
+    selectedConditionText
   });
 };
 
-const postCheckYourAnswers = (request, h) => {
+const postCheckYourAnswers = async (request, h) => {
   const form = handleFormRequest(request, linkageForms.checkYourAnswers);
 
   if (!form.isValid) {
     return h.postRedirectGet(form);
   }
 
+  await handlePost(request);
+
   // eslint-disable-next-line no-useless-escape
   return h.redirect(request.path.replace(/\/[^\/]*$/, '/complete'));
 };
 
 const getFlowComplete = (request, h) => {
+  const { licenceNumber } = session.get(request);
   session.clear(request);
   return h.view('nunjucks/gauging-stations/new-tag-complete', {
-    pageTitle: `Licence added to monitoring station`
+    pageTitle: `Licence added to monitoring station`,
+    back: null,
+    licenceRef: licenceNumber.value
   });
 };
 

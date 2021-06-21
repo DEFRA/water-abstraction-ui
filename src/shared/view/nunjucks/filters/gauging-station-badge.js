@@ -1,13 +1,5 @@
 'use strict';
 
-/*
-  inactive: 'govuk-tag--grey',
-  success: 'govuk-tag--green',
-  error: 'govuk-tag--red',
-  warning: 'govuk-tag--orange',
-  todo: 'govuk-tag--blue'
-*/
-
 const badge = {
   no_restriction: { status: 'success', text: 'no restriction' },
   reduce: { status: 'warning', text: 'reduce' },

@@ -74,7 +74,9 @@ const mapTags = newData => {
 };
 
 const mapStationsLicences = data => {
-  if (!data) { return null; }
+  if (!data) {
+    return null;
+  }
 
   const newData = {
     stations: [],

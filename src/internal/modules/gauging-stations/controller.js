@@ -1,6 +1,6 @@
 const linkageForms = require('./forms');
 const formHandler = require('shared/lib/form-handler');
-const { applyErrors } = require('shared/lib/forms');
+const formHelpers = require('shared/lib/forms');
 const session = require('./lib/session');
 const helpers = require('./lib/helpers');
 
@@ -20,8 +20,8 @@ const getThresholdAndUnit = async (request, h) => {
   });
 };
 
-const postThresholdAndUnit = (request, h) => {
-  const form = formHandler.handleFormRequest(request, linkageForms.thresholdAndUnit);
+const postThresholdAndUnit = async (request, h) => {
+  const form = await formHandler.handleFormRequest(request, linkageForms.thresholdAndUnit);
 
   if (!form.isValid) {
     return h.postRedirectGet(form);
@@ -49,8 +49,8 @@ const getAlertType = async (request, h) => {
   });
 };
 
-const postAlertType = (request, h) => {
-  const form = formHandler.handleFormRequest(request, linkageForms.alertType);
+const postAlertType = async (request, h) => {
+  const form = await formHandler.handleFormRequest(request, linkageForms.alertType);
 
   if (!form.isValid) {
     return h.postRedirectGet(form);
@@ -64,7 +64,7 @@ const postAlertType = (request, h) => {
       .find(field => field.name === 'volumeLimited')
   });
 
-  return helpers.edirectTo(request, h, '/licence-number');
+  return helpers.redirectTo(request, h, '/licence-number');
 };
 
 const getLicenceNumber = async (request, h) => {
@@ -81,15 +81,15 @@ const getLicenceNumber = async (request, h) => {
   });
 };
 
-const postLicenceNumber = (request, h) => {
-  const form = formHandler.handleFormRequest(request, linkageForms.whichLicence);
+const postLicenceNumber = async (request, h) => {
+  const form = await formHandler.handleFormRequest(request, linkageForms.whichLicence);
   const enteredLicenceNumber = form.fields.find(field => field.name === 'licenceNumber');
 
   if (!form.isValid) {
     return h.postRedirectGet(form);
   }
   if (!request.pre.isLicenceNumberValid) {
-    const formWithErrors = applyErrors(form, [{
+    const formWithErrors = formHelpers.applyErrors(form, [{
       name: 'licenceNumber',
       message: 'Licence could not be found',
       summary: 'Licence could not be found'
@@ -119,8 +119,8 @@ const getCondition = async (request, h) => {
   });
 };
 
-const postCondition = (request, h) => {
-  const form = formHandler.handleFormRequest(request, linkageForms.whichCondition);
+const postCondition = async (request, h) => {
+  const form = await formHandler.handleFormRequest(request, linkageForms.whichCondition);
 
   if (!form.isValid) {
     return h.postRedirectGet(form);
@@ -148,8 +148,8 @@ const getManuallyDefinedAbstractionPeriod = async (request, h) => {
   });
 };
 
-const postManuallyDefinedAbstractionPeriod = (request, h) => {
-  const form = formHandler.handleFormRequest(request, linkageForms.manuallyDefinedAbstractionPeriod);
+const postManuallyDefinedAbstractionPeriod = async (request, h) => {
+  const form = await formHandler.handleFormRequest(request, linkageForms.manuallyDefinedAbstractionPeriod);
 
   if (!form.isValid) {
     return h.postRedirectGet(form);
@@ -186,7 +186,7 @@ const getCheckYourAnswers = async (request, h) => {
 };
 
 const postCheckYourAnswers = async (request, h) => {
-  const form = formHandler.handleFormRequest(request, linkageForms.checkYourAnswers);
+  const form = await formHandler.handleFormRequest(request, linkageForms.checkYourAnswers);
 
   if (!form.isValid) {
     return h.postRedirectGet(form);

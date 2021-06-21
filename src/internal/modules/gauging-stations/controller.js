@@ -1,13 +1,13 @@
 const linkageForms = require('./forms');
-const { handleFormRequest } = require('shared/lib/form-handler');
+const formHandler = require('shared/lib/form-handler');
 const { applyErrors } = require('shared/lib/forms');
 const session = require('./lib/session');
-const { handlePost, redirectTo, getCaption, getSelectedConditionText } = require('./lib/helpers');
+const helpers = require('./lib/helpers');
 
 const getNewFlow = (request, h) => h.redirect(`${request.path}/../threshold-and-unit`);
 
 const getThresholdAndUnit = async (request, h) => {
-  const caption = await getCaption(request);
+  const caption = await helpers.getCaption(request);
   const pageTitle = 'What is the licence hands-off flow or level threshold?';
   const { path } = request;
 
@@ -16,12 +16,12 @@ const getThresholdAndUnit = async (request, h) => {
     caption,
     pageTitle,
     back: path.replace(/\/[^/]*$/, ''),
-    form: handleFormRequest(request, linkageForms.thresholdAndUnit)
+    form: formHandler.handleFormRequest(request, linkageForms.thresholdAndUnit)
   });
 };
 
 const postThresholdAndUnit = (request, h) => {
-  const form = handleFormRequest(request, linkageForms.thresholdAndUnit);
+  const form = formHandler.handleFormRequest(request, linkageForms.thresholdAndUnit);
 
   if (!form.isValid) {
     return h.postRedirectGet(form);
@@ -32,12 +32,12 @@ const postThresholdAndUnit = (request, h) => {
     unit: form.fields.find(field => field.name === 'unit')
   });
 
-  return redirectTo(request, h, '/alert-type');
+  return helpers.redirectTo(request, h, '/alert-type');
 };
 
 const getAlertType = async (request, h) => {
   const pageTitle = 'Does the licence holder need to stop or reduce at this threshold?';
-  const caption = await getCaption(request);
+  const caption = await helpers.getCaption(request);
   const { path } = request;
 
   return h.view('nunjucks/form', {
@@ -45,12 +45,12 @@ const getAlertType = async (request, h) => {
     caption,
     pageTitle,
     back: path.replace(/\/[^/]*$/, '/threshold-and-unit'),
-    form: handleFormRequest(request, linkageForms.alertType)
+    form: formHandler.handleFormRequest(request, linkageForms.alertType)
   });
 };
 
 const postAlertType = (request, h) => {
-  const form = handleFormRequest(request, linkageForms.alertType);
+  const form = formHandler.handleFormRequest(request, linkageForms.alertType);
 
   if (!form.isValid) {
     return h.postRedirectGet(form);
@@ -61,12 +61,12 @@ const postAlertType = (request, h) => {
     volumeLimited: form.fields.find(field => field.name === 'alertType').options.choices.find(field => field.value === 'reduce').fields.find(field => field.name === 'volumeLimited')
   });
 
-  return redirectTo(request, h, '/licence-number');
+  return helpers.edirectTo(request, h, '/licence-number');
 };
 
 const getLicenceNumber = async (request, h) => {
   const pageTitle = 'Enter the licence number this threshold applies to';
-  const caption = await getCaption(request);
+  const caption = await helpers.getCaption(request);
   const { path } = request;
 
   return h.view('nunjucks/form', {
@@ -74,12 +74,12 @@ const getLicenceNumber = async (request, h) => {
     caption,
     pageTitle,
     back: path.replace(/\/[^/]*$/, '/alert-type'),
-    form: handleFormRequest(request, linkageForms.whichLicence)
+    form: formHandler.handleFormRequest(request, linkageForms.whichLicence)
   });
 };
 
 const postLicenceNumber = (request, h) => {
-  const form = handleFormRequest(request, linkageForms.whichLicence);
+  const form = formHandler.handleFormRequest(request, linkageForms.whichLicence);
   const enteredLicenceNumber = form.fields.find(field => field.name === 'licenceNumber');
 
   if (!form.isValid) {
@@ -98,13 +98,13 @@ const postLicenceNumber = (request, h) => {
     licenceNumber: enteredLicenceNumber
   });
 
-  return redirectTo(request, h, '/condition');
+  return helpers.redirectTo(request, h, '/condition');
 };
 
 const getCondition = async (request, h) => {
   const sessionData = session.get(request);
   const pageTitle = `Select the full condition for licence ${sessionData.licenceNumber.value}`;
-  const caption = await getCaption(request);
+  const caption = await helpers.getCaption(request);
   const { path } = request;
 
   return h.view('nunjucks/form', {
@@ -112,12 +112,12 @@ const getCondition = async (request, h) => {
     caption,
     pageTitle,
     back: path.replace(/\/[^/]*$/, '/licence-number'),
-    form: handleFormRequest(request, linkageForms.whichCondition)
+    form: formHandler.handleFormRequest(request, linkageForms.whichCondition)
   });
 };
 
 const postCondition = (request, h) => {
-  const form = handleFormRequest(request, linkageForms.whichCondition);
+  const form = formHandler.handleFormRequest(request, linkageForms.whichCondition);
 
   if (!form.isValid) {
     return h.postRedirectGet(form);
@@ -128,12 +128,12 @@ const postCondition = (request, h) => {
     condition
   });
 
-  return redirectTo(request, h, condition.value ? `/check` : '/abstraction-period');
+  return helpers.redirectTo(request, h, condition.value ? `/check` : '/abstraction-period');
 };
 
 const getManuallyDefinedAbstractionPeriod = async (request, h) => {
   const pageTitle = 'Enter an abstraction period for licence';
-  const caption = await getCaption(request);
+  const caption = await helpers.getCaption(request);
   const { path } = request;
 
   return h.view('nunjucks/form', {
@@ -141,12 +141,12 @@ const getManuallyDefinedAbstractionPeriod = async (request, h) => {
     caption,
     pageTitle,
     back: path.replace(/\/[^/]*$/, '/condition'),
-    form: handleFormRequest(request, linkageForms.manuallyDefinedAbstractionPeriod)
+    form: formHandler.handleFormRequest(request, linkageForms.manuallyDefinedAbstractionPeriod)
   });
 };
 
 const postManuallyDefinedAbstractionPeriod = (request, h) => {
-  const form = handleFormRequest(request, linkageForms.manuallyDefinedAbstractionPeriod);
+  const form = formHandler.handleFormRequest(request, linkageForms.manuallyDefinedAbstractionPeriod);
 
   if (!form.isValid) {
     return h.postRedirectGet(form);
@@ -157,39 +157,39 @@ const postManuallyDefinedAbstractionPeriod = (request, h) => {
     endDate: form.fields.find(field => field.name === 'endDate')
   });
 
-  return redirectTo(request, h, '/check');
+  return helpers.redirectTo(request, h, '/check');
 };
 
 const getCheckYourAnswers = async (request, h) => {
   const pageTitle = 'Check the restriction details';
-  const caption = await getCaption(request);
+  const caption = await helpers.getCaption(request);
   const { path } = request;
 
   session.merge(request, {
     checkStageReached: true
   });
 
-  const selectedConditionText = getSelectedConditionText(request);
+  const selectedConditionText = helpers.getSelectedConditionText(request);
 
   return h.view('nunjucks/gauging-stations/new-tag-check', {
     ...request.view,
     caption,
     pageTitle,
     back: path.replace(/\/[^/]*$/, '/condition'),
-    form: handleFormRequest(request, linkageForms.checkYourAnswers),
+    form: formHandler.handleFormRequest(request, linkageForms.checkYourAnswers),
     sessionData: session.get(request),
     selectedConditionText
   });
 };
 
 const postCheckYourAnswers = async (request, h) => {
-  const form = handleFormRequest(request, linkageForms.checkYourAnswers);
+  const form = formHandler.handleFormRequest(request, linkageForms.checkYourAnswers);
 
   if (!form.isValid) {
     return h.postRedirectGet(form);
   }
 
-  await handlePost(request);
+  await helpers.handlePost(request);
 
   // eslint-disable-next-line no-useless-escape
   return h.redirect(request.path.replace(/\/[^\/]*$/, '/complete'));

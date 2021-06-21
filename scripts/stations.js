@@ -10,8 +10,8 @@ program.version('0.1');
 const destinationFile = 'src/internal/modules/abstraction-reform/schema/types/gauging-stations.json';
 
 const mapCsvRow = csvRow => ({
-  id: csvRow.SUID,
-  value: csvRow.stationName
+  id: csvRow.SUID.trim(),
+  value: csvRow.stationName.trim()
 });
 
 const getSchemaFromCsvData = csvData => {

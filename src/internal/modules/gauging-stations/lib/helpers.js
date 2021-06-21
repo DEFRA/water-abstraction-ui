@@ -32,7 +32,8 @@ const isLicenceNumberValid = async request => {
 const fetchConditionsForLicence = async (request, h) => {
   try {
     const sessionData = session.get(request);
-    const { data } = await services.water.licenceVersionPurposeConditionsService.getLicenceVersionPurposeConditionsByLicenceId(sessionData.fetchedLicence.id, { qs: { code: 'CES' } });
+    const { data } = await services.water.licenceVersionPurposeConditionsService
+      .getLicenceVersionPurposeConditionsByLicenceId(sessionData.fetchedLicence.id, { qs: { code: 'CES' } });
     return data;
   } catch (err) {
     return [];
@@ -81,27 +82,22 @@ const handlePost = async request => {
   const restrictionType = deduceRestrictionTypeFromUnit(thresholdUnit);
   const alertType = get(sessionData, 'alertType.value');
   const volumeLimited = get(sessionData, 'volumeLimited.value');
+  const reductionAlertType = volumeLimited === true ? 'stop_or_reduce' : 'reduce';
+  const derivedAlertType = alertType === 'stop' ? 'stop' : reductionAlertType;
   const conditionId = licenceVersionPurposeConditionId.length > 0 ? licenceVersionPurposeConditionId : null;
-  console.log(request.pre.conditionsForSelectedLicence);
-  const selectedCondition = conditionId && request.pre.conditionsForSelectedLicence.find(x => x.licenceVersionPurposeConditionId === conditionId);
-  console.log(selectedCondition);
+
   return services.water.gaugingStations.postLicenceLinkage(gaugingStationId, licenceId, {
-    licenceVersionPurposeConditionId: conditionId,
     thresholdUnit,
     thresholdValue,
-    abstractionPeriod: (startDate && endDate && conditionId && {
-      startDay: parseInt(startDay),
-      startMonth: parseInt(startMonth),
-      endDay: parseInt(endDay),
-      endMonth: parseInt(endMonth)
-    }) || {
+    restrictionType,
+    licenceVersionPurposeConditionId: conditionId,
+    abstractionPeriod: {
       startDay: parseInt(startDay),
       startMonth: parseInt(startMonth),
       endDay: parseInt(endDay),
       endMonth: parseInt(endMonth)
     },
-    restrictionType,
-    alertType: alertType === 'stop' ? 'stop' : (volumeLimited === true ? 'stop_or_reduce' : 'reduce')
+    alertType: derivedAlertType
   });
 };
 

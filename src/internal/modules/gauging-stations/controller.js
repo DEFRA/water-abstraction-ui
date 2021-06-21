@@ -58,7 +58,10 @@ const postAlertType = (request, h) => {
 
   session.merge(request, {
     alertType: form.fields.find(field => field.name === 'alertType'),
-    volumeLimited: form.fields.find(field => field.name === 'alertType').options.choices.find(field => field.value === 'reduce').fields.find(field => field.name === 'volumeLimited')
+    volumeLimited: form.fields
+      .find(field => field.name === 'alertType').options.choices
+      .find(field => field.value === 'reduce').fields
+      .find(field => field.name === 'volumeLimited')
   });
 
   return helpers.edirectTo(request, h, '/licence-number');

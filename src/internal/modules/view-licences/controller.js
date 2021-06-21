@@ -23,7 +23,7 @@ const getLicenceSummary = async (request, h) => {
 
   // Get CRM v1 doc ID
   const documentId = getDocumentId(document);
-  const gaugingStations = { stations: gaugingstationsdata.data };
+  const gaugingStations = { stations: !gaugingstationsdata ? [] : gaugingstationsdata.data };
   const view = {
     ...request.view,
     pageTitle: `Licence ${licence.licenceNumber}`,

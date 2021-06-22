@@ -4,7 +4,7 @@ const formHelpers = require('shared/lib/forms');
 const session = require('./lib/session');
 const helpers = require('./lib/helpers');
 
-const getNewFlow = (request, h) => h.redirect(`${request.path}/../threshold-and-unit`);
+const getNewFlow = (request, h) => h.redirect(`${request.path}/threshold-and-unit`);
 
 const getThresholdAndUnit = async (request, h) => {
   const caption = await helpers.getCaption(request);

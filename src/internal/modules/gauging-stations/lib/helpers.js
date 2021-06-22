@@ -52,7 +52,7 @@ const getSelectedConditionText = request => {
   const selectedCondition = get(sessionData, 'condition.value', null);
 
   if (selectedCondition) {
-    return get(conditionsForSelectedLicence.find(x => x.licenceVersionPurposeConditionId === selectedCondition), 'notes', 'None');
+    return get(conditionsForSelectedLicence.find(x => x.id === selectedCondition), 'notes', 'None');
   } else {
     return 'None';
   }

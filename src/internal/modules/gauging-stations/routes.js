@@ -9,13 +9,13 @@ const allowedScopes = [manageGaugingStationLicenceLinks];
 module.exports = {
   getNewFlow: {
     method: 'GET',
-    path: '/monitoring-stations/{gaugingStationId}/new-link',
+    path: '/monitoring-stations/{gaugingStationId}/tagging-licence',
     handler: controller.getNewFlow
   },
 
   getThresholdAndUnit: {
     method: 'GET',
-    path: '/monitoring-stations/{gaugingStationId}/threshold-and-unit',
+    path: '/monitoring-stations/{gaugingStationId}/tagging-licence/threshold-and-unit',
     handler: controller.getThresholdAndUnit,
     config: {
       description: 'Gets the entry page for linking a licence to a given gauging station - Requires the user to enter a Threshold and Unit for triggering an alert',
@@ -33,7 +33,7 @@ module.exports = {
 
   postThresholdAndUnit: {
     method: 'POST',
-    path: '/monitoring-stations/{gaugingStationId}/threshold-and-unit',
+    path: '/monitoring-stations/{gaugingStationId}/tagging-licence/threshold-and-unit',
     handler: controller.postThresholdAndUnit,
     config: {
       description: 'Accepts a specified threshold and unit, and forwards user to the next step in the flow',
@@ -45,7 +45,7 @@ module.exports = {
 
   getAlertType: {
     method: 'GET',
-    path: '/monitoring-stations/{gaugingStationId}/alert-type',
+    path: '/monitoring-stations/{gaugingStationId}/tagging-licence/alert-type',
     handler: controller.getAlertType,
     config: {
       description: 'Gets the form for selecting an alert type',
@@ -57,7 +57,7 @@ module.exports = {
 
   postAlertType: {
     method: 'POST',
-    path: '/monitoring-stations/{gaugingStationId}/alert-type',
+    path: '/monitoring-stations/{gaugingStationId}/tagging-licence/alert-type',
     handler: controller.postAlertType,
     config: {
       description: 'Accepts a specified threshold and unit, and forwards user to the next step in the flow',
@@ -69,7 +69,7 @@ module.exports = {
 
   getLicenceNumber: {
     method: 'GET',
-    path: '/monitoring-stations/{gaugingStationId}/licence-number',
+    path: '/monitoring-stations/{gaugingStationId}/tagging-licence/licence-number',
     handler: controller.getLicenceNumber,
     config: {
       description: 'Gets the form for entering a licence number',
@@ -81,7 +81,7 @@ module.exports = {
 
   postLicenceNumber: {
     method: 'POST',
-    path: '/monitoring-stations/{gaugingStationId}/licence-number',
+    path: '/monitoring-stations/{gaugingStationId}/tagging-licence/licence-number',
     handler: controller.postLicenceNumber,
     config: {
       description: 'Takes a licence number, and forwards user to the next step in the flow',
@@ -96,7 +96,7 @@ module.exports = {
 
   getCondition: {
     method: 'GET',
-    path: '/monitoring-stations/{gaugingStationId}/condition',
+    path: '/monitoring-stations/{gaugingStationId}/tagging-licence/condition',
     handler: controller.getCondition,
     config: {
       description: 'Gets the form for selecting a relevant licence condition',
@@ -111,7 +111,7 @@ module.exports = {
 
   postCondition: {
     method: 'POST',
-    path: '/monitoring-stations/{gaugingStationId}/condition',
+    path: '/monitoring-stations/{gaugingStationId}/tagging-licence/condition',
     handler: controller.postCondition,
     config: {
       description: 'Takes input of the condition GUID. Accepts Null to indicate a linkage which is not condition-specific.',
@@ -126,7 +126,7 @@ module.exports = {
 
   getManuallyDefinedAbstractionPeriod: {
     method: 'GET',
-    path: '/monitoring-stations/{gaugingStationId}/abstraction-period',
+    path: '/monitoring-stations/{gaugingStationId}/tagging-licence/abstraction-period',
     handler: controller.getManuallyDefinedAbstractionPeriod,
     config: {
       description: 'Gets the form for inputting a manually-defined abstraction period',
@@ -138,7 +138,7 @@ module.exports = {
 
   postManuallyDefinedAbstractionPeriod: {
     method: 'POST',
-    path: '/monitoring-stations/{gaugingStationId}/abstraction-period',
+    path: '/monitoring-stations/{gaugingStationId}/tagging-licence/abstraction-period',
     handler: controller.postManuallyDefinedAbstractionPeriod,
     config: {
       description: 'Takes the input of a manually-defined abstraction period.',
@@ -150,7 +150,7 @@ module.exports = {
 
   getCheckYourAnswers: {
     method: 'GET',
-    path: '/monitoring-stations/{gaugingStationId}/check',
+    path: '/monitoring-stations/{gaugingStationId}/tagging-licence/check',
     handler: controller.getCheckYourAnswers,
     config: {
       description: 'Gets the check your answers page',
@@ -165,7 +165,7 @@ module.exports = {
 
   postCheckYourAnswers: {
     method: 'POST',
-    path: '/monitoring-stations/{gaugingStationId}/check',
+    path: '/monitoring-stations/{gaugingStationId}/tagging-licence/check',
     handler: controller.postCheckYourAnswers,
     config: {
       description: 'Posts the payload.',
@@ -180,7 +180,7 @@ module.exports = {
 
   getFlowComplete: {
     method: 'GET',
-    path: '/monitoring-stations/{gaugingStationId}/complete',
+    path: '/monitoring-stations/{gaugingStationId}/tagging-licence/complete',
     handler: controller.getFlowComplete,
     config: {
       description: 'Gets the completion confirmation page',

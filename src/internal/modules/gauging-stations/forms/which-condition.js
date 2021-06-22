@@ -10,7 +10,7 @@ const conditionEntryForm = request => {
 
   const parsedConditions = conditionsForSelectedLicence.filter(row => row.notes).map((row, n) => {
     return {
-      value: row.licenceVersionPurposeConditionId,
+      value: row.id,
       label: `Flow cessation condition ${n + 1}`,
       hint: row.notes
     };

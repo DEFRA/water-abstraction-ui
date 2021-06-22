@@ -1,6 +1,6 @@
 'use strict';
 
-const getSessionKey = request => `licenceTaggingProcess.${request.defra.entityId}`;
+const getSessionKey = request => `waa.${request.params.gaugingStationId}.licenceTaggingProcess`;
 
 const get = request => {
   const key = getSessionKey(request);

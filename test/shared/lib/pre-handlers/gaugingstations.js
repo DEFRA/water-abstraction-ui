@@ -12,9 +12,8 @@ const sandbox = require('sinon').createSandbox();
 const preHandlers = require('shared/lib/pre-handlers/gaugingstations');
 
 const h = sandbox.stub();
-const GAUGINGSTATION_ID = 'e3e95a10-a989-42ae-9692-feac91f06ffb';
+const GAUGINGSTATION_ID = '0dd992c3-86e6-4410-963c-cc61d51bef40';
 const LICENCE_ID = '22c784b7-b141-4fd0-8ee1-78ea7ae783bc';
-//        licenceId: LICENCE_ID
 
 experiment('src/shared/lib/pre-handlers/gaugingstations', () => {
   let request, result;
@@ -27,7 +26,7 @@ experiment('src/shared/lib/pre-handlers/gaugingstations', () => {
       services: {
         water: {
           gaugingstations: {
-            loadGaugingStations: sandbox.stub().resolves({ data: [
+            loadGaugingStations: { data: [
               {
                 abstractionPeriodStartDay: 1,
                 abstractionPeriodStartMonth: 6,
@@ -49,8 +48,8 @@ experiment('src/shared/lib/pre-handlers/gaugingstations', () => {
                 easting: null,
                 northing: null
               }
-            ] }),
-            loadGaugingStationsByLicenceId: sandbox.stub().resolves({ data: [
+            ] },
+            loadGaugingStationsByLicenceId: { data: [
               {
                 abstractionPeriodStartDay: 1,
                 abstractionPeriodStartMonth: 6,
@@ -72,7 +71,7 @@ experiment('src/shared/lib/pre-handlers/gaugingstations', () => {
                 easting: null,
                 northing: null
               }
-            ] })
+            ] }
           }
         }
       }
@@ -83,6 +82,7 @@ experiment('src/shared/lib/pre-handlers/gaugingstations', () => {
 
   experiment('.loadGaugingStations by gaugingstationsId', () => {
     beforeEach(async () => {
+      sandbox.stub(preHandlers, 'loadGaugingStations').resolves(request.services.water.gaugingstations.loadGaugingStations);
       result = await preHandlers.loadGaugingStations(request, h);
     });
 
@@ -93,6 +93,7 @@ experiment('src/shared/lib/pre-handlers/gaugingstations', () => {
 
   experiment('.loadGaugingStationsByLicenceId', () => {
     beforeEach(async () => {
+      sandbox.stub(preHandlers, 'loadGaugingStationsByLicenceId').resolves(request.services.water.gaugingstations.loadGaugingStationsByLicenceId);
       result = await preHandlers.loadGaugingStationsByLicenceId(request, h);
     });
 

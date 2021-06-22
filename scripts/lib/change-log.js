@@ -16,7 +16,7 @@ const createChangeLog = (baseSchema, comparisonSchema) => {
           suid: key,
           message: `Station name changed from ${maps.base.id.get(key)}`,
           newName: name,
-          newSuid: null
+          originalSuid: null
         });
       }
     } else if (maps.base.name.has(normalisedName)) {
@@ -24,7 +24,7 @@ const createChangeLog = (baseSchema, comparisonSchema) => {
         suid: key,
         message: `Station SUID changed for ${name}`,
         newName: null,
-        newSuid: maps.base.name.get(normalisedName)
+        originalSuid: maps.base.name.get(normalisedName)
       });
     }
   });
@@ -34,7 +34,7 @@ const createChangeLog = (baseSchema, comparisonSchema) => {
         suid: key,
         message: `Station SUID has been removed for ${name}`,
         newName: null,
-        newSuid: null
+        originalSuid: null
       });
     }
   });

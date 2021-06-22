@@ -611,8 +611,6 @@ experiment('internal/modules/gauging-stations/controller', () => {
       fields: []
     };
 
-    const storedData = {};
-
     const h = {
       view: sandbox.spy(),
       postRedirectGet: sandbox.spy(),

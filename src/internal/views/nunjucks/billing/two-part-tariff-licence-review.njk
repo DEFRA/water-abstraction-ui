@@ -6,7 +6,7 @@
 
 {% from "./nunjucks/billing/macros/totals.njk" import chargeOrDash %}
 {% from "./nunjucks/billing/macros/batch-title.njk" import batchTitle %}
-{% from "./nunjucks/billing/macros/batch-buttons.njk" import removeLicenceFromBatchButton %}
+{% from "./nunjucks/billing/macros/batch-buttons.njk" import removeTPTLicenceFromBatchButton %}
 {% from "./nunjucks/billing/macros/two-part-tariff-review-quantities.njk" import authorisedQuantity, billableQuantity, reportedVolume, billableVolume %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "govuk/components/details/macro.njk" import govukDetails %}
@@ -20,8 +20,9 @@
 
 {% block content %}
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
-    <div class="govuk-grid-column-two-thirds">
-      {{ batchTitle(pageTitle, batch) }}
+    <div class="govuk-grid-column-full">
+    {{ batchTitle(pageTitle, batch) }}
+      
      
       {% set summaryHtml %}
         <dl class="meta">
@@ -41,7 +42,7 @@
       {% endset %}
       </div>
     </div>
-
+    {% if aggregateConditions.length > 0 %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
         {{ govukDetails({
@@ -50,7 +51,22 @@
       }) }}
       </div>
     </div>
-      {{ removeLicenceFromBatchButton(batch, licence) }}
+    {% else %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <p>
+          <a href="{{ returnsLink }}">View returns summary</a>
+        </p>
+      </div>
+    </div>
+    {% endif %}
+    <h2 class="govuk-heading-l">
+    {% if totals.errors > 0 %}
+      {{totals.errors}} {{ 'issue' | pluralize(totals.errors != 1) }} to review
+    {% else %}
+      {{totals.ready}} ready for billing
+    {% endif%}</h2>
+      {{ removeTPTLicenceFromBatchButton(batch, licence) }}
       {% for billingVolumes in billingVolumeGroups %}
         {% for billingVolume in billingVolumes %}
           <div class="govuk-grid-row">
@@ -71,7 +87,7 @@
                 }
               ],
               [ { text: "Reported returns", classes: "thick_black_underline"  }, { text: reportedVolume(billingVolume), classes: "thick_black_underline" }, { text: "", classes: "thick_black_underline"  } ],
-              [ { text: "Billing Account" }, { text: billingVolume.invoiceAccount.accountNumber }, { text: "" } ],
+              [ { text: "Billing account" }, { text: billingVolume.invoiceAccount.accountNumber }, { text: "" } ],
               [ { text: "Purpose" }, { text: billingVolume.chargeElement.purposeUse.name }, { text: "" } ],
               [ { text: "Description" }, { text: billingVolume.chargeElement.description }, { text: "" } ],
               [ { text: "Charge period" }, { text: billingVolume.chargePeriod.startDate | date + " to " + billingVolume.chargePeriod.endDate | date }, { text: "" } ],

@@ -48,6 +48,7 @@ const getLicenceReview = async (request, h) => {
   const backLinkTail = action === 'review' ? 'review' : 'ready';
 
   const billingVolumeData = await services.water.billingBatches.getBatchLicenceBillingVolumes(batch.id, licenceId);
+  const totals = twoPartTariff.getTotals(billingVolumeData);
   const billingVolumeGroups = twoPartTariff.decorateBillingVolumes(batch, licence, billingVolumeData);
 
   return h.view('nunjucks/billing/two-part-tariff-licence-review', {
@@ -57,6 +58,7 @@ const getLicenceReview = async (request, h) => {
     licence,
     ...licenceData,
     billingVolumeGroups,
+    totals,
     back: `/billing/batch/${batch.id}/two-part-tariff-${backLinkTail}`
   });
 };

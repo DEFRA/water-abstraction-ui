@@ -561,12 +561,12 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
           });
 
           test('the first radio option is the annual auth quantity', async () => {
-            expect(field.options.choices[0].label).to.equal('Authorised (25.3ML)');
+            expect(field.options.choices[0].label).to.equal('Authorised (25.3Ml)');
             expect(field.options.choices[0].value).to.equal('authorised');
           });
 
           test('the second radio option is for a custom quantity', async () => {
-            expect(field.options.choices[1].label).to.equal('Custom (ML)');
+            expect(field.options.choices[1].label).to.equal('Custom (Ml)');
             expect(field.options.choices[1].value).to.equal('custom');
           });
 
@@ -582,7 +582,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
         test('has a submit button', async () => {
           const submit = form.fields.find(row => row.options.widget === 'button');
-          expect(submit.options.label).to.equal('Continue');
+          expect(submit.options.label).to.equal('Confirm');
         });
       });
     });

@@ -447,6 +447,113 @@ experiment('internal/modules/gauging-stations/controller', () => {
       test('calls handleFormRequest to process the payload through the form', () => {
         expect(formHandler.handleFormRequest.called).to.be.true();
       });
+      test('redirects the user to the next thing', () => {
+        expect(h.redirect.called).to.be.true();
+      });
+    });
+  });
+
+  experiment('.getManuallyDefinedAbstractionPeriod', () => {
+    const request = {
+      path: 'http://example.com/monitoring-stations/123/abstraction-period',
+      method: 'get',
+      view: {
+        csrfToken: 'some-token'
+      }
+    };
+
+    const h = { view: sandbox.spy() };
+
+    beforeEach(() => {
+      controller.getManuallyDefinedAbstractionPeriod(request, h);
+    });
+    afterEach(async () => sandbox.restore());
+
+    test('calls the helper method which generates a caption', async () => {
+      expect(helpers.getCaption.called).to.be.true();
+    });
+
+    test('returns some gumph with h.view', () => {
+      expect(h.view.called).to.be.true();
+    });
+  });
+
+  experiment('.postManuallyDefinedAbstractionPeriod', () => {
+    const request = {
+      path: 'http://example.com/monitoring-stations/123/abstraction-period',
+      method: 'post',
+      view: {
+        csrfToken: 'some-token'
+      }
+    };
+
+    const formContent = {
+      fields: [
+        {
+          name: 'startDate',
+          value: '01-01'
+        },
+        {
+          name: 'endDate',
+          value: '01-05'
+        }
+      ]
+    };
+
+    const storedData = {
+      startDate: {
+        name: 'startDate',
+        value: '01-01'
+      },
+      endDate: {
+        name: 'endDate',
+        value: '01-05'
+      }
+    };
+
+    const h = {
+      view: sandbox.spy(),
+      postRedirectGet: sandbox.spy(),
+      redirect: sandbox.spy()
+    };
+
+    experiment('when the payload is invalid', () => {
+      beforeEach(() => {
+        formHandler.handleFormRequest.resolves({
+          ...formContent,
+          isValid: false
+        });
+        controller.postManuallyDefinedAbstractionPeriod(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+
+      test('calls handleFormRequest to process the payload through the form', () => {
+        expect(formHandler.handleFormRequest.called).to.be.true();
+      });
+      test('redirects the user back to the form', () => {
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+    });
+
+    experiment('when the payload is valid', () => {
+      beforeEach(() => {
+        formHandler.handleFormRequest.resolves({
+          ...formContent,
+          isValid: true
+        });
+        controller.postManuallyDefinedAbstractionPeriod(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+
+      test('calls session.merge with the expected data', () => {
+        expect(session.merge.calledWith(request, storedData)).to.be.true();
+      });
+      test('calls handleFormRequest to process the payload through the form', () => {
+        expect(formHandler.handleFormRequest.called).to.be.true();
+      });
+      test('redirects the user to the next thing', () => {
+        expect(h.redirect.called).to.be.true();
+      });
     });
   });
 });

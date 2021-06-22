@@ -8,13 +8,16 @@ const conditionEntryForm = request => {
 
   const { conditionsForSelectedLicence } = request.pre;
 
-  const parsedConditions = conditionsForSelectedLicence.filter(row => row.notes).map((row, n) => {
-    return {
-      value: row.id,
-      label: `Flow cessation condition ${n + 1}`,
-      hint: row.notes
-    };
-  });
+  const parsedConditions = conditionsForSelectedLicence
+    .filter(row => row.notes)
+    .sort((a, b) => a.notes.localeCompare(b.notes))
+    .map((row, n) => {
+      return {
+        value: row.id,
+        label: `Flow cessation condition ${n + 1}`,
+        hint: `${row.notes} ${row.param1} ${row.param2}`
+      };
+    });
 
   const defaultCondition = get(session.get(request), 'condition.value');
 

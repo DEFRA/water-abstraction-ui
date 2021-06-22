@@ -84,13 +84,12 @@ const handlePost = async request => {
   const volumeLimited = get(sessionData, 'volumeLimited.value');
   const reductionAlertType = volumeLimited === true ? 'stop_or_reduce' : 'reduce';
   const derivedAlertType = alertType === 'stop' ? 'stop' : reductionAlertType;
-  const conditionId = licenceVersionPurposeConditionId.length > 0 ? licenceVersionPurposeConditionId : null;
 
   const parsedPayload = {
     thresholdUnit,
     thresholdValue,
     restrictionType,
-    licenceVersionPurposeConditionId: conditionId,
+    licenceVersionPurposeConditionId,
     abstractionPeriod: {
       startDay: parseInt(startDay),
       startMonth: parseInt(startMonth),

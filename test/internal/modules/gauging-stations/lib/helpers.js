@@ -21,6 +21,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
 
     sandbox.stub(services.water.licences, 'getLicenceByLicenceNumber').resolves();
     sandbox.stub(services.water.licenceVersionPurposeConditionsService, 'getLicenceVersionPurposeConditionsByLicenceId').resolves();
+    sandbox.stub(services.water.gaugingStations, 'postLicenceLinkage').resolves();
   });
 
   afterEach(async () => sandbox.restore());
@@ -144,6 +145,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
         await services.water.licenceVersionPurposeConditionsService.getLicenceVersionPurposeConditionsByLicenceId.throws(new Error());
         result = await helpers.fetchConditionsForLicence(request);
       });
+      afterEach(async () => sandbox.restore());
       test('the returned result is an empty array', () => {
         test('session.get is called', () => {
           expect(session.get.called).to.be.true();
@@ -160,4 +162,65 @@ experiment('internal/modules/gauging-stations/controller', () => {
   // getCaption;
   // getSelectedConditionText;
   // handlePost;
+  experiment('.handlePost', () => {
+    const request = {
+      params: {
+        gaugingStationId: 'some-gauging-station-id'
+      }
+    };
+    beforeEach(async () => {
+      session.get.returns({
+        fetchedLicence: {
+          id: 'some-licence-id'
+        },
+        condition: {
+          value: 'condition-guid'
+        },
+        threshold: {
+          value: 100
+        },
+        unit: {
+          value: 'cups'
+        },
+        startDate: {
+          value: '01-02'
+        },
+        endDate: {
+          value: '03-04'
+        },
+        alertType: {
+          value: 'stop'
+        },
+        volumeLimited: {
+          value: false
+        }
+      });
+
+      await helpers.handlePost(request);
+    });
+    afterEach(async () => sandbox.restore());
+
+    test('calls session.get', () => {
+      expect(session.get.called).to.be.true();
+    });
+    test('calls the post service with the right params', () => {
+      expect(services.water.gaugingStations.postLicenceLinkage.calledWith(
+        'some-gauging-station-id',
+        'some-licence-id',
+        {
+          thresholdUnit: 'cups',
+          thresholdValue: 100,
+          restrictionType: 'level',
+          licenceVersionPurposeConditionId: 'condition-guid',
+          abstractionPeriod: {
+            startDay: 1,
+            startMonth: 2,
+            endDay: 3,
+            endMonth: 4
+          },
+          alertType: 'stop'
+        }
+      ));
+    });
+  });
 });

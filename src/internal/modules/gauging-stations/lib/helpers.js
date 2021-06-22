@@ -29,7 +29,7 @@ const isLicenceNumberValid = async request => {
   }
 };
 
-const fetchConditionsForLicence = async (request, h) => {
+const fetchConditionsForLicence = async request => {
   try {
     const sessionData = session.get(request);
     const { data } = await services.water.licenceVersionPurposeConditionsService

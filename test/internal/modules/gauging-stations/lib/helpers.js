@@ -1,9 +1,3 @@
-// redirectTo;
-// isLicenceNumberValid;
-// fetchConditionsForLicence;
-// getCaption;
-// getSelectedConditionText;
-// handlePost;
 
 const {
   experiment,
@@ -15,6 +9,7 @@ const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 const { expect } = require('@hapi/code');
 
+const services = require('../../../../../src/internal/lib/connectors/services');
 const helpers = require('../../../../../src/internal/modules/gauging-stations/lib/helpers');
 const session = require('../../../../../src/internal/modules/gauging-stations/lib/session');
 
@@ -23,6 +18,9 @@ experiment('internal/modules/gauging-stations/controller', () => {
     sandbox.stub(helpers, 'getCaption').resolves('a caption is output');
     sandbox.stub(session, 'get').resolves();
     sandbox.stub(session, 'merge').resolves({});
+
+    sandbox.stub(services.water.licences, 'getLicenceByLicenceNumber').resolves();
+    sandbox.stub(services.water.licenceVersionPurposeConditionsService, 'getLicenceVersionPurposeConditionsByLicenceId').resolves();
   });
 
   afterEach(async () => sandbox.restore());
@@ -60,4 +58,106 @@ experiment('internal/modules/gauging-stations/controller', () => {
       });
     });
   });
+
+  experiment('.isLicenceNumberValid', () => {
+    let result;
+    const request = {
+      payload: {
+        licenceNumber: 'AB/123'
+      }
+    };
+
+    beforeEach(async () => {
+      await services.water.licences.getLicenceByLicenceNumber.returns({
+        licenceId: 'some-id',
+        licenceRef: 'AB/123'
+      });
+      result = await helpers.isLicenceNumberValid(request);
+    });
+    afterEach(async () => sandbox.restore());
+    experiment('When the licence fetching is successful', () => {
+      test('session.merge is called with the licence payload', () => {
+        expect(session.merge.calledWith(request, {
+          fetchedLicence: {
+            licenceId: 'some-id',
+            licenceRef: 'AB/123'
+          }
+        }));
+      });
+
+      test('result is truthy', () => {
+        expect(result).to.be.true();
+      });
+    });
+    experiment('When the licence fetching throws an error', () => {
+      beforeEach(async () => {
+        await services.water.licences.getLicenceByLicenceNumber.throws(new Error());
+        result = await helpers.isLicenceNumberValid(request);
+      });
+      test('session.merge is called with undefined as the licence body', () => {
+        expect(session.merge.calledWith(request, {
+          fetchedLicence: undefined
+        }));
+      });
+      test('result is falsy', () => {
+        expect(result).to.be.false();
+      });
+    });
+  });
+  // fetchConditionsForLicence;
+
+  experiment('.fetchConditionsForLicence', () => {
+    let result;
+    const request = {};
+
+    beforeEach(async () => {
+      await services.water.licenceVersionPurposeConditionsService.getLicenceVersionPurposeConditionsByLicenceId.returns({
+        data: [{
+          conditionId: 'somecondition'
+        }]
+      });
+      session.get.returns({
+        fetchedLicence: {
+          id: 'some-licence-id'
+        }
+      });
+      result = await helpers.fetchConditionsForLicence(request);
+    });
+    afterEach(async () => sandbox.restore());
+    experiment('When the conditions fetching is successful', () => {
+      test('session.get is called', () => {
+        expect(session.get.called).to.be.true();
+      });
+      test('getLicenceVersionPurposeConditionsByLicenceId is called', () => {
+        expect(services.water.licenceVersionPurposeConditionsService.getLicenceVersionPurposeConditionsByLicenceId.called).to.be.true();
+      });
+      test('returns an expected output', () => {
+        expect(result).to.equal(
+          [{
+            conditionId: 'somecondition'
+          }]
+        );
+      });
+    });
+    experiment('When the condition fetching throws an error', () => {
+      beforeEach(async () => {
+        await services.water.licenceVersionPurposeConditionsService.getLicenceVersionPurposeConditionsByLicenceId.throws(new Error());
+        result = await helpers.fetchConditionsForLicence(request);
+      });
+      test('the returned result is an empty array', () => {
+        test('session.get is called', () => {
+          expect(session.get.called).to.be.true();
+        });
+        test('getLicenceVersionPurposeConditionsByLicenceId is called', () => {
+          expect(services.water.licenceVersionPurposeConditionsService.getLicenceVersionPurposeConditionsByLicenceId.called).to.be.true();
+        });
+        test('returns an expected output', () => {
+          expect(result).to.equal([]);
+        });
+      });
+    });
+  });
+  // getCaption;
+  // getSelectedConditionText;
+  // handlePost;
 });

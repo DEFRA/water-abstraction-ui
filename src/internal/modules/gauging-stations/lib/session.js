@@ -20,9 +20,7 @@ const merge = (request, data) => {
   });
 };
 
-const clear = request => {
-  set(request, {});
-};
+const clear = request => set(request, {});
 
 exports.get = get;
 exports.set = set;

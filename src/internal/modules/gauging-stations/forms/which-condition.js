@@ -3,7 +3,7 @@ const { get } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms/');
 const session = require('../lib/session');
 
-const conditionEntryForm = (request, h) => {
+const conditionEntryForm = request => {
   const f = formFactory(request.path);
 
   const { conditionsForSelectedLicence } = request.pre;

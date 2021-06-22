@@ -1,6 +1,6 @@
 const session = require('./session');
 const services = require('../../../lib/connectors/services');
-const { get } = require('lodash');
+const { get, omit } = require('lodash');
 
 const redirectTo = (request, h, path) => {
   const { checkStageReached } = session.get(request);
@@ -86,7 +86,7 @@ const handlePost = async request => {
   const derivedAlertType = alertType === 'stop' ? 'stop' : reductionAlertType;
   const conditionId = licenceVersionPurposeConditionId.length > 0 ? licenceVersionPurposeConditionId : null;
 
-  return services.water.gaugingStations.postLicenceLinkage(gaugingStationId, licenceId, {
+  const parsedPayload = {
     thresholdUnit,
     thresholdValue,
     restrictionType,
@@ -98,7 +98,13 @@ const handlePost = async request => {
       endMonth: parseInt(endMonth)
     },
     alertType: derivedAlertType
-  });
+  };
+
+  // If the LVPC ID is supplied, the abstraction period is omitted.
+  if (parsedPayload.licenceVersionPurposeConditionId.length === '36') {
+    omit(parsedPayload, 'abstractionPeriod');
+  }
+  return services.water.gaugingStations.postLicenceLinkage(gaugingStationId, licenceId, parsedPayload);
 };
 
 exports.redirectTo = redirectTo;

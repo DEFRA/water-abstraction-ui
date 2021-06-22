@@ -1,6 +1,6 @@
 {% macro billableQuantity(chargeElement) %}
   {% if chargeElement.billableAnnualQuantity | isFinite %}
-    {{ chargeElement.billableAnnualQuantity + 'ML billable'}}
+    {{ chargeElement.billableAnnualQuantity + 'Ml billable'}}
   {% else %}
     Billable not set
   {% endif %}
@@ -8,27 +8,27 @@
 
 {% macro authorisedQuantity(chargeElement) %}
   {% if chargeElement.authorisedAnnualQuantity | isFinite %}
-    {{ chargeElement.authorisedAnnualQuantity + 'ML authorised'}}
+    {{ chargeElement.authorisedAnnualQuantity + 'Ml authorised'}}
   {% else %}
-    0ML
+    0Ml
   {% endif %}
 {% endmacro %}
 
 {% macro reportedVolume(billingVolume) %}
 {% if billingVolume.calculatedVolume | isFinite %}
-  {{ billingVolume.calculatedVolume + 'ML' }}
+  {{ billingVolume.calculatedVolume + 'Ml' }}
 {% else %}
-  0ML
+  0Ml
 {% endif %}
 {% endmacro %}
 
 {% macro billableVolume(billingVolume) %}
 {% if billingVolume.volume | isFinite %}
-  {{ billingVolume.volume + 'ML' }}
+  {{ billingVolume.volume + 'Ml' }}
   {% if billingVolume.volume != billingVolume.calculatedVolume and billingVolume.calculatedVolume | isFinite %}
     <br>Edited
   {% endif %}
 {% else %}
-    0ML
+    0Ml
 {% endif %}
 {% endmacro %}

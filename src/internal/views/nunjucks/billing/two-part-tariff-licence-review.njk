@@ -82,9 +82,9 @@
                         },
                 { text: "" }
               ],
-              [ { text: "Source" }, { text: billingVolume.chargeElement.source}, { text: "" } ],
-              [ { text: "Season" }, { text: billingVolume.chargeElement.season }, { text: "" } ],
-              [ { text: "Loss" }, { text: billingVolume.chargeElement.loss }, { text: "" } ]
+              [ { text: "Source" }, { text: billingVolume.chargeElement.source | sentenceCase }, { text: "" } ],
+              [ { text: "Season" }, { text: billingVolume.chargeElement.season | sentenceCase }, { text: "" } ],
+              [ { text: "Loss" }, { text: billingVolume.chargeElement.loss | sentenceCase }, { text: "" } ]
             ]
           }) }}
           </div>

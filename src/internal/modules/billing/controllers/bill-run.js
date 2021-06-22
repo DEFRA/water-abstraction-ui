@@ -45,6 +45,10 @@ const getBillingBatchSummary = async (request, h) => {
   });
 };
 
+const getCaption = invoice => invoice.invoiceNumber
+  ? `Bill ${invoice.invoiceNumber}`
+  : `Billing account ${invoice.invoiceAccount.accountNumber}`;
+
 const getBillingBatchInvoice = async (request, h) => {
   const { batchId, invoiceId } = request.params;
 
@@ -52,6 +56,8 @@ const getBillingBatchInvoice = async (request, h) => {
     services.water.billingBatches.getBatch(batchId),
     services.water.billingBatches.getBatchInvoice(batchId, invoiceId)
   ]);
+
+  const invoiceLicenceMapper = invoiceLicence => mappers.mapInvoiceLicence(batch, invoice, invoiceLicence);
 
   return h.view('nunjucks/billing/batch-invoice', {
     ...request.view,
@@ -61,11 +67,14 @@ const getBillingBatchInvoice = async (request, h) => {
     financialYearEnding: invoice.financialYear.yearEnding,
     batch,
     batchType: mappers.mapBatchType(batch.type),
-    invoiceLicences: mappers.mapInvoiceLicences(invoice),
+    invoiceLicences: invoice.invoiceLicences.map(invoiceLicenceMapper),
     isCredit: get(invoice, 'totals.netTotal', 0) < 0,
-    caption: `Billing account ${invoice.invoiceAccount.accountNumber}`,
+    caption: getCaption(invoice),
     errors: mappers.mapInvoiceLevelErrors(invoice),
-    isCreditDebitBlockVisible: mappers.isCreditDebitBlockVisible(batch)
+    isCreditDebitBlockVisible: mappers.isCreditDebitBlockVisible(batch),
+    links: {
+      billingAccount: `/billing-accounts/${invoice.invoiceAccount.id}`
+    }
   });
 };
 
@@ -87,10 +96,10 @@ const getBillingBatchList = async (request, h) => {
 const billingBatchAction = (request, h, action) => {
   const { batch } = request.pre;
   const titleAction = (action === 'confirm') ? 'send' : 'cancel';
-  return h.view('nunjucks/billing/confirm-page-with-metadata', {
+  return h.view('nunjucks/billing/confirm-batch', {
     ...request.view,
     batch,
-    pageTitle: `You are about to ${titleAction} this bill run`,
+    pageTitle: `You're about to ${titleAction} this bill run`,
     secondTitle: getBillRunPageTitle(batch),
     metadataType: 'batch',
     form: cancelOrConfirmBatchForm(request, action),
@@ -153,12 +162,12 @@ const getBillingBatchDeleteInvoice = async (request, h) => {
 
   const batchType = mappers.mapBatchType(batch.type).toLowerCase();
 
-  return h.view('nunjucks/billing/confirm-page-with-metadata', {
+  return h.view('nunjucks/billing/confirm-invoice', {
     ...request.view,
     pageTitle: `You're about to remove this bill from the ${batchType} bill run`,
     batch,
     invoice,
-    form: confirmForm.form(request, 'Remove bill'),
+    form: confirmForm.form(request, 'Remove this bill'),
     metadataType: 'invoice',
     back: `/billing/batch/${batchId}/summary`
   });

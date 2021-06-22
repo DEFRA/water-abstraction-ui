@@ -28,7 +28,7 @@
   {% if batch.status == 'ready' %}
     {{
     govukButton({
-      text: "Remove from bill run",
+      text: "Remove bill",
       href: '/billing/batch/' + batch.id + '/delete-invoice/' + invoice.id,
       classes: "govuk-button--secondary"
     })
@@ -36,11 +36,21 @@
   {% endif %}
 {% endmacro %}
 
-{% macro removeLicenceFromBatchButton(batch, licence) %}
+{% macro removeTPTLicenceFromBatchButton(batch, licence) %}
   {{
       govukButton({
         text: "Remove from bill run",
         href: '/billing/batch/' + batch.id + '/two-part-tariff/licence/' + licence.id + '/remove',
+        classes: "govuk-button--secondary"
+      })
+    }}
+{% endmacro %}
+
+{% macro removeLicenceFromBatchButton(link) %}
+  {{
+      govukButton({
+        text: "Remove licence",
+        href: link,
         classes: "govuk-button--secondary"
       })
     }}

@@ -17,8 +17,12 @@ const formHelpers = require('../../../../src/shared/lib/forms');
 experiment('internal/modules/gauging-stations/controller', () => {
   beforeEach(async () => {
     sandbox.stub(helpers, 'getCaption').resolves('a caption is output');
+    sandbox.stub(helpers, 'getSelectedConditionText').resolves('a bit of text is output');
+    sandbox.stub(helpers, 'handlePost').resolves();
+
     sandbox.stub(session, 'get').resolves();
     sandbox.stub(session, 'merge').resolves({});
+    sandbox.stub(session, 'clear').resolves({});
     sandbox.stub(formHandler, 'handleFormRequest').resolves({});
   });
 
@@ -553,6 +557,128 @@ experiment('internal/modules/gauging-stations/controller', () => {
       });
       test('redirects the user to the next thing', () => {
         expect(h.redirect.called).to.be.true();
+      });
+    });
+  });
+
+  experiment('.getCheckYourAnswers', () => {
+    const request = {
+      path: 'http://example.com/monitoring-stations/123/check',
+      method: 'get',
+      view: {
+        csrfToken: 'some-token'
+      }
+    };
+
+    const h = { view: sandbox.spy() };
+
+    beforeEach(() => {
+      session.get.returns({ licenceNumber: { value: 'AB/123' } });
+      controller.getCheckYourAnswers(request, h);
+    });
+    afterEach(async () => sandbox.restore());
+
+    test('calls the helper method which generates a caption', async () => {
+      expect(helpers.getCaption.called).to.be.true();
+    });
+
+    test('calls the session state helper to store checkStageReached', () => {
+      expect(session.merge.calledWith(request, { checkStageReached: true })).to.be.true();
+    });
+
+    test('calls the getSelectedConditionText helper method', () => {
+      expect(helpers.getSelectedConditionText.called).to.be.true();
+    });
+
+    test('returns some gumph with h.view', () => {
+      expect(h.view.called).to.be.true();
+    });
+  });
+
+  experiment('.postCheckYourAnswers', () => {
+    const request = {
+      path: 'http://example.com/monitoring-stations/123/condition',
+      method: 'post',
+      view: {
+        csrfToken: 'some-token'
+      },
+      pre: {
+        isLicenceNumberValid: true
+      }
+    };
+
+    const formContent = {
+      fields: []
+    };
+
+    const storedData = {};
+
+    const h = {
+      view: sandbox.spy(),
+      postRedirectGet: sandbox.spy(),
+      redirect: sandbox.spy()
+    };
+
+    experiment('when the payload is invalid', () => {
+      beforeEach(() => {
+        formHandler.handleFormRequest.resolves({
+          ...formContent,
+          isValid: false
+        });
+        controller.postCheckYourAnswers(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+
+      test('calls handleFormRequest to process the payload through the form', () => {
+        expect(formHandler.handleFormRequest.called).to.be.true();
+      });
+      test('redirects the user back to the form', () => {
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+    });
+
+    experiment('when the payload is valid', () => {
+      beforeEach(() => {
+        formHandler.handleFormRequest.resolves({
+          ...formContent,
+          isValid: true
+        });
+        controller.postCheckYourAnswers(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+
+      test('calls post helper', () => {
+        expect(helpers.handlePost.called).to.be.true();
+      });
+
+      test('redirects the user to the next thing', () => {
+        expect(h.redirect.called).to.be.true();
+      });
+    });
+
+    experiment('.getFlowComplete', () => {
+      const request = {
+        path: 'http://example.com/monitoring-stations/123/new-tag-complete',
+        method: 'get',
+        view: {
+          csrfToken: 'some-token'
+        }
+      };
+
+      const h = { view: sandbox.spy() };
+
+      beforeEach(() => {
+        session.get.returns({ licenceNumber: { value: 'AB/123' } });
+        controller.getFlowComplete(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+
+      test('calls the session clear method', () => {
+        expect(session.clear.calledWith(request)).to.be.true();
+      });
+
+      test('returns some gumph with h.view', () => {
+        expect(h.view.called).to.be.true();
       });
     });
   });

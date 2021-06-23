@@ -37,19 +37,19 @@ const mapChargeVersion = (chargeVersion, { licenceId }) => ({
 
 const createLink = (text, path) => ({ text, path });
 
-const createChargeVersionWorkflowLinks = (chargeVersionWorkflow, { licenceId, isChargeInformationEditable }) => {
-  if (!isChargeInformationEditable) {
-    return [];
-  }
-  if (chargeVersionWorkflow.status === 'to_setup') {
+const createChargeVersionWorkflowLinks = (chargeVersionWorkflow, options) => {
+  const { licenceId, editChargeVersions, reviewChargeVersions } = options;
+  if (chargeVersionWorkflow.status === 'to_setup' && editChargeVersions) {
     return [
       createLink('Set up', `/licences/${licenceId}/charge-information/create?chargeVersionWorkflowId=${chargeVersionWorkflow.id}`),
       createLink('Remove', `/charge-information-workflow/${chargeVersionWorkflow.id}/remove`)
     ];
+  } else if (reviewChargeVersions) {
+    return [
+      createLink('Review', `/licences/${licenceId}/charge-information/${chargeVersionWorkflow.id}/review`)
+    ];
   }
-  return [
-    createLink('Review', `/licences/${licenceId}/charge-information/${chargeVersionWorkflow.id}/review`)
-  ];
+  return [];
 };
 
 const mapChargeVersionWorkflow = (chargeVersionWorkflow, options) => ({

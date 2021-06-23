@@ -4,8 +4,8 @@ const { createRoutePair } = require('shared/lib/route-helpers');
 const controller = require('./controller');
 const preHandlers = require('./pre-handlers');
 
-const { billing } = require('internal/lib/constants').scope;
-const allowedScopes = [billing];
+const { billing, manageBillingAccounts } = require('internal/lib/constants').scope;
+const allowedScopes = [billing, manageBillingAccounts];
 
 module.exports = {
   getPostcode: {

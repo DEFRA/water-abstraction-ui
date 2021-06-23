@@ -59,14 +59,14 @@ const loadChargeVersionWorkflows = partialRight(
   createPreHandler,
   'getChargeVersionWorkflowsByLicenceId',
   'Charge version workflows for licence',
-  [scope.chargeVersionWorkflowEditor, scope.chargeVersionWorkflowReviewer]
+  [scope.chargeVersionWorkflowEditor, scope.chargeVersionWorkflowReviewer, scope.viewChargeVersions]
 );
 
 /**
  * Get bills for given licence ID
  */
 const loadBills = async request => {
-  if (!hasScope(request, scope.charging)) {
+  if (!hasScope(request, scope.billing)) {
     return null;
   }
 
@@ -82,7 +82,7 @@ const loadBills = async request => {
 /**
  * Get agreements for given licence ID
  */
-const loadAgreements = partialRight(createPreHandler, 'getAgreementsByLicenceId', 'Agreements for licence', scope.charging);
+const loadAgreements = partialRight(createPreHandler, 'getAgreementsByLicenceId', 'Agreements for licence');
 
 /**
  * Get returns for given licence ID

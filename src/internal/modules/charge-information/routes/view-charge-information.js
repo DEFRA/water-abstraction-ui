@@ -5,8 +5,8 @@ const { chargeVersionWorkflowReviewer, viewChargeVersions } = require('internal/
 const Joi = require('@hapi/joi');
 
 const allowedScopes = {
-  view: [viewChargeVersions],
-  approve: [chargeVersionWorkflowReviewer]
+  view: viewChargeVersions,
+  approve: chargeVersionWorkflowReviewer
 };
 
 module.exports = {

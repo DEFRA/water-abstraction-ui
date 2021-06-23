@@ -1,6 +1,6 @@
 'use strict';
 
-const { pick, set } = require('lodash');
+const { pick } = require('lodash');
 const moment = require('moment');
 
 const mappers = require('./lib/mappers');
@@ -11,12 +11,26 @@ const returnsMapper = require('../../lib/mappers/returns');
 
 const getDocumentId = doc => doc.document_id;
 
-const getIsChargeInformationEditable = request => {
-  const { licence } = request.pre;
-  const isLicenceChargeInformationEditable = moment(licence.endDate).isAfter(moment().subtract(6, 'years')) || licence.endDate === null;
-  const isRequiredScope = hasScope(request, scope.billing);
-  return isLicenceChargeInformationEditable && isRequiredScope;
+const getIsLicenceChargeVersionsEditingEnabled = licence =>
+  licence.endDate === null || moment(licence.endDate).isAfter(moment().subtract(6, 'years'));
+
+const getPermissions = request => {
+  const isLicenceChargeInformationEditable = getIsLicenceChargeVersionsEditingEnabled(request.pre.licence);
+  return {
+    billing: hasScope(request, scope.billing),
+    editChargeVersions: isLicenceChargeInformationEditable && hasScope(request, scope.chargeVersionWorkflowEditor),
+    reviewChargeVersions: isLicenceChargeInformationEditable && hasScope(request, scope.chargeVersionWorkflowReviewer),
+    manageAgreements: isLicenceChargeInformationEditable && hasScope(request, scope.manageAgreements)
+  };
 };
+
+const getLinks = ({ licenceId, documentId }, permissions) => ({
+  returns: `/licences/${documentId}/returns`,
+  bills: permissions.billing && `/licences/${licenceId}/bills`,
+  setupCharge: permissions.editChargeVersions && `/licences/${licenceId}/charge-information/create`,
+  makeNonChargeable: permissions.editChargeVersions && `/licences/${licenceId}/charge-information/non-chargeable-reason?start=1`,
+  addAgreement: permissions.manageAgreements && `/licences/${licenceId}/agreements/select-type`
+});
 
 /**
  * Main licence summary page
@@ -28,21 +42,22 @@ const getLicenceSummary = async (request, h) => {
   const { licenceId } = request.params;
   const { agreements, licence, returns, document } = request.pre;
 
-  // Get CRM v1 doc ID
+  console.log(request.pre.bills);
+
   const documentId = getDocumentId(document);
 
-  const isChargeInformationEditable = getIsChargeInformationEditable(request);
+  const permissions = getPermissions(request);
 
   const chargeVersions = mappers.mapChargeVersions(
     request.pre.chargeVersions,
     request.pre.chargeVersionWorkflows,
     {
       licenceId,
-      isChargeInformationEditable
+      ...permissions
     }
   );
 
-  const view = {
+  return h.view('nunjucks/view-licences/licence.njk', {
     ...request.view,
     pageTitle: `Licence ${licence.licenceNumber}`,
     featureToggles,
@@ -55,24 +70,10 @@ const getLicenceSummary = async (request, h) => {
       pagination: returns.pagination,
       data: returnsMapper.mapReturns(returns.data, request)
     },
-    links: {
-      bills: `/licences/${licenceId}/bills`,
-      returns: `/licences/${documentId}/returns`
-    },
+    links: getLinks({ licenceId, documentId }, permissions),
     validityMessage: mappers.getValidityNotice(licence),
     back: '/licences'
-  };
-
-  if (isChargeInformationEditable) {
-    Object.assign(view.links, {
-      bills: `/licences/${licenceId}/bills`,
-      setupCharge: `/licences/${licenceId}/charge-information/create`,
-      makeNonChargeable: `/licences/${licenceId}/charge-information/non-chargeable-reason?start=1`,
-      addAgreement: `/licences/${licenceId}/agreements/select-type`
-    });
-  }
-
-  return h.view('nunjucks/view-licences/licence.njk', view);
+  });
 };
 
 /**

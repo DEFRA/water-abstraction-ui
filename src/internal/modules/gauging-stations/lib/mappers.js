@@ -15,13 +15,28 @@ const defaultToMld = item =>
 
 /* Independent objects currently joined in frontend */
 const mapStations = newData => {
+  let stations = [];
+
   for (const rkey in newData.stations) {
-    newData.stations[rkey].wiskiId = defaultToNA(newData.stations[rkey].wiskiId);
-    newData.stations[rkey].easting = defaultToNA(newData.stations[rkey].easting);
-    newData.stations[rkey].northing = defaultToNA(newData.stations[rkey].northing);
-    newData.stations[rkey].tags = [];
-    newData.stations[rkey].licences = [];
-    newData.licences = [];
+    stations[rkey] = {};
+    stations[rkey].stationID = rkey;
+    stations[rkey].riverName = newData.stations[rkey].riverName;
+    stations[rkey].label = newData.stations[rkey].label;
+    stations[rkey].stationReference = newData.stations[rkey].stationReference;
+    stations[rkey].gridReference = newData.stations[rkey].gridReference;
+    stations[rkey].abstractionPeriodStartDay = newData.stations[rkey].abstractionPeriodStartDay;
+    stations[rkey].abstractionPeriodStartMonth = newData.stations[rkey].abstractionPeriodStartMonth;
+    stations[rkey].abstractionPeriodEndDay = newData.stations[rkey].abstractionPeriodEndDay;
+    stations[rkey].abstractionPeriodEndMonth = newData.stations[rkey].abstractionPeriodEndMonth;
+    stations[rkey].licenceRef = newData.stations[rkey].licenceRef;
+    stations[rkey].restrictionType = newData.stations[rkey].restrictionType;
+    stations[rkey].thresholdValue = newData.stations[rkey].thresholdValue;
+    stations[rkey].thresholdUnits = newData.stations[rkey].thresholdUnits;
+    stations[rkey].wiskiId = defaultToNA(newData.stations[rkey].wiskiId);
+    stations[rkey].easting = defaultToNA(newData.stations[rkey].easting);
+    stations[rkey].northing = defaultToNA(newData.stations[rkey].northing);
+    stations[rkey].licences = [];
+
     if (newData.stations.hasOwnProperty(rkey)) {
       const licenceObj = {
         number: newData.stations[rkey].licenceRef,
@@ -34,16 +49,15 @@ const mapStations = newData => {
       if (newData.stations[rkey].dateStatusUpdated) {
         comObj.sent = formatDate(newData.stations[rkey].dateStatusUpdated);
       }
-
       licenceObj.communications.push(comObj);
-      newData.licences.push(licenceObj);
-      newData.stations[rkey].licences.push(licenceObj);
+      stations[rkey].licences.push(licenceObj);
     }
   }
-  return newData;
+  return stations;
 };
 
 const mapTags = newData => {
+  let tags = [];
   for (const rkey in newData.stations) {
     if (newData.stations.hasOwnProperty(rkey)) {
       const tagObj = {
@@ -64,10 +78,10 @@ const mapTags = newData => {
       };
       tagValueObj.thresholdUnits = defaultToMld(newData.stations[rkey].thresholdUnit);
       tagObj.tagValues.push(tagValueObj);
-      newData.stations[0].tags.push(tagObj);
+      tags.push(tagObj);
     }
   }
-  return newData;
+  return tags;
 };
 
 const mapStationsLicences = data => {
@@ -76,8 +90,7 @@ const mapStationsLicences = data => {
   }
 
   const newData = {
-    stations: [],
-    stationID: 0
+    stations: []
   };
 
   const newStations = cloneDeep(data);

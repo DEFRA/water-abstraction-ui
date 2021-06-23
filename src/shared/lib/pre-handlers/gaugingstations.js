@@ -9,7 +9,7 @@ const Boom = require('@hapi/boom');
  * @param {Object} request
  * @param {String} companyId guid, if provided
  */
-const loadGaugingStations = async (request, h) => {
+const loadGaugingStations = async (request) => {
   const id = request.params.gaugingStationId;
   try {
     const service = new GaugingStationsService(request.services.water);

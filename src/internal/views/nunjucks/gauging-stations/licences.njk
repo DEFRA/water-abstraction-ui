@@ -87,13 +87,12 @@
 </div>
 
 
-{% set tags = station['tags'] %}
 {% if tags.length %}
   <div class="govuk-grid-row govuk-!-margin-bottom-6">
     <div class="govuk-grid-column-full">
       {{ govukButton({
     text: "Create a water abstraction alert",
-    href: "licence-notices/send-a-water-abstraction-alert/select-the-type-of-alert?stationID=" + [data.stationID]
+    href: "licence-notices/send-a-water-abstraction-alert/select-the-type-of-alert?stationID=" + gaugingStationId
   }) }}
     </div>
   </div>
@@ -105,10 +104,9 @@
     <!-- Start tag-table.html: Licences linked to this monitoring station -->
     {% block service %}
         <!--setting the loop number to 0-->
-        {% set loopNumber = "" %}
+        {% set loopNumber = 0 %}
 
         <!--getting the licence data-->
-        {% set tags = station['tags'] %}
         {% if tags.length %}
           <table class="govuk-table">
             <caption class="govuk-table__caption govuk-table__caption--m">Licences linked to this monitoring station</caption>
@@ -130,7 +128,7 @@
                 <td class="govuk-table__cell">
                   <!--set the link to go to a specific licence-->
                   <!--
-                  {% for licence in data['licences']%}
+                  {% for licence in station['licences']%}
                     {% if licence.number == i.licenceNumber %}
                       <a href="#licence?ID={{loop.index0}}" class="govuk-link">{{loop.index0}}</a>
                     {% endif %}
@@ -166,10 +164,10 @@
                     {{tag.thresholdUnits}}<br>
                   {% endfor %}
                 </td>
-                {% for licence in data['licences']%}
+                {% for licence in station['licences']%}
                   {% if licence.number == i.licenceNumber %}
-                    {% if data.licences[loop.index0]['communications'].length %}
-                      {% set communications = data.licences[loop.index0]['communications'] %}
+                    {% if station.licences[loop.index0]['communications'].length %}
+                      {% set communications = station.licences[loop.index0]['communications'] %}
                       <!-- type.split(" ")[0] | capitalize -->
                       <td class="govuk-table__cell ">
                         {% set commsType = '' + communications[0].type.trim().replace(' ','_') %}
@@ -193,13 +191,13 @@
           <div class="govuk-button-group">
             {{ govukButton({
               text: "Tag a licence",
-              href: "monitoring-stations/" + [data.stationID] + "/new-tag",
+              href: "monitoring-stations/" + gaugingStationId + "/new-tag",
               classes: "govuk-button--secondary"
             }) }}
 
             {{ govukButton({
               text: "Remove a tag",
-              href: "monitoring-stations/" + [data.stationID] + "/remove-tag",
+              href: "monitoring-stations/" + gaugingStationId + "/remove-tag",
               classes: "govuk-button--secondary"
             }) }}
           </div>
@@ -208,7 +206,7 @@
           <p class="govuk-body">There are no licences tagged with restrictions for this monitoring station</p>
           {{ govukButton({
             text: "Tag a licence",
-            href: "monitoring-stations/" + [data.stationID] + "/new-tag",
+            href: "monitoring-stations/" + gaugingStationId + "/new-tag",
             classes: "govuk-button--secondary"
           }) }}
 

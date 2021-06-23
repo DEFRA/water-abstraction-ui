@@ -64,16 +64,16 @@ experiment('internal/modules/gauging-stations/controllers/lib/mappers', () => {
       test('returns null', async () => {
         const stationsLicences = mappers.mapStationsLicences(newData);
         const stations = mappers.mapStations(stationsLicences);
-        expect(stations.stations[0].licenceRef).to.equal('6/33/04/*G/0068');
+        expect(stations[0].licenceRef).to.equal('6/33/04/*G/0068');
       });
     });
 
     experiment('mapTags', () => {
       test('maps the stations and licences then process tags', async () => {
         const stationsLicences = mappers.mapStationsLicences(newData);
-        const stations = mappers.mapStations(stationsLicences);
-        const stationAndTags = mappers.mapTags(stations);
-        expect(stationAndTags.stations[0].tags[0].licenceNumber).to.equal('6/33/04/*G/0068');
+        stationsLicences.stations = mappers.mapStations(stationsLicences);
+        const tags = mappers.mapTags(stationsLicences);
+        expect(tags[0].licenceNumber).to.equal('6/33/04/*G/0068');
       });
     });
   });

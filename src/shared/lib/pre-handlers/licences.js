@@ -100,10 +100,15 @@ const loadNotifications = partialRight(createPreHandler, 'getNotificationsByLice
  * and moving to the LicenceDataService
  */
 const loadSummary = async request => {
-  const { licence, document: { document_id: documentId } } = request.pre;
+  const { licence, document: { document_id: documentId }, licenceVersion } = request.pre;
   // Skip if licence is not active, as only the "current" version of a licence
   // is currently supported
   if (!licence.isActive) {
+    return null;
+  }
+
+  // Skip if there is no licence version to display
+  if (!licenceVersion.id) {
     return null;
   }
 

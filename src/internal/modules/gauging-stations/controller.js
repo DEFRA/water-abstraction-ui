@@ -23,7 +23,7 @@ const getLicencesForGaugingStation = async (request, h) => {
   if (error) {
     data = [];
   }
-  let newData = mappers.mapStationsLicences(data);
+  const newData = mappers.mapStationsLicences(data);
   let tags = {};
 
   /* Format data for stations, tags */

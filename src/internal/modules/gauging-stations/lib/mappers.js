@@ -15,11 +15,12 @@ const defaultToMld = item =>
 
 /* Independent objects currently joined in frontend */
 const mapStations = newData => {
-  let stations = [];
+  const stations = [];
 
   for (const rkey in newData.stations) {
-    stations[rkey] = {};
-    stations[rkey].stationID = rkey;
+    stations[rkey] = {
+      stationID: rkey
+    };
     stations[rkey].riverName = newData.stations[rkey].riverName;
     stations[rkey].label = newData.stations[rkey].label;
     stations[rkey].stationReference = newData.stations[rkey].stationReference;
@@ -57,7 +58,7 @@ const mapStations = newData => {
 };
 
 const mapTags = newData => {
-  let tags = [];
+  const tags = [];
   for (const rkey in newData.stations) {
     if (newData.stations.hasOwnProperty(rkey)) {
       const tagObj = {

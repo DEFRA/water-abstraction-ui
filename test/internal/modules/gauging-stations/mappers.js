@@ -46,7 +46,7 @@ experiment('internal/modules/gauging-stations/controllers/lib/mappers', () => {
       licenceVersionPurposeConditionId: '00304a0e-0ff7-4820-a3e1-f2cd48f2ae62',
       gridReference: '1',
       easting: '2',
-      northing: '3',
+      northing: '',
       wiskiId: '4',
       licenceRef: '6/33/04/*G/0068',
       abstractionPeriodStartDay: '1',
@@ -55,16 +55,29 @@ experiment('internal/modules/gauging-stations/controllers/lib/mappers', () => {
       abstractionPeriodEndMonth: '11',
       restrictionType: 'flow',
       thresholdValue: '100',
-      thresholdUnit: 'Ml',
+      thresholdUnits: '',
       stationReference: '1',
-      comstatus: 'reduce'
+      licences: []
     }];
 
     experiment('maps the stations and licences then process stations', () => {
-      test('returns null', async () => {
+      test('returns expected values', async () => {
         const stationsLicences = mappers.mapStationsLicences(newData);
         const stations = mappers.mapStations(stationsLicences);
         expect(stations[0].licenceRef).to.equal('6/33/04/*G/0068');
+        expect(stations[0].licences.length).to.equal(1);
+        expect(stations[0].gridReference).to.equal('1');
+        expect(stations[0].easting).to.equal('2');
+        expect(stations[0].northing).to.equal('n/a');
+        expect(stations[0].wiskiId).to.equal('4');
+        expect(stations[0].abstractionPeriodStartDay).to.equal('1');
+        expect(stations[0].abstractionPeriodStartMonth).to.equal('11');
+        expect(stations[0].abstractionPeriodEndDay).to.equal('30');
+        expect(stations[0].abstractionPeriodEndMonth).to.equal('11');
+        expect(stations[0].restrictionType).to.equal('flow');
+        expect(stations[0].thresholdValue).to.equal('100');
+        expect(stations[0].thresholdUnits).to.equal('');
+        expect(stations[0].stationReference).to.equal('1');
       });
     });
 
@@ -74,6 +87,13 @@ experiment('internal/modules/gauging-stations/controllers/lib/mappers', () => {
         stationsLicences.stations = mappers.mapStations(stationsLicences);
         const tags = mappers.mapTags(stationsLicences);
         expect(tags[0].licenceNumber).to.equal('6/33/04/*G/0068');
+        expect(tags[0].tagValues[0].abstractionPeriod.startDay).to.equal('1');
+        expect(tags[0].tagValues[0].abstractionPeriod.startMonth).to.equal('11');
+        expect(tags[0].tagValues[0].abstractionPeriod.endDay).to.equal('30');
+        expect(tags[0].tagValues[0].abstractionPeriod.endMonth).to.equal('11');
+        expect(tags[0].tagValues[0].conditionType).to.equal('flow');
+        expect(tags[0].tagValues[0].thresholdValue).to.equal('100');
+        expect(tags[0].tagValues[0].thresholdUnits).to.equal('Ml/d');
       });
     });
   });

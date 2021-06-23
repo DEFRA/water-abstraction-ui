@@ -48,7 +48,7 @@ describe('two-part-tariff bill run', () => {
       describe('user view returns data', () => {
         cy.get('.govuk-link').contains('Review').click();
         cy.url().should('contain', '/billing/batch/');
-        cy.get('.govuk-heading-xl').contains('View returns data for L1');
+        cy.get('.govuk-heading-xl').contains('Review data issues for L1');
         cy.get('a[href*="billing-volume"]').click();
       });
 
@@ -57,7 +57,7 @@ describe('two-part-tariff bill run', () => {
         cy.url().should('contain', '/billing/batch/');
         cy.get('.govuk-heading-l').contains('Set the billable returns quantity for this bill run');
         cy.get('.govuk-caption-l').contains('Spray Irrigation - Direct, CE2');
-        cy.get('.govuk-button').contains('Continue').click();
+        cy.get('.govuk-button').contains('Confirm').click();
       });
 
       describe('user reviews licenses for bill', () => {

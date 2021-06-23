@@ -42,18 +42,14 @@ const getLicenceReview = async (request, h) => {
   const { licenceId, action } = request.params;
   const licenceData = await getCurrentLicenceData(licence.licenceNumber);
 
-  const pageTitle = action === 'review'
-    ? `Review returns data issues for ${licence.licenceNumber}`
-    : `View returns data for ${licence.licenceNumber}`;
   const backLinkTail = action === 'review' ? 'review' : 'ready';
 
   const billingVolumeData = await services.water.billingBatches.getBatchLicenceBillingVolumes(batch.id, licenceId);
   const totals = twoPartTariff.getTotals(billingVolumeData);
   const billingVolumeGroups = twoPartTariff.decorateBillingVolumes(batch, licence, billingVolumeData);
-
   return h.view('nunjucks/billing/two-part-tariff-licence-review', {
     ...request.view,
-    pageTitle,
+    pageTitle: `Review data issues for ${licence.licenceNumber}`,
     batch,
     licence,
     ...licenceData,

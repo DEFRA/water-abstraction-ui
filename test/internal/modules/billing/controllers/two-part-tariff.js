@@ -349,7 +349,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     experiment('when action is "review"', () => {
       test('the page title is set', async () => {
         const [, { pageTitle }] = h.view.lastCall.args;
-        expect(pageTitle).to.equal('Review returns data issues for 01/123/ABC');
+        expect(pageTitle).to.equal('Review data issues for 01/123/ABC');
       });
 
       test('a back link is set', async () => {
@@ -365,7 +365,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       });
       test('the page title is set', async () => {
         const [, { pageTitle }] = h.view.lastCall.args;
-        expect(pageTitle).to.equal('View returns data for 01/123/ABC');
+        expect(pageTitle).to.equal('Review data issues for 01/123/ABC');
       });
 
       test('a back link is set', async () => {

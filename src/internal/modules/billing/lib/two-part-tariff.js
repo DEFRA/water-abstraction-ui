@@ -39,8 +39,8 @@ const mapLicence = (batch, licenceGroup) => {
     acc.licenceId = licence.licenceId;
     acc.licenceRef = licence.licenceRef;
     acc.billingContact = `${licence.billingContact}\n${acc.billingContact}`;
-    acc.twoPartTariffError = acc.twoPartTariffError ? acc.twoPartTariffError : licence.twoPartTariffError;
-    acc.billingVolumeEdited = acc.billingVolumeEdited ? acc.billingVolumeEdited : licence.billingVolumeEdited;
+    acc.twoPartTariffError = acc.twoPartTariffError || licence.twoPartTariffError;
+    acc.billingVolumeEdited = acc.billingVolumeEdited || licence.billingVolumeEdited;
     acc.twoPartTariffStatuses = [...acc.twoPartTariffStatuses, ...licence.twoPartTariffStatuses];
     acc.link = routing.getTwoPartTariffLicenceReviewRoute(batch, licence.licenceId, (licence.twoPartTariffError ? 'review' : 'view'));
     return acc;

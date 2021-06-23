@@ -30,7 +30,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
 
   experiment('.getNewFlow', () => {
     const request = {
-      path: 'http://example.com/monitoring-stations/123/start'
+      path: 'http://example.com/monitoring-stations/123/tagging-licence/start'
     };
 
     const h = { redirect: sandbox.spy() };
@@ -43,7 +43,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
 
   experiment('.getThresholdAndUnit', () => {
     const request = {
-      path: 'http://example.com/monitoring-stations/123/threshold',
+      path: 'http://example.com/monitoring-stations/123/tagging-licence/threshold',
       method: 'get',
       view: {
         csrfToken: 'some-token'
@@ -67,7 +67,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
 
   experiment('.postThresholdAndUnit', () => {
     const request = {
-      path: 'http://example.com/monitoring-stations/123/threshold',
+      path: 'http://example.com/monitoring-stations/123/tagging-licence/threshold',
       method: 'post',
       view: {
         csrfToken: 'some-token'
@@ -133,7 +133,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
 
   experiment('.getAlertType', () => {
     const request = {
-      path: 'http://example.com/monitoring-stations/123/alert-type',
+      path: 'http://example.com/monitoring-stations/123/tagging-licence/alert-type',
       method: 'get',
       view: {
         csrfToken: 'some-token'
@@ -157,7 +157,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
 
   experiment('.postAlertType', () => {
     const request = {
-      path: 'http://example.com/monitoring-stations/123/alert-type',
+      path: 'http://example.com/monitoring-stations/123/tagging-licence/alert-type',
       method: 'post',
       view: {
         csrfToken: 'some-token'
@@ -243,7 +243,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
 
   experiment('.getLicenceNumber', () => {
     const request = {
-      path: 'http://example.com/monitoring-stations/123/licence-number',
+      path: 'http://example.com/monitoring-stations/123/tagging-licence/licence-number',
       method: 'get',
       view: {
         csrfToken: 'some-token'
@@ -268,7 +268,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
 
   experiment('.postLicenceNumber', () => {
     const request = {
-      path: 'http://example.com/monitoring-stations/123/licence-number',
+      path: 'http://example.com/monitoring-stations/123/tagging-licence/licence-number',
       method: 'post',
       view: {
         csrfToken: 'some-token'
@@ -356,7 +356,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
 
   experiment('.getCondition', () => {
     const request = {
-      path: 'http://example.com/monitoring-stations/123/condition',
+      path: 'http://example.com/monitoring-stations/123/tagging-licence/condition',
       method: 'get',
       view: {
         csrfToken: 'some-token'
@@ -385,7 +385,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
 
   experiment('.postCondition', () => {
     const request = {
-      path: 'http://example.com/monitoring-stations/123/condition',
+      path: 'http://example.com/monitoring-stations/123/tagging-licence/condition',
       method: 'post',
       view: {
         csrfToken: 'some-token'
@@ -459,7 +459,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
 
   experiment('.getManuallyDefinedAbstractionPeriod', () => {
     const request = {
-      path: 'http://example.com/monitoring-stations/123/abstraction-period',
+      path: 'http://example.com/monitoring-stations/123/tagging-licence/abstraction-period',
       method: 'get',
       view: {
         csrfToken: 'some-token'
@@ -484,7 +484,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
 
   experiment('.postManuallyDefinedAbstractionPeriod', () => {
     const request = {
-      path: 'http://example.com/monitoring-stations/123/abstraction-period',
+      path: 'http://example.com/monitoring-stations/123/tagging-licence/abstraction-period',
       method: 'post',
       view: {
         csrfToken: 'some-token'
@@ -563,7 +563,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
 
   experiment('.getCheckYourAnswers', () => {
     const request = {
-      path: 'http://example.com/monitoring-stations/123/check',
+      path: 'http://example.com/monitoring-stations/123/tagging-licence/check',
       method: 'get',
       view: {
         csrfToken: 'some-token'
@@ -597,7 +597,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
 
   experiment('.postCheckYourAnswers', () => {
     const request = {
-      path: 'http://example.com/monitoring-stations/123/condition',
+      path: 'http://example.com/monitoring-stations/123/tagging-licence/condition',
       method: 'post',
       view: {
         csrfToken: 'some-token'
@@ -656,10 +656,13 @@ experiment('internal/modules/gauging-stations/controller', () => {
 
     experiment('.getFlowComplete', () => {
       const request = {
-        path: 'http://example.com/monitoring-stations/123/new-tag-complete',
+        path: 'http://example.com/monitoring-stations/123/tagging-licence/new-tag-complete',
         method: 'get',
         view: {
           csrfToken: 'some-token'
+        },
+        params: {
+          gaugingStationId: 'some-gauging-station-id'
         }
       };
 

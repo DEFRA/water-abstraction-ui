@@ -204,7 +204,8 @@ const getFlowComplete = (request, h) => {
   return h.view('nunjucks/gauging-stations/new-tag-complete', {
     pageTitle: `Licence added to monitoring station`,
     back: null,
-    licenceRef: licenceNumber.value
+    licenceRef: licenceNumber.value,
+    gaugingStationId: request.params.gaugingStationId
   });
 };
 

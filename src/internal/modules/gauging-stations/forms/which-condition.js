@@ -15,7 +15,7 @@ const conditionEntryForm = request => {
       return {
         value: row.id,
         label: `Flow cessation condition ${n + 1}`,
-        hint: `${row.notes} ${row.param1} ${row.param2}`
+        hint: `${row.notes} (Additional information 1: ${row.param1 || 'None'})  (Additional information 2: ${row.param2 || 'None'})`
       };
     });
 

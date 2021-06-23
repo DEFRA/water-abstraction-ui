@@ -1,11 +1,11 @@
 const session = require('./session');
 const services = require('../../../lib/connectors/services');
-const { get, omit } = require('lodash');
+const { get, omit, set } = require('lodash');
 
 const redirectTo = (request, h, path) => {
   const { checkStageReached } = session.get(request);
 
-  if (checkStageReached === true && !request.path.includes('/condition')) {
+  if (checkStageReached === true && !['/condition', '/abstraction-period'].includes(path)) {
     // eslint-disable-next-line no-useless-escape
     return h.redirect(request.path.replace(/\/[^\/]*$/, '/check'));
   } else {
@@ -100,10 +100,10 @@ const handlePost = async request => {
   };
 
   // If the LVPC ID is supplied, the abstraction period is omitted.
-  if (parsedPayload.licenceVersionPurposeConditionId.length === '36') {
-    omit(parsedPayload, 'abstractionPeriod');
+  if (licenceVersionPurposeConditionId) {
+    return services.water.gaugingStations.postLicenceLinkage(gaugingStationId, licenceId, omit(parsedPayload, ['abstractionPeriod']));
   }
-  return services.water.gaugingStations.postLicenceLinkage(gaugingStationId, licenceId, parsedPayload);
+  return services.water.gaugingStations.postLicenceLinkage(gaugingStationId, licenceId, set(parsedPayload, 'licenceVersionPurposeConditionId', null));
 };
 
 exports.redirectTo = redirectTo;

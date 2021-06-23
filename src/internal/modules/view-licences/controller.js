@@ -1,6 +1,6 @@
 'use strict';
 
-const { pick } = require('lodash');
+const { pick, set } = require('lodash');
 const moment = require('moment');
 
 const mappers = require('./lib/mappers');
@@ -11,6 +11,13 @@ const returnsMapper = require('../../lib/mappers/returns');
 
 const getDocumentId = doc => doc.document_id;
 
+const getIsChargeInformationEditable = request => {
+  const { licence } = request.pre;
+  const isLicenceChargeInformationEditable = moment(licence.endDate).isAfter(moment().subtract(6, 'years')) || licence.endDate === null;
+  const isRequiredScope = hasScope(request, scope.billing);
+  return isLicenceChargeInformationEditable && isRequiredScope;
+};
+
 /**
  * Main licence summary page
  * All data is loaded via shared pre-handlers
@@ -19,10 +26,21 @@ const getDocumentId = doc => doc.document_id;
  */
 const getLicenceSummary = async (request, h) => {
   const { licenceId } = request.params;
-  const { agreements, chargeVersions, chargeVersionWorkflows, licence, returns, document } = request.pre;
+  const { agreements, licence, returns, document } = request.pre;
 
   // Get CRM v1 doc ID
   const documentId = getDocumentId(document);
+
+  const isChargeInformationEditable = getIsChargeInformationEditable(request);
+
+  const chargeVersions = mappers.mapChargeVersions(
+    request.pre.chargeVersions,
+    request.pre.chargeVersionWorkflows,
+    {
+      licenceId,
+      isChargeInformationEditable
+    }
+  );
 
   const view = {
     ...request.view,
@@ -31,8 +49,7 @@ const getLicenceSummary = async (request, h) => {
     licenceId,
     documentId,
     ...pick(request.pre, ['licence', 'bills', 'notifications', 'primaryUser', 'summary']),
-    chargeVersions: mappers.mapChargeVersions(chargeVersions, chargeVersionWorkflows),
-    createChargeVersions: moment(licence.endDate).isAfter(moment().subtract(6, 'years')) || licence.endDate === null,
+    chargeVersions,
     agreements: mappers.mapLicenceAgreements(agreements),
     returns: {
       pagination: returns.pagination,
@@ -40,13 +57,20 @@ const getLicenceSummary = async (request, h) => {
     },
     links: {
       bills: `/licences/${licenceId}/bills`,
-      returns: `/licences/${documentId}/returns`,
-      addAgreement: `/licences/${licenceId}/agreements/select-type`
+      returns: `/licences/${documentId}/returns`
     },
-    isChargingUser: hasScope(request, scope.charging),
     validityMessage: mappers.getValidityNotice(licence),
     back: '/licences'
   };
+
+  if (isChargeInformationEditable) {
+    Object.assign(view.links, {
+      bills: `/licences/${licenceId}/bills`,
+      setupCharge: `/licences/${licenceId}/charge-information/create`,
+      makeNonChargeable: `/licences/${licenceId}/charge-information/non-chargeable-reason?start=1`,
+      addAgreement: `/licences/${licenceId}/agreements/select-type`
+    });
+  }
 
   return h.view('nunjucks/view-licences/licence.njk', view);
 };

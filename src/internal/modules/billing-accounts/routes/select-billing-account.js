@@ -5,8 +5,8 @@ const { createRoutePair } = require('shared/lib/route-helpers');
 const controller = require('../controllers/select-billing-account');
 const preHandlers = require('../pre-handlers');
 
-const { charging } = require('internal/lib/constants').scope;
-const allowedScopes = [charging];
+const { billing } = require('internal/lib/constants').scope;
+const allowedScopes = [billing];
 
 module.exports = {
 

@@ -3,16 +3,10 @@
 <h2 class="govuk-heading-l">Charge information</h2>
 
 {% macro chargeVersionLink(chargeVersion) %}
-
-  {% if chargeVersion.status == 'to_setup' %}
-    <a class="govuk-link" href="/licences/{{ licenceId }}/charge-information/create?chargeVersionWorkflowId={{ chargeVersion.id }}">Set up</a>
-    |
-    <a class="govuk-link" href="/charge-information-workflow/{{ chargeVersion.id }}/remove">Remove</a>
-  {% elif chargeVersion.status == 'review' or chargeVersion.status == 'changes_requested' %}
-    <a class="govuk-link" href="/licences/{{ licenceId }}/charge-information/{{ chargeVersion.id }}/review">Review</a>
-  {% else %}
-    <a class="govuk-link" href="/licences/{{ licenceId }}/charge-information/{{ chargeVersion.id }}/view">View</a>
-  {% endif %}
+  {% for link in chargeVersion.links %}
+    {% if not loop.first %} | {% endif %}
+    <a class="govuk-link" href="{{ link.path }}">{{ link.text }}</a>
+  {% endfor %}
 {% endmacro %}
 
 {% macro agreementActions(agreement, licenceId, isChargingUser) %}
@@ -127,18 +121,19 @@
   <p>No charge information for this licence.</p>
 {% endif %}
 
-{% if createChargeVersions %}
-  <a href="/licences/{{ licenceId }}/charge-information/create" role="button" draggable="false" class="govuk-button govuk-!-margin-right-3" data-module="govuk-button">
+{% if links.setupCharge %}
+  <a href="{{ links.setupCharge }}" role="button" draggable="false" class="govuk-button govuk-!-margin-right-3" data-module="govuk-button">
     Set up a new charge
-  </a> 
-  <a href="/licences/{{ licenceId }}/charge-information/non-chargeable-reason?start=1" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+  </a>
+{% endif %}
+{% if links.makeNonChargeable %} 
+  <a href="{{ links.makeNonChargeable }}" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
     Make licence non-chargeable
   </a>
 {% endif %}
 
 {% if agreements.length %}
 
-  {# <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible"> #}
   <h2 class="govuk-heading-l">Agreements</h2>
 
   {% for agreement in agreements %}
@@ -165,7 +160,7 @@
 {% else %}
   <p>No agreements for this licence.</p>
 {% endif %}
-{% if createChargeVersions %}
+{% if links.addAgreement %}
   {{ govukButton({
   href : links.addAgreement,
   text: 'Set up a new agreement',

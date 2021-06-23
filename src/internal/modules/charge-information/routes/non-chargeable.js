@@ -2,8 +2,8 @@ const controller = require('../controllers/non-chargeable');
 const preHandlers = require('../pre-handlers');
 const { VALID_GUID } = require('shared/lib/validators');
 const Joi = require('@hapi/joi');
-const { charging } = require('internal/lib/constants').scope;
-const allowedScopes = [charging];
+const { billing } = require('internal/lib/constants').scope;
+const allowedScopes = [billing];
 
 module.exports = {
   getNonChargeableReason: {

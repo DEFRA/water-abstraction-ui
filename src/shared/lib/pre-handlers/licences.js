@@ -50,7 +50,7 @@ const loadDefaultLicenceVersion = partialRight(createPreHandler, 'getDefaultLice
 /**
  * Get charge versions for given licence ID
  */
-const loadChargeVersions = partialRight(createPreHandler, 'getChargeVersionsByLicenceId', 'Charge versions for licence', scope.charging);
+const loadChargeVersions = partialRight(createPreHandler, 'getChargeVersionsByLicenceId', 'Charge versions for licence', scope.viewChargeVersions);
 
 /**
  * Get charge version workflows for given licence ID

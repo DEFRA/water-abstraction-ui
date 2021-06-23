@@ -1,7 +1,7 @@
 'use strict';
 
 const moment = require('moment');
-const { sortBy } = require('lodash');
+const { sortBy, get } = require('lodash');
 const agreementMapper = require('shared/lib/mappers/agreements');
 
 const validityMessageMap = new Map()
@@ -28,13 +28,46 @@ const getValidityNotice = (licence, refDate) => {
   return null;
 };
 
-const mapChargeVersions = (chargeVersions, chargeVersionWorkflows) => {
+const mapChargeVersion = (chargeVersion, { licenceId }) => ({
+  ...chargeVersion,
+  links: [
+    createLink('View', `/licences/${licenceId}/charge-information/${chargeVersion.id}/view`)
+  ]
+});
+
+const createLink = (text, path) => ({ text, path });
+
+const createChargeVersionWorkflowLinks = (chargeVersionWorkflow, { licenceId, isChargeInformationEditable }) => {
+  if (!isChargeInformationEditable) {
+    return [];
+  }
+  if (chargeVersionWorkflow.status === 'to_setup') {
+    return [
+      createLink('Set up', `/licences/${licenceId}/charge-information/create?chargeVersionWorkflowId=${chargeVersionWorkflow.id}`),
+      createLink('Remove', `/charge-information-workflow/${chargeVersionWorkflow.id}/remove`)
+    ];
+  }
+  return [
+    createLink('Review', `/licences/${licenceId}/charge-information/${chargeVersionWorkflow.id}/review`)
+  ];
+};
+
+const mapChargeVersionWorkflow = (chargeVersionWorkflow, options) => ({
+  ...get(chargeVersionWorkflow, 'chargeVersion', {}),
+  status: chargeVersionWorkflow.status,
+  id: chargeVersionWorkflow.id,
+  links: createChargeVersionWorkflowLinks(chargeVersionWorkflow, options)
+});
+
+const mapChargeVersions = (chargeVersions, chargeVersionWorkflows, options) => {
   if (!chargeVersions) {
     return null;
   }
+  const sortedChargeVersions = sortBy(chargeVersions.data, ['dateRange.startDate', 'versionNumber'])
+    .reverse();
   return [
-    ...chargeVersionWorkflows.data,
-    ...sortBy(chargeVersions.data, ['dateRange.startDate', 'versionNumber']).reverse()
+    ...chargeVersionWorkflows.data.map(chargeVersionWorflow => mapChargeVersionWorkflow(chargeVersionWorflow, options)),
+    ...sortedChargeVersions.map(chargeVersion => mapChargeVersion(chargeVersion, options))
   ];
 };
 

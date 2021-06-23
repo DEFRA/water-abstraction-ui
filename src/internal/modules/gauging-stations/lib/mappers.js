@@ -18,9 +18,10 @@ const mapStations = newData => {
   const stations = [];
 
   for (const rkey in newData.stations) {
-    stations[rkey] = {
-      stationID: rkey
-    };
+    if (stations[rkey] === undefined) {
+      stations.push({ stationID: rkey });
+    }
+
     stations[rkey].riverName = newData.stations[rkey].riverName;
     stations[rkey].label = newData.stations[rkey].label;
     stations[rkey].stationReference = newData.stations[rkey].stationReference;

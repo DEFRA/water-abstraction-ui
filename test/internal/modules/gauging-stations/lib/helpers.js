@@ -15,13 +15,15 @@ const session = require('../../../../../src/internal/modules/gauging-stations/li
 
 experiment('internal/modules/gauging-stations/controller', () => {
   beforeEach(async () => {
-    sandbox.stub(helpers, 'getCaption').resolves('a caption is output');
     sandbox.stub(session, 'get').resolves();
     sandbox.stub(session, 'merge').resolves({});
 
     sandbox.stub(services.water.licences, 'getLicenceByLicenceNumber').resolves();
     sandbox.stub(services.water.licenceVersionPurposeConditionsService, 'getLicenceVersionPurposeConditionsByLicenceId').resolves();
     sandbox.stub(services.water.gaugingStations, 'postLicenceLinkage').resolves();
+    sandbox.stub(services.water.gaugingStations, 'getGaugingStationbyId').resolves({
+      label: 'A Station'
+    });
   });
 
   afterEach(async () => sandbox.restore());
@@ -105,7 +107,6 @@ experiment('internal/modules/gauging-stations/controller', () => {
       });
     });
   });
-  // fetchConditionsForLicence;
 
   experiment('.fetchConditionsForLicence', () => {
     let result;
@@ -159,9 +160,53 @@ experiment('internal/modules/gauging-stations/controller', () => {
       });
     });
   });
-  // getCaption;
+
+  experiment('.getCaption', () => {
+    const request = {
+      params: {
+        gaugingStationId: 'some-gauging-station-id'
+      }
+    };
+    experiment('when a catchment name is known', () => {
+      let result;
+      beforeEach(async () => {
+        services.water.gaugingStations.getGaugingStationbyId.returns({
+          label: 'some station',
+          catchmentName: 'some catchment'
+        });
+        result = await helpers.getCaption(request);
+      });
+      afterEach(async () => sandbox.restore());
+
+      test('calls the relevant service to get the gauging station name', () => {
+        expect(services.water.gaugingStations.getGaugingStationbyId.calledWith(request.params.gaugingStationId)).to.be.true();
+      });
+      test('returns the expected string', () => {
+        expect(result).to.equal('some station at some catchment');
+      });
+    });
+
+    experiment('when a catchment name is not known', () => {
+      let result;
+      beforeEach(async () => {
+        services.water.gaugingStations.getGaugingStationbyId.returns({
+          label: 'some station',
+          catchmentName: null
+        });
+        result = await helpers.getCaption(request);
+      });
+      afterEach(async () => sandbox.restore());
+
+      test('calls the relevant service to get the gauging station name', () => {
+        expect(services.water.gaugingStations.getGaugingStationbyId.calledWith(request.params.gaugingStationId)).to.be.true();
+      });
+      test('returns the expected string', () => {
+        expect(result).to.equal(`some station`);
+      });
+    });
+  });
   // getSelectedConditionText;
-  // handlePost;
+
   experiment('.handlePost', () => {
     const request = {
       params: {

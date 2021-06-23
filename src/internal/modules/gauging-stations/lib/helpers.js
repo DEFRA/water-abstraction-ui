@@ -43,7 +43,7 @@ const fetchConditionsForLicence = async request => {
 const getCaption = async request => {
   const { gaugingStationId } = request.params;
   const { label, catchmentName } = await services.water.gaugingStations.getGaugingStationbyId(gaugingStationId);
-  return `${label}${catchmentName.length > 2 ? ' at ' + catchmentName : ''}`;
+  return `${label}${catchmentName ? ' at ' + catchmentName : ''}`;
 };
 
 const getSelectedConditionText = request => {

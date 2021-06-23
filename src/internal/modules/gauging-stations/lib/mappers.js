@@ -1,6 +1,7 @@
 'use strict';
 
 const moment = require('moment');
+const cloneDeep = require('lodash.clonedeep');
 const formatDate = date => moment(date).format('D MMMM YYYY');
 
 const defaultToNA = item =>
@@ -12,7 +13,7 @@ const defaultToZero = item =>
 const defaultToMld = item =>
   !item ? 'Ml/d' : item;
 
-/* Draft: Independent objects currently joined in frontend */
+/* Independent objects currently joined in frontend */
 const mapStations = newData => {
   for (const rkey in newData.stations) {
     newData.stations[rkey].wiskiId = defaultToNA(newData.stations[rkey].wiskiId);
@@ -50,15 +51,11 @@ const mapTags = newData => {
         tagValues: []
       };
       const abstractionPeriod = {
-        periodStart: 'n/a',
-        periodEnd: 'n/a'
+        startDay: newData.stations[rkey].abstractionPeriodStartDay,
+        startMonth: newData.stations[rkey].abstractionPeriodStartMonth,
+        endDay: newData.stations[rkey].abstractionPeriodEndDay,
+        endMonth: newData.stations[rkey].abstractionPeriodEndMonth
       };
-      if (newData.stations[rkey].abstractionPeriodStartDay && newData.stations[rkey].abstractionPeriodStartMonth) {
-        abstractionPeriod.periodStart = `${newData.stations[rkey].abstractionPeriodStartDay}/${newData.stations[rkey].abstractionPeriodStartMonth}`;
-      }
-      if (newData.stations[rkey].abstractionPeriodEndDay && newData.stations[rkey].abstractionPeriodEndMonth) {
-        abstractionPeriod.periodEnd = `${newData.stations[rkey].abstractionPeriodEndDay}/${newData.stations[rkey].abstractionPeriodEndMonth}`;
-      }
       const tagValueObj = {
         licenceNumber: newData.stations[rkey].licenceRef,
         abstractionPeriod: abstractionPeriod,
@@ -82,7 +79,8 @@ const mapStationsLicences = data => {
     stations: [],
     stationID: 0
   };
-  const newStations = JSON.parse(JSON.stringify(data));
+
+  const newStations = cloneDeep(data);
   newData.stations = newStations;
   return newData;
 };

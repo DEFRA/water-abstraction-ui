@@ -8,11 +8,8 @@
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "badge.njk" import badge %}
 
-<!--set title-->
-{% set title = [data.stations[data.stationID].riverName] + " at " + [data.stations[data.stationID].label] %}
-
 {% block pageTitle %}
-  {{title}} - GOV.UK
+  {{pageTitle}} - GOV.UK
 {% endblock %}
 
 {% block content %}
@@ -20,8 +17,8 @@
   <div class="govuk-grid-row govuk-!-margin-bottom-6">
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-l govuk-!-margin-bottom-1">
-        <span class="govuk-caption-l">{{[data.stations[data.stationID].catchmentName]}}</span>
-        {{title}}
+        <span class="govuk-caption-l">{{catchmentName}}</span>
+        {{pageTitle}}
       </h1>
       {% set metaData %}
         {{ govukSummaryList({
@@ -33,50 +30,50 @@
               classes: "meta-data__label"
             },
             value: {
-              text: [data.stations[data.stationID].gridReference],
+              text: station.gridReference,
               classes: "meta-data__value"
             }
-          } if data.stations[data.stationID].gridReference,
+          } if station.gridReference,
           {
             key: {
               text: "Easting",
               classes: "meta-data__label"
             },
             value: {
-              text: [data.stations[data.stationID].easting],
+              text: station.easting,
               classes: "meta-data__value"
             }
-          } if data.stations[data.stationID].easting,
+          } if station.easting,
           {
             key: {
               text: "Northing",
               classes: "meta-data__label"
             },
             value: {
-              text: [data.stations[data.stationID].northing],
+              text: station.northing,
               classes: "meta-data__value"
             }
-          } if data.stations[data.stationID].northing,
+          } if station.northing,
           {
             key: {
               text: "WISKI ID",
               classes: "meta-data__label"
             },
             value: {
-              text: [data.stations[data.stationID].wiskiId],
+              text: station.wiskiId,
               classes: "meta-data__value"
             }
-          } if data.stations[data.stationID].wiskiId,
+          } if station.wiskiId,
           {
             key: {
               text: "Station reference",
               classes: "meta-data__label"
             },
             value: {
-              text: [data.stations[data.stationID].stationReference],
+              text: station.stationReference,
               classes: "meta-data__value"
             }
-          } if data.stations[data.stationID].stationReference
+          } if station.stationReference
         ]
         }) }}
       {% endset %}
@@ -90,7 +87,7 @@
 </div>
 
 
-{% set tags = data.stations[data.stationID]['tags'] %}
+{% set tags = station['tags'] %}
 {% if tags.length %}
   <div class="govuk-grid-row govuk-!-margin-bottom-6">
     <div class="govuk-grid-column-full">
@@ -111,7 +108,7 @@
         {% set loopNumber = "" %}
 
         <!--getting the licence data-->
-        {% set tags = data.stations[data.stationID]['tags'] %}
+        {% set tags = station['tags'] %}
         {% if tags.length %}
           <table class="govuk-table">
             <caption class="govuk-table__caption govuk-table__caption--m">Licences linked to this monitoring station</caption>
@@ -132,20 +129,23 @@
               <tr class="govuk-table__row">
                 <td class="govuk-table__cell">
                   <!--set the link to go to a specific licence-->
+                  <!--
                   {% for licence in data['licences']%}
                     {% if licence.number == i.licenceNumber %}
-                      <a href="licence?ID={{loop.index0}}" class="govuk-link">
+                      <a href="#licence?ID={{loop.index0}}" class="govuk-link">{{loop.index0}}</a>
                     {% endif %}
                   {% endfor %}
-                  {{i.licenceNumber}}</a>
+                  -->
+                  {{i.licenceNumber}}
                 </td>
 
                 <!--get the tags for that individual licences-->
                 {% set licenceTags = i['tagValues'] %}
 
                 <td class="govuk-table__cell ">
-                  {% set period = licenceTags[0].abstractionPeriod %}
-                  {{ period.periodStart | abstractionPeriod }} to {{ period.periodEnd | abstractionPeriod }} <br>
+                  {% for tag in licenceTags %}
+                    {{ tag.abstractionPeriod | abstractionPeriod }}<br>
+                  {% endfor %}
                 </td>
                 <td class="govuk-table__cell ">
                   <!--loop through conditions for that licence-->

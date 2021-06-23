@@ -32,8 +32,11 @@ const getLicencesForGaugingStation = async (request, h) => {
   return h.view('nunjucks/gauging-stations/licences', {
     ...request.view,
     tableCaption: 'All licences for gaugingstation',
+    pageTitle: `${newData.stations[newData.stationID].riverName} at ${newData.stations[newData.stationID].label}`,
     data: newData,
-    gaugingStationId,
+    gaugingStationId: !gaugingStationId ? 0 : gaugingStationId,
+    catchmentName: newData.stations[newData.stationID].catchmentName,
+    station: newData.stations[newData.stationID],
     back: `/gaugingstation/${gaugingStationId}#back`
   });
 };

@@ -1,69 +1,81 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "badge.njk" import badge %}
-{% from "paginate.njk" import paginate %}
-{% from "./nunjucks/billing/macros/batch-metadata.njk" import batchMetadata %}
-{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
-
-{% from "./nunjucks/billing/macros/totals.njk" import chargeOrDash %}
 {% from "./nunjucks/billing/macros/batch-title.njk" import batchTitle %}
 {% from "./nunjucks/billing/macros/batch-buttons.njk" import removeTPTLicenceFromBatchButton %}
-{% from "./nunjucks/billing/macros/two-part-tariff-review-quantities.njk" import chargeElementQuantity, reportedVolume, billableVolume %}
+{% from "./nunjucks/billing/macros/two-part-tariff-licence-review-table.njk" import billingVolumeTableRow %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
+
+{% macro metaRow(key, value, includePadding) %}
+  <div class="meta__row">
+    <dt class="meta__key">{{ key }}</dt>
+    <dd class="meta__value{% if includePadding %} govuk-!-padding-bottom-3{% endif %}">{{ value }}</dd>
+  </div>
+{% endmacro %}
 
 {% block content %}
-
-  <div class="govuk-grid-row govuk-!-margin-bottom-0">
-    <div class="govuk-grid-column-two-thirds">
-      {{ batchTitle(pageTitle, batch) }}
-      {{ removeTPTLicenceFromBatchButton(batch, licence) }}
-    </div>
-  </div>
-
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-full">
+    {{ batchTitle(pageTitle, batch) }}
+      {% set summaryHtml %}
+        <dl class="meta">
+          {% for condition in aggregateConditions %}
+            {{ metaRow('Aggregate condition', condition.title) }}
+            {{ metaRow(condition.parameter1Label, condition.parameter1) }}
+            {{ metaRow(condition.parameter2Label, condition.parameter2, not condition.text) }}
+            {% if condition.text %}
+              {{ metaRow('Other information', condition.text, true) }}
+            {% endif %}
+          {% endfor %}    
+        </dl>
 
-      {% for group in billingVolumeGroups %}
-
-        {% set insetText %}
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-0">{{ group[0].chargeElement.purposeUse.name }}</h2>
-        <p class="govuk-body">{{ group[0].chargeElement.abstractionPeriod | abstractionPeriod }}</p>
-        {% endset %}
-
-        {{ govukInsetText({
-        html : insetText
-      }) }}
-
-        <table class="govuk-table">
-          <thead class="govuk-table__head">
-            <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header">Element description</th>
-              <th scope="col" class="govuk-table__header">Element quantity</th>
-              <th scope="col" class="govuk-table__header">Reported quantity</th>
-              <th scope="col" class="govuk-table__header">Billable quantity</th>
-              <th scope="col" class="govuk-table__header">Issue</th>
-              <th scope="col" class="govuk-table__header">Action</th>
-            </tr>
-          </thead>
-          <tbody class="govuk-table__body">
-            {% for billingVolume in group %}
-              <tr class="govuk-table__row">
-                <td scope="row" class="govuk-table__cell">{{ billingVolume.chargeElement.description }}</td>
-                <td class="govuk-table__cell">{{ chargeElementQuantity(billingVolume.chargeElement) }}</td>
-                <td class="govuk-table__cell">{{ reportedVolume(billingVolume) }}</td>
-                <td class="govuk-table__cell">{{ billableVolume(billingVolume) }}</td>
-                <td class="govuk-table__cell">{{ billingVolume.error | default ('-') }}</td>
-                <td class="govuk-table__cell">
-                  <a href="{{ billingVolume.editLink }}">Change<span class="govuk-visually-hidden">
-                      element
-                      {{ billingVolume.chargeElement.description }}</span></a>
-                </td>
-              </tr>
-            {% endfor %}
-
-          </tbody>
-        </table>
-
-      {% endfor %}
+        <p>
+          <a href="{{ returnsLink }}">View returns summary</a>
+        </p>
+      {% endset %}
+      </div>
     </div>
-  </div>
-
+    {% if aggregateConditions.length > 0 %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        {{ govukDetails({
+        summaryText: "Licence details",
+        html: summaryHtml
+      }) }}
+      </div>
+    </div>
+    {% else %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <p>
+          <a href="{{ returnsLink }}">View returns summary</a>
+        </p>
+      </div>
+    </div>
+    {% endif %}
+    {{ removeTPTLicenceFromBatchButton(batch, licence) }}
+    
+    {% if totals.errors > 0 %}    
+      <h2 class="govuk-heading-l">
+        {{totals.errors}} {{ 'issue' | pluralize(totals.errors != 1) }} to review
+      </h2>
+      {% for billingVolumes in billingVolumeGroups %}
+        {% for billingVolume in billingVolumes %}
+          {% if billingVolume.twoPartTariffError %}
+           {{ billingVolumeTableRow(billingVolume) }}
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+    {% endif %}
+        {% if totals.ready > 0 %}    
+      <h2 class="govuk-heading-l">
+        {{totals.ready}} ready for billing
+      </h2>
+      {% for billingVolumes in billingVolumeGroups %}
+        {% for billingVolume in billingVolumes %}
+          {% if billingVolume.twoPartTariffError == false %}
+           {{ billingVolumeTableRow(billingVolume) }}
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+    {% endif %}
 {% endblock %}

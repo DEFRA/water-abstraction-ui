@@ -15,21 +15,12 @@ experiment('internal/modules/billing/routes/two-part-tarriff', () => {
     });
   });
 
-  experiment('.getBillingTwoPartTariffReady', () => {
-    test('limits scope to users with billing role', async () => {
-      expect(routes.getBillingTwoPartTariffReady.config.auth.scope)
-        .to.only.include([scope.billing]);
-      expect(routes.getBillingTwoPartTariffReady.path)
-        .to.equal('/billing/batch/{batchId}/two-part-tariff-ready');
-    });
-  });
-
   experiment('.getLicenceReview', () => {
     test('limits scope to users with billing role', async () => {
       expect(routes.getLicenceReview.config.auth.scope)
         .to.only.include([scope.billing]);
       expect(routes.getLicenceReview.path)
-        .to.equal('/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}/{action}');
+        .to.equal('/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}');
     });
   });
 
@@ -48,24 +39,6 @@ experiment('internal/modules/billing/routes/two-part-tarriff', () => {
         .to.only.include([scope.billing]);
       expect(routes.postBillingVolumeReview.path)
         .to.equal('/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}/billing-volume/{billingVolumeId}');
-    });
-  });
-
-  experiment('.getConfirmQuantity', () => {
-    test('limits scope to users with billing role', async () => {
-      expect(routes.getConfirmQuantity.config.auth.scope)
-        .to.only.include([scope.billing]);
-      expect(routes.getConfirmQuantity.path)
-        .to.equal('/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}/billing-volume/{billingVolumeId}/confirm');
-    });
-  });
-
-  experiment('.postConfirmQuantity', () => {
-    test('limits scope to users with billing role', async () => {
-      expect(routes.postConfirmQuantity.config.auth.scope)
-        .to.only.include([scope.billing]);
-      expect(routes.postConfirmQuantity.path)
-        .to.equal('/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}/billing-volume/{billingVolumeId}/confirm');
     });
   });
 

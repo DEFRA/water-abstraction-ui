@@ -54,7 +54,7 @@ const mapStations = newData => {
       stations[rkey].licences.push(licenceObj);
     }
     if (stations[rkey].stationReference === undefined) {
-      delete stations[rkey];
+      stations.splice(rkey, 1);
     }
   }
   return stations;

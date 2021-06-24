@@ -5,8 +5,8 @@ const Joi = require('@hapi/joi');
 const controller = require('./controller');
 const { createRoutePair } = require('shared/lib/route-helpers');
 
-const { charging } = require('internal/lib/constants').scope;
-const allowedScopes = [charging];
+const { manageBillingAccounts } = require('internal/lib/constants').scope;
+const allowedScopes = [manageBillingAccounts];
 
 module.exports = {
 

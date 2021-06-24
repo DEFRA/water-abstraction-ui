@@ -2,8 +2,8 @@ const controller = require('../controllers/charge-information');
 const preHandlers = require('../pre-handlers');
 const { VALID_GUID } = require('shared/lib/validators');
 const Joi = require('@hapi/joi');
-const { charging } = require('internal/lib/constants').scope;
-const allowedScopes = [charging];
+const { chargeVersionWorkflowEditor, chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope;
+const allowedScopes = [chargeVersionWorkflowEditor, chargeVersionWorkflowReviewer];
 
 module.exports = {
   getReason: {

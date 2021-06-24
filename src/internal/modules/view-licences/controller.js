@@ -42,8 +42,6 @@ const getLicenceSummary = async (request, h) => {
   const { licenceId } = request.params;
   const { agreements, licence, returns, document } = request.pre;
 
-  console.log(request.pre.bills);
-
   const documentId = getDocumentId(document);
 
   const permissions = getPermissions(request);

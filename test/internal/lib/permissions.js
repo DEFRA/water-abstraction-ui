@@ -269,20 +269,20 @@ experiment('permissions', () => {
     });
   });
 
-  experiment('isCharging', () => {
+  experiment('isBilling', () => {
     test('returns false if scopes empty', async () => {
       const request = createRequest([]);
-      expect(permissions.isCharging(request)).to.equal(false);
+      expect(permissions.isBilling(request)).to.equal(false);
     });
 
-    test('it should return true if scopes "charging"', async () => {
-      const request = createRequest(['charging']);
-      expect(permissions.isCharging(request)).to.equal(true);
+    test('it should return true if scopes "billing"', async () => {
+      const request = createRequest(['billing']);
+      expect(permissions.isBilling(request)).to.equal(true);
     });
 
-    test('it should return true if scopes contains "charging"', async () => {
-      const request = createRequest(['charging', 'manage_accounts']);
-      expect(permissions.isCharging(request)).to.equal(true);
+    test('it should return true if scopes contains "billing"', async () => {
+      const request = createRequest(['billing', 'manage_accounts']);
+      expect(permissions.isBilling(request)).to.equal(true);
     });
   });
 });

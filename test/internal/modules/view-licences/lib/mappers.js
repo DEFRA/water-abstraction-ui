@@ -75,6 +75,8 @@ experiment('internal/modules/billing/controllers/lib/mappers', () => {
   });
 
   experiment('.mapChargeVersions', () => {
+    const licenceId = 'test-licence-id';
+
     const chargeVersions = {
       data: [{
         id: 'test-charge-version-1',
@@ -103,13 +105,13 @@ experiment('internal/modules/billing/controllers/lib/mappers', () => {
 
     experiment('when no charge versions are loaded', () => {
       test('returns null', async () => {
-        expect(mappers.mapChargeVersions(null, [])).to.be.null();
+        expect(mappers.mapChargeVersions(null, [], { licenceId })).to.be.null();
       });
     });
 
     experiment('when charge versions are loaded', () => {
       test('maps the charge versions, sorted by workflows then by data and version number', async () => {
-        const result = mappers.mapChargeVersions(chargeVersions, chargeVersionWorkflows);
+        const result = mappers.mapChargeVersions(chargeVersions, chargeVersionWorkflows, { licenceId });
         const ids = result.map(row => row.id);
         expect(ids).to.equal([
           'test-charge-version-workflow-1',

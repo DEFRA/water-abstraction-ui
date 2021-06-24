@@ -161,7 +161,7 @@
                 <td class="govuk-table__cell ">
                   <!--loop through the tag values and if they are a flow value add them to this cell  | units |safe -->
                   {% for tag in licenceTags %}
-                    {{tag.thresholdUnits}}<br>
+                    {{tag.thresholdUnit}}<br>
                   {% endfor %}
                 </td>
                 {% for licence in station['licences']%}

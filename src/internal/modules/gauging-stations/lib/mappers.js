@@ -21,7 +21,6 @@ const mapStations = newData => {
     if (stations[rkey] === undefined) {
       stations.push({ stationID: rkey });
     }
-
     stations[rkey].riverName = newData.stations[rkey].riverName;
     stations[rkey].label = newData.stations[rkey].label;
     stations[rkey].stationReference = newData.stations[rkey].stationReference;
@@ -33,7 +32,7 @@ const mapStations = newData => {
     stations[rkey].licenceRef = newData.stations[rkey].licenceRef;
     stations[rkey].restrictionType = newData.stations[rkey].restrictionType;
     stations[rkey].thresholdValue = newData.stations[rkey].thresholdValue;
-    stations[rkey].thresholdUnits = newData.stations[rkey].thresholdUnits;
+    stations[rkey].thresholdUnit = newData.stations[rkey].thresholdUnit;
     stations[rkey].wiskiId = defaultToNA(newData.stations[rkey].wiskiId);
     stations[rkey].easting = defaultToNA(newData.stations[rkey].easting);
     stations[rkey].northing = defaultToNA(newData.stations[rkey].northing);
@@ -53,6 +52,9 @@ const mapStations = newData => {
       }
       licenceObj.communications.push(comObj);
       stations[rkey].licences.push(licenceObj);
+    }
+    if (stations[rkey].stationReference === undefined) {
+      delete stations[rkey];
     }
   }
   return stations;
@@ -78,9 +80,11 @@ const mapTags = newData => {
         conditionType: defaultToNA(newData.stations[rkey].restrictionType),
         thresholdValue: defaultToZero(newData.stations[rkey].thresholdValue)
       };
-      tagValueObj.thresholdUnits = defaultToMld(newData.stations[rkey].thresholdUnit);
+      tagValueObj.thresholdUnit = defaultToMld(newData.stations[rkey].thresholdUnit);
       tagObj.tagValues.push(tagValueObj);
-      tags.push(tagObj);
+      if (tagObj.licenceNumber) {
+        tags.push(tagObj);
+      }
     }
   }
   return tags;

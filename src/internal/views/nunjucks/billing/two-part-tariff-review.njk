@@ -13,38 +13,48 @@
   {{ batchHeader(pageTitle, batch) }}
 
   {% if totals.errors > 0 %}
-  <section class="govuk-!-margin-bottom-6">
-    {{ cancelBatchButton(batch) }}
-  </section>
+    <section class="govuk-!-margin-bottom-6">
 
-    <section class="govuk-!-margin-bottom-9">
-      <h2 class="govuk-heading-l" id="issuesTitle">
-        {% if totals.errors == 1 %}
-        1 licence has data issues 
-        {% else %}
-        {{ totals.errors }} licences have data issues
-        {% endif %}
-      </h2>
-      <div class="table govuk-!-margin-bottom-6" id="dataIssues">
-        {{ twoPartTariffLicencesTable(licences, true )}}
+      {{ cancelBatchButton(batch) }}
+
+      <div class="govuk-inset-text">
+        <p class="govuk-body govuk-!-margin-bottom-0">
+          You need to review {{ totals.errors }} {{ 'licence' | pluralize (totals.errors) }} with returns data issues before you can continue
+        </p>       
       </div>
     </section>
-  {% endif %}
-
-  {% if totals.ready > 0 %}
-    <section class="govuk-!-margin-bottom-0v">
-      <h2 class="govuk-heading-l" id="readyTitle">
-          {% if totals.ready == 1 %}
-          1 licence is ready for billing
-          {% else %}
-          {{ totals.ready }} licences are ready for billing
-          {% endif %}
-      </h2>
-      <p class="govuk-body govuk-!-margin-bottom-9">
-      <a href="{{ readyLink }}" class="govuk-link">View {{ 'licence' | pluralize (totals.ready) }} ready for billing</a>
-      </p>
+  {% else %}
+    <section class="govuk-!-margin-bottom-6">
+      <p class="govuk-body">You have resolved all returns data issues. Continue to generate bills.</p>
+      {{ twoPartTariffContinueButton(batch) }} 
+      {{ cancelBatchButton(batch) }}
     </section>
   {% endif %}
 
+<div class="govuk-tabs" data-module="govuk-tabs">
+  <h2 class="govuk-tabs__title">Two part tarrif review data issues</h2>
+  <ul class="govuk-tabs__list">
+    {% if totals.errors > 0 %}
+    <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+      <a class="govuk-tabs__tab" href="#issues">Issues ({{totals.errors}})</a>
+    </li>
+    {% endif %}
+    {% if totals.ready > 0 %}
+    <li class="govuk-tabs__list-item">
+      <a class="govuk-tabs__tab" href="#ready">Ready ({{totals.ready}})</a>
+    </li> 
+    {% endif %}
+  </ul>
+  {% if totals.errors > 0 %}
+    <section class="govuk-tabs__panel" id="issues">
+      {% include "nunjucks/billing/tabs/two-part-tariff-issues.njk" %}
+    </section>
+  {% endif %}    
+  {% if totals.ready > 0 %}
+    <section class="govuk-tabs__panel" id="ready">
+      {% include "nunjucks/billing/tabs/two-part-tariff-ready.njk" %}
+    </section>
+  {% endif %}
+</div>
 {% endblock %}
 

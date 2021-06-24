@@ -2,11 +2,9 @@
 
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
-
 const sandbox = require('sinon').createSandbox();
-
 const preHandlers = require('shared/lib/pre-handlers/gaugingstations');
-
+const h = sandbox.stub();
 const GAUGINGSTATION_ID = '0dd992c3-86e6-4410-963c-cc61d51bef40';
 const LICENCE_ID = '22c784b7-b141-4fd0-8ee1-78ea7ae783bc';
 
@@ -20,8 +18,8 @@ experiment('src/shared/lib/pre-handlers/gaugingstations', () => {
       },
       services: {
         water: {
-          gaugingstations: {
-            loadGaugingStations: { data: [
+          monitoringstations: {
+            getGaugingStationLicences: sandbox.stub().resolves({ data: [
               {
                 abstractionPeriodStartDay: 1,
                 abstractionPeriodStartMonth: 6,
@@ -43,8 +41,7 @@ experiment('src/shared/lib/pre-handlers/gaugingstations', () => {
                 easting: null,
                 northing: null
               }
-            ] },
-            emptyResponse: { data: [] }
+            ] })
           }
         }
       }
@@ -55,8 +52,7 @@ experiment('src/shared/lib/pre-handlers/gaugingstations', () => {
 
   experiment('.loadGaugingStations by gaugingstationsId', () => {
     beforeEach(async () => {
-      sandbox.stub(preHandlers, 'loadGaugingStations').resolves(request.services.water.gaugingstations.loadGaugingStations);
-      result = await preHandlers.loadGaugingStations(request);
+      result = await preHandlers.loadGaugingStations(request, h);
     });
 
     test('returns the result of the call to the water service', () => {

@@ -18,8 +18,8 @@ experiment('src/shared/lib/pre-handlers/gaugingstations', () => {
       },
       services: {
         water: {
-          gaugingstations: {
-            loadGaugingStations: { data: [
+          monitoringstations: {
+            getGaugingStationLicences: sandbox.stub().resolves({ data: [
               {
                 abstractionPeriodStartDay: 1,
                 abstractionPeriodStartMonth: 6,
@@ -41,8 +41,8 @@ experiment('src/shared/lib/pre-handlers/gaugingstations', () => {
                 easting: null,
                 northing: null
               }
-            ] },
-            loadGaugingStationsByLicenceId: { data: [
+            ] }),
+            getGaugingStationsByLicenceId: sandbox.stub().resolves({ data: [
               {
                 abstractionPeriodStartDay: 1,
                 abstractionPeriodStartMonth: 6,
@@ -64,7 +64,7 @@ experiment('src/shared/lib/pre-handlers/gaugingstations', () => {
                 easting: null,
                 northing: null
               }
-            ] }
+            ] })
           }
         }
       }
@@ -75,7 +75,6 @@ experiment('src/shared/lib/pre-handlers/gaugingstations', () => {
 
   experiment('.loadGaugingStations by gaugingstationsId', () => {
     beforeEach(async () => {
-      sandbox.stub(preHandlers, 'loadGaugingStations').resolves(request.services.water.gaugingstations.loadGaugingStations);
       result = await preHandlers.loadGaugingStations(request, h);
     });
 
@@ -86,7 +85,6 @@ experiment('src/shared/lib/pre-handlers/gaugingstations', () => {
 
   experiment('.loadGaugingStationsByLicenceId', () => {
     beforeEach(async () => {
-      sandbox.stub(preHandlers, 'loadGaugingStationsByLicenceId').resolves(request.services.water.gaugingstations.loadGaugingStationsByLicenceId);
       result = await preHandlers.loadGaugingStationsByLicenceId(request, h);
     });
 

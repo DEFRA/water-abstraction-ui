@@ -63,7 +63,7 @@ const getLicenceSummary = async (request, h) => {
     documentId,
     ...pick(request.pre, ['licence', 'bills', 'notifications', 'primaryUser', 'summary']),
     chargeVersions,
-    agreements: mappers.mapLicenceAgreements(agreements),
+    agreements: mappers.mapLicenceAgreements(agreements, { licenceId, ...permissions }),
     returns: {
       pagination: returns.pagination,
       data: returnsMapper.mapReturns(returns.data, request)

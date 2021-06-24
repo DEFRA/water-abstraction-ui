@@ -1,7 +1,8 @@
 const { expect } = require('@hapi/code');
 const {
   experiment,
-  test
+  test,
+  beforeEach
 } = exports.lab = require('@hapi/lab').script();
 
 const uuid = require('uuid/v4');
@@ -124,24 +125,70 @@ experiment('internal/modules/billing/controllers/lib/mappers', () => {
   });
 
   experiment('.mapAgreements', () => {
-    const agreements = [{
-      id: uuid(),
-      agreement: {
-        code: 'S127'
-      }
-    }];
+    let agreements, options;
+
+    const licenceId = uuid();
+    const licenceAgreementId = uuid();
+
+    beforeEach(() => {
+      agreements = [{
+        id: licenceAgreementId,
+        agreement: {
+          code: 'S127'
+        },
+        dateRange: {
+          startDate: '2020-01-01',
+          endDate: null
+        }
+      }];
+
+      options = {
+        manageAgreements: true,
+        licenceId
+      };
+    });
 
     test('returns null when licence agreements are null', async () => {
-      const result = mappers.mapLicenceAgreements(null);
+      const result = mappers.mapLicenceAgreements(null, options);
       expect(result).to.be.null();
     });
 
     test('returns mapped agreements when licence agreements are an array', async () => {
-      const result = mappers.mapLicenceAgreements(agreements);
-      expect(result).to.equal([{
-        id: agreements[0].id,
-        agreement: { code: 'S127', description: 'Two-part tariff (S127)' }
-      }]);
+      const result = mappers.mapLicenceAgreements(agreements, options);
+      expect(result).to.be.an.array().length(1);
+      expect(result[0].id).to.equal(agreements[0].id);
+      expect(result[0].agreement).to.equal({ code: 'S127', description: 'Two-part tariff (S127)' });
+    });
+
+    test('includes action links', async () => {
+      const [{ links }] = mappers.mapLicenceAgreements(agreements, options);
+      expect(links).to.equal([
+        {
+          text: 'Delete',
+          path: `/licences/${licenceId}/agreements/${licenceAgreementId}/delete`
+        },
+        {
+          text: 'End',
+          path: `/licences/${licenceId}/agreements/${licenceAgreementId}/end`
+        }
+      ]);
+    });
+
+    test('does not include and "end" action link if the agreement has ended', async () => {
+      agreements[0].dateRange.endDate = '2021-01-01';
+      const [{ links }] = mappers.mapLicenceAgreements(agreements, options);
+      expect(links).to.equal([
+        {
+          text: 'Delete',
+          path: `/licences/${licenceId}/agreements/${licenceAgreementId}/delete`
+        }
+      ]);
+    });
+
+    test('does not include action links if the user does not have permission to view', async () => {
+      options.manageAgreements = false;
+      const [{ links }] = mappers.mapLicenceAgreements(agreements, options);
+      expect(links).to.equal([]);
     });
   });
 });

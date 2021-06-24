@@ -1,7 +1,7 @@
 'use strict';
 
 const moment = require('moment');
-const { sortBy, get } = require('lodash');
+const { sortBy, get, isNull } = require('lodash');
 const agreementMapper = require('shared/lib/mappers/agreements');
 
 const validityMessageMap = new Map()
@@ -31,22 +31,22 @@ const getValidityNotice = (licence, refDate) => {
 const mapChargeVersion = (chargeVersion, { licenceId }) => ({
   ...chargeVersion,
   links: [
-    createLink('View', `/licences/${licenceId}/charge-information/${chargeVersion.id}/view`)
+    getLink('View', `/licences/${licenceId}/charge-information/${chargeVersion.id}/view`)
   ]
 });
 
-const createLink = (text, path) => ({ text, path });
+const getLink = (text, path) => ({ text, path });
 
-const createChargeVersionWorkflowLinks = (chargeVersionWorkflow, options) => {
+const getChargeVersionWorkflowLinks = (chargeVersionWorkflow, options) => {
   const { licenceId, editChargeVersions, reviewChargeVersions } = options;
   if (chargeVersionWorkflow.status === 'to_setup' && editChargeVersions) {
     return [
-      createLink('Set up', `/licences/${licenceId}/charge-information/create?chargeVersionWorkflowId=${chargeVersionWorkflow.id}`),
-      createLink('Remove', `/charge-information-workflow/${chargeVersionWorkflow.id}/remove`)
+      getLink('Set up', `/licences/${licenceId}/charge-information/create?chargeVersionWorkflowId=${chargeVersionWorkflow.id}`),
+      getLink('Remove', `/charge-information-workflow/${chargeVersionWorkflow.id}/remove`)
     ];
   } else if (reviewChargeVersions) {
     return [
-      createLink('Review', `/licences/${licenceId}/charge-information/${chargeVersionWorkflow.id}/review`)
+      getLink('Review', `/licences/${licenceId}/charge-information/${chargeVersionWorkflow.id}/review`)
     ];
   }
   return [];
@@ -56,7 +56,7 @@ const mapChargeVersionWorkflow = (chargeVersionWorkflow, options) => ({
   ...get(chargeVersionWorkflow, 'chargeVersion', {}),
   status: chargeVersionWorkflow.status,
   id: chargeVersionWorkflow.id,
-  links: createChargeVersionWorkflowLinks(chargeVersionWorkflow, options)
+  links: getChargeVersionWorkflowLinks(chargeVersionWorkflow, options)
 });
 
 const mapChargeVersions = (chargeVersions, chargeVersionWorkflows, options) => {
@@ -71,13 +71,25 @@ const mapChargeVersions = (chargeVersions, chargeVersionWorkflows, options) => {
   ];
 };
 
-const mapLicenceAgreement = licenceAgreement => ({
+const getLicenceAgreementLinks = (licenceAgreement, options) => {
+  if (!options.manageAgreements) {
+    return [];
+  }
+  const deleteLink = getLink('Delete', `/licences/${options.licenceId}/agreements/${licenceAgreement.id}/delete`);
+  const endLink = getLink('End', `/licences/${options.licenceId}/agreements/${licenceAgreement.id}/end`);
+  return isNull(licenceAgreement.dateRange.endDate)
+    ? [deleteLink, endLink]
+    : [deleteLink];
+};
+
+const mapLicenceAgreement = (licenceAgreement, options) => ({
   ...licenceAgreement,
-  agreement: agreementMapper.mapAgreement(licenceAgreement.agreement)
+  agreement: agreementMapper.mapAgreement(licenceAgreement.agreement),
+  links: getLicenceAgreementLinks(licenceAgreement, options)
 });
 
-const mapLicenceAgreements = licenceAgreements =>
-  licenceAgreements && licenceAgreements.map(mapLicenceAgreement);
+const mapLicenceAgreements = (licenceAgreements, options) =>
+  licenceAgreements && licenceAgreements.map(licenceAgreement => mapLicenceAgreement(licenceAgreement, options));
 
 exports.getValidityNotice = getValidityNotice;
 exports.mapChargeVersions = mapChargeVersions;

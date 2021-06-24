@@ -94,6 +94,10 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
             id: uuid(),
             agreement: {
               code: 'S127'
+            },
+            dateRange: {
+              startDate: '2020-01-01',
+              endDate: null
             }
           }],
           returns: {

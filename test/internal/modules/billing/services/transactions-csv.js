@@ -247,8 +247,8 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         ...transaction,
         agreements: [{ code: 'S130W' }]
       });
-      expect(transactionData['S126 agreement (Y/N)']).to.equal('Y');
-      expect(transactionData['S126 agreement value']).to.equal(1.0);
+      expect(transactionData['S126 agreement (Y/N)']).to.equal('N');
+      expect(transactionData['S126 agreement value']).to.equal(null);
       expect(transactionData['S127 agreement (Y/N)']).to.equal('Y');
       expect(transactionData['S127 agreement value']).to.equal(0.5);
       expect(transactionData['S130 agreement']).to.equal('S130W');

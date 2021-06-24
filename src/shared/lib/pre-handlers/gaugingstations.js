@@ -22,8 +22,8 @@ const loadGaugingStations = async request => {
     return errorHandler(err, `data not found for gaugingStationId: ${id}`);
   }
 };
-const loadGaugingStationsByLicenceId = async (request, h, licenceId = null) => {
-  const id = licenceId || request.params.licenceId;
+const loadGaugingStationsByLicenceId = async request => {
+  const id = request.params.licenceId;
   try {
     const service = new GaugingStationsService(request.services.water);
     const res = service.getGaugingStationsByLicenceId(id);

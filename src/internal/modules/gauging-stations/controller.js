@@ -47,7 +47,7 @@ const getLicencesForGaugingStation = async (request, h) => {
     ...request.view,
     tableCaption: 'All licences for gaugingstation',
     pageTitle: `${newData.stations[0].riverName} at ${newData.stations[0].label}`,
-    gaugingStationId: !gaugingStationId ? 0 : gaugingStationId,
+    gaugingStationId: gaugingStationId,
     catchmentName: newData.stations[0].catchmentName,
     tags: tags,
     station: newData.stations[0],

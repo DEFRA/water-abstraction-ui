@@ -32,6 +32,10 @@ experiment('internal/modules/gauging-stations/controllers/lib/mappers', () => {
       expect(res.status).to.equal('warning');
       expect(res.text).to.equal('warning');
     });
+    test('warning with large option translate to warning badge', async () => {
+      const res = badge.gaugingStationBadge({ status: 'warning' }, true);
+      expect(res.text).to.equal('warning');
+    });
     test('stop translate to error badge', async () => {
       const res = badge.gaugingStationBadge({ status: 'stop' }, false);
       expect(res.status).to.equal('error');

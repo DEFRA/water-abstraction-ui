@@ -1,16 +1,9 @@
 'use strict';
 
 const { expect } = require('@hapi/code');
-const {
-  experiment,
-  test,
-  beforeEach,
-  afterEach
-} = exports.lab = require('@hapi/lab').script();
+const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
 const sandbox = require('sinon').createSandbox();
-
 const preHandlers = require('shared/lib/pre-handlers/gaugingstations');
-
 const h = sandbox.stub();
 const GAUGINGSTATION_ID = '0dd992c3-86e6-4410-963c-cc61d51bef40';
 const LICENCE_ID = '22c784b7-b141-4fd0-8ee1-78ea7ae783bc';

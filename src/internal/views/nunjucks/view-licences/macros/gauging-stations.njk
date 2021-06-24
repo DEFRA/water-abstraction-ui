@@ -10,7 +10,7 @@
         {% for station in stations %}
         <li>
           At National Grid Reference {{ station.gridReference }}
-          <br /><a href="{{ baseUrl }}/gauging-stations/{{ station.gaugingStationId }}">View data from {{ station.label }}</a>
+          <br /><a href="/monitoring-stations/{{ station.gaugingStationId }}/licences">View data from {{ station.label }}</a>
         </li>
         {% endfor %}
       </ul>

@@ -1,0 +1,220 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "badge.njk" import badge %}
+
+{% block pageTitle %}
+  {{pageTitle}} - GOV.UK
+{% endblock %}
+
+{% block content %}
+  <!-- page title -->
+  <div class="govuk-grid-row govuk-!-margin-bottom-6">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-1">
+        <span class="govuk-caption-l">{{catchmentName}}</span>
+        {{pageTitle}}
+      </h1>
+      {% set metaData %}
+        {{ govukSummaryList({
+        classes: 'govuk-summary-list--no-border',
+        rows: [
+          {
+            key: {
+              text: "Grid reference",
+              classes: "meta-data__label"
+            },
+            value: {
+              text: station.gridReference,
+              classes: "meta-data__value"
+            }
+          } if station.gridReference,
+          {
+            key: {
+              text: "Easting",
+              classes: "meta-data__label"
+            },
+            value: {
+              text: station.easting,
+              classes: "meta-data__value"
+            }
+          } if station.easting,
+          {
+            key: {
+              text: "Northing",
+              classes: "meta-data__label"
+            },
+            value: {
+              text: station.northing,
+              classes: "meta-data__value"
+            }
+          } if station.northing,
+          {
+            key: {
+              text: "WISKI ID",
+              classes: "meta-data__label"
+            },
+            value: {
+              text: station.wiskiId,
+              classes: "meta-data__value"
+            }
+          } if station.wiskiId,
+          {
+            key: {
+              text: "Station reference",
+              classes: "meta-data__label"
+            },
+            value: {
+              text: station.stationReference,
+              classes: "meta-data__value"
+            }
+          } if station.stationReference
+        ]
+        }) }}
+      {% endset %}
+
+    {{ govukDetails({
+      summaryText: "Station details",
+      html: metaData
+    }) }}
+
+  </div>
+</div>
+
+
+{% if tags.length %}
+  <div class="govuk-grid-row govuk-!-margin-bottom-6">
+    <div class="govuk-grid-column-full">
+      {{ govukButton({
+    text: "Create a water abstraction alert",
+    href: "licence-notices/send-a-water-abstraction-alert/select-the-type-of-alert?stationID=" + gaugingStationId
+  }) }}
+    </div>
+  </div>
+{% endif %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+
+    <!-- Start tag-table.html: Licences linked to this monitoring station -->
+    {% block service %}
+        <!--setting the loop number to 0-->
+        {% set loopNumber = 0 %}
+
+        <!--getting the licence data-->
+        {% if tags.length %}
+          <table class="govuk-table">
+            <caption class="govuk-table__caption govuk-table__caption--m">Licences linked to this monitoring station</caption>
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header ">Licence</th>
+                <th scope="col" class="govuk-table__header ">Abstraction period</th>
+                <th scope="col" colspan="3" class="govuk-table__header ">Flow and level restriction<br> type and threshold </th>
+                <th scope="col" colspan="2" class="govuk-table__header ">Last type of alert  <br>sent and date issued</th>
+              </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+            <!--starting to loop through the bill runs data -->
+
+            {% for i in tags %}
+              <!--setting the loop number -->
+              {% set loopNumber = loop.index0 %}
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">
+                  <!--set the link to go to a specific licence-->
+                  <!--
+                  {% for licence in station['licences']%}
+                    {% if licence.number == i.licenceNumber %}
+                      <a href="#licence?ID={{loop.index0}}" class="govuk-link">{{loop.index0}}</a>
+                    {% endif %}
+                  {% endfor %}
+                  -->
+                  {{i.licenceNumber}}
+                </td>
+
+                <!--get the tags for that individual licences-->
+                {% set licenceTags = i['tagValues'] %}
+
+                <td class="govuk-table__cell ">
+                  {% for tag in licenceTags %}
+                    {{ tag.abstractionPeriod | abstractionPeriod }}<br>
+                  {% endfor %}
+                </td>
+                <td class="govuk-table__cell ">
+                  <!--loop through conditions for that licence-->
+                  {% for tag in licenceTags %}
+                    {{tag.conditionType |capitalize}}<br>
+                    {{tag.comstatus}}<br>          
+                  {% endfor %}
+                </td>
+                <td class="govuk-table__cell govuk-table__cell--numeric">
+                  <!--loop through the tag values and if they are a flow value add them to this cell-->
+                  {% for tag in licenceTags %}
+                    {{tag.thresholdValue}}<br>
+                  {% endfor %}
+                </td>
+                <td class="govuk-table__cell ">
+                  <!--loop through the tag values and if they are a flow value add them to this cell  | units |safe -->
+                  {% for tag in licenceTags %}
+                    {{tag.thresholdUnit}}<br>
+                  {% endfor %}
+                </td>
+                {% for licence in station['licences']%}
+                  {% if licence.number == i.licenceNumber %}
+                    {% if station.licences[loop.index0]['communications'].length %}
+                      {% set communications = station.licences[loop.index0]['communications'] %}
+                      <!-- type.split(" ")[0] | capitalize -->
+                      <td class="govuk-table__cell ">
+                        {% set commsType = '' + communications[0].type.trim().replace(' ','_') %}
+                        {{ badge({status:[commsType]} | gaugingStationBadge(false) ) }}
+                      </td>
+                      <td class="govuk-table__cell">  {{communications[0].sent}}</td>
+                    {% else %}
+                      {% set communications = "" %}
+                      <td class="govuk-table__cell"> </td>
+                      <td class="govuk-table__cell"> </td>
+                    {% endif %}
+
+                  {% endif %}
+                {% endfor %}
+              </tr>
+              {% endfor %}
+
+            </tbody>
+          </table>
+
+        {% endif %}
+
+        {% if not tags.length %}
+          <p class="govuk-body">There are no licences tagged with restrictions for this monitoring station</p>
+        {% endif %}  
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Tag a licence",
+            href: "/monitoring-stations/" + gaugingStationId + "/tagging-licence",
+            classes: "govuk-button--secondary"
+          }) }}
+
+        {% if tags.length %}
+          {{ govukButton({
+            text: "Remove a tag",
+            href: "monitoring-stations/" + gaugingStationId + "/remove-tag",
+            classes: "govuk-button--secondary"
+          }) }}
+        {% endif %}
+
+          </div>
+
+      <!-- end tag table block-->
+      {% endblock %}
+    </div>
+  </div>
+
+<!--End content block-->
+{% endblock %}

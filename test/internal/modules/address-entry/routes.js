@@ -10,30 +10,30 @@ const routes = require('internal/modules/address-entry/routes');
 
 experiment('internal/modules/address-entry/routes', () => {
   experiment('.getPostcode', () => {
-    test('limits scope to users with charges role', async () => {
+    test('limits scope to users with billing or manage billing accounts roles', async () => {
       expect(routes.getPostcode.options.auth.scope)
-        .to.only.include([scope.charging]);
+        .to.only.include([scope.billing, scope.manageBillingAccounts]);
     });
   });
 
   experiment('.postSelectAddress', () => {
-    test('limits scope to users with charges role', async () => {
+    test('limits scope to users with billing or manage billing accounts roles', async () => {
       expect(routes.postSelectAddress.options.auth.scope)
-        .to.only.include([scope.charging]);
+        .to.only.include([scope.billing, scope.manageBillingAccounts]);
     });
   });
 
   experiment('.getManualAddressEntry', () => {
-    test('limits scope to users with charges role', async () => {
+    test('limits scope to users with billing or manage billing accounts roles', async () => {
       expect(routes.getManualAddressEntry.options.auth.scope)
-        .to.only.include([scope.charging]);
+        .to.only.include([scope.billing, scope.manageBillingAccounts]);
     });
   });
 
   experiment('.postManualAddressEntry', () => {
-    test('limits scope to users with charges role', async () => {
+    test('limits scope to users with billing or manage billing accounts roles', async () => {
       expect(routes.postManualAddressEntry.options.auth.scope)
-        .to.only.include([scope.charging]);
+        .to.only.include([scope.billing, scope.manageBillingAccounts]);
     });
   });
 });

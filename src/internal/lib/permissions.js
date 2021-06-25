@@ -47,8 +47,6 @@ const isManageTab = request => hasScope(request, scope.hasManageTab);
 
 const isManageAccounts = request => hasScope(request, scope.manageAccounts);
 
-const isCharging = request => hasScope(request, scope.charging);
-
 const isBilling = request => hasScope(request, scope.billing);
 
 exports.hasScope = hasScope;
@@ -63,5 +61,4 @@ exports.isAnyNotifications = isAnyNotifications;
 exports.isBasicUser = isBasicUser;
 exports.isManageTab = isManageTab;
 exports.isManageAccounts = isManageAccounts;
-exports.isCharging = isCharging;
 exports.isBilling = isBilling;

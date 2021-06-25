@@ -14,8 +14,7 @@ const types = {
   measurementPointRefPoint: require('../schema/types/measurement-point-ref-point.json'),
   rate: require('../schema/types/rate.json'),
   purpose: require('../schema/types/purpose.json'),
-  waterBodies: require('../schema/types/water-bodies.json'),
-  gaugingStations: require('../schema/types/gauging-stations.json')
+  waterBodies: require('../schema/types/water-bodies.json')
 };
 
 const createEnumsObject = (items, iteratee) => ({
@@ -53,6 +52,20 @@ const resolveLicences = async (ref, context) => {
 };
 
 const resolveTypes = async ref => {
+  if (ref === 'gaugingStations') {
+    const gaugingStationsFromDb = await services.water.gaugingStations.getAllGaugingStations();
+    const GS = gaugingStationsFromDb.map(station => ({ id: station.id, value: station.label }));
+    return {
+      'type': 'object',
+      'defaultEmpty': true,
+      'errors': {
+        'required': {
+          'message': 'Enter a gauging station'
+        }
+      },
+      enum: GS
+    };
+  }
   return types[ref];
 };
 

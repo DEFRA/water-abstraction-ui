@@ -13,9 +13,9 @@ experiment('internal/modules/contact-entry/routes', () => {
   ['get', 'post'].forEach(method => {
     experiment(`.${method}SelectContact`, () => {
       const route = `${method}SelectContact`;
-      test('limits scope to users with charges role', async () => {
+      test('limits scope to users with billing role', async () => {
         expect(routes[route].options.auth.scope)
-          .to.only.include([scope.charging]);
+          .to.only.include([scope.billing]);
       });
 
       test('uses the getSessionData pre handler', async () => {
@@ -51,9 +51,9 @@ experiment('internal/modules/contact-entry/routes', () => {
 
     experiment(`.${method}CreateContact`, () => {
       const route = `${method}CreateContact`;
-      test('limits scope to users with charges role', async () => {
+      test('limits scope to users with billing role', async () => {
         expect(routes[route].options.auth.scope)
-          .to.only.include([scope.charging]);
+          .to.only.include([scope.billing]);
       });
 
       test('uses the getSessionData pre handler', async () => {

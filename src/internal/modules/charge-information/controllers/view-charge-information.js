@@ -8,7 +8,7 @@ const { get } = require('lodash');
 const forms = require('shared/lib/forms');
 const services = require('../../../lib/connectors/services');
 const chargeInformationValidator = require('../lib/charge-information-validator');
-const { chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope;
+const { chargeVersionWorkflowReviewer, manageBillingAccounts } = require('internal/lib/constants').scope;
 const { reviewForm, reviewFormSchema } = require('../forms/review');
 const { hasScope } = require('internal/lib/permissions');
 const moment = require('moment');
@@ -31,6 +31,9 @@ const getViewChargeInformation = async (request, h) => {
     chargeVersionWorkflowId,
     billingAccount,
     billingAccountAddress,
+    links: {
+      billingAccount: hasScope(request, manageBillingAccounts) && `/billing-accounts/${billingAccount.id}`
+    },
     // @TODO: use request.pre.isChargeable to determine this
     // after the chargeVersion import ticket has been completed
     // In the meantime, it will use chargeVersion.changeReason.type === 'new_non_chargeable_charge_version'

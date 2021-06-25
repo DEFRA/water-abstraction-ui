@@ -66,11 +66,13 @@
         <section class="govuk-tabs__panel" id="communications">
           {% include "nunjucks/view-licences/tabs/communications.njk" %}
         </section>
-      {% if bills %}
-        <section class="govuk-tabs__panel" id="bills">
-          {% include "nunjucks/view-licences/tabs/bills.njk" %}
-        </section>
-      {% endif %}
+
+        {% if bills %}
+          <section class="govuk-tabs__panel" id="bills">
+            {% include "nunjucks/view-licences/tabs/bills.njk" %}
+          </section>
+        {% endif %}
+        
         {% if chargeVersions %}
           <section class="govuk-tabs__panel" id="charge">
             {% include "nunjucks/view-licences/tabs/charge.njk" %}

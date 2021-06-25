@@ -7,13 +7,13 @@ const SCOPE_ABSTRACTION_REFORM_APPROVER = 'ar_approver';
 const SCOPE_HOF_NOTIFICATIONS = 'hof_notifications';
 const SCOPE_RENEWAL_NOTIFICATIONS = 'renewal_notifications';
 const SCOPE_MANAGE_ACCOUNTS = 'manage_accounts';
-const SCOPE_CHARGING = 'charging';
 const SCOPE_BILLING = 'billing';
 const SCOPE_DELETE_AGREEMENTS = 'delete_agreements';
 const SCOPE_MANAGE_AGREEMENTS = 'manage_agreements';
 const SCOPE_CHARGE_VERSION_WORKFLOW_REVIEWER = 'charge_version_workflow_reviewer';
 const SCOPE_CHARGE_VERSION_WORKFLOW_EDITOR = 'charge_version_workflow_editor';
 const SCOPE_MANAGE_BILLING_ACCOUNTS = 'manage_billing_accounts';
+const SCOPE_VIEW_CHARGE_VERSIONS = 'view_charge_versions';
 
 module.exports = {
   scope: {
@@ -39,12 +39,12 @@ module.exports = {
       SCOPE_BULK_RETURNS_NOTIFICATIONS
     ],
     manageAccounts: SCOPE_MANAGE_ACCOUNTS,
-    charging: SCOPE_CHARGING,
     billing: SCOPE_BILLING,
     deleteAgreements: SCOPE_DELETE_AGREEMENTS,
     manageAgreements: SCOPE_MANAGE_AGREEMENTS,
     chargeVersionWorkflowReviewer: SCOPE_CHARGE_VERSION_WORKFLOW_REVIEWER,
     chargeVersionWorkflowEditor: SCOPE_CHARGE_VERSION_WORKFLOW_EDITOR,
-    manageBillingAccounts: SCOPE_MANAGE_BILLING_ACCOUNTS
+    manageBillingAccounts: SCOPE_MANAGE_BILLING_ACCOUNTS,
+    viewChargeVersions: SCOPE_VIEW_CHARGE_VERSIONS
   }
 };

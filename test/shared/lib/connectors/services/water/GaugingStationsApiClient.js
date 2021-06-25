@@ -26,6 +26,14 @@ experiment('shared/services/GaugingStationsApiClient', () => {
 
   afterEach(async () => sandbox.restore());
 
+  experiment('.getAllGaugingStations', () => {
+    test('calls the expected URL', async () => {
+      await client.getAllGaugingStations();
+      const [url] = serviceRequest.get.lastCall.args;
+      expect(url).to.equal('https://example.com/api/gauging-stations');
+    });
+  });
+
   experiment('.getGaugingStationbyId', () => {
     test('calls the expected URL', async () => {
       await client.getGaugingStationbyId('ms-id');

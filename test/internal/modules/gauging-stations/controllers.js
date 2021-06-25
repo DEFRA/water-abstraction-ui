@@ -59,7 +59,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
       postRedirectGet: sandbox.stub(),
       redirect: sandbox.stub()
     };
-    await controllers.getLicencesForGaugingStation(request, h);
+    await controllers.getMonitoringStation(request, h);
   });
 
   afterEach(async () => {
@@ -77,7 +77,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
     expect(tableCaption).to.equals(expectedCaption);
   });
 
-  experiment('.getLicencesForGaugingStation fails gracefully', () => {
+  experiment('.getMonitoringStation fails gracefully', () => {
     beforeEach(async () => {
       const callingUserId = 123;
 
@@ -100,7 +100,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
         postRedirectGet: sandbox.stub(),
         redirect: sandbox.stub()
       };
-      await controllers.getLicencesForGaugingStation(request, h);
+      await controllers.getMonitoringStation(request, h);
     });
 
     test('the page is loaded with the correct nunjucks template', async () => {

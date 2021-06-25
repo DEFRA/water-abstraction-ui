@@ -188,29 +188,28 @@
             </tbody>
           </table>
 
-          <div class="govuk-button-group">
-            {{ govukButton({
-              text: "Tag a licence",
-              href: "monitoring-stations/" + gaugingStationId + "/new-tag",
-              classes: "govuk-button--secondary"
-            }) }}
+        {% endif %}
 
-            {{ govukButton({
-              text: "Remove a tag",
-              href: "monitoring-stations/" + gaugingStationId + "/remove-tag",
-              classes: "govuk-button--secondary"
-            }) }}
-          </div>
-
-        {% else %}
+        {% if not tags.length %}
           <p class="govuk-body">There are no licences tagged with restrictions for this monitoring station</p>
+        {% endif %}  
+
+        <div class="govuk-button-group">
           {{ govukButton({
             text: "Tag a licence",
-            href: "monitoring-stations/" + gaugingStationId + "/new-tag",
+            href: "/monitoring-stations/" + gaugingStationId + "/tagging-licence",
             classes: "govuk-button--secondary"
           }) }}
 
+        {% if tags.length %}
+          {{ govukButton({
+            text: "Remove a tag",
+            href: "monitoring-stations/" + gaugingStationId + "/remove-tag",
+            classes: "govuk-button--secondary"
+          }) }}
         {% endif %}
+
+          </div>
 
       <!-- end tag table block-->
       {% endblock %}

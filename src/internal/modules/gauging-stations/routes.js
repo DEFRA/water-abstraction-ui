@@ -6,10 +6,10 @@ const preHandlers = require('shared/lib/pre-handlers/gaugingstations');
 
 module.exports = {
 
-  getLicencesForGaugingStation: {
+  getMonitoringStation: {
     method: 'GET',
-    path: '/monitoring-stations/{gaugingStationId}/licences',
-    handler: controller.getLicencesForGaugingStation,
+    path: '/monitoring-stations/{gaugingStationId}',
+    handler: controller.getMonitoringStation,
     config: {
       description: 'Gets summary details about a particular gauging station',
       validate: {

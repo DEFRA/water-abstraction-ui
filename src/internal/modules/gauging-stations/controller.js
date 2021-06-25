@@ -9,7 +9,7 @@ const Joi = require('@hapi/joi');
  * @param {String} request.params.gaugingStationId - gaugingStation guid
  */
 
-const getLicencesForGaugingStation = async (request, h) => {
+const getMonitoringStation = async (request, h) => {
   const { gaugingStationId } = request.params;
   let { data } = request.pre.gaugingStations;
 
@@ -45,13 +45,13 @@ const getLicencesForGaugingStation = async (request, h) => {
   return h.view('nunjucks/gauging-stations/licences', {
     ...request.view,
     tableCaption: 'All licences for gaugingstation',
-    pageTitle: `${newData.stations[0].riverName} at ${newData.stations[0].label}`,
+    pageTitle: mappers.createTitle(newData.stations[0]),
     gaugingStationId: !gaugingStationId ? 0 : gaugingStationId,
     catchmentName: newData.stations[0].catchmentName,
     tags: tags,
     station: newData.stations[0],
-    back: `/gaugingstation/${gaugingStationId}#back`
+    back: '/licences'
   });
 };
 
-exports.getLicencesForGaugingStation = getLicencesForGaugingStation;
+exports.getMonitoringStation = getMonitoringStation;

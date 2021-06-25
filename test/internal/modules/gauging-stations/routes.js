@@ -7,6 +7,6 @@ const routes = require('internal/modules/gauging-stations/routes');
 
 lab.experiment('/internal/modules/gauging-stations/routes', () => {
   lab.test('has the right method', () => {
-    expect(routes.getLicencesForGaugingStation.method).to.equal('GET');
+    expect(routes.getMonitoringStation.method).to.equal('GET');
   });
 });

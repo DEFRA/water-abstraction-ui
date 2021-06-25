@@ -64,10 +64,10 @@ module.exports = config => ({
   returnsNotifications: new ReturnsNotificationsService(config.services.water, logger),
   kpiReporting: new KpiReportingService(config.services.water, logger),
   reporting: new ReportingService(config.services.water, logger),
+  gaugingStations: new GaugingStationsApiClient(config.services.water, logger),
 
   // Shared API Clients
   abstractionReformAnalysis: new AbstractionReformAnalysisApiClient(config, logger),
-  gaugingStations: new GaugingStationsApiClient(config, logger),
   notifications: new NotificationsApiClient(config, logger),
   taskConfigs: new TaskConfigsApiClient(config, logger),
 

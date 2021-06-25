@@ -54,7 +54,7 @@ const resolveLicences = async (ref, context) => {
 const resolveTypes = async ref => {
   if (ref === 'gaugingStations') {
     const gaugingStationsFromDb = await services.water.gaugingStations.getAllGaugingStations();
-    const GS = gaugingStationsFromDb.map(station => ({ id: station.id, value: station.label }));
+    const GS = gaugingStationsFromDb.map(station => ({ id: station.gaugingStationId, value: station.label }));
     return {
       'type': 'object',
       'defaultEmpty': true,

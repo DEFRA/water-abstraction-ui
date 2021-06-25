@@ -13,6 +13,7 @@ const helpers = require('../../../../src/internal/modules/gauging-stations/lib/h
 const session = require('../../../../src/internal/modules/gauging-stations/lib/session');
 const formHandler = require('../../../../src/shared/lib/form-handler');
 const formHelpers = require('../../../../src/shared/lib/forms');
+const uuid = require('uuid').v4;
 
 experiment('internal/modules/gauging-stations/controller', () => {
   beforeEach(async () => {
@@ -682,5 +683,67 @@ experiment('internal/modules/gauging-stations/controller', () => {
         expect(h.view.called).to.be.true();
       });
     });
+  });
+});
+
+experiment('internal/modules/gauging-stations/controller', () => {
+  let h;
+
+  const gaugingStationId = uuid();
+
+  const res = [{
+    gaugingStationId: 'e3e95a10-a989-42ae-9692-feac91f06ffb',
+    licenceId: '22c784b7-b141-4fd0-8ee1-78ea7ae783bc',
+    licenceVersionPurposeConditionId: '00304a0e-0ff7-4820-a3e1-f2cd48f2ae62',
+    gridReference: '1',
+    easting: '2',
+    northing: '3',
+    wiskiId: '4',
+    licenceRef: '5',
+    abstractionPeriodStartDay: '1',
+    abstractionPeriodStartMonth: '11',
+    abstractionPeriodEndDay: '30',
+    abstractionPeriodEndMonth: '11',
+    restrictionType: 'flow',
+    thresholdValue: '100',
+    thresholdUnit: 'Ml',
+    stationReference: '1',
+    status: 'reduce'
+  }];
+
+  beforeEach(async () => {
+    const callingUserId = 123;
+    const request = {
+      params: {
+        gaugingStationId: gaugingStationId
+      },
+      payload: {
+        callingUserId
+      },
+      pre: {
+        station: {
+          catchmentName: 'some name'
+        },
+        gaugingStationLicences: {
+          data: res
+        }
+      }
+    };
+
+    h = {
+      view: sandbox.spy(),
+      postRedirectGet: sandbox.stub(),
+      redirect: sandbox.stub()
+    };
+    await controller.getMonitoringStation(request, h);
+  });
+
+  afterEach(async () => {
+    sandbox.restore();
+  });
+
+  test('the page is loaded with the correct nunjucks template', async () => {
+    const [template] = h.view.lastCall.args;
+    expect(template).to.equal('nunjucks/gauging-stations/gauging-station');
   });
 });

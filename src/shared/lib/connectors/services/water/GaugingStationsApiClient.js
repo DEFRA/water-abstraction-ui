@@ -6,6 +6,11 @@ class GaugingStationsService extends ServiceClient {
     return this.serviceRequest.get(url, options);
   }
 
+  getGaugingStationLicences (stationId) {
+    const url = this.joinUrl('gauging-stations', stationId, 'licences');
+    return this.serviceRequest.get(url);
+  }
+
   postLicenceLinkage (stationId, licenceId, payload = {
     thresholdUnit: null,
     thresholdValue: null,

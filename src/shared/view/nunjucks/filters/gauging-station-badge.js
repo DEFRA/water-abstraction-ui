@@ -1,7 +1,7 @@
 'use strict';
 
 const badge = {
-  no_restriction: { status: 'success', text: 'no restriction' },
+  resume: { status: 'success', text: 'resume' },
   reduce: { status: 'warning', text: 'reduce' },
   warning: { status: 'warning', text: 'warning' },
   stop: { status: 'error', text: 'stop' },

@@ -1,12 +1,9 @@
 const Boom = require('@hapi/boom');
-const { trim, sortBy } = require('lodash');
+const { trim } = require('lodash');
 const { getLicencePageTitle, getCommonViewContext } = require('./lib/view-helpers');
 const { getCommonBackLink } = require('shared/lib/view-licence-helpers');
 const { getHoFTypes } = require('./lib/conditions');
 const { errorMapper } = require('./lib/error');
-const { hasScope } = require('internal/lib/permissions');
-const { scope } = require('internal/lib/constants');
-const agreementMapper = require('../../lib/mappers/agreements');
 
 async function getLicenceDetail (request, reply) {
   try {
@@ -68,11 +65,6 @@ const getLicenceGaugingStation = async (request, h) => {
 
 const hasMultiplePages = pagination => pagination.pageCount > 1;
 
-const mapLicenceAgreement = licenceAgreement => ({
-  ...licenceAgreement,
-  agreement: agreementMapper.mapAgreement(licenceAgreement.agreement)
-});
-
 /**
  * Tabbed view details for a single licence
  * @param {Object} request - the HAPI HTTP request
@@ -86,16 +78,10 @@ const getLicence = async (request, h) => {
 
   const {
     getLicenceSummaryReturns,
-    getReturnPath,
-    canShowCharging,
-    getLicenceAgreements,
-    getLicenceInvoices
+    getReturnPath
   } = h.realm.pluginOptions;
-  const isChargingUser = hasScope(request, scope.charging);
 
   const returns = await getLicenceSummaryReturns(licenceNumber);
-
-  const showChargeVersions = canShowCharging(request);
 
   const view = {
     ...getCommonViewContext(request),
@@ -103,24 +89,9 @@ const getLicence = async (request, h) => {
     returns: returns.data.map(ret => ({ ...ret, ...getReturnPath(ret, request) })),
     hasMoreReturns: hasMultiplePages(returns.pagination),
     back: '/licences',
-    showChargeVersions,
     licenceId,
-    isChargingUser,
     featureToggles: h.realm.pluginOptions.featureToggles
   };
-
-  if (isChargingUser) {
-    const bills = await getLicenceInvoices(licenceId);
-
-    view.bills = bills.data;
-    view.hasMoreBills = hasMultiplePages(bills.pagination);
-  }
-
-  if (showChargeVersions && isChargingUser) {
-    const agreements = await getLicenceAgreements(licenceId);
-    view.agreements = agreements.map(mapLicenceAgreement);
-    view.chargeVersions = sortBy(request.licence.chargeVersions, ['dateRange.startDate', 'versionNumber']).reverse();
-  }
 
   return h.view('nunjucks/view-licences/licence', view);
 };

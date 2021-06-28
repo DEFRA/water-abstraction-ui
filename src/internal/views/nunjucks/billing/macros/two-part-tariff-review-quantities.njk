@@ -1,24 +1,34 @@
-{% macro chargeElementQuantity(chargeElement) %}
+{% macro billableQuantity(chargeElement) %}
   {% if chargeElement.billableAnnualQuantity | isFinite %}
-    {{ chargeElement.billableAnnualQuantity + 'ML'}}
-  </br>
-  {{' (' + chargeElement.authorisedAnnualQuantity + 'ML authorised)' }}
-{% else %}
-  {{ chargeElement.authorisedAnnualQuantity + 'ML authorised' }}
-{% endif %}
+    {{ chargeElement.billableAnnualQuantity + 'Ml billable'}}
+  {% else %}
+    Billable not set
+  {% endif %}
+{% endmacro %}
+
+{% macro authorisedQuantity(chargeElement) %}
+  {% if chargeElement.authorisedAnnualQuantity | isFinite %}
+    {{ chargeElement.authorisedAnnualQuantity + 'Ml authorised'}}
+  {% else %}
+    0Ml
+  {% endif %}
 {% endmacro %}
 
 {% macro reportedVolume(billingVolume) %}
-{% if billingVolume.calculatedVolume > 0 and billingVolume.calculatedVolume | isFinite %}
-  {{ billingVolume.calculatedVolume + 'ML' }}
+{% if billingVolume.calculatedVolume | isFinite %}
+  {{ billingVolume.calculatedVolume + 'Ml' }}
+{% else %}
+  0Ml
 {% endif %}
 {% endmacro %}
 
 {% macro billableVolume(billingVolume) %}
 {% if billingVolume.volume | isFinite %}
-  {{ billingVolume.volume + 'ML' }}
+  {{ billingVolume.volume + 'Ml' }}
   {% if billingVolume.volume != billingVolume.calculatedVolume and billingVolume.calculatedVolume | isFinite %}
-    {{ ' - edited' }}
+    <br>Edited
   {% endif %}
+{% else %}
+    0Ml
 {% endif %}
 {% endmacro %}

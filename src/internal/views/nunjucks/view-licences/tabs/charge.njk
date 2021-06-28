@@ -2,27 +2,11 @@
 
 <h2 class="govuk-heading-l">Charge information</h2>
 
-{% macro chargeVersionLink(chargeVersion) %}
-
-  {% if chargeVersion.status == 'to_setup' %}
-    <a class="govuk-link" href="/licences/{{ licenceId }}/charge-information/create?chargeVersionWorkflowId={{ chargeVersion.id }}">Set up</a>
-    |
-    <a class="govuk-link" href="/charge-information-workflow/{{ chargeVersion.id }}/remove">Remove</a>
-  {% elif chargeVersion.status == 'review' or chargeVersion.status == 'changes_requested' %}
-    <a class="govuk-link" href="/licences/{{ licenceId }}/charge-information/{{ chargeVersion.id }}/review">Review</a>
-  {% else %}
-    <a class="govuk-link" href="/licences/{{ licenceId }}/charge-information/{{ chargeVersion.id }}/view">View</a>
-  {% endif %}
-{% endmacro %}
-
-{% macro agreementActions(agreement, licenceId, isChargingUser) %}
-  {% if isChargingUser and featureToggles.manageAgreements %}
-    {% if not agreement.dateRange.endDate %}
-      <a href='/licences/{{ licenceId }}/agreements/{{ agreement.id }}/end'>End</a>
-      |
-    {% endif %}
-    <a href='/licences/{{ licenceId }}/agreements/{{ agreement.id }}/delete'>Delete</a>
-  {% endif %}
+{% macro renderLinks(links) %}
+  {% for link in links %}
+    {% if not loop.first %} | {% endif %}
+    <a class="govuk-link" href="{{ link.path }}">{{ link.text }}</a>
+  {% endfor %}
 {% endmacro %}
 
 {% macro chargeVersionRowMobile(chargeVersion) %}
@@ -38,11 +22,11 @@
     <p>Status:
       {{ badge(chargeVersion | chargeVersionBadge) }}</p>
     <p>Action:
-      {{ chargeVersionLink(chargeVersion) }}</p>
+      {{ renderLinks(chargeVersion.links) }}</p>
   </div>
 {% endmacro %}
 
-{% macro agreementRowMobile(agreement, isChargingUser) %}
+{% macro agreementRowMobile(agreement) %}
   <div class="phone--show">
     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
@@ -55,7 +39,7 @@
     <p>Date signed:
       {{ agreement.dateSigned | date }}</p>
     <p>Action:
-      {{ agreementActions(agreement, licenceId, isChargingUser) }}
+      {{ renderLinks(agreement.links) }}
     </p>
   </div>
 {% endmacro %}
@@ -75,12 +59,12 @@
       {{ badge(chargeVersion | chargeVersionBadge) }}
     </td>
     <td class="govuk-table__cell">
-      {{ chargeVersionLink(chargeVersion) }}
+      {{ renderLinks(chargeVersion.links) }}
     </td>
   </tr>
 {% endmacro %}
 
-{% macro agreementRow(agreement, isChargingUser) %}
+{% macro agreementRow(agreement) %}
   <tr class="govuk-table__row">
     <td class="govuk-table__cell">
       {{ agreement.dateRange.startDate | date }}
@@ -95,7 +79,7 @@
       {{ agreement.dateSigned | date }}
     </td>
     <td class="govuk-table__cell">
-      {{ agreementActions(agreement, licenceId, isChargingUser) }}
+      {{ renderLinks(agreement.links) }}
     </td>
   </tr>
 {% endmacro %}
@@ -127,22 +111,23 @@
   <p>No charge information for this licence.</p>
 {% endif %}
 
-{% if createChargeVersions %}
-  <a href="/licences/{{ licenceId }}/charge-information/create" role="button" draggable="false" class="govuk-button govuk-!-margin-right-3" data-module="govuk-button">
+{% if links.setupCharge %}
+  <a href="{{ links.setupCharge }}" role="button" draggable="false" class="govuk-button govuk-!-margin-right-3" data-module="govuk-button">
     Set up a new charge
-  </a> 
-  <a href="/licences/{{ licenceId }}/charge-information/non-chargeable-reason?start=1" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+  </a>
+{% endif %}
+{% if links.makeNonChargeable %} 
+  <a href="{{ links.makeNonChargeable }}" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
     Make licence non-chargeable
   </a>
 {% endif %}
 
 {% if agreements.length %}
 
-  {# <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible"> #}
   <h2 class="govuk-heading-l">Agreements</h2>
 
   {% for agreement in agreements %}
-    {{ agreementRowMobile(agreement, isChargingUser, true) }}
+    {{ agreementRowMobile(agreement) }}
   {% endfor %}
 
   <table class="govuk-table phone--hide">
@@ -157,7 +142,7 @@
     </thead>
     <tbody class="govuk-table__body">
       {% for agreement in agreements %}
-        {{ agreementRow(agreement, isChargingUser, true) }}
+        {{ agreementRow(agreement) }}
       {% endfor %}
     </tbody>
   </table>
@@ -165,7 +150,7 @@
 {% else %}
   <p>No agreements for this licence.</p>
 {% endif %}
-{% if createChargeVersions %}
+{% if links.addAgreement %}
   {{ govukButton({
   href : links.addAgreement,
   text: 'Set up a new agreement',

@@ -13,6 +13,9 @@ const defaultToZero = item =>
 const defaultToMld = item =>
   !item ? 'Ml/d' : item;
 
+const createTitle = station =>
+  !station.catchmentName ? `${station.label}` : `${station.label} at ${station.catchmentName}`;
+
 /* Independent objects currently joined in frontend */
 const mapStations = newData => {
   const stations = [];
@@ -107,3 +110,4 @@ const mapStationsLicences = data => {
 exports.mapStationsLicences = mapStationsLicences;
 exports.mapStations = mapStations;
 exports.mapTags = mapTags;
+exports.createTitle = createTitle;

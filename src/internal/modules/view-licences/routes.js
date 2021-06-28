@@ -4,7 +4,7 @@ const Joi = require('@hapi/joi');
 const controller = require('./controller');
 const { scope } = require('../../lib/constants');
 const preHandlers = require('shared/lib/pre-handlers/licences');
-const preHandlersGS = require('shared/lib/pre-handlers/gaugingstations');
+const preHandlersGS = require('internal/modules/gauging-stations/lib/prehandlers');
 
 module.exports = {
 

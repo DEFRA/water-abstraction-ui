@@ -17,7 +17,7 @@
   <div class="govuk-grid-row govuk-!-margin-bottom-6">
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-l govuk-!-margin-bottom-1">
-        <span class="govuk-caption-l">{{catchmentName}}</span>
+        <span class="govuk-caption-l">{{station.catchmentName}}</span>
         {{pageTitle}}
       </h1>
       {% set metaData %}
@@ -92,7 +92,7 @@
     <div class="govuk-grid-column-full">
       {{ govukButton({
     text: "Create a water abstraction alert",
-    href: "licence-notices/send-a-water-abstraction-alert/select-the-type-of-alert?stationID=" + gaugingStationId
+    href: "licence-notices/send-a-water-abstraction-alert/select-the-type-of-alert?stationID=" + station.gaugingStationId
   }) }}
     </div>
   </div>
@@ -120,7 +120,6 @@
             </thead>
             <tbody class="govuk-table__body">
             <!--starting to loop through the bill runs data -->
-
             {% for i in tags %}
               <!--setting the loop number -->
               {% set loopNumber = loop.index0 %}
@@ -149,7 +148,7 @@
                   <!--loop through conditions for that licence-->
                   {% for tag in licenceTags %}
                     {{tag.conditionType |capitalize}}<br>
-                    {{tag.comstatus}}<br>          
+                    {{tag.comstatus}}<br>
                   {% endfor %}
                 </td>
                 <td class="govuk-table__cell govuk-table__cell--numeric">
@@ -164,16 +163,18 @@
                     {{tag.thresholdUnit}}<br>
                   {% endfor %}
                 </td>
-                {% for licence in station['licences']%}
+
+                <!-- for licence in station[loopNumber]['licences'] -->
+                {% for licence in stationLicences %}
+
                   {% if licence.number == i.licenceNumber %}
-                    {% if station.licences[loop.index0]['communications'].length %}
-                      {% set communications = station.licences[loop.index0]['communications'] %}
-                      <!-- type.split(" ")[0] | capitalize -->
+                    {% if licence['communications'] %}
+                      {% set communications = licence['communications'] %}
                       <td class="govuk-table__cell ">
-                        {% set commsType = '' + communications[0].type.trim().replace(' ','_') %}
+                        {% set commsType = '' + communications[loop.index0].type.trim().replace(' ','_') %}
                         {{ badge({status:[commsType]} | gaugingStationBadge(false) ) }}
                       </td>
-                      <td class="govuk-table__cell">  {{communications[0].sent}}</td>
+                      <td class="govuk-table__cell">  {{communications[loop.index0].sent}}</td>
                     {% else %}
                       {% set communications = "" %}
                       <td class="govuk-table__cell"> </td>
@@ -188,29 +189,28 @@
             </tbody>
           </table>
 
-          <div class="govuk-button-group">
-            {{ govukButton({
-              text: "Tag a licence",
-              href: "monitoring-stations/" + gaugingStationId + "/new-tag",
-              classes: "govuk-button--secondary"
-            }) }}
+        {% endif %}
 
-            {{ govukButton({
-              text: "Remove a tag",
-              href: "monitoring-stations/" + gaugingStationId + "/remove-tag",
-              classes: "govuk-button--secondary"
-            }) }}
-          </div>
-
-        {% else %}
+        {% if not tags.length %}
           <p class="govuk-body">There are no licences tagged with restrictions for this monitoring station</p>
+        {% endif %}
+
+        <div class="govuk-button-group">
           {{ govukButton({
             text: "Tag a licence",
-            href: "monitoring-stations/" + gaugingStationId + "/new-tag",
+            href: "/monitoring-stations/" + station.gaugingStationId + "/tagging-licence",
             classes: "govuk-button--secondary"
           }) }}
 
+        {% if tags.length %}
+          {{ govukButton({
+            text: "Remove a tag",
+            href: "monitoring-stations/" + station.gaugingStationId + "/remove-tag",
+            classes: "govuk-button--secondary"
+          }) }}
         {% endif %}
+
+          </div>
 
       <!-- end tag table block-->
       {% endblock %}

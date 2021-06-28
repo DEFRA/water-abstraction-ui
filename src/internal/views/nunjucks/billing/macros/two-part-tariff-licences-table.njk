@@ -1,31 +1,37 @@
-{% macro twoPartTariffLicencesTable(licences, includeIssues = false) %}
+{% macro twoPartTariffLicencesTable(licences, displayIssues = false) %}
   <table class="govuk-table">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
-        <th scope="col" class="govuk-table__header">Licence</th>
-        {% if includeIssues %}
-          <th scope="col" class="govuk-table__header">Issue</th>
-        {% endif %}
+        <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">Licence</th>
+        <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">Billing contact</th>
+        <th scope="col" class="govuk-table__header">Issue</th>
+        <th scope="col" class="govuk-table__header">Billable returns edited</th>
         <th scope="col" class="govuk-table__header govuk-table__header--numeric">Action</th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
       {% for licence in licences %}
+        {% if licence.twoPartTariffError === displayIssues %}
         <tr class="govuk-table__row">
           <td class="govuk-table__cell">
             {{ licence.licenceRef }}
           </td>
-          {% if includeIssues %}
-            <td class="govuk-table__cell">
-              {% if licence.twoPartTariffStatuses %}
-                {{ licence.twoPartTariffStatuses }}
-              {% endif %}
+          <td class="govuk-table__cell">
+            {{ licence.billingContact | escape | nl2br }}
+          </td>
+            <td class="govuk-table__cell">              
+                {{ licence.twoPartTariffStatuses }}              
             </td>
-          {% endif %}
+            <td class="govuk-table__cell">
+            {% if licence.billingVolumeEdited %}
+              Yes
+            {% endif %} 
+          </td>
           <td class="govuk-table__cell govuk-table__cell--numeric">
             <a href="{{ licence.link }}" class="govuk-link">Review</a>
           </td>
         </tr>
+        {% endif %}
       {% endfor %}
     </tbody>
   </table>

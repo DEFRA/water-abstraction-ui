@@ -23,7 +23,6 @@ const getMonitoringStation = async (request, h) => {
   if (error) {
     data = [];
   }
-  
   const newData = mappers.mapStationsLicences(data);
   let tags = {};
 

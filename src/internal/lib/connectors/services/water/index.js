@@ -47,7 +47,6 @@ module.exports = config => ({
   licences: new LicencesService(config.services.water, logger),
   licenceVersionPurposeConditionsService: new LicenceVersionPurposeConditionsService(config.services.water, logger),
   users: new UsersService(config.services.water, logger),
-
   // Internal services
   addressSearch: new AddressSearchService(config.services.water, logger),
   agreements: new AgreementsService(config.services.water, logger),

@@ -101,65 +101,70 @@
 
 
 {% if licenceGaugingStations.length %}
-            <table class="govuk-table">
-            <caption class="govuk-table__caption govuk-table__caption--m">Licences linked to this monitoring station</caption>
-            <thead class="govuk-table__head">
-              <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header ">Licence</th>
-                <th scope="col" class="govuk-table__header ">Abstraction period</th>
-                <th scope="col" colspan="3" class="govuk-table__header ">Flow and level restriction<br> type and threshold </th>
-                <th scope="col" colspan="2" class="govuk-table__header ">Last type of alert  <br>sent and date issued</th>
-              </tr>
-            </thead>
-            <tbody class="govuk-table__body">
-                {% for licenceGaugingStation in licenceGaugingStations %}
-                    <tr class="govuk-table__row">
-                        <td class="govuk-table__cell">
-                            {{licenceGaugingStation.licenceRef}}
-                        </td>
-                        <td class="govuk-table__cell">
-                            {% for linkage in licenceGaugingStation.linkages %}
-                                {{linkage.abstractionPeriod | abstractionPeriod}}
-                                <br/>
-                            {% endfor %}
-                        </td>
-                        <td class="govuk-table__cell">
-                            {% for linkage in licenceGaugingStation.linkages %}
-                                {{linkage.restrictionType | capitalize}}<br/>
-                            {% endfor %}
-                        </td>
-                        <td class="govuk-table__cell" colspan="2">
-                            {% for linkage in licenceGaugingStation.linkages %}
-                                {{linkage.thresholdValue}} {{linkage.thresholdUnit}}<br/>
-                            {% endfor %}
-                        </td>
-                        <td class="govuk-table__cell" colspan="2">
-                            {% for linkage in licenceGaugingStation.linkages %}
-                                {{ badge({status:[linkage.comstatus]} | gaugingStationBadge(false) ) }} {{'2020-05-01' | date}}<br/>
-                            {% endfor %}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-            </table>
-{% else %}
-    <p class="govuk-body">There are no licences tagged with restrictions for this monitoring station</p>
-{% endif %}
+    <table class="govuk-table">
+    <caption class="govuk-table__caption govuk-table__caption--m">Licences linked to this monitoring station</caption>
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header ">Licence</th>
+        <th scope="col" class="govuk-table__header ">Abstraction period</th>
+        <th scope="col" colspan="3" class="govuk-table__header ">Flow and level restriction<br> type and threshold </th>
+        <th scope="col" colspan="2" class="govuk-table__header ">Last type of alert  <br>sent and date issued</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+        {% for licenceGaugingStation in licenceGaugingStations %}
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">
+                    {{licenceGaugingStation.licenceRef}}
+                </td>
+                <td class="govuk-table__cell">
+                    {% for linkage in licenceGaugingStation.linkages %}
+                        {{linkage.abstractionPeriod | abstractionPeriod}}
+                        <br/>
+                    {% endfor %}
+                </td>
+                <td class="govuk-table__cell">
+                    {% for linkage in licenceGaugingStation.linkages %}
+                        {{linkage.restrictionType | capitalize}}<br/>
+                    {% endfor %}
+                </td>
+                <td class="govuk-table__cell" colspan="2">
+                    {% for linkage in licenceGaugingStation.linkages %}
+                        {{linkage.thresholdValue}} {{linkage.thresholdUnit}}<br/>
+                    {% endfor %}
+                </td>
+                <td class="govuk-table__cell" colspan="2">
+                <table>
+                    {% for linkage in licenceGaugingStation.linkages %}
+                        <tr>
+                            <td>{{ badge({status:[linkage.comstatus]} | gaugingStationBadge(false) ) }}</td>
+                            <td>{{linkage.dateStatusUpdated | date}}</td>
+                        </tr>
+                    {% endfor %}
+                    </table>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+    {% else %}
+        <p class="govuk-body">There are no licences tagged with restrictions for this monitoring station</p>
+    {% endif %}
 
-  <div class="govuk-button-group">
-          {{ govukButton({
-            text: "Tag a licence",
-            href: "/monitoring-stations/" + station.gaugingStationId + "/tagging-licence",
-            classes: "govuk-button--secondary"
-          }) }}
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Tag a licence",
+        href: "/monitoring-stations/" + station.gaugingStationId + "/tagging-licence",
+        classes: "govuk-button--secondary"
+      }) }}
 
-        {% if licenceGaugingStations.length %}
-          {{ govukButton({
-            text: "Remove a tag",
-            href: "monitoring-stations/" + station.gaugingStationId + "/remove-tag",
-            classes: "govuk-button--secondary"
-          }) }}
-        {% endif %}
+    {% if licenceGaugingStations.length %}
+      {{ govukButton({
+        text: "Remove a tag",
+        href: "monitoring-stations/" + station.gaugingStationId + "/remove-tag",
+        classes: "govuk-button--secondary"
+      }) }}
+    {% endif %}
 
 </div>
 

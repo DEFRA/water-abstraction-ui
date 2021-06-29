@@ -3,40 +3,34 @@ const GaugingStationsApiClient = require('shared/lib/connectors/services/water/G
 const {
   experiment,
   test,
-  beforeEach
+  beforeEach,
+  afterEach
 } = exports.lab = require('@hapi/lab').script();
+const sinon = require('sinon');
+const sandbox = sinon.createSandbox();
+
+const { serviceRequest } = require('@envage/water-abstraction-helpers');
+
 const { expect } = require('@hapi/code');
 
 experiment('shared/services/GaugingStationsApiClient', () => {
-  let logger;
-  let config;
   let client;
 
   beforeEach(async () => {
-    logger = {};
-    config = {
-      jwt: {
-        token: 'test-jwt-token'
-      },
-      services: {
-        water: 'https://example.com/water'
-      }
-    };
+    sandbox.stub(serviceRequest, 'get').resolves();
+    sandbox.stub(serviceRequest, 'patch').resolves();
+    sandbox.stub(serviceRequest, 'post').resolves();
 
-    client = new GaugingStationsApiClient(config, logger);
+    client = new GaugingStationsApiClient('https://example.com/api');
   });
 
-  experiment('construction', () => {
-    test('creates the expected endpoint URL', async () => {
-      expect(client.getUrl()).to.equal('https://example.com/water/gaugingStations');
-    });
+  afterEach(async () => sandbox.restore());
 
-    test('sets the JWT in the client headers', async () => {
-      expect(client.config.headers.Authorization).to.equal('test-jwt-token');
-    });
-
-    test('adds the base service URL to the config', async () => {
-      expect(client.config.serviceUrl).to.equal('https://example.com/water');
+  experiment('.getGaugingStationbyId', () => {
+    test('calls the expected URL', async () => {
+      await client.getGaugingStationbyId('ms-id');
+      const [url] = serviceRequest.get.lastCall.args;
+      expect(url).to.equal('https://example.com/api/gauging-stations/ms-id');
     });
   });
 });

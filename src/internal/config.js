@@ -140,6 +140,7 @@ module.exports = {
     manageAgreements: true,
     chargeInformation: true,
     manageInvoiceAccounts: true,
-    deleteAllBillingData: ['local', 'dev', 'development', 'test', 'qa'].includes(process.env.NODE_ENV)
+    deleteAllBillingData: ['local', 'dev', 'development', 'test', 'qa'].includes(process.env.NODE_ENV),
+    waterAbstractionAlerts: false
   }
 };

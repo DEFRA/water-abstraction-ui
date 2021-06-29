@@ -6,6 +6,8 @@ const formHelpers = require('shared/lib/forms');
 const session = require('./lib/session');
 const helpers = require('./lib/helpers');
 
+const { waterAbstractionAlerts: isWaterAbstractionAlertsEnabled } = require('../../config').featureToggles;
+
 /**
  * Main Gauging station page
  * All data is loaded via shared pre-handlers
@@ -21,6 +23,7 @@ const getMonitoringStation = async (request, h) => {
     ...request.view,
     pageTitle: helpers.createTitle(station),
     station,
+    isWaterAbstractionAlertsEnabled,
     licenceGaugingStations: helpers.groupByLicence(data),
     back: '/licences'
   });

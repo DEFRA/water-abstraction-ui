@@ -1,6 +1,6 @@
 const session = require('./session');
 const services = require('../../../lib/connectors/services');
-const { get, omit, set, chain, groupBy, value } = require('lodash');
+const { get, omit, set, chain } = require('lodash');
 
 const redirectTo = (request, h, path) => {
   const { checkStageReached } = session.get(request);

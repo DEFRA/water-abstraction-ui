@@ -9,8 +9,7 @@
       <ul class="govuk-list govuk-!-margin-0">
         {% for station in stations %}
         <li>
-          At National Grid Reference {{ station.gridReference }}
-          <br /><a href="/monitoring-stations/{{ station.gaugingStationId }}/licences">View data from {{ station.label }}</a>
+          <a href="/monitoring-stations/{{ station.gaugingStationId }}">{{ station.label }}</a><br />
         </li>
         {% endfor %}
       </ul>

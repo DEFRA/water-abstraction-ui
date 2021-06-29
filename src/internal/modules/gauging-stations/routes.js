@@ -15,9 +15,14 @@ module.exports = {
     handler: controller.getMonitoringStation,
     config: {
       description: 'Gets summary details about a particular gauging station',
+      validate: {
+        params: Joi.object({
+          gaugingStationId: Joi.string().guid().required()
+        })
+      },
       pre: [
         { method: preHandlers.loadGaugingStation, assign: 'station' },
-        { method: preHandlers.loadGaugingStationLicences, assign: 'gaugingStationLicences' }
+        { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
       ]
     }
   },

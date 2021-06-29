@@ -1,6 +1,6 @@
 const session = require('./session');
 const services = require('../../../lib/connectors/services');
-const { get, omit, set } = require('lodash');
+const { get, omit, set, chain, groupBy, value } = require('lodash');
 
 const redirectTo = (request, h, path) => {
   const { checkStageReached } = session.get(request);
@@ -66,6 +66,33 @@ const deduceRestrictionTypeFromUnit = unit => {
   return 'level';
 };
 
+const createTitle = station =>
+  !station.catchmentName ? `${station.label}` : `${station.label} at ${station.catchmentName}`;
+
+const mapAbstractionPeriods = input => input.map(licence => {
+  return {
+    licenceRef: licence.licenceRef,
+    linkages: licence.linkages.length > 0 ? licence.linkages.map(eachLink => {
+      const abstractionPeriod = {
+        startDay: eachLink.abstractionPeriodStartDay,
+        startMonth: eachLink.abstractionPeriodStartMonth,
+        endDay: eachLink.abstractionPeriodEndDay,
+        endMonth: eachLink.abstractionPeriodEndMonth
+      };
+      return { ...eachLink, abstractionPeriod };
+    }) : []
+  };
+});
+
+const groupByLicence = inputArray => {
+  const output = chain(inputArray).groupBy('licenceRef').map((value, key) => ({
+    licenceRef: key,
+    linkages: value
+  })).value();
+
+  return mapAbstractionPeriods(output);
+};
+
 const handlePost = async request => {
   const { gaugingStationId } = request.params;
   const sessionData = session.get(request);
@@ -106,9 +133,11 @@ const handlePost = async request => {
   return services.water.gaugingStations.postLicenceLinkage(gaugingStationId, licenceId, set(parsedPayload, 'licenceVersionPurposeConditionId', null));
 };
 
+exports.createTitle = createTitle;
 exports.redirectTo = redirectTo;
 exports.isLicenceNumberValid = isLicenceNumberValid;
 exports.fetchConditionsForLicence = fetchConditionsForLicence;
 exports.getCaption = getCaption;
 exports.getSelectedConditionText = getSelectedConditionText;
+exports.groupByLicence = groupByLicence;
 exports.handlePost = handlePost;

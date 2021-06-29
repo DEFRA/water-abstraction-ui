@@ -1,11 +1,11 @@
 'use strict';
 
 const badge = {
-  resume: { status: 'success', text: 'resume' },
-  reduce: { status: 'warning', text: 'reduce' },
-  warning: { status: 'warning', text: 'warning' },
-  stop: { status: 'error', text: 'stop' },
-  empty: { status: 'inactive', text: 'n/a' }
+  resume: { status: 'success', text: 'Resume' },
+  reduce: { status: 'warning', text: 'Reduce' },
+  warning: { status: 'warning', text: 'Warning' },
+  stop: { status: 'error', text: 'Stop' },
+  empty: { status: 'void', text: 'None' }
 };
 
 exports.gaugingStationBadge = (batch, isLarge) => ({

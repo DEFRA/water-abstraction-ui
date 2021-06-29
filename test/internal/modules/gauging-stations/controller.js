@@ -724,7 +724,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
         station: {
           catchmentName: 'some name'
         },
-        gaugingStationLicences: {
+        licenceGaugingStations: {
           data: res
         }
       }

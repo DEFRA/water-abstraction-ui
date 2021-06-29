@@ -96,9 +96,15 @@ formErrorSummary %}
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">Billing account</dt>
             <dd class="govuk-summary-list__value">
-              <a href="/billing-accounts/{{ billingAccount.id }}">
+
+              {% if links.billingAccount %} 
+              <a href="{{ links.billingAccount }}">
+              {% endif %}
                 {{ billingAccount.accountNumber }}
+              {% if links.billingAccount %} 
               </a>
+              {% endif %}
+
               <br>
               {% if billingAccountAddress.contact %}
                 FAO

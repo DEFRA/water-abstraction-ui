@@ -1,0 +1,92 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "badge.njk" import badge %}
+
+{% block pageTitle %}
+  {{pageTitle}} - GOV.UK
+{% endblock %}
+
+{% block content %}
+  <!-- page title -->
+  <div class="govuk-grid-row govuk-!-margin-bottom-6">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-1">
+        <span class="govuk-caption-l">{{catchmentName}}</span>
+        {{pageTitle}}
+      </h1>
+      {% set metaData %}
+        {{ govukSummaryList({
+        classes: 'govuk-summary-list--no-border',
+        rows: [
+          {
+            key: {
+              text: "Grid reference",
+              classes: "meta-data__label"
+            },
+            value: {
+              text: station.gridReference,
+              classes: "meta-data__value"
+            }
+          } if station.gridReference,
+          {
+            key: {
+              text: "Easting",
+              classes: "meta-data__label"
+            },
+            value: {
+              text: station.easting,
+              classes: "meta-data__value"
+            }
+          } if station.easting,
+          {
+            key: {
+              text: "Northing",
+              classes: "meta-data__label"
+            },
+            value: {
+              text: station.northing,
+              classes: "meta-data__value"
+            }
+          } if station.northing,
+          {
+            key: {
+              text: "WISKI ID",
+              classes: "meta-data__label"
+            },
+            value: {
+              text: station.wiskiId,
+              classes: "meta-data__value"
+            }
+          } if station.wiskiId,
+          {
+            key: {
+              text: "Station reference",
+              classes: "meta-data__label"
+            },
+            value: {
+              text: station.stationReference,
+              classes: "meta-data__value"
+            }
+          } if station.stationReference
+        ]
+        }) }}
+      {% endset %}
+
+    {{ govukDetails({
+      summaryText: "Station details",
+      html: metaData
+    }) }}
+
+  </div>
+</div>
+
+
+
+<!--End content block-->
+{% endblock %}

@@ -1,10 +1,13 @@
 const controller = require('../controllers/view-charge-information');
 const preHandlers = require('../pre-handlers');
 const { VALID_GUID } = require('shared/lib/validators');
-const { charging, chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope;
-const allowedScopes = [charging];
-const allowedScopesForApproval = [chargeVersionWorkflowReviewer];
+const { chargeVersionWorkflowReviewer, viewChargeVersions } = require('internal/lib/constants').scope;
 const Joi = require('@hapi/joi');
+
+const allowedScopes = {
+  view: viewChargeVersions,
+  approve: chargeVersionWorkflowReviewer
+};
 
 module.exports = {
   getViewChargeInformation: {
@@ -13,7 +16,7 @@ module.exports = {
     handler: controller.getViewChargeInformation,
     options: {
       auth: {
-        scope: allowedScopes
+        scope: allowedScopes.view
       },
       description: 'Displays charge version information',
       plugins: {
@@ -41,7 +44,7 @@ module.exports = {
     handler: controller.getReviewChargeInformation,
     options: {
       auth: {
-        scope: allowedScopes
+        scope: allowedScopes.approve
       },
       description: 'Displays charge version information for review',
       plugins: {
@@ -75,7 +78,7 @@ module.exports = {
     handler: controller.postReviewChargeInformation,
     options: {
       auth: {
-        scope: allowedScopesForApproval
+        scope: allowedScopes.approve
       },
       description: 'Handles the charge version information review',
       plugins: {

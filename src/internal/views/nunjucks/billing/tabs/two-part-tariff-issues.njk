@@ -1,0 +1,13 @@
+<section class="govuk-!-margin-bottom-9">
+  <h2 class="govuk-heading-l" id="issuesTitle">
+    {% if totals.errors == 1 %}
+      1 licence has data issues 
+    {% else %}
+      {{ totals.errors }} licences have data issues
+    {% endif %}
+  </h2>
+  <div class="table govuk-!-margin-bottom-6" id="dataIssues">
+    {{ twoPartTariffLicencesTable(licences, true )}}
+  </div>
+</section>
+

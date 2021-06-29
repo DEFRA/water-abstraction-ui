@@ -15,7 +15,7 @@ const helpers = require('./lib/helpers');
 
 const getMonitoringStation = async (request, h) => {
   const { licenceGaugingStations, station } = request.pre;
-  let { data } = licenceGaugingStations;
+  const { data } = licenceGaugingStations;
 
   return h.view('nunjucks/gauging-stations/gauging-station', {
     ...request.view,

@@ -1,21 +1,11 @@
 
-/* eslint-disable no-undef */
-/**
- * helper method to test the error messages of a form
- * @param {*} message error message expected on the form
- */
+const { setUp, tearDown } = require('../../support/setup');
 const checkErrorMessage = (message) => {
   describe('it sees the correct error message', () => {
     cy.get('.govuk-list > li > a').should('have.text', message);
   });
 };
-const { contain } = require('@hapi/hoek');
-const { describe } = require('mocha');
-const { setUp, tearDown } = require('../../support/setup');
 
-/**
- * submit meter readings for the rturn
- */
 describe('submit a return metered readings return as an external user', () => {
   beforeEach(() => {
     tearDown();

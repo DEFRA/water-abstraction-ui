@@ -19,7 +19,7 @@ const form = {
   },
   paragraph: {
     name: '',
-    text: 'The licence holder is responsible for the data you are sending.'
+    text: 'The licence holder is responsible for the data You\'re sending.'
   },
   button: {
     name: null,

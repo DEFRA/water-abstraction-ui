@@ -33,6 +33,6 @@ describe('User Login and Log out', () => {
     cy.get('#signout').click();
 
     //  assert the signout
-    cy.contains('You are signed out').should('be.visible');
+    cy.contains(`You're signed out`).should('be.visible');
   });
 });

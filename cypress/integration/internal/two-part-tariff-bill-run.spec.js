@@ -68,7 +68,7 @@ describe('two-part-tariff bill run', () => {
 
       describe('user genrates the bill', () => {
         cy.url().should('contain', '/billing/batch/');
-        cy.get('.govuk-heading-l', { timeout: 20000 }).contains('You are about to generate the two-part tariff bills');
+        cy.get('.govuk-heading-l', { timeout: 20000 }).contains('You\'re about to generate the two-part tariff bills');
         cy.get('.govuk-button').contains('Confirm').click();
       });
 

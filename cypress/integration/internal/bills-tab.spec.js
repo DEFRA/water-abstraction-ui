@@ -32,7 +32,7 @@ describe('non-charging user unable to view bills tab', () => {
     });
   });
   it('sees the licence tabs and the bills tab is not shown', () => {
-    cy.get('ul.govuk-tabs__list').children().should('have.length', '3');
+    cy.get('ul.govuk-tabs__list').children().should('have.length', '4');
     cy.get('#tab_summary').should('have.text', 'Summary');
     cy.get('#tab_returns').should('have.text', 'Returns');
     cy.get('#tab_communications').should('have.text', 'Communications');

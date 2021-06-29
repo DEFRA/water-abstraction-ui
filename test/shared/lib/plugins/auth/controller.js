@@ -111,7 +111,7 @@ experiment('Auth plugin controller', () => {
       test('outputs correct data to the view', async () => {
         const [, view] = h.view.lastCall.args;
         expect(view.surveyType).to.equal('anonymous');
-        expect(view.pageTitle).to.equal('You are signed out');
+        expect(view.pageTitle).to.equal('You\'re signed out');
       });
     });
 

@@ -33,7 +33,7 @@ experiment('shared/services/GaugingStationsApiClient', () => {
       expect(url).to.equal('https://example.com/api/gauging-stations');
     });
   });
-
+  
   experiment('.getGaugingStationbyId', () => {
     test('calls the expected URL', async () => {
       await client.getGaugingStationbyId('ms-id');

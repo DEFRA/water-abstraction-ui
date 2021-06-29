@@ -5,10 +5,15 @@ class GaugingStationsService extends ServiceClient {
     const url = this.joinUrl('gauging-stations');
     return this.serviceRequest.get(url, options);
   }
-
+  
   getGaugingStationbyId (stationId, options = {}) {
     const url = this.joinUrl('gauging-stations', stationId);
     return this.serviceRequest.get(url, options);
+  }
+
+  getGaugingStationLicences (stationId) {
+    const url = this.joinUrl('gauging-stations', stationId, 'licences');
+    return this.serviceRequest.get(url);
   }
 
   postLicenceLinkage (stationId, licenceId, payload = {

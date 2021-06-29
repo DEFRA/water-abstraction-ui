@@ -153,7 +153,7 @@ const getRemoveLicence = async (request, h) => {
     ...request.view,
     ...request.pre,
     form,
-    pageTitle: `You are about to remove this licence from the bill run`,
+    pageTitle: `You're about to remove this licence from the bill run`,
     back: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}`
   });
 };
@@ -182,7 +182,7 @@ const getApproveReview = (request, h) => {
     ...request.view,
     batch,
     form,
-    pageTitle: 'You are about to generate the two-part tariff bills',
+    pageTitle: 'You\'re about to generate the two-part tariff bills',
     back: `/billing/batch/${batch.id}/two-part-tariff-ready`
   });
 };

@@ -11,6 +11,27 @@ const returnsMapper = require('../../lib/mappers/returns');
 
 const getDocumentId = doc => doc.document_id;
 
+const getIsLicenceChargeVersionsEditingEnabled = licence =>
+  licence.endDate === null || moment(licence.endDate).isAfter(moment().subtract(6, 'years'));
+
+const getPermissions = request => {
+  const isLicenceChargeInformationEditable = getIsLicenceChargeVersionsEditingEnabled(request.pre.licence);
+  return {
+    billing: hasScope(request, scope.billing),
+    editChargeVersions: isLicenceChargeInformationEditable && hasScope(request, scope.chargeVersionWorkflowEditor),
+    reviewChargeVersions: isLicenceChargeInformationEditable && hasScope(request, scope.chargeVersionWorkflowReviewer),
+    manageAgreements: isLicenceChargeInformationEditable && hasScope(request, scope.manageAgreements)
+  };
+};
+
+const getLinks = ({ licenceId, documentId }, permissions) => ({
+  returns: `/licences/${documentId}/returns`,
+  bills: permissions.billing && `/licences/${licenceId}/bills`,
+  setupCharge: permissions.editChargeVersions && `/licences/${licenceId}/charge-information/create`,
+  makeNonChargeable: permissions.editChargeVersions && `/licences/${licenceId}/charge-information/non-chargeable-reason?start=1`,
+  addAgreement: permissions.manageAgreements && `/licences/${licenceId}/agreements/select-type`
+});
+
 /**
  * Main licence summary page
  * All data is loaded via shared pre-handlers
@@ -19,36 +40,38 @@ const getDocumentId = doc => doc.document_id;
  */
 const getLicenceSummary = async (request, h) => {
   const { licenceId } = request.params;
-  const { agreements, chargeVersions, chargeVersionWorkflows, licence, returns, document } = request.pre;
+  const { agreements, licence, returns, document } = request.pre;
 
-  // Get CRM v1 doc ID
   const documentId = getDocumentId(document);
 
-  const view = {
+  const permissions = getPermissions(request);
+
+  const chargeVersions = mappers.mapChargeVersions(
+    request.pre.chargeVersions,
+    request.pre.chargeVersionWorkflows,
+    {
+      licenceId,
+      ...permissions
+    }
+  );
+
+  return h.view('nunjucks/view-licences/licence.njk', {
     ...request.view,
     pageTitle: `Licence ${licence.licenceNumber}`,
     featureToggles,
     licenceId,
     documentId,
     ...pick(request.pre, ['licence', 'bills', 'notifications', 'primaryUser', 'summary']),
-    chargeVersions: mappers.mapChargeVersions(chargeVersions, chargeVersionWorkflows),
-    createChargeVersions: moment(licence.endDate).isAfter(moment().subtract(6, 'years')) || licence.endDate === null,
-    agreements: mappers.mapLicenceAgreements(agreements),
+    chargeVersions,
+    agreements: mappers.mapLicenceAgreements(agreements, { licenceId, ...permissions }),
     returns: {
       pagination: returns.pagination,
       data: returnsMapper.mapReturns(returns.data, request)
     },
-    links: {
-      bills: `/licences/${licenceId}/bills`,
-      returns: `/licences/${documentId}/returns`,
-      addAgreement: `/licences/${licenceId}/agreements/select-type`
-    },
-    isChargingUser: hasScope(request, scope.charging),
+    links: getLinks({ licenceId, documentId }, permissions),
     validityMessage: mappers.getValidityNotice(licence),
     back: '/licences'
-  };
-
-  return h.view('nunjucks/view-licences/licence.njk', view);
+  });
 };
 
 /**

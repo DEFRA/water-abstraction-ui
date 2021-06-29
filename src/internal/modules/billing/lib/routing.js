@@ -27,9 +27,8 @@ const getBillingBatchRoute = (batch, opts = {}) => {
   return routeMap.get(batch.status);
 };
 
-const getTwoPartTariffLicenceReviewRoute = (batch, invoiceLicenceId, action) => {
-  const urlTail = action === 'ready' ? 'view' : 'review';
-  return `/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicenceId}/${urlTail}`;
-};
+const getTwoPartTariffLicenceReviewRoute = (batch, invoiceLicenceId) =>
+  `/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicenceId}`;
+
 exports.getBillingBatchRoute = getBillingBatchRoute;
 exports.getTwoPartTariffLicenceReviewRoute = getTwoPartTariffLicenceReviewRoute;

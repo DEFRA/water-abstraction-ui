@@ -42,6 +42,6 @@ describe('View Licences as external user', () => {
     //  Click Sign out Button
     cy.get('#signout').click();
     //  assert the signout
-    cy.contains('You are signed out');
+    cy.contains('You\'re signed out');
   });
 });

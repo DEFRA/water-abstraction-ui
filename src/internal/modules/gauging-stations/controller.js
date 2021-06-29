@@ -1,7 +1,13 @@
 'use strict';
 
-const mappers = require('./lib/mappers');
-const Joi = require('@hapi/joi');
+const linkageForms = require('./forms');
+const formHandler = require('shared/lib/form-handler');
+const formHelpers = require('shared/lib/forms');
+const session = require('./lib/session');
+const helpers = require('./lib/helpers');
+
+const { waterAbstractionAlerts: isWaterAbstractionAlertsEnabled } = require('../../config').featureToggles;
+
 /**
  * Main Gauging station page
  * All data is loaded via shared pre-handlers
@@ -10,44 +16,18 @@ const Joi = require('@hapi/joi');
  */
 
 const getMonitoringStation = async (request, h) => {
-  const { gaugingStationLicences, station } = request.pre;
-  let { data } = gaugingStationLicences;
-
-  const payloadSchema = {
-    gaugingStationId: Joi.string().guid().required()
-  };
-  const joiOptions = {
-    allowUnknown: true
-  };
-  const { error } = Joi.validate(request.params, payloadSchema, joiOptions);
-  if (error) {
-    data = [];
-  }
-  const newData = mappers.mapStationsLicences(data);
-  let tags = {};
-
-  /* Format data for stations, tags */
-  if (newData.stations) {
-    newData.stations = mappers.mapStations(newData);
-  }
-  if (newData.stations) {
-    tags = mappers.mapTags(newData);
-  }
+  const { licenceGaugingStations, station } = request.pre;
+  const { data } = licenceGaugingStations;
 
   return h.view('nunjucks/gauging-stations/gauging-station', {
     ...request.view,
-    pageTitle: mappers.createTitle(station),
-    tags: tags,
+    pageTitle: helpers.createTitle(station),
     station,
+    isWaterAbstractionAlertsEnabled,
+    licenceGaugingStations: helpers.groupByLicence(data),
     back: '/licences'
   });
 };
-
-const linkageForms = require('./forms');
-const formHandler = require('shared/lib/form-handler');
-const formHelpers = require('shared/lib/forms');
-const session = require('./lib/session');
-const helpers = require('./lib/helpers');
 
 const getNewFlow = (request, h) => h.redirect(`${request.path}/threshold-and-unit`);
 

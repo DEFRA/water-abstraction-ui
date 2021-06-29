@@ -17,7 +17,7 @@
   <div class="govuk-grid-row govuk-!-margin-bottom-6">
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-l govuk-!-margin-bottom-1">
-        <span class="govuk-caption-l">{{catchmentName}}</span>
+        <span class="govuk-caption-l">{{station.catchmentName}}</span>
         {{pageTitle}}
       </h1>
       {% set metaData %}
@@ -92,7 +92,7 @@
     <div class="govuk-grid-column-full">
       {{ govukButton({
     text: "Create a water abstraction alert",
-    href: "licence-notices/send-a-water-abstraction-alert/select-the-type-of-alert?stationID=" + gaugingStationId
+    href: "licence-notices/send-a-water-abstraction-alert/select-the-type-of-alert?stationID=" + station.gaugingStationId
   }) }}
     </div>
   </div>
@@ -149,7 +149,7 @@
                   <!--loop through conditions for that licence-->
                   {% for tag in licenceTags %}
                     {{tag.conditionType |capitalize}}<br>
-                    {{tag.comstatus}}<br>          
+                    {{tag.comstatus}}<br>
                   {% endfor %}
                 </td>
                 <td class="govuk-table__cell govuk-table__cell--numeric">
@@ -192,19 +192,19 @@
 
         {% if not tags.length %}
           <p class="govuk-body">There are no licences tagged with restrictions for this monitoring station</p>
-        {% endif %}  
+        {% endif %}
 
         <div class="govuk-button-group">
           {{ govukButton({
             text: "Tag a licence",
-            href: "/monitoring-stations/" + gaugingStationId + "/tagging-licence",
+            href: "/monitoring-stations/" + station.gaugingStationId + "/tagging-licence",
             classes: "govuk-button--secondary"
           }) }}
 
         {% if tags.length %}
           {{ govukButton({
             text: "Remove a tag",
-            href: "monitoring-stations/" + gaugingStationId + "/remove-tag",
+            href: "monitoring-stations/" + station.gaugingStationId + "/remove-tag",
             classes: "govuk-button--secondary"
           }) }}
         {% endif %}

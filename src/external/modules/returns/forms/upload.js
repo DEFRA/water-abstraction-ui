@@ -11,7 +11,7 @@ const form = (request) => {
       accept: '.xml,.csv'
     }
   }));
-  f.fields.push(fields.paragraph('', { text: 'The licence holder is responsible for the data you are sending.' }));
+  f.fields.push(fields.paragraph('', { text: 'The licence holder is responsible for the data you\'re sending.' }));
   f.fields.push(fields.button(null, { label: 'Upload' }));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
 

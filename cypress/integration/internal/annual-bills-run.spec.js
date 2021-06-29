@@ -53,7 +53,7 @@ describe('annual bill run', () => {
         cy.url().should('contain', '/summary');
         cy.get('#tab_other-abstractors').click();
         cy.get('div.govuk-grid-column-two-thirds').eq(3).children(0).contains('Confirm bill run').click();
-        cy.get('.govuk-heading-l').should('contain', 'You are about to send this bill run');
+        cy.get('.govuk-heading-l').should('contain', 'You\'re about to send this bill run');
         cy.get('button.govuk-button').click();
         cy.get('.govuk-panel__title', { timeout: 20000 }).contains('Bill run sent');
         cy.get('div.govuk-grid-column-two-thirds').eq(1).children(3).contains('Go to bill run').click();

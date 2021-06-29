@@ -1,6 +1,11 @@
 const ServiceClient = require('../ServiceClient');
 
 class GaugingStationsService extends ServiceClient {
+  getAllGaugingStations (options = {}) {
+    const url = this.joinUrl('gauging-stations');
+    return this.serviceRequest.get(url, options);
+  }
+
   getGaugingStationbyId (stationId, options = {}) {
     const url = this.joinUrl('gauging-stations', stationId);
     return this.serviceRequest.get(url, options);

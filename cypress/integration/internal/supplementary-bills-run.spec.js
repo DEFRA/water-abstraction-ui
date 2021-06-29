@@ -58,7 +58,7 @@ describe('supplementary bill run', () => {
       });
 
       describe('send the bill run', () => {
-        cy.get('.govuk-heading-l').contains('You are about to send this bill run');
+        cy.get('.govuk-heading-l').contains('You\'re about to send this bill run');
         cy.get('button.govuk-button').contains('Send bill run').click();
       });
 

@@ -10,8 +10,8 @@ const getRadioField = suffix => fields.radio('isSingleTotal', {
   mapper: 'booleanMapper',
   errors: {
     'any.required': {
-      summary: 'Select if you are reporting a single amount or not',
-      message: 'Select if you are reporting a single amount'
+      summary: `Select if you're reporting a single amount or not`,
+      message: `Select if you're reporting a single amount`
     }
   },
   choices: [

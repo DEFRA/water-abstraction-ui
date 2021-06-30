@@ -1,7 +1,5 @@
 'use strict';
 
-require('dotenv').config();
-
 const jwtEncode = require('jsonwebtoken');
 const { throttle } = require('lodash');
 

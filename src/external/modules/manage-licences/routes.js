@@ -54,7 +54,7 @@ module.exports = {
       plugins: {
         viewContext: {
           activeNavLink: 'manage',
-          pageTitle: 'You are about to remove access'
+          pageTitle: 'You\'re about to remove access'
         }
       }
     }

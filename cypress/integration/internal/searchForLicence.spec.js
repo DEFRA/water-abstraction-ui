@@ -35,6 +35,6 @@ describe('search for licences as internal user', () => {
     cy.get('#signout').click();
 
     //  assert the signout
-    cy.contains('You are signed out');
+    cy.contains('You\'re signed out');
   });
 });

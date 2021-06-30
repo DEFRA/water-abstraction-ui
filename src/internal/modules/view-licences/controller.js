@@ -40,9 +40,10 @@ const getLinks = ({ licenceId, documentId }, permissions) => ({
  */
 const getLicenceSummary = async (request, h) => {
   const { licenceId } = request.params;
-  const { agreements, licence, returns, document } = request.pre;
+  const { agreements, licence, returns, document, gaugingstationsdata } = request.pre;
 
   const documentId = getDocumentId(document);
+  const gaugingStations = { stations: !gaugingstationsdata ? [] : gaugingstationsdata.data };
 
   const permissions = getPermissions(request);
 
@@ -62,6 +63,7 @@ const getLicenceSummary = async (request, h) => {
     licenceId,
     documentId,
     ...pick(request.pre, ['licence', 'bills', 'notifications', 'primaryUser', 'summary']),
+    gaugingstations: gaugingStations,
     chargeVersions,
     agreements: mappers.mapLicenceAgreements(agreements, { licenceId, ...permissions }),
     returns: {

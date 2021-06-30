@@ -3,18 +3,31 @@
 {% if stations.length %}
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
-      Gauging {{ 'station' | pluralize(stations) }}
+      Monitoring {{ 'station' | pluralize(stations) }}
     </dt>
     <dd class="govuk-summary-list__value">
       <ul class="govuk-list govuk-!-margin-0">
         {% for station in stations %}
         <li>
-          At National Grid Reference {{ station.gridReference }}
-          <br /><a href="{{ baseUrl }}/station/{{ station.stationReference }}">View data from {{ station.name }}</a>
+          <a href="/monitoring-stations/{{ station.gaugingStationId }}">{{ station.label }}</a><br />
         </li>
         {% endfor %}
       </ul>
     </dd>
   </div>
 {% endif %}
+
+{% if stations.length <= 0 %}
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Monitoring {{ 'station' | pluralize(stations) }}
+    </dt>
+    <dd class="govuk-summary-list__value">
+
+    This licence is not tagged with a station<br/>
+    <a href="{{ baseUrl }}/licences?query=Monitoring+stations">Search for a monitoring station and tag this licence</a>
+        </dd>
+      </div>
+{% endif %}
+
 {% endmacro %}

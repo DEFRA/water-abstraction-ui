@@ -6,6 +6,8 @@ const { withQueryStringSubset } = require('./lib/url');
 
 module.exports = {
 
+  baseUrl: process.env.BASE_URL,
+
   blankie: {
     frameSrc: ['self', 'www.smartsurvey.co.uk'],
     scriptSrc: ['self', '*.google-analytics.com'],

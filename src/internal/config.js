@@ -10,6 +10,8 @@ const { internal } = require('./lib/constants').scope;
 
 module.exports = {
 
+  baseUrl: process.env.ADMIN_BASE_URL,
+
   blankie: {
     frameSrc: ['self', 'www.smartsurvey.co.uk'],
     scriptSrc: ['self', '*.google-analytics.com'],

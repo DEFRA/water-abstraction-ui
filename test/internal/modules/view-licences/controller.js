@@ -56,7 +56,7 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
           licenceId
         },
         pre: {
-          gaugingstationsdata: { data: { stations: [] } },
+          gaugingStations: { data: [] },
           licence: {
             id: licenceId,
             licenceNumber: '01/123',
@@ -148,9 +148,8 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
     });
 
     test('maps the gauging stations', async () => {
-      const [, { gaugingstations }] = h.view.lastCall.args;
-      expect(gaugingstations.stations).to.be.an.object();
-      expect(gaugingstations.stations).to.equal({ stations: [] });
+      const [, { gaugingStationsData }] = h.view.lastCall.args;
+      expect(gaugingStationsData).to.equal([]);
     });
 
     test('includes the licence, bills, notifications, primaryUser and summary from request.pre', async () => {

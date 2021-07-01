@@ -1,4 +1,5 @@
 const controller = require('./controller');
+const { baseUrl } = require('../../config');
 
 module.exports = {
 
@@ -14,7 +15,8 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Accessibility statement for Manage your water abstraction or impoundment licence online',
-          back: '/licences'
+          back: '/licences',
+          baseUrl
         },
         config: {
           view: 'nunjucks/content/accessibility'

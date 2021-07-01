@@ -1,5 +1,4 @@
 {% macro gaugingStations(stations, baseUrl) %}
-
 {% if stations.length %}
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
@@ -23,11 +22,10 @@
       Monitoring {{ 'station' | pluralize(stations) }}
     </dt>
     <dd class="govuk-summary-list__value">
-
-    This licence is not tagged with a station<br/>
-    <a href="{{ baseUrl }}/licences?query=Monitoring+stations">Search for a monitoring station and tag this licence</a>
-        </dd>
-      </div>
+        This licence is not tagged with a station<br/>
+        <a href="/licences">Search for a monitoring station and tag this licence</a>
+    </dd>
+  </div>
 {% endif %}
 
 {% endmacro %}

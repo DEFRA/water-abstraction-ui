@@ -1,6 +1,6 @@
 'use strict';
 
-const { pick } = require('lodash');
+const { pick, uniqWith, isEqual } = require('lodash');
 const moment = require('moment');
 
 const mappers = require('./lib/mappers');
@@ -40,10 +40,9 @@ const getLinks = ({ licenceId, documentId }, permissions) => ({
  */
 const getLicenceSummary = async (request, h) => {
   const { licenceId } = request.params;
-  const { agreements, licence, returns, document, gaugingstationsdata } = request.pre;
-
+  const { agreements, licence, returns, document, gaugingStations } = request.pre;
+  const { data: gaugingStationsData } = gaugingStations;
   const documentId = getDocumentId(document);
-  const gaugingStations = { stations: !gaugingstationsdata ? [] : gaugingstationsdata.data };
 
   const permissions = getPermissions(request);
 
@@ -63,7 +62,7 @@ const getLicenceSummary = async (request, h) => {
     licenceId,
     documentId,
     ...pick(request.pre, ['licence', 'bills', 'notifications', 'primaryUser', 'summary']),
-    gaugingstations: gaugingStations,
+    gaugingStationsData: uniqWith(gaugingStationsData, isEqual),
     chargeVersions,
     agreements: mappers.mapLicenceAgreements(agreements, { licenceId, ...permissions }),
     returns: {

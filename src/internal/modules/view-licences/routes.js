@@ -56,7 +56,7 @@ module.exports = {
           {
             method: preHandlers.loadSummary, assign: 'summary'
           }, {
-            method: preHandlersGS.loadGaugingStationsByLicenceId, assign: 'gaugingstationsdata'
+            method: preHandlersGS.loadGaugingStationsByLicenceId, assign: 'gaugingStations'
           }
 
         ]

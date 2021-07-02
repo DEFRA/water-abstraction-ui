@@ -116,7 +116,7 @@ const postLicenceNumber = async (request, h) => {
   if (!request.pre.isLicenceNumberValid) {
     const formWithErrors = formHelpers.applyErrors(form, [{
       name: 'licenceNumber',
-      message: 'Licence could not be found',
+      message: 'No licences in the service match the number you entered. Check the licence number and enter again.',
       summary: 'Licence could not be found'
     }]);
     return h.postRedirectGet(formWithErrors);
@@ -193,11 +193,18 @@ const getCheckYourAnswers = async (request, h) => {
   const caption = await helpers.getCaption(request);
   const { path } = request;
 
-  session.merge(request, {
+  const sessionData = session.merge(request, {
     checkStageReached: true
   });
 
   const selectedConditionText = helpers.getSelectedConditionText(request);
+
+  const abstractionPeriodData = selectedConditionText && sessionData.startDate ? {
+    startDay: sessionData.startDate.value.split('-').reverse()[0],
+    startMonth: sessionData.startDate.value.split('-').reverse()[1],
+    endDay: sessionData.endDate.value.split('-').reverse()[0],
+    endMonth: sessionData.endDate.value.split('-').reverse()[1]
+  } : {};
 
   return h.view('nunjucks/gauging-stations/new-tag-check', {
     ...request.view,
@@ -205,8 +212,9 @@ const getCheckYourAnswers = async (request, h) => {
     pageTitle,
     back: path.replace(/\/[^/]*$/, '/condition'),
     form: formHandler.handleFormRequest(request, linkageForms.checkYourAnswers),
-    sessionData: session.get(request),
-    selectedConditionText
+    sessionData,
+    selectedConditionText,
+    abstractionPeriodData
   });
 };
 

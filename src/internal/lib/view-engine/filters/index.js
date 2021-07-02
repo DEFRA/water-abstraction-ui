@@ -3,7 +3,6 @@ module.exports = {
   ...require('./most-significant-entity-role'),
   ...require('shared/view/nunjucks/filters/abstraction-period'),
   ...require('shared/view/nunjucks/filters/batch-badge'),
-  ...require('shared/view/nunjucks/filters/gauging-station-badge'),
   ...require('shared/view/nunjucks/filters/charge-element-abstraction-period'),
   ...require('shared/view/nunjucks/filters/charge-version-badge'),
   ...require('shared/view/nunjucks/filters/charge'),

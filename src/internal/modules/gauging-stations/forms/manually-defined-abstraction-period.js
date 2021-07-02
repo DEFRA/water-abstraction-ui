@@ -9,10 +9,10 @@ const errors = {
     message: 'Enter a start and end date for the abstraction period'
   },
   invalidStart: {
-    message: 'Enter a real start date'
+    message: 'Enter the abstraction period start date'
   },
   invalidEnd: {
-    message: 'Enter a real end date'
+    message: 'Enter the abstraction period end date'
   }
 };
 

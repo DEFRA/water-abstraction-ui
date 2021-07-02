@@ -12,11 +12,8 @@ const thresholdAndUnitForm = request => {
     label: 'Threshold',
     controlClass: 'govuk-input govuk-input--width-10',
     errors: {
-      'any.empty': {
-        message: 'Enter a valid threshold'
-      },
-      'any.required': {
-        message: 'Enter a valid threshold'
+      'number.base': {
+        message: 'Enter a number in digits and no other characters other than a decimal point'
       }
     }
   }, defaultThreshold));
@@ -27,18 +24,21 @@ const thresholdAndUnitForm = request => {
     label: 'Unit of measurement',
     errors: {
       'any.empty': {
-        message: 'Select a valid unit'
+        message: 'Select a unit of measurement'
       },
       'any.required': {
-        message: 'Select a valid unit'
+        message: 'Select a unit of measurement'
       }
     },
-    choices: validUnits.map(n => {
+    choices: [{
+      value: null,
+      label: 'Select an option'
+    }, ...validUnits.map(n => {
       return {
         value: n,
         label: n
       };
-    })
+    })]
   }, defaultUnit));
 
   f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));

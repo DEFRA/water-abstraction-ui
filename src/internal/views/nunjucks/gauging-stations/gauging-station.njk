@@ -92,7 +92,7 @@
         <div class="govuk-grid-column-full">
           {{ govukButton({
         text: "Create a water abstraction alert",
-        href: "tagging-licence"
+        href: "send-alert"
       }) }}
         </div>
       </div>
@@ -117,7 +117,9 @@
             {% for licenceGaugingStation in licenceGaugingStations %}
                 <tr class="govuk-table__row">
                     <td class="govuk-table__cell">
-                        {{licenceGaugingStation.licenceRef}}
+                        <a href="/licences/{{licenceGaugingStation.licenceId}}">
+                            {{licenceGaugingStation.licenceRef}}
+                        </a>
                     </td>
                     <td class="govuk-table__cell">
                         {% for linkage in licenceGaugingStation.linkages %}
@@ -125,25 +127,32 @@
                             <br/>
                         {% endfor %}
                     </td>
-                    <td class="govuk-table__cell">
+                    <td class="govuk-table__cell" colspan="1" >
                         {% for linkage in licenceGaugingStation.linkages %}
-                            {{linkage.restrictionType | capitalize}}<br/>
+                            {{ linkage.alertType | titleCase }}<br/>
                         {% endfor %}
                     </td>
+
                     <td class="govuk-table__cell" colspan="2">
-                        {% for linkage in licenceGaugingStation.linkages %}
-                            {{linkage.thresholdValue}} {{linkage.thresholdUnit}}<br/>
-                        {% endfor %}
+                        <table>
+                            {% for linkage in licenceGaugingStation.linkages %}
+                                <tr>
+                                    <td  class="govuk-table__cell--numeric">{{ linkage.thresholdValue }}</td>
+                                    <td>{{ linkage.thresholdUnit }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
                     </td>
+
                     <td class="govuk-table__cell" colspan="2">
                     <table>
                         {% for linkage in licenceGaugingStation.linkages %}
                             <tr>
-                                <td>{{ badge({status:[linkage.comstatus]} | gaugingStationBadge(false) ) }}</td>
-                                <td>{{linkage.dateStatusUpdated | date}}</td>
+                                <td>{{ linkage.comstatus | titleCase }}</td>
+                                <td style="padding-left: 1em;">{{ linkage.dateStatusUpdated | date if linkage.dateStatusUpdated else 'Not set'}}</td>
                             </tr>
                         {% endfor %}
-                        </table>
+                    </table>
                     </td>
                 </tr>
             {% endfor %}

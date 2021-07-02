@@ -12,7 +12,7 @@ const alertTypeForm = request => {
   f.fields.push(fields.radio('alertType', {
     errors: {
       'any.required': {
-        message: 'Select an alert type'
+        message: 'Select if the licence holder needs to stop or reduce'
       }
     },
     choices: [{
@@ -26,7 +26,7 @@ const alertTypeForm = request => {
         hint: 'For example, you must not exceed 4000Ml in total from the start of your abstraction period.',
         errors: {
           'any.required': {
-            message: 'Specify whether the licence holder needs to stop abstraction when they have reached a certain amount.'
+            message: 'Select if the licence holder needs to stop abstraction when they reach a certain amount'
           }
         },
         choices: [{

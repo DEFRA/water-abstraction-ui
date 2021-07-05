@@ -242,6 +242,62 @@ const getFlowComplete = (request, h) => {
   });
 };
 
+const getCheckRemoveTag = async (request, h) => {
+  const pageTitle = 'Which licence do you want to remove a tag from?';
+  const caption = await helpers.getCaption(request);
+  const { licenceGaugingStations } = request.pre;
+  const { data } = licenceGaugingStations;
+
+  session.merge(request, {
+    checkStageReached: true,
+    licenceGaugingStations: data
+  });
+  return h.view('nunjucks/gauging-stations/remove-tag-check', {
+    ...request.view,
+    caption,
+    pageTitle,
+    form: formHandler.handleFormRequest(request, linkageForms.removeTagComplete),
+    sessionData: session.get(request)
+  });
+};
+const getRemoveTagComplete = async (request, h) => {
+  const pageTitle = 'You are about to remove tags from this licence';
+  const caption = await helpers.getCaption(request);
+  const { licenceGaugingStations } = request.pre;
+  const { data } = licenceGaugingStations;
+
+  session.merge(request, {
+    checkStageReached: true,
+    licenceGaugingStations: data
+  });
+
+  return h.view('nunjucks/gauging-stations/remove-tag-complete', {
+    ...request.view,
+    caption,
+    pageTitle,
+    form: formHandler.handleFormRequest(request, linkageForms.removeTagComplete),
+    sessionData: session.get(request)
+  });
+};
+
+const postRemoveTag = async (request, h) => {
+  const form = await formHandler.handleFormRequest(request, linkageForms.removeTagComplete);
+
+  if (!form.isValid) {
+    return h.postRedirectGet(form);
+  }
+  return h.redirect(request.path.replace(/\/[^/]*$/, '/remove-tag-complete'));
+};
+
+const postRemoveTagComplete = async (request, h) => {
+  const form = await formHandler.handleFormRequest(request, linkageForms.removeTagComplete);
+
+  if (!form.isValid) {
+    return h.postRedirectGet(form);
+  }
+  return h.redirect(request.path.replace(/\/tagging-licence\/[^/]*$/, '/'));
+};
+
 exports.getNewFlow = getNewFlow;
 exports.getThresholdAndUnit = getThresholdAndUnit;
 exports.postThresholdAndUnit = postThresholdAndUnit;
@@ -257,3 +313,7 @@ exports.getCheckYourAnswers = getCheckYourAnswers;
 exports.postCheckYourAnswers = postCheckYourAnswers;
 exports.getFlowComplete = getFlowComplete;
 exports.getMonitoringStation = getMonitoringStation;
+exports.getCheckRemoveTag = getCheckRemoveTag;
+exports.getRemoveTagComplete = getRemoveTagComplete;
+exports.postRemoveTag = postRemoveTag;
+exports.postRemoveTagComplete = postRemoveTagComplete;

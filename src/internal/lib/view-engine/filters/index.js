@@ -33,5 +33,7 @@ module.exports = {
   ...require('shared/view/nunjucks/filters/title-case'),
   ...require('shared/view/nunjucks/filters/unit-conversion'),
   ...require('shared/view/nunjucks/filters/units'),
-  ...require('shared/view/nunjucks/filters/html-decode')
+  ...require('shared/view/nunjucks/filters/html-decode'),
+  ...require('shared/view/nunjucks/filters/is-duplicate')
+
 };

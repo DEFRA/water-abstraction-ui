@@ -1,0 +1,69 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "forms/index.njk" import formRender, formErrorSummary %}
+{% from "title.njk" import title %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+
+    {{ formErrorSummary(form) }}
+
+    <div class="govuk-grid-column-full">
+
+      <div class="govuk-radios">
+
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">
+            <span class="govuk-caption-l">{{sessionData.station.label}}</span>{{pageTitle}}
+          </h1>
+      </legend>
+
+      {% set lastLicenceRef = '' %}
+      {% for licence in sessionData.licenceGaugingStations %}
+        {% if lastLicenceRef != licence.licenceRef %}
+
+        <div class="govuk-radios__item">
+          <input class="govuk-radios__input" id="selectedLicence" name="selectedLicence" type="radio" value="{{ licence.licenceRef}}" aria-describedby="selectedLicence-item-hint">
+            <label class="govuk-label govuk-radios__label" for="selectedLicence">
+              {{ licence.licenceRef}}
+            </label>
+ 
+          <div id="selectedLicence-item-hint" class="govuk-hint govuk-radios__hint">
+          {% set htmlTags = '' %}
+
+          {% for tag in sessionData.licenceGaugingStations %}
+
+             {% if tag.licenceRef == licence.licenceRef %}
+
+               {% set multiple = (tag.licenceRef | isDuplicate(sessionData.licenceGaugingStations)) %}
+               {% if multiple == 1 %}
+                 {% set htmlTags = 'Multiple tags' %}
+               {% else %}
+                  {{ tag.restrictionType }} at {{tag.thresholdValue}} {{tag.thresholdUnit}}<br>
+               {% endif %}
+
+             {% endif %}
+          {% endfor %}
+          
+          {{htmlTags}}
+          
+          </div>
+            
+        </div>
+        {% endif %}
+
+      {% set lastLicenceRef = licence.licenceRef %}
+      {% endfor %}
+      </div>
+
+    </div>
+   
+   <div class="govuk-grid-column-full">
+      <br/>
+    </div>
+   
+   <div class="govuk-grid-column-full">
+      {{ formRender(form) }}
+    </div>
+
+  </div>
+{% endblock %}

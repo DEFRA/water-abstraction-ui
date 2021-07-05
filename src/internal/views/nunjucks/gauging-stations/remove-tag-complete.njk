@@ -1,0 +1,68 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "forms/index.njk" import formRender, formErrorSummary %}
+{% from "title.njk" import title %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+
+    {{ formErrorSummary(form) }}
+
+    <div class="govuk-grid-column-full">
+
+      <div class="govuk-radios">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">
+            <span class="govuk-caption-l">{{sessionData.station.label}}</span>{{pageTitle}}
+          </h1>
+      </legend>
+
+      <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-warning-text__assistive">Warning</span>
+          You will not be able to send a water abstraction alert for the licence at this restriction type and threshold.
+        </strong>
+      </div>
+
+      <dl class="govuk-summary-list">
+      {% set lastLicenceRef = '' %}
+      {% for licence in sessionData.licenceGaugingStations %}
+        {% if lastLicenceRef != licence.licenceRef %}
+
+           <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">
+                Licence
+              </dt>
+              <dd class="govuk-summary-list__value">
+                {{ licence.licenceRef}}
+              </dd>
+            </div>
+
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">
+                Tag
+              </dt>
+              <dd class="govuk-summary-list__value">
+              {% for tag in sessionData.licenceGaugingStations %}
+                {% if tag.licenceRef == licence.licenceRef %}
+                    {{ tag.restrictionType }} at {{tag.thresholdValue}} {{tag.thresholdUnit}}<br>
+                  {% endif %}
+              {% endfor %}
+                
+              </dd>
+            </div>
+        {% endif %}
+
+      {% set lastLicenceRef = licence.licenceRef %}
+      {% endfor %}
+
+      </dl>
+      </div>
+    </div>
+
+    <div class="govuk-grid-column-full">
+     {{ formRender(form) }}
+    </div>
+
+  </div>
+{% endblock %}

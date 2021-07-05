@@ -12,7 +12,10 @@ const licenceEntryForm = request => {
     controlClass: 'govuk-input govuk-input--width-10',
     errors: {
       'any.required': {
-        message: 'Enter a valid licence number'
+        message: 'Enter a licence number'
+      },
+      'any.empty': {
+        message: 'Enter a licence number'
       }
     },
     hint: 'You need to tag and add other licences with this threshold individually'

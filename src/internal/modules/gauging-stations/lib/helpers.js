@@ -42,8 +42,8 @@ const fetchConditionsForLicence = async request => {
 
 const getCaption = async request => {
   const { gaugingStationId } = request.params;
-  const { label, catchmentName } = await services.water.gaugingStations.getGaugingStationbyId(gaugingStationId);
-  return `${label}${catchmentName ? ' at ' + catchmentName : ''}`;
+  const { label, riverName } = await services.water.gaugingStations.getGaugingStationbyId(gaugingStationId);
+  return `${riverName ? riverName + ' at ' : ''}${label}`;
 };
 
 const getSelectedConditionText = request => {
@@ -67,26 +67,26 @@ const deduceRestrictionTypeFromUnit = unit => {
 };
 
 const createTitle = station =>
-  !station.catchmentName ? `${station.label}` : `${station.label} at ${station.catchmentName}`;
+  !station.riverName ? `${station.label}` : `${station.riverName} at ${station.label}`;
 
-const mapAbstractionPeriods = input => input.map(licence => {
-  return {
-    licenceRef: licence.licenceRef,
-    linkages: licence.linkages.length > 0 ? licence.linkages.map(eachLink => {
-      const abstractionPeriod = {
-        startDay: eachLink.abstractionPeriodStartDay,
-        startMonth: eachLink.abstractionPeriodStartMonth,
-        endDay: eachLink.abstractionPeriodEndDay,
-        endMonth: eachLink.abstractionPeriodEndMonth
-      };
-      return { ...eachLink, abstractionPeriod };
-    }) : []
-  };
-});
+const mapAbstractionPeriods = input => input.map(licence => ({
+  licenceRef: licence.licenceRef,
+  licenceId: licence.licenceId,
+  linkages: licence.linkages.length > 0 ? licence.linkages.map(eachLink => {
+    const abstractionPeriod = {
+      startDay: eachLink.abstractionPeriodStartDay,
+      startMonth: eachLink.abstractionPeriodStartMonth,
+      endDay: eachLink.abstractionPeriodEndDay,
+      endMonth: eachLink.abstractionPeriodEndMonth
+    };
+    return { ...eachLink, abstractionPeriod };
+  }) : []
+}));
 
 const groupByLicence = inputArray => {
-  const output = chain(inputArray).groupBy('licenceRef').map((value, key) => ({
-    licenceRef: key,
+  const output = chain(inputArray).groupBy('licenceId').map((value, key) => ({
+    licenceRef: value[0].licenceRef,
+    licenceId: value[0].licenceId,
     linkages: value
   })).value();
 

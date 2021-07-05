@@ -167,12 +167,12 @@ experiment('internal/modules/gauging-stations/controller', () => {
         gaugingStationId: 'some-gauging-station-id'
       }
     };
-    experiment('when a catchment name is known', () => {
+    experiment('when a river name is known', () => {
       let result;
       beforeEach(async () => {
         services.water.gaugingStations.getGaugingStationbyId.returns({
           label: 'some station',
-          catchmentName: 'some catchment'
+          riverName: 'some river'
         });
         result = await helpers.getCaption(request);
       });
@@ -182,16 +182,16 @@ experiment('internal/modules/gauging-stations/controller', () => {
         expect(services.water.gaugingStations.getGaugingStationbyId.calledWith(request.params.gaugingStationId)).to.be.true();
       });
       test('returns the expected string', () => {
-        expect(result).to.equal('some station at some catchment');
+        expect(result).to.equal('some river at some station');
       });
     });
 
-    experiment('when a catchment name is not known', () => {
+    experiment('when a river name is not known', () => {
       let result;
       beforeEach(async () => {
         services.water.gaugingStations.getGaugingStationbyId.returns({
           label: 'some station',
-          catchmentName: null
+          riverName: null
         });
         result = await helpers.getCaption(request);
       });

@@ -61,7 +61,7 @@
               </dt>
               <dd class="govuk-summary-list__value">
                 {{ sessionData.condition.value if sessionData.condition.value else "" }}
-                {{ "Derived from the selected licence condition" if sessionData.condition.value else sessionData.startDate.value.split('-').reverse().join('-') + ' to ' + sessionData.endDate.value.split('-').reverse().join('-') }}
+                {{ abstractionPeriodData | abstractionPeriod}}
               </dd>
               <dd class="govuk-summary-list__actions">
                   <a class="govuk-link" href="abstraction-period">

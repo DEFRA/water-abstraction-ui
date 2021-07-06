@@ -37,7 +37,7 @@ const conditionEntryForm = request => {
       ...parsedConditions.length > 0 ? [{ divider: 'or' }] : [],
       {
         label: parsedConditions.length > 0 ? 'The condition is not listed for this licence' : 'No known flow conditions - Manually define an abstraction period',
-        value: null
+        value: '00000000-0000-0000-0000-000000000000'
       }
     ]
   }, defaultCondition));
@@ -49,7 +49,7 @@ const conditionEntryForm = request => {
 
 const conditionEntrySchema = () => Joi.object({
   csrf_token: Joi.string().uuid().required(),
-  condition: Joi.string().uuid().allow(null, '')
+  condition: Joi.string().uuid().required()
 });
 
 exports.form = conditionEntryForm;

@@ -24,7 +24,7 @@
                 <dt class="govuk-summary-list__key">Type</dt>
                 <dd class="govuk-summary-list__value">
                     {{ "Stop" if sessionData.alertType.value == 'stop' else '' }}
-                    {{ "Reduce" if sessionData.alertType.value == 'reduce' else ''}} {{ "or stop" if sessionData.volumeLimited.value === true else ''}}
+                    {{ "Reduce" if sessionData.alertType.value == 'reduce' else ''}} {{ "with a maximum volume limit" if sessionData.volumeLimited.value === true else ''}}
                 </dd>
                 <dd class="govuk-summary-list__actions">
                   <a class="govuk-link" href="alert-type">

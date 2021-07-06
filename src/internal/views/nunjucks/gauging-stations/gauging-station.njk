@@ -129,7 +129,7 @@
                     </td>
                     <td class="govuk-table__cell" colspan="1" >
                         {% for linkage in licenceGaugingStation.linkages %}
-                            {{ linkage.alertType | titleCase }}<br/>
+                            {{ 'Reduce' if linkage.alertType.includes('reduce') else 'Stop' }}<br/>
                         {% endfor %}
                     </td>
 

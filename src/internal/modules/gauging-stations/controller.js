@@ -157,7 +157,7 @@ const postCondition = async (request, h) => {
     condition
   });
 
-  const conditionIsValid = condition.value !== '00000000-0000-0000-0000-000000000000';
+  const conditionIsValid = condition.value !== helpers.blankGuid;
 
   return helpers.redirectTo(request, h, conditionIsValid ? `/check` : '/abstraction-period');
 };

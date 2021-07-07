@@ -19,42 +19,21 @@
 
       {% set lastLicenceRef = '' %}
       {% for licence in sessionData.licenceGaugingStations %}
-        {% if lastLicenceRef != licence.licenceRef %}
+        {% if sessionData.selectedLicence.value == licence.licenceId %}
 
-        <div class="govuk-radios__item">
-          <input class="govuk-radios__input" id="selectedLicence" name="selectedLicence" type="radio" value="{{ licence.licenceRef}}" aria-describedby="selectedLicence-item-hint">
-            <label class="govuk-label govuk-radios__label" for="selectedLicence">
-              {{ licence.licenceRef}}
+        <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="selectedTags" name="selectedTags" type="checkbox" value="{{ licence.licenceRef}}">
+            <label class="govuk-label govuk-checkboxes__label" for="selectedTags">
+            {{ licence.restrictionType }} at {{licence.thresholdValue}} {{licence.thresholdUnit}}<br>
             </label>
- 
-          <div id="selectedLicence-item-hint" class="govuk-hint govuk-radios__hint">
-          {% set htmlTags = '' %}
-
-          {% for tag in sessionData.licenceGaugingStations %}
-
-             {% if tag.licenceRef == licence.licenceRef %}
-
-               {% set multiple = (tag.licenceRef | isDuplicate(sessionData.licenceGaugingStations)) %}
-               {% if multiple == 1 %}
-                 {% set htmlTags = 'Multiple tags' %}
-               {% else %}
-                  {{ tag.restrictionType }} at {{tag.thresholdValue}} {{tag.thresholdUnit}}<br>
-               {% endif %}
-
-             {% endif %}
-          {% endfor %}
-          
-          {{htmlTags}}
-          
           </div>
-            
-        </div>
+
         {% endif %}
 
       {% set lastLicenceRef = licence.licenceRef %}
       {% endfor %}
       </div>
-
     </div>
    
    <div class="govuk-grid-column-full">

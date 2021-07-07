@@ -27,10 +27,10 @@ module.exports = {
     }
   },
 
-  getCheckRemoveTag: {
+  getRemoveTags: {
     method: 'GET',
-    path: '/monitoring-stations/{gaugingStationId}/tagging-licence/remove-tag',
-    handler: controller.getCheckRemoveTag,
+    path: '/monitoring-stations/{gaugingStationId}/untagging-licence/remove-tag',
+    handler: controller.getRemoveTags,
     config: {
       description: 'Gets the entry page for remove linking a licence to a given gauging station - Requires the user to select tag',
       validate: {
@@ -45,21 +45,60 @@ module.exports = {
     }
   },
 
+  getRemoveTagsMultiple: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/untagging-licence/remove-tag-multiple',
+    handler: controller.getRemoveTagsMultiple,
+    config: {
+      description: 'Gets the entry page for remove linking a licence to a given gauging station - Requires the user to select tag',
+      validate: {
+        params: Joi.object({
+          gaugingStationId: Joi.string().guid().required()
+        })
+      },
+      pre: [
+        { method: preHandlers.loadGaugingStation, assign: 'station' },
+        { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
+      ]
+    }
+  },
+
+  postRemoveTagsMultiple: {
+    method: 'POST',
+    path: '/monitoring-stations/{gaugingStationId}/untagging-licence/remove-tag-multiple',
+    handler: controller.postRemoveTagsMultiple, /*postRemoveTag*/
+    config: {
+      description: 'Accepts a specified tag',
+      auth: {
+        scope: allowedScopes
+      },
+      pre: [
+        { method: preHandlers.loadGaugingStation, assign: 'station' },
+        { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
+      ]
+    }
+  },
+
   postRemoveTag: {
     method: 'POST',
-    path: '/monitoring-stations/{gaugingStationId}/tagging-licence/remove-tag',
+    path: '/monitoring-stations/{gaugingStationId}/untagging-licence/remove-tag',
     handler: controller.postRemoveTag,
     config: {
       description: 'Accepts a specified tag',
       auth: {
         scope: allowedScopes
-      }
+      },
+      pre: [
+        { method: preHandlers.loadGaugingStation, assign: 'station' },
+        { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
+      ]
     }
   },
 
+
   getRemoveTagComplete: {
     method: 'GET',
-    path: '/monitoring-stations/{gaugingStationId}/tagging-licence/remove-tag-complete',
+    path: '/monitoring-stations/{gaugingStationId}/untagging-licence/remove-tag-complete',
     handler: controller.getRemoveTagComplete,
     config: {
       description: 'remove linking a licence to a given gauging station - Comfirm removal',
@@ -77,9 +116,12 @@ module.exports = {
 
   postRemoveTagComplete: {
     method: 'POST',
-    path: '/monitoring-stations/{gaugingStationId}/tagging-licence/remove-tag-complete',
+    path: '/monitoring-stations/{gaugingStationId}/untagging-licence/remove-tag-complete',
     handler: controller.postRemoveTagComplete
   },
+
+
+
 
   getNewFlow: {
     method: 'GET',

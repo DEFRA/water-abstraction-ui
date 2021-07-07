@@ -242,34 +242,99 @@ const getFlowComplete = (request, h) => {
   });
 };
 
-const getCheckRemoveTag = async (request, h) => {
+const getRemoveTags = async (request, h) => {
   const pageTitle = 'Which licence do you want to remove a tag from?';
   const caption = await helpers.getCaption(request);
   const { licenceGaugingStations } = request.pre;
   const { data } = licenceGaugingStations;
 
+  /* Used in second step for Multiple tags */
   session.merge(request, {
-    checkStageReached: true,
     licenceGaugingStations: data
   });
-  return h.view('nunjucks/gauging-stations/remove-tag-check', {
+
+  return h.view('nunjucks/form', {
     ...request.view,
     caption,
     pageTitle,
-    form: formHandler.handleFormRequest(request, linkageForms.removeTagComplete),
+    form: formHandler.handleFormRequest(request, linkageForms.removeTags), /* Generates deduplicated list */
     sessionData: session.get(request)
   });
 };
+
+const postRemoveTag = async (request, h) => {
+  const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsMultiple);
+
+  if (!form.isValid) {
+    return h.postRedirectGet(form);
+  }
+
+  const sessionData = session.merge(request, {
+    checkStageReached: true
+  });
+
+  let multiple = 0;
+  const selectedLicence = form.fields.find(field => field.name === 'selectedLicence')
+  if (selectedLicence) {
+    // multiple = selectedLicence.options.choices.filter(item => {return item.value == selectedLicence.value;});
+    multiple = sessionData.licenceGaugingStations.filter(item => {return item.licenceId == selectedLicence.value;});
+  }
+
+  session.merge(request, {
+    selectedLicence,
+    selectedLicenceCheckbox: [] /* clear selection */
+  });
+
+   if (multiple.length > 1) {
+      return h.redirect(request.path.replace(/\/[^/]*$/, '/remove-tag-multiple'));
+   }
+
+  return h.redirect(request.path.replace(/\/[^/]*$/, '/remove-tag-complete'));
+
+};
+
+const getRemoveTagsMultiple = async (request, h) => {
+  const pageTitle = 'This licence has more than one tag, select the ones you need to remove';
+  const caption = await helpers.getCaption(request);
+  const { licenceGaugingStations } = request.pre;
+  const { data } = licenceGaugingStations;
+
+  return h.view('nunjucks/form', {
+    ...request.view,
+    caption,
+    pageTitle,
+    form: formHandler.handleFormRequest(request, linkageForms.removeTagsMultipleCheckbox),
+    sessionData: session.get(request)
+  });
+
+};
+
+const postRemoveTagsMultiple = async (request, h) => {
+  const form = await formHandler.handleFormRequest(request, linkageForms.removeTagComplete);
+
+  if (!form.isValid) {
+    return h.postRedirectGet(form);
+  }
+
+  const sessionData = session.merge(request, {
+    checkStageReached: true
+  });
+
+  const formCheckBox = await formHandler.handleFormRequest(request, linkageForms.removeTagsMultipleCheckbox);
+  const selectedLicenceCheckbox = formCheckBox.fields.find(field => field.name === 'selectedLicenceCheckbox')
+
+  session.merge(request, {
+    selectedLicenceCheckbox: selectedLicenceCheckbox
+  });
+
+  return h.redirect(request.path.replace(/\/[^/]*$/, '/remove-tag-complete'));
+};
+
 const getRemoveTagComplete = async (request, h) => {
   const pageTitle = 'You are about to remove tags from this licence';
   const caption = await helpers.getCaption(request);
   const { licenceGaugingStations } = request.pre;
   const { data } = licenceGaugingStations;
-
-  session.merge(request, {
-    checkStageReached: true,
-    licenceGaugingStations: data
-  });
 
   return h.view('nunjucks/gauging-stations/remove-tag-complete', {
     ...request.view,
@@ -280,22 +345,10 @@ const getRemoveTagComplete = async (request, h) => {
   });
 };
 
-const postRemoveTag = async (request, h) => {
-  const form = await formHandler.handleFormRequest(request, linkageForms.removeTagComplete);
-
-  if (!form.isValid) {
-    return h.postRedirectGet(form);
-  }
-  return h.redirect(request.path.replace(/\/[^/]*$/, '/remove-tag-complete'));
-};
-
 const postRemoveTagComplete = async (request, h) => {
   const form = await formHandler.handleFormRequest(request, linkageForms.removeTagComplete);
-
-  if (!form.isValid) {
-    return h.postRedirectGet(form);
-  }
-  return h.redirect(request.path.replace(/\/tagging-licence\/[^/]*$/, '/'));
+  await helpers.handleRemovePost(request);
+  return h.redirect(request.path.replace(/\/untagging-licence\/[^/]*$/, '/'));
 };
 
 exports.getNewFlow = getNewFlow;
@@ -313,7 +366,9 @@ exports.getCheckYourAnswers = getCheckYourAnswers;
 exports.postCheckYourAnswers = postCheckYourAnswers;
 exports.getFlowComplete = getFlowComplete;
 exports.getMonitoringStation = getMonitoringStation;
-exports.getCheckRemoveTag = getCheckRemoveTag;
+exports.getRemoveTags = getRemoveTags;
 exports.getRemoveTagComplete = getRemoveTagComplete;
 exports.postRemoveTag = postRemoveTag;
 exports.postRemoveTagComplete = postRemoveTagComplete;
+exports.postRemoveTagsMultiple = postRemoveTagsMultiple;
+exports.getRemoveTagsMultiple = getRemoveTagsMultiple;

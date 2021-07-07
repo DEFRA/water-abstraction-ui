@@ -96,6 +96,7 @@ const groupByLicence = inputArray => {
 const handlePost = async request => {
   const { gaugingStationId } = request.params;
   const sessionData = session.get(request);
+
   const { id: licenceId } = sessionData.fetchedLicence;
   const licenceVersionPurposeConditionId = get(sessionData, 'condition.value', null);
   const thresholdValue = get(sessionData, 'threshold.value');
@@ -133,6 +134,32 @@ const handlePost = async request => {
   return services.water.gaugingStations.postLicenceLinkage(gaugingStationId, licenceId, set(parsedPayload, 'licenceVersionPurposeConditionId', null));
 };
 
+const handleRemovePost = async request => {
+  const { gaugingStationId } = request.params;
+  const sessionData = session.get(request);
+
+  if (sessionData.selectedLicence) {
+    const licenceGaugingStationId = sessionData.selectedLicence.value;
+    return services.water.gaugingStations.postLicenceLinkageRemove(licenceGaugingStationId);
+  }
+};
+
+const humanise = (str) => {
+  str = str.replace('stop_or_reduce','Stop Or Reduce');
+  str = str.replace('stop','Stop');
+  str = str.replace('reduce','Reduce');
+  return str;
+};
+
+const incrementDuplicates = (licenceRef, tempArr) => {
+  tempArr.push(licenceRef);
+  return tempArr.filter(item => {return item == licenceRef}).length;
+};
+
+const maxDuplicates = (items, label) => {
+  return items.filter(item => {return item.licenceRef == label}).length;
+};
+
 exports.createTitle = createTitle;
 exports.redirectTo = redirectTo;
 exports.isLicenceNumberValid = isLicenceNumberValid;
@@ -141,3 +168,7 @@ exports.getCaption = getCaption;
 exports.getSelectedConditionText = getSelectedConditionText;
 exports.groupByLicence = groupByLicence;
 exports.handlePost = handlePost;
+exports.handleRemovePost = handleRemovePost;
+exports.humanise = humanise;
+exports.incrementDuplicates = incrementDuplicates;
+exports.maxDuplicates = maxDuplicates;

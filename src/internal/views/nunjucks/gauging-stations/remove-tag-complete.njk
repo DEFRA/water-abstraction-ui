@@ -27,8 +27,9 @@
       <dl class="govuk-summary-list">
       {% set lastLicenceRef = '' %}
       {% for licence in sessionData.licenceGaugingStations %}
-        {% if lastLicenceRef != licence.licenceRef %}
-
+        {% if sessionData.selectedLicence.value == licence.licenceId %}
+          {% if lastLicenceRef != licence.licenceRef %}
+        
            <div class="govuk-summary-list__row">
               <dt class="govuk-summary-list__key">
                 Licence
@@ -43,19 +44,33 @@
                 Tag
               </dt>
               <dd class="govuk-summary-list__value">
-              {% for tag in sessionData.licenceGaugingStations %}
-                {% if tag.licenceRef == licence.licenceRef %}
-                    {{ tag.restrictionType }} at {{tag.thresholdValue}} {{tag.thresholdUnit}}<br>
+
+              {% set checkBoxFound = '0' %}
+            
+              {% for tagsCheckedValue in sessionData.selectedLicenceCheckbox.value %}
+                {% set checkBoxFound = '1' %}
+                {% for tagsCheckbox in sessionData.selectedLicenceCheckbox.options.choices %}
+                  {% if tagsCheckbox.value == tagsCheckedValue %}
+                    {{tagsCheckbox.label}} <br/>
                   {% endif %}
+                {% endfor %}
               {% endfor %}
+
+              {% if checkBoxFound == '0' %}
+                {% for tag in sessionData.licenceGaugingStations %}
+                  {% if tag.licenceRef == licence.licenceRef %}
+                    {{ tag.alertType }} at {{tag.thresholdValue}} {{tag.thresholdUnit}}<br>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
                 
               </dd>
             </div>
-        {% endif %}
 
+          {% endif %}
+        {% endif %}
       {% set lastLicenceRef = licence.licenceRef %}
       {% endfor %}
-
       </dl>
       </div>
     </div>

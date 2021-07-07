@@ -16,7 +16,7 @@ const thresholdAndUnitForm = request => {
         message: 'Enter a number in digits and no other characters other than a decimal point'
       },
       'number.max': {
-        message: 'Enter a number not greater than 1,000,000'
+        message: 'Enter a number no more than 1,000,000'
       },
       'number.min': {
         message: 'Enter a number more than zero'

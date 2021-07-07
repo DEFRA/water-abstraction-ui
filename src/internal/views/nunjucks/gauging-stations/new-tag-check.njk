@@ -24,7 +24,7 @@
                 <dt class="govuk-summary-list__key">Type</dt>
                 <dd class="govuk-summary-list__value">
                     {{ "Stop" if sessionData.alertType.value == 'stop' else '' }}
-                    {{ "Reduce" if sessionData.alertType.value == 'reduce' else ''}} {{ "or stop" if sessionData.volumeLimited.value === true else ''}}
+                    {{ "Reduce" if sessionData.alertType.value == 'reduce' else ''}} {{ "with a maximum volume limit" if sessionData.volumeLimited.value === true else ''}}
                 </dd>
                 <dd class="govuk-summary-list__actions">
                   <a class="govuk-link" href="alert-type">
@@ -54,13 +54,13 @@
                     </a>
                 </dd>
           </div>
-          {% if not sessionData.condition.value and sessionData.startDate.value and sessionData.endDate.value %}
+          {% if sessionData.condition.value === '00000000-0000-0000-0000-000000000000' and sessionData.startDate.value and sessionData.endDate.value %}
           <div class="govuk-summary-list__row">
               <dt class="govuk-summary-list__key">
                 Abstraction period
               </dt>
               <dd class="govuk-summary-list__value">
-                {{ sessionData.condition.value if sessionData.condition.value else "" }}
+                {{ sessionData.condition.value if sessionData.condition.value !== '00000000-0000-0000-0000-000000000000' else "" }}
                 {{ abstractionPeriodData | abstractionPeriod}}
               </dd>
               <dd class="govuk-summary-list__actions">

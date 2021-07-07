@@ -152,11 +152,14 @@ const postCondition = async (request, h) => {
   }
 
   const condition = form.fields.find(field => field.name === 'condition');
+
   session.merge(request, {
     condition
   });
 
-  return helpers.redirectTo(request, h, condition.value ? `/check` : '/abstraction-period');
+  const conditionIsValid = condition.value !== helpers.blankGuid;
+
+  return helpers.redirectTo(request, h, conditionIsValid ? `/check` : '/abstraction-period');
 };
 
 const getManuallyDefinedAbstractionPeriod = async (request, h) => {

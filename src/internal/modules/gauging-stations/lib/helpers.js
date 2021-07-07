@@ -2,6 +2,8 @@ const session = require('./session');
 const services = require('../../../lib/connectors/services');
 const { get, omit, set, chain } = require('lodash');
 
+const blankGuid = '00000000-0000-0000-0000-000000000000';
+
 const redirectTo = (request, h, path) => {
   const { checkStageReached } = session.get(request);
 
@@ -98,7 +100,8 @@ const handlePost = async request => {
   const sessionData = session.get(request);
 
   const { id: licenceId } = sessionData.fetchedLicence;
-  const licenceVersionPurposeConditionId = get(sessionData, 'condition.value', null);
+  const storedLicenceVersionPurposeConditionIdFromSession = get(sessionData, 'condition.value', null);
+  const licenceVersionPurposeConditionId = storedLicenceVersionPurposeConditionIdFromSession === blankGuid ? null : storedLicenceVersionPurposeConditionIdFromSession;
   const thresholdValue = get(sessionData, 'threshold.value');
   const thresholdUnit = get(sessionData, 'unit.value');
   const startDate = get(sessionData, 'startDate.value');
@@ -160,6 +163,7 @@ const maxDuplicates = (items, label) => {
   return items.filter(item => {return item.licenceRef == label}).length;
 };
 
+exports.blankGuid = blankGuid;
 exports.createTitle = createTitle;
 exports.redirectTo = redirectTo;
 exports.isLicenceNumberValid = isLicenceNumberValid;

@@ -14,6 +14,12 @@ const thresholdAndUnitForm = request => {
     errors: {
       'number.base': {
         message: 'Enter a number in digits and no other characters other than a decimal point'
+      },
+      'number.max': {
+        message: 'Enter a number no more than 1,000,000'
+      },
+      'number.min': {
+        message: 'Enter a number more than zero'
       }
     }
   }, defaultThreshold));
@@ -48,7 +54,7 @@ const thresholdAndUnitForm = request => {
 
 const thresholdAndUnitSchema = () => Joi.object({
   csrf_token: Joi.string().uuid().required(),
-  threshold: Joi.number().required(),
+  threshold: Joi.number().min(0).max(1000000).required(),
   unit: Joi.string().required().allow(validUnits)
 });
 

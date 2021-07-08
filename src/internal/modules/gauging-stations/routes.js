@@ -66,7 +66,7 @@ module.exports = {
   postRemoveTagsMultiple: {
     method: 'POST',
     path: '/monitoring-stations/{gaugingStationId}/untagging-licence/remove-tag-multiple',
-    handler: controller.postRemoveTagsMultiple, /*postRemoveTag*/
+    handler: controller.postRemoveTagsMultiple,
     config: {
       description: 'Accepts a specified tag',
       auth: {
@@ -95,7 +95,6 @@ module.exports = {
     }
   },
 
-
   getRemoveTagComplete: {
     method: 'GET',
     path: '/monitoring-stations/{gaugingStationId}/untagging-licence/remove-tag-complete',
@@ -119,9 +118,6 @@ module.exports = {
     path: '/monitoring-stations/{gaugingStationId}/untagging-licence/remove-tag-complete',
     handler: controller.postRemoveTagComplete
   },
-
-
-
 
   getNewFlow: {
     method: 'GET',

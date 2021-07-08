@@ -138,7 +138,7 @@ const handlePost = async request => {
 };
 
 const handleRemovePost = async request => {
-  const { gaugingStationId } = request.params;
+  // const { gaugingStationId } = request.params;
   const sessionData = session.get(request);
 
   if (sessionData.selectedLicence) {
@@ -148,19 +148,19 @@ const handleRemovePost = async request => {
 };
 
 const humanise = (str) => {
-  str = str.replace('stop_or_reduce','Stop Or Reduce');
-  str = str.replace('stop','Stop');
-  str = str.replace('reduce','Reduce');
+  str = str.replace('stop_or_reduce', 'Stop Or Reduce');
+  str = str.replace('stop', 'Stop');
+  str = str.replace('reduce', 'Reduce');
   return str;
 };
 
 const incrementDuplicates = (licenceRef, tempArr) => {
   tempArr.push(licenceRef);
-  return tempArr.filter(item => {return item == licenceRef}).length;
+  return tempArr.filter(item => { return item === licenceRef; }).length;
 };
 
 const maxDuplicates = (items, label) => {
-  return items.filter(item => {return item.licenceRef == label}).length;
+  return items.filter(item => { return item.licenceRef === label; }).length;
 };
 
 exports.blankGuid = blankGuid;

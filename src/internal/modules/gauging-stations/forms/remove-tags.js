@@ -10,28 +10,28 @@ const checkForm = request => {
   let tempArr = [];
 
   const multipleLabel = (data, licenceRef, dupeMax) => {
-     if (dupeMax > 1) {
+    if (dupeMax > 1) {
       return ' Multiple tags';
-     }
-     let item = data.filter(item => {return item.licenceRef == licenceRef;})[0];
-     return ` ${humanise(item.alertType)} at ${item.thresholdValue} ${item.thresholdUnit}`;
+    }
+    let item = data.filter(item => { return item.licenceRef === licenceRef; })[0];
+    return ` ${humanise(item.alertType)} at ${item.thresholdValue} ${item.thresholdUnit}`;
   };
 
-  let dataWithNumbering = data.map(item => ({licenceId: item.licenceId, licenceRef: item.licenceRef, dupeNum: incrementDuplicates(item.licenceRef,tempArr)}));
-  let dataWithMax = dataWithNumbering.map(item => ({value: item.licenceId, label: item.licenceRef, hint: multipleLabel(data,item.licenceRef, maxDuplicates(dataWithNumbering, item.licenceRef)), dupeNum: item.dupeNum, dupeMax: maxDuplicates(dataWithNumbering, item.licenceRef)  }));
+  let dataWithNumbering = data.map(item => ({ licenceId: item.licenceId, licenceRef: item.licenceRef, dupeNum: incrementDuplicates(item.licenceRef, tempArr) }));
+  let dataWithMax = dataWithNumbering.map(item => ({ value: item.licenceId, label: item.licenceRef, hint: multipleLabel(data, item.licenceRef, maxDuplicates(dataWithNumbering, item.licenceRef)), dupeNum: item.dupeNum, dupeMax: maxDuplicates(dataWithNumbering, item.licenceRef) }));
 
   f.fields.push(fields.radio('selectedLicence', {
-  	 controlClass: 'govuk-input govuk-input--width-10',
-      errors: {
-        'any.required': {
-          message: 'Select a licence number'
-        },
-        'any.empty': {
-          message: 'Select a licence number'
-        }
+    controlClass: 'govuk-input govuk-input--width-10',
+    errors: {
+      'any.required': {
+        message: 'Select a licence number'
       },
-  	choices: dataWithMax.filter(item => {return item.dupeNum == item.dupeMax;})
-  }))
+      'any.empty': {
+        message: 'Select a licence number'
+      }
+    },
+    choices: dataWithMax.filter(item => { return item.dupeNum === item.dupeMax; })
+  }));
 
   f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));
   f.fields.push(fields.button(null, { label: 'Confirm' }));
@@ -39,7 +39,7 @@ const checkForm = request => {
 };
 
 const checkSchema = () => Joi.object({
-	selectedLicence: Joi.string().uuid().required(),
+  selectedLicence: Joi.string().uuid().required(),
   csrf_token: Joi.string().uuid().required()
 });
 

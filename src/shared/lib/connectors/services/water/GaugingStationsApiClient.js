@@ -42,7 +42,6 @@ class GaugingStationsService extends ServiceClient {
     const url = this.joinUrl('licence-gauging-stations', licenceGaugingStationId, '');
     return this.serviceRequest.delete(url);
   }
-
 }
 
 module.exports = GaugingStationsService;

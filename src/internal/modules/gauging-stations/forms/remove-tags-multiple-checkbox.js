@@ -17,8 +17,8 @@ const checkForm = request => {
     return ` ${humanise(item.alertType)} at ${item.thresholdValue} ${item.thresholdUnit}`;
   };
 
-  let dataWithNumbering = data.map(item => ({ licenceId: item.licenceId, licenceRef: item.licenceRef, dupeNum: incrementDuplicates(item.licenceRef, tempArr) }));
-  let dataWithMax = dataWithNumbering.map(item => ({ value: item.licenceId + ':' + item.dupeNum, licenceId: item.licenceId, label: detailedLabel(data, item.licenceRef, item.dupeNum), hint: item.licenceRef, dupeNum: item.dupeNum, dupeMax: maxDuplicates(dataWithNumbering, item.licenceRef) }));
+  let dataWithNumbering = data.map(item => ({ licenceGaugingStationId: item.licenceGaugingStationId, licenceId: item.licenceId, licenceRef: item.licenceRef, dupeNum: incrementDuplicates(item.licenceRef, tempArr) }));
+  let dataWithMax = dataWithNumbering.map(item => ({ licenceGaugingStationId: item.licenceGaugingStationId, value: item.licenceGaugingStationId, licenceId: item.licenceId, label: detailedLabel(data, item.licenceRef, item.dupeNum), hint: item.licenceRef, dupeNum: item.dupeNum, dupeMax: maxDuplicates(dataWithNumbering, item.licenceRef) }));
   let selectedData = dataWithMax.filter(item => { return item.licenceId === mySession.selectedLicence.value; });
 
   f.fields.push(fields.checkbox('selectedLicenceCheckbox', {

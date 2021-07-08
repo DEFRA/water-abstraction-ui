@@ -277,14 +277,14 @@ const postRemoveTag = async (request, h) => {
   });
 
   let multiple = 0;
-  const selectedLicence = form.fields.find(field => field.name === 'selectedLicence');
-  if (selectedLicence) {
+  const selectedLicenceRadio = form.fields.find(field => field.name === 'selectedLicence');
+  if (selectedLicenceRadio) {
     // multiple = selectedLicence.options.choices.filter(item => {return item.value == selectedLicence.value;});
-    multiple = sessionData.licenceGaugingStations.filter(item => { return item.licenceId === selectedLicence.value; });
+    multiple = sessionData.licenceGaugingStations.filter(item => { return item.licenceId === selectedLicenceRadio.value; });
   }
 
   session.merge(request, {
-    selectedLicence,
+    selectedLicence: selectedLicenceRadio,
     selectedLicenceCheckbox: [] /* clear selection */
   });
 
@@ -328,6 +328,13 @@ const postRemoveTagsMultiple = async (request, h) => {
 const getRemoveTagComplete = async (request, h) => {
   const pageTitle = 'You are about to remove tags from this licence';
   const caption = await helpers.getCaption(request);
+
+  const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsMultiple);
+
+  const selectedLicenceRadio = form.fields.find(field => field.name === 'selectedLicence');
+  session.merge(request, {
+    selectedLicence: selectedLicenceRadio
+  });
 
   return h.view('nunjucks/gauging-stations/remove-tag-complete', {
     ...request.view,

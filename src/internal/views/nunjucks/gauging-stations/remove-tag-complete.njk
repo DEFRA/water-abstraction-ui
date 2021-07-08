@@ -25,17 +25,21 @@
       </div>
 
       <dl class="govuk-summary-list">
-      {% set lastLicenceRef = '' %}
-      {% for licence in sessionData.licenceGaugingStations %}
-        {% if sessionData.selectedLicence.value == licence.licenceId %}
-          {% if lastLicenceRef != licence.licenceRef %}
-        
-           <div class="govuk-summary-list__row">
+      {% set tagDisplayDone = false %}
+      {% for tagCheckboxValue in sessionData.selectedLicenceCheckbox.value %}
+        {% set tagDisplayDone = true %}
+        <br/>
+            <div class="govuk-summary-list__row">
               <dt class="govuk-summary-list__key">
                 Licence
               </dt>
               <dd class="govuk-summary-list__value">
-                {{ licence.licenceRef}}
+              {% for tagCheckbox in sessionData.selectedLicenceCheckbox.options.choices %}
+                {% if tagCheckbox.value  == tagCheckboxValue %}
+                  {{tagCheckbox.hint}}
+                {% endif %}
+
+              {% endfor %}
               </dd>
             </div>
 
@@ -44,33 +48,39 @@
                 Tag
               </dt>
               <dd class="govuk-summary-list__value">
-
-              {% set checkBoxFound = '0' %}
-            
-              {% for tagsCheckedValue in sessionData.selectedLicenceCheckbox.value %}
-                {% set checkBoxFound = '1' %}
-                {% for tagsCheckbox in sessionData.selectedLicenceCheckbox.options.choices %}
-                  {% if tagsCheckbox.value == tagsCheckedValue %}
-                    {{tagsCheckbox.label}} <br/>
-                  {% endif %}
-                {% endfor %}
+              {% for tagCheckbox in sessionData.selectedLicenceCheckbox.options.choices %}
+                {% if tagCheckbox.value  == tagCheckboxValue %}
+                  {{tagCheckbox.label}}
+                {% endif %}
               {% endfor %}
-
-              {% if checkBoxFound == '0' %}
-                {% for tag in sessionData.licenceGaugingStations %}
-                  {% if tag.licenceRef == licence.licenceRef %}
-                    {{ tag.alertType }} at {{tag.thresholdValue}} {{tag.thresholdUnit}}<br>
-                  {% endif %}
-                {% endfor %}
-              {% endif %}
-                
               </dd>
             </div>
 
-          {% endif %}
-        {% endif %}
-      {% set lastLicenceRef = licence.licenceRef %}
       {% endfor %}
+
+      {% if tagDisplayDone == false %}
+        {% for tagRadio in sessionData.selectedLicence.options.choices %}
+        <br/>
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">
+                Licence
+              </dt>
+              <dd class="govuk-summary-list__value">
+                 {{tagRadio.hint}}
+              </dd>
+            </div>
+
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">
+                Tag
+              </dt>
+              <dd class="govuk-summary-list__value">
+                {{tagRadio.label}}
+              </dd>
+            </div>
+        {% endfor %}
+      {% endif %}
+            
       </dl>
       </div>
     </div>

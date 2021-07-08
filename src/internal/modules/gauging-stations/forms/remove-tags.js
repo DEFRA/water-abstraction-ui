@@ -17,8 +17,8 @@ const checkForm = request => {
     return ` ${humanise(item.alertType)} at ${item.thresholdValue} ${item.thresholdUnit}`;
   };
 
-  let dataWithNumbering = data.map(item => ({ licenceId: item.licenceId, licenceRef: item.licenceRef, dupeNum: incrementDuplicates(item.licenceRef, tempArr) }));
-  let dataWithMax = dataWithNumbering.map(item => ({ value: item.licenceId, label: item.licenceRef, hint: multipleLabel(data, item.licenceRef, maxDuplicates(dataWithNumbering, item.licenceRef)), dupeNum: item.dupeNum, dupeMax: maxDuplicates(dataWithNumbering, item.licenceRef) }));
+  let dataWithNumbering = data.map(item => ({ licenceGaugingStationId: item.licenceGaugingStationId, licenceId: item.licenceId, licenceRef: item.licenceRef, dupeNum: incrementDuplicates(item.licenceRef, tempArr) }));
+  let dataWithMax = dataWithNumbering.map(item => ({ licenceGaugingStationId: item.licenceGaugingStationId, value: item.licenceId, label: item.licenceRef, hint: multipleLabel(data, item.licenceRef, maxDuplicates(dataWithNumbering, item.licenceRef)), dupeNum: item.dupeNum, dupeMax: maxDuplicates(dataWithNumbering, item.licenceRef) }));
 
   f.fields.push(fields.radio('selectedLicence', {
     controlClass: 'govuk-input govuk-input--width-10',

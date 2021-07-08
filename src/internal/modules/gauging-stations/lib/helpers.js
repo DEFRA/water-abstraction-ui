@@ -138,12 +138,27 @@ const handlePost = async request => {
 };
 
 const handleRemovePost = async request => {
-  // const { gaugingStationId } = request.params;
   const sessionData = session.get(request);
 
+  if (sessionData.selectedLicenceCheckbox) {
+    if (sessionData.selectedLicenceCheckbox.value) {
+      sessionData.selectedLicence = null;
+      let selectArr = sessionData.selectedLicenceCheckbox.value;
+      const promises = selectArr.map(licenceGaugingStationId => {
+        return services.water.gaugingStations.postLicenceLinkageRemove(licenceGaugingStationId);
+      });
+      return Promise.all(promises);
+    }
+  }
+
   if (sessionData.selectedLicence) {
-    const licenceGaugingStationId = sessionData.selectedLicence.value;
-    return services.water.gaugingStations.postLicenceLinkageRemove(licenceGaugingStationId);
+    if (sessionData.selectedLicence.value) {
+      let arrayOfLicenceGaugingStationsRecords = sessionData.selectedLicence.options.choices;
+      const promises = arrayOfLicenceGaugingStationsRecords.map(row => {
+        return services.water.gaugingStations.postLicenceLinkageRemove(row.licenceGaugingStationId);
+      });
+      return Promise.all(promises);
+    }
   }
 };
 

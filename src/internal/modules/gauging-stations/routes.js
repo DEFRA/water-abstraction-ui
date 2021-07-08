@@ -39,7 +39,6 @@ module.exports = {
         })
       },
       pre: [
-        { method: preHandlers.loadGaugingStation, assign: 'station' },
         { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
       ]
     }
@@ -57,7 +56,6 @@ module.exports = {
         })
       },
       pre: [
-        { method: preHandlers.loadGaugingStation, assign: 'station' },
         { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
       ]
     }
@@ -73,7 +71,6 @@ module.exports = {
         scope: allowedScopes
       },
       pre: [
-        { method: preHandlers.loadGaugingStation, assign: 'station' },
         { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
       ]
     }
@@ -89,7 +86,6 @@ module.exports = {
         scope: allowedScopes
       },
       pre: [
-        { method: preHandlers.loadGaugingStation, assign: 'station' },
         { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
       ]
     }
@@ -107,7 +103,6 @@ module.exports = {
         })
       },
       pre: [
-        { method: preHandlers.loadGaugingStation, assign: 'station' },
         { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
       ]
     }

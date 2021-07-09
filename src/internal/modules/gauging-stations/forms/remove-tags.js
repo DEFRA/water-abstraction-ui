@@ -1,12 +1,11 @@
 const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
-const { humanise, incrementDuplicates, maxDuplicates } = require('../lib/helpers');
+const { humaniseAlertType, humaniseUnits, maxDuplicates, addDuplicateIndex } = require('../lib/helpers');
 
 const checkForm = request => {
   const f = formFactory(request.path);
   const { licenceGaugingStations } = request.pre;
   const { data } = licenceGaugingStations;
-
   let tempArr = [];
 
   const multipleLabel = (data, licenceRef, dupeMax) => {
@@ -14,11 +13,20 @@ const checkForm = request => {
       return ' Multiple tags';
     }
     let item = data.filter(item => { return item.licenceRef === licenceRef; })[0];
-    return ` ${humanise(item.alertType)} at ${item.thresholdValue} ${item.thresholdUnit}`;
+    return ` ${humaniseAlertType(item.alertType)} at ${item.thresholdValue} ${humaniseUnits(item.thresholdUnit)}`;
   };
 
-  let dataWithNumbering = data.map(item => ({ licenceGaugingStationId: item.licenceGaugingStationId, licenceId: item.licenceId, licenceRef: item.licenceRef, dupeNum: incrementDuplicates(item.licenceRef, tempArr) }));
-  let dataWithMax = dataWithNumbering.map(item => ({ licenceGaugingStationId: item.licenceGaugingStationId, value: item.licenceId, label: item.licenceRef, hint: multipleLabel(data, item.licenceRef, maxDuplicates(dataWithNumbering, item.licenceRef)), dupeNum: item.dupeNum, dupeMax: maxDuplicates(dataWithNumbering, item.licenceRef) }));
+  const dataWithNumbering = addDuplicateIndex(data, tempArr);
+  const dataWithLicenceIdMultipleLabel = dataWithNumbering.map(item => {
+    return {
+      licenceGaugingStationId: item.licenceGaugingStationId,
+      value: item.licenceId,
+      label: item.licenceRef,
+      hint: multipleLabel(data, item.licenceRef, maxDuplicates(dataWithNumbering, item.licenceRef)),
+      dupeNum: item.dupeNum,
+      dupeMax: maxDuplicates(dataWithNumbering, item.licenceRef)
+    };
+  });
 
   f.fields.push(fields.radio('selectedLicence', {
     controlClass: 'govuk-input govuk-input--width-10',
@@ -30,7 +38,7 @@ const checkForm = request => {
         message: 'Select a licence number'
       }
     },
-    choices: dataWithMax.filter(item => { return item.dupeNum === item.dupeMax; })
+    choices: dataWithLicenceIdMultipleLabel.filter(item => { return item.dupeNum === item.dupeMax; })
   }));
 
   f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));

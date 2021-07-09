@@ -2,24 +2,32 @@ const Joi = require('joi');
 
 const { formFactory, fields } = require('shared/lib/forms/');
 const session = require('../lib/session');
-const { humanise, incrementDuplicates, maxDuplicates } = require('../lib/helpers');
+const { maxDuplicates, detailedLabel, addDuplicateIndex } = require('../lib/helpers');
 
 const checkForm = request => {
   const f = formFactory(request.path);
   const { licenceGaugingStations } = request.pre;
   const { data } = licenceGaugingStations;
   const mySession = session.get(request);
+  const tempArr = [];
 
-  let tempArr = [];
+  const dataWithNumbering = addDuplicateIndex(data, tempArr);
+  const dataWithLicenceGaugingStationId = dataWithNumbering.map(item => {
+    return {
+      licenceGaugingStationId: item.licenceGaugingStationId,
+      value: item.licenceGaugingStationId,
+      licenceId: item.licenceId,
+      label: detailedLabel(data, item.licenceRef, item.dupeNum),
+      hint: item.licenceRef,
+      dupeNum: item.dupeNum,
+      dupeMax: maxDuplicates(dataWithNumbering, item.licenceRef)
+    };
+  });
 
-  const detailedLabel = (data, licenceRef, dupeNum) => {
-    let item = data.filter(item => { return item.licenceRef === licenceRef; })[dupeNum - 1];
-    return ` ${humanise(item.alertType)} at ${item.thresholdValue} ${item.thresholdUnit}`;
-  };
-
-  let dataWithNumbering = data.map(item => ({ licenceGaugingStationId: item.licenceGaugingStationId, licenceId: item.licenceId, licenceRef: item.licenceRef, dupeNum: incrementDuplicates(item.licenceRef, tempArr) }));
-  let dataWithMax = dataWithNumbering.map(item => ({ licenceGaugingStationId: item.licenceGaugingStationId, value: item.licenceGaugingStationId, licenceId: item.licenceId, label: detailedLabel(data, item.licenceRef, item.dupeNum), hint: item.licenceRef, dupeNum: item.dupeNum, dupeMax: maxDuplicates(dataWithNumbering, item.licenceRef) }));
-  let selectedData = dataWithMax.filter(item => { return item.licenceId === mySession.selectedLicence.value; });
+  let selectedData = dataWithLicenceGaugingStationId;
+  if (mySession.selectedLicence) {
+    selectedData = dataWithLicenceGaugingStationId.filter(item => { return item.licenceId === mySession.selectedLicence.value; });
+  }
 
   f.fields.push(fields.checkbox('selectedLicenceCheckbox', {
     controlClass: 'govuk-input govuk-input--width-10',

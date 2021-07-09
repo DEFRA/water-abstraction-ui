@@ -1,8 +1,8 @@
-/* you-are-about-to-remove-tags */
+
 const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 
-const checkForm = request => {
+const checkFormAllDone = request => {
   const f = formFactory(request.path);
 
   f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));
@@ -10,9 +10,9 @@ const checkForm = request => {
   return f;
 };
 
-const checkSchema = () => Joi.object({
+const checkSchemaAllDone = () => Joi.object({
   csrf_token: Joi.string().uuid().required()
 });
 
-exports.form = checkForm;
-exports.schema = checkSchema;
+exports.form = checkFormAllDone;
+exports.schema = checkSchemaAllDone;

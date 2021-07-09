@@ -162,10 +162,19 @@ const handleRemovePost = async request => {
   }
 };
 
-const humanise = (str) => {
+const humaniseAlertType = (str) => {
   str = str.replace('stop_or_reduce', 'Stop Or Reduce');
   str = str.replace('stop', 'Stop');
   str = str.replace('reduce', 'Reduce');
+  return str;
+};
+
+const humaniseUnits = (str) => {
+  str = str.replace('gal', 'Gallons');
+  str = str.replace('Ml', 'Megalitres');
+  str = str.replace('m³', 'Cubic metres');
+  str = str.replace('l/', 'Litres/');
+  str = str.replace('/d', ' per day');
   return str;
 };
 
@@ -178,6 +187,23 @@ const maxDuplicates = (items, label) => {
   return items.filter(item => { return item.licenceRef === label; }).length;
 };
 
+const detailedLabel = (labelData, licenceRef, dupeNum) => {
+  const labelItem = labelData.filter(item => item.licenceRef === licenceRef)[dupeNum - 1];
+  return ` ${humaniseAlertType(labelItem.alertType)} at ${labelItem.thresholdValue} ${humaniseUnits(labelItem.thresholdUnit)}`;
+};
+
+const addDuplicateIndex = (data, tempArr) => {
+  const dataWithNumbering = data.map(item => {
+    return {
+      licenceGaugingStationId: item.licenceGaugingStationId,
+      licenceId: item.licenceId,
+      licenceRef: item.licenceRef,
+      dupeNum: incrementDuplicates(item.licenceRef, tempArr)
+    };
+  });
+  return dataWithNumbering;
+};
+
 exports.blankGuid = blankGuid;
 exports.createTitle = createTitle;
 exports.redirectTo = redirectTo;
@@ -188,6 +214,9 @@ exports.getSelectedConditionText = getSelectedConditionText;
 exports.groupByLicence = groupByLicence;
 exports.handlePost = handlePost;
 exports.handleRemovePost = handleRemovePost;
-exports.humanise = humanise;
+exports.humaniseAlertType = humaniseAlertType;
+exports.humaniseUnits = humaniseUnits;
 exports.incrementDuplicates = incrementDuplicates;
 exports.maxDuplicates = maxDuplicates;
+exports.detailedLabel = detailedLabel;
+exports.addDuplicateIndex = addDuplicateIndex;

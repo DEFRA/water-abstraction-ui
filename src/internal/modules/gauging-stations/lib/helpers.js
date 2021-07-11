@@ -144,29 +144,23 @@ const handleRemovePost = async request => {
     if (sessionData.selectedLicenceCheckbox.value) {
       sessionData.selectedLicence = null;
       const selectArr = sessionData.selectedLicenceCheckbox.value;
-      promises = selectArr.map(licenceGaugingStationId => {
-        return services.water.gaugingStations.postLicenceLinkageRemove(licenceGaugingStationId);
-      });
+      promises = selectArr.map(licenceGaugingStationId => services.water.gaugingStations.postLicenceLinkageRemove(licenceGaugingStationId));
     }
-  } else if (sessionData.selectedLicence) {
-    if (sessionData.selectedLicence.value) {
-      const arrayOfLicenceGaugingStationsRecords = sessionData.selectedLicence.options.choices;
-      promises = arrayOfLicenceGaugingStationsRecords.map(row => {
-        return services.water.gaugingStations.postLicenceLinkageRemove(row.licenceGaugingStationId);
-      });
-    }
+  } else if (sessionData.selectedLicence && sessionData.selectedLicence.value) {
+    const arrayOfLicenceGaugingStationsRecords = sessionData.selectedLicence.options.choices;
+    promises = arrayOfLicenceGaugingStationsRecords.map(row => services.water.gaugingStations.postLicenceLinkageRemove(row.licenceGaugingStationId));
   }
   return Promise.all(promises);
 };
 
-const humaniseAlertType = (str) => {
+const humaniseAlertType = str => {
   str = str.replace('stop_or_reduce', 'Stop Or Reduce');
   str = str.replace('stop', 'Stop');
   str = str.replace('reduce', 'Reduce');
   return str;
 };
 
-const humaniseUnits = (str) => {
+const humaniseUnits = str => {
   str = str.replace('gal', 'Gallons');
   str = str.replace('Ml', 'Megalitres');
   str = str.replace('m³', 'Cubic metres');
@@ -177,15 +171,11 @@ const humaniseUnits = (str) => {
 
 const incrementDuplicates = (licenceRef, tempArrWithDups) => {
   tempArrWithDups.push(licenceRef);
-  return tempArrWithDups.filter(itemWithoutDistinct => {
-    return itemWithoutDistinct === licenceRef;
-  }).length;
+  return tempArrWithDups.filter(itemWithoutDistinct => itemWithoutDistinct === licenceRef).length;
 };
 
 const maxDuplicates = (itemsWithoutDistinct, label) => {
-  return itemsWithoutDistinct.filter(itemWithoutDistinct => {
-    return itemWithoutDistinct.licenceRef === label;
-  }).length;
+  return itemsWithoutDistinct.filter(itemWithoutDistinct => itemWithoutDistinct.licenceRef === label).length;
 };
 
 const detailedLabel = (labelData, licenceRef, dupeNum) => {
@@ -194,7 +184,7 @@ const detailedLabel = (labelData, licenceRef, dupeNum) => {
 };
 
 const addDuplicateIndex = (dataWithoutDistinct, tempArrWithDups) => {
-  const dataWithNumbering = dataWithoutDistinct.map(itemWithoutDistinct => {
+  return dataWithoutDistinct.map(itemWithoutDistinct => {
     return {
       licenceGaugingStationId: itemWithoutDistinct.licenceGaugingStationId,
       licenceId: itemWithoutDistinct.licenceId,
@@ -202,7 +192,6 @@ const addDuplicateIndex = (dataWithoutDistinct, tempArrWithDups) => {
       dupeNum: incrementDuplicates(itemWithoutDistinct.licenceRef, tempArrWithDups)
     };
   });
-  return dataWithNumbering;
 };
 
 exports.blankGuid = blankGuid;

@@ -2,7 +2,7 @@ const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const { humaniseAlertType, humaniseUnits, maxDuplicates, addDuplicateIndex } = require('../lib/helpers');
 
-const checkForm = request => {
+const checkFormTags = request => {
   const f = formFactory(request.path);
   const { licenceGaugingStations } = request.pre;
   const { data } = licenceGaugingStations;
@@ -12,10 +12,8 @@ const checkForm = request => {
     if (dupeMax > 1) {
       return ' Multiple tags';
     }
-    const itemLabel = dataLabel.filter(itemLabel => {
-      return itemLabel.licenceRef === licenceRef;
-    })[0];
-    return ` ${humaniseAlertType(itemLabel.alertType)} at ${itemLabel.thresholdValue} ${humaniseUnits(itemLabel.thresholdUnit)}`;
+    const itemLabel0 = dataLabel.filter(itemLabel => itemLabel.licenceRef === licenceRef)[0];
+    return ` ${humaniseAlertType(itemLabel0.alertType)} at ${itemLabel0.thresholdValue} ${humaniseUnits(itemLabel0.thresholdUnit)}`;
   };
 
   const dataWithNumbering = addDuplicateIndex(data, tempArr);
@@ -40,7 +38,7 @@ const checkForm = request => {
         message: 'Select a licence number'
       }
     },
-    choices: dataWithLicenceIdMultipleLabel.filter(item => { return item.dupeNum === item.dupeMax; })
+    choices: dataWithLicenceIdMultipleLabel.filter(item => item.dupeNum === item.dupeMax)
   }));
 
   f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));
@@ -48,10 +46,10 @@ const checkForm = request => {
   return f;
 };
 
-const checkSchema = () => Joi.object({
+const checkSchemaTags = () => Joi.object({
   selectedLicence: Joi.string().uuid().required(),
   csrf_token: Joi.string().uuid().required()
 });
 
-exports.form = checkForm;
-exports.schema = checkSchema;
+exports.form = checkFormTags;
+exports.schema = checkSchemaTags;

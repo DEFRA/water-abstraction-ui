@@ -4,7 +4,7 @@ const { formFactory, fields } = require('shared/lib/forms/');
 const session = require('../lib/session');
 const { maxDuplicates, detailedLabel, addDuplicateIndex } = require('../lib/helpers');
 
-const checkForm = request => {
+const checkFormMultipleRadio = request => {
   const f = formFactory(request.path);
   const { licenceGaugingStations } = request.pre;
   const { data } = licenceGaugingStations;
@@ -25,9 +25,7 @@ const checkForm = request => {
 
   let selectedData = dataWithLicenceId;
   if (mySession.selectedLicence) {
-    selectedData = dataWithLicenceId.filter(item => {
-      return item.value === mySession.selectedLicence.value;
-    });
+    selectedData = dataWithLicenceId.filter(item => item.value === mySession.selectedLicence.value);
   }
 
   f.fields.push(fields.radio('selectedLicence', {
@@ -47,10 +45,10 @@ const checkForm = request => {
   f.fields.push(fields.button(null, { label: 'Confirm' }));
   return f;
 };
-const checkSchema = () => Joi.object({
+const checkSchemaMultipleRadio = () => Joi.object({
   selectedLicence: Joi.string().uuid().required(),
   csrf_token: Joi.string().uuid().required()
 });
 
-exports.form = checkForm;
-exports.schema = checkSchema;
+exports.form = checkFormMultipleRadio;
+exports.schema = checkSchemaMultipleRadio;

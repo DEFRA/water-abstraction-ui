@@ -4,7 +4,7 @@ const { formFactory, fields } = require('shared/lib/forms/');
 const session = require('../lib/session');
 const { maxDuplicates, detailedLabel, addDuplicateIndex } = require('../lib/helpers');
 
-const checkForm = request => {
+const checkFormMultipleCheckbox = request => {
   const f = formFactory(request.path);
   const { licenceGaugingStations } = request.pre;
   const { data } = licenceGaugingStations;
@@ -26,9 +26,7 @@ const checkForm = request => {
 
   let selectedData = dataWithLicenceGaugingStationId;
   if (mySession.selectedLicence) {
-    selectedData = dataWithLicenceGaugingStationId.filter(itemLabel => {
-      return itemLabel.licenceId === mySession.selectedLicence.value;
-    });
+    selectedData = dataWithLicenceGaugingStationId.filter(itemLabel => itemLabel.licenceId === mySession.selectedLicence.value);
   }
 
   f.fields.push(fields.checkbox('selectedLicenceCheckbox', {
@@ -49,10 +47,10 @@ const checkForm = request => {
   return f;
 };
 
-const checkSchema = () => Joi.object({
+const checkSchemaMultipleCheckbox = () => Joi.object({
   selectedLicenceCheckbox: Joi.array().required(),
   csrf_token: Joi.string().uuid().required()
 });
 
-exports.form = checkForm;
-exports.schema = checkSchema;
+exports.form = checkFormMultipleCheckbox;
+exports.schema = checkSchemaMultipleCheckbox;

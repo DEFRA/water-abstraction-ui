@@ -154,7 +154,7 @@ const handleRemovePost = async request => {
 };
 
 const humaniseAlertType = str => {
-  str = str.replace('stop_or_reduce', 'Stop Or Reduce');
+  str = str.replace('stop_or_reduce', 'Reduce');
   str = str.replace('stop', 'Stop');
   str = str.replace('reduce', 'Reduce');
   return str;
@@ -174,9 +174,8 @@ const incrementDuplicates = (licenceRef, tempArrWithDups) => {
   return tempArrWithDups.filter(itemWithoutDistinct => itemWithoutDistinct === licenceRef).length;
 };
 
-const maxDuplicates = (itemsWithoutDistinct, label) => {
-  return itemsWithoutDistinct.filter(itemWithoutDistinct => itemWithoutDistinct.licenceRef === label).length;
-};
+const maxDuplicates = (itemsWithoutDistinct, label) =>
+  itemsWithoutDistinct.filter(itemWithoutDistinct => itemWithoutDistinct.licenceRef === label).length;
 
 const detailedLabel = (labelData, licenceRef, dupeNum) => {
   const labelItem = labelData.filter(item => item.licenceRef === licenceRef)[dupeNum - 1];
@@ -189,9 +188,40 @@ const addDuplicateIndex = (dataWithoutDistinct, tempArrWithDups) => {
       licenceGaugingStationId: itemWithoutDistinct.licenceGaugingStationId,
       licenceId: itemWithoutDistinct.licenceId,
       licenceRef: itemWithoutDistinct.licenceRef,
+      alertType: itemWithoutDistinct.alertType,
+      thresholdValue: itemWithoutDistinct.thresholdValue,
+      thresholdUnit: itemWithoutDistinct.thresholdUnit,
       dupeNum: incrementDuplicates(itemWithoutDistinct.licenceRef, tempArrWithDups)
     };
   });
+};
+
+const selectedLicenceCheckboxWithLinkages = (request) => {
+  const { licenceGaugingStations } = request.pre;
+  const { data } = licenceGaugingStations;
+  const isSelectedCheckbox = (licenceGaugingStationId, selectionArray) => {
+    return selectionArray.filter(chkItem => chkItem === licenceGaugingStationId).length > 0;
+  };
+
+  const dataFormatted = data.map(item => {
+    return {
+      licenceGaugingStationId: item.licenceGaugingStationId,
+      licenceId: item.licenceId,
+      licenceRef: item.licenceRef,
+      alertType: item.alertType,
+      thresholdValue: item.thresholdValue,
+      thresholdUnit: humaniseUnits(item.thresholdUnit)
+    };
+  });
+
+  const checkBoxSelection = session.get(request).selectedLicenceCheckbox.value;
+  const output = chain(dataFormatted).groupBy('licenceId').map((value, key) => ({
+    licenceRef: value[0].licenceRef,
+    licenceId: value[0].licenceId,
+    linkages: value.filter(itemInLinkages => isSelectedCheckbox(itemInLinkages.licenceGaugingStationId, checkBoxSelection))
+  })).value();
+
+  return output.filter(chkItem => chkItem.linkages.length > 0);
 };
 
 exports.blankGuid = blankGuid;
@@ -210,3 +240,4 @@ exports.incrementDuplicates = incrementDuplicates;
 exports.maxDuplicates = maxDuplicates;
 exports.detailedLabel = detailedLabel;
 exports.addDuplicateIndex = addDuplicateIndex;
+exports.selectedLicenceCheckboxWithLinkages = selectedLicenceCheckboxWithLinkages;

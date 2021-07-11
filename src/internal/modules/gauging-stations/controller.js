@@ -331,10 +331,16 @@ const getRemoveTagComplete = async (request, h) => {
   const formCheckBox = await formHandler.handleFormRequest(request, linkageForms.removeTagsMultipleCheckbox);
   const selectedLicenceCheckbox = formCheckBox.fields.find(field => field.name === 'selectedLicenceCheckbox');
 
-  if (selectedLicenceCheckbox.options.choices.length <= 1) {
+  if (selectedLicenceCheckbox.options.choices.length > 1) {
+    const selectedLicenceCheckboxWithLinkages = helpers.selectedLicenceCheckboxWithLinkages(request);
+    session.merge(request, {
+      selectedLicenceCheckboxWithLinkages
+    });
+  } else {
     const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsMultiple);
     const selectedLicenceRadio = form.fields.find(field => field.name === 'selectedLicence');
     session.merge(request, {
+      selectedLicenceCheckboxWithLinkages: [],
       selectedLicence: selectedLicenceRadio
     });
   }

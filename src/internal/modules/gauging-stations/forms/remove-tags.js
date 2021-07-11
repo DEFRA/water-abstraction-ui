@@ -23,6 +23,9 @@ const checkFormTags = request => {
       value: item.licenceId,
       label: item.licenceRef,
       hint: multipleLabel(data, item.licenceRef, maxDuplicates(dataWithNumbering, item.licenceRef)),
+      alertType: item.alertType,
+      thresholdValue: item.thresholdValue,
+      thresholdUnit: humaniseUnits(item.thresholdUnit),
       dupeNum: item.dupeNum,
       dupeMax: maxDuplicates(dataWithNumbering, item.licenceRef)
     };

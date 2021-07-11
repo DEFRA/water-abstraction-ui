@@ -26,20 +26,15 @@
 
       <dl class="govuk-summary-list">
       {% set tagDisplayDone = false %}
-      {% for tagCheckboxValue in sessionData.selectedLicenceCheckbox.value %}
-        {% set tagDisplayDone = true %}
+      {% for tagCheckbox in sessionData.selectedLicenceCheckboxWithLinkages %}
+         {% set tagDisplayDone = true %}
         <br/>
             <div class="govuk-summary-list__row">
               <dt class="govuk-summary-list__key">
                 Licence
               </dt>
               <dd class="govuk-summary-list__value">
-              {% for tagCheckbox in sessionData.selectedLicenceCheckbox.options.choices %}
-                {% if tagCheckbox.value  == tagCheckboxValue %}
-                  {{tagCheckbox.hint}}
-                {% endif %}
-
-              {% endfor %}
+                {{tagCheckbox.licenceRef}}
               </dd>
             </div>
 
@@ -48,10 +43,11 @@
                 Tag
               </dt>
               <dd class="govuk-summary-list__value">
-              {% for tagCheckbox in sessionData.selectedLicenceCheckbox.options.choices %}
-                {% if tagCheckbox.value  == tagCheckboxValue %}
-                  {{tagCheckbox.label}}
-                {% endif %}
+              {% for linkage in tagCheckbox.linkages %}
+                {{ 'Reduce' if linkage.alertType.includes('reduce') else 'Stop' }}
+                {{ linkage.thresholdValue }}
+                {{ linkage.thresholdUnit }}
+                <br/>
               {% endfor %}
               </dd>
             </div>
@@ -75,7 +71,10 @@
                 Tag
               </dt>
               <dd class="govuk-summary-list__value">
-                {{tagRadio.label}}
+              {{ 'Reduce' if tagRadio.alertType.includes('reduce') else 'Stop' }}
+              {{ tagRadio.thresholdValue }}
+              {{ tagRadio.thresholdUnit }}
+              <br/>
               </dd>
             </div>
         {% endfor %}

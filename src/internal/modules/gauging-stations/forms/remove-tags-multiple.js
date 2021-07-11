@@ -2,7 +2,7 @@ const Joi = require('joi');
 
 const { formFactory, fields } = require('shared/lib/forms/');
 const session = require('../lib/session');
-const { maxDuplicates, detailedLabel, addDuplicateIndex } = require('../lib/helpers');
+const { maxDuplicates, detailedLabel, addDuplicateIndex, humaniseUnits } = require('../lib/helpers');
 
 const checkFormMultipleRadio = request => {
   const f = formFactory(request.path);
@@ -18,6 +18,9 @@ const checkFormMultipleRadio = request => {
       value: item.licenceId,
       label: detailedLabel(data, item.licenceRef, item.dupeNum),
       hint: item.licenceRef,
+      alertType: item.alertType,
+      thresholdValue: item.thresholdValue,
+      thresholdUnit: humaniseUnits(item.thresholdUnit),
       dupeNum: item.dupeNum,
       dupeMax: maxDuplicates(dataWithNumbering, item.licenceRef)
     };

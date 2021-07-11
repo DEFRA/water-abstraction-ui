@@ -139,27 +139,24 @@ const handlePost = async request => {
 
 const handleRemovePost = async request => {
   const sessionData = session.get(request);
-
+  let promises = [];
   if (sessionData.selectedLicenceCheckbox) {
     if (sessionData.selectedLicenceCheckbox.value) {
       sessionData.selectedLicence = null;
-      let selectArr = sessionData.selectedLicenceCheckbox.value;
-      const promises = selectArr.map(licenceGaugingStationId => {
+      const selectArr = sessionData.selectedLicenceCheckbox.value;
+      promises = selectArr.map(licenceGaugingStationId => {
         return services.water.gaugingStations.postLicenceLinkageRemove(licenceGaugingStationId);
       });
-      return Promise.all(promises);
     }
-  }
-
-  if (sessionData.selectedLicence) {
+  } else if (sessionData.selectedLicence) {
     if (sessionData.selectedLicence.value) {
-      let arrayOfLicenceGaugingStationsRecords = sessionData.selectedLicence.options.choices;
-      const promises = arrayOfLicenceGaugingStationsRecords.map(row => {
+      const arrayOfLicenceGaugingStationsRecords = sessionData.selectedLicence.options.choices;
+      promises = arrayOfLicenceGaugingStationsRecords.map(row => {
         return services.water.gaugingStations.postLicenceLinkageRemove(row.licenceGaugingStationId);
       });
-      return Promise.all(promises);
     }
   }
+  return Promise.all(promises);
 };
 
 const humaniseAlertType = (str) => {
@@ -178,13 +175,17 @@ const humaniseUnits = (str) => {
   return str;
 };
 
-const incrementDuplicates = (licenceRef, tempArr) => {
-  tempArr.push(licenceRef);
-  return tempArr.filter(item => { return item === licenceRef; }).length;
+const incrementDuplicates = (licenceRef, tempArrWithDups) => {
+  tempArrWithDups.push(licenceRef);
+  return tempArrWithDups.filter(itemWithoutDistinct => {
+    return itemWithoutDistinct === licenceRef;
+  }).length;
 };
 
-const maxDuplicates = (items, label) => {
-  return items.filter(item => { return item.licenceRef === label; }).length;
+const maxDuplicates = (itemsWithoutDistinct, label) => {
+  return itemsWithoutDistinct.filter(itemWithoutDistinct => {
+    return itemWithoutDistinct.licenceRef === label;
+  }).length;
 };
 
 const detailedLabel = (labelData, licenceRef, dupeNum) => {
@@ -192,13 +193,13 @@ const detailedLabel = (labelData, licenceRef, dupeNum) => {
   return ` ${humaniseAlertType(labelItem.alertType)} at ${labelItem.thresholdValue} ${humaniseUnits(labelItem.thresholdUnit)}`;
 };
 
-const addDuplicateIndex = (data, tempArr) => {
-  const dataWithNumbering = data.map(item => {
+const addDuplicateIndex = (dataWithoutDistinct, tempArrWithDups) => {
+  const dataWithNumbering = dataWithoutDistinct.map(itemWithoutDistinct => {
     return {
-      licenceGaugingStationId: item.licenceGaugingStationId,
-      licenceId: item.licenceId,
-      licenceRef: item.licenceRef,
-      dupeNum: incrementDuplicates(item.licenceRef, tempArr)
+      licenceGaugingStationId: itemWithoutDistinct.licenceGaugingStationId,
+      licenceId: itemWithoutDistinct.licenceId,
+      licenceRef: itemWithoutDistinct.licenceRef,
+      dupeNum: incrementDuplicates(itemWithoutDistinct.licenceRef, tempArrWithDups)
     };
   });
   return dataWithNumbering;

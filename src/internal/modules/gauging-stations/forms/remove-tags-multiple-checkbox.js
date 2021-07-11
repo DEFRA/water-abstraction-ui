@@ -26,7 +26,9 @@ const checkForm = request => {
 
   let selectedData = dataWithLicenceGaugingStationId;
   if (mySession.selectedLicence) {
-    selectedData = dataWithLicenceGaugingStationId.filter(item => { return item.licenceId === mySession.selectedLicence.value; });
+    selectedData = dataWithLicenceGaugingStationId.filter(itemLabel => {
+      return itemLabel.licenceId === mySession.selectedLicence.value;
+    });
   }
 
   f.fields.push(fields.checkbox('selectedLicenceCheckbox', {

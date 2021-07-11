@@ -6,14 +6,16 @@ const checkForm = request => {
   const f = formFactory(request.path);
   const { licenceGaugingStations } = request.pre;
   const { data } = licenceGaugingStations;
-  let tempArr = [];
+  const tempArr = [];
 
-  const multipleLabel = (data, licenceRef, dupeMax) => {
+  const multipleLabel = (dataLabel, licenceRef, dupeMax) => {
     if (dupeMax > 1) {
       return ' Multiple tags';
     }
-    let item = data.filter(item => { return item.licenceRef === licenceRef; })[0];
-    return ` ${humaniseAlertType(item.alertType)} at ${item.thresholdValue} ${humaniseUnits(item.thresholdUnit)}`;
+    const itemLabel = dataLabel.filter(itemLabel => {
+      return itemLabel.licenceRef === licenceRef;
+    })[0];
+    return ` ${humaniseAlertType(itemLabel.alertType)} at ${itemLabel.thresholdValue} ${humaniseUnits(itemLabel.thresholdUnit)}`;
   };
 
   const dataWithNumbering = addDuplicateIndex(data, tempArr);

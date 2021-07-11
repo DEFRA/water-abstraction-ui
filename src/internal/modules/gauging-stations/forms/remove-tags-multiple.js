@@ -25,7 +25,9 @@ const checkForm = request => {
 
   let selectedData = dataWithLicenceId;
   if (mySession.selectedLicence) {
-    selectedData = dataWithLicenceId.filter(item => { return item.value === mySession.selectedLicence.value; });
+    selectedData = dataWithLicenceId.filter(item => {
+      return item.value === mySession.selectedLicence.value;
+    });
   }
 
   f.fields.push(fields.radio('selectedLicence', {

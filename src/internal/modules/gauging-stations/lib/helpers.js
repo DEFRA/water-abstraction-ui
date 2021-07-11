@@ -196,12 +196,11 @@ const addDuplicateIndex = (dataWithoutDistinct, tempArrWithDups) => {
   });
 };
 
-const selectedLicenceCheckboxWithLinkages = (request) => {
+const selectedLicenceCheckboxWithLinkages = request => {
   const { licenceGaugingStations } = request.pre;
   const { data } = licenceGaugingStations;
-  const isSelectedCheckbox = (licenceGaugingStationId, selectionArray) => {
-    return selectionArray.filter(chkItem => chkItem === licenceGaugingStationId).length > 0;
-  };
+  const isSelectedCheckbox = (licenceGaugingStationId, selectionArray) =>
+    selectionArray.filter(chkItem => chkItem === licenceGaugingStationId).length > 0;
 
   const dataFormatted = data.map(item => {
     return {
@@ -215,7 +214,7 @@ const selectedLicenceCheckboxWithLinkages = (request) => {
   });
 
   const checkBoxSelection = session.get(request).selectedLicenceCheckbox.value;
-  const output = chain(dataFormatted).groupBy('licenceId').map((value, key) => ({
+  const output = chain(dataFormatted).groupBy('licenceId').map(value => ({
     licenceRef: value[0].licenceRef,
     licenceId: value[0].licenceId,
     linkages: value.filter(itemInLinkages => isSelectedCheckbox(itemInLinkages.licenceGaugingStationId, checkBoxSelection))

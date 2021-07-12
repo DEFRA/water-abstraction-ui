@@ -140,10 +140,10 @@ const handlePost = async request => {
 const handleRemovePost = async request => {
   const sessionData = session.get(request);
   let promises = [];
-  if (sessionData.selectedLicenceCheckbox) {
-    if (sessionData.selectedLicenceCheckbox.value) {
+  if (sessionData.selectedCondition) {
+    if (sessionData.selectedCondition.value) {
       sessionData.selectedLicence = null;
-      const selectArr = sessionData.selectedLicenceCheckbox.value;
+      const selectArr = sessionData.selectedCondition.value;
       promises = selectArr.map(licenceGaugingStationId => services.water.gaugingStations.postLicenceLinkageRemove(licenceGaugingStationId));
     }
   } else if (sessionData.selectedLicence && sessionData.selectedLicence.value) {
@@ -196,7 +196,7 @@ const addDuplicateIndex = (dataWithoutDistinct, tempArrWithDups) => {
   });
 };
 
-const selectedLicenceCheckboxWithLinkages = request => {
+const selectedConditionWithLinkages = request => {
   const { licenceGaugingStations } = request.pre;
   const { data } = licenceGaugingStations;
   const isSelectedCheckbox = (licenceGaugingStationId, selectionArray) =>
@@ -213,7 +213,7 @@ const selectedLicenceCheckboxWithLinkages = request => {
     };
   });
 
-  const checkBoxSelection = session.get(request).selectedLicenceCheckbox.value;
+  const checkBoxSelection = session.get(request).selectedCondition.value;
   const output = chain(dataFormatted).groupBy('licenceId').map(value => ({
     licenceRef: value[0].licenceRef,
     licenceId: value[0].licenceId,
@@ -239,4 +239,4 @@ exports.incrementDuplicates = incrementDuplicates;
 exports.maxDuplicates = maxDuplicates;
 exports.detailedLabel = detailedLabel;
 exports.addDuplicateIndex = addDuplicateIndex;
-exports.selectedLicenceCheckboxWithLinkages = selectedLicenceCheckboxWithLinkages;
+exports.selectedConditionWithLinkages = selectedConditionWithLinkages;

@@ -29,7 +29,7 @@ const checkFormMultipleCheckbox = request => {
     selectedData = dataWithLicenceGaugingStationId.filter(itemLabel => itemLabel.licenceId === mySession.selectedLicence.value);
   }
 
-  f.fields.push(fields.checkbox('selectedLicenceCheckbox', {
+  f.fields.push(fields.checkbox('selectedCondition', {
     controlClass: 'govuk-input govuk-input--width-10',
     errors: {
       'any.required': {
@@ -48,7 +48,7 @@ const checkFormMultipleCheckbox = request => {
 };
 
 const checkSchemaMultipleCheckbox = () => Joi.object({
-  selectedLicenceCheckbox: Joi.array().required(),
+  selectedCondition: Joi.array().min(1),
   csrf_token: Joi.string().uuid().required()
 });
 

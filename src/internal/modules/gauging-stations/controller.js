@@ -276,7 +276,7 @@ const postRemoveTagOrMultiple = async (request, h) => {
   const selectedLicenceRadio = form.fields.find(field => field.name === 'selectedLicence');
   const sessionData = session.merge(request, {
     selectedLicence: selectedLicenceRadio,
-    selectedLicenceCheckbox: [] /* clear selection */
+    selectedCondition: [] /* clear selection */
   });
 
   if (selectedLicenceRadio) {
@@ -295,7 +295,7 @@ const getRemoveMultipleTagsCheckbox = async (request, h) => {
   const caption = await helpers.getCaption(request);
 
   const sessionData = session.merge(request, {
-    selectedLicenceCheckbox: [] /* clear selection */
+    selectedCondition: [] /* clear selection */
   });
 
   return h.view('nunjucks/form', {
@@ -315,10 +315,10 @@ const postRemoveTagsMultiple = async (request, h) => {
   }
 
   const formCheckBox = await formHandler.handleFormRequest(request, linkageForms.removeTagsMultipleCheckbox);
-  const selectedLicenceCheckbox = formCheckBox.fields.find(field => field.name === 'selectedLicenceCheckbox');
+  const selectedCondition = formCheckBox.fields.find(field => field.name === 'selectedCondition');
 
   session.merge(request, {
-    selectedLicenceCheckbox: selectedLicenceCheckbox
+    selectedCondition: selectedCondition
   });
 
   return h.redirect(request.path.replace(/\/[^/]*$/, '/remove-tag-complete'));
@@ -329,18 +329,18 @@ const getRemoveTagComplete = async (request, h) => {
   const caption = await helpers.getCaption(request);
 
   const formCheckBox = await formHandler.handleFormRequest(request, linkageForms.removeTagsMultipleCheckbox);
-  const selectedLicenceCheckbox = formCheckBox.fields.find(field => field.name === 'selectedLicenceCheckbox');
+  const selectedCondition = formCheckBox.fields.find(field => field.name === 'selectedCondition');
 
-  if (selectedLicenceCheckbox.options.choices.length > 1) {
-    const selectedLicenceCheckboxWithLinkages = helpers.selectedLicenceCheckboxWithLinkages(request);
+  if (selectedCondition.options.choices.length > 1) {
+    const selectedConditionWithLinkages = helpers.selectedConditionWithLinkages(request);
     session.merge(request, {
-      selectedLicenceCheckboxWithLinkages
+      selectedConditionWithLinkages
     });
   } else {
     const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsMultiple);
     const selectedLicenceRadio = form.fields.find(field => field.name === 'selectedLicence');
     session.merge(request, {
-      selectedLicenceCheckboxWithLinkages: [],
+      selectedConditionWithLinkages: [],
       selectedLicence: selectedLicenceRadio
     });
   }

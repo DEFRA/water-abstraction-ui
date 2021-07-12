@@ -15,13 +15,13 @@ const verifyNewEmailForm = (request, data = {}) => {
     autoComplete: 'one-time-code',
     controlClass: 'govuk-input--width-4',
     errors: {
-      'any.empty': {
+      'string.empty': {
         message: 'Check your code'
       },
       'any.required': {
         message: 'Check your code'
       },
-      'string.regex.base': {
+      'string.pattern.base': {
         message: 'Check your code'
       }
     }

@@ -8,7 +8,7 @@ const eventPreHandlers = require('shared/lib/pre-handlers/events');
 const constants = require('../../../lib/constants');
 const { returns } = constants.scope;
 const { createFormRoutes } = require('shared/lib/route-helpers');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 const formRoutes = {
   enterLicenceNumber: {

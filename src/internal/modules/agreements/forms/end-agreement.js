@@ -1,6 +1,6 @@
 const { formFactory, fields } = require('shared/lib/forms/');
 const JoiDate = require('@hapi/joi-date');
-const Joi = require('@hapi/joi').extend(JoiDate);
+const Joi = require('joi').extend(JoiDate);
 const moment = require('moment');
 
 /**
@@ -25,7 +25,7 @@ const endAgreementForm = (request, endDate) => {
       'date.format': {
         message: 'Enter the agreement end date'
       },
-      'any.empty': {
+      'string.empty': {
         message: 'Enter the agreement end date'
       },
       'date.base': {

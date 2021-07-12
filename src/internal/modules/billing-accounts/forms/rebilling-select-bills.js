@@ -2,7 +2,7 @@
 
 const moment = require('moment');
 const { get } = require('lodash');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const sentenceCase = require('sentence-case');
 
 const { isoToReadable } = require('@envage/water-abstraction-helpers').nald.dates;

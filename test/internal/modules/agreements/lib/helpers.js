@@ -10,7 +10,7 @@ const {
 const sandbox = require('sinon').createSandbox();
 
 const helpers = require('internal/modules/agreements/lib/helpers');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 experiment('internal/modules/agreements/lib/reducer', () => {
   let request, h;

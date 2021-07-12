@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { capitalize } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms/');
 const { SOURCES, CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants');

@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const titleCase = require('title-case');
 const { get, isObject, isNull } = require('lodash');
 
@@ -36,7 +36,7 @@ const getChoices = request => {
       fields: [
         fields.text('accountSearch', {
           errors: {
-            'any.empty': {
+            'string.empty': {
               message: 'Enter the name of an organisation or individual.'
             }
           },
@@ -76,7 +76,7 @@ const selectCompanyForm = request => {
 const selectCompanyFormSchema = () => {
   return {
     csrf_token: Joi.string().uuid().required(),
-    account: Joi.string().required().valid([BILLING_ACCOUNT_HOLDER, OTHER_ACCOUNT]),
+    account: Joi.string().required().valid(...[BILLING_ACCOUNT_HOLDER, OTHER_ACCOUNT]),
     accountSearch: Joi.string().allow('').when(
       'account',
       {

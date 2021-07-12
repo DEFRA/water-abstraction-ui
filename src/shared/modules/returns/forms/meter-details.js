@@ -3,7 +3,7 @@ const { fields } = require('shared/lib/forms');
 const getErrors = message => {
   return {
     'any.required': { message },
-    'any.empty': { message }
+    'string.empty': { message }
   };
 };
 

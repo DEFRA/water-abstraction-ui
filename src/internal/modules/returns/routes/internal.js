@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const controller = require('../controllers/internal');
 const constants = require('../../../lib/constants');
 const returns = constants.scope.returns;
@@ -111,7 +111,7 @@ module.exports = {
           'dateReceived-month': Joi.string().allow(''),
           'dateReceived-year': Joi.string().allow(''),
           csrf_token: Joi.string().guid(),
-          isUnderQuery: Joi.string().valid(['', 'under_query'])
+          isUnderQuery: Joi.string().valid('', 'under_query')
         }
 
       },

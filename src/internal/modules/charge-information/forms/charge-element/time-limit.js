@@ -2,7 +2,7 @@
 
 const { has } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms/');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants');
 const { getChargeElementData, getChargeElementActionUrl } = require('../../lib/form-helpers');
 
@@ -109,7 +109,7 @@ const schema = (request) => {
   const expiredDate = request.pre.licence.expiredDate || '9999-01-01';
   return {
     csrf_token: Joi.string().uuid().required(),
-    timeLimitedPeriod: Joi.string().required().valid(['yes', 'no']),
+    timeLimitedPeriod: Joi.string().required().valid('yes', 'no'),
     startDate: Joi.when('timeLimitedPeriod', {
       is: 'yes',
       then: Joi.date().iso().min(startDate).required()

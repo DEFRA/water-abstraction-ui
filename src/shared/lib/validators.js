@@ -1,6 +1,4 @@
-const BaseJoi = require('@hapi/joi');
-const joiPasswordValidator = require('./joi-password-validator');
-const Joi = BaseJoi.extend(joiPasswordValidator);
+const Joi = require('joi');
 const returnIDRegex = /^v1:[1-8]:[^:]+:[0-9]+:[0-9]{4}-[0-9]{2}-[0-9]{2}:[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
 
 module.exports = {
@@ -18,7 +16,17 @@ module.exports = {
     utm_campaign: Joi.string().max(64)
   },
 
-  VALID_PASSWORD: Joi.string().requireUppercase().requireSymbol().min(8).max(128).required(),
+  VALID_PASSWORD: Joi.string().custom((value, helper) => {
+    if (!value.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/)) {
+      return helper.message('must contain an uppercase character');
+    }
+    if (!value.match(/^[^a-zA-Z0-9]+$/)) {
+      return helper.message('must contain a symbol');
+    }
+    if (value.length < 8) {
+      return helper.message('must be at least 8 characters long');
+    }
+  }).min(8).max(128).required(),
   VALID_CONFIRM_PASSWORD: Joi.string().valid(Joi.ref('password')).required(),
 
   VALID_LICENCE_QUERY: {
@@ -31,5 +39,5 @@ module.exports = {
 
   VALID_LICENCE_NAME: Joi.string().trim().min(2).max(32).regex(/^[a-z0-9 ']+$/i),
 
-  VALID_RETURN_ID: Joi.string().regex(returnIDRegex).required()
+  VALID_RETURN_ID: Joi.string().pattern(returnIDRegex).required()
 };

@@ -8,7 +8,7 @@
  * @module src/internal/modules/notifications/task-data
  */
 const nunjucks = require('nunjucks');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { find } = require('lodash');
 const { defaultMapper, licenceNumbersMapper, dateMapper, addressMapper } = require('./mappers');
 
@@ -206,7 +206,7 @@ class TaskData {
       const messages = {
         'any.required': `The ${label} field is required`,
         'array.min': `At least ${detail.context.limit} value is required in the ${label} field`,
-        'any.empty': `The ${label} field is required`
+        'string.empty': `The ${label} field is required`
       };
 
       acc.push({

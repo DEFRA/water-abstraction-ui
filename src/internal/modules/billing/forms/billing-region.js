@@ -2,7 +2,7 @@
 
 const { formFactory, fields } = require('shared/lib/forms/');
 const { snakeCase } = require('lodash');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { TWO_PART_TARIFF } = require('../lib/bill-run-types');
 
 const mapChoices = regionsData =>

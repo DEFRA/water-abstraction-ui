@@ -1,6 +1,6 @@
 const controller = require('./controller');
 const { VALID_EMAIL, VALID_FLASH, VALID_GUID, OPTIONAL_GUID, VALID_UTM, VALID_PASSWORD, VALID_CONFIRM_PASSWORD } = require('../../lib/validators');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 module.exports = [
   {

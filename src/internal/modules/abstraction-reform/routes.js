@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const controller = require('./controllers/edit');
 const reportsController = require('./controllers/reports');
 const statuses = require('./lib/statuses');

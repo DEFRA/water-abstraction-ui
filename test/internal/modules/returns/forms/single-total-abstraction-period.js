@@ -1,6 +1,6 @@
 const { expect } = require('@hapi/code');
 const uuid = require('uuid/v4');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const {
   beforeEach,
   experiment,

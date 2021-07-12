@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const controller = require('./controller');
 const contactRoutes = require('./contact-routes');
 const apiController = require('./api-controller');

@@ -26,7 +26,7 @@ const conditionEntryForm = request => {
     hint: 'This is the licence condition recorded in NALD and stated on the licence.',
     controlClass: 'govuk-input govuk-input--width-10',
     errors: {
-      'any.empty': {
+      'string.empty': {
         message: 'Select a condition'
       },
       'any.required': {

@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const helpers = require('@envage/water-abstraction-helpers');
 const { capitalize } = require('lodash');
@@ -45,7 +45,7 @@ const form = request => {
 const schema = (request) => {
   return {
     csrf_token: Joi.string().uuid().required(),
-    season: Joi.string().required().valid(SEASONS)
+    season: Joi.string().required().valid(...SEASONS)
   };
 };
 

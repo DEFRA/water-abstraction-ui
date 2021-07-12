@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { pick } = require('lodash');
 const METHOD_VOLUMES = 'abstractionVolumes';
 const METHOD_ONE_METER = 'oneMeter';
@@ -37,7 +37,7 @@ class Reading {
    * @param {String} type - estimated|measured
    */
   setReadingType (type) {
-    Joi.assert(type, Joi.string().valid([READING_TYPE_ESTIMATED, READING_TYPE_MEASURED]));
+    Joi.assert(type, Joi.string().valid(READING_TYPE_ESTIMATED, READING_TYPE_MEASURED));
     this.type = type;
     this.totalFlag = false;
     return this;
@@ -49,7 +49,7 @@ class Reading {
    * @param {String} method - abstractionVolumes|oneMeter
    */
   setMethod (method) {
-    Joi.assert(method, Joi.string().valid([METHOD_VOLUMES, METHOD_ONE_METER]));
+    Joi.assert(method, Joi.string().valid(METHOD_VOLUMES, METHOD_ONE_METER));
     this.method = method;
     if (method === METHOD_ONE_METER) {
       this.totalFlag = false;

@@ -1,7 +1,7 @@
 const controller = require('../controllers/charge-element');
 const preHandlers = require('../pre-handlers');
 const { VALID_GUID } = require('shared/lib/validators');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { chargeVersionWorkflowEditor, chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope;
 const allowedScopes = [chargeVersionWorkflowEditor, chargeVersionWorkflowReviewer];
 const { ROUTING_CONFIG } = require('../lib/charge-elements/constants');

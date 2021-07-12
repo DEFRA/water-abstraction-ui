@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { isNull, isObject } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms/');
 

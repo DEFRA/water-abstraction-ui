@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { get } = require('lodash');
 const { fields } = require('shared/lib/forms');
 const { getLineName, getLineLabel } = require('./common');

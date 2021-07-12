@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const controller = require('./controller');
 const { scope } = require('../../lib/constants');
 const preHandlers = require('shared/lib/pre-handlers/licences');

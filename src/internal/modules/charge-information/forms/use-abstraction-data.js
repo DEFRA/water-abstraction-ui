@@ -1,7 +1,7 @@
 'use strict';
 
 const { get } = require('lodash');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const moment = require('moment');
 
 const { formFactory, fields } = require('shared/lib/forms/');
@@ -58,7 +58,7 @@ const useAbstractionDataSchema = (request) => {
   const validIds = filterChargeVersions(chargeVersions).map(cv => cv.id);
   return {
     csrf_token: Joi.string().uuid().required(),
-    useAbstractionData: Joi.string().valid(['yes', 'no', ...validIds]).required()
+    useAbstractionData: Joi.string().valid(...['yes', 'no', ...validIds]).required()
   };
 };
 

@@ -18,7 +18,7 @@ const getNameField = (name, value) =>
   fields.text(camelCase(name), {
     controlClass: INPUT_WIDTH_20,
     errors: {
-      'any.empty': {
+      'string.empty': {
         message: `Enter a ${name}`
       } },
     label: `${capitalize(name)}`

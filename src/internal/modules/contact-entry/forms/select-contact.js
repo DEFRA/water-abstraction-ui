@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const { CONTACT_TYPES } = require('../lib/constants');
 const helpers = require('../lib/helpers');
@@ -24,7 +24,7 @@ const newContactChoices = department => [
     fields: [
       fields.text('department', {
         errors: {
-          'any.empty': {
+          'string.empty': {
             message: 'Enter a department'
           }
         },
@@ -86,7 +86,7 @@ const selectContactSchema = request => {
 
   return Joi.object({
     csrf_token: Joi.string().uuid().required(),
-    selectedContact: Joi.string().required().valid(['person', 'department', ...validContactIds]),
+    selectedContact: Joi.string().required().valid(...['person', 'department', ...validContactIds]),
     department: Joi.string().allow('').when(
       'selectedContact', {
         is: 'department',

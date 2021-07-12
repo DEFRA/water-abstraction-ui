@@ -2,7 +2,7 @@ const controller = require('../controllers/view-charge-information');
 const preHandlers = require('../pre-handlers');
 const { VALID_GUID } = require('shared/lib/validators');
 const { chargeVersionWorkflowReviewer, viewChargeVersions } = require('internal/lib/constants').scope;
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 const allowedScopes = {
   view: viewChargeVersions,

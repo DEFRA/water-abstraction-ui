@@ -3,7 +3,7 @@
 const { isoToReadable } = require('@envage/water-abstraction-helpers').nald.dates;
 const moment = require('moment');
 const { sortBy, get } = require('lodash');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 const { formFactory, fields } = require('shared/lib/forms/');
 

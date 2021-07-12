@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const { capitalize, has } = require('lodash');
 const { CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants');
@@ -28,7 +28,7 @@ const getFormField = (key, date) => {
     mapper: 'dayOfYearMapper',
     errors: {
       'any.required': errors.empty,
-      'any.empty': errors.empty,
+      'string.empty': errors.empty,
       'string.isoDate': errors[`invalid${name}`],
       'date.isoDate': errors[`invalid${name}`],
       'date.base': errors[`invalid${name}`]

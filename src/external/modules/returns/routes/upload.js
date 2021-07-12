@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { scope } = require('../../../lib/constants');
 const controller = require('../controllers/upload');
 
@@ -50,7 +50,7 @@ module.exports = {
       },
       validate: {
         params: {
-          status: Joi.string().valid(['processing', 'submitting']),
+          status: Joi.string().valid('processing', 'submitting'),
           eventId: Joi.string().guid()
         }
       },

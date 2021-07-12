@@ -1,5 +1,5 @@
 const { formFactory, fields, setValues } = require('shared/lib/forms');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 const createError = (key, message) => ({
   [key]: { message }
@@ -23,12 +23,12 @@ const enterNewEmailForm = (request, data = {}) => {
   f.fields.push(createEmailField('email', 'Your new email address', {
     ...createError('any.allowOnly', 'The email addresses must match'),
     ...createError('string.email', 'Enter an email address, like name@example.com'),
-    ...createError('any.empty', 'Enter your new email address')
+    ...createError('string.empty', 'Enter your new email address')
   }));
 
   f.fields.push(createEmailField('confirm-email', 'Confirm your new email address', {
     ...createError('any.allowOnly', 'The email addresses must match'),
-    ...createError('any.empty', 'Confirm your new email address')
+    ...createError('string.empty', 'Confirm your new email address')
   }));
 
   f.fields.push(fields.button(null, { label: 'Continue' }));

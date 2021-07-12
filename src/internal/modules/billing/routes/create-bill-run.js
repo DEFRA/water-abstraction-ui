@@ -10,10 +10,11 @@ const billRunTypes = require('../lib/bill-run-types');
 const seasons = require('../lib/seasons');
 
 const VALID_BILL_RUN_TYPES = Joi.string().required().valid(
-  Object.values(billRunTypes).map(kebabCase)
+  ...Object.values(billRunTypes).map(kebabCase)
 );
+
 const VALID_SEASONS = Joi.string().valid(
-  Object.values(seasons).map(kebabCase)
+  ...Object.values(seasons).map(kebabCase)
 );
 
 module.exports = {

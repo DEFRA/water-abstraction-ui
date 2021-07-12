@@ -1,7 +1,7 @@
 'use strict';
 
 const { cloneDeep, set } = require('lodash');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const controller = require('./controller');
 const { VALID_GUID, VALID_GAUGING_STATION } = require('shared/lib/validators');
 

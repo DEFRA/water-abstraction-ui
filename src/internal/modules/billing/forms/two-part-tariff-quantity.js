@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 
 /**
@@ -69,7 +69,7 @@ const twoPartTariffQuantitySchema = billingVolume => {
   const maxQuantity = parseFloat(billingVolume.chargeElement.maxAnnualQuantity);
   return {
     csrf_token: Joi.string().uuid().required(),
-    quantity: Joi.string().valid(['authorised', 'custom']).required(),
+    quantity: Joi.string().valid('authorised', 'custom').required(),
     customQuantity: Joi.when('quantity', {
       is: 'custom',
       then: Joi.number().required().min(0).max(maxQuantity).precision(6)

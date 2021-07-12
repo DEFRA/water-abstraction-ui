@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { createRoutePair } = require('shared/lib/route-helpers');
 const controller = require('../controllers/select-billing-account');
 const preHandlers = require('../pre-handlers');

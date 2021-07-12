@@ -29,7 +29,7 @@ const thresholdAndUnitForm = request => {
   f.fields.push(fields.dropdown('unit', {
     label: 'Unit of measurement',
     errors: {
-      'any.empty': {
+      'string.empty': {
         message: 'Select a unit of measurement'
       },
       'any.required': {

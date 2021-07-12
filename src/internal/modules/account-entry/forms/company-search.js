@@ -1,7 +1,7 @@
 'use strict';
 
 const { formFactory, fields } = require('shared/lib/forms');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 const form = (request, defaultValue) => {
   const f = formFactory(request.path, 'get');
@@ -10,7 +10,7 @@ const form = (request, defaultValue) => {
     label: 'Enter the Companies House number or company name',
     controlClass: 'govuk-!-width-one-half',
     errors: {
-      'any.empty': {
+      'string.empty': {
         message: 'Enter the Companies House number or company name'
       }
     }

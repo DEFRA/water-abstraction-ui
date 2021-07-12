@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 module.exports.flowConverter = (value, unit = 'litre', period = 'second') => {
   let val = value;

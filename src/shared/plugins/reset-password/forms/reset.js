@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms');
 
 /**
@@ -12,7 +12,7 @@ const form = (action) => {
     type: 'email',
     controlClass: 'govuk-!-width-one-half',
     errors: {
-      'any.empty': {
+      'string.empty': {
         message: 'Enter an email address'
       },
       'string.email': {

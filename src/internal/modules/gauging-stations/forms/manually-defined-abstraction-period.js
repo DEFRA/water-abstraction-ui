@@ -26,7 +26,7 @@ const getFormField = (key, date) => {
     mapper: 'dayOfYearMapper',
     errors: {
       'any.required': errors.empty,
-      'any.empty': errors.empty,
+      'string.empty': errors.empty,
       'string.isoDate': errors[`invalid${name}`],
       'date.isoDate': errors[`invalid${name}`],
       'date.base': errors[`invalid${name}`]

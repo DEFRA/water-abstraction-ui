@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const controller = require('./controller');
 const preHandlers = require('./lib/prehandlers');
 const helpers = require('./lib/helpers');

@@ -3,7 +3,7 @@
 const { formFactory, fields } = require('shared/lib/forms');
 const { compact, get } = require('lodash');
 const titleCase = require('title-case');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const queryString = require('querystring');
 const routing = require('../lib/routing');
 const { postcodeSchema } = require('../lib/postcode-validator');

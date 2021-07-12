@@ -1,7 +1,7 @@
 'use strict';
 
 const { get } = require('lodash');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 const { formFactory, fields } = require('shared/lib/forms/');
 const routing = require('../lib/routing');

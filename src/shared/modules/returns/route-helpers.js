@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const uuid = require('uuid/v4');
 const { VALID_RETURN_ID, OPTIONAL_GUID } = require('shared/lib/validators');
 

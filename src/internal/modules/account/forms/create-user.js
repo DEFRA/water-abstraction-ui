@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields, setValues } = require('shared/lib/forms');
 const config = require('internal/config');
 
@@ -9,7 +9,7 @@ const getEmailRegex = () => {
 };
 
 const getEmailErrors = () => {
-  return ['string.regex.base', 'string.email', 'any.empty'].reduce((acc, key) => {
+  return ['string.pattern.base', 'string.email', 'string.empty'].reduce((acc, key) => {
     return {
       ...acc,
       [key]: { message: 'Enter a valid email' }

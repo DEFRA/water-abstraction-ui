@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms');
 
 const recipientForm = request => {
@@ -16,7 +16,7 @@ const recipientForm = request => {
     heading: true,
     controlClass: 'govuk-input--width-20',
     errors: {
-      'any.empty': {
+      'string.empty': {
         message: 'Enter a full name'
       }
     }

@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { get } = require('lodash');
 const { formFactory, setValues } = require('shared/lib/forms');
 const { getMeter } = require('shared/modules/returns/forms/common');

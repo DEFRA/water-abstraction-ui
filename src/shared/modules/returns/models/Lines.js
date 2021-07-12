@@ -1,5 +1,5 @@
 const { find, xor } = require('lodash');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { returns: { lines: { getRequiredLines } } } = require('@envage/water-abstraction-helpers');
 const { getDefaultQuantity, getSingleTotalLines } = require('./water-return-helpers');
 

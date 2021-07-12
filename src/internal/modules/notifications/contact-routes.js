@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const contactController = require('./contact-controller');
 const constants = require('../../lib/constants');
 const { hofNotifications, renewalNotifications } = constants.scope;

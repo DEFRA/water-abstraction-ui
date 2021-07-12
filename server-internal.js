@@ -8,11 +8,17 @@ const Hapi = require('@hapi/hapi');
 
 // -------------- Require project code -----------------
 const config = require('./src/internal/config');
+console.log('DONE CONFIG');
 const plugins = require('./src/internal/lib/hapi-plugins');
+console.log('DONE PLUGINS');
 const routes = require('./src/internal/modules/routes');
+console.log('DONE ROUTES');
 const viewEngine = require('./src/internal/lib/view-engine/');
+console.log('DONE VIEW ENGINE');
 const { logger } = require('./src/internal/logger');
+console.log('DONE LOGGER');
 const connectors = require('./src/internal/lib/connectors/services');
+console.log('DONE CONNECTORS');
 
 const common = createPlugins(config, logger, connectors);
 
@@ -114,6 +120,7 @@ async function start () {
     server.log(['info'], `Server started on ${server.info.uri} port ${server.info.port}`);
   } catch (err) {
     logger.error('Failed to start server', err);
+    console.log(err);
   }
 
   return server;

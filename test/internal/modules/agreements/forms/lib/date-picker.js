@@ -7,7 +7,7 @@ const {
 } = exports.lab = require('@hapi/lab').script();
 
 const datePicker = require('internal/modules/agreements/forms/lib/date-picker');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 experiment('internal/modules/agreements/forms/lib/date-picker', () => {
   experiment('.getMaxDate', () => {

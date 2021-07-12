@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { getReturnsForLicence, getReturn } = require('./view');
 const { scope: { internal } } = require('../../../lib/constants');
 

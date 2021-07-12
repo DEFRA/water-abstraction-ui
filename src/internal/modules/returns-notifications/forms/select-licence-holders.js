@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { groupBy, sortBy } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms');
 const { crmRoles } = require('shared/lib/constants');

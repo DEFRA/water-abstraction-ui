@@ -14,7 +14,7 @@ const licenceEntryForm = request => {
       'any.required': {
         message: 'Enter a licence number'
       },
-      'any.empty': {
+      'string.empty': {
         message: 'Enter a licence number'
       }
     },

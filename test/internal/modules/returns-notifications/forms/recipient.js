@@ -1,7 +1,7 @@
 'use strict';
 
 const { expect } = require('@hapi/code');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const uuid = require('uuid/v4');
 const formContainer = require('internal/modules/returns-notifications/forms/recipient');

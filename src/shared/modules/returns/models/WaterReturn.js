@@ -86,7 +86,7 @@ class WaterReturn {
    * @return {Object} updated return data model
    */
   setStatus (status) {
-    Joi.assert(status, Joi.string().valid([STATUS_DUE, STATUS_RECEIVED, STATUS_COMPLETED]));
+    Joi.assert(status, Joi.string().valid(STATUS_DUE, STATUS_RECEIVED, STATUS_COMPLETED));
 
     // Don't allow a completed return to go back to an earlier status
     if (this.status !== STATUS_COMPLETED) {

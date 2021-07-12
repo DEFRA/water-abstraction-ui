@@ -9,9 +9,9 @@ module.exports = [
     config: {
       auth: false,
       validate: {
-        query: {
+        query: Joi.object().keys({
           flash: VALID_FLASH
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -31,9 +31,9 @@ module.exports = [
     config: {
       auth: false,
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           email: Joi.string().allow('').max(254)
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -41,9 +41,9 @@ module.exports = [
           pageTitle: 'Reset your password'
         },
         formValidator: {
-          payload: {
+          payload: Joi.object().keys({
             email_address: VALID_EMAIL
-          }
+          })
         },
         config: {
           view: 'nunjucks/reset-password/reset-password',
@@ -93,9 +93,9 @@ module.exports = [
     config: {
       auth: false,
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           email: Joi.string().allow('').max(254)
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -103,9 +103,9 @@ module.exports = [
           back: '/reset_password_check_email'
         },
         formValidator: {
-          payload: {
+          payload: Joi.object().keys({
             email_address: VALID_EMAIL
-          }
+          })
         },
         config: {
           view: 'nunjucks/reset-password/reset-password-resend',
@@ -137,10 +137,10 @@ module.exports = [
     config: {
       auth: false,
       validate: {
-        query: {
+        query: Joi.object().keys({
           resetGuid: VALID_GUID,
           ...VALID_UTM
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -157,25 +157,25 @@ module.exports = [
     config: {
       auth: false,
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           resetGuid: OPTIONAL_GUID,
           password: Joi.string().allow('').max(128),
           confirmPassword: Joi.string().allow('').max(128)
-        },
-        query: {
+        }),
+        query: Joi.object().keys({
           resetGuid: OPTIONAL_GUID
-        }
+        })
       },
       plugins: {
         viewContext: {
           pageTitle: 'Change your password'
         },
         formValidator: {
-          payload: {
+          payload: Joi.object().keys({
             resetGuid: VALID_GUID,
             password: VALID_PASSWORD,
             confirmPassword: VALID_CONFIRM_PASSWORD
-          },
+          }),
           options: {
             abortEarly: false
           }
@@ -192,10 +192,10 @@ module.exports = [
     config: {
       auth: false,
       validate: {
-        query: {
+        query: Joi.object().keys({
           resetGuid: VALID_GUID,
           ...VALID_UTM
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -211,11 +211,11 @@ module.exports = [
     path: '/create-password',
     config: { auth: false,
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           resetGuid: VALID_GUID,
           password: Joi.string().allow('').max(128),
           confirmPassword: Joi.string().allow('').max(128)
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -223,11 +223,11 @@ module.exports = [
           create: true
         },
         formValidator: {
-          payload: {
+          payload: Joi.object().keys({
             resetGuid: VALID_GUID,
             password: VALID_PASSWORD,
             confirmPassword: VALID_CONFIRM_PASSWORD
-          },
+          }),
           options: {
             abortEarly: false
           }

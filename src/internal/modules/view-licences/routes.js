@@ -15,7 +15,7 @@ module.exports = {
     config: {
       description: 'Gets summary details about a particular licence',
       validate: {
-        params: Joi.object({
+        params: Joi.object().keys({
           licenceId: Joi.string().guid().required()
         })
       },
@@ -74,10 +74,10 @@ module.exports = {
       },
       description: 'Displays a list of bills for a particular licence',
       validate: {
-        params: Joi.object({
+        params: Joi.object().keys({
           licenceId: Joi.string().guid().required()
         }),
-        query: Joi.object({
+        query: Joi.object().keys({
           page: Joi.number().default(1)
         })
       },

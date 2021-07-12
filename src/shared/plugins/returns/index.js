@@ -57,7 +57,7 @@ const _handler = async (request, h) => {
 
 const returnsPlugin = {
   register: (server, options) => {
-    Joi.object({
+    Joi.object().keys({
       getDocumentHeader: Joi.func().required(),
       checkAccess: Joi.boolean().required(),
       includeExpired: Joi.boolean().default(false)

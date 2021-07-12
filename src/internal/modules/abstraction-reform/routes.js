@@ -15,10 +15,10 @@ module.exports = {
       auth: { scope: allowedScopes },
       description: 'Entrance search page for abstraction reform',
       validate: {
-        query: {
+        query: Joi.object().keys({
           page: Joi.number().default(1),
           q: Joi.string().allow('')
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -81,11 +81,11 @@ module.exports = {
       description: 'Post handler: set document status',
       plugins: {
         formValidator: {
-          payload: {
+          payload: Joi.object().keys({
             csrf_token: Joi.string().guid(),
             notes: Joi.string().allow(''),
-            status: Joi.string().required().valid(Object.values(statuses))
-          }
+            status: Joi.string().required().valid(...Object.values(statuses))
+          })
         }
       }
     }

@@ -23,9 +23,9 @@ const form = (query) => {
   return setValues(f, { query });
 };
 
-const schema = {
+const schema = Joi.object({
   query: Joi.string().trim()
-};
+});
 
 module.exports = {
   searchForm: form,

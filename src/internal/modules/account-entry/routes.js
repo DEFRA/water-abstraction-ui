@@ -17,13 +17,13 @@ module.exports = {
         scope: allowedScopes
       },
       validate: {
-        query: {
+        query: Joi.object().keys({
           q: Joi.string().required(),
           form: Joi.string().guid().optional()
-        },
-        params: {
+        }),
+        params: Joi.object().keys({
           key: Joi.string().required()
-        }
+        })
       },
       pre: [{
         method: preHandlers.getSessionData, assign: 'sessionData'
@@ -40,9 +40,9 @@ module.exports = {
         scope: allowedScopes
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           key: Joi.string().required()
-        }
+        })
       },
       pre: [{
         method: preHandlers.getSessionData, assign: 'sessionData'
@@ -57,9 +57,9 @@ module.exports = {
         scope: allowedScopes
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           key: Joi.string().required()
-        }
+        })
       },
       pre: [{
         method: preHandlers.getSessionData, assign: 'sessionData'

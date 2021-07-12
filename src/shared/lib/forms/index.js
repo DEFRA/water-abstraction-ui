@@ -124,6 +124,8 @@ const getPayload = (form, request) => form.method.toUpperCase() === 'POST'
  * Handles HTTP request on form object
  * @param {Object} form - form config object
  * @param {Object} request - HAPI HTTP request
+ * @param validationSchema
+ * @param options
  */
 const handleRequest = (form, request, validationSchema, options) => {
   if (form.method === 'get' && isEmpty(request.query)) {
@@ -137,7 +139,6 @@ const handleRequest = (form, request, validationSchema, options) => {
   const requestData = importData(f, payload);
 
   const schema = validationSchema || adapter.createSchemaFromForm(form);
-
   const { error, value } = adapter.validate(requestData, schema, options);
 
   const customErrors = getCustomErrors(form);

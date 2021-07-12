@@ -33,10 +33,10 @@ const renameLicenceForm = (request, name) => {
   return f;
 };
 
-const renameLicenceSchema = {
+const renameLicenceSchema = Joi.object().keys({
   csrf_token: Joi.string().guid().required(),
   name: Joi.string().max(32).min(2)
-};
+});
 
 exports.renameLicenceForm = renameLicenceForm;
 exports.renameLicenceSchema = renameLicenceSchema;

@@ -17,9 +17,9 @@ module.exports = {
         scope: allowedScopes
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           key: Joi.string().required()
-        }
+        })
       },
       pre: [{
         method: preHandlers.getAccount, assign: 'account'
@@ -38,9 +38,9 @@ module.exports = {
         scope: allowedScopes
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           key: Joi.string().required()
-        }
+        })
       },
       pre: [{
         method: preHandlers.getSessionData, assign: 'sessionData'
@@ -60,9 +60,9 @@ module.exports = {
       },
       description: 'Handle agent account entry via account entry plugin',
       validate: {
-        params: {
+        params: Joi.object().keys({
           key: Joi.string().required()
-        }
+        })
       },
       pre: [{
         method: preHandlers.getSessionData, assign: 'sessionData'
@@ -80,12 +80,12 @@ module.exports = {
       },
       description: 'Handle address entry via address entry plugin',
       validate: {
-        params: {
+        params: Joi.object().keys({
           key: Joi.string().required()
-        },
-        query: {
+        }),
+        query: Joi.object().keys({
           checkAnswers: Joi.boolean().truthy('true').optional()
-        }
+        })
       },
       pre: [{
         method: preHandlers.getSessionData, assign: 'sessionData'
@@ -100,12 +100,12 @@ module.exports = {
         scope: allowedScopes
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           key: Joi.string().required()
-        },
-        query: {
+        }),
+        query: Joi.object().keys({
           form: Joi.string().guid().optional()
-        }
+        })
       },
       pre: [{
         method: preHandlers.getSessionData, assign: 'sessionData'
@@ -125,12 +125,12 @@ module.exports = {
       },
       description: 'Handle contact entry via contact entry plugin',
       validate: {
-        params: {
+        params: Joi.object().keys({
           key: Joi.string().required()
-        },
-        query: {
+        }),
+        query: Joi.object().keys({
           checkAnswers: Joi.boolean().truthy('true').optional()
-        }
+        })
       },
       pre: [{
         method: preHandlers.getSessionData, assign: 'sessionData'
@@ -146,9 +146,9 @@ module.exports = {
       },
       description: 'Check answers page',
       validate: {
-        params: {
+        params: Joi.object().keys({
           key: Joi.string().required()
-        }
+        })
       },
       pre: [{
         method: preHandlers.getSessionData, assign: 'sessionData'

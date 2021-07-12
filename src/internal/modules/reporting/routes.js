@@ -32,13 +32,13 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           reportIdentifier: Joi.string().valid(
             'billedActiveLicencesReport',
             'uncreditedInactiveLicencesReport',
             'unbilledActiveLicencesReport'
           ).required()
-        }
+        })
       }
     }
   }

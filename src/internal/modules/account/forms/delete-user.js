@@ -29,10 +29,10 @@ const form = (request, userEmail) => {
   return f;
 };
 
-const schema = {
+const schema = Joi.object({
   csrf_token: Joi.string().uuid().required(),
   confirmDelete: Joi.array().length(1).items(Joi.valid('confirm').required())
-};
+});
 
 exports.deleteUserForm = form;
 exports.deleteUserSchema = schema;

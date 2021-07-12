@@ -67,14 +67,14 @@ const checkStartDateForm = request => {
 
 const checkStartDateSchema = (request, refDate) => {
   const { licence } = request.pre;
-  return {
+  return Joi.object({
     csrf_token: Joi.string().uuid().required(),
     isCustomStartDate: Joi.boolean().required(),
     startDate: Joi.when('isCustomStartDate', {
       is: true,
       then: getDateValidator(licence)
     })
-  };
+  });
 };
 
 exports.form = checkStartDateForm;

@@ -25,7 +25,7 @@ const form = (request, defaultValue) => {
   return f;
 };
 
-const schema = () => Joi.object({
+const schema = () => Joi.object().keys({
   q: Joi.string().required()
 });
 

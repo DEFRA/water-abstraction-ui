@@ -16,12 +16,12 @@ const linesSchema = Joi.array().items({
   readingType: VALID_READING_TYPE
 });
 
-const optionsSchema = {
+const optionsSchema = Joi.object({
   startDate: VALID_DATE,
   endDate: VALID_DATE,
   frequency: VALID_PERIOD,
   isFinal: VALID_FLAG
-};
+});
 
 const getDateKey = line => `${line.startDate}_${line.endDate}`;
 

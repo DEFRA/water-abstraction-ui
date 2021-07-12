@@ -77,11 +77,11 @@ const form = (request, permission, newUser) => {
   return setValues(f, { permission });
 };
 
-const schema = {
+const schema = Joi.object({
   csrf_token: Joi.string().uuid().required(),
-  permission: Joi.string().required().valid(choices.map(choice => choice.value)),
+  permission: Joi.string().required().valid(...choices.map(choice => choice.value)),
   newUserEmail: Joi.string().email().lowercase().trim().regex(getEmailRegex())
-};
+});
 
 exports.setPermissionsForm = form;
 exports.setPermissionsSchema = schema;

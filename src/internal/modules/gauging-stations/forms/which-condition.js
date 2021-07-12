@@ -48,7 +48,7 @@ const conditionEntryForm = request => {
   return f;
 };
 
-const conditionEntrySchema = () => Joi.object({
+const conditionEntrySchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   condition: Joi.string().uuid().required()
 });

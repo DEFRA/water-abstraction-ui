@@ -63,7 +63,7 @@ class Reading {
    * @param {String} units - m³|l|Ml|gal
    */
   setUnits (units) {
-    Joi.assert(units, Joi.string().valid(['m³', 'l', 'Ml', 'gal']));
+    Joi.assert(units, Joi.string().valid('m³', 'l', 'Ml', 'gal'));
     this.units = units;
     return this;
   };

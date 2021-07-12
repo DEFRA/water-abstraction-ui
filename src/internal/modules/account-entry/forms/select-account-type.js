@@ -38,7 +38,7 @@ const form = request => {
   return f;
 };
 
-const schema = () => Joi.object({
+const schema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   accountType: Joi.string().required().valid(...[accountTypes.organisation, accountTypes.person]),
   personName: Joi.when('accountType', {

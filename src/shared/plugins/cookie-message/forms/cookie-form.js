@@ -52,7 +52,7 @@ const cookieForm = request => {
   return f;
 };
 
-const cookieFormSchema = request => Joi.object({
+const cookieFormSchema = request => Joi.object().keys({
   acceptAnalyticsCookies: Joi.boolean().required(),
   redirectPath: Joi.string().allow(''),
   ...request.auth.credentials && {

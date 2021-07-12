@@ -25,7 +25,7 @@ function validatePayload (payload) {
   const joiOptions = {
     allowUnknown: true
   };
-  const { error } = Joi.validate(payload, payloadSchema, joiOptions);
+  const { error } = Joi.object().keys(payloadSchema).validate(payload, joiOptions);
   if (error) {
     throw Boom.badRequest('CSRF protection: invalid CSRF token', { isCsrfError: true });
   }

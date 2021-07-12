@@ -50,10 +50,10 @@ const verifyNewEmailApplyErrors = (form) => {
 
 const VERIFICATION_REGEX = /^[0-9]{6}$/;
 
-const verifyNewEmailSchema = {
+const verifyNewEmailSchema = Joi.object({
   csrf_token: Joi.string().guid().required(),
   verificationCode: Joi.string().required().regex(VERIFICATION_REGEX)
-};
+});
 
 exports.verifyNewEmailForm = verifyNewEmailForm;
 exports.verifyNewEmailApplyErrors = verifyNewEmailApplyErrors;

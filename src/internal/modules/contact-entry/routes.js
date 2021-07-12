@@ -21,9 +21,9 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           key: Joi.string().required()
-        }
+        })
       },
       pre: [
         { method: preHandlers.getSessionData, assign: 'sessionData' },
@@ -44,9 +44,9 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           key: Joi.string().required()
-        }
+        })
       },
       pre: [
         { method: preHandlers.getSessionData, assign: 'sessionData' },

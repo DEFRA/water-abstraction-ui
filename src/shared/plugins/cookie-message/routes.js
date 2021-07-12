@@ -25,7 +25,7 @@ module.exports = {
         }
       },
       validate: {
-        query: Joi.object({
+        query: Joi.object().keys({
           redirectPath,
           form: Joi.string().guid().optional()
         })
@@ -43,7 +43,7 @@ module.exports = {
       },
       description: 'View cookie details and set choices',
       validate: {
-        query: Joi.object({
+        query: Joi.object().keys({
           acceptAnalytics: Joi.boolean().truthy('true').falsy('false'),
           redirectPath
         })

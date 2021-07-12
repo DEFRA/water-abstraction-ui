@@ -1,3 +1,4 @@
+const Joi = require('joi');
 const { formFactory, fields, applyErrors } = require('shared/lib/forms');
 const { VALID_PASSWORD, VALID_GUID } = require('shared/lib/validators');
 
@@ -32,10 +33,10 @@ const confirmPasswordForm = request => {
   return f;
 };
 
-const schema = {
+const schema = Joi.object({
   password: VALID_PASSWORD,
   csrf_token: VALID_GUID
-};
+});
 
 /**
  * Depending on the error string returned from the water service,

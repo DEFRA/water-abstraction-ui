@@ -3,7 +3,7 @@
 const DATE_FORMAT = 'YYYY-MM-DD';
 const moment = require('moment');
 
-const JoiDate = require('@hapi/joi-date');
+const JoiDate = require('@joi/date');
 const Joi = require('joi').extend(JoiDate);
 
 /**

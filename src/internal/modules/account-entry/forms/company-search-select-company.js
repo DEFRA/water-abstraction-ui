@@ -44,7 +44,7 @@ const form = (request, defaultValue) => {
   return f;
 };
 
-const schema = () => Joi.object({
+const schema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   selectedCompaniesHouseNumber: Joi.string().required()
 });

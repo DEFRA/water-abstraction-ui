@@ -27,7 +27,7 @@ const formValidator = {
             return reply.continue();
           }
 
-          const { error, value } = Joi.validate(data, schema, options);
+          const { error, value } = Joi.object(schema).validate(data, options);
           request.formError = error;
           request.formValue = value;
           request.view.errors = formatViewError(error);

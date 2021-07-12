@@ -20,12 +20,12 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           documentId: Joi.string().guid()
-        },
-        query: {
+        }),
+        query: Joi.object().keys({
           userId: Joi.number().integer().required()
-        }
+        })
       }
     }
   },
@@ -47,12 +47,12 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           documentId: Joi.string().guid()
-        },
-        query: {
+        }),
+        query: Joi.object().keys({
           userId: Joi.number().integer().required()
-        }
+        })
       }
     }
   },
@@ -74,13 +74,13 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           documentId: Joi.string().guid()
-        },
-        query: {
+        }),
+        query: Joi.object().keys({
           userId: Joi.number().integer().required(),
           companyName: Joi.string().required()
-        }
+        })
       }
     }
   }

@@ -79,9 +79,9 @@ const getUprn = address => address.uprn;
 const schema = request => {
   const { addressSearchResults } = request.pre;
   const validUprns = addressSearchResults.map(getUprn);
-  return Joi.object({
+  return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
-    uprn: Joi.number().integer().valid(validUprns).required(),
+    uprn: Joi.number().integer().valid(...validUprns).required(),
     postcode: postcodeSchema
   });
 };

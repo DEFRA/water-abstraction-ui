@@ -67,7 +67,7 @@ const selectLicenceHoldersSchema = request => {
     return {
       ...acc,
       [`licence_${documents[0].licence.id}`]: Joi.array().items(
-        Joi.string().guid().valid(documents.map(doc => doc.document.id))
+        Joi.string().guid().valid(...documents.map(doc => doc.document.id))
       )
     };
   }, {

@@ -1,5 +1,5 @@
 const { formFactory, fields } = require('shared/lib/forms/');
-const JoiDate = require('@hapi/joi-date');
+const JoiDate = require('@joi/date');
 const Joi = require('joi').extend(JoiDate);
 const moment = require('moment');
 
@@ -46,7 +46,7 @@ const endAgreementForm = (request, endDate) => {
 
 const endAgreementFormSchema = (request, h) => {
   const { licence, agreement } = request.pre;
-  return {
+  return Joi.object({
     csrf_token: Joi.string().uuid().required(),
     endDate: Joi
       .date()
@@ -54,7 +54,7 @@ const endAgreementFormSchema = (request, h) => {
       .min(new Date(agreement.dateRange.startDate || '1000-1-1'))
       .max(new Date(licence.endDate || '3000-1-1'))
       .required()
-  };
+  });
 };
 
 exports.endAgreementForm = endAgreementForm;

@@ -13,7 +13,7 @@ const postcodeValidator = require('./lib/postcode-validator');
  * @param {Promise<Array>}
  */
 const searchForAddressesByPostcode = async request => {
-  const { error, value: postcode } = Joi.validate(request.query.postcode, postcodeValidator.postcodeSchema);
+  const { error, value: postcode } = Joi.object().keys(postcodeValidator.postcodeSchema).validate(request.query.postcode);
 
   if (!error) {
     try {

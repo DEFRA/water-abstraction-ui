@@ -111,11 +111,11 @@ const setStatusSchema = (request) => {
     STATUS_APPROVED,
     STATUS_NALD_UPDATE,
     STATUS_LICENCE_REVIEW] : [STATUS_IN_REVIEW, STATUS_NALD_UPDATE];
-  return {
+  return Joi.object({
     csrf_token: Joi.string().guid().required(),
     notes: Joi.string().allow(''),
-    status: Joi.string().required().valid(validStatus)
-  };
+    status: Joi.string().required().valid(...validStatus)
+  });
 };
 
 module.exports = {

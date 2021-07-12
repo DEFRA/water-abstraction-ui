@@ -43,9 +43,9 @@ const selectAgreementTypeForm = request => {
   return f;
 };
 
-const selectAgreementTypeSchema = () => ({
+const selectAgreementTypeSchema = () => Joi.object({
   csrf_token: Joi.string().uuid().required(),
-  financialAgreementCode: Joi.string().required().valid(Object.keys(agreementDescriptions))
+  financialAgreementCode: Joi.string().required().valid(...Object.keys(agreementDescriptions))
 });
 
 exports.form = selectAgreementTypeForm;

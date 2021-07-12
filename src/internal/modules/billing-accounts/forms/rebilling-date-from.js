@@ -59,7 +59,7 @@ const form = request => {
 
 const schema = request => {
   const maxDate = getMaxDate(request.pre.rebillableBills).format('YYYY-MM-DD');
-  return Joi.object({
+  return Joi.object().keys({
     fromDate: Joi.date().iso().max(maxDate).required(),
     csrf_token: Joi.string().guid().required()
   });

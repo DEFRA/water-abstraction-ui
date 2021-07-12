@@ -41,7 +41,7 @@ module.exports = {
         }
       },
       validate: {
-        params: Joi.object({
+        params: Joi.object().keys({
           chargeVersionWorkflowId: VALID_GUID
         })
       },
@@ -66,7 +66,7 @@ module.exports = {
         }
       },
       validate: {
-        params: Joi.object({
+        params: Joi.object().keys({
           chargeVersionWorkflowId: VALID_GUID
         })
       }

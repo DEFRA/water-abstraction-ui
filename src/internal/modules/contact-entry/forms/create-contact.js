@@ -44,7 +44,7 @@ const createContactForm = request => {
   return f;
 };
 
-const createContactSchema = () => Joi.object({
+const createContactSchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   title: Joi.string().trim().optional().allow(''),
   firstName: Joi.string().trim().required(),

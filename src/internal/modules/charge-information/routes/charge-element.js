@@ -23,16 +23,16 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           licenceId: VALID_GUID,
-          step: Joi.string().valid(chargeElementSteps).required(),
+          step: Joi.string().valid(...chargeElementSteps).required(),
           elementId: VALID_GUID
-        },
-        query: {
+        }),
+        query: Joi.object().keys({
           form: VALID_GUID.optional(),
           returnToCheckData: Joi.boolean().default(false),
           chargeVersionWorkflowId: Joi.string().uuid().optional().default('')
-        }
+        })
       },
       pre: [
         { method: preHandlers.loadLicence, assign: 'licence' },
@@ -56,16 +56,16 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           licenceId: VALID_GUID,
-          step: Joi.string().valid(chargeElementSteps).required(),
+          step: Joi.string().valid(...chargeElementSteps).required(),
           elementId: VALID_GUID
-        },
-        query: {
+        }),
+        query: Joi.object().keys({
           form: VALID_GUID.optional(),
           returnToCheckData: Joi.boolean().default(false),
           chargeVersionWorkflowId: Joi.string().uuid().optional().default('')
-        }
+        })
       },
       pre: [
         { method: preHandlers.loadLicence, assign: 'licence' },

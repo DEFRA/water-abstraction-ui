@@ -39,7 +39,7 @@ const enterNewEmailForm = (request, data = {}) => {
 
 const VALID_EMAIL = Joi.string().email().required();
 
-const enterNewEmailSchema = Joi.object({
+const enterNewEmailSchema = Joi.object().keys({
   email: VALID_EMAIL,
   'confirm-email': Joi.when('email', {
     is: VALID_EMAIL,

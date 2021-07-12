@@ -20,10 +20,10 @@ module.exports = {
     config: {
       ...getReturn.config,
       validate: {
-        query: {
+        query: Joi.object().keys({
           id: Joi.string().required(),
           version: Joi.number().optional().min(1)
-        }
+        })
       },
       auth: {
         scope: internal

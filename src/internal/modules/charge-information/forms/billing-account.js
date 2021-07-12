@@ -74,7 +74,7 @@ const selectBillingAccountForm = request => {
 const selectBillingAccountSchema = request => {
   const { billingAccounts = [] } = request.pre;
 
-  return {
+  return Joi.object({
     csrf_token: Joi.string().uuid().required(),
     invoiceAccountAddress: Joi.string().required().valid(...[
       ...flatMap(billingAccounts.map(billingAccount => {
@@ -84,7 +84,7 @@ const selectBillingAccountSchema = request => {
       })),
       'set-up-new-billing-account'
     ])
-  };
+  });
 };
 
 exports.form = selectBillingAccountForm;

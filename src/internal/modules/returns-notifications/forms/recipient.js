@@ -27,7 +27,7 @@ const recipientForm = request => {
   return f;
 };
 
-const schema = () => Joi.object({
+const schema = () => Joi.object().keys({
   fullName: Joi.string().required(),
   csrf_token: Joi.string().guid().required()
 });

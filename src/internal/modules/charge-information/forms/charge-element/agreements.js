@@ -51,7 +51,7 @@ const form = request => {
   return f;
 };
 
-const schema = () => ({
+const schema = Joi.object({
   csrf_token: Joi.string().uuid().required(),
   isSection127AgreementEnabled: Joi.boolean().required()
 });

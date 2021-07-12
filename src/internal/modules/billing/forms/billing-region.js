@@ -44,15 +44,15 @@ const selectBillingRegionForm = (request, regions) => {
 
 const getRegionIds = regions => regions.map(region => region.regionId);
 
-const billingRegionFormSchema = regions => ({
+const billingRegionFormSchema = regions => (Joi.object({
   csrf_token: Joi.string().uuid().required(),
-  selectedBillingRegion: Joi.string().uuid().required().valid(getRegionIds(regions)),
+  selectedBillingRegion: Joi.string().uuid().required().valid(...getRegionIds(regions)),
   selectedBillingType: Joi.string().required(),
   selectedTwoPartTariffSeason: Joi.string().allow('').when('selectedBillingType', {
     is: TWO_PART_TARIFF,
     then: Joi.string().required()
   })
-});
+}));
 
 exports.selectBillingRegionForm = selectBillingRegionForm;
 exports.billingRegionFormSchema = billingRegionFormSchema;

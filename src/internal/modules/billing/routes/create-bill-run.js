@@ -52,10 +52,10 @@ module.exports = {
       auth: { scope: allowedScopes },
       description: 'select bill run region',
       validate: {
-        params: {
+        params: Joi.object().keys({
           billingType: VALID_BILL_RUN_TYPES,
           season: VALID_SEASONS
-        }
+        })
       },
 
       plugins: {
@@ -98,9 +98,9 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: Joi.string().uuid()
-        }
+        })
       }
     }
   },
@@ -120,9 +120,9 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: Joi.string().uuid()
-        }
+        })
       }
     }
   }

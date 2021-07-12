@@ -48,10 +48,10 @@ const form = () => {
   return f;
 };
 
-const schema = {
+const schema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required()
-};
+});
 
 // Enter if empty, Check your if it's wrong
 const applyErrorState = form => {

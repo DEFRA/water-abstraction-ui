@@ -60,13 +60,13 @@ async function postLicenceAdd (request, reply) {
   viewContext.activeNavLink = 'manage';
 
   // Validate posted data
-  const schema = {
+  const schema = Joi.object({
     licence_no: Joi.string().required().trim().max(9000),
     csrf_token: Joi.string().guid()
-  };
+  });
   try {
     // Validate post data
-    const { error, value } = Joi.validate(request.payload, schema);
+    const { error, value } = Joi.object(schema).validate(request.payload);
     if (error) {
       throw error;
     }
@@ -461,11 +461,11 @@ async function postSecurityCode (request, reply) {
 
   try {
     // Validate HTTP POST payload
-    const schema = {
+    const schema = Joi.object({
       verification_code: Joi.string().length(5).required(),
       csrf_token: Joi.string().guid()
-    };
-    const { error } = Joi.validate(request.payload, schema);
+    });
+    const { error } = Joi.object(schema).validate(request.payload);
 
     if (error) {
       throw error;

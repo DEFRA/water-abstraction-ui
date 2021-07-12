@@ -23,12 +23,12 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           billingAccountId: VALID_GUID
-        },
-        query: {
+        }),
+        query: Joi.object().keys({
           back: Joi.string().optional()
-        }
+        })
       },
       pre: [
         { method: preHandlers.loadBillingAccount, assign: 'billingAccount' },
@@ -52,13 +52,13 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           billingAccountId: VALID_GUID
-        },
-        query: {
+        }),
+        query: Joi.object().keys({
           page: Joi.number().min(1),
           perPage: Joi.number().min(1).default(50)
-        }
+        })
       },
       pre: [
         { method: preHandlers.loadBillingAccount, assign: 'billingAccount' },

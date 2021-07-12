@@ -16,9 +16,9 @@ module.exports = {
       auth: { scope: allowedScopes },
       description: 'Display contact details form if not already set in notifications flow',
       validate: {
-        query: {
+        query: Joi.object().keys({
           redirect: Joi.string()
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -37,12 +37,12 @@ module.exports = {
       auth: { scope: allowedScopes },
       description: 'Post handler for name and job title',
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           csrf_token: Joi.string().guid().required(),
           redirect: Joi.string().allow(''),
           name: Joi.string().allow('').max(254),
           jobTitle: Joi.string().allow('').max(254)
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -77,12 +77,12 @@ module.exports = {
       auth: { scope: allowedScopes },
       description: 'Post handler for email/tel/address',
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           csrf_token: Joi.string().guid().required(),
           tel: Joi.string().allow('').max(254),
           email: Joi.string().allow('').max(254),
           address: Joi.string().allow('').max(254)
-        }
+        })
       },
       plugins: {
         viewContext: {

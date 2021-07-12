@@ -13,12 +13,12 @@ module.exports = [
       },
       // pre: [{ method: options.ifAuthenticated }],
       validate: {
-        query: {
+        query: Joi.object().keys({
           flash: Joi.string().max(32),
           utm_source: Joi.string().max(254),
           utm_medium: Joi.string().max(254),
           utm_campaign: Joi.string().max(254)
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -36,10 +36,10 @@ module.exports = [
       description: 'Login form handler',
       auth: false,
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           email: Joi.string().max(254).allow(''),
           password: Joi.string().max(128).allow('')
-        }
+        })
       },
       plugins: {
         viewContext: {

@@ -66,10 +66,10 @@ const selectReasonSchema = (request) => {
     validReasons.push('non-chargeable');
   };
 
-  return {
+  return Joi.object({
     csrf_token: Joi.string().uuid().required(),
-    reason: Joi.string().required().valid(validReasons)
-  };
+    reason: Joi.string().required().valid(...validReasons)
+  });
 };
 
 exports.form = selectReasonForm;

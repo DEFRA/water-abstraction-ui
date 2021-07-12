@@ -29,7 +29,7 @@ const createPluginsOptions = options => ({
 });
 
 const createRoute = (method, path, handler, options) => {
-  Joi.assert(options, optionsSchema);
+  Joi.assert(options, Joi.object(optionsSchema));
 
   return {
     method,
@@ -38,10 +38,10 @@ const createRoute = (method, path, handler, options) => {
     options: {
       description: options.pageTitle,
       validate: {
-        query: {
+        query: Joi.object().keys({
           returnId: VALID_RETURN_ID,
           error: OPTIONAL_GUID
-        }
+        })
       },
       plugins: createPluginsOptions(options),
       pre: options.pre

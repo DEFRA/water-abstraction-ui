@@ -45,9 +45,9 @@ const selectReturnsForm = request => {
 const selectReturnsSchema = request => {
   const { document } = request.pre;
   const validReturnIds = document.returns.map(getReturnId);
-  return Joi.object({
+  return Joi.object().keys({
     csrf_token: Joi.string().guid().required(),
-    returnIds: Joi.array().required().items(Joi.string().valid(validReturnIds))
+    returnIds: Joi.array().required().items(Joi.string().valid(...validReturnIds))
   });
 };
 

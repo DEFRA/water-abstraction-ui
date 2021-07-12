@@ -13,12 +13,12 @@ exports.getWaiting = {
     },
     description: 'Generic waiting page for event processing',
     validate: {
-      params: {
+      params: Joi.object().keys({
         eventId: Joi.string().uuid().required()
-      },
-      query: {
+      }),
+      query: Joi.object().keys({
         back: Joi.number().integer().default(1).optional()
-      }
+      })
     },
     plugins: {
       viewContext: {

@@ -58,10 +58,10 @@ const selectBillingAccountSchema = request => {
   const { billingAccounts } = request.pre;
   const validIds = billingAccounts.map(account => account.id);
 
-  return {
+  return Joi.object({
     csrf_token: Joi.string().uuid().required(),
-    billingAccountId: Joi.string().required().valid(validIds).allow(NEW_BILLING_ACCOUNT)
-  };
+    billingAccountId: Joi.string().required().valid(...validIds).allow(NEW_BILLING_ACCOUNT)
+  });
 };
 
 exports.form = selectBillingAccountForm;

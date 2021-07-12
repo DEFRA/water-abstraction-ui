@@ -120,7 +120,7 @@ class TaskData {
       this.data.params[name] = this.mappers[mapper].import(name, payload);
     });
 
-    const { error } = Joi.validate(this.data.params, schema, { abortEarly: false, allowUnknown: true });
+    const { error } = Joi.object().keys(schema).validate(this.data.params, { abortEarly: false, allowUnknown: true });
 
     return { error: this.mapJoiError(error, widgets) };
   }
@@ -242,7 +242,7 @@ class TaskData {
       ...query
     };
 
-    const { error } = Joi.validate(query, this.createJoiSchema(widgets), { abortEarly: false, allowUnknown: true });
+    const { error } = this.createJoiSchema(widgets).validate(query, { abortEarly: false, allowUnknown: true });
 
     return { error: this.mapJoiError(error, widgets) };
   }

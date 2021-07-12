@@ -171,14 +171,14 @@ const selectStartDateSchema = (request) => {
   const { licence } = request.pre;
   const dates = getDates(licence);
 
-  return {
+  return Joi.object({
     csrf_token: Joi.string().uuid().required(),
     startDate: Joi.string().valid('today', 'licenceStartDate', 'customDate').required(),
     customDate: Joi.when('startDate', {
       is: 'customDate',
       then: Joi.date().min(dates.minDate).max(dates.maxDate).required()
     })
-  };
+  });
 };
 
 exports.form = selectStartDateForm;

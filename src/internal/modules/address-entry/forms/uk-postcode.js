@@ -62,7 +62,7 @@ const form = request => {
   return f;
 };
 
-const schema = () => Joi.object({
+const schema = () => Joi.object().keys({
   postcode: postcodeSchema
 });
 

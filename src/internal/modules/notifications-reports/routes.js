@@ -15,9 +15,9 @@ module.exports = {
       auth: { scope: allNotifications },
       description: 'View list of notifications sent',
       validate: {
-        query: {
+        query: Joi.object().keys({
           page: Joi.number().integer().min(1).default(1)
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -36,13 +36,13 @@ module.exports = {
       auth: { scope: allNotifications },
       description: 'View list of recipients for a single event',
       validate: {
-        params: {
+        params: Joi.object().keys({
           id: VALID_GUID
-        },
-        query: {
+        }),
+        query: Joi.object().keys({
           sort: Joi.string().valid('created', 'notification', 'issuer', 'recipients', 'status').default('created'),
           direction: Joi.number().valid(-1, +1).default(-1)
-        }
+        })
       },
       plugins: {
         viewContext: {

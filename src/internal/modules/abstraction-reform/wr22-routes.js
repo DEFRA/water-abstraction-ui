@@ -117,10 +117,10 @@ module.exports = {
       auth: { scope: allowedScopes },
       description: 'Add a WR22 data point to existing licence - data form',
       validate: {
-        params: {
+        params: Joi.object().keys({
           documentId: Joi.string().guid(),
           id: Joi.string().guid()
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -140,10 +140,10 @@ module.exports = {
       auth: { scope: allowedScopes },
       description: 'POST handler for editing a WR22 data point to existing licence',
       validate: {
-        params: {
+        params: Joi.object().keys({
           documentId: Joi.string().guid(),
           id: Joi.string().guid()
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -163,10 +163,10 @@ module.exports = {
       auth: { scope: allowedScopes },
       description: 'Delete a WR22 data point from licence',
       validate: {
-        params: {
+        params: Joi.object().keys({
           documentId: Joi.string().guid(),
           id: Joi.string().guid()
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -186,10 +186,10 @@ module.exports = {
       auth: { scope: allowedScopes },
       description: 'POST handler - delete a WR22 data point from licence',
       validate: {
-        params: {
+        params: Joi.object().keys({
           documentId: Joi.string().guid(),
           id: Joi.string().guid()
-        }
+        })
       },
       plugins: {
         viewContext: {

@@ -60,13 +60,11 @@ const form = request => {
   return f;
 };
 
-const schema = (request) => {
-  return {
-    csrf_token: Joi.string().uuid().required(),
-    startDate: Joi.date().raw().required(),
-    endDate: Joi.date().required()
-  };
-};
+const schema = (request) => Joi.object({
+  csrf_token: Joi.string().uuid().required(),
+  startDate: Joi.date().raw().required(),
+  endDate: Joi.date().required()
+});
 
 exports.schema = schema;
 exports.form = form;

@@ -1,5 +1,6 @@
 'use strict';
 const moment = require('moment');
+const Joi = require('joi');
 const { pick, partialRight, flatMap, omit } = require('lodash');
 const DATE_FORMAT = 'YYYY-MM-DD';
 
@@ -14,10 +15,10 @@ const ACTION_TYPES = {
 
 const setInitialState = (request, licences, refDate) => ({
   type: ACTION_TYPES.setInitialState,
-  payload: {
+  payload: Joi.object().keys({
     licences,
     refDate: refDate || moment().format(DATE_FORMAT)
-  }
+  })
 });
 
 const createDocumentAction = (request, formValues, type, formKeys) => {
@@ -39,19 +40,19 @@ const setOneTimeAddressName = partialRight(createDocumentAction, ACTION_TYPES.se
 
 const setOneTimeAddress = (documentId, address) => ({
   type: ACTION_TYPES.setOneTimeAddress,
-  payload: {
+  payload: Joi.object().keys({
     documentId,
     address
-  }
+  })
 });
 
 const setLicenceHolders = (request, formValues) => {
   const documentIds = flatMap(Object.values(omit(formValues, 'csrf_token')));
   return {
     type: ACTION_TYPES.setLicenceHolders,
-    payload: {
+    payload: Joi.object().keys({
       documentIds
-    }
+    })
   };
 };
 

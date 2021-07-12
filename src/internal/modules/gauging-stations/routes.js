@@ -16,7 +16,7 @@ module.exports = {
     config: {
       description: 'Gets summary details about a particular gauging station',
       validate: {
-        params: Joi.object({
+        params: Joi.object().keys({
           gaugingStationId: Joi.string().guid().required()
         })
       },
@@ -43,7 +43,7 @@ module.exports = {
         scope: allowedScopes
       },
       validate: {
-        params: Joi.object({
+        params: Joi.object().keys({
           gaugingStationId: Joi.string().guid().required()
         })
       },

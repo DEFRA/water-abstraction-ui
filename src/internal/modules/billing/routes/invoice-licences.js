@@ -21,11 +21,11 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: Joi.string().uuid(),
           invoiceId: Joi.string().uuid(),
           invoiceLicenceId: Joi.string().uuid()
-        }
+        })
       },
       pre: [
         { method: preHandlers.loadBatch, assign: 'batch' },

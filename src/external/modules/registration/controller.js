@@ -32,9 +32,9 @@ const getUrlWithEmailParam = (email, options) => {
 };
 
 const validateEmail = requestPayload => {
-  const { error, value } = Joi.validate(requestPayload, {
+  const { error, value } = Joi.object({
     email: Joi.string().trim().required().email().lowercase()
-  });
+  }).validate(requestPayload);
 
   if (error) {
     throw error;

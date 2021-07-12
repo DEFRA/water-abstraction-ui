@@ -60,9 +60,9 @@ const form = request => {
 const schema = request => {
   const selectableBills = getSelectableBills(request);
   const selectableBillIds = selectableBills.map(bill => bill.id);
-  return Joi.object({
+  return Joi.object().keys({
     selectedBillIds: Joi.array().min(1).items(
-      Joi.string().guid().valid(selectableBillIds)
+      Joi.string().guid().valid(...selectableBillIds)
     ),
     csrf_token: Joi.string().guid().required()
   });

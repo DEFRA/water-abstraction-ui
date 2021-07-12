@@ -49,7 +49,7 @@ const addFaoForm = request => {
   return f;
 };
 
-const addFaoFormSchema = () => Joi.object({
+const addFaoFormSchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   faoRequired: Joi.boolean().required()
 });

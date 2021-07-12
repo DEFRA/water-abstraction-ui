@@ -26,7 +26,7 @@ const licenceEntryForm = request => {
   return f;
 };
 
-const licenceEntrySchema = () => Joi.object({
+const licenceEntrySchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   licenceNumber: Joi.string().required()
 });

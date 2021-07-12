@@ -1,4 +1,5 @@
 'use strict';
+const Joi = require('joi');
 const controller = require('../controllers/two-part-tariff');
 const { billing } = require('../../../../internal/lib/constants').scope;
 const allowedScopes = [billing];
@@ -27,9 +28,9 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: VALID_GUID
-        }
+        })
       }
     }
   },
@@ -50,10 +51,10 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: VALID_GUID,
           licenceId: VALID_GUID
-        }
+        })
       }
     }
   },
@@ -75,11 +76,11 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: VALID_GUID,
           licenceId: VALID_GUID,
           billingVolumeId: VALID_GUID
-        }
+        })
       }
     }
   },
@@ -101,11 +102,11 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: VALID_GUID,
           licenceId: VALID_GUID,
           billingVolumeId: VALID_GUID
-        }
+        })
       }
     }
   },
@@ -126,10 +127,10 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: VALID_GUID,
           licenceId: VALID_GUID
-        }
+        })
       }
     }
   },
@@ -150,10 +151,10 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: VALID_GUID,
           licenceId: VALID_GUID
-        }
+        })
       }
     }
   },
@@ -174,9 +175,9 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: VALID_GUID
-        }
+        })
       }
     }
   },
@@ -196,9 +197,9 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: VALID_GUID
-        }
+        })
       }
     }
   }

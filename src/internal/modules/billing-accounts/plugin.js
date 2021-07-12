@@ -6,7 +6,7 @@ const routes = Object.values(require('./routes'));
 const session = require('./lib/session');
 const routing = require('./lib/routing');
 
-const OPTIONS_SCHEMA = Joi.object({
+const OPTIONS_SCHEMA = Joi.object().keys({
   back: Joi.string().required(),
   redirectPath: Joi.string().required(),
   key: Joi.string().required(),
@@ -14,14 +14,14 @@ const OPTIONS_SCHEMA = Joi.object({
   data: Joi.when(
     'isUpdate', {
       is: true,
-      then: Joi.object({
+      then: Joi.object().keys({
         id: Joi.string().guid(),
         company: Joi.object()
       }),
       otherwise: Joi.object().optional().default({})
     }
   ),
-  isUpdate: Joi.boolean().optional().default(false).notes('True if updating an existing billing account'),
+  isUpdate: Joi.boolean().optional().default(false).note('True if updating an existing billing account'),
   startDate: Joi.when(
     'isUpdate', {
       is: true,

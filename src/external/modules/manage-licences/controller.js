@@ -93,11 +93,11 @@ async function postAddAccess (request, h) {
   };
 
   // Validate input data with Joi
-  const schema = {
+  const schema = Joi.object({
     email: Joi.string().trim().required().email().lowercase().trim(),
     returns: Joi.boolean(),
     csrf_token: Joi.string().guid().required()
-  };
+  });
 
   // Process:
   // 1. Attempt to create IDM user
@@ -107,7 +107,7 @@ async function postAddAccess (request, h) {
   // 5. Add colleague role
 
   try {
-    const { error: validationError, value } = Joi.validate(request.payload, schema);
+    const { error: validationError, value } = Joi.object().keys(schema).validate(request.payload);
 
     // Gracefully handle any errors.
     if (validationError) {

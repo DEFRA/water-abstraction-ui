@@ -45,11 +45,11 @@ module.exports = [
     config: {
       description: 'Update password: set new password',
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           password: Joi.string().max(128).allow(''),
           confirmPassword: Joi.string().max(128).allow(''),
           csrf_token: Joi.string().guid().required()
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -57,11 +57,11 @@ module.exports = [
           activeNavLink: 'change-password'
         },
         formValidator: {
-          payload: {
+          payload: Joi.object().keys({
             password: VALID_PASSWORD,
             confirmPassword: VALID_CONFIRM_PASSWORD,
             csrf_token: VALID_GUID
-          },
+          }),
           options: {
             abortEarly: false
           }

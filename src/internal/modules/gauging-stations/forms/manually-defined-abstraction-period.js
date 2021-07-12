@@ -49,7 +49,7 @@ const abstractionPeriodForm = request => {
   return f;
 };
 
-const abstractionPeriodSchema = () => Joi.object({
+const abstractionPeriodSchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   startDate: Joi.date().required(),
   endDate: Joi.date().required()

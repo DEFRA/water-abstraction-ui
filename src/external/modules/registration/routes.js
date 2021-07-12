@@ -49,9 +49,9 @@ module.exports = {
       auth: false,
       description: 'Register user account - email address form handler',
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           email: Joi.string().allow('').max(254)
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -78,9 +78,9 @@ module.exports = {
         }
       },
       validate: {
-        query: {
+        query: Joi.object().keys({
           email: Joi.string().required().max(254)
-        }
+        })
       }
     }
   },
@@ -111,9 +111,9 @@ module.exports = {
       auth: false,
       description: 'Register user account - resend email address form handler',
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           email: Joi.string().allow('').max(254)
-        }
+        })
       },
       plugins: {
         viewContext: {

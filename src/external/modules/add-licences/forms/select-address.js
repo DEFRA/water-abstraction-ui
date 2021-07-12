@@ -53,10 +53,10 @@ const selectAddressForm = (request, licences) => {
 
 const selectAddressSchema = licences => {
   const documentIds = licences.map(licence => licence.document_id);
-  return {
-    selectedAddressId: Joi.string().guid().required().valid(documentIds),
+  return Joi.object({
+    selectedAddressId: Joi.string().guid().required().valid(...documentIds),
     csrf_token: Joi.string().guid().required()
-  };
+  });
 };
 
 exports.selectAddressForm = selectAddressForm;

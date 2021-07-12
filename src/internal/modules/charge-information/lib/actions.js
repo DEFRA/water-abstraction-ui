@@ -1,4 +1,5 @@
 const { find, omit } = require('lodash');
+const Joi = require('joi');
 const moment = require('moment');
 const uuid = require('uuid/v4');
 const DATE_FORMAT = 'YYYY-MM-DD';
@@ -40,9 +41,9 @@ const setStartDate = (request, formValues) => {
 
 const setBillingAccount = id => ({
   type: ACTION_TYPES.setBillingAccount,
-  payload: {
+  payload: Joi.object().keys({
     billingAccountId: id
-  }
+  })
 });
 
 const generateIds = chargeElements =>
@@ -107,9 +108,9 @@ const clearData = () => {
 
 const createChargeElement = id => ({
   type: ACTION_TYPES.createChargeElement,
-  payload: {
+  payload: Joi.object().keys({
     id
-  }
+  })
 });
 
 exports.ACTION_TYPES = ACTION_TYPES;

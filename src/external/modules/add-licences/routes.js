@@ -26,10 +26,10 @@ module.exports = {
     config: {
       description: 'Start flow to add licences',
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           licence_no: Joi.string().allow('').max(9000),
           csrf_token: Joi.string().guid().required()
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -48,9 +48,9 @@ module.exports = {
     config: {
       description: 'Select the licences to add',
       validate: {
-        query: {
+        query: Joi.object().keys({
           error: Joi.string().max(32)
-        }
+        })
       },
       pre: [{ method: controller.ensureSessionDataPreHandler }],
       plugins: {
@@ -69,10 +69,10 @@ module.exports = {
     config: {
       description: 'Post handler for licence select',
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           licences: [Joi.array(), Joi.string().allow('')],
           csrf_token: Joi.string().guid().required()
-        }
+        })
       },
       pre: [{ method: controller.ensureSessionDataPreHandler }],
       plugins: {
@@ -113,9 +113,9 @@ module.exports = {
         }
       },
       validate: {
-        query: {
+        query: Joi.object().keys({
           error: Joi.string().allow('').max(32)
-        }
+        })
       }
     }
   },
@@ -134,10 +134,10 @@ module.exports = {
         }
       },
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           selectedAddressId: Joi.string().allow('').guid(),
           csrf_token: Joi.string().guid().required()
-        }
+        })
       }
     }
   },
@@ -164,11 +164,11 @@ module.exports = {
     config: {
       description: 'Specify a name or department for security code letter',
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           selectedAddressId: Joi.string().guid(),
           fao: Joi.string().allow('').trim().uppercase(),
           csrf_token: Joi.string().guid().required()
-        }
+        })
       },
       pre: [{ method: controller.ensureSessionDataPreHandler }],
       plugins: {
@@ -213,10 +213,10 @@ module.exports = {
         }
       },
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           verification_code: Joi.string().allow('').max(5),
           csrf_token: Joi.string().guid().required()
-        }
+        })
       }
     }
   }

@@ -39,11 +39,11 @@ const faoForm = (request) => {
  * @return {Object} Joi validation schema
  */
 const getSchema = selectedIds => {
-  return {
+  return Joi.object({
     csrf_token: Joi.string().guid().required(),
-    selectedAddressId: Joi.string().guid().required().valid(selectedIds),
+    selectedAddressId: Joi.string().guid().required().valid(...selectedIds),
     fao: Joi.string().max(32).allow('')
-  };
+  });
 };
 
 exports.faoForm = faoForm;

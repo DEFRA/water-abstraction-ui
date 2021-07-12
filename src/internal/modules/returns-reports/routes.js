@@ -36,7 +36,7 @@ module.exports = {
         }
       },
       validate: {
-        params: Joi.object({
+        params: Joi.object().keys({
           returnCycleId: Joi.string().guid().required()
         })
       }
@@ -56,7 +56,7 @@ module.exports = {
         }
       },
       validate: {
-        params: Joi.object({
+        params: Joi.object().keys({
           returnCycleId: Joi.string().guid().required()
         })
       }

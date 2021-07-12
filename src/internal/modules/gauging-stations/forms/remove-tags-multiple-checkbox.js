@@ -8,7 +8,7 @@ const checkFormMultipleCheckbox = request => {
   const f = formFactory(request.path);
   const mySession = session.get(request);
   const dataCheckboxChoices = groupLicenceConditions(request);
-
+  const requiredMessage = 'Select a licence tag';
   f.fields.push(fields.checkbox('selectedCondition', {
     controlClass: 'govuk-input govuk-input--width-10',
     errors: {
@@ -16,16 +16,16 @@ const checkFormMultipleCheckbox = request => {
         message: 'At least one condition must be selected'
       },
       'array.required': {
-        message: 'Select a licence tag'
+        message: requiredMessage
       },
       'array.empty': {
-        message: 'Select a licence tag'
+        message: requiredMessage
       },
       'any.required': {
-        message: 'Select a licence tag'
+        message: requiredMessage
       },
       'any.empty': {
-        message: 'Select a licence tag'
+        message: requiredMessage
       }
     },
     choices: dataCheckboxChoices.filter(itemLabel => itemLabel.licenceId === mySession.selectedLicence.value)[0].linkages

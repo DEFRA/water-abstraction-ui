@@ -201,7 +201,7 @@ const selectedConditionWithLinkages = request => {
   return output.filter(chkItem => chkItem.linkages.length > 0);
 };
 
-const addCheckboxFields = (dataWithoutDistinct) => {
+const addCheckboxFields = dataWithoutDistinct => {
   return dataWithoutDistinct.map(itemWithoutDistinct => {
     return {
       licenceGaugingStationId: itemWithoutDistinct.licenceGaugingStationId,
@@ -218,7 +218,7 @@ const addCheckboxFields = (dataWithoutDistinct) => {
   });
 };
 
-const groupLicenceConditions = (request, licenceRef = null) => {
+const groupLicenceConditions = request => {
   const { licenceGaugingStations } = request.pre;
   const { data } = licenceGaugingStations;
 

@@ -1,33 +1,25 @@
 const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
-const { humaniseAlertType, humaniseUnits, maxDuplicates, addDuplicateIndex } = require('../lib/helpers');
+const { humaniseAlertType, humaniseUnits, groupLicenceConditions } = require('../lib/helpers');
 
 const checkFormTags = request => {
   const f = formFactory(request.path);
-  const { licenceGaugingStations } = request.pre;
-  const { data } = licenceGaugingStations;
-  const tempArr = [];
 
-  const multipleLabel = (dataLabel, licenceRef, dupeMax) => {
-    if (dupeMax > 1) {
-      return ' Multiple tags';
-    }
-    const itemLabel0 = dataLabel.filter(itemLabel => itemLabel.licenceRef === licenceRef)[0];
-    return ` ${humaniseAlertType(itemLabel0.alertType)} at ${itemLabel0.thresholdValue} ${humaniseUnits(itemLabel0.thresholdUnit)}`;
+  const multipleLabel = (dataPayload, licenceRef = null) => {
+    const item = dataPayload.filter(itemLabel => itemLabel.licenceRef === licenceRef)[0];
+    return item.linkages.length > 1 ? ' Multiple tags' : ` ${humaniseAlertType(item.alertType)} at ${item.thresholdValue} ${humaniseUnits(item.thresholdUnit)}`;
   };
 
-  const dataWithNumbering = addDuplicateIndex(data, tempArr);
-  const dataWithLicenceIdMultipleLabel = dataWithNumbering.map(item => {
+  const dataLicenceConditions = groupLicenceConditions(request);
+  const dataRadioChoices = dataLicenceConditions.map(item => {
     return {
       licenceGaugingStationId: item.licenceGaugingStationId,
       value: item.licenceId,
       label: item.licenceRef,
-      hint: multipleLabel(data, item.licenceRef, maxDuplicates(dataWithNumbering, item.licenceRef)),
+      hint: multipleLabel(dataLicenceConditions, item.licenceRef),
       alertType: item.alertType,
       thresholdValue: item.thresholdValue,
-      thresholdUnit: humaniseUnits(item.thresholdUnit),
-      dupeNum: item.dupeNum,
-      dupeMax: maxDuplicates(dataWithNumbering, item.licenceRef)
+      thresholdUnit: humaniseUnits(item.thresholdUnit)
     };
   });
 
@@ -41,7 +33,7 @@ const checkFormTags = request => {
         message: 'Select a licence number'
       }
     },
-    choices: dataWithLicenceIdMultipleLabel.filter(item => item.dupeNum === item.dupeMax)
+    choices: dataRadioChoices
   }));
 
   f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));

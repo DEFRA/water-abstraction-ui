@@ -169,31 +169,9 @@ const humaniseUnits = str => {
   return str;
 };
 
-const incrementDuplicates = (licenceRef, tempArrWithDups) => {
-  tempArrWithDups.push(licenceRef);
-  return tempArrWithDups.filter(itemWithoutDistinct => itemWithoutDistinct === licenceRef).length;
-};
-
-const maxDuplicates = (itemsWithoutDistinct, label) =>
-  itemsWithoutDistinct.filter(itemWithoutDistinct => itemWithoutDistinct.licenceRef === label).length;
-
 const detailedLabel = (labelData, licenceRef, dupeNum) => {
   const labelItem = labelData.filter(item => item.licenceRef === licenceRef)[dupeNum - 1];
   return ` ${humaniseAlertType(labelItem.alertType)} at ${labelItem.thresholdValue} ${humaniseUnits(labelItem.thresholdUnit)}`;
-};
-
-const addDuplicateIndex = (dataWithoutDistinct, tempArrWithDups) => {
-  return dataWithoutDistinct.map(itemWithoutDistinct => {
-    return {
-      licenceGaugingStationId: itemWithoutDistinct.licenceGaugingStationId,
-      licenceId: itemWithoutDistinct.licenceId,
-      licenceRef: itemWithoutDistinct.licenceRef,
-      alertType: itemWithoutDistinct.alertType,
-      thresholdValue: itemWithoutDistinct.thresholdValue,
-      thresholdUnit: itemWithoutDistinct.thresholdUnit,
-      dupeNum: incrementDuplicates(itemWithoutDistinct.licenceRef, tempArrWithDups)
-    };
-  });
 };
 
 const selectedConditionWithLinkages = request => {
@@ -217,10 +195,66 @@ const selectedConditionWithLinkages = request => {
   const output = chain(dataFormatted).groupBy('licenceId').map(value => ({
     licenceRef: value[0].licenceRef,
     licenceId: value[0].licenceId,
-    linkages: value.filter(itemInLinkages => isSelectedCheckbox(itemInLinkages.licenceGaugingStationId, checkBoxSelection))
+    linkages: value.length <= 0 ? [] : value.filter(itemInLinkages => isSelectedCheckbox(itemInLinkages.licenceGaugingStationId, checkBoxSelection))
   })).value();
 
   return output.filter(chkItem => chkItem.linkages.length > 0);
+};
+
+const addCheckboxFields = (dataWithoutDistinct) => {
+  return dataWithoutDistinct.map(itemWithoutDistinct => {
+    return {
+      licenceGaugingStationId: itemWithoutDistinct.licenceGaugingStationId,
+      licenceId: itemWithoutDistinct.licenceId,
+      licenceRef: itemWithoutDistinct.licenceRef,
+      value: itemWithoutDistinct.licenceGaugingStationId,
+      label: ` ${humaniseAlertType(itemWithoutDistinct.alertType)} at ${itemWithoutDistinct.thresholdValue} ${humaniseUnits(itemWithoutDistinct.thresholdUnit)}`,
+      hint: itemWithoutDistinct.licenceRef,
+      alertType: itemWithoutDistinct.alertType,
+      thresholdValue: itemWithoutDistinct.thresholdValue,
+      thresholdUnit: humaniseUnits(itemWithoutDistinct.thresholdUnit),
+      dupeMax: itemWithoutDistinct.dupeMax
+    };
+  });
+};
+
+const groupLicenceConditions = (request, licenceRef = null) => {
+  const { licenceGaugingStations } = request.pre;
+  const { data } = licenceGaugingStations;
+
+  const dataFormatted = data.map(item => {
+    return {
+      licenceGaugingStationId: item.licenceGaugingStationId,
+      licenceId: item.licenceId,
+      licenceRef: item.licenceRef,
+      alertType: item.alertType,
+      thresholdValue: item.thresholdValue,
+      thresholdUnit: item.thresholdUnit
+    };
+  });
+
+  const output = chain(dataFormatted).groupBy('licenceId').map(value => ({
+    licenceRef: value[0].licenceRef,
+    licenceId: value[0].licenceId,
+    licenceGaugingStationId: value[0].licenceGaugingStationId,
+    alertType: value[0].alertType,
+    thresholdValue: value[0].thresholdValue,
+    thresholdUnit: value[0].thresholdUnit,
+    linkages: value
+  })).value();
+
+  return output.map(item => {
+    return {
+      licenceGaugingStationId: item.licenceGaugingStationId,
+      licenceId: item.licenceId,
+      licenceRef: item.licenceRef,
+      alertType: item.alertType,
+      thresholdValue: item.thresholdValue,
+      thresholdUnit: item.thresholdUnit,
+      dupeNum: item.linkages ? 1 : item.linkages.length,
+      linkages: addCheckboxFields(item.linkages)
+    };
+  });
 };
 
 exports.blankGuid = blankGuid;
@@ -235,8 +269,6 @@ exports.handlePost = handlePost;
 exports.handleRemovePost = handleRemovePost;
 exports.humaniseAlertType = humaniseAlertType;
 exports.humaniseUnits = humaniseUnits;
-exports.incrementDuplicates = incrementDuplicates;
-exports.maxDuplicates = maxDuplicates;
 exports.detailedLabel = detailedLabel;
-exports.addDuplicateIndex = addDuplicateIndex;
 exports.selectedConditionWithLinkages = selectedConditionWithLinkages;
+exports.groupLicenceConditions = groupLicenceConditions;

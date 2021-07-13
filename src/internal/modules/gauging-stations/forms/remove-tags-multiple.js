@@ -13,18 +13,18 @@ const checkFormMultipleRadio = request => {
     return item.linkages.length > 1 ? ' Multiple tags' : ` ${humaniseAlertType(item.alertType)} at ${item.thresholdValue} ${humaniseUnits(item.thresholdUnit)}`;
   };
 
-  const dataWithNumbering = groupLicenceConditions(request);
-  const dataWithLicenceId = dataWithNumbering.map(item => {
+  const dataLicenceConditions = groupLicenceConditions(request);
+  const dataUniqueLicences = dataLicenceConditions.map(item => {
     return {
       licenceGaugingStationId: item.licenceGaugingStationId,
       value: item.licenceId,
-      label: multipleLabel(dataWithNumbering, item.licenceRef),
+      label: multipleLabel(dataLicenceConditions, item.licenceRef),
       hint: item.licenceRef,
+      licenceRef: item.licenceRef,
       alertType: item.alertType,
       thresholdValue: item.thresholdValue,
       thresholdUnit: humaniseUnits(item.thresholdUnit),
-      licenceId: item.licenceId,
-      linkages: item.linkages
+      licenceId: item.licenceId
     };
   });
 
@@ -38,7 +38,7 @@ const checkFormMultipleRadio = request => {
         message: 'Select a licence number'
       }
     },
-    choices: mySession.selectedLicence ? dataWithLicenceId.filter(item => item.value === mySession.selectedLicence.value) : []
+    choices: mySession.selectedLicence ? dataUniqueLicences.filter(item => item.value === mySession.selectedLicence.value) : []
   }));
 
   f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));

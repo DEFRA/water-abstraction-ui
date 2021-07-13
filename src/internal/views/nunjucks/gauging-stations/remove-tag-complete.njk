@@ -26,7 +26,7 @@
 
       <dl class="govuk-summary-list">
       {% set tagDisplayDone = false %}
-      {% for tagCheckbox in sessionData.selectedConditionWithLinkages %}
+      {% for tag in sessionData.selected %}
          {% set tagDisplayDone = true %}
         <br/>
             <div class="govuk-summary-list__row">
@@ -34,52 +34,32 @@
                 Licence
               </dt>
               <dd class="govuk-summary-list__value">
-                {{tagCheckbox.licenceRef}}
+                {{tag.licenceRef}}
               </dd>
             </div>
-
             <div class="govuk-summary-list__row">
               <dt class="govuk-summary-list__key">
                 Tag
               </dt>
               <dd class="govuk-summary-list__value">
-              {% for linkage in tagCheckbox.linkages %}
-                {{ 'Reduce' if linkage.alertType.includes('reduce') else 'Stop' }}
-                {{ linkage.thresholdValue }}
-                {{ linkage.thresholdUnit }}
+              {% if tag.linkages.length == 0 %}
+                {{ 'Reduce' if tag.alertType.includes('reduce') else 'Stop' }}
+                {{ tag.thresholdValue }}
+                {{ tag.thresholdUnit }}
                 <br/>
+              {% else %}
+                {% for linkage in tag.linkages %}
+                  {{ 'Reduce' if linkage.alertType.includes('reduce') else 'Stop' }}
+                  {{ linkage.thresholdValue }}
+                  {{ linkage.thresholdUnit }}
+                  <br/>
               {% endfor %}
+              {% endif %}
+
               </dd>
             </div>
 
       {% endfor %}
-
-      {% if tagDisplayDone == false %}
-        {% for tagRadio in sessionData.selectedLicence.options.choices %}
-        <br/>
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">
-                Licence
-              </dt>
-              <dd class="govuk-summary-list__value">
-                 {{tagRadio.hint}}
-              </dd>
-            </div>
-
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">
-                Tag
-              </dt>
-              <dd class="govuk-summary-list__value">
-              {{ 'Reduce' if tagRadio.alertType.includes('reduce') else 'Stop' }}
-              {{ tagRadio.thresholdValue }}
-              {{ tagRadio.thresholdUnit }}
-              <br/>
-              </dd>
-            </div>
-        {% endfor %}
-      {% endif %}
-            
       </dl>
       </div>
     </div>

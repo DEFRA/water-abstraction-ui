@@ -332,16 +332,16 @@ const getRemoveTagComplete = async (request, h) => {
   const selectedCondition = formCheckBox.fields.find(field => field.name === 'selectedCondition');
 
   if (selectedCondition.options.choices.length > 1) {
-    const selectedConditionWithLinkages = helpers.selectedConditionWithLinkages(request);
     session.merge(request, {
-      selectedConditionWithLinkages
+      selected: helpers.selectedConditionWithLinkages(request) ? helpers.selectedConditionWithLinkages(request) : []
     });
   } else {
     const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsMultiple);
     const selectedLicenceRadio = form.fields.find(field => field.name === 'selectedLicence');
+    const oneAndOnlyRadioSelection = 0;
+    selectedLicenceRadio.options.choices[oneAndOnlyRadioSelection].linkages = [];
     session.merge(request, {
-      selectedConditionWithLinkages: [],
-      selectedLicence: selectedLicenceRadio
+      selected: selectedLicenceRadio.options.choices ? selectedLicenceRadio.options.choices : []
     });
   }
 

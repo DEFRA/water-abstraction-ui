@@ -2,12 +2,25 @@ const Joi = require('joi');
 
 const { formFactory, fields } = require('shared/lib/forms/');
 const session = require('../lib/session');
-const { groupLicenceConditions } = require('../lib/helpers');
+const { groupLicenceConditions, addCheckboxFields } = require('../lib/helpers');
 
 const checkFormMultipleCheckbox = request => {
   const f = formFactory(request.path);
   const mySession = session.get(request);
-  const dataCheckboxChoices = groupLicenceConditions(request);
+  const dataLicenceConditions = groupLicenceConditions(request);
+  const dataUniqueLicencesLinkedTags = dataLicenceConditions.map(item => {
+    return {
+      licenceGaugingStationId: item.licenceGaugingStationId,
+      licenceId: item.licenceId,
+      licenceRef: item.licenceRef,
+      alertType: item.alertType,
+      thresholdValue: item.thresholdValue,
+      thresholdUnit: item.thresholdUnit,
+      dupeNum: item.linkages ? 1 : item.linkages.length,
+      linkages: addCheckboxFields(item.linkages)
+    };
+  });
+  const oneAndOnlyLicence = 0;
   const requiredMessage = 'Select a licence tag';
   f.fields.push(fields.checkbox('selectedCondition', {
     controlClass: 'govuk-input govuk-input--width-10',
@@ -28,7 +41,7 @@ const checkFormMultipleCheckbox = request => {
         message: requiredMessage
       }
     },
-    choices: dataCheckboxChoices.filter(itemLabel => itemLabel.licenceId === mySession.selectedLicence.value)[0].linkages
+    choices: dataUniqueLicencesLinkedTags.filter(itemLabel => itemLabel.licenceId === mySession.selectedLicence.value)[oneAndOnlyLicence].linkages
   }));
 
   f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));

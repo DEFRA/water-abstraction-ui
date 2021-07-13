@@ -161,11 +161,13 @@ const humaniseAlertType = str => {
 };
 
 const humaniseUnits = str => {
-  str = str.replace('gal', 'Gallons');
-  str = str.replace('Ml', 'Megalitres');
-  str = str.replace('m³', 'Cubic metres');
-  str = str.replace('l/', 'Litres/');
-  str = str.replace('/d', ' per day');
+  if (str) {
+    str = str.replace('gal', 'Gallons');
+    str = str.replace('Ml', 'Megalitres');
+    str = str.replace('m³', 'Cubic metres');
+    str = str.replace('l/', 'Litres/');
+    str = str.replace('/d', ' per day');
+  }
   return str;
 };
 
@@ -174,11 +176,16 @@ const detailedLabel = (labelData, licenceRef, dupeNum) => {
   return ` ${humaniseAlertType(labelItem.alertType)} at ${labelItem.thresholdValue} ${humaniseUnits(labelItem.thresholdUnit)}`;
 };
 
+const isSelectedCheckbox = (licenceGaugingStationId, selectionArray) =>
+  selectionArray.filter(chkItem => chkItem === licenceGaugingStationId).length > 0;
+
 const selectedConditionWithLinkages = request => {
   const { licenceGaugingStations } = request.pre;
   const { data } = licenceGaugingStations;
-  const isSelectedCheckbox = (licenceGaugingStationId, selectionArray) =>
-    selectionArray.filter(chkItem => chkItem === licenceGaugingStationId).length > 0;
+  const checkBoxSelection = session.get(request).selectedCondition.value;
+  if (checkBoxSelection === undefined) {
+    return [];
+  }
 
   const dataFormatted = data.map(item => {
     return {
@@ -191,7 +198,6 @@ const selectedConditionWithLinkages = request => {
     };
   });
 
-  const checkBoxSelection = session.get(request).selectedCondition.value;
   const output = chain(dataFormatted).groupBy('licenceId').map(value => ({
     licenceRef: value[0].licenceRef,
     licenceId: value[0].licenceId,
@@ -222,18 +228,7 @@ const groupLicenceConditions = request => {
   const { licenceGaugingStations } = request.pre;
   const { data } = licenceGaugingStations;
 
-  const dataFormatted = data.map(item => {
-    return {
-      licenceGaugingStationId: item.licenceGaugingStationId,
-      licenceId: item.licenceId,
-      licenceRef: item.licenceRef,
-      alertType: item.alertType,
-      thresholdValue: item.thresholdValue,
-      thresholdUnit: item.thresholdUnit
-    };
-  });
-
-  const output = chain(dataFormatted).groupBy('licenceId').map(value => ({
+  return chain(data).groupBy('licenceId').map(value => ({
     licenceRef: value[0].licenceRef,
     licenceId: value[0].licenceId,
     licenceGaugingStationId: value[0].licenceGaugingStationId,
@@ -242,19 +237,6 @@ const groupLicenceConditions = request => {
     thresholdUnit: value[0].thresholdUnit,
     linkages: value
   })).value();
-
-  return output.map(item => {
-    return {
-      licenceGaugingStationId: item.licenceGaugingStationId,
-      licenceId: item.licenceId,
-      licenceRef: item.licenceRef,
-      alertType: item.alertType,
-      thresholdValue: item.thresholdValue,
-      thresholdUnit: item.thresholdUnit,
-      dupeNum: item.linkages ? 1 : item.linkages.length,
-      linkages: addCheckboxFields(item.linkages)
-    };
-  });
 };
 
 exports.blankGuid = blankGuid;
@@ -272,3 +254,5 @@ exports.humaniseUnits = humaniseUnits;
 exports.detailedLabel = detailedLabel;
 exports.selectedConditionWithLinkages = selectedConditionWithLinkages;
 exports.groupLicenceConditions = groupLicenceConditions;
+exports.addCheckboxFields = addCheckboxFields;
+exports.isSelectedCheckbox = isSelectedCheckbox;

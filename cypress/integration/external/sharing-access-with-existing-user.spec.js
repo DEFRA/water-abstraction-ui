@@ -20,36 +20,31 @@ describe('External user sharing license access with another external user ', () 
     cy.get('input#password').type(Cypress.env('DEFAULT_PASSWORD'));
     cy.get('.govuk-button.govuk-button--start').click();
 
-    //  assign the licence
+    //  view and assign the licence
+    cy.get('.licence-result__column > a').contains('AT/CURR/DAILY/01').should('be.visible');
     cy.get('#navbar-manage').contains('Add licences or give access').click();
-    cy.get(':nth-child(2) > .govuk-list > li > .govuk-link').click();
+    cy.get('.govuk-list').contains('Give or remove access to your licence information').click();
     cy.get('.govuk-grid-column-two-thirds > .govuk-button').click();
     cy.fixture('users.json').then(users => {
-      cy.get('input#email').type(users.externalNew);
+      cy.get('input#email').type(users.externalAccessSharing);
     });
     cy.get('.form > .govuk-button').click();
-    cy.get(':nth-child(3) > .govuk-link').click();
-
-    //  Click Sign out Button
+    cy.get('.govuk-link').contains('Return to give access').click();
     cy.get('#signout').click();
-
+    //
     describe('Login to check the license assigned ', () => {
       cy.visit(Cypress.env('USER_URI'));
       cy.get('a[href*="/signin"]').click();
       cy.fixture('users.json').then(users => {
-        cy.get('input#email').type(users.externalNew);
+        cy.get('input#email').type(users.externalAccessSharing);
       });
       cy.get('input#password').type(Cypress.env('DEFAULT_PASSWORD'));
-  
-      //  Click Sign in Button
       cy.get('.govuk-button.govuk-button--start').click();
+      // assert the assigned licence
+      cy.get('.licence-result__column > a').contains('AT/CURR/DAILY/01').should('be.visible');
+
+      // Sign out
+      cy.get('#signout').click();
     });
   });
-
-
-  // Login to check the license assigned
-
-  
 });
-
-

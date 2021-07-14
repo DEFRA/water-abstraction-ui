@@ -55,16 +55,32 @@ describe('View Licences as external user', () => {
         cy.get('.licence-result__column').contains('AT/CURR/WEEKLY/01').click();
         cy.get('.govuk-summary-list__value > a').contains('Rename this licence').click();
         cy.get('#name').clear();
-        cy.get('#name').type('1234 ');
+        cy.get('#name').type(1234);
         cy.get('form > .govuk-button').contains('Save').click();
-        cy.get('#summary').contains('1234').should('be.visible');
+        cy.get('#summary').contains(1234).should('be.visible');
         cy.get('#navbar-view').contains('View licences').click();
-        cy.get('.licence-result__column--description').contains('1234').should('be.visible');
+        cy.get('.licence-result__column--description').contains(1234).should('be.visible');
 
-        cy.get('#signout').click();
+        // Creating the licence alias name using chracters and numbers
+        describe('Creating the licence alias name using empty fields', () => {
+          cy.get('#navbar-view').contains('View licences').click();
 
-        //  assert the signout
-        cy.contains('You\'re signed out').should('be.visible');
+          // assert the licences in the table
+          cy.contains('AT/CURR/MONTHLY/01').should('be.visible');
+          cy.get('.licence-result__column').contains('AT/CURR/MONTHLY/01').click();
+          cy.get('.govuk-summary-list__value > a').contains('Rename this licence').click();
+          cy.get('#name').clear();
+          cy.get('#name').type('Cupcake Factory' + 5000);
+          cy.get('form > .govuk-button').contains('Save').click();
+          cy.get('#summary').contains('Cupcake Factory5000').should('be.visible');
+          cy.get('#navbar-view').contains('View licences').click();
+          cy.get('.licence-result__column--description').contains('Cupcake Factory5000').should('be.visible');
+
+          cy.get('#signout').click();
+
+          //  assert the signout
+          cy.contains('You\'re signed out').should('be.visible');
+        });
       });
     });
   });

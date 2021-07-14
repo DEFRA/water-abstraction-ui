@@ -31,7 +31,7 @@ describe('External user sharing license access with another external user ', () 
     cy.get('.form > .govuk-button').click();
     cy.get('.govuk-link').contains('Return to give access').click();
     cy.get('#signout').click();
-    //
+    // User will login and check the assigned licence
     describe('Login to check the license assigned ', () => {
       cy.visit(Cypress.env('USER_URI'));
       cy.get('a[href*="/signin"]').click();

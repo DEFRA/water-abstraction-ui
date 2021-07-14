@@ -260,13 +260,13 @@ const getRemoveTags = async (request, h) => {
     ...request.view,
     caption,
     pageTitle,
-    form: formHandler.handleFormRequest(request, linkageForms.removeTags), /* Generates deduplicated list */
+    form: formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceView), /* Generates deduplicated list */
     sessionData: session.get(request)
   });
 };
 
 const postRemoveTagOrMultiple = async (request, h) => {
-  const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsMultiple);
+  const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceSelected);
 
   if (!form.isValid) {
     return h.postRedirectGet(form);
@@ -302,19 +302,19 @@ const getRemoveMultipleTagsCheckbox = async (request, h) => {
     ...request.view,
     caption,
     pageTitle,
-    form: formHandler.handleFormRequest(request, linkageForms.removeTagsMultipleCheckbox),
+    form: formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceConditions),
     sessionData
   });
 };
 
-const postRemoveTagsMultiple = async (request, h) => {
-  const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsMultipleCheckbox);
+const postremoveTagsLicenceSelected = async (request, h) => {
+  const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceConditions);
 
   if (!form.isValid) {
     return h.postRedirectGet(form);
   }
 
-  const formCheckBox = await formHandler.handleFormRequest(request, linkageForms.removeTagsMultipleCheckbox);
+  const formCheckBox = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceConditions);
   const selectedCondition = formCheckBox.fields.find(field => field.name === 'selectedCondition');
 
   session.merge(request, {
@@ -328,7 +328,7 @@ const getRemoveTagComplete = async (request, h) => {
   const pageTitle = 'You are about to remove tags from this licence';
   const caption = await helpers.getCaption(request);
 
-  const formCheckBox = await formHandler.handleFormRequest(request, linkageForms.removeTagsMultipleCheckbox);
+  const formCheckBox = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceConditions);
   const selectedCondition = formCheckBox.fields.find(field => field.name === 'selectedCondition');
 
   if (selectedCondition.options.choices.length > 1) {
@@ -336,7 +336,7 @@ const getRemoveTagComplete = async (request, h) => {
       selected: helpers.selectedConditionWithLinkages(request) ? helpers.selectedConditionWithLinkages(request) : []
     });
   } else {
-    const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsMultiple);
+    const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceSelected);
     const selectedLicenceRadio = form.fields.find(field => field.name === 'selectedLicence');
     const oneAndOnlyRadioSelection = 0;
     selectedLicenceRadio.options.choices[oneAndOnlyRadioSelection].linkages = [];
@@ -349,7 +349,7 @@ const getRemoveTagComplete = async (request, h) => {
     ...request.view,
     caption,
     pageTitle,
-    form: formHandler.handleFormRequest(request, linkageForms.removeTagComplete),
+    form: formHandler.handleFormRequest(request, linkageForms.removeTagConfirm),
     sessionData: session.get(request)
   });
 };
@@ -378,5 +378,5 @@ exports.getRemoveTags = getRemoveTags;
 exports.getRemoveTagComplete = getRemoveTagComplete;
 exports.postRemoveTagOrMultiple = postRemoveTagOrMultiple;
 exports.postRemoveTagComplete = postRemoveTagComplete;
-exports.postRemoveTagsMultiple = postRemoveTagsMultiple;
+exports.postremoveTagsLicenceSelected = postremoveTagsLicenceSelected;
 exports.getRemoveMultipleTagsCheckbox = getRemoveMultipleTagsCheckbox;

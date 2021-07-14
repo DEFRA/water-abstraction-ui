@@ -153,27 +153,36 @@ const handleRemovePost = async request => {
   return Promise.all(promises);
 };
 
-const humaniseAlertType = str => {
-  str = str.replace('stop_or_reduce', 'Reduce');
-  str = str.replace('stop', 'Stop');
-  str = str.replace('reduce', 'Reduce');
-  return str;
-};
+const longFormDictionary = [
+  { dbitem: 'gal', translation: 'Gallons', context: 'Units' },
+  { dbitem: 'Ml/d', translation: 'Megalitres per day', context: 'Units' },
+  { dbitem: 'm³', translation: 'Cubic metres', context: 'Units' },
+  { dbitem: 'l/d', translation: 'Litres per day', context: 'Units' },
+  { dbitem: 'stop_or_reduce', translation: 'Reduce', context: 'AlertType' },
+  { dbitem: 'stop', translation: 'Stop', context: 'AlertType' },
+  { dbitem: 'reduce', translation: 'Reduce', context: 'AlertType' }
+];
 
-const humaniseUnits = str => {
+const toLongForm = (str, context = '') => {
   if (str) {
-    str = str.replace('gal', 'Gallons');
-    str = str.replace('Ml', 'Megalitres');
-    str = str.replace('m³', 'Cubic metres');
-    str = str.replace('l/', 'Litres/');
-    str = str.replace('/d', ' per day');
+    const words = str.split(' ');
+    const firstMatch = 0;
+    let dictionarySubset = longFormDictionary.filter(dict => dict.context.toUpperCase() === context.toUpperCase().trim());
+    if (dictionarySubset.length === 0) {
+      dictionarySubset = longFormDictionary;
+    }
+    const translated = words.map(word =>
+      dictionarySubset.filter(dict => dict.dbitem.toUpperCase() === word.toUpperCase().trim())[firstMatch]);
+    if (translated.length > 0) {
+      return translated[firstMatch].translation;
+    }
   }
   return str;
 };
 
 const detailedLabel = (labelData, licenceRef, dupeNum) => {
   const labelItem = labelData.filter(item => item.licenceRef === licenceRef)[dupeNum - 1];
-  return ` ${humaniseAlertType(labelItem.alertType)} at ${labelItem.thresholdValue} ${humaniseUnits(labelItem.thresholdUnit)}`;
+  return ` ${toLongForm(labelItem.alertType, 'AlertType')} at ${labelItem.thresholdValue} ${toLongForm(labelItem.thresholdUnit, 'Units')}`;
 };
 
 const isSelectedCheckbox = (licenceGaugingStationId, selectionArray) =>
@@ -194,7 +203,7 @@ const selectedConditionWithLinkages = request => {
       licenceRef: item.licenceRef,
       alertType: item.alertType,
       thresholdValue: item.thresholdValue,
-      thresholdUnit: humaniseUnits(item.thresholdUnit)
+      thresholdUnit: toLongForm(item.thresholdUnit, 'Units')
     };
   });
 
@@ -214,11 +223,11 @@ const addCheckboxFields = dataWithoutDistinct => {
       licenceId: itemWithoutDistinct.licenceId,
       licenceRef: itemWithoutDistinct.licenceRef,
       value: itemWithoutDistinct.licenceGaugingStationId,
-      label: ` ${humaniseAlertType(itemWithoutDistinct.alertType)} at ${itemWithoutDistinct.thresholdValue} ${humaniseUnits(itemWithoutDistinct.thresholdUnit)}`,
+      label: ` ${toLongForm(itemWithoutDistinct.alertType, 'AlertType')} at ${itemWithoutDistinct.thresholdValue} ${toLongForm(itemWithoutDistinct.thresholdUnit, 'Units')}`,
       hint: itemWithoutDistinct.licenceRef,
       alertType: itemWithoutDistinct.alertType,
       thresholdValue: itemWithoutDistinct.thresholdValue,
-      thresholdUnit: humaniseUnits(itemWithoutDistinct.thresholdUnit),
+      thresholdUnit: toLongForm(itemWithoutDistinct.thresholdUnit, 'Units'),
       dupeMax: itemWithoutDistinct.dupeMax
     };
   });
@@ -249,8 +258,7 @@ exports.getSelectedConditionText = getSelectedConditionText;
 exports.groupByLicence = groupByLicence;
 exports.handlePost = handlePost;
 exports.handleRemovePost = handleRemovePost;
-exports.humaniseAlertType = humaniseAlertType;
-exports.humaniseUnits = humaniseUnits;
+exports.toLongForm = toLongForm;
 exports.detailedLabel = detailedLabel;
 exports.selectedConditionWithLinkages = selectedConditionWithLinkages;
 exports.groupLicenceConditions = groupLicenceConditions;

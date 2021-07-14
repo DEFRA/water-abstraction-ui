@@ -4,7 +4,7 @@ const { formFactory, fields } = require('shared/lib/forms/');
 const session = require('../lib/session');
 const { groupLicenceConditions, addCheckboxFields } = require('../lib/helpers');
 
-const checkFormMultipleCheckbox = request => {
+const removeTagsConditionsForm = request => {
   const f = formFactory(request.path);
   const mySession = session.get(request);
   const dataLicenceConditions = groupLicenceConditions(request);
@@ -49,10 +49,10 @@ const checkFormMultipleCheckbox = request => {
   return f;
 };
 
-const checkSchemaMultipleCheckbox = () => Joi.object({
+const removeTagsConditionsSchema = () => Joi.object({
   selectedCondition: Joi.array().min(1),
   csrf_token: Joi.string().uuid().required()
 });
 
-exports.form = checkFormMultipleCheckbox;
-exports.schema = checkSchemaMultipleCheckbox;
+exports.form = removeTagsConditionsForm;
+exports.schema = removeTagsConditionsSchema;

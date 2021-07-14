@@ -1,13 +1,13 @@
 const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
-const { humaniseAlertType, humaniseUnits, groupLicenceConditions } = require('../lib/helpers');
+const { toLongForm, groupLicenceConditions } = require('../lib/helpers');
 
-const checkFormTags = request => {
+const removeTagsLicenceForm = request => {
   const f = formFactory(request.path);
 
   const multipleLabel = (dataPayload, licenceRef = null) => {
     const item = dataPayload.filter(itemLabel => itemLabel.licenceRef === licenceRef)[0];
-    return item.linkages.length > 1 ? ' Multiple tags' : ` ${humaniseAlertType(item.alertType)} at ${item.thresholdValue} ${humaniseUnits(item.thresholdUnit)}`;
+    return item.linkages.length > 1 ? ' Multiple tags' : ` ${toLongForm(item.alertType, 'AlertType')} at ${item.thresholdValue} ${toLongForm(item.thresholdUnit, 'Units')}`;
   };
 
   const dataLicenceConditions = groupLicenceConditions(request);
@@ -19,7 +19,7 @@ const checkFormTags = request => {
       hint: multipleLabel(dataLicenceConditions, item.licenceRef),
       alertType: item.alertType,
       thresholdValue: item.thresholdValue,
-      thresholdUnit: humaniseUnits(item.thresholdUnit)
+      thresholdUnit: toLongForm(item.thresholdUnit, 'Units')
     };
   });
 
@@ -41,10 +41,10 @@ const checkFormTags = request => {
   return f;
 };
 
-const checkSchemaTags = () => Joi.object({
+const removeTagsLicenceSchema = () => Joi.object({
   selectedLicence: Joi.string().uuid().required(),
   csrf_token: Joi.string().uuid().required()
 });
 
-exports.form = checkFormTags;
-exports.schema = checkSchemaTags;
+exports.form = removeTagsLicenceForm;
+exports.schema = removeTagsLicenceSchema;

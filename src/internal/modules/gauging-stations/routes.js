@@ -61,10 +61,10 @@ module.exports = {
     }
   },
 
-  postRemoveTagsMultiple: {
+  postremoveTagsLicenceSelected: {
     method: 'POST',
     path: '/monitoring-stations/{gaugingStationId}/untagging-licence/remove-tag-multiple',
-    handler: controller.postRemoveTagsMultiple,
+    handler: controller.postremoveTagsLicenceSelected,
     config: {
       description: 'Accepts a specified tag',
       auth: {

@@ -2,15 +2,15 @@ const Joi = require('joi');
 
 const { formFactory, fields } = require('shared/lib/forms/');
 const session = require('../lib/session');
-const { humaniseUnits, groupLicenceConditions, humaniseAlertType } = require('../lib/helpers');
+const { toLongForm, groupLicenceConditions } = require('../lib/helpers');
 
-const checkFormMultipleRadio = request => {
+const removeTagsLicenceSelectedForm = request => {
   const f = formFactory(request.path);
   const mySession = session.get(request);
 
   const multipleLabel = (dataPayload, licenceRef = null) => {
     const item = dataPayload.filter(itemLabel => itemLabel.licenceRef === licenceRef)[0];
-    return item.linkages.length > 1 ? ' Multiple tags' : ` ${humaniseAlertType(item.alertType)} at ${item.thresholdValue} ${humaniseUnits(item.thresholdUnit)}`;
+    return item.linkages.length > 1 ? ' Multiple tags' : ` ${toLongForm(item.alertType, 'AlertType')} at ${item.thresholdValue} ${toLongForm(item.thresholdUnit, 'Units')}`;
   };
 
   const dataLicenceConditions = groupLicenceConditions(request);
@@ -23,7 +23,7 @@ const checkFormMultipleRadio = request => {
       licenceRef: item.licenceRef,
       alertType: item.alertType,
       thresholdValue: item.thresholdValue,
-      thresholdUnit: humaniseUnits(item.thresholdUnit),
+      thresholdUnit: toLongForm(item.thresholdUnit, 'Units'),
       licenceId: item.licenceId
     };
   });
@@ -45,10 +45,10 @@ const checkFormMultipleRadio = request => {
   f.fields.push(fields.button(null, { label: 'Confirm' }));
   return f;
 };
-const checkSchemaMultipleRadio = () => Joi.object({
+const removeTagsLicenceSelectedSchema = () => Joi.object({
   selectedLicence: Joi.string().uuid().required(),
   csrf_token: Joi.string().uuid().required()
 });
 
-exports.form = checkFormMultipleRadio;
-exports.schema = checkSchemaMultipleRadio;
+exports.form = removeTagsLicenceSelectedForm;
+exports.schema = removeTagsLicenceSelectedSchema;

@@ -15,6 +15,7 @@ const formatViewError = (error) => {
   if (!error.isJoi) {
     return error;
   }
+
   return error.details.reduce((memo, detail) => {
     memo[detail.path.join('_') + '_' + detail.type.split('.')[1]] = true;
     return memo;

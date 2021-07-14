@@ -7,7 +7,7 @@ const returnIDRegex = /^v1:[1-8]:[^:]+:[0-9]+:[0-9]{4}-[0-9]{2}-[0-9]{2}:[0-9]{4
 const joiPasswordValidator = Joi.extend((joi) => {
   return {
     type: 'passwordValidation',
-    base: joi.string().min(8).max(128).required(),
+    base: joi.string(),
     messages: {
       'password.uppercase': 'must contain an uppercase character',
       'password.symbol': 'must contain a symbol',
@@ -42,6 +42,20 @@ const joiPasswordValidator = Joi.extend((joi) => {
       }
     }
   };
+}).extend(joi => {
+  return {
+    type: 'confirmPasswordValidation',
+    base: joi.string(),
+    messages: {
+      'confirmPassword.only': 'must contain an uppercase character'
+    },
+    validate: (value, helpers) => {
+      if (!value) {
+        return { value, errors: helpers.error('confirmPassword.only') };
+      }
+      return value;
+    }
+  };
 });
 
 module.exports = {
@@ -61,7 +75,7 @@ module.exports = {
 
   VALID_PASSWORD: joiPasswordValidator.passwordValidation(),
 
-  VALID_CONFIRM_PASSWORD: Joi.string().required().valid(Joi.ref('password')).required(),
+  VALID_CONFIRM_PASSWORD: joiPasswordValidator.confirmPasswordValidation(),
 
   VALID_LICENCE_QUERY: Joi.object().keys({
     sort: Joi.string().valid('licenceNumber', 'name', 'expiryDate').default('licenceNumber'),

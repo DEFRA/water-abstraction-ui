@@ -85,6 +85,7 @@ async function postChangePassword (request, h) {
       throw new UserNotFoundError();
     }
     // Check for form errors
+
     if (request.formError) {
       const errors = mapJoiPasswordError(request.formError);
       return h.view('nunjucks/reset-password/change-password', {

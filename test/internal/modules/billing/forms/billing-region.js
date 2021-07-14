@@ -1,6 +1,5 @@
 'use strict';
 
-const Joi = require('joi');
 const uuid = require('uuid/v4');
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();

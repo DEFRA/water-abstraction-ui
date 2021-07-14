@@ -3,7 +3,6 @@
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 
-const Joi = require('joi');
 const { form, schema } = require('../../../../../../src/internal/modules/charge-information/forms/charge-element/time-limit');
 const { findField, findButton } = require('../../../../../lib/form-test');
 

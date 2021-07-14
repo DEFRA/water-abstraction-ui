@@ -1,6 +1,5 @@
 'use strict';
 const { expect } = require('@hapi/code');
-const Joi = require('joi');
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const uuid = require('uuid/v4');
 const formContainer = require('internal/modules/returns-notifications/forms/select-licence-holders');
@@ -131,7 +130,7 @@ experiment('internal/modules/returns-notifications/forms/select-licence-holders'
         csrf_token: request.view.csrfToken,
         'licence_00000000-0000-0000-0000-00000000000a': []
       });
-      expect(error).to.be.null();
+      expect(error).to.be.false();
     });
 
     test('validates when one or more valid documents are selected', async () => {
@@ -139,7 +138,7 @@ experiment('internal/modules/returns-notifications/forms/select-licence-holders'
         csrf_token: request.view.csrfToken,
         'licence_00000000-0000-0000-0000-00000000000a': ['00000000-0000-0000-0000-000000000001']
       });
-      expect(error).to.be.null();
+      expect(error).to.be.false();
     });
 
     test('fails validation for an unexpected document', async () => {

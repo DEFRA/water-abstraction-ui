@@ -134,7 +134,7 @@ experiment('internal/modules/address-entry/forms/manual-address-entry', () => {
 
     test('validates for a valid address and csrf token', async () => {
       const { error } = manualAddressEntry.schema().validate(address);
-      expect(error).to.be.null();
+      expect(error).to.be.false();
     });
 
     test('fails validation for a valid address and invalid csrf token', async () => {

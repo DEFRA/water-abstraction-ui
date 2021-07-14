@@ -17,7 +17,9 @@ const joiPasswordValidator = Joi.extend((joi) => {
       'password.required': 'must not be blank'
     },
     validate: (value, helpers) => {
+      // eslint-disable-next-line no-useless-escape
       const hasUpperCase = new RegExp(/(?=.*[A-Z])/).test(value);
+      // eslint-disable-next-line no-useless-escape
       const hasSymbol = new RegExp(/^.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?].*$/).test(value);
       let errors = [];
 

@@ -78,7 +78,7 @@ experiment('internal/modules/address-entry/forms/uk-postcode', () => {
 
     test('validates when the data is valid', async () => {
       const { error } = ukPostcode.schema().validate(data);
-      expect(error).to.be.null();
+      expect(error).to.be.false();
     });
 
     experiment('.postcode validation', () => {

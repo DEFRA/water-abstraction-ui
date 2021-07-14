@@ -51,44 +51,44 @@ experiment('account/forms/create-user form', () => {
 experiment('account/forms/create-user schema', () => {
   experiment('csrf token', () => {
     test('validates for a uuid', async () => {
-      const result = createUserSchema.csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
+      const result = createUserSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842' }, { allowUnknown: true });
       expect(result.error).to.be.null();
     });
 
     test('fails for a string that is not a uuid', async () => {
-      const result = createUserSchema.csrf_token.validate('pasta');
+      const result = createUserSchema.validate({ csrf_token: 'pasta' }, { allowUnknown: true });
       expect(result.error).to.exist();
     });
   });
 
   experiment('email', () => {
     test('validates for a defra email', async () => {
-      const result = createUserSchema.email.validate('test@defra.gov.uk');
+      const result = createUserSchema.validate({ email: 'test@defra.gov.uk' }, { allowUnknown: true });
       expect(result.error).to.be.null();
     });
 
     test('validates for an environment agency email', async () => {
-      const result = createUserSchema.email.validate('test@environment-agency.gov.uk');
+      const result = createUserSchema.email.validate({ email: 'test@environment-agency.gov.uk' }, { allowUnknown: true });
       expect(result.error).to.be.null();
     });
 
     test('fails for an invalid email', async () => {
-      const result = createUserSchema.email.validate('pasta');
+      const result = createUserSchema.validate({ email: 'pasta' }, { allowUnknown: true });
       expect(result.error).to.exist();
     });
 
     test('fails for a non gov tld', async () => {
-      const result = createUserSchema.email.validate('test@example.com');
+      const result = createUserSchema.validate({ email: 'test@example.com' }, { allowUnknown: true });
       expect(result.error).to.exist();
     });
 
     test('lower cases the input email', async () => {
-      const result = createUserSchema.email.validate('SHOUTY@DEFRA.GOV.UK');
+      const result = createUserSchema.validate({ email: 'SHOUTY@DEFRA.GOV.UK' }, { allowUnknown: true });
       expect(result.value).to.equal('shouty@defra.gov.uk');
     });
 
     test('trims the input email', async () => {
-      const result = createUserSchema.email.validate('  test@defra.gov.uk  ');
+      const result = createUserSchema.validate({ email: '  test@defra.gov.uk  ' }, { allowUnknown: true });
       expect(result.value).to.equal('test@defra.gov.uk');
     });
   });

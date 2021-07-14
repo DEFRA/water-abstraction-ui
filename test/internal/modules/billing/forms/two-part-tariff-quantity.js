@@ -8,7 +8,6 @@ const {
 
 const uuid = require('uuid/v4');
 const { expect } = require('@hapi/code');
-const Joi = require('joi');
 
 const { schema } = require('../../../../../src/internal/modules/billing/forms/two-part-tariff-quantity');
 

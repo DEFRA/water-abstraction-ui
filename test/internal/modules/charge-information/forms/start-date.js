@@ -5,7 +5,7 @@ const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').scri
 
 const { form, schema } = require('internal/modules/charge-information/forms/start-date');
 const { findField, findButton } = require('../../../../lib/form-test');
-const Joi = require('joi');
+
 const moment = require('moment');
 
 const createRequest = (startDate, isChargeable = true, licenceStart = '2016-04-01', licenceEnd = '2030-03-31') => ({

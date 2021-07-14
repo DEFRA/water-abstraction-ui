@@ -1,6 +1,5 @@
 const { expect } = require('@hapi/code');
 const uuid = require('uuid/v4');
-const Joi = require('joi');
 const {
   beforeEach,
   experiment,
@@ -77,7 +76,7 @@ experiment('schema', () => {
       const data = { totalCustomDates: false, csrf_token: csrf };
       const { error, value } = schema.validate(data);
 
-      expect(error).to.be.null();
+      expect(error).to.be.false();
       expect(value).to.equal({
         totalCustomDates: false,
         csrf_token: csrf

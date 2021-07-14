@@ -6,7 +6,6 @@ const constants = require('external/lib/constants');
 const allowedScopes = [constants.scope.licenceHolder, constants.scope.colleagueWithReturns];
 const steps = require('shared/modules/returns/steps');
 const storageAdapter = new FlowStorageAdapter(services.water.returns);
-const Joi = require('joi');
 const controller = require('../controllers/edit');
 const preHandlers = require('../pre-handlers');
 

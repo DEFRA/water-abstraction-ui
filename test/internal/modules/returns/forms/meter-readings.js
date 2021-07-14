@@ -124,8 +124,10 @@ experiment('meterReadingsSchema', () => {
   test('not valid if a reading at end is lower', async () => {
     const formValues = createFormValues(20, 30, null, 10);
     request.payload = formValues;
-    const schema = meterReadingsSchema(request, data, form);
+    const schema = Joi.compile(meterReadingsSchema(request, data, form));
     const result = schema.validate(formValues, { abortEarly: false });
+    console.log('§§§§');
+    console.log(result);
     expect(result.error).to.not.be.null();
   });
 });

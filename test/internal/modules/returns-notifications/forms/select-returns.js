@@ -1,6 +1,5 @@
 'use strict';
 const { expect } = require('@hapi/code');
-const Joi = require('joi');
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const uuid = require('uuid/v4');
 const formContainer = require('internal/modules/returns-notifications/forms/select-returns');
@@ -73,7 +72,7 @@ experiment('internal/modules/returns-notifications/forms/select-returns', () => 
         csrf_token: request.view.csrfToken,
         returnIds: []
       });
-      expect(error).to.be.null();
+      expect(error).to.be.false();
     });
 
     test('validates when return IDs contains IDs from document', async () => {
@@ -81,7 +80,7 @@ experiment('internal/modules/returns-notifications/forms/select-returns', () => 
         csrf_token: request.view.csrfToken,
         returnIds: [document.returns[0].id]
       });
-      expect(error).to.be.null();
+      expect(error).to.be.false();
     });
 
     test('fails validation when return IDs contains IDs not from document', async () => {

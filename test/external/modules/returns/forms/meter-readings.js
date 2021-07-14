@@ -1,4 +1,3 @@
-const Joi = require('joi');
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const { find } = require('lodash');

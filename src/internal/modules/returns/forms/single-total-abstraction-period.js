@@ -96,7 +96,7 @@ exports.schema = (request, returnData) => {
   const startDate = formatLineDateForValidation(first(lines).startDate);
   const endDate = formatLineDateForValidation(last(lines).endDate);
 
-  return {
+  return Joi.object().keys({
     totalCustomDates: Joi.boolean().required(),
     totalCustomDateStart: Joi.when('totalCustomDates', {
       is: true,
@@ -107,5 +107,5 @@ exports.schema = (request, returnData) => {
       then: Joi.date().max(endDate).greater(Joi.ref('totalCustomDateStart')).required()
     }),
     csrf_token: Joi.string().guid().required()
-  };
+  });
 };

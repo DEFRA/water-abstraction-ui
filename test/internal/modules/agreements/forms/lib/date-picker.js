@@ -59,22 +59,22 @@ experiment('internal/modules/agreements/forms/lib/date-picker', () => {
     });
 
     test('a date before the licence start date gives an error', async () => {
-      const { error } = Joi.validate('2018-12-31', validator);
+      const { error } = validator.validate('2018-12-31');
       expect(error).to.not.be.null();
     });
 
     test('the licence start date gives no error', async () => {
-      const { error } = Joi.validate('2019-01-01', validator);
+      const { error } = validator.validate('2019-01-01');
       expect(error).to.be.null();
     });
 
     test('the licence end date gives no error', async () => {
-      const { error } = Joi.validate('2019-12-31', validator);
+      const { error } = validator.validate('2019-12-31');
       expect(error).to.be.null();
     });
 
     test('a date after the licence end date gives an error', async () => {
-      const { error } = Joi.validate('2020-01-01', validator);
+      const { error } = validator.validate('2020-01-01');
       expect(error).to.not.be.null();
     });
   });

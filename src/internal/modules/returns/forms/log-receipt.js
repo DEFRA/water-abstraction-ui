@@ -52,11 +52,11 @@ const form = (request, data) => {
  */
 const getSchema = () => {
   const minDate = getMinimumDate().format('YYYY-MM-DD');
-  return {
+  return Joi.object().keys({
     csrf_token: Joi.string().guid().required(),
     dateReceived: Joi.date().max('now').min(minDate).iso(),
     isUnderQuery: Joi.array().items(Joi.string().valid('under_query'))
-  };
+  });
 };
 
 module.exports = {

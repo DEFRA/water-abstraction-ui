@@ -22,10 +22,10 @@ const sendRemindersForm = (request) => {
   return f;
 };
 
-const schema = {
+const schema = Joi.object().keys({
   excludeLicences: Joi.string().allow(''),
   csrf_token: Joi.string().guid().required()
-};
+});
 
 exports.sendRemindersForm = sendRemindersForm;
 exports.sendRemindersSchema = schema;

@@ -19,13 +19,13 @@ const { get } = require('lodash');
  * @param {String} payload.csrf_token
  */
 function validatePayload (payload) {
-  const payloadSchema = {
+  const payloadSchema = Joi.object().keys({
     csrf_token: Joi.string().guid().required()
-  };
+  });
   const joiOptions = {
     allowUnknown: true
   };
-  const { error } = Joi.object().keys(payloadSchema).validate(payload, joiOptions);
+  const { error } = payloadSchema.validate(payload, joiOptions);
   if (error) {
     throw Boom.badRequest('CSRF protection: invalid CSRF token', { isCsrfError: true });
   }

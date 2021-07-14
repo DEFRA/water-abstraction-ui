@@ -33,7 +33,7 @@ const confirmPasswordForm = request => {
   return f;
 };
 
-const schema = Joi.object({
+const schema = () => Joi.object().keys({
   password: VALID_PASSWORD,
   csrf_token: VALID_GUID
 });

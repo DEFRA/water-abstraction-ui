@@ -40,7 +40,7 @@ const form = (request, email) => {
   return setValues(f, { email });
 };
 
-const schema = Joi.object({
+const schema = Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   email: Joi.string().email().lowercase().trim().regex(getEmailRegex())
 });

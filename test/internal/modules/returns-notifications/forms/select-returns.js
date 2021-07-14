@@ -69,26 +69,26 @@ experiment('internal/modules/returns-notifications/forms/select-returns', () => 
     });
 
     test('validates when return IDs is empty array', async () => {
-      const { error } = Joi.validate({
+      const { error } = schema.validate({
         csrf_token: request.view.csrfToken,
         returnIds: []
-      }, schema);
+      });
       expect(error).to.be.null();
     });
 
     test('validates when return IDs contains IDs from document', async () => {
-      const { error } = Joi.validate({
+      const { error } = schema.validate({
         csrf_token: request.view.csrfToken,
         returnIds: [document.returns[0].id]
-      }, schema);
+      });
       expect(error).to.be.null();
     });
 
     test('fails validation when return IDs contains IDs not from document', async () => {
-      const { error } = Joi.validate({
+      const { error } = schema.validate({
         csrf_token: request.view.csrfToken,
         returnIds: [document.returns[0].id, 'invalid-id']
-      }, schema);
+      });
       expect(error).to.not.be.null();
     });
   });

@@ -55,7 +55,7 @@ const thresholdAndUnitForm = request => {
 const thresholdAndUnitSchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   threshold: Joi.number().min(0).max(1000000).required(),
-  unit: Joi.string().required().allow(validUnits)
+  unit: Joi.string().required().allow(...validUnits)
 });
 
 exports.form = thresholdAndUnitForm;

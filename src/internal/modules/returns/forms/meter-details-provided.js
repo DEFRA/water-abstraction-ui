@@ -28,7 +28,7 @@ exports.form = (request, data) => setValues({
   ]
 }, { meterDetailsProvided: get(data, 'meters[0].meterDetailsProvided') });
 
-exports.schema = () => ({
+exports.schema = () => Joi.object().keys({
   meterDetailsProvided: Joi.boolean().required(),
   csrf_token: Joi.string().guid().required()
 });

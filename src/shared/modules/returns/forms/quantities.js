@@ -55,9 +55,9 @@ const getLineValues = (lines) => {
 };
 
 const quantitiesSchema = (request, data) => {
-  const schema = {
+  const schema = Joi.object().keys({
     csrf_token: Joi.string().guid().required()
-  };
+  });
 
   const lines = getFormLines(data);
 

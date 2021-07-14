@@ -127,34 +127,34 @@ experiment('internal/modules/returns-notifications/forms/select-licence-holders'
     });
 
     test('validates when no documents are selected', async () => {
-      const { error } = Joi.validate({
+      const { error } = schema.validate({
         csrf_token: request.view.csrfToken,
         'licence_00000000-0000-0000-0000-00000000000a': []
-      }, schema);
+      });
       expect(error).to.be.null();
     });
 
     test('validates when one or more valid documents are selected', async () => {
-      const { error } = Joi.validate({
+      const { error } = schema.validate({
         csrf_token: request.view.csrfToken,
         'licence_00000000-0000-0000-0000-00000000000a': ['00000000-0000-0000-0000-000000000001']
-      }, schema);
+      });
       expect(error).to.be.null();
     });
 
     test('fails validation for an unexpected document', async () => {
-      const { error } = Joi.validate({
+      const { error } = schema.validate({
         csrf_token: request.view.csrfToken,
         'licence_00000000-0000-0000-0000-00000000000a': ['00000000-0000-0000-0000-000000000999']
-      }, schema);
+      });
       expect(error).to.not.be.null();
     });
 
     test('fails validation for an unexpected licence', async () => {
-      const { error } = Joi.validate({
+      const { error } = schema.validate({
         csrf_token: request.view.csrfToken,
         'licence_00000000-0000-0000-0000-00000000000x': ['00000000-0000-0000-0000-000000000001']
-      }, schema);
+      });
       expect(error).to.not.be.null();
     });
   });

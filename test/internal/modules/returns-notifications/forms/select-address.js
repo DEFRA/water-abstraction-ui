@@ -89,25 +89,25 @@ experiment('internal/modules/returns-notifications/forms/select-address', () => 
     });
 
     test('validates when the selected role is supplied', async () => {
-      const { error } = Joi.validate({
+      const { error } = schema.validate({
         csrf_token: request.view.csrfToken,
         selectedRole: 'licenceHolder'
-      }, schema);
+      });
       expect(error).to.be.null();
     });
 
     test('fails validation when the selectedRole is invalid', async () => {
-      const { error } = Joi.validate({
+      const { error } = schema.validate({
         csrf_token: request.view.csrfToken,
         selectedRole: 'not-a-real-role'
-      }, schema);
+      });
       expect(error).to.not.be.null();
     });
 
     test('fails validation when the selectedRole is not supplied', async () => {
-      const { error } = Joi.validate({
+      const { error } = schema.validate({
         csrf_token: request.view.csrfToken
-      }, schema);
+      });
       expect(error).to.not.be.null();
     });
   });

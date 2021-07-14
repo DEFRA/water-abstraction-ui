@@ -7,7 +7,8 @@ const formatViewError = require('../../lib/format-view-error');
  */
 function mapJoiPasswordError (error) {
   const viewErrors = formatViewError(error);
-
+  console.log('------');
+  console.log(viewErrors);
   const hasValidationErrors = (viewErrors.password_min || viewErrors.password_symbol || viewErrors.password_uppercase);
 
   return {

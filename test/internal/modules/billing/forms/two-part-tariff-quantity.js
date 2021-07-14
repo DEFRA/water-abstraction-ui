@@ -78,25 +78,25 @@ experiment('internal/modules/billing/forms/two-part-tariff-quantity', () => {
       experiment('when the quantity is of type "custom', () => {
         test('the customQuantity cannot be less than 0', async () => {
           const data = getData({ customQuantity: -1 });
-          const result = Joi.validate(data, tptSchema);
+          const result = tptSchema.validate(data);
           expect(result.error).to.exist();
         });
 
         test('the customQuantity cannot be greater than the maxAnnualQuantity', async () => {
           const data = getData({ customQuantity: 4 });
-          const result = Joi.validate(data, tptSchema);
+          const result = tptSchema.validate(data);
           expect(result.error).to.exist();
         });
 
         test('the customQuantity can equal the maxAnnualQuantity', async () => {
           const data = getData({ customQuantity: 3 });
-          const result = Joi.validate(data, tptSchema);
+          const result = tptSchema.validate(data);
           expect(result.error).to.equal(null);
         });
 
         test('the customQuantity can be greater than zero and less that the maxAnnualQuantity', async () => {
           const data = getData({ customQuantity: 2 });
-          const result = Joi.validate(data, tptSchema);
+          const result = tptSchema.validate(data);
           expect(result.error).to.equal(null);
         });
       });

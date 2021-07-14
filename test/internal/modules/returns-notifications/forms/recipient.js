@@ -54,18 +54,18 @@ experiment('internal/modules/returns-notifications/forms/recipient', () => {
     });
 
     test('validates when a full name is supplied', async () => {
-      const { error } = Joi.validate({
+      const { error } = schema.validate({
         csrf_token: request.view.csrfToken,
         fullName: 'Test Person'
-      }, schema);
+      });
       expect(error).to.be.null();
     });
 
     test('fails validation when the full name is empty', async () => {
-      const { error } = Joi.validate({
+      const { error } = schema.validate({
         csrf_token: request.view.csrfToken,
         fullName: ''
-      }, schema);
+      });
       expect(error).to.not.be.null();
     });
   });

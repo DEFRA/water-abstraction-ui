@@ -29,9 +29,9 @@ const form = (action) => {
   return f;
 };
 
-const schema = {
+const schema = Joi.object().keys({
   email: Joi.string().required().email()
-};
+});
 
 exports.resetForm = form;
 exports.resetSchema = schema;

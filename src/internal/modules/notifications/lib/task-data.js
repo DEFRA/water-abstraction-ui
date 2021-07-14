@@ -231,6 +231,7 @@ class TaskData {
     // current step
     const query = widgets.reduce((acc, widget) => {
       const { name, mapper = 'default' } = widget;
+
       return {
         ...acc,
         [name]: this.mappers[mapper].import(name, payload)
@@ -242,7 +243,8 @@ class TaskData {
       ...query
     };
 
-    const { error } = this.createJoiSchema(widgets).validate(query, { abortEarly: false, allowUnknown: true });
+    const schema = Joi.isSchema(this.createJoiSchema(widgets)) ? this.createJoiSchema(widgets) : Joi.compile(this.createJoiSchema(widgets));
+    const { error } = schema.validate(query, { abortEarly: false, allowUnknown: true });
 
     return { error: this.mapJoiError(error, widgets) };
   }

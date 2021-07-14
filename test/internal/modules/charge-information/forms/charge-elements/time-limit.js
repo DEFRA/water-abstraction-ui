@@ -146,7 +146,7 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
           csrf_token: testUuid,
           timeLimitedPeriod: 'no'
         };
-        const result = Joi.validate(data, timeLimitSchema);
+        const result = timeLimitSchema.validate(data);
         expect(result.error).not.to.exist();
       });
     });
@@ -164,7 +164,7 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
           csrf_token: testUuid,
           timeLimitedPeriod: 'no'
         };
-        const result = Joi.validate(data, timeLimitSchema);
+        const result = timeLimitSchema.validate(data);
         expect(result.error).not.to.exist();
       });
     });
@@ -176,7 +176,7 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
           startDate: null,
           endDate: null
         };
-        const result = Joi.validate(data, timeLimitSchema);
+        const result = timeLimitSchema.validate(data);
         expect(result.error).to.exist();
       });
 
@@ -187,7 +187,7 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
           startDate: null,
           endDate: '2001-01-02'
         };
-        const result = Joi.validate(data, timeLimitSchema);
+        const result = timeLimitSchema.validate(data);
         expect(result.error).to.exist();
       });
 
@@ -198,7 +198,7 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
           startDate: '2001-01-02',
           endDate: null
         };
-        const result = Joi.validate(data, timeLimitSchema);
+        const result = timeLimitSchema.validate(data);
         expect(result.error).to.exist();
       });
 
@@ -209,7 +209,7 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
           startDate: '2001-01-02',
           endDate: '2000-12-25'
         };
-        const result = Joi.validate(data, timeLimitSchema);
+        const result = timeLimitSchema.validate(data);
         expect(result.error).to.exist();
       });
 
@@ -220,7 +220,7 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
           startDate: '2001-01-02',
           endDate: '2001-02-08'
         };
-        const result = Joi.validate(data, timeLimitSchema);
+        const result = timeLimitSchema.validate(data);
         expect(result.error).not.to.exist();
       });
       test('fails when startDate is before chargeStartDate', async () => {
@@ -230,7 +230,7 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
           startDate: '2000-01-02',
           endDate: '2001-02-08'
         };
-        const result = Joi.validate(data, timeLimitSchema);
+        const result = timeLimitSchema.validate(data);
         expect(result.error).to.exist();
       });
 
@@ -243,7 +243,7 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
           draftChargeInformation: { startDate: '2001-01-01' },
           licence: { expiredDate: '2001-12-31' }
         };
-        const result = Joi.validate(data, timeLimitSchema);
+        const result = timeLimitSchema.validate(data);
         expect(result.error).to.exist();
       });
 
@@ -256,7 +256,7 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
           draftChargeInformation: { startDate: '2001-01-01' },
           licence: { expiredDate: '2001-12-31' }
         };
-        const result = Joi.validate(data, timeLimitSchema);
+        const result = timeLimitSchema.validate(data);
         expect(result.error).to.exist();
       });
       test('is OK when start and end dates are on the boundaries', async () => {
@@ -266,7 +266,7 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
           startDate: '2001-01-01',
           endDate: '2001-12-31'
         };
-        const result = Joi.validate(data, timeLimitSchema);
+        const result = timeLimitSchema.validate(data);
         expect(result.error).not.to.exist();
       });
     });

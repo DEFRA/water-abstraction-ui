@@ -2,7 +2,7 @@ const Joi = require('joi');
 const uuid = require('uuid/v4');
 const { VALID_RETURN_ID, OPTIONAL_GUID } = require('shared/lib/validators');
 
-const optionsSchema = {
+const optionsSchema = Joi.object().keys({
   description: Joi.string(),
   pageTitle: Joi.string().required(),
   showMeta: Joi.boolean(),
@@ -10,7 +10,7 @@ const optionsSchema = {
   schema: Joi.func(),
   submit: Joi.boolean(),
   pre: Joi.array().optional()
-};
+});
 
 const createPluginsOptions = options => ({
   viewContext: {
@@ -29,7 +29,7 @@ const createPluginsOptions = options => ({
 });
 
 const createRoute = (method, path, handler, options) => {
-  Joi.assert(options, Joi.object(optionsSchema));
+  Joi.assert(options, optionsSchema);
 
   return {
     method,

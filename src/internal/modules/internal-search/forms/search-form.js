@@ -23,8 +23,8 @@ const form = (query) => {
   return setValues(f, { query });
 };
 
-const schema = Joi.object({
-  query: Joi.string().trim()
+const schema = () => Joi.object().keys({
+  query: Joi.string().trim().required()
 });
 
 module.exports = {

@@ -57,8 +57,12 @@ exports.form = (request, data) => {
   return setValues(form, { isSingleTotal, total });
 };
 
-exports.schema = () => ({
+exports.schema = () => Joi.object().keys({
   isSingleTotal: Joi.boolean().required(),
-  total: Joi.when('isSingleTotal', { is: true, then: Joi.number().required().min(0) }),
+  total: Joi.when('isSingleTotal', {
+    is: true,
+    then: Joi.number().required().min(0),
+    otherwise: Joi.any().default(null)
+  }),
   csrf_token: Joi.string().guid().required()
 });

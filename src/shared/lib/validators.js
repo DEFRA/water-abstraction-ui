@@ -17,16 +17,17 @@ module.exports = {
   },
 
   VALID_PASSWORD: Joi.string().custom((value, helper) => {
-    if (!value.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/)) {
+    if (!value.match(/(?=.*[A-Z])/)) {
       return helper.message('must contain an uppercase character');
     }
-    if (!value.match(/^[^a-zA-Z0-9]+$/)) {
+    if (!value.match(/(?=.*[\W_])/)) {
       return helper.message('must contain a symbol');
     }
     if (value.length < 8) {
       return helper.message('must be at least 8 characters long');
     }
-  }).min(8).max(128).required(),
+    return value;
+  }).required(),
   VALID_CONFIRM_PASSWORD: Joi.string().valid(Joi.ref('password')).required(),
 
   VALID_LICENCE_QUERY: Joi.object().keys({

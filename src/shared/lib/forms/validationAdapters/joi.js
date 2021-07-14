@@ -23,6 +23,9 @@ const createSchemaFromForm = form => {
     if (field.options.mapper === 'dateMapper') {
       s = Joi.string().isoDate().options({ convert: false });
     }
+    if (field.options.mapper === 'numberMapper') {
+      s = Joi.number();
+    }
     if (field.options.mapper === 'arrayMapper' && field.options.choices) {
       const values = getChoiceValues(field);
       s = Joi.array().items(Joi.string().valid(...values));
@@ -39,7 +42,7 @@ const createSchemaFromForm = form => {
   return schema;
 };
 
-const validate = (requestData, schema, options = { abortEarly: false }) => schema.validate(requestData, options);
+const validate = (requestData, schema, options = { abortEarly: false }) => schema.validate(requestData);
 
 /**
  * Formats error object from Joi into an easy format, and includes

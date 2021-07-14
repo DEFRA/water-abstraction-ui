@@ -54,12 +54,12 @@ const form = (request, data) => {
   return setValues(f, data);
 };
 
-const schema = {
+const schema = Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   email: Joi.string().email(),
   tel: Joi.string().required(),
   address: Joi.string().required()
-};
+});
 
 exports.form = form;
 exports.schema = schema;

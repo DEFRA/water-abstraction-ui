@@ -73,7 +73,7 @@ experiment('billing/forms/billing-type schema', () => {
         selectedBillingType: ANNUAL
       };
 
-      const result = Joi.validate(data, billingTypeFormSchema());
+      const result = billingTypeFormSchema().validate(data);
       expect(result.error).not.to.exist();
     });
 
@@ -84,7 +84,7 @@ experiment('billing/forms/billing-type schema', () => {
         twoPartTariffSeason: 'summer'
       };
 
-      const result = Joi.validate(data, billingTypeFormSchema());
+      const result = billingTypeFormSchema().validate(data);
       expect(result.error).not.to.exist();
     });
 
@@ -94,7 +94,7 @@ experiment('billing/forms/billing-type schema', () => {
         selectedBillingType: TWO_PART_TARIFF
       };
 
-      const result = Joi.validate(data, billingTypeFormSchema());
+      const result = billingTypeFormSchema().validate(data);
       expect(result.error).to.exist();
     });
 
@@ -105,7 +105,7 @@ experiment('billing/forms/billing-type schema', () => {
         twoPartTariffSeason: 'spring'
       };
 
-      const result = Joi.validate(data, billingTypeFormSchema());
+      const result = billingTypeFormSchema().validate(data);
       expect(result.error).to.exist();
     });
   });

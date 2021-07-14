@@ -113,7 +113,7 @@ experiment('invoice-accounts/forms/select-company schema', () => {
         account: BILLING_ACCOUNT_HOLDER
       };
 
-      const result = Joi.validate(data, selectAccountForm.schema());
+      const result = selectAccountForm.schema().validate(data);
       expect(result.error).to.be.null();
     });
 
@@ -123,7 +123,7 @@ experiment('invoice-accounts/forms/select-company schema', () => {
         account: OTHER_ACCOUNT,
         accountSearch: 'some company name'
       };
-      const result = Joi.validate(data, selectAccountForm.schema());
+      const result = selectAccountForm.schema().validate(data);
       expect(result.error).to.be.null();
     });
 
@@ -133,7 +133,7 @@ experiment('invoice-accounts/forms/select-company schema', () => {
         selectedCompany: 'company_search',
         companySearch: ''
       };
-      const result = Joi.validate(data, selectAccountForm.schema());
+      const result = selectAccountForm.schema().validate(data);
       expect(result.error).to.exist();
     });
   });

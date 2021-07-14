@@ -154,7 +154,7 @@ experiment('billing/forms/billing-region schema', () => {
         selectedTwoPartTariffSeason: ''
       };
 
-      const result = Joi.validate(data, schema);
+      const result = schema.validate(data);
       expect(result.error).not.to.exist();
     });
 
@@ -166,7 +166,7 @@ experiment('billing/forms/billing-region schema', () => {
         selectedTwoPartTariffSeason: 'summer'
       };
 
-      const result = Joi.validate(data, schema);
+      const result = schema.validate(data);
       expect(result.error).not.to.exist();
     });
 
@@ -178,7 +178,7 @@ experiment('billing/forms/billing-region schema', () => {
         selectedTwoPartTariffSeason: ''
       };
 
-      const result = Joi.validate(data, schema);
+      const result = schema.validate(data);
       expect(result.error).to.exist();
     });
   });

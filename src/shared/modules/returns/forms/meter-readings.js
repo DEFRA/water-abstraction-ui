@@ -52,8 +52,7 @@ const getMeterReadingValidator = (type, minValue) => {
   return Joi
     .number()
     .allow(null)
-    .min(minValue)
-    .error(() => ({ type }));
+    .min(minValue);
 };
 
 const getStartReadingValidator = data => getMeterReadingValidator(

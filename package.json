@@ -65,7 +65,7 @@
     "snyk": "^1.483.0"
   },
   "dependencies": {
-    "@envage/hapi-pg-rest-api": "https://github.com/DEFRA/hapi-pg-rest-api/archive/v4.3.0.tar.gz",
+    "@envage/hapi-pg-rest-api": "github:DEFRA/hapi-pg-rest-api#master",
     "@envage/water-abstraction-helpers": "^4.3.6",
     "@hapi/boom": "^7.4.2",
     "@hapi/catbox-redis": "^6.0.2",

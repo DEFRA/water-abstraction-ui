@@ -24,7 +24,7 @@ describe('External user sharing license access with another external user ', () 
     cy.get('.licence-result__column > a').contains('AT/CURR/DAILY/01').should('be.visible');
     cy.get('#navbar-manage').contains('Add licences or give access').click();
     cy.get('.govuk-list').contains('Give or remove access to your licence information').click();
-    cy.get('.govuk-grid-column-two-thirds > .govuk-button').click();
+    cy.get('.govuk-button').contains('Give access').click();
     cy.fixture('users.json').then(users => {
       cy.get('input#email').type(users.externalAccessSharing);
     });

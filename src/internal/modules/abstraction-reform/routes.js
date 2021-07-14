@@ -81,11 +81,11 @@ module.exports = {
       description: 'Post handler: set document status',
       plugins: {
         formValidator: {
-          payload: Joi.object().keys({
+          payload: {
             csrf_token: Joi.string().guid(),
             notes: Joi.string().allow(''),
             status: Joi.string().required().valid(...Object.values(statuses))
-          })
+          }
         }
       }
     }

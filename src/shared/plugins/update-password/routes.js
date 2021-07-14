@@ -57,11 +57,11 @@ module.exports = [
           activeNavLink: 'change-password'
         },
         formValidator: {
-          payload: Joi.object().keys({
+          payload: {
             password: VALID_PASSWORD,
             confirmPassword: VALID_CONFIRM_PASSWORD,
             csrf_token: VALID_GUID
-          }),
+          },
           options: {
             abortEarly: false
           }

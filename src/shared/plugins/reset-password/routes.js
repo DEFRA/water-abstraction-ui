@@ -41,9 +41,9 @@ module.exports = [
           pageTitle: 'Reset your password'
         },
         formValidator: {
-          payload: Joi.object().keys({
+          payload: {
             email_address: VALID_EMAIL
-          })
+          }
         },
         config: {
           view: 'nunjucks/reset-password/reset-password',
@@ -103,9 +103,9 @@ module.exports = [
           back: '/reset_password_check_email'
         },
         formValidator: {
-          payload: Joi.object().keys({
+          payload: {
             email_address: VALID_EMAIL
-          })
+          }
         },
         config: {
           view: 'nunjucks/reset-password/reset-password-resend',
@@ -171,11 +171,11 @@ module.exports = [
           pageTitle: 'Change your password'
         },
         formValidator: {
-          payload: Joi.object().keys({
+          payload: {
             resetGuid: VALID_GUID,
             password: VALID_PASSWORD,
             confirmPassword: VALID_CONFIRM_PASSWORD
-          }),
+          },
           options: {
             abortEarly: false
           }
@@ -223,11 +223,11 @@ module.exports = [
           create: true
         },
         formValidator: {
-          payload: Joi.object().keys({
+          payload: {
             resetGuid: VALID_GUID,
             password: VALID_PASSWORD,
             confirmPassword: VALID_CONFIRM_PASSWORD
-          }),
+          },
           options: {
             abortEarly: false
           }

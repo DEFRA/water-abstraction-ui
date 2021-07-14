@@ -1,5 +1,48 @@
+'use strict';
+
 const Joi = require('joi');
+
 const returnIDRegex = /^v1:[1-8]:[^:]+:[0-9]+:[0-9]{4}-[0-9]{2}-[0-9]{2}:[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
+
+const joiPasswordValidator = Joi.extend((joi) => {
+  return {
+    type: 'passwordValidation',
+    base: joi.string().min(8).max(128).required(),
+    messages: {
+      'password.uppercase': 'must contain an uppercase character',
+      'password.symbol': 'must contain a symbol',
+      'password.min': 'must contain at least 8 characters',
+      'password.empty': 'must not be blank',
+      'password.undefined': 'must not be blank',
+      'password.required': 'must not be blank'
+    },
+    validate: (value, helpers) => {
+      const hasUpperCase = new RegExp(/(?=.*[A-Z])/).test(value);
+      const hasSymbol = new RegExp(/^.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?].*$/).test(value);
+      let errors = [];
+
+      if (!value) {
+        return { value, errors: helpers.error('password.required') };
+      }
+      if (!hasUpperCase) {
+        errors.push(helpers.error('password.uppercase'));
+      }
+      if (!hasSymbol) {
+        errors.push(helpers.error('password.symbol'));
+      }
+
+      if (value.length < 8) {
+        errors.push(helpers.error('password.min'));
+      }
+
+      if (errors.length === 0) {
+        return value;
+      } else {
+        return { value, errors };
+      }
+    }
+  };
+});
 
 module.exports = {
 
@@ -16,19 +59,9 @@ module.exports = {
     utm_campaign: Joi.string().max(64)
   },
 
-  VALID_PASSWORD: Joi.string().custom((value, helper) => {
-    if (!value.match(/(?=.*[A-Z])/)) {
-      return helper.message('must contain an uppercase character');
-    }
-    if (!value.match(/(?=.*[\W_])/)) {
-      return helper.message('must contain a symbol');
-    }
-    if (value.length < 8) {
-      return helper.message('must be at least 8 characters long');
-    }
-    return value;
-  }).required(),
-  VALID_CONFIRM_PASSWORD: Joi.string().valid(Joi.ref('password')).required(),
+  VALID_PASSWORD: joiPasswordValidator.passwordValidation(),
+
+  VALID_CONFIRM_PASSWORD: Joi.string().required().valid(Joi.ref('password')).required(),
 
   VALID_LICENCE_QUERY: Joi.object().keys({
     sort: Joi.string().valid('licenceNumber', 'name', 'expiryDate').default('licenceNumber'),

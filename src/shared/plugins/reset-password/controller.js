@@ -79,32 +79,23 @@ async function getChangePassword (request, h) {
  */
 async function postChangePassword (request, h) {
   try {
-    console.log(1111);
     // Check for valid reset GUID
     const user = await h.realm.pluginOptions.getUserByResetGuid(request.payload.resetGuid);
-    console.log(222);
     if (!user) {
       throw new UserNotFoundError();
     }
-    console.log(333);
     // Check for form errors
-    console.log(request.formError);
     if (request.formError) {
-      console.log(555);
       const errors = mapJoiPasswordError(request.formError);
-      console.log(errors);
       return h.view('nunjucks/reset-password/change-password', {
         ...request.view, errors
       });
     }
-    console.log(76776);
     // Validation OK - update password in IDM
     const { error } = await h.realm.pluginOptions.updatePasswordWithGuid(request.payload.resetGuid, request.payload.password);
-    console.log(117745745);
     if (error) {
       throw error;
     }
-    console.log(189899);
     // Log user in
     return request.logIn(user);
   } catch (error) {

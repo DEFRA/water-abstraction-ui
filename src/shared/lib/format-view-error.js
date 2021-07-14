@@ -5,8 +5,8 @@
  * which can then be tested in the view, e.g. {# if error.password_min }...
  *
  * The output is e.g.:  { password_min : true, confirmPassword_empty : true }
- * @param {Object} Joi error
  * @return {Object}
+ * @param error
  */
 const formatViewError = (error) => {
   if (!error) {

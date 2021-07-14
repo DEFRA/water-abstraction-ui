@@ -6,11 +6,10 @@ const formatViewError = require('../../lib/format-view-error');
  * @return {Object} error in format for existing change password template
  */
 function mapJoiPasswordError (error) {
+  console.log(error);
   const viewErrors = formatViewError(error);
-  console.log('------');
-  console.log(viewErrors);
-  const hasValidationErrors = (viewErrors.password_min || viewErrors.password_symbol || viewErrors.password_uppercase);
 
+  const hasValidationErrors = (viewErrors.password_required || viewErrors.password_empty || viewErrors.password_undefined || !!viewErrors.password_min || !!viewErrors.password_symbol || !!viewErrors.password_uppercase);
   return {
     hasValidationErrors,
     passwordTooShort: viewErrors.password_min,

@@ -60,9 +60,9 @@ module.exports = {
           showMeta: true
         },
         formValidator: {
-          payload: Joi.object().keys({
+          payload: {
             csrf_token: VALID_GUID
-          })
+          }
         }
       },
       pre

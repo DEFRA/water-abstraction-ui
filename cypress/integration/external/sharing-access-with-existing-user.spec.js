@@ -6,7 +6,7 @@ describe('External user sharing license access with another external user ', () 
     setUp('barebones');
   });
 
-  after(() => {
+  afterEach(() => {
     tearDown();
   });
 

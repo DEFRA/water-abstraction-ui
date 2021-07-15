@@ -28,7 +28,6 @@ describe('check for different status for a licence in returns tab as internal us
     cy.get('.search__button').click();
     cy.contains('Licences').should('be.visible');
     cy.get('.govuk-table__row').contains('AT/CURR/MONTHLY/02').click();
-    
 
     // Click on returns tab to see status
     describe('sees the Summary table', () => {

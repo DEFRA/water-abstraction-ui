@@ -1,10 +1,10 @@
 
 const { setUp, tearDown } = require('../../support/setup');
-const checkErrorMessage = (message) => {
-  describe('it sees the correct error message', () => {
-    cy.get('.govuk-list > li > a').should('have.text', message);
-  });
-};
+// const checkErrorMessage = (message) => {
+/* describe('it sees the correct error message', () => {
+  cy.get('.govuk-list > li > a').should('have.text');
+  // });
+}); */
 
 describe('check for different return status as an external user', () => {
   beforeEach(() => {

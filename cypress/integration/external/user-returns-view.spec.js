@@ -1,10 +1,5 @@
 
 const { setUp, tearDown } = require('../../support/setup');
-// const checkErrorMessage = (message) => {
-/* describe('it sees the correct error message', () => {
-  cy.get('.govuk-list > li > a').should('have.text');
-  // });
-}); */
 
 describe('check for different return status as an external user', () => {
   beforeEach(() => {
@@ -55,8 +50,8 @@ describe('check for different return status as an external user', () => {
       cy.get('#returns').should('be.visible');
     });
     describe('sees the status column', () => {
-      cy.get(':nth-child(1) > :nth-child(4) > .govuk-tag').should('be.visible').and('contain.text', 'Due');
-      cy.get(':nth-child(2) > :nth-child(4) > .govuk-tag').should('be.visible').and('contain.text', 'Overdue');
+      cy.get('.govuk-tag').should('be.visible').and('contain.text', 'Due');
+      cy.get('.govuk-tag').should('be.visible').and('contain.text', 'Overdue');
     });
   });
 });

@@ -41,9 +41,9 @@ describe('check for different status for a licence in returns tab as internal us
       cy.get('#returns').should('be.visible');
     });
     describe('sees the status column', () => {
-      cy.get(':nth-child(1) > :nth-child(4) > .govuk-tag').should('be.visible').and('contain.text', 'Due');
-      cy.get(':nth-child(2) > :nth-child(4) > .govuk-tag').should('be.visible').and('contain.text', 'Void');
-      cy.get(':nth-child(3) > :nth-child(4) > .govuk-tag').should('be.visible').and('contain.text', 'Overdue');
+      cy.get('.govuk-tag').should('be.visible').and('contain.text', 'Due');
+      cy.get('.govuk-tag').should('be.visible').and('contain.text', 'Void');
+      cy.get('.govuk-tag').should('be.visible').and('contain.text', 'Overdue');
     });
 
     //  Click Sign out Button

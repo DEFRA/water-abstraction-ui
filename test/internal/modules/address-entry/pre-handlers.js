@@ -18,14 +18,15 @@ const ADDRESS1 = {
   addressLine1: 'Line 1',
   addressLine2: 'Line 2',
   addressLine3: 'Line 3',
-  postcode: POST_CODE,
-}
+  postcode: POST_CODE
+};
+
 const INVALID_ADDRESS = {
   addressLine1: 'Line 1',
   addressLine2: null,
   addressLine3: null,
-  postcode: POST_CODE,
-}
+  postcode: POST_CODE
+};
 
 experiment('src/internal/modules/address-entry/pre-handlers .searchForAddressesByPostcode', () => {
   let request, result;

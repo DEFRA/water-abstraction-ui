@@ -25,7 +25,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
     sandbox.stub(helpers, 'handlePost').resolves();
 
     sandbox.stub(session, 'get').resolves();
-    sandbox.stub(session, 'merge').resolves({ licenceGaugingStations: [ { licenceId: 0 } ] });
+    sandbox.stub(session, 'merge').resolves({});
     sandbox.stub(session, 'clear').resolves({});
     sandbox.stub(formHandler, 'handleFormRequest').resolves({});
   });
@@ -334,7 +334,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
       }
     };
 
-    const formContent = {
+    const formContentMultipleSelected = {
       fields: [ { name: 'selectedLicence',
         options: {
           choices: [],
@@ -358,6 +358,42 @@ experiment('internal/modules/gauging-stations/controller', () => {
       } ]
     };
 
+    const formContentSingleSelected = {
+      fields: [ { name: 'selectedLicence',
+        options: {
+          choices: [
+            {
+              licenceGaugingStationId: '9177f85d-916c-4d51-8db7-74246d228b7b',
+              value: '6e21a77b-1525-459d-acb8-3615e5d53f06',
+              label: ' Reduce at 115 Megalitres per day',
+              hint: '2672520010',
+              licenceRef: '2672520010',
+              alertType: 'stop_or_reduce',
+              thresholdValue: '115',
+              thresholdUnit: 'Megalitres per day',
+              licenceId: '6e21a77b-1525-459d-acb8-3615e5d53f06'
+            }
+          ],
+          label: '',
+          widget: 'radio',
+          required: true,
+          controlClass: 'govuk-input govuk-input--width-10',
+          errors: {
+            any: {
+              required: {
+                message: 'Select a licence number'
+              },
+              empty: {
+                message: 'Select a licence number'
+              }
+            }
+          }
+        },
+        errors: [],
+        value: '6e21a77b-1525-459d-acb8-3615e5d53f06'
+      } ]
+    };
+
     const h = {
       view: sandbox.spy(),
       postRedirectGet: sandbox.spy(),
@@ -367,7 +403,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
     experiment('when the payload is invalid', () => {
       beforeEach(() => {
         formHandler.handleFormRequest.resolves({
-          ...formContent,
+          ...formContentSingleSelected,
           isValid: false
         });
         controller.getRemoveTags(request, h);
@@ -383,10 +419,14 @@ experiment('internal/modules/gauging-stations/controller', () => {
       });
     });
 
-    experiment('when the payload is valid', () => {
+    experiment('selectedLicence containing multiple matching licenceId ', () => {
       beforeEach(() => {
+        session.merge.returns({
+          selectedLicence: formContentMultipleSelected.fields[0],
+          licenceGaugingStations: data.data
+        });
         formHandler.handleFormRequest.resolves({
-          ...formContent,
+          ...formContentMultipleSelected,
           isValid: true
         });
         controller.getRemoveTags(request, h);
@@ -407,8 +447,73 @@ experiment('internal/modules/gauging-stations/controller', () => {
         expect(h.postRedirectGet.called).to.be.true();
       });
 
+      test('.postRemoveTagsLicenceSelected', () => {
+        controller.postRemoveTagsLicenceSelected(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+
+      test('.getRemoveTagsConditions', () => {
+        controller.getRemoveTagsConditions(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+
+      test('.postRemoveTagComplete', () => {
+        controller.postRemoveTagComplete(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+
       test('.handleFormRequest to process the payload through the form', () => {
         expect(formHandler.handleFormRequest.called).to.be.true();
+      });
+    });
+
+    experiment('selectedLicence containing one matching licenceId ', () => {
+      beforeEach(() => {
+        session.merge.returns({
+          selectedLicence: formContentSingleSelected.fields[0],
+          licenceGaugingStations: data.data
+        });
+        formHandler.handleFormRequest.resolves({
+          ...formContentSingleSelected,
+          isValid: true
+        });
+        controller.getRemoveTags(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+
+      test('.getRemoveTags displaying expected forms', () => {
+        controller.getRemoveTags(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+        expect(h.postRedirectGet.called).to.be.true();
+        expect(h.view.lastCall.args[1].pageTitle).to.equal('Which licence do you want to remove a tag from?');
+      });
+
+      test('.postRemoveTagOrMultiple displaying expected forms', () => {
+        controller.postRemoveTagOrMultiple(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+
+      test('.postRemoveTagsLicenceSelected', () => {
+        controller.postRemoveTagsLicenceSelected(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+
+      test('.postRemoveTagComplete', () => {
+        controller.postRemoveTagComplete(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+        expect(h.postRedirectGet.called).to.be.true();
       });
     });
 

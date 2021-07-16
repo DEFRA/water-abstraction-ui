@@ -383,7 +383,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
       });
     });
 
-    experiment('when the payload is invalid', () => {
+    experiment('when the payload is valid', () => {
       beforeEach(() => {
         formHandler.handleFormRequest.resolves({
           ...formContent,
@@ -393,26 +393,26 @@ experiment('internal/modules/gauging-stations/controller', () => {
       });
       afterEach(async () => sandbox.restore());
 
-      test('calls getRemoveTags', () => {
+      test('.getRemoveTags displaying expected forms', () => {
         controller.getRemoveTags(request, h);
         const [template] = h.view.lastCall.args;
         expect(template).to.equal('nunjucks/form');
         expect(h.postRedirectGet.called).to.be.true();
       });
 
-      test('calls postRemoveTagOrMultiple', () => {
+      test('.postRemoveTagOrMultiple displaying expected forms', () => {
         controller.postRemoveTagOrMultiple(request, h);
         const [template] = h.view.lastCall.args;
         expect(template).to.equal('nunjucks/form');
         expect(h.postRedirectGet.called).to.be.true();
       });
 
-      test('calls handleFormRequest to process the payload through the form', () => {
+      test('.handleFormRequest to process the payload through the form', () => {
         expect(formHandler.handleFormRequest.called).to.be.true();
       });
     });
 
-    experiment('calls getRemoveTagsConditions', () => {
+    experiment('.getRemoveTagsConditions', () => {
       const request = {
         path: 'http://example.com/monitoring-stations/123/untagging-licence/remove-tag',
         method: 'get',

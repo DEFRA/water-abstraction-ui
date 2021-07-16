@@ -205,7 +205,129 @@ experiment('internal/modules/gauging-stations/controller', () => {
       });
     });
   });
-  // getSelectedConditionText;
+
+  experiment('.groupLicenceConditions', () => {
+    const data = {
+      data: [
+        {
+          licenceGaugingStationId: 'ee886147-ec1d-4a0f-8598-fc3f5886ee84',
+          abstractionPeriodStartDay: 1,
+          abstractionPeriodStartMonth: 1,
+          abstractionPeriodEndDay: 11,
+          abstractionPeriodEndMonth: 11,
+          restrictionType: 'flow',
+          alertType: 'stop_or_reduce',
+          thresholdValue: '100',
+          thresholdUnit: 'Ml/d',
+          comstatus: null,
+          dateStatusUpdated: null,
+          licenceVersionPurposeConditionId: null,
+          licenceId: '22c784b7-b141-4fd0-8ee1-78ea7ae783bc',
+          licenceRef: '11/42/18.6.2/262',
+          startDate: '1965-11-26',
+          label: 'STATION ROAD',
+          gridReference: 'TQ7360023530',
+          catchmentName: '',
+          riverName: '',
+          wiskiId: 'E6681',
+          stationReference: 'E6681',
+          easting: null,
+          northing: null
+        },
+        {
+          licenceGaugingStationId: 'd6369186-a485-48a1-878f-05b3b51a7c7f',
+          abstractionPeriodStartDay: 13,
+          abstractionPeriodStartMonth: 1,
+          abstractionPeriodEndDay: 13,
+          abstractionPeriodEndMonth: 2,
+          restrictionType: 'flow',
+          alertType: 'reduce',
+          thresholdValue: '113',
+          thresholdUnit: 'Ml/d',
+          comstatus: null,
+          dateStatusUpdated: null,
+          licenceVersionPurposeConditionId: null,
+          licenceId: '22c784b7-b141-4fd0-8ee1-78ea7ae783bc',
+          licenceRef: '11/42/18.6.2/262',
+          startDate: '1965-11-26',
+          label: 'STATION ROAD',
+          gridReference: 'TQ7360023530',
+          catchmentName: '',
+          riverName: '',
+          wiskiId: 'E6681',
+          stationReference: 'E6681',
+          easting: null,
+          northing: null
+        },
+        {
+          licenceGaugingStationId: '9177f85d-916c-4d51-8db7-74246d228b7b',
+          abstractionPeriodStartDay: 1,
+          abstractionPeriodStartMonth: 1,
+          abstractionPeriodEndDay: 2,
+          abstractionPeriodEndMonth: 2,
+          restrictionType: 'flow',
+          alertType: 'stop_or_reduce',
+          thresholdValue: '115',
+          thresholdUnit: 'Ml/d',
+          comstatus: null,
+          dateStatusUpdated: null,
+          licenceVersionPurposeConditionId: null,
+          licenceId: '6e21a77b-1525-459d-acb8-3615e5d53f06',
+          licenceRef: '2672520010',
+          startDate: '1966-12-30',
+          label: 'STATION ROAD',
+          gridReference: 'TQ7360023530',
+          catchmentName: '',
+          riverName: '',
+          wiskiId: 'E6681',
+          stationReference: 'E6681',
+          easting: null,
+          northing: null
+        }
+      ] };
+    const request = {
+      path: 'http://example.com/monitoring-stations/123/untagging-licence/remove-tag',
+      view: {
+        csrfToken: 'some-token'
+      },
+      pre: {
+        licenceGaugingStations: data
+      }
+    };
+    experiment('.groupLicenceConditions ', () => {
+      let result;
+      beforeEach(async () => {
+        result = await helpers.groupLicenceConditions(request);
+      });
+      afterEach(async () => sandbox.restore());
+
+      test('returns the expected linkages', () => {
+        expect(result[0].licenceRef).to.equal('11/42/18.6.2/262');
+        expect(result[0].linkages.length).to.equal(2);
+        expect(result[1].licenceRef).to.equal('2672520010');
+        expect(result[1].linkages.length).to.equal(1);
+      });
+
+      test('.toLongForm is returning expected words', () => {
+        expect(helpers.toLongForm('gal', 'Units')).to.equal('Gallons');
+        expect(helpers.toLongForm('Ml/d', 'Units')).to.equal('Megalitres per day');
+        expect(helpers.toLongForm('m³', 'Units')).to.equal('Cubic metres');
+        expect(helpers.toLongForm('l/d', 'Units')).to.equal('Litres per day');
+        expect(helpers.toLongForm('stop_or_reduce', 'AlertType')).to.equal('Reduce');
+        expect(helpers.toLongForm('reduce', 'AlertType')).to.equal('Reduce');
+        expect(helpers.toLongForm('stop', 'AlertType')).to.equal('Stop');
+      });
+
+      test('.addCheckboxFields returns checkbox labels', () => {
+        expect(helpers.addCheckboxFields(data.data).length).to.equal(3);
+        expect(helpers.addCheckboxFields(data.data)[0].label).to.equal(' Reduce at 100 Megalitres per day');
+      });
+
+      test('.selectedConditionWithLinkages handles expired session gracefully', () => {
+        expect(helpers.selectedConditionWithLinkages(request).length).to.equal(0);
+      });
+    });
+  });
 
   experiment('.handlePost', () => {
     const request = {

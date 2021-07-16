@@ -191,10 +191,11 @@ const isSelectedCheckbox = (licenceGaugingStationId, selectionArray) =>
 const selectedConditionWithLinkages = request => {
   const { licenceGaugingStations } = request.pre;
   const { data } = licenceGaugingStations;
-  const checkBoxSelection = session.get(request).selectedCondition.value;
-  if (checkBoxSelection === undefined) {
-    return [];
+  let checkBoxSelection = [];
+  if (session.get(request).selectedCondition === undefined) {
+    return checkBoxSelection;
   }
+  checkBoxSelection = session.get(request).selectedCondition.value;
 
   const dataFormatted = data.map(item => {
     return {
@@ -227,8 +228,7 @@ const addCheckboxFields = dataWithoutDistinct => {
       hint: itemWithoutDistinct.licenceRef,
       alertType: itemWithoutDistinct.alertType,
       thresholdValue: itemWithoutDistinct.thresholdValue,
-      thresholdUnit: toLongForm(itemWithoutDistinct.thresholdUnit, 'Units'),
-      dupeMax: itemWithoutDistinct.dupeMax
+      thresholdUnit: toLongForm(itemWithoutDistinct.thresholdUnit, 'Units')
     };
   });
 };

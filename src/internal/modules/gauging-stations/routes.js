@@ -44,10 +44,10 @@ module.exports = {
     }
   },
 
-  getRemoveMultipleTagsCheckbox: {
+  getRemoveTagsConditions: {
     method: 'GET',
     path: '/monitoring-stations/{gaugingStationId}/untagging-licence/remove-tag-multiple',
-    handler: controller.getRemoveMultipleTagsCheckbox,
+    handler: controller.getRemoveTagsConditions,
     config: {
       description: 'Gets the entry page for remove linking a licence to a given gauging station - Requires the user to select tag',
       validate: {
@@ -61,10 +61,10 @@ module.exports = {
     }
   },
 
-  postremoveTagsLicenceSelected: {
+  postRemoveTagsLicenceSelected: {
     method: 'POST',
     path: '/monitoring-stations/{gaugingStationId}/untagging-licence/remove-tag-multiple',
-    handler: controller.postremoveTagsLicenceSelected,
+    handler: controller.postRemoveTagsLicenceSelected,
     config: {
       description: 'Accepts a specified tag',
       auth: {

@@ -279,6 +279,10 @@ const postRemoveTagOrMultiple = async (request, h) => {
     selectedCondition: [] /* clear selection */
   });
 
+  if (sessionData.licenceGaugingStations === undefined) {
+    return h.redirect(request.path.replace(/\/untagging-licence\/[^/]*$/, '/'));
+  }
+
   if (selectedLicenceRadio) {
     tagsForLicence = sessionData.licenceGaugingStations.filter(item => item.licenceId === selectedLicenceRadio.value);
   }
@@ -290,7 +294,7 @@ const postRemoveTagOrMultiple = async (request, h) => {
   return h.redirect(request.path.replace(/\/[^/]*$/, '/remove-tag-complete'));
 };
 
-const getRemoveMultipleTagsCheckbox = async (request, h) => {
+const getRemoveTagsConditions = async (request, h) => {
   const pageTitle = 'This licence has more than one tag, select the ones you need to remove';
   const caption = await helpers.getCaption(request);
 
@@ -307,7 +311,7 @@ const getRemoveMultipleTagsCheckbox = async (request, h) => {
   });
 };
 
-const postremoveTagsLicenceSelected = async (request, h) => {
+const postRemoveTagsLicenceSelected = async (request, h) => {
   const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceConditions);
 
   if (!form.isValid) {
@@ -378,5 +382,5 @@ exports.getRemoveTags = getRemoveTags;
 exports.getRemoveTagComplete = getRemoveTagComplete;
 exports.postRemoveTagOrMultiple = postRemoveTagOrMultiple;
 exports.postRemoveTagComplete = postRemoveTagComplete;
-exports.postremoveTagsLicenceSelected = postremoveTagsLicenceSelected;
-exports.getRemoveMultipleTagsCheckbox = getRemoveMultipleTagsCheckbox;
+exports.postRemoveTagsLicenceSelected = postRemoveTagsLicenceSelected;
+exports.getRemoveTagsConditions = getRemoveTagsConditions;

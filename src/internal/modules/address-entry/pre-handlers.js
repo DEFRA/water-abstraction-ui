@@ -6,6 +6,8 @@ const services = require('../../lib/connectors/services');
 const session = require('./lib/session');
 const postcodeValidator = require('./lib/postcode-validator');
 
+const excludeAddressesWithoutFullDetails = (addresses = []) => addresses.filter(address => (!!address.addressLine2 || !!address.addressLine3));
+
 /**
  * Retrieves addresses for the specified postcode,
  * or a Boom 404 error if not found
@@ -18,7 +20,10 @@ const searchForAddressesByPostcode = async request => {
   if (!error) {
     try {
       const { data } = await services.water.addressSearch.getAddressSearchResults(postcode);
-      return data;
+
+      // EA address facade can return some addresses with addressLine2 and addressLine3 as `null`
+      // which causes validation to blow up downstream. This amendment was made as part of WATER-3269
+      return excludeAddressesWithoutFullDetails(data);
     } catch (err) {
       if (err.statusCode === 404) {
         return Boom.notFound(`No addresses found for postcode ${postcode}`);

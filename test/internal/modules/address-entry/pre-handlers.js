@@ -14,7 +14,7 @@ const services = require('internal/lib/connectors/services');
 const preHandlers = require('internal/modules/address-entry/pre-handlers');
 
 const POST_CODE = 'TT1 1TT';
-const ADDRESS1 = {
+const ADDRESS = {
   addressLine1: 'Line 1',
   addressLine2: 'Line 2',
   addressLine3: 'Line 3',
@@ -29,28 +29,34 @@ const INVALID_ADDRESS = {
 };
 
 experiment('src/internal/modules/address-entry/pre-handlers .searchForAddressesByPostcode', () => {
-  let request, result;
-  beforeEach(async () => {
-    sandbox.stub(services.water.addressSearch, 'getAddressSearchResults')
-      .resolves({ data: [ADDRESS1, INVALID_ADDRESS] });
+  let stub;
+  const request = {
+    query: {
+      postcode: POST_CODE
+    }
+  };
 
-    request = {
-      query: {
-        postcode: POST_CODE
-      }
-    };
-    result = await preHandlers.searchForAddressesByPostcode(request);
+  beforeEach(async () => {
+    stub = sandbox.stub(services.water.addressSearch, 'getAddressSearchResults');
   });
 
   afterEach(() => sandbox.restore());
 
-  test('calls the address search with the postcode', () => {
+  function addressSearch (addresses = []) {
+    stub.resolves({ data: [ADDRESS, ADDRESS, ...addresses] });
+
+    return preHandlers.searchForAddressesByPostcode(request);
+  }
+
+  test('calls the address search with the postcode', async () => {
+    await addressSearch();
     const [postcode] = services.water.addressSearch.getAddressSearchResults.lastCall.args;
     expect(postcode).to.equal(POST_CODE);
   });
 
-  test('returns the data from the address search and omits invalid address', () => {
-    expect(result).to.equal([ ADDRESS1 ]);
+  test('returns the data from the address search', async () => {
+    const result = await addressSearch();
+    expect(result).to.equal([ ADDRESS, ADDRESS ]);
   });
 
   test('returns a Boom not found error if a 404 is returned', async () => {
@@ -59,7 +65,7 @@ experiment('src/internal/modules/address-entry/pre-handlers .searchForAddressesB
     services.water.addressSearch.getAddressSearchResults
       .rejects(err);
 
-    result = await preHandlers.searchForAddressesByPostcode(request);
+    const result = await preHandlers.searchForAddressesByPostcode(request);
 
     expect(result.isBoom).to.be.true();
     expect(result.message).to.equal(`No addresses found for postcode ${POST_CODE}`);
@@ -70,7 +76,7 @@ experiment('src/internal/modules/address-entry/pre-handlers .searchForAddressesB
     services.water.addressSearch.getAddressSearchResults
       .rejects(error);
     try {
-      result = await preHandlers.searchForAddressesByPostcode(request);
+      await preHandlers.searchForAddressesByPostcode(request);
     } catch (err) {
       expect(err).to.equal(error);
     }

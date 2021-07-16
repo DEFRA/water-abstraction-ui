@@ -52,6 +52,8 @@ describe('check for different return status as an external user', () => {
     describe('sees the status column', () => {
       cy.get('.govuk-tag').should('be.visible').and('contain.text', 'Due');
       cy.get('.govuk-tag').should('be.visible').and('contain.text', 'Overdue');
+      cy.get('.govuk-tag').should('be.visible').and('contain.text', 'Complete');
+      cy.get('.govuk-tag').should('be.visible').and('contain.text', 'Overdue');
     });
   });
 });

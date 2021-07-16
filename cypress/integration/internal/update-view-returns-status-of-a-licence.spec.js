@@ -1,6 +1,6 @@
 const { setUp, tearDown } = require('../../support/setup');
 
-describe('check for different status for a licence in returns tab as internal user', () => {
+describe('check and update different status for a licence in returns tab as internal user', () => {
   before(() => {
     tearDown();
     setUp('barebones');
@@ -10,7 +10,7 @@ describe('check for different status for a licence in returns tab as internal us
     tearDown();
   });
 
-  it('user logs in and searches for a License', () => {
+  it('user logs in and searches for a License and updates retuns status', () => {
     cy.visit(Cypress.env('ADMIN_URI'));
     cy.fixture('users.json').then(users => {
       cy.get('input#email').type(users.billingAndData);
@@ -33,7 +33,7 @@ describe('check for different status for a licence in returns tab as internal us
       cy.get('#summary').should('be.visible');
     });
 
-    describe('it clicks on the returns tab link', () => {
+    describe('clicks on the returns tab link', () => {
       cy.get('#tab_returns').click();
     });
     describe('sees the returns table', () => {

@@ -6,7 +6,7 @@ const { formFactory, fields } = require('shared/lib/forms');
  * new user's email address.
  *
  * @param {Object} request The Hapi request object
- * @param {String} email The user's email address
+ * @param {String} userEmail The user's email address
  */
 const form = (request, userEmail) => {
   const { csrfToken } = request.view;
@@ -31,7 +31,7 @@ const form = (request, userEmail) => {
 
 const schema = Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
-  confirmDelete: Joi.array().length(1).items(Joi.valid('confirm').required())
+  confirmDelete: Joi.array().allow('confirm').required()
 });
 
 exports.deleteUserForm = form;

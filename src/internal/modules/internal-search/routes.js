@@ -16,7 +16,7 @@ module.exports = {
       },
       validate: {
         query: Joi.object().keys({
-          query: Joi.string().required(),
+          query: Joi.string().allow(''),
           page: Joi.number().default(1).min(1)
         })
       }

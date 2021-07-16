@@ -6,6 +6,7 @@ const {
   beforeEach
 } = exports.lab = require('@hapi/lab').script();
 
+const Joi = require('joi');
 const { expect } = require('@hapi/code');
 const moment = require('moment');
 const uuid = require('uuid/v4');
@@ -172,9 +173,9 @@ experiment('internal/modules/charge-information/lib/actions', () => {
 
         expect(action).to.equal({
           type: actions.ACTION_TYPES.setBillingAccount,
-          payload: {
+          payload: Joi.object().keys({
             billingAccountId: id
-          }
+          })
         });
       });
     });

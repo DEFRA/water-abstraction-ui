@@ -1,6 +1,5 @@
 'use strict';
 
-const Joi = require('joi');
 const uuid = require('uuid/v4');
 const { expect } = require('@hapi/code');
 const { experiment, test } = exports.lab = require('@hapi/lab').script();
@@ -56,7 +55,7 @@ experiment('billing/forms/billing-type schema', () => {
 
   experiment('billing type', () => {
     test('It should only allow valid billing types in the water service', async () => {
-      const result = Joi.describe(billingTypeFormSchema(createRequest()));
+      const result = billingTypeFormSchema(createRequest()).describe();
       expect(result.children.selectedBillingType.valids).to.equal([ANNUAL, SUPPLEMENTARY, TWO_PART_TARIFF]);
     });
 

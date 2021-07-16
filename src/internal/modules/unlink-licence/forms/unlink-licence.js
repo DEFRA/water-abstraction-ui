@@ -31,7 +31,7 @@ const form = (request, licenceData) => {
 
 const schema = Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
-  confirmUnlink: Joi.array().max(1).items(Joi.valid('confirm').required())
+  confirmUnlink: Joi.array().allow('confirm').required()
 });
 
 exports.unlinkLicenceForm = form;

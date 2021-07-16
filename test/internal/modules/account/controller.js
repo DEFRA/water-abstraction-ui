@@ -274,6 +274,8 @@ experiment('modules/account/controller', () => {
 
       test('the form object contains errors', async () => {
         const [, view] = h.view.lastCall.args;
+        console.log('§§§§§§§');
+        console.log(view.form.errors);
         const error = view.form.errors.find(e => e.name === 'confirmDelete');
         expect(error).to.be.an.object();
         expect(error.message).to.equal('Tick the box to confirm you want to delete the account');

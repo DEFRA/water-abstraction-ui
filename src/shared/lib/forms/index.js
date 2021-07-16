@@ -142,6 +142,10 @@ const handleRequest = (form, request, validationSchema, options = {}) => {
   const schema = Joi.isSchema(validationSchema) ? validationSchema : Joi.object().keys(adapter.createSchemaFromForm(form));
 
   const { error, value } = schema.validate(requestData, options);
+  console.log('==-=-=-=-==');
+  console.log(error, value);
+  console.log('==-=-=-=-==');
+  console.log('==-=-=-=-==');
   const customErrors = getCustomErrors(form);
   const formattedErrors = adapter.formatErrors(error, customErrors);
   f = applyErrors(f, formattedErrors);

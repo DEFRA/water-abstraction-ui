@@ -172,7 +172,7 @@
         {% if licenceGaugingStations.length %}
           {{ govukButton({
             text: "Remove a tag",
-            href: "monitoring-stations/" + station.gaugingStationId + "/remove-tag",
+            href: "/monitoring-stations/" + station.gaugingStationId + "/untagging-licence/remove-tag",
             classes: "govuk-button--secondary"
           }) }}
         {% endif %}

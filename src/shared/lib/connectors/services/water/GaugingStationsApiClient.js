@@ -37,6 +37,11 @@ class GaugingStationsService extends ServiceClient {
       }
     });
   }
+
+  postLicenceLinkageRemove (licenceGaugingStationId) {
+    const url = this.joinUrl('licence-gauging-stations', licenceGaugingStationId, '');
+    return this.serviceRequest.delete(url);
+  }
 }
 
 module.exports = GaugingStationsService;

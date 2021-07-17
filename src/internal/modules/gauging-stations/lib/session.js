@@ -1,6 +1,14 @@
 'use strict';
 
-const getSessionKey = request => `waa.${request.params.gaugingStationId}.licenceTaggingProcess`;
+const identifyWhichFlowThisIs = path => {
+  const regex = /((www\.)?([^/\n\r]+))\/?([^?\n\r]+)?\??([^#\n\r]*)?#?([^\n\r]*)/g;
+  return path.match(regex)[0].split('/')[2];
+};
+
+const getSessionKey = request => {
+  const flowIdentifier = identifyWhichFlowThisIs(request.view.path);
+  return `waa.${request.params.gaugingStationId}.${flowIdentifier}`;
+};
 
 const get = request => {
   const key = getSessionKey(request);

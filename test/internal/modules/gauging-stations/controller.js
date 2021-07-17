@@ -17,6 +17,9 @@ const uuid = require('uuid').v4;
 
 experiment('internal/modules/gauging-stations/controller', () => {
   beforeEach(async () => {
+    sandbox.stub(formHandler, 'handleFormRequest').restore();
+    sandbox.restore();
+
     sandbox.stub(helpers, 'getCaption').resolves('a caption is output');
     sandbox.stub(helpers, 'getSelectedConditionText').resolves('a bit of text is output');
     sandbox.stub(helpers, 'handlePost').resolves();
@@ -238,6 +241,301 @@ experiment('internal/modules/gauging-stations/controller', () => {
       });
       test('calls handleFormRequest to process the payload through the form', () => {
         expect(formHandler.handleFormRequest.called).to.be.true();
+      });
+    });
+  });
+
+  experiment('.postRemoveTagsLicenceSelected', () => {
+    const data = {
+      data: [
+        {
+          licenceGaugingStationId: 'ee886147-ec1d-4a0f-8598-fc3f5886ee84',
+          abstractionPeriodStartDay: 1,
+          abstractionPeriodStartMonth: 1,
+          abstractionPeriodEndDay: 11,
+          abstractionPeriodEndMonth: 11,
+          restrictionType: 'flow',
+          alertType: 'stop_or_reduce',
+          thresholdValue: '100',
+          thresholdUnit: 'Ml/d',
+          comstatus: null,
+          dateStatusUpdated: null,
+          licenceVersionPurposeConditionId: null,
+          licenceId: '22c784b7-b141-4fd0-8ee1-78ea7ae783bc',
+          licenceRef: '11/42/18.6.2/262',
+          startDate: '1965-11-26',
+          label: 'STATION ROAD',
+          gridReference: 'TQ7360023530',
+          catchmentName: '',
+          riverName: '',
+          wiskiId: 'E6681',
+          stationReference: 'E6681',
+          easting: null,
+          northing: null
+        },
+        {
+          licenceGaugingStationId: 'd6369186-a485-48a1-878f-05b3b51a7c7f',
+          abstractionPeriodStartDay: 13,
+          abstractionPeriodStartMonth: 1,
+          abstractionPeriodEndDay: 13,
+          abstractionPeriodEndMonth: 2,
+          restrictionType: 'flow',
+          alertType: 'reduce',
+          thresholdValue: '113',
+          thresholdUnit: 'Ml/d',
+          comstatus: null,
+          dateStatusUpdated: null,
+          licenceVersionPurposeConditionId: null,
+          licenceId: '22c784b7-b141-4fd0-8ee1-78ea7ae783bc',
+          licenceRef: '11/42/18.6.2/262',
+          startDate: '1965-11-26',
+          label: 'STATION ROAD',
+          gridReference: 'TQ7360023530',
+          catchmentName: '',
+          riverName: '',
+          wiskiId: 'E6681',
+          stationReference: 'E6681',
+          easting: null,
+          northing: null
+        },
+        {
+          licenceGaugingStationId: '9177f85d-916c-4d51-8db7-74246d228b7b',
+          abstractionPeriodStartDay: 1,
+          abstractionPeriodStartMonth: 1,
+          abstractionPeriodEndDay: 2,
+          abstractionPeriodEndMonth: 2,
+          restrictionType: 'flow',
+          alertType: 'stop_or_reduce',
+          thresholdValue: '115',
+          thresholdUnit: 'Ml/d',
+          comstatus: null,
+          dateStatusUpdated: null,
+          licenceVersionPurposeConditionId: null,
+          licenceId: '6e21a77b-1525-459d-acb8-3615e5d53f06',
+          licenceRef: '2672520010',
+          startDate: '1966-12-30',
+          label: 'STATION ROAD',
+          gridReference: 'TQ7360023530',
+          catchmentName: '',
+          riverName: '',
+          wiskiId: 'E6681',
+          stationReference: 'E6681',
+          easting: null,
+          northing: null
+        }
+      ] };
+    const request = {
+      path: 'http://example.com/monitoring-stations/123/untagging-licence/remove-tag',
+      view: {
+        csrfToken: 'some-token'
+      },
+      pre: {
+        licenceGaugingStations: data
+      }
+    };
+
+    const formContentMultipleSelected = {
+      fields: [ { name: 'selectedLicence',
+        options: {
+          choices: [],
+          label: '',
+          widget: 'radio',
+          required: true,
+          controlClass: 'govuk-input govuk-input--width-10',
+          errors: {
+            any: {
+              required: {
+                message: 'Select a licence number'
+              },
+              empty: {
+                message: 'Select a licence number'
+              }
+            }
+          }
+        },
+        errors: [],
+        value: '22c784b7-b141-4fd0-8ee1-78ea7ae783bc'
+      } ]
+    };
+
+    const formContentSingleSelected = {
+      fields: [ { name: 'selectedLicence',
+        options: {
+          choices: [
+            {
+              licenceGaugingStationId: '9177f85d-916c-4d51-8db7-74246d228b7b',
+              value: '6e21a77b-1525-459d-acb8-3615e5d53f06',
+              label: ' Reduce at 115 Megalitres per day',
+              hint: '2672520010',
+              licenceRef: '2672520010',
+              alertType: 'stop_or_reduce',
+              thresholdValue: '115',
+              thresholdUnit: 'Megalitres per day',
+              licenceId: '6e21a77b-1525-459d-acb8-3615e5d53f06'
+            }
+          ],
+          label: '',
+          widget: 'radio',
+          required: true,
+          controlClass: 'govuk-input govuk-input--width-10',
+          errors: {
+            any: {
+              required: {
+                message: 'Select a licence number'
+              },
+              empty: {
+                message: 'Select a licence number'
+              }
+            }
+          }
+        },
+        errors: [],
+        value: '6e21a77b-1525-459d-acb8-3615e5d53f06'
+      } ]
+    };
+
+    const h = {
+      view: sandbox.spy(),
+      postRedirectGet: sandbox.spy(),
+      redirect: sandbox.spy()
+    };
+
+    experiment('when the payload is invalid', () => {
+      beforeEach(() => {
+        formHandler.handleFormRequest.resolves({
+          ...formContentSingleSelected,
+          isValid: false
+        });
+        controller.getRemoveTags(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+
+      test('calls handleFormRequest to process the payload through the form', () => {
+        controller.postRemoveTagOrMultiple(request, h);
+        expect(formHandler.handleFormRequest.called).to.be.true();
+      });
+      test('redirects the user back to the form', () => {
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+    });
+
+    experiment('selectedLicence containing multiple matching licenceId ', () => {
+      beforeEach(() => {
+        session.merge.returns({
+          selectedLicence: formContentMultipleSelected.fields[0],
+          licenceGaugingStations: data.data
+        });
+        formHandler.handleFormRequest.resolves({
+          ...formContentMultipleSelected,
+          isValid: true
+        });
+        controller.getRemoveTags(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+
+      test('.getRemoveTags displaying expected forms', () => {
+        controller.getRemoveTags(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+
+      test('.postRemoveTagOrMultiple displaying expected forms', () => {
+        controller.postRemoveTagOrMultiple(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+
+      test('.postRemoveTagsLicenceSelected', () => {
+        controller.postRemoveTagsLicenceSelected(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+
+      test('.getRemoveTagsConditions', () => {
+        controller.getRemoveTagsConditions(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+
+      test('.postRemoveTagComplete', () => {
+        controller.postRemoveTagComplete(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+
+      test('.handleFormRequest to process the payload through the form', () => {
+        expect(formHandler.handleFormRequest.called).to.be.true();
+      });
+    });
+
+    experiment('selectedLicence containing one matching licenceId ', () => {
+      beforeEach(() => {
+        session.merge.returns({
+          selectedLicence: formContentSingleSelected.fields[0],
+          licenceGaugingStations: data.data
+        });
+        formHandler.handleFormRequest.resolves({
+          ...formContentSingleSelected,
+          isValid: true
+        });
+        controller.getRemoveTags(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+
+      test('.getRemoveTags displaying expected forms', () => {
+        controller.getRemoveTags(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+        expect(h.postRedirectGet.called).to.be.true();
+        expect(h.view.lastCall.args[1].pageTitle).to.equal('Which licence do you want to remove a tag from?');
+      });
+
+      test('.postRemoveTagOrMultiple displaying expected forms', () => {
+        controller.postRemoveTagOrMultiple(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+
+      test('.postRemoveTagsLicenceSelected', () => {
+        controller.postRemoveTagsLicenceSelected(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+
+      test('.postRemoveTagComplete', () => {
+        controller.postRemoveTagComplete(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+    });
+
+    experiment('.getRemoveTagsConditions', () => {
+      const request = {
+        path: 'http://example.com/monitoring-stations/123/untagging-licence/remove-tag',
+        method: 'get',
+        view: {
+          csrfToken: 'some-token'
+        }
+      };
+      const h = { view: sandbox.spy() };
+
+      beforeEach(async () => {
+        await formHandler.handleFormRequest.resolves({ form: { fields: [ { name: 'selectedLicence' } ] } });
+        controller.getRemoveTagsConditions(request, h);
+      });
+
+      afterEach(async () => sandbox.restore());
+
+      test('returns some gumph with h.view', () => {
+        expect(h.view.called).to.be.true();
       });
     });
   });

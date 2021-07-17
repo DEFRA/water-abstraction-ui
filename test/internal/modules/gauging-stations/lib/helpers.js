@@ -294,6 +294,88 @@ experiment('internal/modules/gauging-stations/controller', () => {
         licenceGaugingStations: data
       }
     };
+    const requestSimple = {
+      view: {
+        csrfToken: 'some-token'
+      },
+      pre: {
+        licenceGaugingStations: data
+      }
+    };
+    const formContentSingleSelected = {
+      fields: [ { name: 'selectedLicence',
+        options: {
+          choices: [
+            {
+              licenceGaugingStationId: '9177f85d-916c-4d51-8db7-74246d228b7b',
+              value: '6e21a77b-1525-459d-acb8-3615e5d53f06',
+              label: ' Reduce at 115 Megalitres per day',
+              hint: '2672520010',
+              licenceRef: '2672520010',
+              alertType: 'stop_or_reduce',
+              thresholdValue: '115',
+              thresholdUnit: 'Megalitres per day',
+              licenceId: '6e21a77b-1525-459d-acb8-3615e5d53f06'
+            }
+          ],
+          label: '',
+          widget: 'radio',
+          required: true,
+          controlClass: 'govuk-input govuk-input--width-10',
+          errors: {
+            any: {
+              required: {
+                message: 'Select a licence number'
+              },
+              empty: {
+                message: 'Select a licence number'
+              }
+            }
+          }
+        },
+        errors: [],
+        value: '6e21a77b-1525-459d-acb8-3615e5d53f06'
+      } ]
+    };
+
+    experiment('.handleRemovePost multiple', () => {
+      let removeRes;
+      beforeEach(async () => {
+        session.get.returns({
+          selectedCondition: { value: ['6e21a77b-1525-459d-acb8-3615e5d53f06'] },
+          licenceGaugingStations: data.data
+        });
+
+        sandbox.stub(services.water.gaugingStations, 'postLicenceLinkageRemove').returns(true);
+        removeRes = await helpers.handleRemovePost(requestSimple);
+      });
+
+      afterEach(async () => sandbox.restore());
+
+      test('return a result', () => {
+        expect(removeRes).to.equal([ true ]);
+      });
+    });
+
+    experiment('.handleRemovePost single', () => {
+      let removeResSingle;
+      beforeEach(async () => {
+        session.get.returns({
+          selectedLicence: formContentSingleSelected.fields[0],
+          licenceGaugingStations: data.data
+        });
+
+        sandbox.stub(services.water.gaugingStations, 'postLicenceLinkageRemove').returns(true);
+        removeResSingle = await helpers.handleRemovePost(requestSimple);
+      });
+
+      afterEach(async () => sandbox.restore());
+
+      test('return a result', () => {
+        expect(removeResSingle).to.equal([ true ]);
+      });
+    });
+
     experiment('.groupLicenceConditions ', () => {
       let result;
       beforeEach(async () => {

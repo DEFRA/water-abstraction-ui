@@ -103,7 +103,7 @@ experiment('billing/forms/billing-region schema', () => {
   experiment('csrf token', () => {
     test('validates for a uuid', async () => {
       const result = schema.csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
-      expect(result.error).to.be.null();
+      expect(result.error).to.be.undefined();
     });
 
     test('fails for a string that is not a uuid', async () => {
@@ -115,7 +115,7 @@ experiment('billing/forms/billing-region schema', () => {
   experiment('region Id', () => {
     test('validates for a valid region uuid', async () => {
       const result = schema.selectedBillingRegion.validate(getBillingRegions().data[0].regionId);
-      expect(result.error).to.be.null();
+      expect(result.error).to.be.undefined();
     });
 
     test('fails for an invalid uuid', async () => {
@@ -135,7 +135,7 @@ experiment('billing/forms/billing-region schema', () => {
   experiment('billing type', () => {
     test('validates for a string', async () => {
       const result = schema.selectedBillingType.validate('annual');
-      expect(result.error).to.be.null();
+      expect(result.error).to.be.undefined();
     });
 
     test('fails if blank', async () => {

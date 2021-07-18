@@ -74,7 +74,7 @@ experiment('invoice-accounts/forms/select-company schema', () => {
   experiment('csrf token', () => {
     test('validates for a uuid', async () => {
       const result = selectAccountForm.schema(createRequest()).csrf_token.validate(uuid());
-      expect(result.error).to.be.null();
+      expect(result.error).to.be.undefined();
     });
 
     test('fails for a string that is not a uuid', async () => {
@@ -86,12 +86,12 @@ experiment('invoice-accounts/forms/select-company schema', () => {
   experiment('selected account', () => {
     test('It allows billing account holder', async () => {
       const result = selectAccountForm.schema(createRequest()).account.validate(BILLING_ACCOUNT_HOLDER);
-      expect(result.error).to.be.null();
+      expect(result.error).to.be.undefined();
     });
 
     test('It allows other account holder', async () => {
       const result = selectAccountForm.schema(createRequest()).account.validate(OTHER_ACCOUNT);
-      expect(result.error).to.be.null();
+      expect(result.error).to.be.undefined();
     });
 
     test('It fails for an invalid value', async () => {
@@ -113,7 +113,7 @@ experiment('invoice-accounts/forms/select-company schema', () => {
       };
 
       const result = selectAccountForm.schema().validate(data);
-      expect(result.error).to.be.null();
+      expect(result.error).to.be.undefined();
     });
 
     test('is valid if a company name is entered', async () => {
@@ -123,7 +123,7 @@ experiment('invoice-accounts/forms/select-company schema', () => {
         accountSearch: 'some company name'
       };
       const result = selectAccountForm.schema().validate(data);
-      expect(result.error).to.be.null();
+      expect(result.error).to.be.undefined();
     });
 
     test('fails if no company search name has been entered', async () => {

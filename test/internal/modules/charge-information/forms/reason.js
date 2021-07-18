@@ -110,7 +110,7 @@ experiment('internal/modules/charge-information/forms/reason', () => {
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
         const result = reasonSchema.csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
-        expect(result.error).to.be.null();
+        expect(result.error).to.be.undefined();
       });
 
       test('fails for a string that is not a uuid', async () => {

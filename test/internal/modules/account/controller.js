@@ -263,7 +263,8 @@ experiment('modules/account/controller', () => {
     experiment('when the confirm box was not selected', () => {
       beforeEach(async () => {
         request.defra.userId = 100;
-        request.payload.confirmDelete = null;
+        request.params.userId = 999; // deletedUserId
+        request.payload.confirmDelete = [];
         await controller.postDeleteUserAccount(request, h);
       });
 
@@ -274,9 +275,7 @@ experiment('modules/account/controller', () => {
 
       test('the form object contains errors', async () => {
         const [, view] = h.view.lastCall.args;
-        console.log('§§§§§§§');
-        console.log(view.form.errors);
-        const error = view.form.errors.find(e => e.name === 'confirmDelete');
+        const error = view.form.errors[0];
         expect(error).to.be.an.object();
         expect(error.message).to.equal('Tick the box to confirm you want to delete the account');
       });

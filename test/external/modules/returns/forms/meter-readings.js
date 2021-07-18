@@ -53,7 +53,7 @@ experiment('meterReadingsSchema', () => {
     request.payload = formValues;
     const schema = meterReadingsSchema(request, data, form);
     const result = schema.validate(formValues, { abortEarly: false });
-    expect(result.error).to.be.null();
+    expect(result.error).to.be.undefined();
   });
 
   test('is valid for incrementing numbers', async () => {
@@ -61,7 +61,7 @@ experiment('meterReadingsSchema', () => {
     request.payload = formValues;
     const schema = meterReadingsSchema(request, data, form);
     const result = schema.validate(formValues, { abortEarly: false });
-    expect(result.error).to.be.null();
+    expect(result.error).to.be.undefined();
   });
 
   test('is valid for equal numbers', async () => {
@@ -69,7 +69,7 @@ experiment('meterReadingsSchema', () => {
     request.payload = formValues;
     const schema = meterReadingsSchema(request, data, form);
     const result = schema.validate(formValues, { abortEarly: false });
-    expect(result.error).to.be.null();
+    expect(result.error).to.be.undefined();
   });
 
   test('handles null in between numeric readings', async () => {
@@ -77,7 +77,7 @@ experiment('meterReadingsSchema', () => {
     request.payload = formValues;
     const schema = meterReadingsSchema(request, data, form);
     const result = schema.validate(formValues, { abortEarly: false });
-    expect(result.error).to.be.null();
+    expect(result.error).to.be.undefined();
   });
 
   test('handles multiple nulls in between numeric readings', async () => {
@@ -85,7 +85,7 @@ experiment('meterReadingsSchema', () => {
     request.payload = formValues;
     const schema = meterReadingsSchema(request, data, form);
     const result = schema.validate(formValues, { abortEarly: false });
-    expect(result.error).to.be.null();
+    expect(result.error).to.be.undefined();
   });
 
   test('not valid if first reading is less than start reading', async () => {

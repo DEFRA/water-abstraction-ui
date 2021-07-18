@@ -72,8 +72,6 @@ experiment('enterNewEmailForm', () => {
       const validated = handleRequest(form, request, enterNewEmailSchema);
 
       expect(validated.isValid).to.be.false();
-      console.log('§§§§§§ERRORE');
-      console.log(validated.errors);
       expect(validated.errors.find(f => {
         return f.name === 'confirm-email' &&
           f.message === 'Confirm your new email address';

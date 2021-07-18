@@ -22,9 +22,7 @@ const getBatchInvoice = async (batchId, invoiceId) => {
   };
 };
 
-const getBatchList = (page, perPage) => {
-  return dataService.water.billingBatches.getBatches(page, perPage);
-};
+const getBatchList = (page, perPage) => dataService.water.billingBatches.getBatches(page, perPage);
 
 exports.getBatch = getBatch;
 exports.getBatchList = getBatchList;

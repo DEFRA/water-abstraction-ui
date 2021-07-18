@@ -19,6 +19,8 @@ const form = (request, userEmail) => {
       value: 'confirm'
     }],
     errors: {
+      'any.only': { message: 'Tick the box to confirm you want to delete the account' },
+      'array.min': { message: 'Tick the box to confirm you want to delete the account' },
       'array.includesRequiredUnknowns': { message: 'Tick the box to confirm you want to delete the account' }
     }
   }));
@@ -31,7 +33,7 @@ const form = (request, userEmail) => {
 
 const schema = Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
-  confirmDelete: Joi.array().allow('confirm').required()
+  confirmDelete: Joi.array().required().min(1).items(Joi.string().required().valid('confirm')).required()
 });
 
 exports.deleteUserForm = form;

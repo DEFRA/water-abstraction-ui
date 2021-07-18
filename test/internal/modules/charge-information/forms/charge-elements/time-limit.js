@@ -107,7 +107,7 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
         const result = timeLimitSchema.csrf_token.validate(testUuid);
-        expect(result.error).to.be.null();
+        expect(result.error).to.be.undefined();
       });
 
       test('fails for a string that is not a uuid', async () => {

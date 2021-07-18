@@ -208,7 +208,7 @@ experiment('internal/modules/charge-information/forms/start-date', () => {
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
         const result = startDateSchema.csrf_token.validate(csrfToken);
-        expect(result.error).to.be.null();
+        expect(result.error).to.be.undefined();
       });
 
       test('fails for a string that is not a uuid', async () => {

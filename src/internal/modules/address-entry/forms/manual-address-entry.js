@@ -114,7 +114,7 @@ const form = request => {
   return f;
 };
 
-const schema = () => VALID_ADDRESS.keys({
+const schema = () => VALID_ADDRESS.append({
   csrf_token: Joi.string().uuid().required()
 });
 

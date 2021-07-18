@@ -105,7 +105,7 @@ experiment('internal/modules/contact-entry/forms/create-contact', () => {
 
     test('validates when data is valid', () => {
       const result = createContact.schema(request).validate(data);
-      expect(result.error).to.be.null();
+      expect(result.error).to.be.undefined();
     });
 
     experiment('csrf token', () => {

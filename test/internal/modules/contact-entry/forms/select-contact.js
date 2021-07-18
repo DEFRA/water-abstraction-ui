@@ -94,7 +94,7 @@ experiment('internal/modules/contact-entry/forms/select-contact', () => {
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
         const result = selectContact.schema(request).validate(data);
-        expect(result.error).to.be.null();
+        expect(result.error).to.be.undefined();
       });
 
       test('fails for a string that is not a uuid', async () => {
@@ -109,7 +109,7 @@ experiment('internal/modules/contact-entry/forms/select-contact', () => {
     experiment('selected contact', () => {
       test('validates for "person"', async () => {
         const result = selectContact.schema(request).validate(data);
-        expect(result.error).to.be.null();
+        expect(result.error).to.be.undefined();
       });
 
       test('validates for "department"', async () => {
@@ -118,7 +118,7 @@ experiment('internal/modules/contact-entry/forms/select-contact', () => {
           selectedContact: 'department',
           department: 'Accts payable'
         });
-        expect(result.error).to.be.null();
+        expect(result.error).to.be.undefined();
       });
 
       test('validates for one a contact id from companyContacts array', async () => {
@@ -126,7 +126,7 @@ experiment('internal/modules/contact-entry/forms/select-contact', () => {
           ...data,
           selectedContact: contacts[1].id
         });
-        expect(result.error).to.be.null();
+        expect(result.error).to.be.undefined();
       });
 
       test('fails for an id that is not in companyContacts array', async () => {

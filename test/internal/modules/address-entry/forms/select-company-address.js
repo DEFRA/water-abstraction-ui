@@ -84,7 +84,7 @@ experiment('invoice-accounts/forms/select-address schema', () => {
 
   test('validates when the data is valid', async () => {
     const { error } = selectCompanyAddress.schema(request).validate(data);
-    expect(error).to.be.false();
+    expect(error).to.be.undefined();
   });
 
   experiment('.csrf_token validation', () => {

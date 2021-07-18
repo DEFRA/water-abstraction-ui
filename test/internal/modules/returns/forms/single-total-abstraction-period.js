@@ -76,7 +76,7 @@ experiment('schema', () => {
       const data = { totalCustomDates: false, csrf_token: csrf };
       const { error, value } = schema.validate(data);
 
-      expect(error).to.be.false();
+      expect(error).to.be.undefined();
       expect(value).to.equal({
         totalCustomDates: false,
         csrf_token: csrf

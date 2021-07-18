@@ -64,12 +64,12 @@ experiment('internal/modules/agreements/forms/lib/date-picker', () => {
 
     test('the licence start date gives no error', async () => {
       const { error } = validator.validate('2019-01-01');
-      expect(error).to.be.false();
+      expect(error).to.be.undefined();
     });
 
     test('the licence end date gives no error', async () => {
       const { error } = validator.validate('2019-12-31');
-      expect(error).to.be.false();
+      expect(error).to.be.undefined();
     });
 
     test('a date after the licence end date gives an error', async () => {

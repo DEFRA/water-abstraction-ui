@@ -72,7 +72,7 @@ experiment('internal/modules/returns-notifications/forms/select-returns', () => 
         csrf_token: request.view.csrfToken,
         returnIds: []
       });
-      expect(error).to.be.false();
+      expect(error).to.be.undefined();
     });
 
     test('validates when return IDs contains IDs from document', async () => {
@@ -80,7 +80,7 @@ experiment('internal/modules/returns-notifications/forms/select-returns', () => 
         csrf_token: request.view.csrfToken,
         returnIds: [document.returns[0].id]
       });
-      expect(error).to.be.false();
+      expect(error).to.be.undefined();
     });
 
     test('fails validation when return IDs contains IDs not from document', async () => {

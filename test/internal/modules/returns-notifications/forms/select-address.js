@@ -92,7 +92,7 @@ experiment('internal/modules/returns-notifications/forms/select-address', () => 
         csrf_token: request.view.csrfToken,
         selectedRole: 'licenceHolder'
       });
-      expect(error).to.be.false();
+      expect(error).to.be.undefined();
     });
 
     test('fails validation when the selectedRole is invalid', async () => {

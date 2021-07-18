@@ -57,7 +57,7 @@ experiment('internal/modules/returns-notifications/forms/recipient', () => {
         csrf_token: request.view.csrfToken,
         fullName: 'Test Person'
       });
-      expect(error).to.be.false();
+      expect(error).to.be.undefined();
     });
 
     test('fails validation when the full name is empty', async () => {

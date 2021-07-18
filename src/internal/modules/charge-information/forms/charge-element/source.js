@@ -33,10 +33,10 @@ const form = request => {
   return f;
 };
 
-const schema = () => ({
+const schema = () => (Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
-  source: Joi.string().required().valid(Object.values(SOURCES))
-});
+  source: Joi.string().required().valid(...Object.values(SOURCES))
+}));
 
 exports.schema = schema;
 

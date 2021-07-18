@@ -1,5 +1,4 @@
 'use strict';
-const Joi = require('joi');
 
 const actionTypes = {
   setFromDate: 'setFromDate',
@@ -8,17 +7,17 @@ const actionTypes = {
 
 const setFromDate = (fromDate, rebillableBills) => ({
   type: actionTypes.setFromDate,
-  payload: Joi.object().keys({
+  payload: {
     fromDate,
     rebillableBills
-  })
+  }
 });
 
 const setSelectedBills = (selectedBillIds = []) => ({
   type: actionTypes.setSelectedBills,
-  payload: Joi.object().keys({
+  payload: {
     selectedBillIds
-  })
+  }
 });
 
 exports.actionTypes = actionTypes;

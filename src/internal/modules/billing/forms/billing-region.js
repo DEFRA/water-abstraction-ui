@@ -50,7 +50,7 @@ const billingRegionFormSchema = regions => (Joi.object({
   selectedBillingType: Joi.string().required(),
   selectedTwoPartTariffSeason: Joi.string().allow('').when('selectedBillingType', {
     is: TWO_PART_TARIFF,
-    then: Joi.string().required()
+    then: Joi.string().allow().required()
   })
 }));
 

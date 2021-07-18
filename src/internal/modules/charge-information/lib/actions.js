@@ -41,9 +41,9 @@ const setStartDate = (request, formValues) => {
 
 const setBillingAccount = id => ({
   type: ACTION_TYPES.setBillingAccount,
-  payload: Joi.object().keys({
+  payload: {
     billingAccountId: id
-  })
+  }
 });
 
 const generateIds = chargeElements =>
@@ -108,9 +108,9 @@ const clearData = () => {
 
 const createChargeElement = id => ({
   type: ACTION_TYPES.createChargeElement,
-  payload: Joi.object().keys({
+  payload: {
     id
-  })
+  }
 });
 
 exports.ACTION_TYPES = ACTION_TYPES;

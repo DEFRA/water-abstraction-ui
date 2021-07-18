@@ -42,7 +42,10 @@ const form = request => {
       'any.required': {
         message: 'Enter the date you need to reissue a bill from'
       },
-      'date.isoDate': {
+      'date.base': {
+        message: 'Enter a real date'
+      },
+      'date.format': {
         message: 'Enter a real date'
       },
       'date.max': {

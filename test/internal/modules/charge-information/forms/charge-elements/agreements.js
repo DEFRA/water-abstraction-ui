@@ -82,24 +82,36 @@ experiment('internal/modules/charge-information/forms/charge-element/agreements'
   experiment('.schema', () => {
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
-        const result = schema(createRequest()).csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
+        const result = schema.validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          isSection127AgreementEnabled: true
+        });
         expect(result.error).to.be.undefined();
       });
 
       test('fails for a string that is not a uuid', async () => {
-        const result = schema(createRequest()).csrf_token.validate('sciccors');
+        const result = schema.validate({
+          csrf_token: '🤡',
+          isSection127AgreementEnabled: true
+        });
         expect(result.error).to.exist();
       });
     });
 
     experiment('isSection127AgreementEnabled', () => {
       test('validates for a boolean', async () => {
-        const result = schema().isSection127AgreementEnabled.validate(true);
+        const result = schema.validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          isSection127AgreementEnabled: true
+        });
         expect(result.error).to.not.exist();
       });
 
       test('can not be null', async () => {
-        const result = schema().isSection127AgreementEnabled.validate(null);
+        const result = schema.validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          isSection127AgreementEnabled: null
+        });
         expect(result.error).to.exist();
       });
     });

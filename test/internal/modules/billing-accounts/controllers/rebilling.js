@@ -140,7 +140,8 @@ experiment('internal/modules/billing-accounts/controllers/rebilling', () => {
       const field = findField(form, 'fromDate');
       expect(field.options.errors).to.equal({
         'any.required': { message: 'Enter the date you need to reissue a bill from' },
-        'date.isoDate': { message: 'Enter a real date' },
+        'date.base': { message: 'Enter a real date' },
+        'date.format': { message: 'Enter a real date' },
         'date.max': { message: 'There are no bills available for reissue for this date.  Enter a date on or before 1 January 2020.' }
       });
     });
@@ -200,6 +201,7 @@ experiment('internal/modules/billing-accounts/controllers/rebilling', () => {
 
       test('the correct error message is set', async () => {
         const { errors } = h.postRedirectGet.lastCall.args[0];
+        console.log(errors);
         expect(errors[0].name).to.equal('fromDate');
         expect(errors[0].message).to.equal('Enter a real date');
       });

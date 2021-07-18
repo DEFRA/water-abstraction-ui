@@ -35,10 +35,10 @@ const form = request => {
 };
 
 const schema = (request) => {
-  return {
+  return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
     description: Joi.string().trim().required()
-  };
+  });
 };
 
 exports.schema = schema;

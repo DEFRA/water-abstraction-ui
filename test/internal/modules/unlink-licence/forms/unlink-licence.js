@@ -49,33 +49,51 @@ experiment('modules/unlink-licence/forms/unlink-licence', () => {
   experiment('schema', () => {
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
-        const result = unlinkLicenceSchema.csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
+        const result = unlinkLicenceSchema.validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          confirmUnlink: ['confirm']
+        });
         expect(result.error).to.be.undefined();
       });
 
       test('fails for a string that is not a uuid', async () => {
-        const result = unlinkLicenceSchema.csrf_token.validate('pasta');
+        const result = unlinkLicenceSchema.validate({
+          csrf_token: 'pasta',
+          confirmUnlink: ['confirm']
+        });
         expect(result.error).to.exist();
       });
     });
     experiment('confirm checkbox', () => {
       test('validates for a single item array containing "confirm"', async () => {
-        const result = unlinkLicenceSchema.confirmUnlink.validate(['confirm']);
+        const result = unlinkLicenceSchema.validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          confirmUnlink: ['confirm']
+        });
         expect(result.error).to.be.undefined();
       });
 
       test('fails for an empty array', async () => {
-        const result = unlinkLicenceSchema.confirmUnlink.validate([]);
+        const result = unlinkLicenceSchema.validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          confirmUnlink: []
+        });
         expect(result.error).to.exist();
       });
 
       test('fails for a two element array', async () => {
-        const result = unlinkLicenceSchema.confirmUnlink.validate(['cofirm', 'confirm']);
+        const result = unlinkLicenceSchema.validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          confirmUnlink: ['yes', 'confirm']
+        });
         expect(result.error).to.exist();
       });
 
       test('fails for a singl element array with incorrect element', async () => {
-        const result = unlinkLicenceSchema.confirmUnlink.validate(['invalid']);
+        const result = unlinkLicenceSchema.validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          confirmUnlink: ['invalid']
+        });
         expect(result.error).to.exist();
       });
     });

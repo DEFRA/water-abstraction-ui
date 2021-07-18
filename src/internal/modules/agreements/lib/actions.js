@@ -1,5 +1,4 @@
 'useStrict';
-const Joi = require('joi');
 const { pick } = require('lodash');
 
 const ACTION_TYPES = {
@@ -15,12 +14,12 @@ const setAgreementType = (request, formValues) => ({
 
 const setDateSigned = (request, formValues, currentDate = Date.now()) => ({
   type: ACTION_TYPES.setDateSigned,
-  payload: Joi.object().keys({
+  payload: {
     dateSigned: formValues.dateSigned,
     isDateSignedKnown: formValues.isDateSignedKnown,
     licenceStartDate: request.pre.licence.startDate,
     currentDate
-  })
+  }
 });
 
 const setStartDate = (request, formValues) => ({

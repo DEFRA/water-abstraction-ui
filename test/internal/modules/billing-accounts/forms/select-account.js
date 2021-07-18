@@ -73,34 +73,58 @@ experiment('internal/billing-accounts/forms/select-account', () => {
 experiment('invoice-accounts/forms/select-company schema', () => {
   experiment('csrf token', () => {
     test('validates for a uuid', async () => {
-      const result = selectAccountForm.schema(createRequest()).csrf_token.validate(uuid());
+      const result = selectAccountForm.schema(createRequest()).validate({
+        csrf_token: uuid(),
+        accountSearch: '',
+        account: BILLING_ACCOUNT_HOLDER
+      });
       expect(result.error).to.be.undefined();
     });
 
     test('fails for a string that is not a uuid', async () => {
-      const result = selectAccountForm.schema(createRequest()).csrf_token.validate('noodles');
+      const result = selectAccountForm.schema(createRequest()).validate({
+        csrf_token: 'potato',
+        accountSearch: '',
+        account: BILLING_ACCOUNT_HOLDER
+      });
       expect(result.error).to.exist();
     });
   });
 
   experiment('selected account', () => {
     test('It allows billing account holder', async () => {
-      const result = selectAccountForm.schema(createRequest()).account.validate(BILLING_ACCOUNT_HOLDER);
+      const result = selectAccountForm.schema(createRequest()).validate({
+        csrf_token: uuid(),
+        accountSearch: '',
+        account: BILLING_ACCOUNT_HOLDER
+      });
       expect(result.error).to.be.undefined();
     });
 
     test('It allows other account holder', async () => {
-      const result = selectAccountForm.schema(createRequest()).account.validate(OTHER_ACCOUNT);
+      const result = selectAccountForm.schema(createRequest()).validate({
+        csrf_token: uuid(),
+        accountSearch: '',
+        account: OTHER_ACCOUNT
+      });
       expect(result.error).to.be.undefined();
     });
 
     test('It fails for an invalid value', async () => {
-      const result = selectAccountForm.schema(createRequest()).account.validate('noodles');
-      expect(result.error).to.not.be.null();
+      const result = selectAccountForm.schema(createRequest()).validate({
+        csrf_token: uuid(),
+        accountSearch: '',
+        account: 'slipper ltd.'
+      });
+      expect(result.error).to.exist();
     });
 
     test('fails if blank', async () => {
-      const result = selectAccountForm.schema(createRequest()).account.validate();
+      const result = selectAccountForm.schema(createRequest()).validate({
+        csrf_token: uuid(),
+        accountSearch: '',
+        account: null
+      });
       expect(result.error).to.exist();
     });
   });

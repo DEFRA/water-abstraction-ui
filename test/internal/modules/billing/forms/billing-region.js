@@ -102,44 +102,70 @@ experiment('billing/forms/billing-region schema', () => {
 
   experiment('csrf token', () => {
     test('validates for a uuid', async () => {
-      const result = schema.csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
+      const result = schema.validate({
+        csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+        selectedBillingRegion: '07ae7f3a-2677-4102-b352-cc006828948c',
+        selectedBillingType: 'whatever'
+      }, { allowUnknown: true });
       expect(result.error).to.be.undefined();
     });
 
     test('fails for a string that is not a uuid', async () => {
-      const result = schema.csrf_token.validate('pizza');
+      const result = schema.validate(
+        {
+          csrf_token: 'pizza',
+          selectedBillingRegion: '07ae7f3a-2677-4102-b352-cc006828948c',
+          selectedBillingType: 'whatever'
+        }
+      );
       expect(result.error).to.exist();
     });
   });
 
   experiment('region Id', () => {
     test('validates for a valid region uuid', async () => {
-      const result = schema.selectedBillingRegion.validate(getBillingRegions().data[0].regionId);
+      const result = schema.validate({
+        csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+        selectedBillingRegion: getBillingRegions().data[0].regionId,
+        selectedBillingType: 'whatever'
+      });
       expect(result.error).to.be.undefined();
     });
 
     test('fails for an invalid uuid', async () => {
-      const result = schema.selectedBillingRegion.validate('c5afe238-fb77-4131-be80-384aaf245842');
+      const result = schema.validate({
+        csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+        selectedBillingRegion: 'cumquats',
+        selectedBillingType: 'whatever'
+      });
       expect(result.error).to.exist();
     });
 
-    test('fails for a string that is not a uuid', async () => {
-      const result = schema.selectedBillingRegion.validate('pizza');
-      expect(result.error).to.exist();
-    });
     test('fails if blank', async () => {
-      const result = schema.selectedBillingRegion.validate();
+      const result = schema.validate({
+        csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+        selectedBillingRegion: '',
+        selectedBillingType: 'whatever'
+      });
       expect(result.error).to.exist();
     });
   });
   experiment('billing type', () => {
     test('validates for a string', async () => {
-      const result = schema.selectedBillingType.validate('annual');
+      const result = schema.validate({
+        csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+        selectedBillingRegion: getBillingRegions().data[0].regionId,
+        selectedBillingType: 'annual'
+      });
       expect(result.error).to.be.undefined();
     });
 
     test('fails if blank', async () => {
-      const result = schema.selectedBillingType.validate();
+      const result = schema.validate({
+        csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+        selectedBillingRegion: getBillingRegions().data[0].regionId,
+        selectedBillingType: ''
+      });
       expect(result.error).to.exist();
     });
   });
@@ -174,7 +200,7 @@ experiment('billing/forms/billing-region schema', () => {
         csrf_token: uuid(),
         selectedBillingRegion: getBillingRegions().data[0].regionId,
         selectedBillingType: 'two_part_tariff',
-        selectedTwoPartTariffSeason: ''
+        selectedTwoPartTariffSeason: null
       };
 
       const result = schema.validate(data);

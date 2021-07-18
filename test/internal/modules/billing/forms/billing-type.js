@@ -43,12 +43,18 @@ experiment('billing/forms/billing-type form', () => {
 experiment('billing/forms/billing-type schema', () => {
   experiment('csrf token', () => {
     test('validates for a uuid', async () => {
-      const result = billingTypeFormSchema(createRequest()).csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
+      const result = billingTypeFormSchema(createRequest()).validate({
+        csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+        selectedBillingType: 'annual'
+      });
       expect(result.error).to.be.undefined();
     });
 
     test('fails for a string that is not a uuid', async () => {
-      const result = billingTypeFormSchema(createRequest()).csrf_token.validate('pizza');
+      const result = billingTypeFormSchema(createRequest()).validate({
+        csrf_token: 'potato',
+        selectedBillingType: 'annual'
+      });
       expect(result.error).to.exist();
     });
   });
@@ -56,11 +62,14 @@ experiment('billing/forms/billing-type schema', () => {
   experiment('billing type', () => {
     test('It should only allow valid billing types in the water service', async () => {
       const result = billingTypeFormSchema(createRequest()).describe();
-      expect(result.children.selectedBillingType.valids).to.equal([ANNUAL, SUPPLEMENTARY, TWO_PART_TARIFF]);
+      expect(result.keys.selectedBillingType.allow).to.equal([ANNUAL, SUPPLEMENTARY, TWO_PART_TARIFF]);
     });
 
     test('fails if blank', async () => {
-      const result = billingTypeFormSchema(createRequest()).selectedBillingType.validate();
+      const result = billingTypeFormSchema(createRequest()).validate({
+        csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+        selectedBillingType: null
+      });
       expect(result.error).to.exist();
     });
   });

@@ -30,39 +30,69 @@ experiment('internal/modules/billing/forms/two-part-tariff-quantity', () => {
 
     experiment('csrf_token', () => {
       test('can be a uuid', async () => {
-        const result = tptSchema.csrf_token.validate(uuid());
-        expect(result.error).to.equal(null);
+        const result = tptSchema.validate({
+          csrf_token: uuid(),
+          quantity: 'authorised'
+        });
+        expect(result.error).to.be.undefined();
       });
 
       test('cannot be a non uuid', async () => {
-        const result = tptSchema.csrf_token.validate('hello');
+        const result = tptSchema.validate({
+          csrf_token: 'thighs',
+          quantity: 'authorised'
+        });
         expect(result.error).to.exist();
       });
 
       test('is required', async () => {
-        const result = tptSchema.csrf_token.validate();
+        const result = tptSchema.validate({
+          csrf_token: null,
+          quantity: 'authorised'
+        });
         expect(result.error).to.exist();
       });
     });
 
     experiment('quantity', () => {
       test('can be "authorised"', async () => {
-        const result = tptSchema.quantity.validate('authorised');
-        expect(result.error).to.equal(null);
+        const result = tptSchema.validate({
+          csrf_token: uuid(),
+          quantity: 'authorised'
+        });
+        expect(result.error).to.be.undefined();
       });
 
-      test('can be "custom', async () => {
-        const result = tptSchema.quantity.validate('custom');
-        expect(result.error).to.equal(null);
+      experiment('can be "custom', () => {
+        test('as long as customQuantity is defined', () => {
+          const experiment1 = tptSchema.validate({
+            csrf_token: uuid(),
+            quantity: 'custom',
+            customQuantity: 2
+          });
+          expect(experiment1.error).to.be.undefined();
+
+          const experiment2 = tptSchema.validate({
+            csrf_token: uuid(),
+            quantity: 'custom'
+          });
+          expect(experiment2.error).to.exist();
+        });
       });
 
       test('cannot be another value', async () => {
-        const result = tptSchema.quantity.validate('hello');
+        const result = tptSchema.validate({
+          csrf_token: uuid(),
+          quantity: 'Cypress Hill'
+        });
         expect(result.error).to.exist();
       });
 
       test('is required', async () => {
-        const result = tptSchema.quantity.validate();
+        const result = tptSchema.validate({
+          csrf_token: uuid(),
+          quantity: null
+        });
         expect(result.error).to.exist();
       });
     });
@@ -90,13 +120,13 @@ experiment('internal/modules/billing/forms/two-part-tariff-quantity', () => {
         test('the customQuantity can equal the maxAnnualQuantity', async () => {
           const data = getData({ customQuantity: 3 });
           const result = tptSchema.validate(data);
-          expect(result.error).to.equal(null);
+          expect(result.error).to.be.undefined();
         });
 
         test('the customQuantity can be greater than zero and less that the maxAnnualQuantity', async () => {
           const data = getData({ customQuantity: 2 });
           const result = tptSchema.validate(data);
-          expect(result.error).to.equal(null);
+          expect(result.error).to.be.undefined();
         });
       });
     });

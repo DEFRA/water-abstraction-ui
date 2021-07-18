@@ -69,7 +69,7 @@ experiment('internal/modules/agreements/lib/reducer', () => {
             options: {}
           }]
         }),
-        schema: () => ({
+        schema: () => Joi.object().keys({
           foo: Joi.string().valid('bar')
         })
       };

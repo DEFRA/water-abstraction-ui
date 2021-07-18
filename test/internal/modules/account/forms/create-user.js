@@ -52,7 +52,6 @@ experiment('account/forms/create-user schema', () => {
   experiment('csrf token', () => {
     test('validates for a uuid', async () => {
       const result = createUserSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842' }, { allowUnknown: true });
-      console.log(result);
       expect(result.error).to.be.undefined();
     });
 

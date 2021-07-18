@@ -109,29 +109,44 @@ experiment('internal/modules/charge-information/forms/reason', () => {
     });
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
-        const result = reasonSchema.csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
+        const result = reasonSchema.validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          reason: request.pre.changeReasons[0].id
+        });
         expect(result.error).to.be.undefined();
       });
 
       test('fails for a string that is not a uuid', async () => {
-        const result = reasonSchema.csrf_token.validate('pizza');
+        const result = reasonSchema.validate({
+          csrf_token: 'Billie Holiday',
+          reason: request.pre.changeReasons[0].id
+        });
         expect(result.error).to.exist();
       });
     });
 
     experiment('reason', () => {
       test('can be one of the change reason ids', async () => {
-        const result = reasonSchema.reason.validate(request.pre.changeReasons[0].id);
+        const result = reasonSchema.validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          reason: request.pre.changeReasons[0].id
+        });
         expect(result.error).to.not.exist();
       });
 
       test('can be "non-chargeable"', async () => {
-        const result = reasonSchema.reason.validate('non-chargeable');
+        const result = reasonSchema.validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          reason: 'non-chargeable'
+        });
         expect(result.error).to.not.exist();
       });
 
       test('cannot be a unexpected string', async () => {
-        const result = reasonSchema.reason.validate('pizza');
+        const result = reasonSchema.validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          reason: 'pizza'
+        });
         expect(result.error).to.exist();
       });
     });

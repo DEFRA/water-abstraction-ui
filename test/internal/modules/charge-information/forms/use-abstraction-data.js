@@ -108,7 +108,7 @@ experiment('internal/modules/charge-information/forms/use-abstraction-data', () 
           { id: 'test-cv-id-3', status: 'current', dateRange: { startDate: '2015-06-19' } },
           { id: 'test-cv-id-2', status: 'invalid', dateRange: { startDate: '2015-06-19' } }
         ];
-        const result = schema(createRequest()).validate({
+        const result = schema(request).validate({
           csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
           useAbstractionData: 'test-cv-id-3'
         });
@@ -116,7 +116,13 @@ experiment('internal/modules/charge-information/forms/use-abstraction-data', () 
       });
 
       test('cannot be a unexpected string', async () => {
-        const result = schema(createRequest()).validate({
+        const request = createRequest();
+        request.pre.chargeVersions = [
+          { id: 'test-cv-id-1', status: 'superseded', dateRange: { startDate: '2001-03-19' } },
+          { id: 'test-cv-id-3', status: 'current', dateRange: { startDate: '2015-06-19' } },
+          { id: 'test-cv-id-2', status: 'invalid', dateRange: { startDate: '2015-06-19' } }
+        ];
+        const result = schema(request).validate({
           csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
           useAbstractionData: 'test-cv-id-4'
         });

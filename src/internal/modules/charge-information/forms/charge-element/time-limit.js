@@ -107,7 +107,7 @@ const form = request => {
 const schema = (request) => {
   const { startDate } = request.pre.draftChargeInformation.dateRange;
   const expiredDate = request.pre.licence.expiredDate || '9999-01-01';
-  return {
+  return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
     timeLimitedPeriod: Joi.string().required().valid('yes', 'no'),
     startDate: Joi.when('timeLimitedPeriod', {
@@ -118,7 +118,7 @@ const schema = (request) => {
       is: 'yes',
       then: Joi.date().iso().greater(Joi.ref('startDate')).max(expiredDate).required()
     })
-  };
+  });
 };
 
 exports.schema = schema;

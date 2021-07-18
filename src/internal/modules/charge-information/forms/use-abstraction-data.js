@@ -56,6 +56,8 @@ const useAbstractionDataForm = request => {
 const useAbstractionDataSchema = (request) => {
   const { chargeVersions } = request.pre;
   const validIds = filterChargeVersions(chargeVersions).map(cv => cv.id);
+  console.log('§§§§§§-----');
+  console.log(validIds);
   return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
     useAbstractionData: Joi.string().valid(...['yes', 'no', ...validIds]).required()

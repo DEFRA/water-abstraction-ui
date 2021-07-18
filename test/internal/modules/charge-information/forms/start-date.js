@@ -207,27 +207,39 @@ experiment('internal/modules/charge-information/forms/start-date', () => {
     });
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
-        const result = startDateSchema.csrf_token.validate(csrfToken);
+        const result = startDateSchema.validate({
+          csrf_token: csrfToken,
+          startDate: 'today'
+        });
         expect(result.error).to.be.undefined();
       });
 
       test('fails for a string that is not a uuid', async () => {
-        const result = startDateSchema.csrf_token.validate('pizza');
+        const result = startDateSchema.validate({
+          csrf_token: 'pizza',
+          startDate: 'today'
+        });
         expect(result.error).to.exist();
       });
     });
 
     experiment('startDate', () => {
-      const validStartDateValues = ['today', 'licenceStartDate', 'customDate'];
+      const validStartDateValues = ['today', 'licenceStartDate'];
       validStartDateValues.forEach(value => {
         test(`can be ${value}`, async () => {
-          const result = startDateSchema.startDate.validate(value);
+          const result = startDateSchema.validate({
+            csrf_token: csrfToken,
+            startDate: value
+          });
           expect(result.error).to.not.exist();
         });
       });
 
       test('cannot be a unexpected string', async () => {
-        const result = startDateSchema.startDate.validate('pizza');
+        const result = startDateSchema.validate({
+          csrf_token: csrfToken,
+          startDate: 'pizza'
+        });
         expect(result.error).to.exist();
       });
     });

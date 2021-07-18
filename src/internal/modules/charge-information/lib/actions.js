@@ -1,5 +1,4 @@
 const { find, omit } = require('lodash');
-const Joi = require('joi');
 const moment = require('moment');
 const uuid = require('uuid/v4');
 const DATE_FORMAT = 'YYYY-MM-DD';

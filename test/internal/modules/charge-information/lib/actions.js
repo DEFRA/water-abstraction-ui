@@ -173,9 +173,9 @@ experiment('internal/modules/charge-information/lib/actions', () => {
 
         expect(action).to.equal({
           type: actions.ACTION_TYPES.setBillingAccount,
-          payload: Joi.object().keys({
+          payload: {
             billingAccountId: id
-          })
+          }
         });
       });
     });

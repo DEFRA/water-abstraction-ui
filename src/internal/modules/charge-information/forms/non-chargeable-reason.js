@@ -40,12 +40,12 @@ const selectReasonForm = request => {
 const selectReasonSchema = request => {
   const { changeReasons } = request.pre;
 
-  return {
+  return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
     reason: Joi.string().required().valid(
-      changeReasons.map(changeReason => changeReason.id)
+      ...changeReasons.map(changeReason => changeReason.id)
     )
-  };
+  });
 };
 
 exports.form = selectReasonForm;

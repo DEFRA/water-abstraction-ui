@@ -57,7 +57,7 @@ const selectBillingTypeForm = (request) => {
       'any.required': {
         message: 'Which kind of bill run do you want to create?'
       },
-      'any.allowOnly': {
+      'any.only': {
         message: 'You must select supplementary to continue'
       }
     },

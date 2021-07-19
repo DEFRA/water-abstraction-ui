@@ -98,7 +98,7 @@ const form = request => {
 
   f.fields.push(fields.dropdown('country', {
     errors: {
-      'any.allowOnly': { message: 'Select a country' },
+      'any.only': { message: 'Select a country' },
       'string.empty': { message: 'Select a country' }
     },
     label: 'Country',

@@ -15,10 +15,10 @@ const ACTION_TYPES = {
 
 const setInitialState = (request, licences, refDate) => ({
   type: ACTION_TYPES.setInitialState,
-  payload: Joi.object().keys({
+  payload: {
     licences,
     refDate: refDate || moment().format(DATE_FORMAT)
-  })
+  }
 });
 
 const createDocumentAction = (request, formValues, type, formKeys) => {
@@ -40,19 +40,19 @@ const setOneTimeAddressName = partialRight(createDocumentAction, ACTION_TYPES.se
 
 const setOneTimeAddress = (documentId, address) => ({
   type: ACTION_TYPES.setOneTimeAddress,
-  payload: Joi.object().keys({
+  payload: {
     documentId,
     address
-  })
+  }
 });
 
 const setLicenceHolders = (request, formValues) => {
   const documentIds = flatMap(Object.values(omit(formValues, 'csrf_token')));
   return {
     type: ACTION_TYPES.setLicenceHolders,
-    payload: Joi.object().keys({
+    payload: {
       documentIds
-    })
+    }
   };
 };
 

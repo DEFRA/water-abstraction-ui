@@ -16,7 +16,6 @@ const reducer = (state, action) => {
 
     case actionTypes.setFromDate:
       const { fromDate, rebillableBills } = action.payload;
-      console.log(action.payload);
       const selectedBills = rebillableBills
         .filter(bill => moment(bill.dateCreated).isSameOrAfter(fromDate, 'day'));
       return {

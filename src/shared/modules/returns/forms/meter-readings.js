@@ -88,7 +88,7 @@ const schema = (request, data, form) => {
   const startValidator = getStartReadingValidator(internalData);
   let lastReading = false;
 
-  return lines.reduce((acc, line, currentIndex) => {
+  const schemaContents = lines.reduce((acc, line, currentIndex) => {
     const name = getLineName(line);
     const validator = (currentIndex === 0 || lastReading === false)
       ? startValidator
@@ -100,6 +100,8 @@ const schema = (request, data, form) => {
     }
     return { ...acc, [name]: validator };
   }, baseSchema);
+
+  return Joi.object(schemaContents);
 };
 
 exports.getStartReadingField = getStartReadingField;

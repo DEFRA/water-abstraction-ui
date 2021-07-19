@@ -87,7 +87,7 @@ const selectContactSchema = request => {
   return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
     selectedContact: Joi.string().required().valid(...['person', 'department', ...validContactIds]),
-    department: Joi.string().allow('').when(
+    department: Joi.any().when(
       'selectedContact', {
         is: 'department',
         then: Joi.string().required()

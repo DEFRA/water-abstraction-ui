@@ -38,7 +38,7 @@ const selectAddressForm = (request, licences) => {
       'any.required': {
         message: 'Select an address'
       },
-      'any.allowOnly': {
+      'any.only': {
         message: 'Address is invalid'
       }
     },

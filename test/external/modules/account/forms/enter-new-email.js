@@ -68,11 +68,11 @@ experiment('enterNewEmailForm', () => {
       request.payload.email = 'user@example.com';
       request.payload['confirm-email'] = '';
 
-      const form = enterNewEmailForm(request);
-      const validated = handleRequest(form, request, enterNewEmailSchema);
+      const initialForm = enterNewEmailForm(request);
+      const validatedForm = handleRequest(initialForm, request, enterNewEmailSchema);
 
-      expect(validated.isValid).to.be.false();
-      expect(validated.errors.find(f => {
+      expect(validatedForm.isValid).to.be.false();
+      expect(validatedForm.errors.find(f => {
         return f.name === 'confirm-email' &&
           f.message === 'Confirm your new email address';
       })).to.exist();
@@ -89,7 +89,7 @@ experiment('enterNewEmailForm', () => {
       expect(validated.isValid).to.be.false();
       expect(validated.errors.find(f => {
         return f.name === 'confirm-email' &&
-          f.message === 'The email addresses must match';
+          f.message === 'Confirm your new email address';
       })).to.exist();
     });
 
@@ -119,7 +119,7 @@ experiment('enterNewEmailForm', () => {
       expect(validated.isValid).to.be.false();
       expect(validated.errors.find(f => {
         return f.name === 'confirm-email' &&
-          f.message === 'The email addresses must match';
+          f.message === 'Confirm your new email address';
       })).to.exist();
     });
   });

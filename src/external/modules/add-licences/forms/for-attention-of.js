@@ -21,7 +21,7 @@ const faoForm = (request) => {
       'string.max': {
         message: 'Name and/or department must be 32 characters or less'
       },
-      'any.allowOnly': {
+      'any.only': {
         message: 'Address is invalid'
       }
     }

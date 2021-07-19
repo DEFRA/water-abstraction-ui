@@ -88,7 +88,6 @@ experiment('internal/modules/charge-information/forms/non-chargeable-reason', ()
           csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
           reason: 'Liver'
         });
-        console.log(result);
         expect(result.error).to.exist();
       });
     });

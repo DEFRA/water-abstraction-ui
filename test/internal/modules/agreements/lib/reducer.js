@@ -35,7 +35,6 @@ experiment('internal/modules/agreements/lib/reducer', () => {
   experiment('.setDateSigned', () => {
     test('sets the date signed to the provided date, if is date signed known is true', async () => {
       const nextState = reducer({ code: 'S127' }, actions.setDateSigned(request, { isDateSignedKnown: true, dateSigned: '2020-05-01' }));
-      console.log();
       expect(nextState).to.equal({
         code: 'S127',
         dateSigned: '2020-05-01',

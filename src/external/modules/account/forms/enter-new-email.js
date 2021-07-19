@@ -21,13 +21,13 @@ const enterNewEmailForm = (request, data = {}) => {
   const f = formFactory('/account/change-email/enter-new-email');
 
   f.fields.push(createEmailField('email', 'Your new email address', {
-    ...createError('any.allowOnly', 'The email addresses must match'),
+    ...createError('any.only', 'Confirm your new email address'),
     ...createError('string.email', 'Enter an email address, like name@example.com'),
     ...createError('string.empty', 'Enter your new email address')
   }));
 
   f.fields.push(createEmailField('confirm-email', 'Confirm your new email address', {
-    ...createError('any.allowOnly', 'The email addresses must match'),
+    ...createError('any.only', 'Confirm your new email address'),
     ...createError('string.empty', 'Confirm your new email address')
   }));
 

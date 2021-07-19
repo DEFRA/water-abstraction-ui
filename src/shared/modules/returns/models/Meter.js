@@ -48,7 +48,7 @@ class Meter {
       multiplier: Joi.number().positive(),
       meterDetailsProvided: Joi.boolean().default(true)
     });
-    const { value, error } = Joi.object().keys(schema).validate(meter);
+    const { value, error } = schema.validate(meter);
     if (error) {
       throw new Error(`Invalid meter details`, meter);
     }

@@ -123,7 +123,7 @@ experiment('internal/modules/contact-entry/forms/create-contact', () => {
           ...data,
           title: ''
         });
-        expect(result.error).to.equal(null);
+        expect(result.error).to.equal(undefined);
       });
     });
 
@@ -143,7 +143,7 @@ experiment('internal/modules/contact-entry/forms/create-contact', () => {
           ...data,
           middleInitials: ''
         });
-        expect(result.error).to.equal(null);
+        expect(result.error).to.equal(undefined);
       });
     });
 
@@ -163,7 +163,7 @@ experiment('internal/modules/contact-entry/forms/create-contact', () => {
           ...data,
           suffix: ''
         });
-        expect(result.error).to.equal(null);
+        expect(result.error).to.equal(undefined);
       });
     });
 
@@ -172,7 +172,7 @@ experiment('internal/modules/contact-entry/forms/create-contact', () => {
         const result = createContact.schema(request).validate({
           ...data,
           department: '' });
-        expect(result.error).to.equal(null);
+        expect(result.error).to.equal(undefined);
       });
     });
   });

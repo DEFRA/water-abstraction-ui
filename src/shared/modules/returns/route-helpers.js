@@ -6,8 +6,8 @@ const optionsSchema = Joi.object().keys({
   description: Joi.string(),
   pageTitle: Joi.string().required(),
   showMeta: Joi.boolean(),
-  form: Joi.func().required(),
-  schema: Joi.func(),
+  form: Joi.function().required(),
+  schema: Joi.function(),
   submit: Joi.boolean(),
   pre: Joi.array().optional()
 });

@@ -62,7 +62,7 @@ const form = (request, permission, newUser) => {
     choices,
     errors: {
       'any.required': { message: 'Select the permissions for the user' },
-      'any.allowOnly': { message: 'Select the permissions for the user' }
+      'any.only': { message: 'Select the permissions for the user' }
     }
   }));
 

@@ -1,11 +1,11 @@
 const Boom = require('@hapi/boom');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const bluebird = require('bluebird');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
 const routeConfigSchema = Joi.object().keys({
   param: Joi.string().default('documentId'),
-  load: Joi.object({
+  load: Joi.object().keys({
     licence: Joi.boolean().valid(true),
     summary: Joi.boolean().valid(true),
     communications: Joi.boolean().valid(true),
@@ -58,7 +58,8 @@ const getConfig = request => {
     return;
   }
   Joi.assert(config, routeConfigSchema, `Invalid licenceData route configuration`);
-  const { value } = Joi.validate(config, routeConfigSchema);
+
+  const { value } = routeConfigSchema.validate(config);
   return value;
 };
 

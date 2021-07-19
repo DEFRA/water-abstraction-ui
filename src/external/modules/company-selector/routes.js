@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const controller = require('./controller');
 
 module.exports = {
@@ -18,10 +18,10 @@ module.exports = {
     options: {
       description: 'Allows the user to select their company',
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           company: Joi.number(),
           csrf_token: Joi.string().guid().required()
-        }
+        })
       }
     }
   }

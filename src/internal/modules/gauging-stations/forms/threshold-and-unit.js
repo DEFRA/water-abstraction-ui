@@ -29,7 +29,7 @@ const thresholdAndUnitForm = request => {
   f.fields.push(fields.dropdown('unit', {
     label: 'Unit of measurement',
     errors: {
-      'any.empty': {
+      'string.empty': {
         message: 'Select a unit of measurement'
       },
       'any.required': {
@@ -52,10 +52,10 @@ const thresholdAndUnitForm = request => {
   return f;
 };
 
-const thresholdAndUnitSchema = () => Joi.object({
+const thresholdAndUnitSchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   threshold: Joi.number().min(0).max(1000000).required(),
-  unit: Joi.string().required().allow(validUnits)
+  unit: Joi.string().required().allow(...validUnits)
 });
 
 exports.form = thresholdAndUnitForm;

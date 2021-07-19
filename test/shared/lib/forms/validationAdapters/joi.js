@@ -15,13 +15,13 @@ experiment('formatErrors', () => {
         {
           message: 'manufacturer is not allowed to be empty',
           path: ['manufacturer'],
-          type: 'any.empty',
+          type: 'string.empty',
           context: { key: 'manufacturer', label: 'manufacturer' }
         },
         {
           message: 'serialNumber is not allowed to be empty',
           path: ['serialNumber'],
-          type: 'any.empty',
+          type: 'string.empty',
           context: { key: 'serialNumber', label: 'serialNumber' }
         },
         {
@@ -36,11 +36,11 @@ experiment('formatErrors', () => {
     customErrors = {
       manufacturer: {
         'any.required': { message: 'Select a manufacturer' },
-        'any.empty': { message: 'Select a manufacturer', summary: 'Custom summary' }
+        'string.empty': { message: 'Select a manufacturer', summary: 'Custom summary' }
       },
       serialNumber: {
         'any.required': { message: 'Select a serial number' },
-        'any.empty': { message: 'Select a serial number' }
+        'string.empty': { message: 'Select a serial number' }
       }
     };
 

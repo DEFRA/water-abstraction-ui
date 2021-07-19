@@ -1,5 +1,5 @@
 const { formFactory, fields } = require('shared/lib/forms');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 const getLines = licences => {
   return licences.map(licence => {
@@ -38,7 +38,7 @@ const selectAddressForm = (request, licences) => {
       'any.required': {
         message: 'Select an address'
       },
-      'any.allowOnly': {
+      'any.only': {
         message: 'Address is invalid'
       }
     },
@@ -53,10 +53,10 @@ const selectAddressForm = (request, licences) => {
 
 const selectAddressSchema = licences => {
   const documentIds = licences.map(licence => licence.document_id);
-  return {
-    selectedAddressId: Joi.string().guid().required().valid(documentIds),
+  return Joi.object({
+    selectedAddressId: Joi.string().guid().required().valid(...documentIds),
     csrf_token: Joi.string().guid().required()
-  };
+  });
 };
 
 exports.selectAddressForm = selectAddressForm;

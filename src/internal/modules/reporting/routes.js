@@ -1,5 +1,5 @@
 const controllers = require('./controllers');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const constants = require('../../lib/constants');
 const { billing } = constants.scope;
 
@@ -32,13 +32,13 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           reportIdentifier: Joi.string().valid(
             'billedActiveLicencesReport',
             'uncreditedInactiveLicencesReport',
             'unbilledActiveLicencesReport'
           ).required()
-        }
+        })
       }
     }
   }

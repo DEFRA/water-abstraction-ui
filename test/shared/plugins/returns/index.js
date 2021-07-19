@@ -1,8 +1,10 @@
 const plugin = require('shared/plugins/returns');
 const Lab = require('@hapi/lab');
+const Joi = require('joi');
 const {
   experiment,
   test,
+  before,
   beforeEach,
   afterEach,
   fail
@@ -74,6 +76,9 @@ experiment('returns plugin', () => {
   });
 
   test('register function throws an error if invalid options are supplied', async () => {
+    before(async () => {
+      await sandbox.stub(Joi, 'validate').spy();
+    });
     const options = {
       getDocumentHeader: 'x',
       checkAccess: true

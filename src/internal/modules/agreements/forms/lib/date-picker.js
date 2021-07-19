@@ -3,8 +3,8 @@
 const DATE_FORMAT = 'YYYY-MM-DD';
 const moment = require('moment');
 
-const JoiDate = require('@hapi/joi-date');
-const Joi = require('@hapi/joi').extend(JoiDate);
+const JoiDate = require('@joi/date');
+const Joi = require('joi').extend(JoiDate);
 
 /**
  * Gets the maximum date - this is the earliest of:

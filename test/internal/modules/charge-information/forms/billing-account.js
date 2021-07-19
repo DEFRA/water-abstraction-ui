@@ -96,32 +96,44 @@ experiment('internal/modules/charge-information/forms/use-abstraction-data', () 
   experiment('.schema', () => {
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
-        const result = schema(createRequest()).csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
-        expect(result.error).to.be.null();
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          invoiceAccountAddress: '00000000-0000-0000-0000-000000002222'
+        });
+        expect(result.error).to.be.undefined();
       });
 
       test('fails for a string that is not a uuid', async () => {
-        const result = schema(createRequest()).csrf_token.validate('pizza');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'crumpets',
+          invoiceAccountAddress: '00000000-0000-0000-0000-000000002222'
+        });
         expect(result.error).to.exist();
       });
     });
 
     experiment('invoiceAccountAddress', () => {
       test('can be set-up-new-billing-account', async () => {
-        const request = createRequest();
-        const result = schema(request).invoiceAccountAddress.validate('set-up-new-billing-account');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          invoiceAccountAddress: 'set-up-new-billing-account'
+        });
         expect(result.error).to.not.exist();
       });
 
       test('can be an invoice account address id', async () => {
-        const request = createRequest();
-        const result = schema(request).invoiceAccountAddress.validate('00000000-0000-0000-0000-000000002222');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          invoiceAccountAddress: '00000000-0000-0000-0000-000000002222'
+        });
         expect(result.error).to.not.exist();
       });
 
       test('cannot be a unexpected string be true', async () => {
-        const request = createRequest();
-        const result = schema(request).invoiceAccountAddress.validate('pizza');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          invoiceAccountAddress: 'kebab'
+        });
         expect(result.error).to.exist();
       });
     });

@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 const { get } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms');
@@ -42,10 +42,10 @@ const form = request => {
 
   f.fields.push(fields.text('postcode', {
     errors: {
-      'any.empty': {
+      'string.empty': {
         message: 'Enter a UK postcode'
       },
-      'string.regex.base': {
+      'string.pattern.base': {
         message: 'Enter a real UK postcode'
       }
     },
@@ -62,7 +62,7 @@ const form = request => {
   return f;
 };
 
-const schema = () => Joi.object({
+const schema = () => Joi.object().keys({
   postcode: postcodeSchema
 });
 

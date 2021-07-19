@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms');
 
 /**
@@ -19,6 +19,8 @@ const form = (request, licenceData) => {
       value: 'confirm'
     }],
     errors: {
+      'any.only': { message: 'Tick the box to confirm you want to unlink this licence' },
+      'array.min': { message: 'Tick the box to confirm you want to unlink this licence' },
       'array.includesRequiredUnknowns': { message: 'Tick the box to confirm you want to unlink this licence' }
     }
   }));
@@ -29,10 +31,10 @@ const form = (request, licenceData) => {
   return f;
 };
 
-const schema = {
+const schema = Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
-  confirmUnlink: Joi.array().max(1).items(Joi.valid('confirm').required())
-};
+  confirmUnlink: Joi.array().required().min(1).items(Joi.string().required().valid('confirm')).required()
+});
 
 exports.unlinkLicenceForm = form;
 exports.unlinkLicenceSchema = schema;

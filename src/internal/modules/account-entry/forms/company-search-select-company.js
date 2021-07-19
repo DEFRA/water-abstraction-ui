@@ -1,7 +1,7 @@
 'use strict';
 
 const { formFactory, fields } = require('shared/lib/forms');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { getAddressText } = require('../lib/helpers');
 const routing = require('../lib/routing');
 
@@ -30,7 +30,7 @@ const form = (request, defaultValue) => {
       'any.required': {
         message: 'Select a company from the list'
       },
-      'any.empty': {
+      'string.empty': {
         message: 'Select a company from the list'
       }
     },
@@ -44,7 +44,7 @@ const form = (request, defaultValue) => {
   return f;
 };
 
-const schema = () => Joi.object({
+const schema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   selectedCompaniesHouseNumber: Joi.string().required()
 });

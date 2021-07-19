@@ -5,7 +5,7 @@ const fields = require('./fields');
 const mappers = require('./mappers');
 const { mapFields } = require('./mapFields');
 const validationAdapterFactory = require('./validationAdapters');
-
+const Joi = require('joi');
 /**
  * Creates the form skeleton which will have fields added to.
  *
@@ -109,7 +109,8 @@ const postValidate = (form, values) => {
   mapFields(form, (field) => {
     if (field.name) {
       const mapper = field.options.mapper || 'defaultMapper';
-      data[field.name] = mappers[mapper].postValidate(values[field.name]);
+      data[field.name] =
+        mappers[mapper].postValidate(values[field.name]);
     }
     return field;
   });
@@ -124,8 +125,10 @@ const getPayload = (form, request) => form.method.toUpperCase() === 'POST'
  * Handles HTTP request on form object
  * @param {Object} form - form config object
  * @param {Object} request - HAPI HTTP request
+ * @param validationSchema
+ * @param options
  */
-const handleRequest = (form, request, validationSchema, options) => {
+const handleRequest = (form, request, validationSchema, options = {}) => {
   if (form.method === 'get' && isEmpty(request.query)) {
     return form;
   }
@@ -136,15 +139,12 @@ const handleRequest = (form, request, validationSchema, options) => {
   const payload = getPayload(form, request);
   const requestData = importData(f, payload);
 
-  const schema = validationSchema || adapter.createSchemaFromForm(form);
-
-  const { error, value } = adapter.validate(requestData, schema, options);
-
+  const schema = Joi.isSchema(validationSchema) ? validationSchema : Joi.object().keys(adapter.createSchemaFromForm(form));
+  const { error, value } = schema.validate(requestData, options);
   const customErrors = getCustomErrors(form);
   const formattedErrors = adapter.formatErrors(error, customErrors);
   f = applyErrors(f, formattedErrors);
   f.isValid = !error;
-
   return setValues(f, postValidate(form, value));
 };
 

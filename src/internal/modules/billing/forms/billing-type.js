@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 const { formFactory, fields } = require('shared/lib/forms/');
 const {
@@ -57,7 +57,7 @@ const selectBillingTypeForm = (request) => {
       'any.required': {
         message: 'Which kind of bill run do you want to create?'
       },
-      'any.allowOnly': {
+      'any.only': {
         message: 'You must select supplementary to continue'
       }
     },
@@ -72,17 +72,17 @@ const selectBillingTypeForm = (request) => {
 const billingTypeFormSchema = (request) => {
   const validBillRunTypes = [ANNUAL, SUPPLEMENTARY, TWO_PART_TARIFF];
 
-  return {
+  return Joi.object({
     csrf_token: Joi.string().uuid().required(),
-    selectedBillingType: Joi.string().required().valid(validBillRunTypes),
+    selectedBillingType: Joi.string().required().valid(...validBillRunTypes),
     twoPartTariffSeason: Joi.string().when(
       'selectedBillingType',
       {
         is: TWO_PART_TARIFF,
-        then: Joi.string().required().valid(Object.values(seasons))
+        then: Joi.string().required().valid(...Object.values(seasons))
       }
     )
-  };
+  });
 };
 
 exports.selectBillingTypeForm = selectBillingTypeForm;

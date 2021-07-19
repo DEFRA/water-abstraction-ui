@@ -103,6 +103,7 @@ const getDeleteUserAccount = async (request, h, formFromPost) => {
 
 const postDeleteUserAccount = async (request, h) => {
   const { userId } = request.params;
+
   const { user_name: userEmail } = await services.idm.users.findOneById(userId);
 
   const form = handleRequest(
@@ -116,7 +117,6 @@ const postDeleteUserAccount = async (request, h) => {
   }
   try {
     await services.water.users.disableInternalUser(request.defra.userId, userId);
-
     return h.redirect(`/account/delete-account/${userId}/success`);
   } catch (err) {
     if (err.statusCode === 404) {

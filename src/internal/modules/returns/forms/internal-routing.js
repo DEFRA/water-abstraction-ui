@@ -1,3 +1,4 @@
+const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms');
 const { STEP_INTERNAL_ROUTING } = require('shared/modules/returns/steps');
 const { addQuery } = require('shared/modules/returns/route-helpers');
@@ -57,5 +58,9 @@ const form = (request, data) => ({
 });
 
 module.exports = {
-  internalRoutingForm: form
+  internalRoutingForm: form,
+  internalRoutingFormSchema: Joi.object().keys({
+    action: Joi.string().required(),
+    csrf_token: Joi.string().guid().required()
+  })
 };

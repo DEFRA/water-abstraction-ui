@@ -78,40 +78,78 @@ experiment('internal/modules/charge-information/forms/charge-element/abstraction
   experiment('.schema', () => {
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
-        const result = schema(createRequest()).csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
-        expect(result.error).to.be.null();
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          startDate: '2001-01-01',
+          endDate: '2011-01-01'
+        });
+        expect(result.error).to.be.undefined();
       });
 
       test('fails for a string that is not a uuid', async () => {
-        const result = schema(createRequest()).csrf_token.validate('sciccors');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'burgers',
+          startDate: '2001-01-01',
+          endDate: '2011-01-01'
+        });
         expect(result.error).to.exist();
       });
     });
 
     experiment('startDate', () => {
       test('validates for a string', async () => {
-        // we test for year momth day even though there is only a day and month text box
+        // we test for year month day even though there is only a day and month text box
         // the day of year mapper adds a year when validating using the form widgets
-        const result = schema().startDate.validate('2001-01-01');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          startDate: '2001-01-01',
+          endDate: '2011-01-01'
+        });
         expect(result.error).to.not.exist();
       });
 
       test('can not null or empty', async () => {
-        const result = schema().startDate.validate('');
-        expect(result.error).to.exist();
+        const experiment1 = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          startDate: '',
+          endDate: '2011-01-01'
+        });
+        expect(experiment1.error).to.exist();
+
+        const experiment2 = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          startDate: null,
+          endDate: '2011-01-01'
+        });
+        expect(experiment2.error).to.exist();
       });
     });
     experiment('endDate', () => {
       test('validates for a string', async () => {
         // we test for year momth day even though there is only a day and month text box
         // the day of year mapper adds a year when validating using the form widgets
-        const result = schema().endDate.validate('2001-01-01');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          startDate: '2001-01-01',
+          endDate: '2011-01-01'
+        });
         expect(result.error).to.not.exist();
       });
 
       test('can not null or empty', async () => {
-        const result = schema().endDate.validate('');
-        expect(result.error).to.exist();
+        const experiment1 = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          startDate: '2001-01-01',
+          endDate: null
+        });
+        expect(experiment1.error).to.exist();
+
+        const experiment2 = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          startDate: '2001-01-01',
+          endDate: ''
+        });
+        expect(experiment2.error).to.exist();
       });
     });
   });

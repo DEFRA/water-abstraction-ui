@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { scope } = require('../../../lib/constants');
 const controller = require('../controllers/upload');
 
@@ -49,10 +49,10 @@ module.exports = {
         scope: allowedScopes
       },
       validate: {
-        params: {
-          status: Joi.string().valid(['processing', 'submitting']),
+        params: Joi.object().keys({
+          status: Joi.string().valid('processing', 'submitting'),
           eventId: Joi.string().guid()
-        }
+        })
       },
       description: 'Uploading returns data',
       plugins: {
@@ -72,9 +72,9 @@ module.exports = {
         scope: allowedScopes
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           eventId: validators.VALID_GUID
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -92,10 +92,10 @@ module.exports = {
         scope: allowedScopes
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           eventId: validators.VALID_GUID,
           returnId: validators.VALID_RETURN_ID
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -114,9 +114,9 @@ module.exports = {
         scope: allowedScopes
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           eventId: validators.VALID_GUID
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -135,9 +135,9 @@ module.exports = {
         scope: allowedScopes
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           eventId: validators.VALID_GUID
-        }
+        })
       },
       plugins: {
         viewContext: {

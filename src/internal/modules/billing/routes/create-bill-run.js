@@ -10,10 +10,11 @@ const billRunTypes = require('../lib/bill-run-types');
 const seasons = require('../lib/seasons');
 
 const VALID_BILL_RUN_TYPES = Joi.string().required().valid(
-  Object.values(billRunTypes).map(kebabCase)
+  ...Object.values(billRunTypes).map(kebabCase)
 );
+
 const VALID_SEASONS = Joi.string().valid(
-  Object.values(seasons).map(kebabCase)
+  ...Object.values(seasons).map(kebabCase)
 );
 
 module.exports = {
@@ -51,10 +52,10 @@ module.exports = {
       auth: { scope: allowedScopes },
       description: 'select bill run region',
       validate: {
-        params: {
+        params: Joi.object().keys({
           billingType: VALID_BILL_RUN_TYPES,
           season: VALID_SEASONS
-        }
+        })
       },
 
       plugins: {
@@ -97,9 +98,9 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: Joi.string().uuid()
-        }
+        })
       }
     }
   },
@@ -119,9 +120,9 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: Joi.string().uuid()
-        }
+        })
       }
     }
   }

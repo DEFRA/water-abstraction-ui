@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms');
 
 const licenceNumbersForm = (request) => {
@@ -30,10 +30,10 @@ const licenceNumbersForm = (request) => {
   return f;
 };
 
-const schema = {
-  licenceNumbers: Joi.array().required().min(1).items(Joi.string()),
+const schema = Joi.object().keys({
+  licenceNumbers: Joi.array().min(1).items(Joi.string()),
   csrf_token: Joi.string().guid().required()
-};
+});
 
 /**
  * Gets error message when licence number(s) are not found

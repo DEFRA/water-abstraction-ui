@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { pick, findLastKey } = require('lodash');
 
 const { mapMeterLinesToVolumes } = require('./water-return-helpers');
@@ -42,13 +42,13 @@ class Meter {
    * @param {Object} meter - the meter
    */
   setMeterDetails (meter) {
-    const schema = {
+    const schema = Joi.object().keys({
       manufacturer: Joi.string().required(),
       serialNumber: Joi.string().required(),
       multiplier: Joi.number().positive(),
       meterDetailsProvided: Joi.boolean().default(true)
-    };
-    const { value, error } = Joi.validate(meter, schema);
+    });
+    const { value, error } = schema.validate(meter);
     if (error) {
       throw new Error(`Invalid meter details`, meter);
     }

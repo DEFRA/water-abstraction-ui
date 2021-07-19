@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields, setValues } = require('shared/lib/forms');
 
 const getAddressField = () =>
@@ -7,7 +7,7 @@ const getAddressField = () =>
     multiline: true,
     controlClass: 'govuk-!-width-three-quarters',
     errors: {
-      'any.empty': {
+      'string.empty': {
         message: 'Enter a valid postal address'
       }
     }
@@ -18,7 +18,7 @@ const getEmailField = () =>
     label: 'Email address',
     controlClass: 'govuk-!-width-one-half',
     errors: {
-      'any.empty': {
+      'string.empty': {
         message: 'Enter a valid email address'
       },
       'string.email': {
@@ -31,7 +31,7 @@ const getTelField = () => fields.text('tel', {
   label: 'Phone number',
   controlClass: 'govuk-!-width-one-half',
   errors: {
-    'any.empty': {
+    'string.empty': {
       message: 'Enter a valid telephone number'
     }
   }
@@ -54,12 +54,12 @@ const form = (request, data) => {
   return setValues(f, data);
 };
 
-const schema = {
+const schema = Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   email: Joi.string().email(),
   tel: Joi.string().required(),
   address: Joi.string().required()
-};
+});
 
 exports.form = form;
 exports.schema = schema;

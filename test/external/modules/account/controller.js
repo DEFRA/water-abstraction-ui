@@ -161,7 +161,7 @@ experiment('modules/account/controller', () => {
         const request = {
           view: { csrfToken: 'token' },
           payload: {
-            csrf_token: 'token',
+            csrf_token: '2abbe559-7e06-4dcc-8856-451b737ecbf0',
             email: 'user@example.com',
             'confirm-email': 'user@example.com'
           },
@@ -184,7 +184,7 @@ experiment('modules/account/controller', () => {
         const request = {
           view: { csrfToken: 'token' },
           payload: {
-            csrf_token: 'token',
+            csrf_token: '2abbe559-7e06-4dcc-8856-451b737ecbf0',
             email: 'user@example.com',
             'confirm-email': 'user@example.com'
           },
@@ -210,7 +210,7 @@ experiment('modules/account/controller', () => {
         request = {
           view: { csrfToken: 'token' },
           payload: {
-            csrf_token: 'token',
+            csrf_token: '2abbe559-7e06-4dcc-8856-451b737ecbf0',
             email: 'user@example.com',
             'confirm-email': 'user@example.com'
           },
@@ -425,7 +425,7 @@ experiment('modules/account/controller', () => {
         const request = {
           view: { csrfToken: 'token' },
           payload: {
-            csrf_token: 'token',
+            csrf_token: '2abbe559-7e06-4dcc-8856-451b737ecbf0',
             'verification-code': ''
           },
           defra: {

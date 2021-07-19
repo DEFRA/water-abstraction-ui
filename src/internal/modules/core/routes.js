@@ -1,6 +1,7 @@
 const { VALID_UTM } = require('shared/lib/validators');
 const controller = require('./controller');
 const pkg = require('../../../../package.json');
+const Joi = require('joi');
 const { version } = pkg;
 
 module.exports = {
@@ -11,7 +12,7 @@ module.exports = {
     handler: controller.index,
     config: {
       validate: {
-        query: VALID_UTM
+        query: Joi.object(VALID_UTM)
       }
     }
   },

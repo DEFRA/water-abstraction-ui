@@ -26,7 +26,7 @@ const getFormField = (key, date) => {
     mapper: 'dayOfYearMapper',
     errors: {
       'any.required': errors.empty,
-      'any.empty': errors.empty,
+      'string.empty': errors.empty,
       'string.isoDate': errors[`invalid${name}`],
       'date.isoDate': errors[`invalid${name}`],
       'date.base': errors[`invalid${name}`]
@@ -49,7 +49,7 @@ const abstractionPeriodForm = request => {
   return f;
 };
 
-const abstractionPeriodSchema = () => Joi.object({
+const abstractionPeriodSchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   startDate: Joi.date().required(),
   endDate: Joi.date().required()

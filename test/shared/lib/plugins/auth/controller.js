@@ -16,7 +16,7 @@ const createRequest = (isAuthenticated) => {
     query: {},
     view: { csrfToken: 'token' },
     payload: {
-      csrf_token: 'token',
+      csrf_token: '2abbe559-7e06-4dcc-8856-451b737ecbf0',
       email: 'bob@example.com',
       password: 'topsecret'
     }

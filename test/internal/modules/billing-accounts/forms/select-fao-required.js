@@ -69,7 +69,7 @@ experiment('invoice-accounts/forms/add-fao schema', () => {
   experiment('csrf token', () => {
     test('validates for a uuid', async () => {
       const result = selectFaoRequiredForm.schema(request).validate(data);
-      expect(result.error).to.be.null();
+      expect(result.error).to.be.undefined();
     });
 
     test('fails for a string that is not a uuid', async () => {
@@ -84,7 +84,7 @@ experiment('invoice-accounts/forms/add-fao schema', () => {
   experiment('faoRequired', () => {
     test('validates for true', async () => {
       const result = selectFaoRequiredForm.schema(request).validate(data);
-      expect(result.error).to.be.null();
+      expect(result.error).to.be.undefined();
     });
 
     test('validates for false', async () => {
@@ -92,7 +92,7 @@ experiment('invoice-accounts/forms/add-fao schema', () => {
         ...data,
         faoRequired: false
       });
-      expect(result.error).to.be.null();
+      expect(result.error).to.be.undefined();
     });
 
     test('fails for a value that is not a boolean', async () => {

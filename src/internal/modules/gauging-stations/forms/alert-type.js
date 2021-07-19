@@ -45,7 +45,7 @@ const alertTypeForm = request => {
   return f;
 };
 
-const alertTypeSchema = () => Joi.object({
+const alertTypeSchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   alertType: Joi.string().required().allow('stop', 'reduce'),
   volumeLimited: Joi.boolean().when(

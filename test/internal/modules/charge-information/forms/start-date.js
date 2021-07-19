@@ -5,7 +5,7 @@ const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').scri
 
 const { form, schema } = require('internal/modules/charge-information/forms/start-date');
 const { findField, findButton } = require('../../../../lib/form-test');
-const Joi = require('@hapi/joi');
+
 const moment = require('moment');
 
 const createRequest = (startDate, isChargeable = true, licenceStart = '2016-04-01', licenceEnd = '2030-03-31') => ({
@@ -207,84 +207,96 @@ experiment('internal/modules/charge-information/forms/start-date', () => {
     });
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
-        const result = startDateSchema.csrf_token.validate(csrfToken);
-        expect(result.error).to.be.null();
+        const result = startDateSchema.validate({
+          csrf_token: csrfToken,
+          startDate: 'today'
+        });
+        expect(result.error).to.be.undefined();
       });
 
       test('fails for a string that is not a uuid', async () => {
-        const result = startDateSchema.csrf_token.validate('pizza');
+        const result = startDateSchema.validate({
+          csrf_token: 'pizza',
+          startDate: 'today'
+        });
         expect(result.error).to.exist();
       });
     });
 
     experiment('startDate', () => {
-      const validStartDateValues = ['today', 'licenceStartDate', 'customDate'];
+      const validStartDateValues = ['today', 'licenceStartDate'];
       validStartDateValues.forEach(value => {
         test(`can be ${value}`, async () => {
-          const result = startDateSchema.startDate.validate(value);
+          const result = startDateSchema.validate({
+            csrf_token: csrfToken,
+            startDate: value
+          });
           expect(result.error).to.not.exist();
         });
       });
 
       test('cannot be a unexpected string', async () => {
-        const result = startDateSchema.startDate.validate('pizza');
+        const result = startDateSchema.validate({
+          csrf_token: csrfToken,
+          startDate: 'pizza'
+        });
         expect(result.error).to.exist();
       });
     });
 
     experiment('customDate', () => {
       test('can be null when startDate is not "customDate"', async () => {
-        const result = Joi.validate({
+        const result = startDateSchema.validate({
           csrf_token: csrfToken,
           startDate: 'today',
           customDate: null
-        }, startDateSchema);
+        });
         expect(result.error).to.not.exist();
       });
 
       experiment('when startDate is "customDate"', () => {
         test('can be a date between the licence start and end dates', async () => {
-          const result = Joi.validate({
+          const result = startDateSchema.validate({
             csrf_token: csrfToken,
             startDate: 'customDate',
             customDate: '2018-01-01'
-          }, startDateSchema);
+          });
           expect(result.error).to.not.exist();
         });
 
         test('can be the same as licence start date', async () => {
-          const result = Joi.validate({
+          const result = startDateSchema.validate({
             csrf_token: csrfToken,
             startDate: 'customDate',
             customDate: '2016-04-01'
-          }, startDateSchema);
+          });
           expect(result.error).to.not.exist();
         });
 
         test('can be the same as licence end date', async () => {
-          const result = Joi.validate({
+          const result = startDateSchema.validate({
             csrf_token: csrfToken,
             startDate: 'customDate',
             customDate: '2030-03-31'
-          }, startDateSchema);
+          });
           expect(result.error).to.not.exist();
         });
 
         test('cannot be before the licence start date', async () => {
-          const result = Joi.validate({
+          const result = startDateSchema.validate({
             csrf_token: csrfToken,
             startDate: 'customDate',
             customDate: '2014-04-01'
-          }, startDateSchema);
+          });
           expect(result.error).to.exist();
         });
 
         test('cannot be after the licence start date', async () => {
-          const result = Joi.validate({
+          const result = startDateSchema.validate({
             csrf_token: csrfToken,
             startDate: 'customDate',
             customDate: '2035-04-01'
-          }, startDateSchema);
+          });
           expect(result.error).to.exist();
         });
       });

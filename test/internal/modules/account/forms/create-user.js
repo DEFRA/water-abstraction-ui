@@ -51,45 +51,50 @@ experiment('account/forms/create-user form', () => {
 experiment('account/forms/create-user schema', () => {
   experiment('csrf token', () => {
     test('validates for a uuid', async () => {
-      const result = createUserSchema.csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
-      expect(result.error).to.be.null();
+      const result = createUserSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842' }, { allowUnknown: true });
+      expect(result.error).to.be.undefined();
     });
 
     test('fails for a string that is not a uuid', async () => {
-      const result = createUserSchema.csrf_token.validate('pasta');
+      const result = createUserSchema.validate({ csrf_token: 'pasta' }, { allowUnknown: true });
       expect(result.error).to.exist();
     });
   });
 
   experiment('email', () => {
     test('validates for a defra email', async () => {
-      const result = createUserSchema.email.validate('test@defra.gov.uk');
-      expect(result.error).to.be.null();
+      const result = createUserSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', email: 'test@defra.gov.uk' }, { allowUnknown: true });
+      expect(result.error).to.be.undefined();
     });
 
     test('validates for an environment agency email', async () => {
-      const result = createUserSchema.email.validate('test@environment-agency.gov.uk');
-      expect(result.error).to.be.null();
+      const result = createUserSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', email: 'test@environment-agency.gov.uk' }, { allowUnknown: true });
+      expect(result.error).to.be.undefined();
     });
 
     test('fails for an invalid email', async () => {
-      const result = createUserSchema.email.validate('pasta');
+      const result = createUserSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', email: 'pasta' }, { allowUnknown: true });
       expect(result.error).to.exist();
     });
 
     test('fails for a non gov tld', async () => {
-      const result = createUserSchema.email.validate('test@example.com');
+      const result = createUserSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', email: 'test@example.com' }, { allowUnknown: true });
       expect(result.error).to.exist();
     });
 
     test('lower cases the input email', async () => {
-      const result = createUserSchema.email.validate('SHOUTY@DEFRA.GOV.UK');
-      expect(result.value).to.equal('shouty@defra.gov.uk');
+      const input = { csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', email: 'SHOUTY@DEFRA.GOV.UK' };
+      const expectedOutput = { value: {
+        csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+        email: 'shouty@defra.gov.uk'
+      } };
+      const result = createUserSchema.validate(input, { allowUnknown: true });
+      expect(result).to.equal(expectedOutput);
     });
 
     test('trims the input email', async () => {
-      const result = createUserSchema.email.validate('  test@defra.gov.uk  ');
-      expect(result.value).to.equal('test@defra.gov.uk');
+      const result = createUserSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', email: '  test@defra.gov.uk  ' }, { allowUnknown: true });
+      expect(result.value.email).to.equal('test@defra.gov.uk');
     });
   });
 });

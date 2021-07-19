@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields, setValues } = require('shared/lib/forms');
 const { getEmailRegex } = require('./create-user');
 
@@ -62,7 +62,7 @@ const form = (request, permission, newUser) => {
     choices,
     errors: {
       'any.required': { message: 'Select the permissions for the user' },
-      'any.allowOnly': { message: 'Select the permissions for the user' }
+      'any.only': { message: 'Select the permissions for the user' }
     }
   }));
 
@@ -77,11 +77,11 @@ const form = (request, permission, newUser) => {
   return setValues(f, { permission });
 };
 
-const schema = {
+const schema = Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
-  permission: Joi.string().required().valid(choices.map(choice => choice.value)),
+  permission: Joi.string().required().valid(...choices.map(choice => choice.value)),
   newUserEmail: Joi.string().email().lowercase().trim().regex(getEmailRegex())
-};
+});
 
 exports.setPermissionsForm = form;
 exports.setPermissionsSchema = schema;

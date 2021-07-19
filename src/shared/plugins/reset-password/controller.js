@@ -84,21 +84,19 @@ async function postChangePassword (request, h) {
     if (!user) {
       throw new UserNotFoundError();
     }
-
     // Check for form errors
+
     if (request.formError) {
       const errors = mapJoiPasswordError(request.formError);
       return h.view('nunjucks/reset-password/change-password', {
         ...request.view, errors
       });
     }
-
     // Validation OK - update password in IDM
     const { error } = await h.realm.pluginOptions.updatePasswordWithGuid(request.payload.resetGuid, request.payload.password);
     if (error) {
       throw error;
     }
-
     // Log user in
     return request.logIn(user);
   } catch (error) {

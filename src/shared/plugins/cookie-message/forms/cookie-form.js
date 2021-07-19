@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 
 const choices = [
@@ -52,7 +52,7 @@ const cookieForm = request => {
   return f;
 };
 
-const cookieFormSchema = request => Joi.object({
+const cookieFormSchema = request => Joi.object().keys({
   acceptAnalyticsCookies: Joi.boolean().required(),
   redirectPath: Joi.string().allow(''),
   ...request.auth.credentials && {

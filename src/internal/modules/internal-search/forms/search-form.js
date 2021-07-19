@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields, setValues } = require('shared/lib/forms');
 
 /**
@@ -14,7 +14,7 @@ const form = (query) => {
     widget: 'search',
     hint: 'Enter a licence number, customer name, returns ID, registered email address or monitoring station',
     errors: {
-      'any.empty': {
+      'string.empty': {
         message: 'Enter a licence number, customer name, returns ID, registered email address or monitoring station'
       }
     }
@@ -23,9 +23,9 @@ const form = (query) => {
   return setValues(f, { query });
 };
 
-const schema = {
-  query: Joi.string().trim()
-};
+const schema = () => Joi.object().keys({
+  query: Joi.string().trim().required()
+});
 
 module.exports = {
   searchForm: form,

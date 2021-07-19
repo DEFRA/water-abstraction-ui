@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const { capitalize } = require('lodash');
 const { LOSS_CATEGORIES, CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants');
@@ -47,7 +47,7 @@ const form = request => {
 const schema = (request) => {
   return {
     csrf_token: Joi.string().uuid().required(),
-    loss: Joi.string().valid(LOSS_CATEGORIES).required()
+    loss: Joi.string().valid(...LOSS_CATEGORIES).required()
   };
 };
 

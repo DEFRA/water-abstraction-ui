@@ -18,7 +18,7 @@ experiment('modules/company-selector/controller', () => {
 
   const createRequest = () => ({
     view: {
-      csrfToken: 'token'
+      csrfToken: '2abbe559-7e06-4dcc-8856-451b737ecbf0'
     },
     auth: {
       credentials: {
@@ -30,7 +30,7 @@ experiment('modules/company-selector/controller', () => {
       userId
     },
     payload: {
-      csrf_token: 'token'
+      csrf_token: '2abbe559-7e06-4dcc-8856-451b737ecbf0'
     }
   });
 

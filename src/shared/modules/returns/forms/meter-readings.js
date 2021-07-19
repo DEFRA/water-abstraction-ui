@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { get } = require('lodash');
 const { fields, importData } = require('shared/lib/forms');
 const { getLineName, getLineLabel, getFormLines } = require('./common');
@@ -52,8 +52,7 @@ const getMeterReadingValidator = (type, minValue) => {
   return Joi
     .number()
     .allow(null)
-    .min(minValue)
-    .error(() => ({ type }));
+    .min(minValue);
 };
 
 const getStartReadingValidator = data => getMeterReadingValidator(
@@ -89,7 +88,7 @@ const schema = (request, data, form) => {
   const startValidator = getStartReadingValidator(internalData);
   let lastReading = false;
 
-  return lines.reduce((acc, line, currentIndex) => {
+  const schemaContents = lines.reduce((acc, line, currentIndex) => {
     const name = getLineName(line);
     const validator = (currentIndex === 0 || lastReading === false)
       ? startValidator
@@ -101,6 +100,8 @@ const schema = (request, data, form) => {
     }
     return { ...acc, [name]: validator };
   }, baseSchema);
+
+  return Joi.object(schemaContents);
 };
 
 exports.getStartReadingField = getStartReadingField;

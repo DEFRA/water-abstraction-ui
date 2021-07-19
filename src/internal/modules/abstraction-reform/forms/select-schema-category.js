@@ -1,3 +1,4 @@
+const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms');
 
 const mapChoice = (category) => {
@@ -34,6 +35,12 @@ const selectSchemaCategoryForm = (request, categories) => {
   return f;
 };
 
+const selectSchemaCategoryFormSchema = Joi.object().keys({
+  category: Joi.any().required(),
+  csrf_token: Joi.string().guid().required()
+});
+
 module.exports = {
-  selectSchemaCategoryForm
+  selectSchemaCategoryForm,
+  selectSchemaCategoryFormSchema
 };

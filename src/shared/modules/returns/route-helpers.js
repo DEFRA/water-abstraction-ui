@@ -1,16 +1,16 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const uuid = require('uuid/v4');
 const { VALID_RETURN_ID, OPTIONAL_GUID } = require('shared/lib/validators');
 
-const optionsSchema = {
+const optionsSchema = Joi.object().keys({
   description: Joi.string(),
   pageTitle: Joi.string().required(),
   showMeta: Joi.boolean(),
-  form: Joi.func().required(),
-  schema: Joi.func(),
+  form: Joi.function().required(),
+  schema: Joi.function(),
   submit: Joi.boolean(),
   pre: Joi.array().optional()
-};
+});
 
 const createPluginsOptions = options => ({
   viewContext: {
@@ -38,10 +38,10 @@ const createRoute = (method, path, handler, options) => {
     options: {
       description: options.pageTitle,
       validate: {
-        query: {
+        query: Joi.object().keys({
           returnId: VALID_RETURN_ID,
           error: OPTIONAL_GUID
-        }
+        })
       },
       plugins: createPluginsOptions(options),
       pre: options.pre

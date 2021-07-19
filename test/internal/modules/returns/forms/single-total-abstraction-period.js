@@ -1,6 +1,5 @@
 const { expect } = require('@hapi/code');
 const uuid = require('uuid/v4');
-const Joi = require('@hapi/joi');
 const {
   beforeEach,
   experiment,
@@ -75,9 +74,9 @@ experiment('schema', () => {
     test('the data validates', async () => {
       const schema = singleTotalAbstractionPeriodSchema({}, returnData);
       const data = { totalCustomDates: false, csrf_token: csrf };
-      const { error, value } = Joi.validate(data, schema);
+      const { error, value } = schema.validate(data);
 
-      expect(error).to.be.null();
+      expect(error).to.be.undefined();
       expect(value).to.equal({
         totalCustomDates: false,
         csrf_token: csrf
@@ -87,7 +86,7 @@ experiment('schema', () => {
     test('validation fails for missing csrf token', async () => {
       const schema = singleTotalAbstractionPeriodSchema({}, returnData);
       const data = { totalCustomDates: false };
-      const { error } = Joi.validate(data, schema);
+      const { error } = schema.validate(data);
 
       expect(error).not.to.be.null();
     });
@@ -95,7 +94,7 @@ experiment('schema', () => {
     test('validation fails for missing totalCustomDates value', async () => {
       const schema = singleTotalAbstractionPeriodSchema({}, returnData);
       const data = { csrf_token: csrf };
-      const { error } = Joi.validate(data, schema);
+      const { error } = schema.validate(data);
 
       expect(error).not.to.be.null();
     });
@@ -110,7 +109,7 @@ experiment('schema', () => {
         totalCustomDateEnd: '2018-06-01',
         totalCustomDateStart: '2000-01-01'
       };
-      const { error } = Joi.validate(data, schema);
+      const { error } = schema.validate(data);
       expect(error.details[0].type).to.equal('date.min');
     });
 
@@ -122,7 +121,7 @@ experiment('schema', () => {
         totalCustomDateEnd: '2020-01-01',
         totalCustomDateStart: '2018-06-01'
       };
-      const { error } = Joi.validate(data, schema);
+      const { error } = schema.validate(data);
       expect(error.details[0].type).to.equal('date.max');
     });
 
@@ -134,7 +133,7 @@ experiment('schema', () => {
         totalCustomDateEnd: '2018-06-01',
         totalCustomDateStart: '2019-06-01'
       };
-      const { error } = Joi.validate(data, schema);
+      const { error } = schema.validate(data);
       expect(error.details[0].type).to.equal('date.greater');
     });
   });

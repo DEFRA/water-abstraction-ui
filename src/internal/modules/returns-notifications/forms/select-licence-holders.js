@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { groupBy, sortBy } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms');
 const { crmRoles } = require('shared/lib/constants');
@@ -67,7 +67,7 @@ const selectLicenceHoldersSchema = request => {
     return {
       ...acc,
       [`licence_${documents[0].licence.id}`]: Joi.array().items(
-        Joi.string().guid().valid(documents.map(doc => doc.document.id))
+        Joi.string().guid().valid(...documents.map(doc => doc.document.id))
       )
     };
   }, {

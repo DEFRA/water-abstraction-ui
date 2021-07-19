@@ -75,9 +75,9 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           userId: Joi.number().integer().required()
-        }
+        })
       }
     }
   },
@@ -96,9 +96,9 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           userId: Joi.number().integer().required()
-        }
+        })
       }
     }
   },
@@ -117,9 +117,9 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           userId: Joi.number().integer().required()
-        }
+        })
       }
     }
   },
@@ -138,9 +138,9 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           userId: Joi.number().integer().required()
-        }
+        })
       }
     }
   }

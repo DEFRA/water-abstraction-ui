@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const controller = require('./controllers/edit');
 const reportsController = require('./controllers/reports');
 const statuses = require('./lib/statuses');
@@ -15,10 +15,10 @@ module.exports = {
       auth: { scope: allowedScopes },
       description: 'Entrance search page for abstraction reform',
       validate: {
-        query: {
+        query: Joi.object().keys({
           page: Joi.number().default(1),
           q: Joi.string().allow('')
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -84,7 +84,7 @@ module.exports = {
           payload: {
             csrf_token: Joi.string().guid(),
             notes: Joi.string().allow(''),
-            status: Joi.string().required().valid(Object.values(statuses))
+            status: Joi.string().required().valid(...Object.values(statuses))
           }
         }
       }

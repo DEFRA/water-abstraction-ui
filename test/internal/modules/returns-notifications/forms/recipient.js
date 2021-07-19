@@ -1,7 +1,6 @@
 'use strict';
 
 const { expect } = require('@hapi/code');
-const Joi = require('@hapi/joi');
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const uuid = require('uuid/v4');
 const formContainer = require('internal/modules/returns-notifications/forms/recipient');
@@ -54,18 +53,18 @@ experiment('internal/modules/returns-notifications/forms/recipient', () => {
     });
 
     test('validates when a full name is supplied', async () => {
-      const { error } = Joi.validate({
+      const { error } = schema.validate({
         csrf_token: request.view.csrfToken,
         fullName: 'Test Person'
-      }, schema);
-      expect(error).to.be.null();
+      });
+      expect(error).to.be.undefined();
     });
 
     test('fails validation when the full name is empty', async () => {
-      const { error } = Joi.validate({
+      const { error } = schema.validate({
         csrf_token: request.view.csrfToken,
         fullName: ''
-      }, schema);
+      });
       expect(error).to.not.be.null();
     });
   });

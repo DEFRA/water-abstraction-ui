@@ -22,7 +22,8 @@ const {
 const {
   logReceiptForm,
   logReceiptSchema,
-  internalRoutingForm
+  internalRoutingForm,
+  internalRoutingFormSchema
 } = require('../forms');
 
 /**
@@ -88,7 +89,7 @@ const postInternalRouting = async (request, h) => {
   const waterReturn = await loadWaterReturn(returnId);
   const data = waterReturn.toObject();
 
-  const form = handleRequest(internalRoutingForm(request, data), request);
+  const form = handleRequest(internalRoutingForm(request, data), request, internalRoutingFormSchema);
 
   if (form.isValid) {
     const { action } = getValues(form);

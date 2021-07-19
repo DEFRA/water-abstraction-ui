@@ -28,7 +28,7 @@ const getSearchForm = async (request, h) => {
   const { view } = request;
 
   if ('query' in request.query) {
-    form = forms.handleRequest(form, request, searchFormSchema);
+    form = forms.handleRequest(form, request, searchFormSchema());
     const { query } = forms.getValues(form);
 
     if (form.isValid) {

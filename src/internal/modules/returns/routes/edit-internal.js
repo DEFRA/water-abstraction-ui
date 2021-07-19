@@ -151,6 +151,7 @@ module.exports = [
   createRoute('POST', steps.STEP_CONFIRM, controller.postConfirm, {
     pageTitle: 'Abstraction return - check the information before submitting',
     form: require('../forms/confirm').form,
+    schema: require('../forms/confirm').schema,
     showMeta: true,
     submit: true
   }),

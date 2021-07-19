@@ -1,5 +1,5 @@
 'use strict';
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { get } = require('lodash');
 
 const { formFactory, fields } = require('shared/lib/forms');
@@ -49,8 +49,8 @@ const getCompanyId = company => company.id;
 const schema = request => {
   const { companies } = request.pre;
   const companyIds = companies.map(getCompanyId);
-  return Joi.object({
-    companyId: Joi.string().guid().required().valid(companyIds).allow(NEW_ACCOUNT),
+  return Joi.object().keys({
+    companyId: Joi.string().guid().required().valid(...companyIds).allow(NEW_ACCOUNT),
     csrf_token: Joi.string().guid().required()
   });
 };

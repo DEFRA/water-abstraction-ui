@@ -15,13 +15,13 @@ const verifyNewEmailForm = (request, data = {}) => {
     autoComplete: 'one-time-code',
     controlClass: 'govuk-input--width-4',
     errors: {
-      'any.empty': {
+      'string.empty': {
         message: 'Check your code'
       },
       'any.required': {
         message: 'Check your code'
       },
-      'string.regex.base': {
+      'string.pattern.base': {
         message: 'Check your code'
       }
     }
@@ -50,10 +50,10 @@ const verifyNewEmailApplyErrors = (form) => {
 
 const VERIFICATION_REGEX = /^[0-9]{6}$/;
 
-const verifyNewEmailSchema = {
+const verifyNewEmailSchema = Joi.object({
   csrf_token: Joi.string().guid().required(),
   verificationCode: Joi.string().required().regex(VERIFICATION_REGEX)
-};
+});
 
 exports.verifyNewEmailForm = verifyNewEmailForm;
 exports.verifyNewEmailApplyErrors = verifyNewEmailApplyErrors;

@@ -2,7 +2,6 @@ require('dotenv').config();
 const Lab = require('@hapi/lab');
 const { expect } = require('@hapi/code');
 const { find } = require('lodash');
-const Joi = require('@hapi/joi');
 
 const { setStatusForm, setStatusSchema } = require('internal/modules/abstraction-reform/forms/set-status');
 
@@ -109,11 +108,11 @@ lab.experiment('Test setStatusSchema for AR user', () => {
 
   lab.before(async () => {
     request = getRequest();
-    schema = Joi.describe(setStatusSchema(request));
+    schema = setStatusSchema(request).describe();
   });
 
   lab.test('It should only allow status to be In review/NALD review', async () => {
-    expect(schema.children.status.valids).to.equal([STATUS_IN_REVIEW, STATUS_NALD_UPDATE]);
+    expect(schema.keys.status.allow).to.equal([STATUS_IN_REVIEW, STATUS_NALD_UPDATE]);
   });
 });
 
@@ -123,11 +122,11 @@ lab.experiment('Test setStatusSchema for AR approver', () => {
 
   lab.before(async () => {
     request = getRequest(true);
-    schema = Joi.describe(setStatusSchema(request));
+    schema = setStatusSchema(request).describe();
   });
 
   lab.test('It should only allow the correct statuses', async () => {
-    expect(schema.children.status.valids).to.equal([STATUS_IN_PROGRESS, STATUS_APPROVED, STATUS_NALD_UPDATE, STATUS_LICENCE_REVIEW]);
+    expect(schema.keys.status.allow).to.equal([STATUS_IN_PROGRESS, STATUS_APPROVED, STATUS_NALD_UPDATE, STATUS_LICENCE_REVIEW]);
   });
 });
 

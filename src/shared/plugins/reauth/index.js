@@ -39,7 +39,7 @@ const _handler = async (request, h) => {
 
 const reauthPlugin = {
   register: (server, options) => {
-    Joi.assert(options.reauthenticate, Joi.func());
+    Joi.assert(options.reauthenticate, Joi.function());
 
     server.ext({
       type: 'onPreHandler',

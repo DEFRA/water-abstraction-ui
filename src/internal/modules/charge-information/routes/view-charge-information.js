@@ -2,7 +2,7 @@ const controller = require('../controllers/view-charge-information');
 const preHandlers = require('../pre-handlers');
 const { VALID_GUID } = require('shared/lib/validators');
 const { chargeVersionWorkflowReviewer, viewChargeVersions } = require('internal/lib/constants').scope;
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 const allowedScopes = {
   view: viewChargeVersions,
@@ -25,7 +25,7 @@ module.exports = {
         }
       },
       validate: {
-        params: Joi.object({
+        params: Joi.object().keys({
           licenceId: VALID_GUID,
           chargeVersionId: VALID_GUID
         })
@@ -53,12 +53,12 @@ module.exports = {
         }
       },
       validate: {
-        params: Joi.object({
+        params: Joi.object().keys({
           licenceId: VALID_GUID,
           chargeVersionWorkflowId: VALID_GUID
         }),
         query:
-          Joi.object({
+          Joi.object().keys({
             form: VALID_GUID.optional(),
             returnToCheckData: Joi.boolean().default(false)
           })
@@ -87,7 +87,7 @@ module.exports = {
         }
       },
       validate: {
-        params: Joi.object({
+        params: Joi.object().keys({
           licenceId: VALID_GUID,
           chargeVersionWorkflowId: VALID_GUID
         })

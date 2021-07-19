@@ -1,7 +1,7 @@
 'use strict';
 
 const Boom = require('boom');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 const { partialRight, partial } = require('lodash');
 

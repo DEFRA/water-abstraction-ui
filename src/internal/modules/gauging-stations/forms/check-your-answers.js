@@ -10,7 +10,7 @@ const checkForm = request => {
   return f;
 };
 
-const checkSchema = () => Joi.object({
+const checkSchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required()
 });
 

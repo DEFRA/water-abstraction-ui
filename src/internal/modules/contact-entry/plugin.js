@@ -1,9 +1,9 @@
 'use strict';
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const routes = Object.values(require('./routes'));
 const session = require('./lib/session');
 
-const OPTIONS_SCHEMA = Joi.object({
+const OPTIONS_SCHEMA = Joi.object().keys({
   back: Joi.string().required(),
   caption: Joi.string().optional().default(null),
   key: Joi.string().required(),

@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const controller = require('./controller');
 
 module.exports = {
@@ -10,10 +10,10 @@ module.exports = {
       auth: false,
       description: 'Accept callback from Notify',
       validate: {
-        headers: Joi.object({
+        headers: Joi.object().keys({
           authorization: Joi.string().required().example('Bearer {{JWT_TOKEN}}')
         }).unknown(true),
-        payload: Joi.object({
+        payload: Joi.object().keys({
           id: Joi.string().required().guid(),
           reference: Joi.any(),
           to: Joi.string(),

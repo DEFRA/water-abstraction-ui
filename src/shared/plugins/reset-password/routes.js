@@ -1,6 +1,6 @@
 const controller = require('./controller');
 const { VALID_EMAIL, VALID_FLASH, VALID_GUID, OPTIONAL_GUID, VALID_UTM, VALID_PASSWORD, VALID_CONFIRM_PASSWORD } = require('../../lib/validators');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 module.exports = [
   {
@@ -9,9 +9,9 @@ module.exports = [
     config: {
       auth: false,
       validate: {
-        query: {
+        query: Joi.object().keys({
           flash: VALID_FLASH
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -31,9 +31,9 @@ module.exports = [
     config: {
       auth: false,
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           email: Joi.string().allow('').max(254)
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -93,9 +93,9 @@ module.exports = [
     config: {
       auth: false,
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           email: Joi.string().allow('').max(254)
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -137,10 +137,10 @@ module.exports = [
     config: {
       auth: false,
       validate: {
-        query: {
+        query: Joi.object().keys({
           resetGuid: VALID_GUID,
           ...VALID_UTM
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -157,14 +157,14 @@ module.exports = [
     config: {
       auth: false,
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           resetGuid: OPTIONAL_GUID,
           password: Joi.string().allow('').max(128),
           confirmPassword: Joi.string().allow('').max(128)
-        },
-        query: {
+        }),
+        query: Joi.object().keys({
           resetGuid: OPTIONAL_GUID
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -192,10 +192,10 @@ module.exports = [
     config: {
       auth: false,
       validate: {
-        query: {
+        query: Joi.object().keys({
           resetGuid: VALID_GUID,
           ...VALID_UTM
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -211,11 +211,11 @@ module.exports = [
     path: '/create-password',
     config: { auth: false,
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           resetGuid: VALID_GUID,
           password: Joi.string().allow('').max(128),
           confirmPassword: Joi.string().allow('').max(128)
-        }
+        })
       },
       plugins: {
         viewContext: {

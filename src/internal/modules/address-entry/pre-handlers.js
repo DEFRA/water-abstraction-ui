@@ -1,7 +1,6 @@
 'use strict';
 
 const Boom = require('@hapi/boom');
-const Joi = require('joi');
 const services = require('../../lib/connectors/services');
 const session = require('./lib/session');
 const postcodeValidator = require('./lib/postcode-validator');

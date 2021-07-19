@@ -6,7 +6,6 @@ const {
   beforeEach
 } = exports.lab = require('@hapi/lab').script();
 
-const Joi = require('joi');
 const { expect } = require('@hapi/code');
 const moment = require('moment');
 const uuid = require('uuid/v4');

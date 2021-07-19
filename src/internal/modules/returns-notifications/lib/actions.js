@@ -1,6 +1,5 @@
 'use strict';
 const moment = require('moment');
-const Joi = require('joi');
 const { pick, partialRight, flatMap, omit } = require('lodash');
 const DATE_FORMAT = 'YYYY-MM-DD';
 

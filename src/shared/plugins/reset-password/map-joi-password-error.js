@@ -7,7 +7,15 @@ const formatViewError = require('../../lib/format-view-error');
  */
 function mapJoiPasswordError (error) {
   const viewErrors = formatViewError(error);
-  const hasValidationErrors = (viewErrors.password_required || viewErrors.password_empty || viewErrors.password_undefined || !!viewErrors.password_min || !!viewErrors.password_symbol || !!viewErrors.password_uppercase);
+  const hasValidationErrors = (
+    viewErrors.password_required ||
+    viewErrors.password_empty ||
+    viewErrors.password_undefined ||
+    !!viewErrors.password_min ||
+    !!viewErrors.password_symbol ||
+    !!viewErrors.password_uppercase
+  );
+
   return {
     hasValidationErrors,
     passwordTooShort: viewErrors.password_min,

@@ -4,7 +4,7 @@ const Joi = require('joi');
 
 const returnIDRegex = /^v1:[1-8]:[^:]+:[0-9]+:[0-9]{4}-[0-9]{2}-[0-9]{2}:[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
 
-const joiPasswordValidator = Joi.extend((joi) => {
+const joiPasswordValidator = Joi.extend(joi => {
   return {
     type: 'passwordValidation',
     base: joi.string(),
@@ -21,7 +21,7 @@ const joiPasswordValidator = Joi.extend((joi) => {
       const hasUpperCase = new RegExp(/(?=.*[A-Z])/).test(value);
       // eslint-disable-next-line no-useless-escape
       const hasSymbol = new RegExp(/^.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?].*$/).test(value);
-      let errors = [];
+      const errors = [];
 
       if (!value) {
         return { value, errors: helpers.error('password.required') };

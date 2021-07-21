@@ -69,7 +69,7 @@ experiment('reset password controller', () => {
 
     test('uses the template specified in the config', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('test-template');
+      expect(template).to.equal('nunjucks/form');
     });
 
     test('uses the view data from request.view', async () => {
@@ -87,18 +87,6 @@ experiment('reset password controller', () => {
       const [, view] = h.view.lastCall.args;
       expect(view.form).to.equal({ foo: 'bar' });
     });
-
-    test('when the query param is not set, the link expired flag is not set in the view', async () => {
-      const [, view] = h.view.lastCall.args;
-      expect(view.linkExpired).to.equal(false);
-    });
-
-    test('when the query param is set, the link expired flag is set in the view', async () => {
-      set(request, 'query.flash', 'resetLinkExpired');
-      await controller.getResetPassword(request, h);
-      const [, view] = h.view.lastCall.args;
-      expect(view.linkExpired).to.equal(true);
-    });
   });
 
   experiment('postResetPassword', () => {
@@ -112,7 +100,7 @@ experiment('reset password controller', () => {
 
       test('the form page is re-rendered', async () => {
         const [template] = h.view.lastCall.args;
-        expect(template).to.equal('test-template');
+        expect(template).to.equal('nunjucks/form');
       });
 
       test('the form object has errors', async () => {
@@ -134,8 +122,8 @@ experiment('reset password controller', () => {
         expect(h.realm.pluginOptions.resetPassword.calledWith(request.payload.email)).to.be.true();
       });
 
-      test('the user is redirected to the path specified in the request config', async () => {
-        expect(h.redirect.calledWith(request.config.redirect)).to.be.true();
+      test('the user is redirected to the path specified', async () => {
+        expect(h.redirect.calledWith('/reset_password_check_email')).to.be.true();
       });
     });
 
@@ -155,8 +143,8 @@ experiment('reset password controller', () => {
         expect(error).to.be.an.object();
       });
 
-      test('the user is redirected to the path specified in the request config', async () => {
-        expect(h.redirect.calledWith(request.config.redirect)).to.be.true();
+      test('the user is redirected', async () => {
+        expect(h.redirect.called).to.be.true();
       });
     });
   });
@@ -164,11 +152,6 @@ experiment('reset password controller', () => {
   experiment('getResetSuccess', () => {
     beforeEach(async () => {
       await controller.getResetSuccess(request, h);
-    });
-
-    test('renders the template specified in the request config', async () => {
-      const [ template ] = h.view.lastCall.args;
-      expect(template).to.equal(request.config.view);
     });
 
     test('outputs the request.view object to the view', async () => {
@@ -189,12 +172,14 @@ experiment('reset password controller', () => {
       });
       test('the correct template is displayed', async () => {
         const [ template ] = h.view.lastCall.args;
-        expect(template).to.equal('nunjucks/reset-password/change-password');
+        expect(template).to.equal('nunjucks/form');
       });
 
       test('the request.view object is output to the view', async () => {
         const [ , view ] = h.view.lastCall.args;
-        expect(view).to.equal(request.view);
+        const { action, method } = view.form;
+        expect(action).to.equal('/reset_password_change_password');
+        expect(method).to.equal('POST');
       });
     });
 
@@ -224,25 +209,7 @@ experiment('reset password controller', () => {
       await controller.postChangePassword(request, h);
 
       const [view] = h.view.lastCall.args;
-      expect(view).to.equal('nunjucks/reset-password/change-password');
-    });
-
-    test('redirects to reset expired if password not updated', async () => {
-      h.realm.pluginOptions.updatePasswordWithGuid.resolves({
-        error: 'bad'
-      });
-      await controller.postChangePassword(request, h);
-
-      const [redirectPath] = h.redirect.lastCall.args;
-      expect(redirectPath).to.equal('/reset_password?flash=resetLinkExpired');
-    });
-
-    experiment('on success', () => {
-      test('the user is signed in', async () => {
-        await controller.postChangePassword(request, h);
-        const [user] = request.logIn.lastCall.args;
-        expect(user.user_name).to.equal('test-user-name');
-      });
+      expect(view).to.equal('nunjucks/form');
     });
   });
 });

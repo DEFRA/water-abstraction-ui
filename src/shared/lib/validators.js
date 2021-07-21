@@ -44,20 +44,6 @@ const joiPasswordValidator = Joi.extend(joi => {
       }
     }
   };
-}).extend(joi => {
-  return {
-    type: 'confirmPasswordValidation',
-    base: joi.string(),
-    messages: {
-      'confirmPassword.only': 'must contain an uppercase character'
-    },
-    validate: (value, helpers) => {
-      if (!value) {
-        return { value, errors: helpers.error('confirmPassword.only') };
-      }
-      return value;
-    }
-  };
 });
 
 module.exports = {
@@ -77,7 +63,7 @@ module.exports = {
 
   VALID_PASSWORD: joiPasswordValidator.passwordValidation(),
 
-  VALID_CONFIRM_PASSWORD: joiPasswordValidator.confirmPasswordValidation(),
+  VALID_CONFIRM_PASSWORD: Joi.string().valid(Joi.ref('password')),
 
   VALID_LICENCE_QUERY: Joi.object().keys({
     sort: Joi.string().valid('licenceNumber', 'name', 'expiryDate').default('licenceNumber'),

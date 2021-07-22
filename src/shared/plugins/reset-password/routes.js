@@ -1,5 +1,5 @@
 const controller = require('./controller');
-const { VALID_EMAIL, VALID_FLASH, VALID_GUID, OPTIONAL_GUID, VALID_UTM, VALID_PASSWORD, VALID_CONFIRM_PASSWORD } = require('../../lib/validators');
+const { VALID_FLASH, VALID_GUID, VALID_UTM } = require('../../lib/validators');
 const Joi = require('joi');
 
 module.exports = [

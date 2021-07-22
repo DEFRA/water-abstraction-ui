@@ -10,7 +10,6 @@ const {
 const { expect } = require('@hapi/code');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
-const { set } = require('lodash');
 
 const loginHelpers = require('external/lib/login-helpers');
 const controller = require('shared/plugins/reset-password/controller');

@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms');
-const { VALID_GUID, VALID_PASSWORD, VALID_CONFIRM_PASSWORD } = require('../../../lib/validators');
+const { VALID_GUID, VALID_PASSWORD } = require('../../../lib/validators');
 /**
  * @return {Object} - form object
  */

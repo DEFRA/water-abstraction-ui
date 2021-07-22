@@ -30,6 +30,8 @@ jobs:
       ADMIN_URI: http://127.0.0.1:8005/API/1.0/
       CRM_URI: http://127.0.0.1:8002/crm/1.0
       RETURNS_URI: http://127.0.0.1:8006/returns/1.0
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
 
     services:
       # Label used to access the service container
@@ -49,30 +51,18 @@ jobs:
         # Set health checks to wait until postgres has started. You must have this so the runner knows to wait till
         # postgres is up and running before proceeding
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      redis:
+        # Docker Hub image
+        image: redis
+        ports:
+          # Maps port 6379 on service container to the host
+          - 6379:6379
 
     steps:
       - name: Install Node
         uses: actions/setup-node@v2-beta
         with:
           node-version: '12'
-
-      - name: Install Google Chrome
-        run: |
-          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-          sudo sh -c 'echo "deb https://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-          sudo apt-get update
-          sudo apt-get install google-chrome-stable
-          sudo apt-get install chromium-chromedriver
-          sudo npm i pm2 -g
-
-      - name: Install msedgedriver
-        run: |
-          curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
-          sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
-          sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge-dev.list'
-          sudo rm microsoft.gpg
-          sudo apt update
-          sudo apt install microsoft-edge-dev
 
 
       # Downloads a copy of the code in your repository before running CI tests
@@ -177,11 +167,6 @@ jobs:
             ${{ runner.OS }}-node-
             ${{ runner.OS }}-
 
-      - name: Start Redis
-        uses: supercharge/redis-github-action@1.1.0
-        with:
-          redis-version: 6
-
       - name: Sleep for 15 seconds
         uses: jakejarvis/wait-action@master
         with:
@@ -204,4 +189,4 @@ jobs:
 
       - name: Run regression tests
         run: |
-          npm run test:regression
+          npm run test:cypress-silently

@@ -3,7 +3,7 @@
 const { formFactory, fields } = require('shared/lib/forms');
 const { compact, get } = require('lodash');
 const titleCase = require('title-case');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const queryString = require('querystring');
 const routing = require('../lib/routing');
 const { postcodeSchema } = require('../lib/postcode-validator');
@@ -79,9 +79,9 @@ const getUprn = address => address.uprn;
 const schema = request => {
   const { addressSearchResults } = request.pre;
   const validUprns = addressSearchResults.map(getUprn);
-  return Joi.object({
+  return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
-    uprn: Joi.number().integer().valid(validUprns).required(),
+    uprn: Joi.number().integer().valid(...validUprns).required(),
     postcode: postcodeSchema
   });
 };

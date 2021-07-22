@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { get } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms/');
 const routing = require('../lib/routing');
@@ -33,7 +33,7 @@ const reviewForm = (request, reviewOutcome, reviewComments) => {
           multiline: true,
           required: true,
           errors: {
-            'any.empty': {
+            'string.empty': {
               message: `Enter details into the box about what needs to change.`
             }
           },
@@ -51,7 +51,7 @@ const reviewForm = (request, reviewOutcome, reviewComments) => {
 
 const reviewFormSchema = request => {
   const draftChargeInformationStatus = get(request, 'pre.draftChargeInformation.status', null);
-  return {
+  return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
     approval_notice: Joi.any(),
     reviewOutcome: draftChargeInformationStatus === 'changes_requested' ? Joi.string() : Joi.string().required().allow('approve', 'changes_requested'),
@@ -59,7 +59,7 @@ const reviewFormSchema = request => {
       is: 'changes_requested',
       then: Joi.string().required()
     })
-  };
+  });
 };
 
 exports.reviewForm = reviewForm;

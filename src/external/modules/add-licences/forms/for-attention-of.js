@@ -1,5 +1,5 @@
 const { formFactory, fields } = require('shared/lib/forms');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 /**
  * form for page to enter FAO information
@@ -21,7 +21,7 @@ const faoForm = (request) => {
       'string.max': {
         message: 'Name and/or department must be 32 characters or less'
       },
-      'any.allowOnly': {
+      'any.only': {
         message: 'Address is invalid'
       }
     }
@@ -39,11 +39,11 @@ const faoForm = (request) => {
  * @return {Object} Joi validation schema
  */
 const getSchema = selectedIds => {
-  return {
+  return Joi.object({
     csrf_token: Joi.string().guid().required(),
-    selectedAddressId: Joi.string().guid().required().valid(selectedIds),
+    selectedAddressId: Joi.string().guid().required().valid(...selectedIds),
     fao: Joi.string().max(32).allow('')
-  };
+  });
 };
 
 exports.faoForm = faoForm;

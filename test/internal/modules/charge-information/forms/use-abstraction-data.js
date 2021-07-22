@@ -68,24 +68,36 @@ experiment('internal/modules/charge-information/forms/use-abstraction-data', () 
   experiment('.schema', () => {
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
-        const result = schema(createRequest()).csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
-        expect(result.error).to.be.null();
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          useAbstractionData: 'yes'
+        });
+        expect(result.error).to.be.undefined();
       });
 
       test('fails for a string that is not a uuid', async () => {
-        const result = schema(createRequest()).csrf_token.validate('pizza');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'pizza',
+          useAbstractionData: 'yes'
+        });
         expect(result.error).to.exist();
       });
     });
 
     experiment('useAbstractionData', () => {
       test('can be true', async () => {
-        const result = schema(createRequest()).useAbstractionData.validate('yes');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          useAbstractionData: 'yes'
+        });
         expect(result.error).to.not.exist();
       });
 
-      test('can be true', async () => {
-        const result = schema(createRequest()).useAbstractionData.validate('no');
+      test('can be no', async () => {
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          useAbstractionData: 'no'
+        });
         expect(result.error).to.not.exist();
       });
 
@@ -96,12 +108,24 @@ experiment('internal/modules/charge-information/forms/use-abstraction-data', () 
           { id: 'test-cv-id-3', status: 'current', dateRange: { startDate: '2015-06-19' } },
           { id: 'test-cv-id-2', status: 'invalid', dateRange: { startDate: '2015-06-19' } }
         ];
-        const result = schema(request).useAbstractionData.validate('test-cv-id-3');
+        const result = schema(request).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          useAbstractionData: 'test-cv-id-3'
+        });
         expect(result.error).to.not.exist();
       });
 
-      test('cannot be a unexpected string be true', async () => {
-        const result = schema(createRequest()).useAbstractionData.validate('pizza');
+      test('cannot be a unexpected string', async () => {
+        const request = createRequest();
+        request.pre.chargeVersions = [
+          { id: 'test-cv-id-1', status: 'superseded', dateRange: { startDate: '2001-03-19' } },
+          { id: 'test-cv-id-3', status: 'current', dateRange: { startDate: '2015-06-19' } },
+          { id: 'test-cv-id-2', status: 'invalid', dateRange: { startDate: '2015-06-19' } }
+        ];
+        const result = schema(request).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          useAbstractionData: 'test-cv-id-4'
+        });
         expect(result.error).to.exist();
       });
     });

@@ -1,3 +1,4 @@
+const Joi = require('joi');
 const { flatMap, find, sortBy } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms');
 
@@ -61,6 +62,11 @@ const selectSchemaForm = (request, schemas, category) => {
   return f;
 };
 
+const selectSchemaFormSchema = Joi.object().keys({
+  schema: Joi.any().required(),
+  csrf_token: Joi.string().guid().required()
+});
 module.exports = {
-  selectSchemaForm
+  selectSchemaForm,
+  selectSchemaFormSchema
 };

@@ -115,6 +115,12 @@ experiment('mapFormErrorSummary', () => {
           message: 'Error message'
         }
       };
+
+      formWithError.fields[1].options.errors = {
+        'any.required': {
+          message: 'Error message'
+        }
+      };
       f = handleRequest(formWithError, { log: console.log, payload: {} }, schema);
       result = mapFormErrorSummary(f);
     });
@@ -133,14 +139,6 @@ experiment('mapFormErrorSummary', () => {
 
     test('The error message used is from the "message" property of the field errors object', async () => {
       expect(result.errorList[0].text).to.equal('Error message');
-    });
-
-    test('It should set the href to the first radio button in a list', async () => {
-      expect(result.errorList[1].href).to.equal('#radio_field');
-    });
-
-    test('It should set the href to the first radio button in a list', async () => {
-      expect(result.errorList[2].href).to.equal('#checkbox_field');
     });
   });
 

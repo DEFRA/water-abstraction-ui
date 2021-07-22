@@ -58,24 +58,36 @@ experiment('internal/modules/charge-information/forms/non-chargeable-reason', ()
   experiment('schema', () => {
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
-        const result = schema(createRequest()).csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
-        expect(result.error).to.be.null();
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          reason: 'test-id-1'
+        });
+        expect(result.error).to.be.undefined();
       });
 
       test('fails for a string that is not a uuid', async () => {
-        const result = schema(createRequest()).csrf_token.validate('pizza');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'Pancreas',
+          reason: 'test-id-1'
+        });
         expect(result.error).to.exist();
       });
     });
 
     experiment('reason', () => {
       test('can be an id from the pre handler charge reasons', async () => {
-        const result = schema(createRequest()).reason.validate('test-id-1');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          reason: 'test-id-1'
+        });
         expect(result.error).to.not.exist();
       });
 
-      test('cannot be a unexpected string be true', async () => {
-        const result = schema(createRequest()).reason.validate('pizza');
+      test('cannot be a unexpected string', async () => {
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          reason: 'Liver'
+        });
         expect(result.error).to.exist();
       });
     });

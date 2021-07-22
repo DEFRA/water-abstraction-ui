@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const { getChargeElementData } = require('../../lib/form-helpers');
 const { CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants');
@@ -51,7 +51,7 @@ const form = request => {
   return f;
 };
 
-const schema = () => ({
+const schema = Joi.object({
   csrf_token: Joi.string().uuid().required(),
   isSection127AgreementEnabled: Joi.boolean().required()
 });

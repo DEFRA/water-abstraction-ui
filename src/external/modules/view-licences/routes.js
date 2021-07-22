@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const controller = require('./controller');
 const { VALID_GUID, VALID_LICENCE_QUERY } = require('shared/lib/validators');
 
@@ -16,9 +16,9 @@ const getLicenceRename = {
     },
     description: 'Set user-defined name for licence',
     validate: {
-      params: {
+      params: Joi.object().keys({
         documentId: VALID_GUID
-      }
+      })
     },
     plugins: {
       viewContext: {
@@ -43,13 +43,13 @@ const postLicenceRename = {
       scope: allowedScopes
     },
     validate: {
-      params: {
+      params: Joi.object().keys({
         documentId: VALID_GUID
-      },
-      payload: {
+      }),
+      payload: Joi.object().keys({
         name: Joi.string().allow(''),
         csrf_token: VALID_GUID
-      }
+      })
     },
     plugins: {
       viewContext: {

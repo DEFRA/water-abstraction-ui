@@ -1,5 +1,4 @@
 'useStrict';
-
 const { pick } = require('lodash');
 
 const ACTION_TYPES = {

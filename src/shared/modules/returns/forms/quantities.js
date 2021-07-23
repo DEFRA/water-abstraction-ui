@@ -55,19 +55,20 @@ const getLineValues = (lines) => {
 };
 
 const quantitiesSchema = (request, data) => {
-  const schema = Joi.object().keys({
-    csrf_token: Joi.string().guid().required()
-  });
-
   const lines = getFormLines(data);
 
-  return lines.reduce((acc, line) => {
+  const lineSchema = lines.reduce((acc, line) => {
     const name = getLineName(line);
     return {
       ...acc,
-      [name]: Joi.number().allow(null).min(0)
+      [name]: Joi.number().min(0).allow(null)
     };
-  }, schema);
+  }, {});
+
+  return Joi.object().options({ abortEarly: false }).keys({
+    csrf_token: Joi.string().guid().required(),
+    ...lineSchema
+  });
 };
 
 exports.getLineFields = getLineFields;

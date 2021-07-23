@@ -56,8 +56,8 @@ describe('submit a return metered readings return as an external user', () => {
 
     describe('it clicks on the return id 9999992 to start the returns flow', () => {
       cy.get(':nth-child(1) > [scope="row"] > a').click();
-      cy.get('.govuk-heading-l').should('contain.text', 'Abstraction return');
-      cy.get('.govuk-caption-l').should('contain.text', 'Licence number AT/CURR/MONTHLY/02');
+      cy.get('.govuk-heading-l').should('contain.text', 'the monthly doughnut licence');
+      cy.get('.govuk-caption-l').should('contain.text', 'Abstraction return for licence number AT/CURR/MONTHLY/02');
       cy.get('form').should('be.visible');
       cy.get('form>.govuk-button').click();
     });
@@ -91,7 +91,7 @@ describe('submit a return metered readings return as an external user', () => {
       cy.get('form>.govuk-button').click();
     });
 
-    checkErrorMessage('Has your meter reset or rolled over?');
+    checkErrorMessage('"meterReset" is not allowed');
 
     describe('selects No to meter reset', () => {
       cy.get('input[value="false"]').check();
@@ -216,8 +216,8 @@ describe('submit a return metered readings return as an external user', () => {
 
       describe('it clicks on the return id 9999990', () => {
         cy.get(':nth-child(3) > [scope="row"] > a').click();
-        cy.get('.govuk-heading-l').should('contain.text', 'Abstraction return');
-        cy.get('.govuk-caption-l').should('contain.text', 'Licence number AT/CURR/MONTHLY/02');
+        cy.get('.govuk-heading-l').should('contain.text', 'the monthly doughnut licence');
+        cy.get('.govuk-caption-l').should('contain.text', 'Abstraction return for licence number AT/CURR/MONTHLY/02');
         cy.get('form').should('be.visible');
         cy.get('#isNil-2').check();
         cy.get('form>.govuk-button').click();
@@ -270,8 +270,8 @@ describe('submit a return metered readings return as an external user', () => {
 
     describe('it clicks on the return id 9999991', () => {
       cy.get(':nth-child(2) > [scope="row"] > a').click();
-      cy.get('.govuk-heading-l').should('contain.text', 'Abstraction return');
-      cy.get('.govuk-caption-l').should('contain.text', 'Licence number AT/CURR/MONTHLY/02');
+      cy.get('.govuk-heading-l').should('contain.text', 'the monthly doughnut licence');
+      cy.get('.govuk-caption-l').should('contain.text', 'Abstraction return for licence number AT/CURR/MONTHLY/02');
       cy.get('form').should('be.visible');
       cy.get('form>.govuk-button').click();
     });

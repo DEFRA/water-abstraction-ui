@@ -335,7 +335,7 @@ const getRemoveTagComplete = async (request, h) => {
   const formCheckBox = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceConditions);
   const selectedCondition = formCheckBox.fields.find(field => field.name === 'selectedCondition');
 
-  if (selectedCondition.options.choices.length > 1) {
+  if (selectedCondition && selectedCondition.options.choices.length > 1) {
     session.merge(request, {
       selected: helpers.selectedConditionWithLinkages(request) ? helpers.selectedConditionWithLinkages(request) : []
     });

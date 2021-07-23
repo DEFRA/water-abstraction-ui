@@ -335,11 +335,34 @@ experiment('internal/modules/gauging-stations/controller', () => {
     };
 
     const formContentMultipleSelected = {
-      fields: [ { name: 'selectedLicence',
+      fields: [ { name: 'selectedCondition',
         options: {
-          choices: [],
+          choices: [
+            {
+              licenceGaugingStationId: '9177f85d-916c-4d51-8db7-74246d228b7b',
+              value: '6e21a77b-1525-459d-acb8-3615e5d53f06',
+              label: ' Reduce at 115 Megalitres per day',
+              hint: '2672520010',
+              licenceRef: '2672520010',
+              alertType: 'stop_or_reduce',
+              thresholdValue: '115',
+              thresholdUnit: 'Megalitres per day',
+              licenceId: '6e21a77b-1525-459d-acb8-3615e5d53f06'
+            },
+            {
+              licenceGaugingStationId: '9177f85d-916c-4d51-8db7-74246d228b7b',
+              value: '6e21a77b-1525-459d-acb8-3615e5d53f07',
+              label: ' Stop at 151 Megalitres per day',
+              hint: '2672520010',
+              licenceRef: '2672520010',
+              alertType: 'stop',
+              thresholdValue: '151',
+              thresholdUnit: 'Megalitres per day',
+              licenceId: '6e21a77b-1525-459d-acb8-3615e5d53f06'
+            }
+          ],
           label: '',
-          widget: 'radio',
+          widget: 'checkbox',
           required: true,
           controlClass: 'govuk-input govuk-input--width-10',
           errors: {
@@ -422,7 +445,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
     experiment('selectedLicence containing multiple matching licenceId ', () => {
       beforeEach(() => {
         session.merge.returns({
-          selectedLicence: formContentMultipleSelected.fields[0],
+          selectedCondition: formContentMultipleSelected.fields[0],
           licenceGaugingStations: data.data
         });
         formHandler.handleFormRequest.resolves({
@@ -463,6 +486,13 @@ experiment('internal/modules/gauging-stations/controller', () => {
 
       test('.postRemoveTagComplete', () => {
         controller.postRemoveTagComplete(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+
+      test('.getRemoveTagComplete displaying expected forms', () => {
+        controller.getRemoveTagComplete(request, h);
         const [template] = h.view.lastCall.args;
         expect(template).to.equal('nunjucks/form');
         expect(h.postRedirectGet.called).to.be.true();
@@ -514,6 +544,14 @@ experiment('internal/modules/gauging-stations/controller', () => {
         const [template] = h.view.lastCall.args;
         expect(template).to.equal('nunjucks/form');
         expect(h.postRedirectGet.called).to.be.true();
+      });
+
+      test('.getRemoveTagComplete displaying expected forms', () => {
+        controller.getRemoveTagComplete(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+        expect(h.postRedirectGet.called).to.be.true();
+        expect(h.view.lastCall.args[1].pageTitle).to.equal('Which licence do you want to remove a tag from?');
       });
     });
 

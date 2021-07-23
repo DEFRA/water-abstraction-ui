@@ -1,14 +1,15 @@
-/* CI: Joi.validate is not a function */
 'use strict';
 
 const { expect } = require('@hapi/code');
-const { test, experiment, beforeEach } = exports.lab = require('@hapi/lab').script();
-// const Joi = require('joi');
-
+const { test, experiment, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
+const sinon = require('sinon');
+const sandbox = sinon.createSandbox();
+const session = require('internal/modules/gauging-stations/lib/session');
 const removeTagsLicenceViewForm = require('internal/modules/gauging-stations/forms/remove-tags-licence-view');
+const removeTagsLicenceSelectedForm = require('internal/modules/gauging-stations/forms/remove-tags-licence-selected');
 
 experiment('internal/modules/gauging-stations/forms/remove-tags-licence-view.js', () => {
-  let request, form;
+  let request, form, formBefore;
   const data = {
     data: [
       {
@@ -90,8 +91,13 @@ experiment('internal/modules/gauging-stations/forms/remove-tags-licence-view.js'
 
   experiment('.form', () => {
     beforeEach(async () => {
+      sandbox.stub(session, 'get').resolves({
+        selectedCondition: [],
+        licenceGaugingStations: data.data
+      });
+
       request = {
-        path: 'http://example.com/monitoring-stations/123/untagging-licence/remove-tag',
+        path: 'http://example.com/monitoring-stations/123/untagging-licence/remove-tag-multiple',
         view: {
           csrfToken: 'some-token'
         },
@@ -100,23 +106,20 @@ experiment('internal/modules/gauging-stations/forms/remove-tags-licence-view.js'
         }
       };
     });
+    afterEach(async () => sandbox.restore());
 
-    experiment('LOADS with data', () => {
+    experiment('SELECTED ', () => {
       beforeEach(async () => {
-        form = removeTagsLicenceViewForm.form(request);
+        formBefore = removeTagsLicenceViewForm.form(request);
+        form = removeTagsLicenceSelectedForm.form(request);
       });
 
       test('the form has the correct action attribute', async () => {
-        expect(form.action).to.equal('http://example.com/monitoring-stations/123/untagging-licence/remove-tag');
+        expect(form.action).to.equal('http://example.com/monitoring-stations/123/untagging-licence/remove-tag-multiple');
       });
 
-      // Note: Below require Joi.validate support on ci server
-      // test('the schema validate', async () => {
-      //  const valid = Joi.validate(removeTagsLicenceViewForm.schema);
-      //  expect(valid.error).to.equal(null);
-      // });
-
       test('the form has the POST method', async () => {
+        expect(formBefore.method).to.equal('POST');
         expect(form.method).to.equal('POST');
       });
 

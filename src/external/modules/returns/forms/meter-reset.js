@@ -25,5 +25,6 @@ exports.form = (request, data) => ({
 });
 
 exports.schema = () => Joi.object({
-  csrf_token: Joi.string().guid().required()
+  csrf_token: Joi.string().guid().required(),
+  meterReset: Joi.boolean().required()
 });

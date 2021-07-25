@@ -168,7 +168,7 @@ const toLongForm = (str, context = '') => {
     const words = str.split(' ');
     const firstMatch = 0;
     let dictionarySubset = longFormDictionary.filter(dict => dict.context.toUpperCase() === context.toUpperCase().trim());
-    if (dictionarySubset.length === 0) {
+    if (!dictionarySubset.length) {
       dictionarySubset = longFormDictionary;
     }
     const translated = words.map(word =>
@@ -178,11 +178,6 @@ const toLongForm = (str, context = '') => {
     }
   }
   return str;
-};
-
-const detailedLabel = (labelData, licenceRef, dupeNum) => {
-  const labelItem = labelData.filter(item => item.licenceRef === licenceRef)[dupeNum - 1];
-  return ` ${toLongForm(labelItem.alertType, 'AlertType')} at ${labelItem.thresholdValue} ${toLongForm(labelItem.thresholdUnit, 'Units')}`;
 };
 
 const isSelectedCheckbox = (licenceGaugingStationId, selectionArray) =>
@@ -259,7 +254,6 @@ exports.groupByLicence = groupByLicence;
 exports.handlePost = handlePost;
 exports.handleRemovePost = handleRemovePost;
 exports.toLongForm = toLongForm;
-exports.detailedLabel = detailedLabel;
 exports.selectedConditionWithLinkages = selectedConditionWithLinkages;
 exports.groupLicenceConditions = groupLicenceConditions;
 exports.addCheckboxFields = addCheckboxFields;

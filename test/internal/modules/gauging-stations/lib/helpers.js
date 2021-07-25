@@ -400,6 +400,16 @@ experiment('internal/modules/gauging-stations/controller', () => {
         expect(helpers.toLongForm('stop', 'AlertType')).to.equal('Stop');
       });
 
+      test('.toLongForm working without context', () => {
+        expect(helpers.toLongForm('gal', '')).to.equal('Gallons');
+        expect(helpers.toLongForm('Ml/d', '')).to.equal('Megalitres per day');
+        expect(helpers.toLongForm('m³', '')).to.equal('Cubic metres');
+        expect(helpers.toLongForm('l/d', '')).to.equal('Litres per day');
+        expect(helpers.toLongForm('stop_or_reduce', '')).to.equal('Reduce');
+        expect(helpers.toLongForm('reduce', '')).to.equal('Reduce');
+        expect(helpers.toLongForm('stop', '')).to.equal('Stop');
+      });
+
       test('.addCheckboxFields returns checkbox labels', () => {
         expect(helpers.addCheckboxFields(data.data).length).to.equal(3);
         expect(helpers.addCheckboxFields(data.data)[0].label).to.equal(' Reduce at 100 Megalitres per day');

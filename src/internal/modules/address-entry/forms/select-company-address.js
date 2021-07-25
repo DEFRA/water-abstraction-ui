@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const { uniqBy, get, isEmpty } = require('lodash');
 const addressMapper = require('shared/lib/mappers/address');
@@ -64,9 +64,9 @@ const selectAddressFormSchema = request => {
   const validAddressIds = addresses
     .map(row => row.address.id);
 
-  return Joi.object({
+  return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
-    selectedAddress: Joi.string().uuid().valid(validAddressIds).allow(NEW_ADDRESS).required()
+    selectedAddress: Joi.string().uuid().valid(...validAddressIds).allow(NEW_ADDRESS).required()
   });
 };
 

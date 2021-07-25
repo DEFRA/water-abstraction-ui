@@ -99,24 +99,24 @@ experiment('account/forms/set-permissions schema', () => {
   afterEach(async () => { sandbox.restore(); });
   experiment('csrf token', () => {
     test('validates for a uuid', async () => {
-      const result = setPermissionsSchema.csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
-      expect(result.error).to.be.null();
+      const result = setPermissionsSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', newUserEmail: 'test@defra.gov.uk', permission: 'basic' });
+      expect(result.error).to.be.undefined();
     });
 
     test('fails for a string that is not a uuid', async () => {
-      const result = setPermissionsSchema.csrf_token.validate('pasta');
+      const result = setPermissionsSchema.validate({ csrf_token: 'pasta', newUserEmail: 'test@defra.gov.uk', permission: 'basic' });
       expect(result.error).to.exist();
     });
   });
 
   experiment('email', () => {
     test('validates for an email', async () => {
-      const result = setPermissionsSchema.newUserEmail.validate('test@defra.gov.uk');
-      expect(result.error).to.be.null();
+      const result = setPermissionsSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', newUserEmail: 'test@defra.gov.uk', permission: 'basic' });
+      expect(result.error).to.be.undefined();
     });
 
     test('fails for a string that is not a valid email', async () => {
-      const result = setPermissionsSchema.newUserEmail.validate('pasta');
+      const result = setPermissionsSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', newUserEmail: 'test', permission: 'basic' });
       expect(result.error).to.exist();
     });
   });
@@ -135,16 +135,16 @@ experiment('account/forms/set-permissions schema', () => {
 
     validPermissions.forEach(permission => {
       test(`${permission} is a valid value`, async () => {
-        expect(setPermissionsSchema.permission.validate(permission).error).to.be.null();
+        expect(setPermissionsSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', newUserEmail: 'test@defra.gov.uk', permission: permission }).error).to.be.undefined();
       });
     });
 
     test('does not validate invalid permissions', async () => {
-      expect(setPermissionsSchema.permission.validate('not-valid').error).not.to.be.null();
+      expect(setPermissionsSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', newUserEmail: 'test@defra.gov.uk', permission: 'overlord' })).to.exist();
     });
 
     test('permission is required', async () => {
-      expect(setPermissionsSchema.permission.validate('').error).not.to.be.null();
+      expect(setPermissionsSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', newUserEmail: 'test@defra.gov.uk', permission: null })).to.exist();
     });
   });
 });

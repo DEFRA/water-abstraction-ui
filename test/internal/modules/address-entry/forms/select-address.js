@@ -135,7 +135,7 @@ experiment('internal/modules/address-entry/forms/select-address', () => {
 
     test('validates when the data is valid', async () => {
       const { error } = selectAddress.schema(request).validate(data);
-      expect(error).to.be.null();
+      expect(error).to.be.undefined();
     });
 
     experiment('.csrf_token validation', () => {

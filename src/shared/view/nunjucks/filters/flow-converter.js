@@ -1,13 +1,13 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 module.exports.flowConverter = (value, unit = 'litre', period = 'second') => {
   let val = value;
 
   // Validate
-  Joi.assert({ unit, period }, {
+  Joi.assert({ unit, period }, Joi.object().keys({
     unit: Joi.string().valid('cm', 'litre', 'megalitre'),
     period: Joi.string().valid('second', 'day')
-  });
+  }));
 
   if (unit === 'litre') {
     val = val * 1000;

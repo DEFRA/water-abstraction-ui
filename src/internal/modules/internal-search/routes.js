@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const controller = require('./controller');
 
 module.exports = {
@@ -15,10 +15,10 @@ module.exports = {
         }
       },
       validate: {
-        query: {
+        query: Joi.object().keys({
           query: Joi.string().allow(''),
           page: Joi.number().default(1).min(1)
-        }
+        })
       }
     }
   },
@@ -36,9 +36,9 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           userId: Joi.number().required()
-        }
+        })
       }
     }
   },
@@ -57,9 +57,9 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           userId: Joi.number().required()
-        }
+        })
       }
     }
   },
@@ -78,9 +78,9 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           userId: Joi.number().required()
-        }
+        })
       }
     }
   }

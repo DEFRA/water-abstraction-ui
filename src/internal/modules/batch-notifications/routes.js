@@ -1,6 +1,6 @@
 const controller = require('./controller');
 const constants = require('../../lib/constants');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const returns = constants.scope.returns;
 
 module.exports = {
@@ -18,9 +18,9 @@ module.exports = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           eventId: Joi.string().uuid().required()
-        }
+        })
       }
     },
     handler: controller.getReview
@@ -34,9 +34,9 @@ module.exports = {
         scope: returns
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           eventId: Joi.string().uuid().required()
-        }
+        })
       }
     },
     handler: controller.getRecipientsCSV
@@ -50,12 +50,12 @@ module.exports = {
         scope: returns
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           eventId: Joi.string().uuid().required()
-        },
-        payload: {
+        }),
+        payload: Joi.object().keys({
           csrf_token: Joi.string().uuid().required()
-        }
+        })
       }
     },
     handler: controller.postSendNotification
@@ -69,9 +69,9 @@ module.exports = {
         scope: returns
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           eventId: Joi.string().uuid().required()
-        }
+        })
       },
       plugins: {
         viewContext: {

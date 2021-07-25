@@ -1,7 +1,7 @@
 'use strict';
 
 const { cloneDeep, set } = require('lodash');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const controller = require('./controller');
 const { VALID_GUID, VALID_GAUGING_STATION } = require('shared/lib/validators');
 
@@ -13,9 +13,9 @@ const allRoutes = {
     config: {
       description: 'View a single licence',
       validate: {
-        params: {
+        params: Joi.object().keys({
           documentId: VALID_GUID
-        }
+        })
       },
       plugins: {
         licenceData: {
@@ -39,9 +39,9 @@ const allRoutes = {
     config: {
       description: 'View contact info for licence',
       validate: {
-        params: {
+        params: Joi.object().keys({
           documentId: VALID_GUID
-        }
+        })
       },
       plugins: {
         config: {
@@ -65,9 +65,9 @@ const allRoutes = {
     config: {
       description: 'View abstraction purposes for licence',
       validate: {
-        params: {
+        params: Joi.object().keys({
           documentId: VALID_GUID
-        }
+        })
       },
       plugins: {
         config: {
@@ -91,9 +91,9 @@ const allRoutes = {
     config: {
       description: 'View abstraction points for licence',
       validate: {
-        params: {
+        params: Joi.object().keys({
           documentId: VALID_GUID
-        }
+        })
       },
       plugins: {
         config: {
@@ -117,9 +117,9 @@ const allRoutes = {
     config: {
       description: 'View abstraction conditions info for licence',
       validate: {
-        params: {
+        params: Joi.object().keys({
           documentId: VALID_GUID
-        }
+        })
       },
       plugins: {
         config: {
@@ -143,13 +143,13 @@ const allRoutes = {
     config: {
       description: 'View abstraction conditions info for licence',
       validate: {
-        params: {
+        params: Joi.object().keys({
           documentId: VALID_GUID,
           gaugingStation: VALID_GAUGING_STATION
-        },
-        query: {
+        }),
+        query: Joi.object().keys({
           measure: Joi.string().allow('level', 'flow', 'auto').default('auto')
-        }
+        })
       },
       plugins: {
         config: {
@@ -173,10 +173,10 @@ const allRoutes = {
     config: {
       description: 'Look at the content of a message sent to the user regarding the licence',
       validate: {
-        params: {
+        params: Joi.object().keys({
           communicationId: VALID_GUID,
           documentId: VALID_GUID
-        }
+        })
       },
       plugins: {
         viewContext: {

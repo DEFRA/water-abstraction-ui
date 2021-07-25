@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms');
 
 /**
@@ -6,7 +6,7 @@ const { formFactory, fields } = require('shared/lib/forms');
  * new user's email address.
  *
  * @param {Object} request The Hapi request object
- * @param {String} email The user's email address
+ * @param {String} userEmail The user's email address
  */
 const form = (request, userEmail) => {
   const { csrfToken } = request.view;
@@ -19,6 +19,8 @@ const form = (request, userEmail) => {
       value: 'confirm'
     }],
     errors: {
+      'any.only': { message: 'Tick the box to confirm you want to delete the account' },
+      'array.min': { message: 'Tick the box to confirm you want to delete the account' },
       'array.includesRequiredUnknowns': { message: 'Tick the box to confirm you want to delete the account' }
     }
   }));
@@ -29,10 +31,10 @@ const form = (request, userEmail) => {
   return f;
 };
 
-const schema = {
+const schema = Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
-  confirmDelete: Joi.array().length(1).items(Joi.valid('confirm').required())
-};
+  confirmDelete: Joi.array().required().min(1).items(Joi.string().required().valid('confirm')).required()
+});
 
 exports.deleteUserForm = form;
 exports.deleteUserSchema = schema;

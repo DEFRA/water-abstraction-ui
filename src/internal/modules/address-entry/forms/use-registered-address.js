@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 const { formFactory, fields } = require('shared/lib/forms');
 const { isEqual, pick, isEmpty, get } = require('lodash');
@@ -69,7 +69,7 @@ const form = request => {
   return f;
 };
 
-const schema = () => Joi.object({
+const schema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   useRegisteredAddress: Joi.boolean().required()
 });

@@ -1,6 +1,5 @@
 'use strict';
 const { expect } = require('@hapi/code');
-const Joi = require('@hapi/joi');
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const uuid = require('uuid/v4');
 const formContainer = require('internal/modules/returns-notifications/forms/select-address');
@@ -89,25 +88,25 @@ experiment('internal/modules/returns-notifications/forms/select-address', () => 
     });
 
     test('validates when the selected role is supplied', async () => {
-      const { error } = Joi.validate({
+      const { error } = schema.validate({
         csrf_token: request.view.csrfToken,
         selectedRole: 'licenceHolder'
-      }, schema);
-      expect(error).to.be.null();
+      });
+      expect(error).to.be.undefined();
     });
 
     test('fails validation when the selectedRole is invalid', async () => {
-      const { error } = Joi.validate({
+      const { error } = schema.validate({
         csrf_token: request.view.csrfToken,
         selectedRole: 'not-a-real-role'
-      }, schema);
+      });
       expect(error).to.not.be.null();
     });
 
     test('fails validation when the selectedRole is not supplied', async () => {
-      const { error } = Joi.validate({
+      const { error } = schema.validate({
         csrf_token: request.view.csrfToken
-      }, schema);
+      });
       expect(error).to.not.be.null();
     });
   });

@@ -57,13 +57,15 @@ const _handler = async (request, h) => {
 
 const returnsPlugin = {
   register: (server, options) => {
-    Joi.assert(options, {
-      getDocumentHeader: Joi.func().required(),
+    const pluginOptionsSchema = Joi.object().keys({
+      getDocumentHeader: Joi.function().required(),
       checkAccess: Joi.boolean().required(),
       includeExpired: Joi.boolean().default(false)
     });
 
-    server.ext({
+    Joi.assert(options, pluginOptionsSchema);
+
+    return server.ext({
       type: 'onPreHandler',
       method: _handler
     });

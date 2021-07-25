@@ -1,7 +1,7 @@
 'use strict';
 
 const { get } = require('lodash');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const addressMapper = require('shared/lib/mappers/address');
 const { NEW_BILLING_ACCOUNT } = require('../lib/constants');
@@ -58,10 +58,10 @@ const selectBillingAccountSchema = request => {
   const { billingAccounts } = request.pre;
   const validIds = billingAccounts.map(account => account.id);
 
-  return {
+  return Joi.object({
     csrf_token: Joi.string().uuid().required(),
-    billingAccountId: Joi.string().required().valid(validIds).allow(NEW_BILLING_ACCOUNT)
-  };
+    billingAccountId: Joi.string().required().valid(...validIds).allow(NEW_BILLING_ACCOUNT)
+  });
 };
 
 exports.form = selectBillingAccountForm;

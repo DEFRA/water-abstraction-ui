@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const controller = require('./controller');
 const constants = require('../../lib/constants');
 const returns = constants.scope.returns;
@@ -36,7 +36,7 @@ module.exports = {
         }
       },
       validate: {
-        params: Joi.object({
+        params: Joi.object().keys({
           returnCycleId: Joi.string().guid().required()
         })
       }
@@ -56,7 +56,7 @@ module.exports = {
         }
       },
       validate: {
-        params: Joi.object({
+        params: Joi.object().keys({
           returnCycleId: Joi.string().guid().required()
         })
       }

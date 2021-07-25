@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields, setValues } = require('shared/lib/forms');
 
 const getTextField = (name, label) =>
@@ -6,7 +6,7 @@ const getTextField = (name, label) =>
     label,
     controlClass: 'govuk-!-width-one-half',
     errors: {
-      'any.empty': {
+      'string.empty': {
         message: `Enter a ${label.toLowerCase()}`
       }
     }
@@ -29,11 +29,11 @@ const form = (request, data) => {
   return setValues(f, data);
 };
 
-const schema = {
+const schema = Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   name: Joi.string().required(),
   jobTitle: Joi.string().required()
-};
+});
 
 exports.form = form;
 exports.schema = schema;

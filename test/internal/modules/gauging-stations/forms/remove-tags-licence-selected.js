@@ -108,7 +108,7 @@ experiment('internal/modules/gauging-stations/forms/remove-tags-licence-view.js'
     });
     afterEach(async () => sandbox.restore());
 
-    experiment('SELECTED ', () => {
+    experiment('request loaded ', () => {
       beforeEach(async () => {
         formBefore = removeTagsLicenceViewForm.form(request);
         form = removeTagsLicenceSelectedForm.form(request);

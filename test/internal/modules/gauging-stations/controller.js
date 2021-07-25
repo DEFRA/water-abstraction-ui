@@ -1,3 +1,4 @@
+const { cloneDeep } = require('lodash');
 const {
   experiment,
   test,
@@ -380,7 +381,41 @@ experiment('internal/modules/gauging-stations/controller', () => {
         value: '22c784b7-b141-4fd0-8ee1-78ea7ae783bc'
       } ]
     };
-
+    const formContentMultipleSelectedNothing = {
+      fields: [ { name: 'selectedLicence',
+        options: {
+          choices: [
+            {
+              licenceGaugingStationId: '9177f85d-916c-4d51-8db7-74246d228b7b',
+              value: '6e21a77b-1525-459d-acb8-3615e5d53f06',
+              label: ' Reduce at 115 Megalitres per day',
+              hint: '2672520010',
+              licenceRef: '2672520010',
+              alertType: 'stop_or_reduce',
+              thresholdValue: '115',
+              thresholdUnit: 'Megalitres per day',
+              licenceId: '6e21a77b-1525-459d-acb8-3615e5d53f06'
+            }
+          ],
+          label: '',
+          widget: 'checkbox',
+          required: true,
+          controlClass: 'govuk-input govuk-input--width-10',
+          errors: {
+            any: {
+              required: {
+                message: 'Select a licence number'
+              },
+              empty: {
+                message: 'Select a licence number'
+              }
+            }
+          }
+        },
+        errors: [],
+        value: '0'
+      } ]
+    };
     const formContentSingleSelected = {
       fields: [ { name: 'selectedLicence',
         options: {
@@ -464,6 +499,11 @@ experiment('internal/modules/gauging-stations/controller', () => {
       });
 
       test('.postRemoveTagOrMultiple displaying expected forms', () => {
+        formContentMultipleSelected.value = 0;
+        formHandler.handleFormRequest.resolves({
+          ...formContentMultipleSelectedNothing,
+          isValid: true
+        });
         controller.postRemoveTagOrMultiple(request, h);
         const [template] = h.view.lastCall.args;
         expect(template).to.equal('nunjucks/form');
@@ -471,6 +511,17 @@ experiment('internal/modules/gauging-stations/controller', () => {
       });
 
       test('.postRemoveTagsLicenceSelected', () => {
+        controller.postRemoveTagsLicenceSelected(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+
+      test('.postRemoveTagsLicenceSelected invalid form', () => {
+        formHandler.handleFormRequest.resolves({
+          ...formContentMultipleSelected,
+          isValid: false
+        });
         controller.postRemoveTagsLicenceSelected(request, h);
         const [template] = h.view.lastCall.args;
         expect(template).to.equal('nunjucks/form');
@@ -492,6 +543,17 @@ experiment('internal/modules/gauging-stations/controller', () => {
       });
 
       test('.getRemoveTagComplete displaying expected forms', () => {
+        controller.getRemoveTagComplete(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+
+      test('.getRemoveTagComplete with no selectedCondition.options', () => {
+        formHandler.handleFormRequest.resolves({
+          ...formContentMultipleSelectedNothing,
+          isValid: true
+        });
         controller.getRemoveTagComplete(request, h);
         const [template] = h.view.lastCall.args;
         expect(template).to.equal('nunjucks/form');
@@ -527,6 +589,15 @@ experiment('internal/modules/gauging-stations/controller', () => {
 
       test('.postRemoveTagOrMultiple displaying expected forms', () => {
         controller.postRemoveTagOrMultiple(request, h);
+        const [template] = h.view.lastCall.args;
+        expect(template).to.equal('nunjucks/form');
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+
+      test('.postRemoveTagOrMultiple without data', () => {
+        let newRequest = cloneDeep(request);
+        newRequest.pre.licenceGaugingStations = undefined;
+        controller.postRemoveTagOrMultiple(newRequest, h);
         const [template] = h.view.lastCall.args;
         expect(template).to.equal('nunjucks/form');
         expect(h.postRedirectGet.called).to.be.true();

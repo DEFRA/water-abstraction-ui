@@ -1,9 +1,7 @@
-/* CI: Joi.validate is not a function */
 'use strict';
 
 const { expect } = require('@hapi/code');
 const { test, experiment, beforeEach } = exports.lab = require('@hapi/lab').script();
-// const Joi = require('joi');
 
 const removeTagsLicenceViewForm = require('internal/modules/gauging-stations/forms/remove-tags-licence-view');
 
@@ -101,7 +99,7 @@ experiment('internal/modules/gauging-stations/forms/remove-tags-licence-view.js'
       };
     });
 
-    experiment('LOADS with data', () => {
+    experiment('load request', () => {
       beforeEach(async () => {
         form = removeTagsLicenceViewForm.form(request);
       });
@@ -110,11 +108,10 @@ experiment('internal/modules/gauging-stations/forms/remove-tags-licence-view.js'
         expect(form.action).to.equal('http://example.com/monitoring-stations/123/untagging-licence/remove-tag');
       });
 
-      // Note: Below require Joi.validate support on ci server
-      // test('the schema validate', async () => {
-      //  const valid = Joi.validate(removeTagsLicenceViewForm.schema);
-      //  expect(valid.error).to.equal(null);
-      // });
+      test('the schema validate', async () => {
+        const validation = removeTagsLicenceViewForm.schema.validate(request.body);
+        expect(validation.error).to.equal(null);
+      });
 
       test('the form has the POST method', async () => {
         expect(form.method).to.equal('POST');

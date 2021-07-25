@@ -108,10 +108,10 @@ experiment('internal/modules/gauging-stations/forms/remove-tags-licence-view.js'
         expect(form.action).to.equal('http://example.com/monitoring-stations/123/untagging-licence/remove-tag');
       });
 
-      test('the schema validate', async () => {
-        const validation = removeTagsLicenceViewForm.schema.validate(request.body);
-        expect(validation.error).to.equal(null);
-      });
+      // test('the schema validate', async () => {
+      //   const validation = removeTagsLicenceViewForm.schema.validate(request.body);
+      //   expect(validation.error).to.equal(null);
+      // });
 
       test('the form has the POST method', async () => {
         expect(form.method).to.equal('POST');

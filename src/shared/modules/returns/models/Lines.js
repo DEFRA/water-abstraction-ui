@@ -68,11 +68,11 @@ class Lines {
    * @param {Number|null} lines[].quantity - abstracted volume or null
    */
   setLines (abstractionPeriod, lines) {
-    const schema = Joi.array().items({
+    const schema = Joi.array().items(Joi.object({
       startDate: Joi.string().isoDate(),
       endDate: Joi.string().isoDate(),
       quantity: Joi.number().min(0).allow(null)
-    });
+    }));
     Joi.assert(lines, schema);
     Joi.assert(abstractionPeriod, VALID_ABSTRACTION_PERIOD);
 

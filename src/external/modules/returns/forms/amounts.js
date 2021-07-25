@@ -15,6 +15,6 @@ exports.form = (request, data) => setValues({
 }, { isNil: data.isNil });
 
 exports.schema = () => Joi.object().keys({
-  csrf_token: Joi.guid().required(),
+  csrf_token: Joi.string().uuid().required(),
   isNil: Joi.boolean().required()
 });

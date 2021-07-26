@@ -294,6 +294,7 @@ experiment('.postSecurityCode', () => {
 
   beforeEach(aysnc => {
     sandbox.stub(crmConnector, 'verify').resolves();
+    sandbox.stub(crmConnector, 'getOutstandingLicenceRequests').resolves();
   });
   afterEach(async () => {
     sandbox.restore();

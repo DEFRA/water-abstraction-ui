@@ -38,7 +38,7 @@ const joiPasswordValidator = Joi.extend(joi => {
       }
 
       if (errors.length === 0) {
-        return value;
+        return { value };
       } else {
         return { value, errors };
       }

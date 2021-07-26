@@ -93,7 +93,7 @@ async function postAddAccess (request, h) {
   };
 
   // Validate input data with Joi
-  const schema = Joi.object({
+  const schema = Joi.object().keys({
     email: Joi.string().trim().required().email().lowercase().trim(),
     returns: Joi.boolean(),
     csrf_token: Joi.string().guid().required()
@@ -107,7 +107,7 @@ async function postAddAccess (request, h) {
   // 5. Add colleague role
 
   try {
-    const { error: validationError, value } = Joi.object().keys(schema).validate(request.payload);
+    const { error: validationError, value } = schema.validate(request.payload);
 
     // Gracefully handle any errors.
     if (validationError) {

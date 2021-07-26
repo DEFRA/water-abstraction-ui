@@ -8,6 +8,7 @@ const crmConnector = require('external/lib/connectors/crm');
 const services = require('external/lib/connectors/services');
 const controller = require('external/modules/add-licences/controller');
 const forms = require('shared/lib/forms');
+const uuid = require('uuid');
 
 experiment('postAddressSelect', () => {
   let request;
@@ -273,6 +274,41 @@ experiment('ensureSessionDataPreHandler', () => {
       const [redirect] = h.redirect.lastCall.args;
       expect(redirect).to.equal('/add-licences');
       expect(takeoverSpy.called).to.be.true();
+    });
+  });
+});
+
+experiment('.postSecurityCode', () => {
+  const request = {
+    view: {},
+    defra: {},
+    payload: {
+      verification_code: '12345',
+      csrf_token: uuid()
+    }
+  };
+  const reply = {
+    redirect: sandbox.stub(),
+    view: sandbox.stub()
+  };
+
+  beforeEach(aysnc => {
+    sandbox.stub(crmConnector, 'verify').resolves();
+  });
+  afterEach(async () => {
+    sandbox.restore();
+  });
+  experiment('for a valid payload', () => {
+    test('the user is redirected to /licences', async () => {
+      await controller.postSecurityCode(request, reply);
+      expect(reply.redirect.lastCall.args[0]).to.equal('/licences');
+    });
+  });
+  experiment('for an invalid payload', () => {
+    test('user is redirected to /add-licences/security-code', async () => {
+      request.payload.verification_code = '';
+      await controller.postSecurityCode(request, reply);
+      expect(reply.view.lastCall.args[0]).to.equal('nunjucks/add-licences/security-code');
     });
   });
 });

@@ -1,6 +1,7 @@
 'use strict';
 
 const identifyWhichFlowThisIs = path => {
+  /* extract sessionkey from path, e.g. untagging-licence */
   const regex = /((www\.)?([^/\n\r]+))\/?([^?\n\r]+)?\??([^#\n\r]*)?#?([^\n\r]*)/g;
   return path.match(regex)[0].split('/')[2];
 };

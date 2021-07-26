@@ -253,6 +253,8 @@ const getRemoveTags = async (request, h) => {
 
   /* Used in second step for Multiple tags */
   session.merge(request, {
+    selectedLicence: [],
+    selectedCondition: [], /* clear selection */
     licenceGaugingStations: data
   });
 
@@ -280,7 +282,7 @@ const postRemoveTagOrMultiple = async (request, h) => {
   });
 
   if (sessionData.licenceGaugingStations === undefined) {
-    return h.redirect(request.path.replace(/\/untagging-licence\/[^/]*$/, '/'));
+    return helpers.redirectTo(request, h, '/../');
   }
 
   if (selectedLicenceRadio) {
@@ -288,10 +290,10 @@ const postRemoveTagOrMultiple = async (request, h) => {
   }
 
   if (tagsForLicence.length > 1) {
-    return h.redirect(request.path.replace(/\/[^/]*$/, '/remove-tag-multiple'));
+    return helpers.redirectTo(request, h, '/remove-tag-multiple');
   }
 
-  return h.redirect(request.path.replace(/\/[^/]*$/, '/remove-tag-complete'));
+  return helpers.redirectTo(request, h, '/remove-tag-complete');
 };
 
 const getRemoveTagsConditions = async (request, h) => {
@@ -320,32 +322,42 @@ const postRemoveTagsLicenceSelected = async (request, h) => {
 
   const formCheckBox = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceConditions);
   const selectedCondition = formCheckBox.fields.find(field => field.name === 'selectedCondition');
-
   session.merge(request, {
     selectedCondition: selectedCondition
   });
 
-  return h.redirect(request.path.replace(/\/[^/]*$/, '/remove-tag-complete'));
+  return helpers.redirectTo(request, h, '/remove-tag-complete');
 };
 
 const getRemoveTagComplete = async (request, h) => {
   const pageTitle = 'You are about to remove tags from this licence';
   const caption = await helpers.getCaption(request);
 
-  const formCheckBox = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceConditions);
-  const selectedCondition = formCheckBox.fields.find(field => field.name === 'selectedCondition');
-
-  if (selectedCondition && selectedCondition.options.choices.length > 1) {
+  session.merge(request, {
+    completed: true
+  });
+  const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceSelected);
+  const selectedLicenceRadio = form.fields.find(field => field.name === 'selectedLicence');
+  let selectedMultiple = false;
+  if (selectedLicenceRadio && selectedLicenceRadio.options) {
+    selectedMultiple = selectedLicenceRadio.options.choices.find(field => field.label === ' Multiple tags');
+  }
+  if (selectedMultiple) {
     session.merge(request, {
       selected: helpers.selectedConditionWithLinkages(request) ? helpers.selectedConditionWithLinkages(request) : []
     });
   } else {
-    const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceSelected);
-    const selectedLicenceRadio = form.fields.find(field => field.name === 'selectedLicence');
-    const oneAndOnlyRadioSelection = 0;
-    selectedLicenceRadio.options.choices[oneAndOnlyRadioSelection].linkages = [];
+    let selectedSingle = false;
+    if (selectedLicenceRadio && selectedLicenceRadio.options) {
+      selectedSingle = selectedLicenceRadio.options.choices.find(field => field.label !== ' Multiple tags');
+    }
+    /* Handle case when selected item already deleted */
+    if (!selectedSingle) {
+      return helpers.redirectTo(request, h, '/../');
+    }
+    selectedSingle.linkages = [];
     session.merge(request, {
-      selected: selectedLicenceRadio.options.choices ? selectedLicenceRadio.options.choices : []
+      selected: [selectedSingle]
     });
   }
 
@@ -360,7 +372,7 @@ const getRemoveTagComplete = async (request, h) => {
 
 const postRemoveTagComplete = async (request, h) => {
   await helpers.handleRemovePost(request);
-  return h.redirect(request.path.replace(/\/untagging-licence\/[^/]*$/, '/'));
+  return helpers.redirectTo(request, h, '/../');
 };
 
 exports.getNewFlow = getNewFlow;

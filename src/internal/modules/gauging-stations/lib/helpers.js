@@ -139,18 +139,20 @@ const handlePost = async request => {
 
 const handleRemovePost = async request => {
   const sessionData = session.get(request);
-  let promises = [];
-  if (sessionData.selectedCondition) {
-    if (sessionData.selectedCondition.value) {
-      sessionData.selectedLicence = null;
-      const selectArr = sessionData.selectedCondition.value;
-      promises = selectArr.map(licenceGaugingStationId => services.water.gaugingStations.postLicenceLinkageRemove(licenceGaugingStationId));
+  let removeList = [];
+  if (!sessionData.selected) {
+    return removeList;
+  };
+  sessionData.selected.forEach(item => {
+    if (item.linkages && item.linkages.length) {
+      item.linkages.forEach(linkItem => removeList.push(linkItem.licenceGaugingStationId));
+    } else {
+      removeList.push(item.licenceGaugingStationId);
     }
-  } else if (sessionData.selectedLicence && sessionData.selectedLicence.value) {
-    const arrayOfLicenceGaugingStationsRecords = sessionData.selectedLicence.options.choices;
-    promises = arrayOfLicenceGaugingStationsRecords.map(row => services.water.gaugingStations.postLicenceLinkageRemove(row.licenceGaugingStationId));
+  });
+  if (removeList.length) {
+    return Promise.all(removeList.map(licenceGaugingStationId => services.water.gaugingStations.postLicenceLinkageRemove(licenceGaugingStationId)));
   }
-  return Promise.all(promises);
 };
 
 const longFormDictionary = [
@@ -180,8 +182,10 @@ const toLongForm = (str, context = '') => {
   return str;
 };
 
-const isSelectedCheckbox = (licenceGaugingStationId, selectionArray) =>
-  selectionArray.filter(chkItem => chkItem === licenceGaugingStationId).length > 0;
+const isSelectedCheckbox = (licenceGaugingStationId, selectionArray) => {
+  if (!selectionArray) return false;
+  return selectionArray.filter(chkItem => chkItem === licenceGaugingStationId).length > 0;
+};
 
 const selectedConditionWithLinkages = request => {
   const { licenceGaugingStations } = request.pre;
@@ -213,19 +217,18 @@ const selectedConditionWithLinkages = request => {
 };
 
 const addCheckboxFields = dataWithoutDistinct => {
-  return dataWithoutDistinct.map(itemWithoutDistinct => {
-    return {
-      licenceGaugingStationId: itemWithoutDistinct.licenceGaugingStationId,
-      licenceId: itemWithoutDistinct.licenceId,
-      licenceRef: itemWithoutDistinct.licenceRef,
-      value: itemWithoutDistinct.licenceGaugingStationId,
-      label: ` ${toLongForm(itemWithoutDistinct.alertType, 'AlertType')} at ${itemWithoutDistinct.thresholdValue} ${toLongForm(itemWithoutDistinct.thresholdUnit, 'Units')}`,
-      hint: itemWithoutDistinct.licenceRef,
-      alertType: itemWithoutDistinct.alertType,
-      thresholdValue: itemWithoutDistinct.thresholdValue,
-      thresholdUnit: toLongForm(itemWithoutDistinct.thresholdUnit, 'Units')
-    };
-  });
+  return dataWithoutDistinct.map(itemWithoutDistinct => ({
+    value: itemWithoutDistinct.licenceGaugingStationId,
+    licenceGaugingStationId: itemWithoutDistinct.licenceGaugingStationId,
+    licenceId: itemWithoutDistinct.licenceId,
+    licenceRef: itemWithoutDistinct.licenceRef,
+    label: ` ${toLongForm(itemWithoutDistinct.alertType, 'AlertType')} at ${itemWithoutDistinct.thresholdValue} ${toLongForm(itemWithoutDistinct.thresholdUnit, 'Units')}`,
+    hint: itemWithoutDistinct.licenceRef,
+    alertType: itemWithoutDistinct.alertType,
+    thresholdValue: itemWithoutDistinct.thresholdValue,
+    thresholdUnit: toLongForm(itemWithoutDistinct.thresholdUnit, 'Units')
+  })
+  );
 };
 
 const groupLicenceConditions = request => {

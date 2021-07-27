@@ -109,8 +109,11 @@ experiment('internal/modules/gauging-stations/forms/remove-tags-licence-view.js'
       });
 
       test('the schema validate', async () => {
-        const validation = removeTagsLicenceViewForm.schema.validate(request.body);
-        expect(validation.error).to.equal(null);
+        const { error } = removeTagsLicenceViewForm.schema.validate([{
+          selectedLicence: '6e21a77b-1525-459d-acb8-3615e5d53f06',
+          csrf_token: '6e21a77b-1525-459d-acb8-3615e5d53f06'
+        }]);
+        expect(error).to.equal(undefined);
       });
 
       test('the form has the POST method', async () => {

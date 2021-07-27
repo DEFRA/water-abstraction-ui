@@ -270,6 +270,7 @@ const getRemoveTags = async (request, h) => {
 const postRemoveTagOrMultiple = async (request, h) => {
   const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceSelected);
 
+  // Must select one radio
   if (!form.isValid) {
     return h.postRedirectGet(form);
   }

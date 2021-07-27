@@ -6,12 +6,11 @@ const removeTagsLicenceForm = request => {
   const f = formFactory(request.path);
 
   const multipleLabel = (dataPayload, licenceRef = null) => {
-    const item = dataPayload.filter(itemLabel => itemLabel.licenceRef === licenceRef);
+    const item = dataPayload.find(itemLabel => itemLabel.licenceRef === licenceRef);
     if (!item) {
       return '';
     }
-    const licence = item[0];
-    return licence.linkages.length > 1 ? ' Multiple tags' : ` ${toLongForm(licence.alertType, 'AlertType')} at ${licence.thresholdValue} ${toLongForm(licence.thresholdUnit, 'Units')}`;
+    return item.linkages.length > 1 ? ' Multiple tags' : ` ${toLongForm(item.alertType, 'AlertType')} at ${item.thresholdValue} ${toLongForm(item.thresholdUnit, 'Units')}`;
   };
 
   const dataLicenceConditions = groupLicenceConditions(request);

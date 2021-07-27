@@ -139,10 +139,10 @@ const handlePost = async request => {
 
 const handleRemovePost = async request => {
   const sessionData = session.get(request);
-  let removeList = [];
+  const removeList = [];
   if (!sessionData.selected) {
-    return removeList;
-  };
+    return Promise.all([]);
+  }
   sessionData.selected.forEach(item => {
     if (item.linkages && item.linkages.length) {
       item.linkages.forEach(linkItem => removeList.push(linkItem.licenceGaugingStationId));
@@ -153,6 +153,7 @@ const handleRemovePost = async request => {
   if (removeList.length) {
     return Promise.all(removeList.map(licenceGaugingStationId => services.water.gaugingStations.postLicenceLinkageRemove(licenceGaugingStationId)));
   }
+  return Promise.all([]);
 };
 
 const longFormDictionary = [
@@ -183,7 +184,9 @@ const toLongForm = (str, context = '') => {
 };
 
 const isSelectedCheckbox = (licenceGaugingStationId, selectionArray) => {
-  if (!selectionArray) return false;
+  if (!selectionArray) {
+    return false;
+  }
   return selectionArray.filter(chkItem => chkItem === licenceGaugingStationId).length > 0;
 };
 

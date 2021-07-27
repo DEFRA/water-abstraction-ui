@@ -17,19 +17,18 @@ const removeTagsLicenceSelectedForm = request => {
   };
 
   const dataLicenceConditions = groupLicenceConditions(request);
-  const dataUniqueLicences = dataLicenceConditions.map(item => {
-    return {
-      licenceGaugingStationId: item.licenceGaugingStationId,
-      value: item.licenceId,
-      label: multipleLabel(dataLicenceConditions, item.licenceRef),
-      hint: item.licenceRef,
-      licenceRef: item.licenceRef,
-      alertType: item.alertType,
-      thresholdValue: item.thresholdValue,
-      thresholdUnit: toLongForm(item.thresholdUnit, 'Units'),
-      licenceId: item.licenceId
-    };
-  });
+  const dataUniqueLicences = dataLicenceConditions.map(item => ({
+    licenceGaugingStationId: item.licenceGaugingStationId,
+    value: item.licenceId,
+    label: multipleLabel(dataLicenceConditions, item.licenceRef),
+    hint: item.licenceRef,
+    licenceRef: item.licenceRef,
+    alertType: item.alertType,
+    thresholdValue: item.thresholdValue,
+    thresholdUnit: toLongForm(item.thresholdUnit, 'Units'),
+    licenceId: item.licenceId
+  })
+  );
 
   const radioChoices = mySession.selectedLicence ? dataUniqueLicences.filter(item => item.value === mySession.selectedLicence.value) : [];
 
@@ -56,9 +55,7 @@ const removeTagsLicenceSelectedSchema = Joi.object().keys({
   csrf_token: Joi.string().guid()
 });
 
-const removeTagsLicenceSelectedCustomValidation = (request) => {
-  return true;
-};
+const removeTagsLicenceSelectedCustomValidation = () => true;
 
 exports.form = removeTagsLicenceSelectedForm;
 exports.schema = removeTagsLicenceSelectedSchema;

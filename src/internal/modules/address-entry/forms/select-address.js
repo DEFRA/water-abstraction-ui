@@ -54,7 +54,7 @@ const form = request => {
   f.fields.push(fields.dropdown('uprn', {
     mapper: 'numberMapper',
     errors: {
-      'number.base': {
+      'any.only': {
         message: 'Select an address from the list'
       }
     },

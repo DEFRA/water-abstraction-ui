@@ -47,7 +47,7 @@ describe('creating an internal user:', () => {
     });
 
     describe('select a permission level and click on continue', () => {
-      cy.get('#permission').check();
+      cy.get('[type="radio"]').check('basic');
       cy.get('form > .govuk-button').click();
       cy.get('h1.govuk-heading-l').should('contain.text', 'New account created');
     });

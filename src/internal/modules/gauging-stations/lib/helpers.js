@@ -199,16 +199,15 @@ const selectedConditionWithLinkages = request => {
   }
   checkBoxSelection = session.get(request).selectedCondition.value;
 
-  const dataFormatted = data.map(item => {
-    return {
-      licenceGaugingStationId: item.licenceGaugingStationId,
-      licenceId: item.licenceId,
-      licenceRef: item.licenceRef,
-      alertType: item.alertType,
-      thresholdValue: item.thresholdValue,
-      thresholdUnit: toLongForm(item.thresholdUnit, 'Units')
-    };
-  });
+  const dataFormatted = data.map(item => ({
+    licenceGaugingStationId: item.licenceGaugingStationId,
+    licenceId: item.licenceId,
+    licenceRef: item.licenceRef,
+    alertType: item.alertType,
+    thresholdValue: item.thresholdValue,
+    thresholdUnit: toLongForm(item.thresholdUnit, 'Units')
+  })
+  );
 
   const output = chain(dataFormatted).groupBy('licenceId').map(value => ({
     licenceRef: value[0].licenceRef,
@@ -219,8 +218,8 @@ const selectedConditionWithLinkages = request => {
   return output.filter(chkItem => chkItem.linkages.length > 0);
 };
 
-const addCheckboxFields = dataWithoutDistinct => {
-  return dataWithoutDistinct.map(itemWithoutDistinct => ({
+const addCheckboxFields = dataWithoutDistinct =>
+  dataWithoutDistinct.map(itemWithoutDistinct => ({
     value: itemWithoutDistinct.licenceGaugingStationId,
     licenceGaugingStationId: itemWithoutDistinct.licenceGaugingStationId,
     licenceId: itemWithoutDistinct.licenceId,
@@ -232,7 +231,6 @@ const addCheckboxFields = dataWithoutDistinct => {
     thresholdUnit: toLongForm(itemWithoutDistinct.thresholdUnit, 'Units')
   })
   );
-};
 
 const groupLicenceConditions = request => {
   const { licenceGaugingStations } = request.pre;

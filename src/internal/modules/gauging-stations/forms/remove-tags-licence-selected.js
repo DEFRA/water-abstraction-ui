@@ -31,6 +31,8 @@ const removeTagsLicenceSelectedForm = request => {
     };
   });
 
+  const radioChoices = mySession.selectedLicence ? dataUniqueLicences.filter(item => item.value === mySession.selectedLicence.value) : [];
+
   f.fields.push(fields.radio('selectedLicence', {
     controlClass: 'govuk-input govuk-input--width-10',
     errors: {
@@ -41,7 +43,7 @@ const removeTagsLicenceSelectedForm = request => {
         message: 'Select a licence number'
       }
     },
-    choices: mySession.selectedLicence ? dataUniqueLicences.filter(item => item.value === mySession.selectedLicence.value) : []
+    choices: radioChoices
   }));
 
   f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));

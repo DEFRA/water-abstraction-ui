@@ -4,7 +4,7 @@ const { experiment, test } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
 const Joi = require('joi');
 
-const { createSchema } = require('shared/lib/schema');
+const { createSchema } = require('shared/lib/joi.helpers');
 
 experiment('shared/lib/schema', () => {
   const plainSchema = {

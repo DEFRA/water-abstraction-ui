@@ -6,7 +6,7 @@ const { VALID_ADDRESS } = require('@envage/water-abstraction-helpers').validator
 
 const { formFactory, fields, setValues } = require('shared/lib/forms');
 const { addressSources } = require('shared/lib/constants');
-const { createSchema } = require('shared/lib/schema');
+const { createSchema } = require('shared/lib/joi.helpers');
 const countryList = require('./country-list');
 const session = require('../lib/session');
 

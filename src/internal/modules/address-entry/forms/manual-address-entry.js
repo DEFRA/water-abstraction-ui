@@ -1,11 +1,12 @@
 'use strict';
 
 const { pick, get } = require('lodash');
+const Joi = require('joi');
 const { VALID_ADDRESS } = require('@envage/water-abstraction-helpers').validators;
 
 const { formFactory, fields, setValues } = require('shared/lib/forms');
 const { addressSources } = require('shared/lib/constants');
-const Joi = require('joi');
+const { createSchema } = require('shared/lib/schema');
 const countryList = require('./country-list');
 const session = require('../lib/session');
 
@@ -87,7 +88,6 @@ const getValues = request => {
  * an address
  *
  * @param {Object} request The Hapi request object
- * @param {Object} address contains address data values
  */
 const form = request => {
   const { csrfToken } = request.view;
@@ -114,9 +114,9 @@ const form = request => {
   return f;
 };
 
-const schema = () => VALID_ADDRESS.append({
+const schema = () => createSchema(VALID_ADDRESS.append({
   csrf_token: Joi.string().uuid().required()
-});
+}));
 
 exports.form = form;
 exports.schema = schema;

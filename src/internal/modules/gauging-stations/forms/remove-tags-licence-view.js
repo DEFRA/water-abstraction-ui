@@ -43,9 +43,9 @@ const removeTagsLicenceForm = request => {
   return f;
 };
 
-const removeTagsLicenceSchema = Joi.array().items({
-  selectedLicence: Joi.string().uuid().required(),
-  csrf_token: Joi.string().uuid().required()
+const removeTagsLicenceSchema = Joi.object().keys({
+  selectedLicence: Joi.string().required().trim().max(9000),
+  csrf_token: Joi.string().guid()
 });
 
 exports.form = removeTagsLicenceForm;

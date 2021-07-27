@@ -2,8 +2,7 @@
 
 const { expect } = require('@hapi/code');
 const { test, experiment, beforeEach } = exports.lab = require('@hapi/lab').script();
-
-const removeTagsLicenceViewForm = require('internal/modules/gauging-stations/forms/remove-tags-licence-view');
+const { form: removeTagsLicenceViewForm, schema: removeTagsLicenceViewSchema } = require('internal/modules/gauging-stations/forms/remove-tags-licence-view');
 
 experiment('internal/modules/gauging-stations/forms/remove-tags-licence-view.js', () => {
   let request, form;
@@ -101,7 +100,7 @@ experiment('internal/modules/gauging-stations/forms/remove-tags-licence-view.js'
 
     experiment('load request', () => {
       beforeEach(async () => {
-        form = removeTagsLicenceViewForm.form(request);
+        form = removeTagsLicenceViewForm(request);
       });
 
       test('the form has the correct action attribute', async () => {
@@ -109,11 +108,13 @@ experiment('internal/modules/gauging-stations/forms/remove-tags-licence-view.js'
       });
 
       test('the schema validate', async () => {
-        const { error } = removeTagsLicenceViewForm.schema.validate([{
+        const payload = {
           selectedLicence: '6e21a77b-1525-459d-acb8-3615e5d53f06',
           csrf_token: '6e21a77b-1525-459d-acb8-3615e5d53f06'
-        }]);
-        expect(error).to.equal(undefined);
+        };
+        const { error: validationError, value } = removeTagsLicenceViewSchema.validate(payload);
+        expect(validationError).to.equal(undefined);
+        expect(value).to.equal(payload);
       });
 
       test('the form has the POST method', async () => {

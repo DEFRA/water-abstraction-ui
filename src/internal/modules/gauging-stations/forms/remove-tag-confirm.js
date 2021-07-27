@@ -10,8 +10,8 @@ const removeTagConfirmForm = request => {
   return f;
 };
 
-const removeTagConfirmSchema = () => Joi.object({
-  csrf_token: Joi.string().uuid().required()
+const removeTagConfirmSchema = Joi.object().keys({
+  csrf_token: Joi.string().guid()
 });
 
 exports.form = removeTagConfirmForm;

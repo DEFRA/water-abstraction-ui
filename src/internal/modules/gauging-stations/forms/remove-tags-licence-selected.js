@@ -50,10 +50,16 @@ const removeTagsLicenceSelectedForm = request => {
   f.fields.push(fields.button(null, { label: 'Confirm' }));
   return f;
 };
-const removeTagsLicenceSelectedSchema = () => Joi.object({
-  selectedLicence: Joi.string().uuid().required(),
-  csrf_token: Joi.string().uuid().required()
+
+const removeTagsLicenceSelectedSchema = Joi.object().keys({
+  selectedLicence: Joi.string().required().trim().max(9000),
+  csrf_token: Joi.string().guid()
 });
+
+const removeTagsLicenceSelectedCustomValidation = (request) => {
+  return true;
+};
 
 exports.form = removeTagsLicenceSelectedForm;
 exports.schema = removeTagsLicenceSelectedSchema;
+exports.customValidation = removeTagsLicenceSelectedCustomValidation;

@@ -6,7 +6,7 @@ const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 const session = require('internal/modules/gauging-stations/lib/session');
 const removeTagsLicenceViewForm = require('internal/modules/gauging-stations/forms/remove-tags-licence-view');
-const removeTagsLicenceSelectedForm = require('internal/modules/gauging-stations/forms/remove-tags-licence-selected');
+const { form: removeTagsLicenceSelectedForm, schema: removeTagsLicenceViewSchema } = require('internal/modules/gauging-stations/forms/remove-tags-licence-selected');
 
 experiment('internal/modules/gauging-stations/forms/remove-tags-licence-view.js', () => {
   let request, form, formBefore;
@@ -111,7 +111,7 @@ experiment('internal/modules/gauging-stations/forms/remove-tags-licence-view.js'
     experiment('request loaded ', () => {
       beforeEach(async () => {
         formBefore = removeTagsLicenceViewForm.form(request);
-        form = removeTagsLicenceSelectedForm.form(request);
+        form = removeTagsLicenceSelectedForm(request);
       });
 
       test('the form has the correct action attribute', async () => {
@@ -121,6 +121,16 @@ experiment('internal/modules/gauging-stations/forms/remove-tags-licence-view.js'
       test('the form has the POST method', async () => {
         expect(formBefore.method).to.equal('POST');
         expect(form.method).to.equal('POST');
+      });
+
+      test('the schema validate', async () => {
+        const payload = {
+          selectedLicence: '6e21a77b-1525-459d-acb8-3615e5d53f06',
+          csrf_token: '6e21a77b-1525-459d-acb8-3615e5d53f06'
+        };
+        const { error: validationError, value } = removeTagsLicenceViewSchema.validate(payload);
+        expect(validationError).to.equal(undefined);
+        expect(value).to.equal(payload);
       });
 
       test('the form has a radio button', async () => {

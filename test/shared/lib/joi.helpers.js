@@ -50,4 +50,20 @@ experiment('shared/lib/schema', () => {
 
     expect(schema._preferences).to.equal(customOptions);
   });
+
+  test('does not allow anything other than an object as schema param', () => {
+    try {
+      createSchema('cupcakes');
+    } catch (e) {
+      expect(e.message).to.equal('Invalid schema type, should be plain object or existing joi schema');
+    }
+  });
+
+  test('does not allow anything other than an object as schema param', () => {
+    try {
+      createSchema(null);
+    } catch (e) {
+      expect(e.message).to.equal('Invalid schema type, should be plain object or existing joi schema');
+    }
+  });
 });

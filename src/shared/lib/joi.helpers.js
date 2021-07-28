@@ -11,7 +11,9 @@ const { isObject } = require('lodash/lang');
  * @returns {Object} - a Joi schema
  */
 const createSchema = (schema = {}, options = {}) => {
-  if (!isObject(schema)) throw new Error('Invalid schema type, should be plain object or existing joi schema');
+  if (!isObject(schema)) {
+    throw new Error('Invalid schema type, should be plain object or existing joi schema');
+  }
 
   const isValidSchema = Joi.isSchema(schema);
   const schemaOptions = {

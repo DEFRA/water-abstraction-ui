@@ -30,8 +30,7 @@ describe('B&D user able to view charge information tab', () => {
       cy.url().should('contain', '/licences/');
       cy.contains(LICENCE_NUMBER).should('be.visible');
     });
-  });
-  it('sees the licence tabs and the bills tab is not shown', () => {
+  describe('sees the licence tabs and the bills tab is not shown', () => {
     cy.get('ul.govuk-tabs__list').children().should('have.lengthOf.at.least', 3);
     cy.get('#tab_summary').should('have.text', 'Summary');
     cy.get('#tab_returns').should('have.text', 'Returns');
@@ -41,7 +40,7 @@ describe('B&D user able to view charge information tab', () => {
   });
 });
 
-describe('Charge version workflow journey', () => {
+ describe('Charge version workflow journey', () => {
   before(() => {
     tearDown();
     setUp('billing-data');
@@ -70,8 +69,8 @@ describe('Charge version workflow journey', () => {
       cy.url().should('contain', '/licences/');
       cy.contains(LICENCE_NUMBER).should('be.visible');
     });
-  });
-  it('sees the licence tabs Summary, returns, communications, bills and charge information', () => {
+  
+  describe('sees the licence tabs Summary, returns, communications, bills and charge information', () => {
     cy.get('ul.govuk-tabs__list').children().should('have.lengthOf.at.least', 3);
     cy.get('#tab_summary').should('have.text', 'Summary');
     cy.get('#tab_returns').should('have.text', 'Returns');
@@ -80,21 +79,65 @@ describe('Charge version workflow journey', () => {
     cy.get('ul.govuk-tabs__list').children().should('be.visible', 'Charge Information');
   });
 
-  it('navigates to the Charge information tab', () => {
+  describe('navigates to the Charge information tab', () => {
     cy.get('#tab_charge').click();
     cy.get('#charge > .govuk-heading-l').should('have.text', 'Charge information');
   });
   
-  it('click Set up new charge', () => {
+  describe('click Set up new charge', () => {
     cy.get('.govuk-button').contains('Set up a new charge').click();
-    // cy.url().should('contain', '/charge-information/create');
   });
 
-  it('user selects reason for new charge information', () => {
+  describe('user selects reason for new charge information', () => {
     cy.get('.govuk-heading-l').contains('Select reason for new charge information');
-    cy.get('.govuk-radios__input').contains('reason').click();
+    cy.get('#reason').click();
     cy.get('button.govuk-button').click();
-    cy.get('.govuk-back-link').click();
+  }); 
+  
+  describe('user sets start date', () => {
+    cy.get('.govuk-heading-l').contains('Set charge start date');
+    cy.get('#startDate').click();
+    cy.get('button.govuk-button').click();
+  }); 
+  
+  describe('user selects billing contact', () => {
+    cy.get('.govuk-heading-l').contains('Who should the bills go to?');
+    cy.get('#account').click();
+    cy.get('button.govuk-button').click();
+  });
+  
+  describe('user selects address', () => {
+    cy.get('.govuk-heading-l').contains('Select an existing address for Big Farm Co Ltd');
+    cy.get('#selectedAddress').click();
+    cy.get('button.govuk-button').click();
   });
 
+  describe('user selects no for FAO', () => {
+    cy.get('.govuk-heading-l').contains('Do you need to add an FAO?');
+    cy.get('#faoRequired-2').click();
+    cy.get('button.govuk-button').click();
+  });
+
+  describe('user checks billing account details', () => {
+    cy.get('.govuk-heading-l').contains('Check billing account details');
+    cy.get('button.govuk-button').click();
+  });
+
+  describe('user selects abstraction data', () => {
+    cy.get('.govuk-heading-l').contains('Use abstraction data to set up the element?');
+    cy.get('#useAbstractionData').click();
+    cy.get('button.govuk-button').click();
+  });
+
+  describe('user checks charge information details', () => {
+    cy.get('.govuk-heading-xl').contains('Check charge information');
+    cy.get('.govuk-button').contains('Confirm').click();
+  });
+
+  describe('user checks charge information confirmation page', () => {
+    cy.get('.govuk-panel__title').contains('Charge information complete');
+    cy.get('.govuk-link').contains('Confirm').click();
+    });
+   });
+  });
 });

@@ -56,10 +56,13 @@ const removeTagsConditionsForm = request => {
   return f;
 };
 
-const removeTagsConditionsSchema = () => createSchema({
+const removeTagsConditionsCustomValidation = () => true;
+
+const removeTagsConditionsSchema = createSchema({
   selectedCondition: Joi.array().min(1),
   csrf_token: Joi.string().uuid().required()
 });
 
 exports.form = removeTagsConditionsForm;
 exports.schema = removeTagsConditionsSchema;
+exports.customValidation = removeTagsConditionsCustomValidation;

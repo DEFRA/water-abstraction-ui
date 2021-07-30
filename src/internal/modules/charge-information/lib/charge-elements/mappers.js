@@ -40,9 +40,10 @@ const source = formValues => ({
 
 const quantities = formValues => {
   const { authorisedAnnualQuantity, billableAnnualQuantity } = formValues;
+
   return {
     authorisedAnnualQuantity: parseFloat(authorisedAnnualQuantity),
-    billableAnnualQuantity: isEmpty(billableAnnualQuantity) ? null : parseFloat(billableAnnualQuantity)
+    billableAnnualQuantity: !billableAnnualQuantity ? null : parseFloat(billableAnnualQuantity)
   };
 };
 

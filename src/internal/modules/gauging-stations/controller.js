@@ -245,6 +245,12 @@ const getFlowComplete = (request, h) => {
   });
 };
 
+const removeTagURL = {
+  selectCondition: '/remove-tag-multiple',
+  selectCompleted: '/remove-tag-complete',
+  monitoringStation: '/../'
+};
+
 const getRemoveTags = async (request, h) => {
   const pageTitle = 'Which licence do you want to remove a tag from?';
   const caption = await helpers.getCaption(request);
@@ -282,19 +288,16 @@ const postRemoveTagOrMultiple = async (request, h) => {
     selectedCondition: [] /* clear selection */
   });
 
-  if (sessionData.licenceGaugingStations === undefined) {
-    return helpers.redirectTo(request, h, '/../');
+  if (!sessionData.licenceGaugingStations) {
+    return helpers.redirectTo(request, h, removeTagURL.monitoringStation);
   }
 
   if (selectedLicenceRadio) {
     tagsForLicence = sessionData.licenceGaugingStations.filter(item => item.licenceId === selectedLicenceRadio.value);
   }
 
-  if (tagsForLicence.length > 1) {
-    return helpers.redirectTo(request, h, '/remove-tag-multiple');
-  }
-
-  return helpers.redirectTo(request, h, '/remove-tag-complete');
+  const redirectPath = tagsForLicence.length > 1 ? removeTagURL.selectCondition : removeTagURL.selectCompleted;
+  return helpers.redirectTo(request, h, redirectPath);
 };
 
 const getRemoveTagsConditions = async (request, h) => {
@@ -327,7 +330,7 @@ const postRemoveTagsLicenceSelected = async (request, h) => {
     selectedCondition: selectedCondition
   });
 
-  return helpers.redirectTo(request, h, '/remove-tag-complete');
+  return helpers.redirectTo(request, h, removeTagURL.selectCompleted);
 };
 
 const getRemoveTagComplete = async (request, h) => {

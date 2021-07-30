@@ -3,6 +3,7 @@ const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const session = require('../lib/session');
 const { groupLicenceConditions, addCheckboxFields } = require('../lib/helpers');
+const { createSchema } = require('shared/lib/joi.helpers');
 
 const removeTagsConditionsForm = request => {
   const f = formFactory(request.path);
@@ -55,7 +56,7 @@ const removeTagsConditionsForm = request => {
   return f;
 };
 
-const removeTagsConditionsSchema = () => Joi.object({
+const removeTagsConditionsSchema = () => createSchema({
   selectedCondition: Joi.array().min(1),
   csrf_token: Joi.string().uuid().required()
 });

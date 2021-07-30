@@ -3,6 +3,7 @@ const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const session = require('../lib/session');
 const { toLongForm, groupLicenceConditions } = require('../lib/helpers');
+const { createSchema } = require('shared/lib/joi.helpers');
 
 const removeTagsLicenceSelectedForm = request => {
   const f = formFactory(request.path);
@@ -50,7 +51,7 @@ const removeTagsLicenceSelectedForm = request => {
   return f;
 };
 
-const removeTagsLicenceSelectedSchema = Joi.object().keys({
+const removeTagsLicenceSelectedSchema = createSchema({
   selectedLicence: Joi.string().required().trim().max(9000),
   csrf_token: Joi.string().guid()
 });

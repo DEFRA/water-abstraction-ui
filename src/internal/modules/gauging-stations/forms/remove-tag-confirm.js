@@ -1,6 +1,7 @@
 
 const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
+const { createSchema } = require('shared/lib/joi.helpers');
 
 const removeTagConfirmForm = request => {
   const f = formFactory(request.path);
@@ -10,7 +11,7 @@ const removeTagConfirmForm = request => {
   return f;
 };
 
-const removeTagConfirmSchema = Joi.object().keys({
+const removeTagConfirmSchema = createSchema({
   csrf_token: Joi.string().guid()
 });
 

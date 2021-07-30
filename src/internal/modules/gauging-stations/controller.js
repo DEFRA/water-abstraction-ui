@@ -274,7 +274,7 @@ const getRemoveTags = async (request, h) => {
 };
 
 const postRemoveTagOrMultiple = async (request, h) => {
-  const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceSelected);
+  const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceView); // Back to view
 
   // Must select one radio
   if (!form.isValid) {
@@ -340,11 +340,11 @@ const getRemoveTagComplete = async (request, h) => {
   session.merge(request, {
     completed: true
   });
-  const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceSelected);
+  const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceView);
   const selectedLicenceRadio = form.fields.find(field => field.name === 'selectedLicence');
   let selectedMultiple = false;
   if (selectedLicenceRadio && selectedLicenceRadio.options) {
-    selectedMultiple = selectedLicenceRadio.options.choices.find(field => field.label === ' Multiple tags');
+    selectedMultiple = selectedLicenceRadio.options.selectedChoices.find(field => field.hint === ' Multiple tags');
   }
   if (selectedMultiple) {
     session.merge(request, {
@@ -353,11 +353,11 @@ const getRemoveTagComplete = async (request, h) => {
   } else {
     let selectedSingle = false;
     if (selectedLicenceRadio && selectedLicenceRadio.options) {
-      selectedSingle = selectedLicenceRadio.options.choices.find(field => field.label !== ' Multiple tags');
+      selectedSingle = selectedLicenceRadio.options.selectedChoices.find(field => field.hint !== ' Multiple tags');
     }
     /* Handle case when selected item already deleted */
     if (!selectedSingle) {
-      return helpers.redirectTo(request, h, '/../');
+      return helpers.redirectTo(request, h, removeTagURL.monitoringStation);
     }
     selectedSingle.linkages = [];
     session.merge(request, {

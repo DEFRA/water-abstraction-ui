@@ -362,6 +362,30 @@ experiment('internal/modules/gauging-stations/controller', () => {
               licenceId: '6e21a77b-1525-459d-acb8-3615e5d53f06'
             }
           ],
+          selectedChoices: [
+            {
+              licenceGaugingStationId: '9177f85d-916c-4d51-8db7-74246d228b7b',
+              value: '6e21a77b-1525-459d-acb8-3615e5d53f06',
+              label: ' Reduce at 115 Megalitres per day',
+              hint: '2672520010',
+              licenceRef: '2672520010',
+              alertType: 'stop_or_reduce',
+              thresholdValue: '115',
+              thresholdUnit: 'Megalitres per day',
+              licenceId: '6e21a77b-1525-459d-acb8-3615e5d53f06'
+            },
+            {
+              licenceGaugingStationId: '9177f85d-916c-4d51-8db7-74246d228b7b',
+              value: '6e21a77b-1525-459d-acb8-3615e5d53f07',
+              label: ' Stop at 151 Megalitres per day',
+              hint: '2672520010',
+              licenceRef: '2672520010',
+              alertType: 'stop',
+              thresholdValue: '151',
+              thresholdUnit: 'Megalitres per day',
+              licenceId: '6e21a77b-1525-459d-acb8-3615e5d53f06'
+            }
+          ],
           label: '',
           widget: 'checkbox',
           required: true,
@@ -397,6 +421,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
               licenceId: '6e21a77b-1525-459d-acb8-3615e5d53f06'
             }
           ],
+          selectedChoices: [],
           label: '',
           widget: 'checkbox',
           required: true,
@@ -420,6 +445,19 @@ experiment('internal/modules/gauging-stations/controller', () => {
       fields: [ { name: 'selectedLicence',
         options: {
           choices: [
+            {
+              licenceGaugingStationId: '9177f85d-916c-4d51-8db7-74246d228b7b',
+              value: '6e21a77b-1525-459d-acb8-3615e5d53f06',
+              label: ' Reduce at 115 Megalitres per day',
+              hint: '2672520010',
+              licenceRef: '2672520010',
+              alertType: 'stop_or_reduce',
+              thresholdValue: '115',
+              thresholdUnit: 'Megalitres per day',
+              licenceId: '6e21a77b-1525-459d-acb8-3615e5d53f06'
+            }
+          ],
+          selectedChoices: [
             {
               licenceGaugingStationId: '9177f85d-916c-4d51-8db7-74246d228b7b',
               value: '6e21a77b-1525-459d-acb8-3615e5d53f06',

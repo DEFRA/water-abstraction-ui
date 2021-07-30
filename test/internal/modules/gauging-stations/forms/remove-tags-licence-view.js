@@ -1,7 +1,10 @@
 'use strict';
 
 const { expect } = require('@hapi/code');
-const { test, experiment, beforeEach } = exports.lab = require('@hapi/lab').script();
+const { test, experiment, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
+const sinon = require('sinon');
+const sandbox = sinon.createSandbox();
+const session = require('internal/modules/gauging-stations/lib/session');
 const { form: removeTagsLicenceViewForm, schema: removeTagsLicenceViewSchema } = require('internal/modules/gauging-stations/forms/remove-tags-licence-view');
 
 experiment('internal/modules/gauging-stations/forms/remove-tags-licence-view.js', () => {
@@ -87,6 +90,11 @@ experiment('internal/modules/gauging-stations/forms/remove-tags-licence-view.js'
 
   experiment('.form', () => {
     beforeEach(async () => {
+      sandbox.stub(session, 'get').resolves({
+        selectedCondition: [],
+        licenceGaugingStations: data.data
+      });
+
       request = {
         path: 'http://example.com/monitoring-stations/123/untagging-licence/remove-tag',
         view: {
@@ -97,6 +105,7 @@ experiment('internal/modules/gauging-stations/forms/remove-tags-licence-view.js'
         }
       };
     });
+    afterEach(async () => sandbox.restore());
 
     experiment('load request', () => {
       beforeEach(async () => {

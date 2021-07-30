@@ -89,8 +89,11 @@ experiment('internal/modules/gauging-stations/forms/remove-tag-confirm.js', () =
     beforeEach(async () => {
       request = {
         path: 'http://example.com/monitoring-stations/123/untagging-licence/remove-tag-confirm',
+        params: {
+          gaugingStationId: '9177f85d-916c-4d51-8db7-74246d228b7b'
+        },
         view: {
-          csrfToken: 'some-token'
+          csrfToken: '6e21a77b-1525-459d-acb8-3615e5d53f06'
         },
         pre: {
           licenceGaugingStations: data

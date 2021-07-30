@@ -161,11 +161,13 @@ const longFormDictionary = [
   { dbitem: 'Ml/d', translation: 'Megalitres per day', context: 'Units' },
   { dbitem: 'm³', translation: 'Cubic metres', context: 'Units' },
   { dbitem: 'l/d', translation: 'Litres per day', context: 'Units' },
+  { dbitem: 'mAOD', translation: 'Ordnance datum (mAOD)', context: 'Units' },
   { dbitem: 'stop_or_reduce', translation: 'Reduce', context: 'AlertType' },
   { dbitem: 'stop', translation: 'Stop', context: 'AlertType' },
   { dbitem: 'reduce', translation: 'Reduce', context: 'AlertType' }
 ];
 
+/* Converts database representation into description of tags, e.g. Stop at 115 Megalitres per day */
 const toLongForm = (str, context = '') => {
   if (str) {
     const words = str.split(' ');
@@ -176,7 +178,7 @@ const toLongForm = (str, context = '') => {
     }
     const translated = words.map(word =>
       dictionarySubset.filter(dict => dict.dbitem.toUpperCase() === word.toUpperCase().trim())[firstMatch]);
-    if (translated.length > 0) {
+    if (translated[firstMatch]) {
       return translated[firstMatch].translation;
     }
   }

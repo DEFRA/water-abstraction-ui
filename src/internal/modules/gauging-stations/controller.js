@@ -336,25 +336,25 @@ const postRemoveTagsLicenceSelected = async (request, h) => {
 const getRemoveTagComplete = async (request, h) => {
   const pageTitle = 'You are about to remove tags from this licence';
   const caption = await helpers.getCaption(request);
+  const sessionData = session.get(request);
 
-  session.merge(request, {
-    completed: true
-  });
   const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceView);
   const selectedLicenceRadio = form.fields.find(field => field.name === 'selectedLicence');
+  const dataRadioChoices = selectedLicenceRadio ? selectedLicenceRadio.options.choices : [];
   let selectedMultiple = false;
-  if (selectedLicenceRadio && selectedLicenceRadio.options) {
-    selectedMultiple = selectedLicenceRadio.options.selectedChoices.find(field => field.hint === ' Multiple tags');
+  let selectedSingle = false;
+  let radioChoicesSelected = [];
+
+  if (dataRadioChoices) {
+    radioChoicesSelected = sessionData.selectedLicence ? dataRadioChoices.filter(item => item.value === sessionData.selectedLicence.value) : [];
+    selectedMultiple = radioChoicesSelected.find(field => field.hint === ' Multiple tags');
+    selectedSingle = radioChoicesSelected.find(field => field.hint !== ' Multiple tags');
   }
   if (selectedMultiple) {
     session.merge(request, {
       selected: helpers.selectedConditionWithLinkages(request) ? helpers.selectedConditionWithLinkages(request) : []
     });
   } else {
-    let selectedSingle = false;
-    if (selectedLicenceRadio && selectedLicenceRadio.options) {
-      selectedSingle = selectedLicenceRadio.options.selectedChoices.find(field => field.hint !== ' Multiple tags');
-    }
     /* Handle case when selected item already deleted */
     if (!selectedSingle) {
       return helpers.redirectTo(request, h, removeTagURL.monitoringStation);
@@ -364,7 +364,6 @@ const getRemoveTagComplete = async (request, h) => {
       selected: [selectedSingle]
     });
   }
-
   return h.view('nunjucks/gauging-stations/remove-tag-complete', {
     ...request.view,
     caption,

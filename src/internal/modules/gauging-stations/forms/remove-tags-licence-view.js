@@ -2,11 +2,9 @@ const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const { toLongForm, groupLicenceConditions } = require('../lib/helpers');
 const { createSchema } = require('shared/lib/joi.helpers');
-const session = require('../lib/session');
 
 const removeTagsLicenceForm = request => {
   const f = formFactory(request.path);
-  const mySession = session.get(request);
 
   const multipleLabel = (dataPayload, licenceRef = null) => {
     const item = dataPayload.find(itemLabel => itemLabel.licenceRef === licenceRef);
@@ -29,8 +27,6 @@ const removeTagsLicenceForm = request => {
   })
   );
 
-  const radioChoicesSelected = mySession.selectedLicence ? dataRadioChoices.filter(item => item.value === mySession.selectedLicence.value) : [];
-
   f.fields.push(fields.radio('selectedLicence', {
     controlClass: 'govuk-input govuk-input--width-10',
     errors: {
@@ -41,8 +37,7 @@ const removeTagsLicenceForm = request => {
         message: 'Select a licence number'
       }
     },
-    choices: dataRadioChoices,
-    selectedChoices: radioChoicesSelected
+    choices: dataRadioChoices
   }));
 
   f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));

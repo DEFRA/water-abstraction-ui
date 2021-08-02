@@ -186,7 +186,11 @@ jobs:
         uses: jakejarvis/wait-action@master
         with:
           time: '10s'
-
-      - name: Run regression tests
-        run: |
-          npm run test:cypress-silently
+          
+      - name: Run cypress e2e tests
+        uses: cypress-io/github-action@v2
+        with:
+          start: npm run test:cypress-silently
+          browser: chrome
+          headless: true
+          wait-on: 'http://localhost:8008'

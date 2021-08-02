@@ -83,12 +83,15 @@ const getCurrentLicenceData = async licenceRef => {
  */
 const getBillingVolumeReview = async (request, h, form) => {
   const { batch, licence, billingVolume } = request.pre;
+  const { chargePeriod } = billingVolume.chargePeriod;
+
   return h.view('nunjucks/billing/two-part-tariff-quantities', {
     licence,
     ...request.view,
     pageTitle: 'Set the billable returns quantity for this bill run',
     caption: `${billingVolume.chargeElement.purposeUse.name}, ${billingVolume.chargeElement.description}`,
     billingVolume,
+    chargePeriod,
     form: form || twoPartTariffQuantityForm.form(request, billingVolume),
     back: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}`
   });

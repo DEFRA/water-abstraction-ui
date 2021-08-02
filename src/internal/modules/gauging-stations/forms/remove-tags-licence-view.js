@@ -19,6 +19,7 @@ const removeTagsLicenceForm = request => {
     licenceGaugingStationId: item.licenceGaugingStationId,
     value: item.licenceId,
     label: item.licenceRef,
+    licenceRef: item.licenceRef,
     hint: multipleLabel(dataLicenceConditions, item.licenceRef),
     alertType: item.alertType,
     thresholdValue: item.thresholdValue,

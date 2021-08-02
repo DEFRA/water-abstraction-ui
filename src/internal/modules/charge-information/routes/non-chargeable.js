@@ -1,7 +1,7 @@
 const controller = require('../controllers/non-chargeable');
 const preHandlers = require('../pre-handlers');
 const { VALID_GUID } = require('shared/lib/validators');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { chargeVersionWorkflowEditor, chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope;
 const allowedScopes = [chargeVersionWorkflowEditor, chargeVersionWorkflowReviewer];
 
@@ -21,10 +21,10 @@ module.exports = {
         }
       },
       validate: {
-        params: Joi.object({
+        params: Joi.object().keys({
           licenceId: VALID_GUID
         }),
-        query: Joi.object({
+        query: Joi.object().keys({
           form: VALID_GUID.optional(),
           start: Joi.number().default(0).allow(0, 1),
           returnToCheckData: Joi.boolean().default(false),
@@ -54,10 +54,10 @@ module.exports = {
         }
       },
       validate: {
-        params: Joi.object({
+        params: Joi.object().keys({
           licenceId: VALID_GUID
         }),
-        query: Joi.object({
+        query: Joi.object().keys({
           form: VALID_GUID.optional(),
           returnToCheckData: Joi.boolean().default(false),
           isChargeable: Joi.boolean().default(false),
@@ -87,10 +87,10 @@ module.exports = {
         }
       },
       validate: {
-        params: Joi.object({
+        params: Joi.object().keys({
           licenceId: VALID_GUID
         }),
-        query: Joi.object({
+        query: Joi.object().keys({
           form: VALID_GUID.optional(),
           returnToCheckData: Joi.boolean().default(false),
           chargeVersionWorkflowId: Joi.string().uuid().optional().default('')
@@ -120,10 +120,10 @@ module.exports = {
         }
       },
       validate: {
-        params: Joi.object({
+        params: Joi.object().keys({
           licenceId: VALID_GUID
         }),
-        query: Joi.object({
+        query: Joi.object().keys({
           returnToCheckData: Joi.boolean().default(false),
           chargeVersionWorkflowId: Joi.string().uuid().optional().default('')
         })

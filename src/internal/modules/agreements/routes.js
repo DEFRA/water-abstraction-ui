@@ -1,5 +1,5 @@
 'use strict';
-
+const Joi = require('joi');
 const controller = require('./controller');
 const preHandlers = require('./pre-handlers');
 const sharedPreHandlers = require('shared/lib/pre-handlers/licences');
@@ -25,10 +25,10 @@ if (config.featureToggles.manageAgreements) {
           }
         },
         validate: {
-          params: {
+          params: Joi.object().keys({
             licenceId: VALID_GUID,
             agreementId: VALID_GUID
-          }
+          })
         },
         pre: [
           { method: preHandlers.loadAgreement, assign: 'agreement' },
@@ -47,10 +47,10 @@ if (config.featureToggles.manageAgreements) {
         },
         description: 'Post handler for deleting an agreement',
         validate: {
-          params: {
+          params: Joi.object().keys({
             licenceId: VALID_GUID,
             agreementId: VALID_GUID
-          }
+          })
         },
         pre: [
           { method: sharedPreHandlers.loadLicence, assign: 'licence' }
@@ -68,9 +68,9 @@ if (config.featureToggles.manageAgreements) {
         },
         description: 'Select financial agreement type',
         validate: {
-          params: {
+          params: Joi.object().keys({
             licenceId: VALID_GUID
-          }
+          })
         },
         pre: [
           { method: preHandlers.getFlowState, assign: 'flowState' },
@@ -89,9 +89,9 @@ if (config.featureToggles.manageAgreements) {
         },
         description: 'Post handler for select financial agreement type',
         validate: {
-          params: {
+          params: Joi.object().keys({
             licenceId: VALID_GUID
-          }
+          })
         },
         pre: [
           { method: preHandlers.getFlowState, assign: 'flowState' },
@@ -110,9 +110,9 @@ if (config.featureToggles.manageAgreements) {
         },
         description: 'Set the date the agreement was signed',
         validate: {
-          params: {
+          params: Joi.object().keys({
             licenceId: VALID_GUID
-          }
+          })
         },
         pre: [
           { method: preHandlers.getFlowState, assign: 'flowState' },
@@ -131,9 +131,9 @@ if (config.featureToggles.manageAgreements) {
         },
         description: 'Set the date the agreement was signed',
         validate: {
-          params: {
+          params: Joi.object().keys({
             licenceId: VALID_GUID
-          }
+          })
         },
         pre: [
           { method: preHandlers.getFlowState, assign: 'flowState' },
@@ -152,9 +152,9 @@ if (config.featureToggles.manageAgreements) {
         },
         description: 'Check the start date for the agreement',
         validate: {
-          params: {
+          params: Joi.object().keys({
             licenceId: VALID_GUID
-          }
+          })
         },
         pre: [
           { method: sharedPreHandlers.loadLicence, assign: 'licence' }
@@ -172,9 +172,9 @@ if (config.featureToggles.manageAgreements) {
         },
         description: 'Post handler to set the date the agreement was signed',
         validate: {
-          params: {
+          params: Joi.object().keys({
             licenceId: VALID_GUID
-          }
+          })
         },
         pre: [
           { method: sharedPreHandlers.loadLicence, assign: 'licence' }
@@ -192,9 +192,9 @@ if (config.featureToggles.manageAgreements) {
         },
         description: 'Check answers page',
         validate: {
-          params: {
+          params: Joi.object().keys({
             licenceId: VALID_GUID
-          }
+          })
         },
         pre: [
           { method: preHandlers.getFlowState, assign: 'flowState' },
@@ -213,9 +213,9 @@ if (config.featureToggles.manageAgreements) {
         },
         description: 'Post handler for check answers page',
         validate: {
-          params: {
+          params: Joi.object().keys({
             licenceId: VALID_GUID
-          }
+          })
         },
         pre: [
           { method: preHandlers.getFlowState, assign: 'flowState' }
@@ -238,10 +238,10 @@ if (config.featureToggles.manageAgreements) {
           }
         },
         validate: {
-          params: {
+          params: Joi.object().keys({
             licenceId: VALID_GUID,
             agreementId: VALID_GUID
-          }
+          })
         },
         pre: [
           { method: preHandlers.loadAgreement, assign: 'agreement' },
@@ -265,10 +265,10 @@ if (config.featureToggles.manageAgreements) {
           }
         },
         validate: {
-          params: {
+          params: Joi.object().keys({
             licenceId: VALID_GUID,
             agreementId: VALID_GUID
-          }
+          })
         },
         pre: [
           { method: preHandlers.loadAgreement, assign: 'agreement' },
@@ -291,10 +291,10 @@ if (config.featureToggles.manageAgreements) {
           }
         },
         validate: {
-          params: {
+          params: Joi.object().keys({
             licenceId: VALID_GUID,
             agreementId: VALID_GUID
-          }
+          })
         },
         pre: [
           { method: preHandlers.loadAgreement, assign: 'agreement' },
@@ -318,10 +318,10 @@ if (config.featureToggles.manageAgreements) {
           }
         },
         validate: {
-          params: {
+          params: Joi.object().keys({
             licenceId: VALID_GUID,
             agreementId: VALID_GUID
-          }
+          })
         },
         pre: [
           { method: preHandlers.loadAgreement, assign: 'agreement' },

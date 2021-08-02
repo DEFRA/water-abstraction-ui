@@ -63,7 +63,7 @@ describe('internal user resetting their password:', () => {
 
   it('changes the password and signs in', () => {
     cy.get('[id=password]').type('P@55word');
-    cy.get('[id=confirm-password]').type('P@55word');
+    cy.get('[id=confirmPassword]').type('P@55word');
     cy.get('button.govuk-button').click();
   });
 

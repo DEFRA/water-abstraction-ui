@@ -1,18 +1,19 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms');
 
 /**
  * @return {Object} - form object
  */
-const form = (action) => {
-  const f = formFactory(action);
+const form = (request, h) => {
+  const f = formFactory('/reset_password');
 
   f.fields.push(fields.text('email', {
     label: 'Email address',
+    hint: 'Tell us the email address you used to register with this service and we will send you a reset link.',
     type: 'email',
     controlClass: 'govuk-!-width-one-half',
     errors: {
-      'any.empty': {
+      'string.empty': {
         message: 'Enter an email address'
       },
       'string.email': {
@@ -29,9 +30,9 @@ const form = (action) => {
   return f;
 };
 
-const schema = {
+const schema = Joi.object().keys({
   email: Joi.string().required().email()
-};
+});
 
 exports.resetForm = form;
-exports.resetSchema = schema;
+exports.resetFormSchema = schema;

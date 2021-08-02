@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const controller = require('../controllers/view');
 const { scope } = require('../../../lib/constants');
 const licencePreHandlers = require('shared/lib/pre-handlers/licences');
@@ -18,12 +18,12 @@ module.exports = {
       },
       description: 'Displays a list of returns for a particular licence',
       validate: {
-        params: {
+        params: Joi.object().keys({
           documentId: Joi.string().guid().required()
-        },
-        query: {
+        }),
+        query: Joi.object().keys({
           page: Joi.number().default(1)
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -43,9 +43,9 @@ module.exports = {
       },
       description: 'Displays data for a single return',
       validate: {
-        query: {
+        query: Joi.object().keys({
           id: Joi.string().required()
-        }
+        })
       },
       plugins: {
         viewContext: {

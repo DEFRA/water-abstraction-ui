@@ -2,7 +2,7 @@
 
 const moment = require('moment');
 const { get } = require('lodash');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const sentenceCase = require('sentence-case');
 
 const { isoToReadable } = require('@envage/water-abstraction-helpers').nald.dates;
@@ -60,9 +60,9 @@ const form = request => {
 const schema = request => {
   const selectableBills = getSelectableBills(request);
   const selectableBillIds = selectableBills.map(bill => bill.id);
-  return Joi.object({
+  return Joi.object().keys({
     selectedBillIds: Joi.array().min(1).items(
-      Joi.string().guid().valid(selectableBillIds)
+      Joi.string().guid().valid(...selectableBillIds)
     ),
     csrf_token: Joi.string().guid().required()
   });

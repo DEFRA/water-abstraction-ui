@@ -1,5 +1,5 @@
 const { formFactory, fields, setValues } = require('shared/lib/forms');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 const createError = (key, message) => ({
   [key]: { message }
@@ -21,14 +21,14 @@ const enterNewEmailForm = (request, data = {}) => {
   const f = formFactory('/account/change-email/enter-new-email');
 
   f.fields.push(createEmailField('email', 'Your new email address', {
-    ...createError('any.allowOnly', 'The email addresses must match'),
+    ...createError('any.only', 'Confirm your new email address'),
     ...createError('string.email', 'Enter an email address, like name@example.com'),
-    ...createError('any.empty', 'Enter your new email address')
+    ...createError('string.empty', 'Enter your new email address')
   }));
 
   f.fields.push(createEmailField('confirm-email', 'Confirm your new email address', {
-    ...createError('any.allowOnly', 'The email addresses must match'),
-    ...createError('any.empty', 'Confirm your new email address')
+    ...createError('any.only', 'Confirm your new email address'),
+    ...createError('string.empty', 'Confirm your new email address')
   }));
 
   f.fields.push(fields.button(null, { label: 'Continue' }));
@@ -39,7 +39,7 @@ const enterNewEmailForm = (request, data = {}) => {
 
 const VALID_EMAIL = Joi.string().email().required();
 
-const enterNewEmailSchema = Joi.object({
+const enterNewEmailSchema = Joi.object().keys({
   email: VALID_EMAIL,
   'confirm-email': Joi.when('email', {
     is: VALID_EMAIL,

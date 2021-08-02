@@ -72,9 +72,9 @@ exports.form = (request, data) => ({
 }
 );
 
-exports.schema = () => ({
+exports.schema = () => Joi.object().keys({
   csrf_token: Joi.string().guid(),
-  receivedDate: Joi.string().required().valid(['today', 'yesterday', 'custom']),
+  receivedDate: Joi.string().required().valid('today', 'yesterday', 'custom'),
   customDate: Joi.when('receivedDate', {
     is: 'custom',
     then: Joi.string().isoDate().options({ convert: false })

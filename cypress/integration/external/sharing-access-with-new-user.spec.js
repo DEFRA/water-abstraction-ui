@@ -37,7 +37,7 @@ describe('External user sharing license access with new external user ', () => {
       cy.getUserRegistrationUrl(Cypress.env('USER_URI'), users.externalAccessSharingNew).then(response => {
         cy.visit(response);
         cy.get('input#password').type('A12345678$');
-        cy.get('input#confirm-password').type('A12345678$');
+        cy.get('input#confirmPassword').type('A12345678$');
         cy.get('form').submit();
 
         // assert the assigned licence

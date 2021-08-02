@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { getReturnsForLicence, getReturn } = require('./view');
 const { scope: { internal } } = require('../../../lib/constants');
 
@@ -20,10 +20,10 @@ module.exports = {
     config: {
       ...getReturn.config,
       validate: {
-        query: {
+        query: Joi.object().keys({
           id: Joi.string().required(),
           version: Joi.number().optional().min(1)
-        }
+        })
       },
       auth: {
         scope: internal

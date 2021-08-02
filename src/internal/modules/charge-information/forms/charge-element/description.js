@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const { CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants');
 const { getChargeElementData, getChargeElementActionUrl } = require('../../lib/form-helpers');
@@ -20,7 +20,7 @@ const form = request => {
   f.fields.push(fields.text('description', {
     hint: 'For example, describe where the abstraction point is',
     errors: {
-      'any.empty': {
+      'string.empty': {
         message: 'Enter a description of the element'
       },
       'any.required': {
@@ -35,10 +35,10 @@ const form = request => {
 };
 
 const schema = (request) => {
-  return {
+  return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
     description: Joi.string().trim().required()
-  };
+  });
 };
 
 exports.schema = schema;

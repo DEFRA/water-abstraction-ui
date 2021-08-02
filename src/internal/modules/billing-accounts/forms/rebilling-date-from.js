@@ -3,7 +3,7 @@
 const { isoToReadable } = require('@envage/water-abstraction-helpers').nald.dates;
 const moment = require('moment');
 const { sortBy, get } = require('lodash');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 const { formFactory, fields } = require('shared/lib/forms/');
 
@@ -42,7 +42,10 @@ const form = request => {
       'any.required': {
         message: 'Enter the date you need to reissue a bill from'
       },
-      'date.isoDate': {
+      'date.base': {
+        message: 'Enter a real date'
+      },
+      'date.format': {
         message: 'Enter a real date'
       },
       'date.max': {
@@ -59,7 +62,7 @@ const form = request => {
 
 const schema = request => {
   const maxDate = getMaxDate(request.pre.rebillableBills).format('YYYY-MM-DD');
-  return Joi.object({
+  return Joi.object().keys({
     fromDate: Joi.date().iso().max(maxDate).required(),
     csrf_token: Joi.string().guid().required()
   });

@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const { find } = require('lodash');
@@ -53,47 +53,47 @@ experiment('meterReadingsSchema', () => {
     const formValues = createFormValues(null, null, null, null);
     request.payload = formValues;
     const schema = meterReadingsSchema(request, data, form);
-    const result = Joi.validate(formValues, schema, { abortEarly: false });
-    expect(result.error).to.be.null();
+    const result = schema.validate(formValues, { abortEarly: false });
+    expect(result.error).to.be.undefined();
   });
 
   test('is valid for incrementing numbers', async () => {
     const formValues = createFormValues(11, 12, 13, 14);
     request.payload = formValues;
     const schema = meterReadingsSchema(request, data, form);
-    const result = Joi.validate(formValues, schema, { abortEarly: false });
-    expect(result.error).to.be.null();
+    const result = schema.validate(formValues, { abortEarly: false });
+    expect(result.error).to.be.undefined();
   });
 
   test('is valid for equal numbers', async () => {
     const formValues = createFormValues(10, 10, 10, 10);
     request.payload = formValues;
     const schema = meterReadingsSchema(request, data, form);
-    const result = Joi.validate(formValues, schema, { abortEarly: false });
-    expect(result.error).to.be.null();
+    const result = schema.validate(formValues, { abortEarly: false });
+    expect(result.error).to.be.undefined();
   });
 
   test('handles null in between numeric readings', async () => {
     const formValues = createFormValues(10, 20, null, 30);
     request.payload = formValues;
     const schema = meterReadingsSchema(request, data, form);
-    const result = Joi.validate(formValues, schema, { abortEarly: false });
-    expect(result.error).to.be.null();
+    const result = schema.validate(formValues, { abortEarly: false });
+    expect(result.error).to.be.undefined();
   });
 
   test('handles multiple nulls in between numeric readings', async () => {
     const formValues = createFormValues(null, null, null, 30);
     request.payload = formValues;
     const schema = meterReadingsSchema(request, data, form);
-    const result = Joi.validate(formValues, schema, { abortEarly: false });
-    expect(result.error).to.be.null();
+    const result = schema.validate(formValues, { abortEarly: false });
+    expect(result.error).to.be.undefined();
   });
 
   test('not valid if first reading is less than start reading', async () => {
     const formValues = createFormValues(5, 20, 30, 40);
     request.payload = formValues;
     const schema = meterReadingsSchema(request, data, form);
-    const result = Joi.validate(formValues, schema, { abortEarly: false });
+    const result = schema.validate(formValues, { abortEarly: false });
     expect(result.error).to.not.be.null();
   });
 
@@ -101,7 +101,7 @@ experiment('meterReadingsSchema', () => {
     const formValues = createFormValues(5, 5, 5, 5);
     request.payload = formValues;
     const schema = meterReadingsSchema(request, data, form);
-    const result = Joi.validate(formValues, schema, { abortEarly: false });
+    const result = schema.validate(formValues, { abortEarly: false });
     expect(result.error).to.not.be.null();
   });
 
@@ -109,7 +109,7 @@ experiment('meterReadingsSchema', () => {
     const formValues = createFormValues(20, 20, 20, 10);
     request.payload = formValues;
     const schema = meterReadingsSchema(request, data, form);
-    const result = Joi.validate(formValues, schema, { abortEarly: false });
+    const result = schema.validate(formValues, { abortEarly: false });
     expect(result.error).to.not.be.null();
   });
 
@@ -117,15 +117,15 @@ experiment('meterReadingsSchema', () => {
     const formValues = createFormValues(2000000000, 3000000000, 2000000001, 4000000000);
     request.payload = formValues;
     const schema = meterReadingsSchema(request, data, form);
-    const result = Joi.validate(formValues, schema, { abortEarly: false });
+    const result = schema.validate(formValues, { abortEarly: false });
     expect(result.error).to.not.be.null();
   });
 
   test('not valid if a reading at end is lower', async () => {
     const formValues = createFormValues(20, 30, null, 10);
     request.payload = formValues;
-    const schema = meterReadingsSchema(request, data, form);
-    const result = Joi.validate(formValues, schema, { abortEarly: false });
+    const schema = Joi.compile(meterReadingsSchema(request, data, form));
+    const result = schema.validate(formValues, { abortEarly: false });
     expect(result.error).to.not.be.null();
   });
 });

@@ -1,7 +1,6 @@
 'use strict';
 
 const Boom = require('@hapi/boom');
-const Joi = require('@hapi/joi');
 const services = require('../../lib/connectors/services');
 const session = require('./lib/session');
 const postcodeValidator = require('./lib/postcode-validator');
@@ -15,7 +14,7 @@ const excludeAddressesWithoutFullDetails = (addresses = []) => addresses.filter(
  * @param {Promise<Array>}
  */
 const searchForAddressesByPostcode = async request => {
-  const { error, value: postcode } = Joi.validate(request.query.postcode, postcodeValidator.postcodeSchema);
+  const { error, value: postcode } = postcodeValidator.postcodeSchema.validate(request.query.postcode);
 
   if (!error) {
     try {

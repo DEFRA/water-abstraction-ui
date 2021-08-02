@@ -1,5 +1,5 @@
 const { find, xor } = require('lodash');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { returns: { lines: { getRequiredLines } } } = require('@envage/water-abstraction-helpers');
 const { getDefaultQuantity, getSingleTotalLines } = require('./water-return-helpers');
 
@@ -16,12 +16,12 @@ const linesSchema = Joi.array().items({
   readingType: VALID_READING_TYPE
 });
 
-const optionsSchema = {
+const optionsSchema = Joi.object({
   startDate: VALID_DATE,
   endDate: VALID_DATE,
   frequency: VALID_PERIOD,
   isFinal: VALID_FLAG
-};
+});
 
 const getDateKey = line => `${line.startDate}_${line.endDate}`;
 
@@ -68,11 +68,11 @@ class Lines {
    * @param {Number|null} lines[].quantity - abstracted volume or null
    */
   setLines (abstractionPeriod, lines) {
-    const schema = Joi.array().items({
+    const schema = Joi.array().items(Joi.object({
       startDate: Joi.string().isoDate(),
       endDate: Joi.string().isoDate(),
       quantity: Joi.number().min(0).allow(null)
-    });
+    }));
     Joi.assert(lines, schema);
     Joi.assert(abstractionPeriod, VALID_ABSTRACTION_PERIOD);
 

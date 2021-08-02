@@ -1,0 +1,13 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "forms/index.njk" import formRender, formErrorSummary %}
+{% from "title.njk" import title %}
+
+{% block mainNav %}{% endblock %}
+
+{% block content %}
+
+    {{ formErrorSummary(form) }}
+    {{ title(pageTitle) }}
+    {{ formRender(form) }}
+
+{% endblock %}

@@ -46,7 +46,7 @@ experiment('logReceiptForm', () => {
 experiment('logReceiptSchema', () => {
   test('should contain the correct fields', async () => {
     const schema = logReceiptSchema();
-    const keys = Object.keys(schema);
+    const keys = Array.from(schema._ids._byKey.keys());
     expect(keys).to.only.include(['csrf_token', 'dateReceived', 'isUnderQuery']);
   });
 });

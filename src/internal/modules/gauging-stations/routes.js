@@ -27,6 +27,93 @@ module.exports = {
     }
   },
 
+  getRemoveTags: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/untagging-licence/remove-tag',
+    handler: controller.getRemoveTags,
+    config: {
+      description: 'Gets the entry page for remove linking a licence to a given gauging station - Requires the user to select tag',
+      validate: {
+        params: Joi.object({
+          gaugingStationId: Joi.string().guid().required()
+        })
+      },
+      pre: [
+        { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
+      ]
+    }
+  },
+
+  getRemoveTagsConditions: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/untagging-licence/remove-tag-multiple',
+    handler: controller.getRemoveTagsConditions,
+    config: {
+      description: 'Gets the entry page for remove linking a licence to a given gauging station - Requires the user to select tag',
+      validate: {
+        params: Joi.object({
+          gaugingStationId: Joi.string().guid().required()
+        })
+      },
+      pre: [
+        { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
+      ]
+    }
+  },
+
+  postRemoveTagsLicenceSelected: {
+    method: 'POST',
+    path: '/monitoring-stations/{gaugingStationId}/untagging-licence/remove-tag-multiple',
+    handler: controller.postRemoveTagsLicenceSelected,
+    config: {
+      description: 'Accepts a specified tag',
+      auth: {
+        scope: allowedScopes
+      },
+      pre: [
+        { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
+      ]
+    }
+  },
+
+  postRemoveTag: {
+    method: 'POST',
+    path: '/monitoring-stations/{gaugingStationId}/untagging-licence/remove-tag',
+    handler: controller.postRemoveTagOrMultiple,
+    config: {
+      description: 'Accepts a specified tag',
+      auth: {
+        scope: allowedScopes
+      },
+      pre: [
+        { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
+      ]
+    }
+  },
+
+  getRemoveTagComplete: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/untagging-licence/remove-tag-complete',
+    handler: controller.getRemoveTagComplete,
+    config: {
+      description: 'remove linking a licence to a given gauging station - Comfirm removal',
+      validate: {
+        params: Joi.object({
+          gaugingStationId: Joi.string().guid().required()
+        })
+      },
+      pre: [
+        { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
+      ]
+    }
+  },
+
+  postRemoveTagComplete: {
+    method: 'POST',
+    path: '/monitoring-stations/{gaugingStationId}/untagging-licence/remove-tag-complete',
+    handler: controller.postRemoveTagComplete
+  },
+
   getNewFlow: {
     method: 'GET',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence',

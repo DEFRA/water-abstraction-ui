@@ -116,6 +116,12 @@ const getBillingVolumeReviewRequest = payload => (
             id: 'test-purpose-use-id',
             name: 'Spritzing leeks'
           }
+        },
+        chargePeriod: {
+          chargePeriod: {
+            startDate: '2020-01-01',
+            endDate: '2020-07-01'
+          }
         }
       }
     },

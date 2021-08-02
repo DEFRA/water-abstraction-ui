@@ -98,6 +98,7 @@ const groupByLicence = inputArray => {
 const handlePost = async request => {
   const { gaugingStationId } = request.params;
   const sessionData = session.get(request);
+
   const { id: licenceId } = sessionData.fetchedLicence;
   const storedLicenceVersionPurposeConditionIdFromSession = get(sessionData, 'condition.value', null);
   const licenceVersionPurposeConditionId = storedLicenceVersionPurposeConditionIdFromSession === blankGuid ? null : storedLicenceVersionPurposeConditionIdFromSession;
@@ -136,6 +137,118 @@ const handlePost = async request => {
   return services.water.gaugingStations.postLicenceLinkage(gaugingStationId, licenceId, set(parsedPayload, 'licenceVersionPurposeConditionId', null));
 };
 
+const handleRemovePost = async request => {
+  const sessionData = session.get(request);
+  const removeList = [];
+  if (!sessionData.selected) {
+    return Promise.all([]);
+  }
+  sessionData.selected.forEach(item => {
+    if (item.linkages && item.linkages.length) {
+      item.linkages.forEach(linkItem => removeList.push(linkItem.licenceGaugingStationId));
+    } else {
+      removeList.push(item.licenceGaugingStationId);
+    }
+  });
+  if (removeList.length) {
+    return Promise.all(removeList.map(licenceGaugingStationId => services.water.gaugingStations.postLicenceLinkageRemove(licenceGaugingStationId)));
+  }
+  return Promise.all([]);
+};
+
+const longFormDictionary = [
+  { dbitem: 'gal', translation: 'Gallons', context: 'Units' },
+  { dbitem: 'Ml/d', translation: 'Megalitres per day', context: 'Units' },
+  { dbitem: 'm³', translation: 'Cubic metres', context: 'Units' },
+  { dbitem: 'l/d', translation: 'Litres per day', context: 'Units' },
+  { dbitem: 'mAOD', translation: 'Ordnance datum (mAOD)', context: 'Units' },
+  { dbitem: 'stop_or_reduce', translation: 'Reduce', context: 'AlertType' },
+  { dbitem: 'stop', translation: 'Stop', context: 'AlertType' },
+  { dbitem: 'reduce', translation: 'Reduce', context: 'AlertType' }
+];
+
+/* Converts database representation into description of tags, e.g. Stop at 115 Megalitres per day */
+const toLongForm = (str, context = '') => {
+  if (str) {
+    const words = str.split(' ');
+    const firstMatch = 0;
+    let dictionarySubset = longFormDictionary.filter(dict => dict.context.toUpperCase() === context.toUpperCase().trim());
+    if (!dictionarySubset.length) {
+      dictionarySubset = longFormDictionary;
+    }
+    const translated = words.map(word =>
+      dictionarySubset.filter(dict => dict.dbitem.toUpperCase() === word.toUpperCase().trim())[firstMatch]);
+    if (translated[firstMatch]) {
+      return translated[firstMatch].translation;
+    }
+  }
+  return str;
+};
+
+const isSelectedCheckbox = (licenceGaugingStationId, selectionArray) => {
+  if (!selectionArray) {
+    return false;
+  }
+  return selectionArray.filter(chkItem => chkItem === licenceGaugingStationId).length > 0;
+};
+
+const selectedConditionWithLinkages = request => {
+  const { licenceGaugingStations } = request.pre;
+  const { data } = licenceGaugingStations;
+  let checkBoxSelection = [];
+  if (session.get(request).selectedCondition === undefined) {
+    return checkBoxSelection;
+  }
+  checkBoxSelection = session.get(request).selectedCondition.value;
+
+  const dataFormatted = data.map(item => ({
+    licenceGaugingStationId: item.licenceGaugingStationId,
+    licenceId: item.licenceId,
+    licenceRef: item.licenceRef,
+    alertType: item.alertType,
+    thresholdValue: item.thresholdValue,
+    thresholdUnit: toLongForm(item.thresholdUnit, 'Units')
+  })
+  );
+
+  const output = chain(dataFormatted).groupBy('licenceId').map(value => ({
+    licenceRef: value[0].licenceRef,
+    licenceId: value[0].licenceId,
+    linkages: value.length <= 0 ? [] : value.filter(itemInLinkages => isSelectedCheckbox(itemInLinkages.licenceGaugingStationId, checkBoxSelection))
+  })).value();
+
+  return output.filter(chkItem => chkItem.linkages.length > 0);
+};
+
+const addCheckboxFields = dataWithoutDistinct =>
+  dataWithoutDistinct.map(itemWithoutDistinct => ({
+    value: itemWithoutDistinct.licenceGaugingStationId,
+    licenceGaugingStationId: itemWithoutDistinct.licenceGaugingStationId,
+    licenceId: itemWithoutDistinct.licenceId,
+    licenceRef: itemWithoutDistinct.licenceRef,
+    label: ` ${toLongForm(itemWithoutDistinct.alertType, 'AlertType')} at ${itemWithoutDistinct.thresholdValue} ${toLongForm(itemWithoutDistinct.thresholdUnit, 'Units')}`,
+    hint: itemWithoutDistinct.licenceRef,
+    alertType: itemWithoutDistinct.alertType,
+    thresholdValue: itemWithoutDistinct.thresholdValue,
+    thresholdUnit: toLongForm(itemWithoutDistinct.thresholdUnit, 'Units')
+  })
+  );
+
+const groupLicenceConditions = request => {
+  const { licenceGaugingStations } = request.pre;
+  const { data } = licenceGaugingStations;
+
+  return chain(data).groupBy('licenceId').map(value => ({
+    licenceRef: value[0].licenceRef,
+    licenceId: value[0].licenceId,
+    licenceGaugingStationId: value[0].licenceGaugingStationId,
+    alertType: value[0].alertType,
+    thresholdValue: value[0].thresholdValue,
+    thresholdUnit: value[0].thresholdUnit,
+    linkages: value
+  })).value();
+};
+
 exports.blankGuid = blankGuid;
 exports.createTitle = createTitle;
 exports.redirectTo = redirectTo;
@@ -145,3 +258,9 @@ exports.getCaption = getCaption;
 exports.getSelectedConditionText = getSelectedConditionText;
 exports.groupByLicence = groupByLicence;
 exports.handlePost = handlePost;
+exports.handleRemovePost = handleRemovePost;
+exports.toLongForm = toLongForm;
+exports.selectedConditionWithLinkages = selectedConditionWithLinkages;
+exports.groupLicenceConditions = groupLicenceConditions;
+exports.addCheckboxFields = addCheckboxFields;
+exports.isSelectedCheckbox = isSelectedCheckbox;

@@ -3,93 +3,12 @@ name: Regression
 on: workflow_dispatch
 
 jobs:
-  RegressionTests:
-    runs-on: ubuntu-latest
-    env:
-      COOKIE_SECRET: somethingverysecrethere
-      GOOGLE_ANALYTICS_PROPERTY_ID: ga-test
-      PGUSER: water
-      PGHOST: localhost
-      PGPASSWORD: water
-      PGPORT: 5432
-      PGDATABASE: water
-      ENVIRONMENT: dev
-      DATABASE_URL: postgres://water:water@localhost:5432/water
-      JWT_SECRET: secret
-      JWT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIzNH0.MOREC6-Kszb9bDFw0O1UKywpnkcP-c5cPjASMpjk8Po
-      NOTIFY_KEY: somerealnotifykey-00000000-0000-0000-0000-000000000000-00000000-0000-0000-0000-000000000000
-      TEST_NOTIFY_KEY: ${{ secrets.TEST_NOTIFY_KEY }}
-      WHITELIST_NOTIFY_KEY: ${{ secrets.WHITELIST_NOTIFY_KEY }}
-      LIVE_NOTIFY_KEY: somerealnotifykey-00000000-0000-0000-0000-000000000000-00000000-0000-0000-0000-000000000000
-      TRAVIS: 1
-      NODE_ENV: local
-      CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-      WATER_URI: http://localhost:8001/water/1.0
-      WATER_URI_INTERNAL: http://localhost:8001/water/1.0
-      PERMIT_URI: http://localhost:8004/API/1.0/
-      ADMIN_URI: http://localhost:8005/API/1.0/
-      CRM_URI: http://localhost:8002/crm/1.0
-      RETURNS_URI: http://localhost:8006/returns/1.0
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-
-    services:
-      # Label used to access the service container
-      postgres:
-        # Docker Hub image
-        image: postgres:13-alpine
-        # Provide the password for postgres
-        env:
-          POSTGRES_USER: water
-          POSTGRES_HOST: localhost
-          POSTGRES_PASSWORD: water
-          POSTGRES_PORT: 5432
-          POSTGRES_DB: water
-        # Maps tcp port 5432 on service container to the host
-        ports:
-          - 5432:5432
-        # Set health checks to wait until postgres has started. You must have this so the runner knows to wait till
-        # postgres is up and running before proceeding
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-      redis:
-        # Docker Hub image
-        image: redis
-        ports:
-          # Maps port 6379 on service container to the host
-          - 6379:6379
-
+  cypress-run:
+    runs-on: ubuntu-20.04
     steps:
-      - name: Install Node
-        uses: actions/setup-node@v2-beta
-        with:
-          node-version: '12'
-
-
-      # Downloads a copy of the code in your repository before running CI tests
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v2
-
-      - name: Install UI dependencies
-        run: |
-          npm i
-
-
-
-      - name: Install PM2
-        run: |
-          npm i -g pm2
-          
-      - name: Start pm2
-        run: |
-          pm2 start ecosystem.config.json
-
-      - name: Sleep for 10 seconds
-        uses: jakejarvis/wait-action@master
-        with:
-          time: '10s'
-          
-      - name: Run cypress e2e tests
+      - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          start: npm run test:cypress-silently
-          wait-on: 'http://localhost:8008'
+          build: npm i -g pm2 && pm2 start ecosystem.config.json

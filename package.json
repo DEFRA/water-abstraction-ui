@@ -10,6 +10,7 @@
   "scripts": {
     "run:internal": "node server-internal",
     "run:external": "node server-external",
+    "run:internal-and-external": "npm run run:internal && npm run run:external",
     "clean:reports": "rm -rf cypress/reports/*",
     "pretest": "npm run clean:reports",
     "install-assets": "gulp build",

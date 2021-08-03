@@ -148,6 +148,7 @@ jobs:
       
       - name: Start pm2
         run: |
+          npm i
           npm i -g pm2
           cd water-abstraction-permit-repository && pm2 start ecosystem.config.json && cd ..
           cd water-abstraction-service && pm2 start ecosystem.config.json && cd ..

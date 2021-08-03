@@ -62,6 +62,9 @@ jobs:
       - name: Create database
         run: |
           PGPASSWORD=water psql -U water -tc "SELECT 'CREATE DATABASE water' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'water')"
+          PGPASSWORD=water psql -U water -tc "SHOW search_path"
+          PGPASSWORD=water psql -U water -tc "SET search_path = 'water'"
+          PGPASSWORD=water psql -U water -tc "SHOW search_path"
           
       - name: Install water service
         uses: actions/checkout@v2

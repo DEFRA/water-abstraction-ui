@@ -12,5 +12,5 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           build: |
-            npm i -g pm2
-            pm2 start ecosystem.config.json
+            npm i
+            npm run server-internal.js

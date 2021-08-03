@@ -77,7 +77,7 @@ const getDebitCreditLines = (value, isCredit, debitLabel, creditLabel) => {
 const getInvoiceData = invoice => {
   const { netTotal, isCredit } = invoice;
   return {
-    ...invoice.invoiceNumber && { 'Bill number': invoice.invoiceNumber },
+    'Bill number': invoice.invoiceNumber,
     'Financial year': invoice.financialYear.yearEnding,
     ...getDebitCreditLines(netTotal, isCredit, 'Invoice amount', 'Credit amount')
   }

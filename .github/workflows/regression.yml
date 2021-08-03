@@ -11,6 +11,5 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          build: |
-            npm i
-            npm run server-internal.js
+          build: npm i
+          start: npm run server-internal.js

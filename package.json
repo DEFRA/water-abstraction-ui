@@ -8,6 +8,8 @@
     "url": "https://github.com/DEFRA/water-abstraction-ui"
   },
   "scripts": {
+    "run:internal": "npm run server-internal",
+    "run:external": "npm run server-external",
     "clean:reports": "rm -rf cypress/reports/*",
     "pretest": "npm run clean:reports",
     "install-assets": "gulp build",

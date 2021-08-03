@@ -34,7 +34,7 @@ jobs:
       RETURNS_URI: http://127.0.0.1:8006/returns/1.0
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      REDIS_PASSWORD: 
+      REDIS_PASSWORD: ""
     services:
       # Label used to access the service container
       postgres:
@@ -163,3 +163,33 @@ jobs:
         with:
           build: npm i
           start: npm run run:internal-and-external
+        env:
+          COOKIE_SECRET: somethingverysecrethere
+          GOOGLE_ANALYTICS_PROPERTY_ID: ga-test
+          PGUSER: water
+          PGHOST: localhost
+          PGPASSWORD: water
+          PGPORT: 5432
+          PGDATABASE: water
+          ENVIRONMENT: test
+          DATABASE_URL: postgres://water:water@localhost:5432/water
+          JWT_SECRET: secret
+          JWT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIzNH0.MOREC6-Kszb9bDFw0O1UKywpnkcP-c5cPjASMpjk8Po
+          NOTIFY_KEY: somerealnotifykey-00000000-0000-0000-0000-000000000000-00000000-0000-0000-0000-000000000000
+          TEST_NOTIFY_KEY: ${{ secrets.TEST_NOTIFY_KEY }}
+          WHITELIST_NOTIFY_KEY: ${{ secrets.WHITELIST_NOTIFY_KEY }}
+          NOTIFY_CALLBACK_TOKEN: some-token
+          LIVE_NOTIFY_KEY: somerealnotifykey-00000000-0000-0000-0000-000000000000-00000000-0000-0000-0000-000000000000
+          TRAVIS: 1
+          TEST_MODE: 1
+          NODE_ENV: local
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+          WATER_URI: http://127.0.0.1:8001/water/1.0
+          WATER_URI_INTERNAL: http://127.0.0.1:8001/water/1.0
+          PERMIT_URI: http://127.0.0.1:8004/API/1.0/
+          ADMIN_URI: http://127.0.0.1:8005/API/1.0/
+          CRM_URI: http://127.0.0.1:8002/crm/1.0
+          RETURNS_URI: http://127.0.0.1:8006/returns/1.0
+          REDIS_HOST: redis
+          REDIS_PORT: 6379
+          REDIS_PASSWORD: ""

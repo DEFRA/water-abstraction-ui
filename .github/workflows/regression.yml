@@ -160,4 +160,4 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           build: npm i
-          start: npm run runInternalAndExternal
+          start: npm run run:internal-and-external

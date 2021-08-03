@@ -50,6 +50,9 @@ jobs:
       ADMIN_URI: http://127.0.0.1:8005/API/1.0/
       CRM_URI: http://127.0.0.1:8002/crm/1.0
       RETURNS_URI: http://127.0.0.1:8006/returns/1.0
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -152,9 +155,8 @@ jobs:
           cd water-abstraction-tactical-idm && pm2 start ecosystem.config.json && cd ..
           cd water-abstraction-returns && pm2 start ecosystem.config.json && cd ..
           cd water-abstraction-import && pm2 start ecosystem.config.json && cd ..
+          npm run run:internal
+          npm run run:external
           
       - name: Cypress run
         uses: cypress-io/github-action@v2
-        with:
-          build: npm i
-          start: npm run run:internal

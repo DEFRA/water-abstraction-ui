@@ -1,7 +1,6 @@
 'use-strict';
 
 const { SOURCES, EIUC_SOURCE_OTHER } = require('./constants');
-const { isEmpty } = require('lodash');
 
 const abstraction = (formValues) => {
   const [startMonth, startDay] = (formValues.startDate).toString().split(/[- T]/g);

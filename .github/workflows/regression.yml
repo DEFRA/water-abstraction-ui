@@ -31,7 +31,7 @@ jobs:
       PGPASSWORD: water
       PGPORT: 5432
       PGDATABASE: water
-      ENVIRONMENT: dev
+      ENVIRONMENT: test
       DATABASE_URL: postgres://water:water@localhost:5432/water
       JWT_SECRET: secret
       JWT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIzNH0.MOREC6-Kszb9bDFw0O1UKywpnkcP-c5cPjASMpjk8Po

@@ -41,7 +41,7 @@ const getTransactionTotals = transactions => {
   const totals = transactions.reduce((acc, row) => ({
     debits: acc.debits.plus(row.isCredit ? 0 : row.value),
     credits: acc.credits.plus(row.isCredit ? row.value : 0),
-    netTotal: acc.netTotal.plus(row.value)
+    netTotal: row.isCredit ? acc.netTotal.minus(row.value) : acc.netTotal.plus(row.value)
   }), initialValue);
 
   return mapValues(totals, val => val.toNumber());

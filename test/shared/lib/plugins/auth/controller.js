@@ -16,7 +16,7 @@ const createRequest = (isAuthenticated) => {
     query: {},
     view: { csrfToken: 'token' },
     payload: {
-      csrf_token: 'token',
+      csrf_token: '2abbe559-7e06-4dcc-8856-451b737ecbf0',
       email: 'bob@example.com',
       password: 'topsecret'
     }
@@ -111,7 +111,7 @@ experiment('Auth plugin controller', () => {
       test('outputs correct data to the view', async () => {
         const [, view] = h.view.lastCall.args;
         expect(view.surveyType).to.equal('anonymous');
-        expect(view.pageTitle).to.equal('You are signed out');
+        expect(view.pageTitle).to.equal('You\'re signed out');
       });
     });
 

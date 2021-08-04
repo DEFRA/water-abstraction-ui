@@ -247,8 +247,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         ...transaction,
         agreements: [{ code: 'S130W' }]
       });
-      expect(transactionData['S126 agreement (Y/N)']).to.equal('Y');
-      expect(transactionData['S126 agreement value']).to.equal(1.0);
       expect(transactionData['S127 agreement (Y/N)']).to.equal('Y');
       expect(transactionData['S127 agreement value']).to.equal(0.5);
       expect(transactionData['S130 agreement']).to.equal('S130W');
@@ -285,8 +283,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       const transactionData = transactionsCSV._getTransactionData(minChargeTransaction);
       expect(transactionData.description).to.equal(minChargeTransaction.description);
       expect(transactionData['Compensation charge Y/N']).to.equal('Y');
-      expect(transactionData['S126 agreement (Y/N)']).to.equal('N');
-      expect(transactionData['S126 agreement value']).to.equal(null);
       expect(transactionData['S127 agreement (Y/N)']).to.equal('N');
       expect(transactionData['S127 agreement value']).to.equal(null);
       expect(transactionData['S130 agreement']).to.equal(null);
@@ -303,10 +299,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
     });
 
     experiment('invoice number', () => {
-      test('does not exist if not present', async () => {
-        expect(invoiceData['Bill number']).to.be.undefined();
-      });
-
       test('is mapped to user friendly heading when present', async () => {
         invoiceData = transactionsCSV._getInvoiceData({
           ...invoice, invoiceNumber: 'IIA123456'

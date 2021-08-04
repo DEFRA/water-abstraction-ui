@@ -2,7 +2,7 @@
 
 const { formFactory, fields } = require('shared/lib/forms/');
 const { snakeCase } = require('lodash');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { TWO_PART_TARIFF } = require('../lib/bill-run-types');
 
 const mapChoices = regionsData =>
@@ -44,15 +44,15 @@ const selectBillingRegionForm = (request, regions) => {
 
 const getRegionIds = regions => regions.map(region => region.regionId);
 
-const billingRegionFormSchema = regions => ({
+const billingRegionFormSchema = regions => (Joi.object({
   csrf_token: Joi.string().uuid().required(),
-  selectedBillingRegion: Joi.string().uuid().required().valid(getRegionIds(regions)),
+  selectedBillingRegion: Joi.string().uuid().required().valid(...getRegionIds(regions)),
   selectedBillingType: Joi.string().required(),
   selectedTwoPartTariffSeason: Joi.string().allow('').when('selectedBillingType', {
     is: TWO_PART_TARIFF,
-    then: Joi.string().required()
+    then: Joi.string().allow().required()
   })
-});
+}));
 
 exports.selectBillingRegionForm = selectBillingRegionForm;
 exports.billingRegionFormSchema = billingRegionFormSchema;

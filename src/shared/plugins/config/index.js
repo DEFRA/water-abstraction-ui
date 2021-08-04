@@ -11,7 +11,6 @@ const configPlugin = {
       type: 'onPreHandler',
       method: async (request, reply) => {
         const config = request.route.settings.plugins.config || {};
-
         request.config = config;
 
         // Continue processing request

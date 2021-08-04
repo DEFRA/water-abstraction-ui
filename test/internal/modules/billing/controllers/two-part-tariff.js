@@ -116,6 +116,12 @@ const getBillingVolumeReviewRequest = payload => (
             id: 'test-purpose-use-id',
             name: 'Spritzing leeks'
           }
+        },
+        chargePeriod: {
+          chargePeriod: {
+            startDate: '2020-01-01',
+            endDate: '2020-07-01'
+          }
         }
       }
     },
@@ -765,7 +771,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     test('the page title is set correctly', async () => {
       const [, { pageTitle }] = h.view.lastCall.args;
-      expect(pageTitle).to.equal('You are about to remove this licence from the bill run');
+      expect(pageTitle).to.equal('You\'re about to remove this licence from the bill run');
     });
 
     test('sets the back link correctly', async () => {
@@ -824,7 +830,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     test('passes the correct page title to the view context', () => {
       const [, view] = h.view.lastCall.args;
-      expect(view.pageTitle).to.equal('You are about to generate the two-part tariff bills');
+      expect(view.pageTitle).to.equal('You\'re about to generate the two-part tariff bills');
     });
 
     test('passes back link to the view context', () => {

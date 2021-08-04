@@ -8,7 +8,7 @@ const Boom = require('@hapi/boom');
 const { get } = require('lodash');
 
 const loginHelpers = require('../../lib/login-helpers');
-const { selectCompanyForm } = require('./forms/select-company');
+const { selectCompanyForm, selectCompanyFormSchema } = require('./forms/select-company');
 const { handleRequest, getValues } = require('shared/lib/forms');
 
 /**
@@ -55,7 +55,7 @@ const getSelectCompany = async (request, h) => {
 const postSelectCompany = async (request, h) => {
   const { userId } = request.defra;
   const data = await loginHelpers.loadUserData(userId);
-  const form = handleRequest(selectCompanyForm(request, data), request);
+  const form = handleRequest(selectCompanyForm(request, data), request, selectCompanyFormSchema);
 
   // Set company entity and redirect if valid
   if (form.isValid) {

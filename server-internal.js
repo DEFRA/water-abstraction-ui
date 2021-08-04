@@ -15,7 +15,6 @@ const { logger } = require('./src/internal/logger');
 const connectors = require('./src/internal/lib/connectors/services');
 
 const common = createPlugins(config, logger, connectors);
-
 // Configure auth plugin
 const AuthConfig = require('internal/lib/AuthConfig');
 const authConfig = new AuthConfig(config, connectors);
@@ -91,16 +90,13 @@ const pluginsArray = [
 async function start () {
   try {
     await server.register(require('hapi-auth-cookie'));
-
     server.auth.strategy('standard', 'cookie', {
       ...config.hapiAuthCookie,
       validateFunc: (request, data) => authConfig.validateFunc(request, data)
     });
 
     server.auth.default('standard');
-
     await server.register(pluginsArray);
-
     // Set up Nunjucks view engine
     server.views(viewEngine);
 

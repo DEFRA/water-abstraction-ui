@@ -1,11 +1,12 @@
 'use strict';
 
 const { pick, get } = require('lodash');
+const Joi = require('joi');
 const { VALID_ADDRESS } = require('@envage/water-abstraction-helpers').validators;
 
 const { formFactory, fields, setValues } = require('shared/lib/forms');
 const { addressSources } = require('shared/lib/constants');
-const Joi = require('@hapi/joi');
+const { createSchema } = require('shared/lib/joi.helpers');
 const countryList = require('./country-list');
 const session = require('../lib/session');
 
@@ -23,7 +24,7 @@ const addressTextFields = [
     label: 'Building number',
     controlClass: 'govuk-input--width-5',
     errors: {
-      'any.empty': {
+      'string.empty': {
         message: 'Enter either a building number or building name'
       }
     }
@@ -36,7 +37,7 @@ const addressTextFields = [
     label: 'Street name',
     controlClass: GOVUK_WIDTH_TWO_THIRDS,
     errors: {
-      'any.empty': {
+      'string.empty': {
         message: 'Enter either a street name or town or city'
       }
     }
@@ -51,10 +52,10 @@ const addressTextFields = [
   }),
   fields.text('postcode', {
     errors: {
-      'any.empty': {
+      'string.empty': {
         message: 'Enter a UK postcode'
       },
-      'string.regex.base': {
+      'string.pattern.base': {
         message: 'Enter a real UK postcode'
       }
     },
@@ -87,7 +88,6 @@ const getValues = request => {
  * an address
  *
  * @param {Object} request The Hapi request object
- * @param {Object} address contains address data values
  */
 const form = request => {
   const { csrfToken } = request.view;
@@ -98,8 +98,8 @@ const form = request => {
 
   f.fields.push(fields.dropdown('country', {
     errors: {
-      'any.allowOnly': { message: 'Select a country' },
-      'any.empty': { message: 'Select a country' }
+      'any.only': { message: 'Select a country' },
+      'string.empty': { message: 'Select a country' }
     },
     label: 'Country',
     choices: getCountryDropdownChoices()
@@ -114,9 +114,9 @@ const form = request => {
   return f;
 };
 
-const schema = () => VALID_ADDRESS.keys({
+const schema = () => createSchema(VALID_ADDRESS.append({
   csrf_token: Joi.string().uuid().required()
-});
+}));
 
 exports.form = form;
 exports.schema = schema;

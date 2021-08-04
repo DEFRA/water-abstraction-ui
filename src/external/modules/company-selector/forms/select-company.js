@@ -1,3 +1,4 @@
+const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms');
 
 const mapChoices = userData => {
@@ -34,4 +35,10 @@ const form = (request, userData) => {
   return f;
 };
 
+const schema = Joi.object().keys({
+  company: Joi.any().required(),
+  csrf_token: Joi.string().guid().required()
+});
+
 exports.selectCompanyForm = form;
+exports.selectCompanyFormSchema = schema;

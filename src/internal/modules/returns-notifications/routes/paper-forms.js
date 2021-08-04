@@ -8,7 +8,7 @@ const eventPreHandlers = require('shared/lib/pre-handlers/events');
 const constants = require('../../../lib/constants');
 const { returns } = constants.scope;
 const { createFormRoutes } = require('shared/lib/route-helpers');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 const formRoutes = {
   enterLicenceNumber: {
@@ -24,9 +24,9 @@ const formRoutes = {
         }
       },
       validate: {
-        query: {
+        query: Joi.object().keys({
           form: Joi.string().optional()
-        }
+        })
       },
       pre: [
         { method: preHandlers.getStateFromSession, assign: 'state' }
@@ -59,9 +59,9 @@ const formRoutes = {
         scope: returns
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           documentId: VALID_GUID
-        }
+        })
       },
       pre: [
         { method: preHandlers.getDocumentFromSession, assign: 'document' }
@@ -82,9 +82,9 @@ const formRoutes = {
         scope: returns
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           documentId: VALID_GUID
-        }
+        })
       },
       pre: [
         { method: preHandlers.getDocumentFromSession, assign: 'document' }
@@ -105,9 +105,9 @@ const formRoutes = {
         scope: returns
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           documentId: VALID_GUID
-        }
+        })
       },
       pre: [
         { method: preHandlers.getDocumentFromSession, assign: 'document' }
@@ -153,9 +153,9 @@ module.exports = {
         scope: returns
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           documentId: VALID_GUID
-        }
+        })
       },
       pre: [
         { method: preHandlers.getDocumentFromSession, assign: 'document' }

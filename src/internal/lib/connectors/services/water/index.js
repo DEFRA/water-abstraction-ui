@@ -2,6 +2,7 @@
 const CommunicationsService = require('shared/lib/connectors/services/water/CommunicationsService');
 const CompaniesService = require('shared/lib/connectors/services/water/CompaniesService');
 const LicencesService = require('shared/lib/connectors/services/water/LicencesService');
+const LicenceVersionPurposeConditionsService = require('shared/lib/connectors/services/water/LicenceVersionPurposeConditionsService');
 const UsersService = require('shared/lib/connectors/services/water/UsersService');
 const ChargeVersionsService = require('shared/lib/connectors/services/water/ChargeVersionsService');
 const ChargeVersionWorkflowsService = require('shared/lib/connectors/services/water/ChargeVersionWorkflowsService');
@@ -28,7 +29,6 @@ const ReportingService = require('./ReportingService');
 // Shared API Clients
 const EventsApiClient = require('shared/lib/connectors/services/water/EventsApiClient');
 const GaugingStationsApiClient = require('shared/lib/connectors/services/water/GaugingStationsApiClient');
-const GaugingStationsService = require('shared/lib/connectors/services/water/GaugingStationsService');
 const PendingImportsApiClient = require('shared/lib/connectors/services/water/PendingImportsApiClient');
 
 // API Clients
@@ -45,9 +45,8 @@ module.exports = config => ({
   communications: new CommunicationsService(config.services.water, logger),
   companies: new CompaniesService(config.services.water, logger),
   licences: new LicencesService(config.services.water, logger),
+  licenceVersionPurposeConditionsService: new LicenceVersionPurposeConditionsService(config.services.water, logger),
   users: new UsersService(config.services.water, logger),
-  monitoringstations: new GaugingStationsService(config.services.water, logger),
-
   // Internal services
   addressSearch: new AddressSearchService(config.services.water, logger),
   agreements: new AgreementsService(config.services.water, logger),
@@ -66,10 +65,10 @@ module.exports = config => ({
   returnsNotifications: new ReturnsNotificationsService(config.services.water, logger),
   kpiReporting: new KpiReportingService(config.services.water, logger),
   reporting: new ReportingService(config.services.water, logger),
+  gaugingStations: new GaugingStationsApiClient(config.services.water, logger),
 
   // Shared API Clients
   abstractionReformAnalysis: new AbstractionReformAnalysisApiClient(config, logger),
-  gaugingStations: new GaugingStationsApiClient(config, logger),
   notifications: new NotificationsApiClient(config, logger),
   taskConfigs: new TaskConfigsApiClient(config, logger),
 

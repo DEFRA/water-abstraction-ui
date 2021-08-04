@@ -26,12 +26,12 @@ const routes = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: Joi.string().uuid()
-        },
-        query: {
+        }),
+        query: Joi.object().keys({
           back: Joi.number().integer().default(1).optional()
-        }
+        })
       },
       pre: [
         { method: preHandlers.loadBatch, assign: 'batch' },
@@ -53,10 +53,10 @@ const routes = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: Joi.string().uuid(),
           invoiceId: Joi.string().uuid()
-        }
+        })
       }
     }
   },
@@ -75,9 +75,9 @@ const routes = {
         }
       },
       validate: {
-        query: {
+        query: Joi.object().keys({
           page: Joi.number().integer().min(1).default(1)
-        }
+        })
       }
     }
   },
@@ -94,9 +94,9 @@ const routes = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: Joi.string().uuid()
-        }
+        })
       },
       pre: [{ method: preHandlers.loadBatch, assign: 'batch' }]
     }
@@ -109,12 +109,12 @@ const routes = {
     config: {
       auth: { scope: allowedScopes },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: Joi.string().uuid().required()
-        },
-        payload: {
+        }),
+        payload: Joi.object().keys({
           csrf_token: Joi.string().uuid().required()
-        }
+        })
       }
     }
   },
@@ -134,9 +134,9 @@ const routes = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: Joi.string().uuid()
-        }
+        })
       },
       pre: [
         { method: preHandlers.loadBatch, assign: 'batch' },
@@ -157,9 +157,9 @@ const routes = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: Joi.string().uuid()
-        }
+        })
       },
       pre: [{ method: preHandlers.loadBatch, assign: 'batch' }]
     }
@@ -172,12 +172,12 @@ const routes = {
     config: {
       auth: { scope: allowedScopes },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: Joi.string().uuid().required()
-        },
-        payload: {
+        }),
+        payload: Joi.object().keys({
           csrf_token: Joi.string().uuid().required()
-        }
+        })
       }
     }
   },
@@ -189,9 +189,9 @@ const routes = {
     config: {
       auth: { scope: allowedScopes },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: Joi.string().uuid().required()
-        }
+        })
       },
       pre: [{ method: preHandlers.loadBatch, assign: 'batch' }]
     }
@@ -209,10 +209,10 @@ const routes = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: Joi.string().uuid(),
           invoiceId: Joi.string().uuid()
-        }
+        })
       },
       pre: [
         { method: preHandlers.loadBatch, assign: 'batch' },
@@ -233,13 +233,13 @@ const routes = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: Joi.string().uuid(),
           invoiceId: Joi.string().uuid()
-        },
-        payload: {
+        }),
+        payload: Joi.object().keys({
           csrf_token: Joi.string().uuid().required()
-        }
+        })
       }
     }
   },
@@ -259,12 +259,12 @@ const routes = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: Joi.string().uuid()
-        },
-        query: {
+        }),
+        query: Joi.object().keys({
           back: Joi.number().integer().default(1).optional()
-        }
+        })
       },
       pre: [
         { method: preHandlers.loadBatch, assign: 'batch' },
@@ -288,9 +288,9 @@ const routes = {
         }
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           batchId: Joi.string().uuid()
-        }
+        })
       },
       pre: [
         { method: preHandlers.loadBatch, assign: 'batch' },

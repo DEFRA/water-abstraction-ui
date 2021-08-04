@@ -1,0 +1,183 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "badge.njk" import badge %}
+
+{% block pageTitle %}
+  {{pageTitle}} - GOV.UK
+{% endblock %}
+
+{% block content %}
+  <!-- page title -->
+  <div class="govuk-grid-row govuk-!-margin-bottom-6">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-1">
+        <span class="govuk-caption-l">{{station.catchmentName}}</span>
+        {{pageTitle}}
+      </h1>
+      {% set metaData %}
+        {{ govukSummaryList({
+        classes: 'govuk-summary-list--no-border',
+        rows: [
+          {
+            key: {
+              text: "Grid reference",
+              classes: "meta-data__label"
+            },
+            value: {
+              text: station.gridReference,
+              classes: "meta-data__value"
+            }
+          } if station.gridReference,
+          {
+            key: {
+              text: "Easting",
+              classes: "meta-data__label"
+            },
+            value: {
+              text: station.easting,
+              classes: "meta-data__value"
+            }
+          } if station.easting,
+          {
+            key: {
+              text: "Northing",
+              classes: "meta-data__label"
+            },
+            value: {
+              text: station.northing,
+              classes: "meta-data__value"
+            }
+          } if station.northing,
+          {
+            key: {
+              text: "WISKI ID",
+              classes: "meta-data__label"
+            },
+            value: {
+              text: station.wiskiId,
+              classes: "meta-data__value"
+            }
+          } if station.wiskiId,
+          {
+            key: {
+              text: "Station reference",
+              classes: "meta-data__label"
+            },
+            value: {
+              text: station.stationReference,
+              classes: "meta-data__value"
+            }
+          } if station.stationReference
+        ]
+        }) }}
+      {% endset %}
+
+    {{ govukDetails({
+      summaryText: "Station details",
+      html: metaData
+    }) }}
+
+  </div>
+</div>
+
+{% if isWaterAbstractionAlertsEnabled %}
+    {% if licenceGaugingStations.length %}
+      <div class="govuk-grid-row govuk-!-margin-bottom-6">
+        <div class="govuk-grid-column-full">
+          {{ govukButton({
+        text: "Create a water abstraction alert",
+        href: "send-alert"
+      }) }}
+        </div>
+      </div>
+    {% endif %}
+{% endif %}
+
+
+
+{% if isWaterAbstractionAlertsEnabled %}
+    {% if licenceGaugingStations.length %}
+        <table class="govuk-table">
+        <caption class="govuk-table__caption govuk-table__caption--m">Licences linked to this monitoring station</caption>
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header ">Licence</th>
+            <th scope="col" class="govuk-table__header ">Abstraction period</th>
+            <th scope="col" colspan="3" class="govuk-table__header ">Flow and level restriction<br> type and threshold </th>
+            <th scope="col" colspan="2" class="govuk-table__header ">Last type of alert  <br>sent and date issued</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+            {% for licenceGaugingStation in licenceGaugingStations %}
+                <tr class="govuk-table__row">
+                    <td class="govuk-table__cell">
+                        <a href="/licences/{{licenceGaugingStation.licenceId}}">
+                            {{licenceGaugingStation.licenceRef}}
+                        </a>
+                    </td>
+                    <td class="govuk-table__cell">
+                        {% for linkage in licenceGaugingStation.linkages %}
+                            {{linkage.abstractionPeriod | abstractionPeriod}}
+                            <br/>
+                        {% endfor %}
+                    </td>
+                    <td class="govuk-table__cell" colspan="1" >
+                        {% for linkage in licenceGaugingStation.linkages %}
+                            {{ 'Reduce' if linkage.alertType.includes('reduce') else 'Stop' }}<br/>
+                        {% endfor %}
+                    </td>
+
+                    <td class="govuk-table__cell" colspan="2">
+                        <table>
+                            {% for linkage in licenceGaugingStation.linkages %}
+                                <tr>
+                                    <td  class="govuk-table__cell--numeric">{{ linkage.thresholdValue }}</td>
+                                    <td>{{ linkage.thresholdUnit }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </td>
+
+                    <td class="govuk-table__cell" colspan="2">
+                    <table>
+                        {% for linkage in licenceGaugingStation.linkages %}
+                            <tr>
+                                <td>{{ linkage.comstatus | titleCase }}</td>
+                                <td style="padding-left: 1em;">{{ linkage.dateStatusUpdated | date if linkage.dateStatusUpdated else 'Not set'}}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+        {% else %}
+            <p class="govuk-body">There are no licences tagged with restrictions for this monitoring station</p>
+        {% endif %}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Tag a licence",
+            href: "/monitoring-stations/" + station.gaugingStationId + "/tagging-licence",
+            classes: "govuk-button--secondary"
+          }) }}
+
+        {% if licenceGaugingStations.length %}
+          {{ govukButton({
+            text: "Remove a tag",
+            href: "/monitoring-stations/" + station.gaugingStationId + "/untagging-licence/remove-tag",
+            classes: "govuk-button--secondary"
+          }) }}
+        {% endif %}
+{% endif %}
+</div>
+
+<!--End content block-->
+{% endblock %}

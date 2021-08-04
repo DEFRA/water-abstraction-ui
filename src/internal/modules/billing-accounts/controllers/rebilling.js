@@ -31,7 +31,6 @@ const getRebillingStartDate = async (request, h) => h.view('nunjucks/form', {
  */
 const postRebillingStartDate = async (request, h) => {
   const form = handleFormRequest(request, forms.dateFrom);
-
   if (!form.isValid) {
     return h.postRedirectGet(form);
   }

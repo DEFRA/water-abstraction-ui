@@ -46,7 +46,7 @@ async function getSignout (request, h) {
 async function getSignedOut (request, h) {
   const surveyType = { i: 'internal', e: 'external' };
   request.view.surveyType = surveyType[request.query.u] || 'anonymous';
-  request.view.pageTitle = 'You are signed out';
+  request.view.pageTitle = `You're signed out`;
   return h.view('nunjucks/auth/signed-out', request.view);
 }
 

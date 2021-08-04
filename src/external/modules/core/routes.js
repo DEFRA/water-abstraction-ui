@@ -25,10 +25,10 @@ module.exports = {
         // Plus allow any other values that may appear but don't parse into request.query
         // because they are of no use at the moment, but it prevents a 400 response if
         // they appear (potentially via google analytics)
-        query: {
+        query: Joi.object().keys({
           ...VALID_UTM,
           _ga: Joi.any().optional()
-        },
+        }),
         options: {
           stripUnknown: true
         }

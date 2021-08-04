@@ -1,7 +1,7 @@
 'use strict';
 
 const { formFactory, fields } = require('shared/lib/forms');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { accountTypes } = require('shared/lib/constants');
 
 const form = request => {
@@ -23,7 +23,7 @@ const form = request => {
         label: 'Individual',
         fields: [fields.text('personName', {
           errors: {
-            'any.empty': {
+            'string.empty': {
               message: `Enter the full name`
             }
           },
@@ -38,9 +38,9 @@ const form = request => {
   return f;
 };
 
-const schema = () => Joi.object({
+const schema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
-  accountType: Joi.string().required().valid([accountTypes.organisation, accountTypes.person]),
+  accountType: Joi.string().required().valid(...[accountTypes.organisation, accountTypes.person]),
   personName: Joi.when('accountType', {
     is: accountTypes.person,
     then: Joi.string().required().trim()

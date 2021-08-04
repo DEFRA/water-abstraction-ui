@@ -1,9 +1,10 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const controller = require('./controller');
 const { scope } = require('../../lib/constants');
 const preHandlers = require('shared/lib/pre-handlers/licences');
+const preHandlersGS = require('internal/modules/gauging-stations/lib/prehandlers');
 
 module.exports = {
 
@@ -14,7 +15,7 @@ module.exports = {
     config: {
       description: 'Gets summary details about a particular licence',
       validate: {
-        params: Joi.object({
+        params: Joi.object().keys({
           licenceId: Joi.string().guid().required()
         })
       },
@@ -54,7 +55,10 @@ module.exports = {
           },
           {
             method: preHandlers.loadSummary, assign: 'summary'
+          }, {
+            method: preHandlersGS.loadGaugingStationsByLicenceId, assign: 'gaugingStations'
           }
+
         ]
       ]
     }
@@ -70,10 +74,10 @@ module.exports = {
       },
       description: 'Displays a list of bills for a particular licence',
       validate: {
-        params: Joi.object({
+        params: Joi.object().keys({
           licenceId: Joi.string().guid().required()
         }),
-        query: Joi.object({
+        query: Joi.object().keys({
           page: Joi.number().default(1)
         })
       },

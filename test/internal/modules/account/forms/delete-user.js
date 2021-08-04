@@ -51,29 +51,29 @@ experiment('account/forms/delete-user form', () => {
 experiment('account/forms/delete-user schema', () => {
   experiment('csrf token', () => {
     test('validates for a uuid', async () => {
-      const result = deleteUserSchema.csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
-      expect(result.error).to.be.null();
+      const result = deleteUserSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', confirmDelete: ['confirm'] }, { allowUnknown: true });
+      expect(result.error).to.be.undefined();
     });
 
     test('fails for a string that is not a uuid', async () => {
-      const result = deleteUserSchema.csrf_token.validate('pasta');
+      const result = deleteUserSchema.validate({ csrf_token: 'pasta', confirmDelete: ['confirm'] }, { allowUnknown: true });
       expect(result.error).to.exist();
     });
   });
 
   experiment('confirmDelete', () => {
     test('validates for confirm value', async () => {
-      const result = deleteUserSchema.confirmDelete.validate(['confirm']);
-      expect(result.error).to.be.null();
+      const result = deleteUserSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', confirmDelete: ['confirm'] });
+      expect(result.error).to.be.undefined();
     });
 
     test('fails if value is not in an array', async () => {
-      const result = deleteUserSchema.confirmDelete.validate('confirm');
+      const result = deleteUserSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', confirmDelete: 'confirm' });
       expect(result.error).to.exist();
     });
 
     test('fails for any other value', async () => {
-      const result = deleteUserSchema.confirmDelete.validate(['pasta']);
+      const result = deleteUserSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', confirmDelete: 'pasta' });
       expect(result.error).to.exist();
     });
   });

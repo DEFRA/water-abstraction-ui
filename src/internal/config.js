@@ -10,6 +10,8 @@ const { internal } = require('./lib/constants').scope;
 
 module.exports = {
 
+  baseUrl: process.env.ADMIN_BASE_URL,
+
   blankie: {
     frameSrc: ['self', 'www.smartsurvey.co.uk'],
     scriptSrc: ['self', '*.google-analytics.com'],
@@ -140,6 +142,7 @@ module.exports = {
     manageAgreements: true,
     chargeInformation: true,
     manageInvoiceAccounts: true,
-    deleteAllBillingData: ['local', 'dev', 'development', 'test', 'qa'].includes(process.env.NODE_ENV)
+    deleteAllBillingData: ['local', 'dev', 'development', 'test', 'qa'].includes(process.env.NODE_ENV),
+    waterAbstractionAlerts: isLocal || isTest || testMode
   }
 };

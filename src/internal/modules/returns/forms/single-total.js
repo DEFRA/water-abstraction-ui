@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { get } = require('lodash');
 const { formFactory, fields, setValues } = require('shared/lib/forms');
 const { getContinueField, getCsrfTokenField, getSuffix } =
@@ -10,8 +10,8 @@ const getRadioField = suffix => fields.radio('isSingleTotal', {
   mapper: 'booleanMapper',
   errors: {
     'any.required': {
-      summary: 'Select if you are reporting a single amount or not',
-      message: 'Select if you are reporting a single amount'
+      summary: `Select if you're reporting a single amount or not`,
+      message: `Select if you're reporting a single amount`
     }
   },
   choices: [
@@ -57,8 +57,12 @@ exports.form = (request, data) => {
   return setValues(form, { isSingleTotal, total });
 };
 
-exports.schema = () => ({
+exports.schema = () => Joi.object().keys({
   isSingleTotal: Joi.boolean().required(),
-  total: Joi.when('isSingleTotal', { is: true, then: Joi.number().required().min(0) }),
+  total: Joi.when('isSingleTotal', {
+    is: true,
+    then: Joi.number().required().min(0),
+    otherwise: Joi.any().default(null)
+  }),
   csrf_token: Joi.string().guid().required()
 });

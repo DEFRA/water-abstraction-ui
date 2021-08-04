@@ -123,7 +123,7 @@ const invoice = {
         isMinimumCharge: false,
         agreements: []
       }, {
-        value: -363,
+        value: 363,
         isCredit: true,
         chargePeriod: {
           startDate: '2019-04-01',
@@ -314,6 +314,16 @@ experiment('modules/billing/lib/mappers', () => {
       test('the second transaction agreements are an empty array', async () => {
         const [, { agreements }] = result.transactions;
         expect(agreements).to.equal([]);
+      });
+      test('has the correct debit, credit and net totals', async () => {
+        expect(result.totals).to.equal({ debits: 2500, credits: 0, netTotal: 2500 });
+      });
+    });
+
+    experiment('for the 2nd invoice licence with credit transaction', () => {
+      test('has the correct debit, credit and net totals', async () => {
+        result = mappers.mapInvoiceLicence(batch, invoice, invoice.invoiceLicences[1]);
+        expect(result.totals).to.equal({ debits: 6395, credits: 363, netTotal: 6032 });
       });
     });
 

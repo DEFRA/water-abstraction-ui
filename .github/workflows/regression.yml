@@ -198,3 +198,7 @@ jobs:
           RETURNS_URI: http://127.0.0.1:8006/returns/1.0
           REDIS_HOST: localhost
           REDIS_PORT: 6379
+      - uses: actions/upload-artifact@v2
+        with:
+          name: PM2-Logs
+          path: ~/.pm2/logs/

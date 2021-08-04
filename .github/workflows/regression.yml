@@ -4,7 +4,7 @@ on: workflow_dispatch
 
 jobs:
   cypress-run:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
       COOKIE_SECRET: somethingverysecrethere
       GOOGLE_ANALYTICS_PROPERTY_ID: ga-test
@@ -32,9 +32,9 @@ jobs:
       ADMIN_URI: http://127.0.0.1:8005/API/1.0/
       CRM_URI: http://127.0.0.1:8002/crm/1.0
       RETURNS_URI: http://127.0.0.1:8006/returns/1.0
-      REDIS_HOST: redis
+      REDIS_HOST: localhost
       REDIS_PORT: 6379
-      REDIS_PASSWORD: ""
+      
     services:
       # Label used to access the service container
       postgres:
@@ -56,6 +56,12 @@ jobs:
       redis:
         # Docker Hub image
         image: redis
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
         ports:
           # Maps port 6379 on service container to the host
           - 6379:6379
@@ -190,6 +196,5 @@ jobs:
           ADMIN_URI: http://127.0.0.1:8005/API/1.0/
           CRM_URI: http://127.0.0.1:8002/crm/1.0
           RETURNS_URI: http://127.0.0.1:8006/returns/1.0
-          REDIS_HOST: redis
+          REDIS_HOST: localhost
           REDIS_PORT: 6379
-          REDIS_PASSWORD: ""

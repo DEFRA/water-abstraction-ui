@@ -163,7 +163,13 @@ jobs:
           cd water-abstraction-tactical-idm && pm2 start ecosystem.config.json && cd ..
           cd water-abstraction-returns && pm2 start ecosystem.config.json && cd ..
           cd water-abstraction-import && pm2 start ecosystem.config.json && cd ..
-          
+          curl --location --request GET 'http://localhost:8001/water/1.0/service-status'
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: PM2-Logs
+          path: ~/.pm2/logs/    
+      
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
@@ -198,7 +204,4 @@ jobs:
           RETURNS_URI: http://127.0.0.1:8006/returns/1.0
           REDIS_HOST: localhost
           REDIS_PORT: 6379
-      - uses: actions/upload-artifact@v2
-        with:
-          name: PM2-Logs
-          path: ~/.pm2/logs/
+

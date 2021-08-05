@@ -165,6 +165,11 @@ jobs:
           cd water-abstraction-import && pm2 start ecosystem.config.json && cd ..
           curl --location --request GET 'http://localhost:8001/water/1.0/service-status'
 
+      - name: Sleep for 30 seconds
+        if: always()
+        run: sleep 30s
+        shell: bash
+        
       - uses: actions/upload-artifact@v2
         if: always()
         with:

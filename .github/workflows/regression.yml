@@ -163,8 +163,7 @@ jobs:
           cd water-abstraction-tactical-idm && pm2 start ecosystem.config.json && cd ..
           cd water-abstraction-returns && pm2 start ecosystem.config.json && cd ..
           cd water-abstraction-import && pm2 start ecosystem.config.json && cd ..
-          pm2 logs all
-          curl --location --request GET 'http://localhost:8001/water/1.0/service-status'
+          curl --location --request GET 'http://localhost:8001/water/1.0/service-status' && pm2 logs all
 
       - uses: actions/upload-artifact@v2
         with:

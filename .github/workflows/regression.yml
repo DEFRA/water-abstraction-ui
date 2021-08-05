@@ -165,18 +165,9 @@ jobs:
           cd water-abstraction-import && pm2 start ecosystem.config.json && cd ..
           curl --location --request GET 'http://localhost:8001/water/1.0/service-status'
 
-      - name: Sleep for 30 seconds
-        if: always()
-        run: sleep 30s
-        shell: bash
-        
-      - uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: PM2-Logs
-          path: ~/.pm2/logs/    
-      
+
       - name: Cypress run
+        if: always()
         uses: cypress-io/github-action@v2
         with:
           build: npm i
@@ -211,3 +202,14 @@ jobs:
           REDIS_HOST: localhost
           REDIS_PORT: 6379
 
+      - name: Sleep for 90 seconds
+        if: always()
+        run: sleep 90s
+        shell: bash
+        
+      - uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: PM2-Logs
+          path: ~/.pm2/logs/    
+      

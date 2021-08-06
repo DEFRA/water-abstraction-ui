@@ -1,5 +1,6 @@
 'use-strict';
 
+const { isEmpty } = require('lodash');
 const { SOURCES, EIUC_SOURCE_OTHER } = require('./constants');
 
 const abstraction = (formValues) => {
@@ -42,7 +43,7 @@ const quantities = formValues => {
 
   return {
     authorisedAnnualQuantity: parseFloat(authorisedAnnualQuantity),
-    billableAnnualQuantity: !billableAnnualQuantity ? null : parseFloat(billableAnnualQuantity)
+    billableAnnualQuantity: isEmpty(billableAnnualQuantity) ? null : parseFloat(billableAnnualQuantity)
   };
 };
 

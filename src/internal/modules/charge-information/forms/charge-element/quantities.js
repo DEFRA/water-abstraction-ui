@@ -18,7 +18,7 @@ const getErrors = key => {
     errors['any.base'] = requiredAuthorisedQuantityError;
     errors['number.base'] = requiredAuthorisedQuantityError;
     errors['number.greater'] = requiredAuthorisedQuantityError;
-  };
+  }
 
   return errors;
 };
@@ -37,7 +37,6 @@ const getFormField = (key, data) => {
  * Form to request the abstraction quantities
  *
  * @param {Object} request The Hapi request object
- * @param {Boolean}  data object containing selected and default options for the form
   */
 const form = request => {
   const { csrfToken } = request.view;
@@ -62,8 +61,8 @@ const form = request => {
 const schema = () => {
   return createSchema({
     csrf_token: Joi.string().uuid().required(),
-    authorisedAnnualQuantity: Joi.number().precision(6).greater(0).required(),
-    billableAnnualQuantity: Joi.number().precision(6).greater(0).allow(null, '')
+    authorisedAnnualQuantity: Joi.number().precision(6).positive().required(),
+    billableAnnualQuantity: Joi.number().precision(6).min(0).allow(null, '')
   });
 };
 

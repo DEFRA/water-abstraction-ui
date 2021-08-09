@@ -76,65 +76,60 @@ experiment('internal/modules/charge-information/forms/charge-element/quantities'
   experiment('.schema', () => {
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
-        const result = schema(createRequest()).csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
+        const result = schema(createRequest()).extract('csrf_token').validate('c5afe238-fb77-4131-be80-384aaf245842');
         expect(result.error).to.be.undefined();
       });
 
       test('fails for a string that is not a uuid', async () => {
-        const result = schema(createRequest()).csrf_token.validate('scissors');
+        const result = schema(createRequest()).extract('csrf_token').validate('scissors');
         expect(result.error).to.exist();
       });
     });
 
     experiment('authorisedAnnualQuantity', () => {
       test('validates for a number string', async () => {
-        const result = schema().authorisedAnnualQuantity.validate('132');
+        const result = schema().extract('authorisedAnnualQuantity').validate('132');
         expect(result.error).to.not.exist();
       });
 
       test('validates for a number string with 6 decimal places', async () => {
-        const result = schema().authorisedAnnualQuantity.validate('132.123456');
+        const result = schema().extract('authorisedAnnualQuantity').validate('132.123456');
         expect(result.error).to.not.exist();
       });
 
-      test('must not have more than 6 decimal places', async () => {
-        const result = schema().authorisedAnnualQuantity.validate('132.1234567');
-        expect(result.error).to.exist();
-      });
-
       test('must not be zero', async () => {
-        const result = schema().authorisedAnnualQuantity.validate('0');
+        const result = schema().extract('authorisedAnnualQuantity').validate('0');
         expect(result.error).to.exist();
       });
 
       test('must be a number', async () => {
-        const result = schema().authorisedAnnualQuantity.validate('gsgsd');
+        const result = schema().extract('authorisedAnnualQuantity').validate('gsgsd');
         expect(result.error).to.exist();
       });
 
       test('can not null or empty', async () => {
-        const result = schema().authorisedAnnualQuantity.validate('');
+        const result = schema().extract('authorisedAnnualQuantity').validate('');
         expect(result.error).to.exist();
       });
     });
     experiment('billableAnnualQuantity', () => {
       test('validates for a string', async () => {
-        const result = schema().billableAnnualQuantity.validate('123');
+        const result = schema().extract('billableAnnualQuantity').validate('123');
         expect(result.error).to.not.exist();
       });
 
       test('cannot be a string describing -0.x', async () => {
-        const result = schema().billableAnnualQuantity.validate('-0.123');
+        const result = schema().extract('billableAnnualQuantity').validate('-0.123');
         expect(result.error).to.exist();
       });
 
       test('validates for a string describing 0.x', async () => {
-        const result = schema().billableAnnualQuantity.validate('0.123');
+        const result = schema().extract('billableAnnualQuantity').validate('0.123');
         expect(result.error).to.not.exist();
       });
 
       test('can be empty', async () => {
-        const result = schema().billableAnnualQuantity.validate('');
+        const result = schema().extract('billableAnnualQuantity').validate('');
         expect(result.error).not.to.exist();
       });
     });

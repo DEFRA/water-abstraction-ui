@@ -3,9 +3,10 @@ const shallowDiff = require('shallow-diff');
 
 const { handleRequest, getValues } = require('shared/lib/forms');
 const { load, update } = require('../lib/loader');
-const { extractData, transformNulls, prepareData } = require('../lib/helpers');
-const { getPermissions } = require('../lib/permissions');
 const {
+  extractData,
+  transformNulls,
+  prepareData,
   getPurpose,
   getLicence,
   getPoint,
@@ -13,8 +14,18 @@ const {
   getVersion,
   getParty,
   getAddress
-} = require('../lib/licence-helpers');
-const { createEditPurpose, createEditLicence, createEditPoint, createEditCondition, createSetStatus, createEditVersion, createEditParty, createEditAddress } = require('../lib/action-creators');
+} = require('@envage/water-abstraction-helpers').digitise;
+const { getPermissions } = require('../lib/permissions');
+const {
+  createEditPurpose,
+  createEditLicence,
+  createEditPoint,
+  createEditCondition,
+  createSetStatus,
+  createEditVersion,
+  createEditParty,
+  createEditAddress
+} = require('../lib/action-creators');
 const { stateManager, getInitialState } = require('../lib/state-manager');
 const { search, recent } = require('../lib/search');
 const { STATUS_IN_PROGRESS, STATUS_IN_REVIEW } = require('../lib/statuses');

@@ -6,7 +6,7 @@ const {
   ADD_DATA, EDIT_DATA, DELETE_DATA
 } = require('./action-types');
 const { STATUS_IN_PROGRESS } = require('./statuses');
-const { setObject, isMatch, isVersion } = require('./helpers');
+const { setObject, isMatch, isVersion } = require('@envage/water-abstraction-helpers').digitise;
 
 const { addData, editData, deleteData } = require('./ar-reducer');
 

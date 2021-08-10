@@ -1,7 +1,7 @@
 const Boom = require('@hapi/boom');
 const services = require('../../../lib/connectors/services');
 const { stateManager, getInitialState } = require('./state-manager');
-const { transformNulls } = require('./helpers');
+const { transformNulls } = require('@envage/water-abstraction-helpers').digitise;
 
 /**
  * Loads or creates an abstraction reform "licence" for the specified

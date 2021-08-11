@@ -17,35 +17,33 @@ describe('View and setup new licence agreements', () => {
     });
     cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
     cy.get('.govuk-button.govuk-button--start').click();
-
-    // assert once the user is signed in
+    // assert the user is signed in
     cy.contains('Licences, users and returns');
-
-    // describe('sets up the ')
-
-    // search for a license by using Licence Number
     cy.get('#query').clear();
     cy.get('#query').type('AT/CURR/MONTHLY/02').should('be.visible');
     cy.get('.search__button').click();
     cy.contains('Licences').should('be.visible');
     cy.get('.govuk-table__row').contains('AT/CURR/MONTHLY/02').click();
-    // setting up the new agreement
-    cy.get('#tab_charge').click();
-    cy.get('#charge').contains('Set up a new agreement').click();
-    cy.get('#financialAgreementCode-3').check();
-    cy.get('form > .govuk-button').click();
-    cy.get('#isDateSignedKnown-2').check();
-    cy.get('form > .govuk-button').click();
-    cy.get('#isCustomStartDate-2').click();
-    cy.get('form > .govuk-button').click();
+
+    describe('sets up the sets up new License Agreemen', () => {
+      // setting up the new agreement
+      cy.get('#tab_charge').click();
+      cy.get('#charge').contains('Set up a new agreement').click();
+      cy.get('#financialAgreementCode-3').check();
+      cy.get('form > .govuk-button').click();
+      cy.get('#isDateSignedKnown-2').check();
+      cy.get('form > .govuk-button').click();
+      cy.get('#isCustomStartDate-2').click();
+      cy.get('form > .govuk-button').click();
     // Agreement details entered and ready to submit
+    });
 
     describe('Asserting the agreement details before submitting the form', () => {
       cy.get('.govuk-heading-l').contains('Check agreement details').should('be.visible');
       cy.get('.govuk-summary-list__value').contains('Canal and Rivers Trust, unsupported source (S130U)').should('be.visible');
       cy.get('form > .govuk-button').click();
     });
-    // viewging and asserting the agreement details after the agreement is created
+
     describe('Viewing, asserting the agreement details after submitting the form', () => {
       cy.get('#tab_summary').should('be.visible');
       cy.get('.govuk-table')
@@ -59,7 +57,7 @@ describe('View and setup new licence agreements', () => {
         .should('contain', 'End');
     });
 
-    describe('End the created agreement', () => {
+    describe('End the created agreement using invalid date', () => {
       cy.get('a.govuk-link').eq(5).click({ force: true });
       cy.get('.govuk-heading-l').contains('Set agreement end date');
       cy.get('#endDate-day').type('01');
@@ -68,7 +66,9 @@ describe('View and setup new licence agreements', () => {
       cy.get('form > .govuk-button').click();
       // error message
       cy.get('.govuk-error-summary').contains('Enter an end date on or after the agreement start date (01-04-2021)').should('be.visible');
-      // provide valid date for the agreement end date
+    });
+
+    describe('End the created agreement using valid date', () => {
       cy.get('#endDate-day').clear().type('01');
       cy.get('#endDate-month').clear().type('05');
       cy.get('#endDate-year').clear().type('2021');
@@ -95,7 +95,7 @@ describe('View and setup new licence agreements', () => {
     // user signing out
     describe('user signing out', () => {
       cy.get('#signout').click();
-      cy.contains('You\'re signed out');
+      cy.contains('You\'re signed out').should('be.visible');
     });
   });
 });

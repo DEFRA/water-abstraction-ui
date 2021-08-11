@@ -325,8 +325,12 @@ experiment('internal/modules/gauging-stations/controller', () => {
           northing: null
         }
       ] };
+    const params = {
+      gaugingStationId: 'e3e95a10-a989-42ae-9692-feac91f06ffb'
+    };
     const request = {
       path: 'http://example.com/monitoring-stations/123/untagging-licence/remove-tag',
+      params,
       view: {
         csrfToken: 'some-token'
       },
@@ -665,8 +669,12 @@ experiment('internal/modules/gauging-stations/controller', () => {
     });
 
     experiment('.getRemoveTagsConditions', () => {
+      const params = {
+        gaugingStationId: 'e3e95a10-a989-42ae-9692-feac91f06ffb'
+      };
       const request = {
         path: 'http://example.com/monitoring-stations/123/untagging-licence/remove-tag',
+        params,
         method: 'get',
         view: {
           csrfToken: 'some-token'

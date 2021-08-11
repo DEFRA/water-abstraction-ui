@@ -269,7 +269,8 @@ const getRemoveTags = async (request, h) => {
     caption,
     pageTitle,
     form: formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceView), /* Generates deduplicated list */
-    sessionData: session.get(request)
+    sessionData: session.get(request),
+    back: `/monitoring-stations/${request.params.gaugingStationId}/`
   });
 };
 
@@ -313,7 +314,8 @@ const getRemoveTagsConditions = async (request, h) => {
     caption,
     pageTitle,
     form: formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceConditions),
-    sessionData
+    sessionData,
+    back: `/monitoring-stations/${request.params.gaugingStationId}/untagging-licence/remove-tag`
   });
 };
 
@@ -369,7 +371,8 @@ const getRemoveTagComplete = async (request, h) => {
     caption,
     pageTitle,
     form: formHandler.handleFormRequest(request, linkageForms.removeTagConfirm),
-    sessionData: session.get(request)
+    sessionData: session.get(request),
+    back: `/monitoring-stations/${request.params.gaugingStationId}/untagging-licence/remove-tag`
   });
 };
 

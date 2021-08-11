@@ -13,7 +13,10 @@ const {
   getCondition,
   getVersion,
   getParty,
-  getAddress
+  getAddress,
+  stateManager,
+  getInitialState,
+  statuses
 } = require('@envage/water-abstraction-helpers').digitise;
 const { getPermissions } = require('../lib/permissions');
 const {
@@ -26,9 +29,8 @@ const {
   createEditParty,
   createEditAddress
 } = require('../lib/action-creators');
-const { stateManager, getInitialState } = require('../lib/state-manager');
 const { search, recent } = require('../lib/search');
-const { STATUS_IN_PROGRESS, STATUS_IN_REVIEW } = require('../lib/statuses');
+const { STATUS_IN_PROGRESS, STATUS_IN_REVIEW } = statuses;
 
 const { setStatusForm, setStatusSchema } = require('../forms/set-status');
 

@@ -3,10 +3,7 @@ const { expect } = require('@hapi/code');
 
 const lab = exports.lab = Lab.script();
 
-const {
-  getSchemaCategories,
-  getSchemaCategory
-} = require('internal/modules/abstraction-reform/lib/schema-helpers');
+const { getSchemaCategories, getSchemaCategory } = require('@envage/water-abstraction-helpers').digitise;
 
 const schemas = [
   {

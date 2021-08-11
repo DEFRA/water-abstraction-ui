@@ -2,7 +2,7 @@ const Lab = require('@hapi/lab');
 const { expect } = require('@hapi/code');
 const { find } = require('lodash');
 
-const reducer = require('internal/modules/abstraction-reform/lib/reducer');
+const { reducer } = require('@envage/water-abstraction-helpers').digitise;
 const {
   createEditLicence, createEditPurpose, createEditPoint, createEditCondition,
   createSetStatus, createEditVersion, createEditParty, createEditAddress,

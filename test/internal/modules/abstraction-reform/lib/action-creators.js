@@ -2,7 +2,7 @@ require('dotenv').config();
 const Lab = require('@hapi/lab');
 const { expect } = require('@hapi/code');
 
-const { ADD_DATA, EDIT_DATA, DELETE_DATA } = require('internal/modules/abstraction-reform/lib/action-types');
+const { ADD_DATA, EDIT_DATA, DELETE_DATA } = require('@envage/water-abstraction-helpers').digitise.actionTypes;
 const { createAddData, createEditData, createDeleteData } = require('internal/modules/abstraction-reform/lib/action-creators');
 
 const lab = exports.lab = Lab.script();

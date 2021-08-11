@@ -5,7 +5,7 @@ const loader = require('./loader');
 const { getWR22 } = require('@envage/water-abstraction-helpers').digitise;
 const formGenerator = require('./form-generator');
 const { createAddData, createEditData } = require('./action-creators');
-const { stateManager, getInitialState } = require('./state-manager');
+const { stateManager, getInitialState } = require('@envage/water-abstraction-helpers').digitise;
 
 /**
  * Gets a WR22 schema by name (ID in JSON schema)

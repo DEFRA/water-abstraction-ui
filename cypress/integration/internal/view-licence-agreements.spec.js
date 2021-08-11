@@ -22,7 +22,7 @@ describe('check and update different status for a licence in returns tab as inte
     // assert once the user is signed in
     cy.contains('Licences, users and returns');
 
-   // describe('sets up the ')
+    // describe('sets up the ')
 
     // search for a license by using Licence Number
     cy.get('#query').clear();
@@ -39,11 +39,9 @@ describe('check and update different status for a licence in returns tab as inte
     cy.get('#isCustomStartDate-2').click();
     cy.get('form > .govuk-button').click();
     cy.get('form > .govuk-button').click();
-    //cy.get('.govuk-table__cell').contains(' Canal and Rivers Trust, unsupported').should('be.visible');
-      
+    // cy.get('.govuk-table__cell').contains(' Canal and Rivers Trust, unsupported').should('be.visible');
 
-
-     /* // Click on returns tab to see status
+    // Click on returns tab to see status
     describe('sees the Summary table', () => {
       cy.get('#summary').should('be.visible');
     });
@@ -93,6 +91,6 @@ describe('check and update different status for a licence in returns tab as inte
     describe('user signing out', () => {
       cy.get('#signout').click();
       cy.contains('You\'re signed out');
-    }); */
+    });
   });
 });

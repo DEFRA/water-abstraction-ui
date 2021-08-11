@@ -1,5 +1,6 @@
 'use strict';
 
+const Joi = require('joi');
 const linkageForms = require('./forms');
 const formHandler = require('shared/lib/form-handler');
 const formHelpers = require('shared/lib/forms');
@@ -320,13 +321,18 @@ const getRemoveTagsConditions = async (request, h) => {
 };
 
 const postRemoveTagsLicenceSelected = async (request, h) => {
-  const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceConditions);
+  const formCheckBox = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceConditions);
 
-  if (!form.isValid) {
-    return h.postRedirectGet(form);
+  /* selectedCondition can be either string or array */
+  const removeTagsConditionsSchema = Joi.object().keys({
+    selectedCondition: Joi.required(),
+    csrf_token: Joi.string().uuid().required()
+  });
+  const { error } = removeTagsConditionsSchema.validate(request.payload);
+  if (error) {
+    return h.postRedirectGet(formCheckBox);
   }
 
-  const formCheckBox = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceConditions);
   const selectedCondition = formCheckBox.fields.find(field => field.name === 'selectedCondition');
   session.merge(request, {
     selectedCondition: selectedCondition

@@ -18,7 +18,7 @@ const getNameField = (name, value) =>
   fields.text(camelCase(name), {
     controlClass: INPUT_WIDTH_20,
     errors: {
-      'any.empty': {
+      'string.empty': {
         message: `Enter a ${name}`
       } },
     label: `${capitalize(name)}`
@@ -44,7 +44,7 @@ const createContactForm = request => {
   return f;
 };
 
-const createContactSchema = () => Joi.object({
+const createContactSchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   title: Joi.string().trim().optional().allow(''),
   firstName: Joi.string().trim().required(),

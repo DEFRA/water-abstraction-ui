@@ -30,13 +30,13 @@ describe('two-part-tariff bill run', () => {
       });
 
       describe('user selects two-part-tariff billing type', () => {
-        cy.get('#selectedBillingType-3').click();
-        cy.get('#twoPartTariffSeason').click();
+        cy.get('[type="radio"]').check('two_part_tariff');
+        cy.get('[type="radio"]').check('summer');
         cy.get('button.govuk-button').click();
       });
 
       describe('user selects the test region', () => {
-        cy.get('#selectedBillingRegion-9').click();
+        cy.get('[type="radio"]#selectedBillingRegion-9').last().check();
         cy.get('button.govuk-button').click();
       });
 
@@ -57,6 +57,7 @@ describe('two-part-tariff bill run', () => {
         cy.url().should('contain', '/billing/batch/');
         cy.get('.govuk-heading-l').contains('Set the billable returns quantity for this bill run');
         cy.get('.govuk-caption-l').contains('Spray Irrigation - Direct, CE2');
+        cy.get('[type="radio"]').check('authorised');
         cy.get('.govuk-button').contains('Confirm').click();
       });
 

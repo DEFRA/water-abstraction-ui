@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { get } = require('lodash');
 const { fields } = require('shared/lib/forms');
 const { getLineName, getLineLabel } = require('./common');
@@ -55,19 +55,20 @@ const getLineValues = (lines) => {
 };
 
 const quantitiesSchema = (request, data) => {
-  const schema = {
-    csrf_token: Joi.string().guid().required()
-  };
-
   const lines = getFormLines(data);
 
-  return lines.reduce((acc, line) => {
+  const lineSchema = lines.reduce((acc, line) => {
     const name = getLineName(line);
     return {
       ...acc,
-      [name]: Joi.number().allow(null).min(0)
+      [name]: Joi.number().min(0).allow(null)
     };
-  }, schema);
+  }, {});
+
+  return Joi.object().options({ abortEarly: false }).keys({
+    csrf_token: Joi.string().guid().required(),
+    ...lineSchema
+  });
 };
 
 exports.getLineFields = getLineFields;

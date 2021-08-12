@@ -1,6 +1,5 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
 const uuid = require('uuid/v4');
 const { expect } = require('@hapi/code');
 const { experiment, test } = exports.lab = require('@hapi/lab').script();
@@ -44,24 +43,33 @@ experiment('billing/forms/billing-type form', () => {
 experiment('billing/forms/billing-type schema', () => {
   experiment('csrf token', () => {
     test('validates for a uuid', async () => {
-      const result = billingTypeFormSchema(createRequest()).csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
-      expect(result.error).to.be.null();
+      const result = billingTypeFormSchema(createRequest()).validate({
+        csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+        selectedBillingType: 'annual'
+      });
+      expect(result.error).to.be.undefined();
     });
 
     test('fails for a string that is not a uuid', async () => {
-      const result = billingTypeFormSchema(createRequest()).csrf_token.validate('pizza');
+      const result = billingTypeFormSchema(createRequest()).validate({
+        csrf_token: 'potato',
+        selectedBillingType: 'annual'
+      });
       expect(result.error).to.exist();
     });
   });
 
   experiment('billing type', () => {
     test('It should only allow valid billing types in the water service', async () => {
-      const result = Joi.describe(billingTypeFormSchema(createRequest()));
-      expect(result.children.selectedBillingType.valids).to.equal([ANNUAL, SUPPLEMENTARY, TWO_PART_TARIFF]);
+      const result = billingTypeFormSchema(createRequest()).describe();
+      expect(result.keys.selectedBillingType.allow).to.equal([ANNUAL, SUPPLEMENTARY, TWO_PART_TARIFF]);
     });
 
     test('fails if blank', async () => {
-      const result = billingTypeFormSchema(createRequest()).selectedBillingType.validate();
+      const result = billingTypeFormSchema(createRequest()).validate({
+        csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+        selectedBillingType: null
+      });
       expect(result.error).to.exist();
     });
   });
@@ -73,7 +81,7 @@ experiment('billing/forms/billing-type schema', () => {
         selectedBillingType: ANNUAL
       };
 
-      const result = Joi.validate(data, billingTypeFormSchema());
+      const result = billingTypeFormSchema().validate(data);
       expect(result.error).not.to.exist();
     });
 
@@ -84,7 +92,7 @@ experiment('billing/forms/billing-type schema', () => {
         twoPartTariffSeason: 'summer'
       };
 
-      const result = Joi.validate(data, billingTypeFormSchema());
+      const result = billingTypeFormSchema().validate(data);
       expect(result.error).not.to.exist();
     });
 
@@ -94,7 +102,7 @@ experiment('billing/forms/billing-type schema', () => {
         selectedBillingType: TWO_PART_TARIFF
       };
 
-      const result = Joi.validate(data, billingTypeFormSchema());
+      const result = billingTypeFormSchema().validate(data);
       expect(result.error).to.exist();
     });
 
@@ -105,7 +113,7 @@ experiment('billing/forms/billing-type schema', () => {
         twoPartTariffSeason: 'spring'
       };
 
-      const result = Joi.validate(data, billingTypeFormSchema());
+      const result = billingTypeFormSchema().validate(data);
       expect(result.error).to.exist();
     });
   });

@@ -14,7 +14,7 @@ const licenceEntryForm = request => {
       'any.required': {
         message: 'Enter a licence number'
       },
-      'any.empty': {
+      'string.empty': {
         message: 'Enter a licence number'
       }
     },
@@ -26,7 +26,7 @@ const licenceEntryForm = request => {
   return f;
 };
 
-const licenceEntrySchema = () => Joi.object({
+const licenceEntrySchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   licenceNumber: Joi.string().required()
 });

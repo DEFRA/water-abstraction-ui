@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const controller = require('./controller');
 const contactRoutes = require('./contact-routes');
 const apiController = require('./api-controller');
@@ -16,14 +16,14 @@ const routes = {
       },
       description: 'Admin view step of notification task',
       validate: {
-        params: {
+        params: Joi.object().keys({
           id: Joi.number()
-        },
-        query: {
+        }),
+        query: Joi.object().keys({
           step: Joi.number().default(0),
           data: Joi.string(),
           start: Joi.number().default(0).allow(0, 1)
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -59,9 +59,9 @@ const routes = {
       },
       description: 'Notification: refine audience',
       validate: {
-        params: {
+        params: Joi.object().keys({
           id: Joi.number()
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -82,9 +82,9 @@ const routes = {
       },
       description: 'Notification: refine audience',
       validate: {
-        params: {
+        params: Joi.object().keys({
           id: Joi.number()
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -105,9 +105,9 @@ const routes = {
       },
       description: 'Notification: add custom data',
       validate: {
-        params: {
+        params: Joi.object().keys({
           id: Joi.number()
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -128,9 +128,9 @@ const routes = {
       },
       description: 'Notification: add custom data',
       validate: {
-        params: {
+        params: Joi.object().keys({
           id: Joi.number()
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -151,9 +151,9 @@ const routes = {
       },
       description: 'Notification: preview',
       validate: {
-        params: {
+        params: Joi.object().keys({
           id: Joi.number()
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -174,9 +174,9 @@ const routes = {
       },
       description: 'Notification: send messages',
       validate: {
-        params: {
+        params: Joi.object().keys({
           id: Joi.number()
-        }
+        })
       },
       plugins: {
         viewContext: {

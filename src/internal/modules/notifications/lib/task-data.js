@@ -8,7 +8,7 @@
  * @module src/internal/modules/notifications/task-data
  */
 const nunjucks = require('nunjucks');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { find } = require('lodash');
 const { defaultMapper, licenceNumbersMapper, dateMapper, addressMapper } = require('./mappers');
 
@@ -120,7 +120,7 @@ class TaskData {
       this.data.params[name] = this.mappers[mapper].import(name, payload);
     });
 
-    const { error } = Joi.validate(this.data.params, schema, { abortEarly: false, allowUnknown: true });
+    const { error } = Joi.object().keys(schema).validate(this.data.params, { abortEarly: false, allowUnknown: true });
 
     return { error: this.mapJoiError(error, widgets) };
   }
@@ -206,7 +206,7 @@ class TaskData {
       const messages = {
         'any.required': `The ${label} field is required`,
         'array.min': `At least ${detail.context.limit} value is required in the ${label} field`,
-        'any.empty': `The ${label} field is required`
+        'string.empty': `The ${label} field is required`
       };
 
       acc.push({
@@ -231,6 +231,7 @@ class TaskData {
     // current step
     const query = widgets.reduce((acc, widget) => {
       const { name, mapper = 'default' } = widget;
+
       return {
         ...acc,
         [name]: this.mappers[mapper].import(name, payload)
@@ -242,7 +243,8 @@ class TaskData {
       ...query
     };
 
-    const { error } = Joi.validate(query, this.createJoiSchema(widgets), { abortEarly: false, allowUnknown: true });
+    const schema = Joi.isSchema(this.createJoiSchema(widgets)) ? this.createJoiSchema(widgets) : Joi.compile(this.createJoiSchema(widgets));
+    const { error } = schema.validate(query, { abortEarly: false, allowUnknown: true });
 
     return { error: this.mapJoiError(error, widgets) };
   }

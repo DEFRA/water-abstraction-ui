@@ -1,7 +1,7 @@
 'use strict';
 
 const { get } = require('lodash');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const routing = require('../lib/routing');
 
@@ -40,12 +40,12 @@ const selectReasonForm = request => {
 const selectReasonSchema = request => {
   const { changeReasons } = request.pre;
 
-  return {
+  return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
     reason: Joi.string().required().valid(
-      changeReasons.map(changeReason => changeReason.id)
+      ...changeReasons.map(changeReason => changeReason.id)
     )
-  };
+  });
 };
 
 exports.form = selectReasonForm;

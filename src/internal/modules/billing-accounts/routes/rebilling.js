@@ -1,5 +1,5 @@
 'use strict';
-
+const Joi = require('joi');
 const controller = require('../controllers/rebilling');
 const preHandlers = require('../pre-handlers');
 const { VALID_GUID } = require('shared/lib/validators');
@@ -19,9 +19,9 @@ const getOptions = description => ({
     }
   },
   validate: {
-    params: {
+    params: Joi.object().keys({
       billingAccountId: VALID_GUID
-    }
+    })
   },
   pre: [
     { method: preHandlers.getRebillingState, assign: 'rebillingState' },

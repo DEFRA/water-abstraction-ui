@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const { find } = require('lodash');
 const { logger } = require('../../logger');
@@ -93,11 +93,11 @@ async function postAddAccess (request, h) {
   };
 
   // Validate input data with Joi
-  const schema = {
+  const schema = Joi.object().keys({
     email: Joi.string().trim().required().email().lowercase().trim(),
     returns: Joi.boolean(),
     csrf_token: Joi.string().guid().required()
-  };
+  });
 
   // Process:
   // 1. Attempt to create IDM user
@@ -107,7 +107,7 @@ async function postAddAccess (request, h) {
   // 5. Add colleague role
 
   try {
-    const { error: validationError, value } = Joi.validate(request.payload, schema);
+    const { error: validationError, value } = schema.validate(request.payload);
 
     // Gracefully handle any errors.
     if (validationError) {

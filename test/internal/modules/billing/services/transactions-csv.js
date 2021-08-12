@@ -299,10 +299,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
     });
 
     experiment('invoice number', () => {
-      test('does not exist if not present', async () => {
-        expect(invoiceData['Bill number']).to.be.undefined();
-      });
-
       test('is mapped to user friendly heading when present', async () => {
         invoiceData = transactionsCSV._getInvoiceData({
           ...invoice, invoiceNumber: 'IIA123456'

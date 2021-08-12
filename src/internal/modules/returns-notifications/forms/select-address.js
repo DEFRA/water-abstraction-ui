@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms');
 
 const { crmRoles } = require('shared/lib/constants');
@@ -78,9 +78,9 @@ const selectAddressSchema = request => {
     'createOneTimeAddress',
     'oneTimeAddress'
   ];
-  return Joi.object({
+  return Joi.object().keys({
     csrf_token: Joi.string().guid().required(),
-    selectedRole: Joi.string().required().valid(validRoleNames)
+    selectedRole: Joi.string().required().valid(...validRoleNames)
   });
 };
 

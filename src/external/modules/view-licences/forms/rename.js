@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields } = require('../../../../shared/lib/forms');
 
 const createNameField = (name) => {
@@ -6,7 +6,7 @@ const createNameField = (name) => {
     label: 'Licence name',
     hint: 'You can give this licence a name to help you find it more easily. Choose a name that is between 2 and 32 characters long.',
     errors: {
-      'any.empty': {
+      'string.empty': {
         message: 'Enter a licence name'
       },
       'string.min': {
@@ -33,10 +33,10 @@ const renameLicenceForm = (request, name) => {
   return f;
 };
 
-const renameLicenceSchema = {
+const renameLicenceSchema = Joi.object().keys({
   csrf_token: Joi.string().guid().required(),
   name: Joi.string().max(32).min(2)
-};
+});
 
 exports.renameLicenceForm = renameLicenceForm;
 exports.renameLicenceSchema = renameLicenceSchema;

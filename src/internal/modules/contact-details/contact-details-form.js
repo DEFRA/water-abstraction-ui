@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields, setValues } = require('shared/lib/forms');
 
 const getTextField = (name, label, multiline = false) =>
@@ -42,14 +42,14 @@ const form = (request, data) => {
   return setValues(f, data);
 };
 
-const schema = {
+const schema = Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   name: Joi.string().allow(''),
   jobTitle: Joi.string().allow(''),
   email: Joi.string().email().allow(''),
   tel: Joi.string().allow(''),
   address: Joi.string().allow('')
-};
+});
 
 exports.contactDetailsForm = form;
 exports.contactDetailsSchema = schema;

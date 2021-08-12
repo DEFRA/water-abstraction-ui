@@ -1,6 +1,6 @@
 const controller = require('./controller');
 const { VALID_GUID, VALID_PASSWORD, VALID_CONFIRM_PASSWORD } = require('shared/lib/validators');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 /**
  * Creates an anonymous route that simply redirects from one URL permanently
@@ -45,11 +45,11 @@ module.exports = [
     config: {
       description: 'Update password: set new password',
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           password: Joi.string().max(128).allow(''),
           confirmPassword: Joi.string().max(128).allow(''),
           csrf_token: Joi.string().guid().required()
-        }
+        })
       },
       plugins: {
         viewContext: {

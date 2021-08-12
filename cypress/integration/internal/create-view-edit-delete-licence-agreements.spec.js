@@ -58,7 +58,7 @@ describe('View and setup new licence agreements', () => {
     });
 
     describe('End the created agreement using invalid date', () => {
-      cy.get('a.govuk-link').eq(5).click({ force: true });
+      cy.get('a.govuk-link').eq(5).contains('End').click({ force: true });
       cy.get('.govuk-heading-l').contains('Set agreement end date');
       cy.get('#endDate-day').type('01');
       cy.get('#endDate-month').type('01');
@@ -86,7 +86,7 @@ describe('View and setup new licence agreements', () => {
         .should('contain', '1 May 2021').should('be.visible');
     });
     describe('Delete the  agreement', () => {
-      cy.get('a.govuk-link').eq(4).click({ force: true });
+      cy.get('a.govuk-link').eq(4).contains('Delete').click({ force: true });
       cy.get('.govuk-heading-l').contains("You're about to delete this agreement");
       cy.get('form > .govuk-button').contains('Delete agreement').click();
       cy.get('#charge').contains('Set up a new agreement').should('be.visible');

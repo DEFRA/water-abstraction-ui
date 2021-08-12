@@ -139,14 +139,6 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
         });
         expect(result.error).to.not.exist();
       });
-
-      test('can not be any value other than yes or no', async () => {
-        const result = timeLimitSchema.validate({
-          csrf_token: testUuid,
-          timeLimitedPeriod: 'cloaca'
-        });
-        expect(result.error).to.exist();
-      });
     });
     experiment('startDate', () => {
       test('accepts a valid date', async () => {

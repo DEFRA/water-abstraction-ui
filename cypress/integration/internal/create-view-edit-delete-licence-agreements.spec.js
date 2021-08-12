@@ -1,6 +1,6 @@
 const { setUp, tearDown } = require('../../support/setup');
 
-describe('View and setup new licence agreements', () => {
+describe('Licence agreement - Set up, View, End and Delete', () => {
   before(() => {
     tearDown();
     setUp('barebones');
@@ -10,7 +10,7 @@ describe('View and setup new licence agreements', () => {
     tearDown();
   });
 
-  it('user logs in and sets up new License Agreement', () => {
+  it('user logs in and sets up new License Agreement, Ends it and deletes the agreement', () => {
     cy.visit(Cypress.env('ADMIN_URI'));
     cy.fixture('users.json').then(users => {
       cy.get('input#email').type(users.billingAndData);

@@ -30,12 +30,9 @@ const getError = (key) => {
   };
 };
 
-const getDates = data => {
-  console.log(data);
-  return (has(data, 'timeLimitedPeriod.startDate'))
-    ? data.timeLimitedPeriod
-    : { startDate: null, endDate: null };
-};
+const getDates = data => (has(data, 'timeLimitedPeriod.startDate'))
+  ? data.timeLimitedPeriod
+  : { startDate: null, endDate: null };
 
 /**
  * This method returns a date field - it is extracted to avoid code duplication

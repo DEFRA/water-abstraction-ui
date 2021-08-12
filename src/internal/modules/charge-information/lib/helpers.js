@@ -1,7 +1,7 @@
 'use strict';
 
 const { isFunction, isEmpty, omit, get } = require('lodash');
-
+const Joi = require('joi');
 const { handleRequest, getValues } = require('shared/lib/forms');
 const sessionForms = require('shared/lib/session-forms');
 const services = require('../../../lib/connectors/services');
@@ -10,7 +10,7 @@ const { reducer } = require('./reducer');
 const routing = require('../lib/routing');
 
 const getPostedForm = (request, formContainer) => {
-  const schema = formContainer.schema(request);
+  const schema = Joi.isSchema(formContainer.schema) ? formContainer.schema : formContainer.schema(request);
   return handleRequest(formContainer.form(request), request, schema);
 };
 

@@ -58,11 +58,10 @@ const removeTagsConditionsForm = request => {
 };
 
 const removeTagsConditionsSchema = () => {
-  const schema = createSchema({
+  return createSchema({
     selectedCondition: Joi.array().min(1).required(),
     csrf_token: Joi.string().uuid().required()
   });
-  return schema;
 };
 
 exports.form = removeTagsConditionsForm;

@@ -19,7 +19,6 @@ const getErrors = key => {
     errors['any.required'] = requiredAuthorisedQuantityError;
     errors['string.empty'] = requiredAuthorisedQuantityError;
   }
-  ;
 
   return errors;
 };
@@ -60,7 +59,7 @@ const form = request => {
   return f;
 };
 
-const schema = (request) => {
+const schema = () => {
   const nonZeroNumberWithWSixDpRegex = new RegExp(/^\s*(?=.*[1-9])\d*(?:\.\d{1,6})?\s*$/);
   return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),

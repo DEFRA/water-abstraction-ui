@@ -14,7 +14,6 @@ const options = (selectedPurposeUse) => {
     if (category === lossFactor) {
       option.hint = 'This is the default loss category for the purpose chosen';
     }
-    ;
     return option;
   });
 };
@@ -47,7 +46,7 @@ const form = request => {
   return f;
 };
 
-const schema = (request) => Joi.object().keys({
+const schema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   loss: Joi.string().valid(...LOSS_CATEGORIES).required()
 });

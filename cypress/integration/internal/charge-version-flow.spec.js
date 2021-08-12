@@ -136,8 +136,19 @@ describe('B&D user able to view charge information tab', () => {
 
   describe('user checks charge information confirmation page', () => {
     cy.get('.govuk-panel__title').contains('Charge information complete');
-    cy.get('.govuk-link').contains('Confirm').click();
+    cy.get('.govuk-link').contains('View charge information').click();
     });
+   
+  describe('user clicks review link', () => {
+      cy.get('.govuk-heading-l').contains('Charge information');
+      cy.get('.govuk-link').click('Review');
+      });
+
+  describe('user approves the charge versiobn', () => {
+        cy.get('.govuk-heading-l').contains('Check charge information');
+        cy.get('#reviewOutcome').click();
+        cy.get('button.govuk-button').click();
+      });
    });
   });
 });

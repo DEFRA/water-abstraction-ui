@@ -147,8 +147,7 @@ describe('B&D user able to view charge information tab', () => {
   describe('user approves the charge versiobn', () => {
         cy.get('.govuk-heading-l').contains('Check charge information');
         cy.get('#reviewOutcome').click();
-        // cy.get('.button.govuk-button').click();
-         cy.get('.govuk-button').contains('Continue').click();
+        cy.get('.govuk-button').contains('Continue').click();
       });
    });
   });

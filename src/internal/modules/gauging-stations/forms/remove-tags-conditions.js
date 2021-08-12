@@ -53,23 +53,17 @@ const removeTagsConditionsForm = request => {
 
   f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));
   f.fields.push(fields.button(null, { label: 'Confirm' }));
+
   return f;
 };
 
-/* selectedCondition can be either string or array */
-const removeTagsConditionsSchema = createSchema({
-  selectedCondition: Joi.required(),
-  csrf_token: Joi.string().uuid().required()
-});
-
-const removeTagsConditionsCustomValidation = (request) => {
-  const { error } = removeTagsConditionsSchema.validate(request.payload);
-  if (error) {
-    return false;
-  }
-  return true;
+const removeTagsConditionsSchema = () => {
+  const schema = createSchema({
+    selectedCondition: Joi.array().min(1).required(),
+    csrf_token: Joi.string().uuid().required()
+  });
+  return schema;
 };
 
 exports.form = removeTagsConditionsForm;
 exports.schema = removeTagsConditionsSchema;
-exports.customValidation = removeTagsConditionsCustomValidation;

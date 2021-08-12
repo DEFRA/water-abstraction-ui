@@ -5,7 +5,6 @@ const formHandler = require('shared/lib/form-handler');
 const formHelpers = require('shared/lib/forms');
 const session = require('./lib/session');
 const helpers = require('./lib/helpers');
-
 const { waterAbstractionAlerts: isWaterAbstractionAlertsEnabled } = require('../../config').featureToggles;
 
 /**
@@ -276,7 +275,6 @@ const getRemoveTags = async (request, h) => {
 
 const postRemoveTagOrMultiple = async (request, h) => {
   const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceView); // Back to view
-
   // Must select one radio
   if (!form.isValid) {
     return h.postRedirectGet(form);
@@ -321,7 +319,7 @@ const getRemoveTagsConditions = async (request, h) => {
 
 const postRemoveTagsLicenceSelected = async (request, h) => {
   const formCheckBox = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceConditions);
-  if (!formCheckBox.isValid || !linkageForms.removeTagsLicenceConditions.customValidation(request)) {
+  if (!formCheckBox.isValid) {
     return h.postRedirectGet(formCheckBox);
   }
 

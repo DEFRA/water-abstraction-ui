@@ -1,6 +1,5 @@
 'use strict';
 
-const Joi = require('joi');
 const linkageForms = require('./forms');
 const formHandler = require('shared/lib/form-handler');
 const formHelpers = require('shared/lib/forms');
@@ -322,14 +321,7 @@ const getRemoveTagsConditions = async (request, h) => {
 
 const postRemoveTagsLicenceSelected = async (request, h) => {
   const formCheckBox = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceConditions);
-
-  /* selectedCondition can be either string or array */
-  const removeTagsConditionsSchema = Joi.object().keys({
-    selectedCondition: Joi.required(),
-    csrf_token: Joi.string().uuid().required()
-  });
-  const { error } = removeTagsConditionsSchema.validate(request.payload);
-  if (error) {
+  if (!formCheckBox.isValid || !linkageForms.removeTagsLicenceConditions.customValidation(request)) {
     return h.postRedirectGet(formCheckBox);
   }
 

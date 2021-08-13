@@ -46,13 +46,12 @@ const removeTagsLicenceForm = request => {
   return f;
 };
 
-const removeTagsLicenceSchema = createSchema({
-  selectedLicence: Joi.string().min(1),
-  csrf_token: Joi.string().uuid().required()
-});
-
-const removeTagsLicenceCustomValidation = () => true;
+const removeTagsLicenceSchema = () => {
+  return createSchema({
+    selectedLicence: Joi.string().min(1).required(),
+    csrf_token: Joi.string().uuid().required()
+  });
+};
 
 exports.form = removeTagsLicenceForm;
 exports.schema = removeTagsLicenceSchema;
-exports.customValidation = removeTagsLicenceCustomValidation;

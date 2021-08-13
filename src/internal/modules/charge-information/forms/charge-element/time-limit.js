@@ -30,11 +30,9 @@ const getError = (key) => {
   };
 };
 
-const getDates = data => {
-  return (has(data, 'timeLimitedPeriod.startDate'))
-    ? data.timeLimitedPeriod
-    : { startDate: null, endDate: null };
-};
+const getDates = data => (has(data, 'timeLimitedPeriod.startDate'))
+  ? data.timeLimitedPeriod
+  : { startDate: null, endDate: null };
 
 /**
  * This method returns a date field - it is extracted to avoid code duplication
@@ -109,7 +107,7 @@ const schema = (request) => {
   const expiredDate = request.pre.licence.expiredDate || '9999-01-01';
   return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
-    timeLimitedPeriod: Joi.string().required().valid('yes', 'no'),
+    timeLimitedPeriod: Joi.string().required().allow('yes', 'no'),
     startDate: Joi.when('timeLimitedPeriod', {
       is: 'yes',
       then: Joi.date().iso().min(startDate).required()

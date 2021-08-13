@@ -40,12 +40,10 @@ const form = request => {
   return f;
 };
 
-const schema = (request) => {
-  return {
-    csrf_token: Joi.string().uuid().required(),
-    purpose: Joi.string().uuid().required()
-  };
-};
+const schema = (request) => Joi.object().keys({
+  csrf_token: Joi.string().uuid().required(),
+  purpose: Joi.string().uuid().required()
+});
 
 exports.schema = schema;
 

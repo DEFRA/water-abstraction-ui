@@ -85,7 +85,7 @@ const isRebillableBill = bill =>
   (bill.batch.source === 'wrls') &&
   !bill.isDeMinimis &&
   (bill.netTotal !== 0) &&
-  isEmpty(bill.originalBillingInvoiceId);
+  (bill.rebillingState === 'rebill' || isEmpty(bill.rebillingState));
 
 /**
  * Gets a list of bills which can be re-billed for the current billing account

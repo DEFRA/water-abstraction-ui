@@ -1,7 +1,7 @@
 'use strict';
 
 const Boom = require('@hapi/boom');
-const { get, sortBy, isEmpty } = require('lodash');
+const { get, sortBy } = require('lodash');
 const { water } = require('../../lib/connectors/services');
 
 const session = require('./lib/session');
@@ -85,7 +85,7 @@ const isRebillableBill = bill =>
   (bill.batch.source === 'wrls') &&
   !bill.isDeMinimis &&
   (bill.netTotal !== 0) &&
-  (bill.rebillingState === 'rebill' || isEmpty(bill.rebillingState));
+  ['rebill', null].includes(bill.rebillingState);
 
 /**
  * Gets a list of bills which can be re-billed for the current billing account

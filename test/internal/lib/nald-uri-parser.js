@@ -1,8 +1,7 @@
 const Lab = require('@hapi/lab');
 const lab = Lab.script();
 const { expect } = require('@hapi/code');
-
-const { parseNaldDataURI } = require('internal/lib/nald-uri-parser');
+const { parseNaldDataURI } = require('@envage/water-abstraction-helpers').digitise;
 
 lab.experiment('parseNaldDataURI', () => {
   lab.test('It should parse a valid NALD data URI', async () => {

@@ -1,8 +1,7 @@
 const { find } = require('lodash');
 const { handleRequest, getValues } = require('shared/lib/forms');
 const { mapRequestData } = require('shared/lib/forms/validationAdapters/json-schema');
-const { mapARItem } = require('../lib/helpers');
-const { getSchemaCategories, getSchemaCategory } = require('../lib/schema-helpers');
+const { mapARItem, getSchemaCategories, getSchemaCategory, getWR22 } = require('@envage/water-abstraction-helpers').digitise;
 const { selectSchemaCategoryForm, selectSchemaCategoryFormSchema } = require('../forms/select-schema-category');
 const { selectSchemaForm, selectSchemaFormSchema } = require('../forms/select-schema');
 const { load } = require('../lib/loader');
@@ -15,8 +14,6 @@ const {
   findDataItem, getEditFormAndSchema, getAddFormAndSchema,
   addActionFactory, editActionFactory, persistActions, getSchema
 } = wr22Helpers;
-
-const { getWR22 } = require('../lib/schema');
 
 const { deleteForm } = require('../forms/delete');
 

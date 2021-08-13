@@ -312,17 +312,19 @@ experiment('internal/modules/billing-accounts/pre-handlers', () => {
       batch: {
         source: overrides.source || 'wrls'
       },
-      originalBillingInvoiceId: overrides.originalBillingInvoiceId || null
+      originalBillingInvoiceId: overrides.originalBillingInvoiceId || null,
+      rebillingState: overrides.rebillingState || null
     });
 
     const apiResponse = {
       data: [
-        createBill({ id: 'valid-id-1', invoiceNumber: 'A1112' }),
-        createBill({ id: 'valid-id-2', invoiceNumber: 'A1111' }),
+        createBill({ id: 'valid-id-1', invoiceNumber: 'A1112', rebillingState: null }),
+        createBill({ id: 'valid-id-2', invoiceNumber: 'A1111', rebillingState: 'rebill' }),
         createBill({ source: 'nald' }),
         createBill({ isDeMinimis: true }),
         createBill({ isNetZero: true }),
-        createBill({ originalBillingInvoiceId: uuid() })
+        createBill({ originalBillingInvoiceId: uuid(), rebillingState: 'rebilled' }),
+        createBill({ originalBillingInvoiceId: uuid(), rebillingState: 'reversal' })
       ],
       pagination: {
         page: 1

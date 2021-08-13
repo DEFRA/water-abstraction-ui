@@ -503,7 +503,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
     experiment('when the payload is invalid', () => {
       beforeEach(() => {
         formHandler.handleFormRequest.resolves({
-          ...formContentSingleSelected,
+          ...formContentMultipleSelectedNothing,
           isValid: false
         });
         controller.getRemoveTags(request, h);
@@ -561,7 +561,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
 
       test('.postRemoveTagsLicenceSelected invalid form', () => {
         formHandler.handleFormRequest.resolves({
-          ...formContentMultipleSelected,
+          ...formContentMultipleSelectedNothing,
           isValid: false
         });
         controller.postRemoveTagsLicenceSelected(request, h);

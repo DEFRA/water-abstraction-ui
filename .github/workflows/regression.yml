@@ -165,20 +165,9 @@ jobs:
           cd water-abstraction-returns && pm2 start ecosystem.config.json && cd ..
           cd water-abstraction-import && pm2 start ecosystem.config.json && cd ..
           npm i
+          curl --location --request GET 'http://localhost:8001/water/1.0/service-status'
           curl --location --request GET 'http://127.0.0.1:8001/water/1.0/service-status'
 
-
-      - name: Cypress run
-        if: always()
-        uses: cypress-io/github-action@v2
-        with:
-          build: npm run install-assets
-          start: pm2 start ecosystem.config.json
-
-      - name: Sleep for 90 seconds
-        if: always()
-        run: sleep 90s
-        shell: bash
         
       - uses: actions/upload-artifact@v2
         if: always()

@@ -171,7 +171,7 @@ jobs:
         if: always()
         uses: cypress-io/github-action@v2
         with:
-          build: npm i
+          build: npm i && npm run install-assets
           start: pm2 start ecosystem.config.json
         env:
           COOKIE_SECRET: someSuperSecretStringThatYouWouldNeverGuess

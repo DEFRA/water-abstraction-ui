@@ -173,7 +173,7 @@ jobs:
           build: npm i
           start: npm run run:internal-and-external
         env:
-          COOKIE_SECRET: somethingverysecrethere
+          COOKIE_SECRET: someSuperSecretStringThatYouWouldNeverGuess
           GOOGLE_ANALYTICS_PROPERTY_ID: ga-test
           PGUSER: water
           PGHOST: localhost
@@ -182,7 +182,7 @@ jobs:
           PGDATABASE: water
           ENVIRONMENT: test
           DATABASE_URL: postgres://water:water@localhost:5432/water
-          JWT_SECRET: secret
+          JWT_SECRET: someSuperSecretStringThatYouWouldNeverGuess
           JWT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIzNH0.MOREC6-Kszb9bDFw0O1UKywpnkcP-c5cPjASMpjk8Po
           NOTIFY_KEY: somerealnotifykey-00000000-0000-0000-0000-000000000000-00000000-0000-0000-0000-000000000000
           TEST_NOTIFY_KEY: ${{ secrets.TEST_NOTIFY_KEY }}

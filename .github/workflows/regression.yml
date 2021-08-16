@@ -31,6 +31,7 @@ jobs:
       PERMIT_URI: http://127.0.0.1:8004/API/1.0/
       ADMIN_URI: http://127.0.0.1:8005/API/1.0/
       CRM_URI: http://127.0.0.1:8002/crm/1.0
+      IDM_URI: http://127.0.0.1:8003/crm/1.0
       RETURNS_URI: http://127.0.0.1:8006/returns/1.0
       REDIS_HOST: localhost
       REDIS_PORT: 6379

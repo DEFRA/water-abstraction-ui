@@ -87,6 +87,9 @@ async function start () {
     await server.start();
 
     server.log(['info'], `Server started on ${server.info.uri} port ${server.info.port}`);
+
+    console.log('§§§§§§§ environment variables below §§§§§§§');
+    console.log(process.env);
   } catch (err) {
     logger.error('Failed to start server', err);
   }

@@ -119,18 +119,6 @@ jobs:
           npm i
           npm run migrate
           
-      - name: Install returns service
-        uses: actions/checkout@v2
-        with:
-          repository: defra/water-abstraction-returns
-          path: './water-abstraction-returns'
-
-      - name: Install returns service dependencies
-        run: |
-          cd ./water-abstraction-returns
-          npm i
-          npm run migrate
-          
       - name: Install permit repo
         uses: actions/checkout@v2
         with:
@@ -155,6 +143,18 @@ jobs:
           npm i
           npm run migrate
       
+      - name: Install returns service
+        uses: actions/checkout@v2
+        with:
+          repository: defra/water-abstraction-returns
+          path: './water-abstraction-returns'
+
+      - name: Install returns service dependencies
+        run: |
+          cd ./water-abstraction-returns
+          npm i
+          npm run migrate
+          
       - name: Start pm2
         run: |
           PGPASSWORD=water psql -U water -tc "SELECT schemaname, tablename FROM pg_catalog.pg_tables pt"

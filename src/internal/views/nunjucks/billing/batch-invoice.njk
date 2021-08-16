@@ -73,6 +73,12 @@ invoiceDebitsTotal %}
       {{ batchMetadata(batch, invoice)}}
 
       <!-- Bills linked to reissue -->
+      {% macro displayBillingState(inv) %}
+        {% if inv.rebillingState == 'rebill' %}Reissued <span class="screen-reader-only">bill</span> {% endif %}
+        {% if inv.rebillingState == 'reversal' %}Reversed <span class="screen-reader-only">bill</span> {% endif %}
+        {% if inv.originalInvoiceId == null %}Original <span class="screen-reader-only">bill</span> {% endif %}
+      {% endmacro %}
+
       {% set htmlBillsLinked %}
       <h2 class="govuk-heading-m">This bill is linked to a reissue</h2>
       <dl class="meta govuk-!-margin-bottom-3">
@@ -80,29 +86,35 @@ invoiceDebitsTotal %}
           <dt class="meta__key">Date created</dt>
           <dd class="meta__value">{{invoice.dateCreated | date }}</dd>
         </div>
-        {% set displayedInvoiceNumber = incoice.invoiceNumber %}
         {% for linkedInvoice in invoice.linkedInvoices %}
+        {% if linkedInvoice.invoiceNumber != null %}
         <div class="meta__row">
           <dt class="meta__key">
-            {% if linkedInvoice.rebillingState == 'rebilled' %}Reissued bill{% endif %}
-            {% if linkedInvoice.rebillingState == 'reversal' %}Reversed bill{% endif %}
-            {% if linkedInvoice.rebillingState == null %}Original bill{% endif %}
+            {{ displayBillingState(linkedInvoice)}}
           </dt>
           <dd class="meta__value">
-            {% if linkedInvoice.invoiceNumber != displayedInvoiceNumber %}
-              <!-- Link to bill other than current -->
-              <a href="/billing/batch/{{batch.id}}/invoice/{{linkedInvoice.invoiceAccountId}}">
-                <span class="screen-reader-only">bill</span> {{linkedInvoice.invoiceNumber}}
+            {% if linkedInvoice.originalInvoiceId != null %}
+              <a href="/billing/batch/{{batch.id}}/invoice/{{linkedInvoice.id}}">
+                {{linkedInvoice.invoiceNumber  }}
               </a>
             {% else %}
-              {{linkedInvoice.invoiceNumber}}, this bill
+              <!-- different batchid -->
+              {{linkedInvoice.invoiceNumber}}
             {% endif %}
           </dd>
         </div>
+        {% endif %}
         {% endfor %}
+        <div class="meta__row">
+          <dt class="meta__key">
+            {{ displayBillingState(invoice)}}
+          </dt>
+          <dd class="meta__value">
+            {{invoice.invoiceNumber }}, this bill
+          </dd>
+        </div>
       </dl>
       {% endset %}
-      <!-- end: Bills linked to reissue -->
 
       <div class="govuk-!-margin-bottom-9">
         {% set html %}
@@ -117,16 +129,11 @@ invoiceDebitsTotal %}
           html: html })
         }}
 
-        {#
-        -- Uncomment when linked invoices fully implemented and Reissued/Reversed supplementary bills created
-
         {% if invoice.linkedInvoices.length %}
         {{ govukInsetText({
-            html: htmlBillsLinked })
+          html: htmlBillsLinked })
         }}
         {% endif %}
-
-        #}
 
       </div>
     </div>

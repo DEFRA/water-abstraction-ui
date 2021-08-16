@@ -167,7 +167,11 @@ jobs:
           cd water-abstraction-import && pm2 start ecosystem.config.json && cd ..
           npm i
           curl --location --request GET 'http://localhost:8001/water/1.0/service-status'
-          curl --location --request GET 'http://127.0.0.1:8001/water/1.0/service-status'
+          curl --location --request GET 'http://localhost:8002/status'
+          curl --location --request GET 'http://localhost:8003/status'
+          curl --location --request GET 'http://127.0.0.1:8004/status'
+          curl --location --request GET 'http://127.0.0.1:8006/status'
+          curl --location --request GET 'http://127.0.0.1:8007/status'
 
         
       - uses: actions/upload-artifact@v2

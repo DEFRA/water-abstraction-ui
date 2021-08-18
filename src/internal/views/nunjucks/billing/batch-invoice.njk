@@ -76,7 +76,8 @@ invoiceDebitsTotal %}
       {% macro displayBillingState(inv) %}
         {% if inv.rebillingState == 'rebill' %}Reissued <span class="screen-reader-only">bill</span> {% endif %}
         {% if inv.rebillingState == 'reversal' %}Reversed <span class="screen-reader-only">bill</span> {% endif %}
-        {% if inv.originalInvoiceId == null %}Original <span class="screen-reader-only">bill</span> {% endif %}
+        {% if inv.originalInvoiceId == null %}Original <span class="screen-reader-only">bill</span>
+        {% set originalBill = inv.invoiceNumber %} {% endif %}
       {% endmacro %}
 
       {% set htmlBillsLinked %}
@@ -129,10 +130,12 @@ invoiceDebitsTotal %}
           html: html })
         }}
 
-        {% if invoice.linkedInvoices.length %}
-        {{ govukInsetText({
-          html: htmlBillsLinked })
-        }}
+        {% if batch.status == 'sent' %}
+          {% if invoice.linkedInvoices.length %}
+          {{ govukInsetText({
+            html: htmlBillsLinked })
+          }}
+          {% endif %}
         {% endif %}
 
       </div>
@@ -168,10 +171,34 @@ invoiceDebitsTotal %}
       </div>
     </div>
   {% endif %}
+  
+  {% set buttonLabel = 'Remove bill' %}
+  <!-- Warning text for reissue -->
+  {% if batch.status == 'ready' %}
+    {% set originalBill = '' %}
+    {% for inv in invoice.linkedInvoices %}
+      {% if inv.invoiceNumber != null %}
+        {% if inv.originalInvoiceId == null %}
+          {% set originalBill = inv.invoiceNumber %} 
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+
+    {% if originalBill %}
+      {% set warningText = "This bill is linked to the reissue of bill " + originalBill %}
+      {% set buttonLabel = 'Cancel this reissue' %}
+
+      {{ govukWarningText({
+        text: warningText,
+        iconFallbackText: "Warning"
+      }) }}
+    {% endif %}
+
+  {% endif %}
 
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-two-thirds">
-      {{ removeInvoiceFromBatchButton(batch, invoice) }}
+      {{ removeInvoiceFromBatchButton(batch, invoice, buttonLabel) }}
     </div>
   </div>
 

@@ -87,7 +87,7 @@
   <td class="govuk-table__cell govuk-table__cell--numeric">
     {{ chargeOrDash(invoice.netTotal) }}
     {% if invoice.isCredit %}
-      <div>Credit note</div>
+      <div>Credit</div>
     {% endif %}
   </td>
 {% endmacro %}
@@ -185,12 +185,20 @@
     </td>
   {% endmacro %}
 
+  {% macro displayRebillingState(invoice) %}
+     {% if invoice.isFlaggedForRebilling != true %}
+       {% if invoice.rebillingState == 'rebill'%}<p class="govuk-body-s govuk-!-margin-bottom-0">Reissued</p>{% endif %}
+       {% if invoice.rebillingState == 'reversal'%}<p class="govuk-body-s govuk-!-margin-bottom-0">Reversed</p>{% endif %}
+     {% endif %}
+  {% endmacro %}
+
   {% macro invoiceLink(row) %}
     <td class="govuk-table__cell" scope="row">
       <a href="/billing/batch/{{ row.batch.id }}/invoice/{{ row.invoice.id }}">
         {{row.invoice.displayLabel}}
       </a>
-
+      {{displayRebillingState(row.invoice)}}
+      
       {% if row.invoice.isFlaggedForRebilling %}
       <p class="govuk-body-s govuk-!-margin-bottom-0">Marked for reissue</p>
       {% endif %}

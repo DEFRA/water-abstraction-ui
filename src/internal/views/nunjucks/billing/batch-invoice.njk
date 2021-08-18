@@ -96,11 +96,14 @@ invoiceDebitsTotal %}
           <dd class="meta__value">
             {% if linkedInvoice.originalInvoiceId != null %}
               <a href="/billing/batch/{{batch.id}}/invoice/{{linkedInvoice.id}}">
-                {{linkedInvoice.invoiceNumber  }}
+                {{linkedInvoice.invoiceNumber}}
               </a>
             {% else %}
-              <!-- different batchid -->
-              {{linkedInvoice.invoiceNumber}}
+              <!-- different batchid, set to links.view until further backend updates -->
+              {% for invoiceLicence in invoiceLicences %}
+                <a class="govuk-link" href="{{ invoiceLicence.links.view }}#bills">{{linkedInvoice.invoiceNumber}}</a>
+              {% endfor %}
+
             {% endif %}
           </dd>
         </div>
@@ -119,11 +122,10 @@ invoiceDebitsTotal %}
 
       <div class="govuk-!-margin-bottom-9">
         {% set html %}
-
-        <p class="govuk-!-font-weight-bold govuk-!-margin-0">
-          <a href="{{ links.billingAccount }}">Billing account {{ invoice.invoiceAccount.accountNumber }}</a>
-        </p>
-        {{ invoiceAddress(invoice, invoice.invoiceAccount.company) }}
+          <p class="govuk-!-font-weight-bold govuk-!-margin-0">
+            <a href="{{ links.billingAccount }}">Billing account {{ invoice.invoiceAccount.accountNumber }}</a>
+          </p>
+          {{ invoiceAddress(invoice, invoice.invoiceAccount.company) }}
         {% endset %}
         {{ govukDetails({
           summaryText: "Billing account details",

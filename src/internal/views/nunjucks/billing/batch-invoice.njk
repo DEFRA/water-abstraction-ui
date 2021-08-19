@@ -85,10 +85,10 @@ invoiceDebitsTotal %}
             {{inv.invoiceNumber}}
           </a>
         {% else %}
-          <!-- original bill has different batchid, set to links.view until further backend updates -->
-          {% for invoiceLicence in invoiceLicences %}
-            <a class="govuk-link" href="{{ invoiceLicence.links.view }}#bills">{{inv.invoiceNumber}}</a>
-          {% endfor %}
+          <!-- original bill has different batchid -->
+          <a class="govuk-link" href="/billing/batch/{{inv.billingBatchId}}/invoice/{{inv.id}}">
+            {{inv.invoiceNumber}}
+          </a>
         {% endif %}
       {% endmacro %}
 

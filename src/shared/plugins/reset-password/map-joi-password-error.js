@@ -7,15 +7,21 @@ const formatViewError = require('../../lib/format-view-error');
  */
 function mapJoiPasswordError (error) {
   const viewErrors = formatViewError(error);
-
-  const hasValidationErrors = (viewErrors.password_min || viewErrors.password_symbol || viewErrors.password_uppercase);
+  const hasValidationErrors = (
+    viewErrors.password_required ||
+    viewErrors.password_empty ||
+    viewErrors.password_undefined ||
+    !!viewErrors.password_min ||
+    !!viewErrors.password_symbol ||
+    !!viewErrors.password_uppercase
+  );
 
   return {
     hasValidationErrors,
     passwordTooShort: viewErrors.password_min,
     passwordHasNoSymbol: viewErrors.password_symbol,
     passwordHasNoUpperCase: viewErrors.password_uppercase,
-    passwordsDontMatch: !viewErrors.confirmPassword_empty && viewErrors.confirmPassword_allowOnly,
+    passwordsDontMatch: viewErrors.confirmPassword_only,
     noConfirmPassword: viewErrors.confirmPassword_empty
   };
 }

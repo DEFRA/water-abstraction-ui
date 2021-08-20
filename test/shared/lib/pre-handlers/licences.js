@@ -20,6 +20,7 @@ const createError = code => {
 
 const licenceId = 'test-licence-id';
 const licenceNumber = '01/123/ABC';
+const documentId = 'test-crm-v1-document-id';
 
 experiment('shared/lib/pre-handlers/licences', () => {
   let request, h;
@@ -32,12 +33,24 @@ experiment('shared/lib/pre-handlers/licences', () => {
       },
       query: {
 
+      },
+      pre: {
+        licence: {
+          isActive: true
+        },
+        licenceVersion: {
+          id: 'test-licence-version-id'
+        },
+        document: {
+          document_id: documentId
+        }
       }
     };
     const licencesStub = {
       getLicenceById: sandbox.stub().resolves({ id: licenceId }),
       getDocumentByLicenceId: sandbox.stub().resolves({ document_id: 'test-document-id' }),
-      getLicenceByLicenceNumber: sandbox.stub().resolves({ id: licenceId })
+      getLicenceByLicenceNumber: sandbox.stub().resolves({ id: licenceId }),
+      getSummaryByDocumentId: sandbox.stub().resolves({ error: null, data: {} })
     };
 
     set(request, 'services.water.licences', licencesStub);
@@ -166,6 +179,58 @@ experiment('shared/lib/pre-handlers/licences', () => {
       test('a Boom notFound error is returned', () => {
         const func = () => preHandlers.getLicenceByReturnId(request, h);
         expect(func()).to.reject();
+      });
+    });
+  });
+
+  experiment('.loadSummary', () => {
+    let result;
+
+    experiment('when the licence is active and there is a licence version', () => {
+      beforeEach(async () => {
+        result = await preHandlers.loadSummary(request);
+      });
+
+      test('the summary is loaded from the water service', () => {
+        expect(request.services.water.licences.getSummaryByDocumentId.calledWith(documentId)).to.be.true();
+      });
+
+      test('resolves with the data', () => {
+        expect(result).to.equal({});
+      });
+    });
+
+    experiment('when the licence is not active', () => {
+      beforeEach(async () => {
+        request.pre.licence.isActive = false;
+        result = await preHandlers.loadSummary(request);
+      });
+
+      test('the summary is not loaded from the water service', () => {
+        expect(
+          request.services.water.licences.getSummaryByDocumentId.called
+        ).to.be.false();
+      });
+
+      test('resolves with null', () => {
+        expect(result).to.be.null();
+      });
+    });
+
+    experiment('when the licence has no current version', () => {
+      beforeEach(async () => {
+        delete request.pre.licenceVersion.id;
+        result = await preHandlers.loadSummary(request);
+      });
+
+      test('the summary is not loaded from the water service', () => {
+        expect(
+          request.services.water.licences.getSummaryByDocumentId.called
+        ).to.be.false();
+      });
+
+      test('resolves with null', () => {
+        expect(result).to.be.null();
       });
     });
   });

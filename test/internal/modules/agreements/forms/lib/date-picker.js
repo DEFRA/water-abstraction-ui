@@ -7,7 +7,6 @@ const {
 } = exports.lab = require('@hapi/lab').script();
 
 const datePicker = require('internal/modules/agreements/forms/lib/date-picker');
-const Joi = require('@hapi/joi');
 
 experiment('internal/modules/agreements/forms/lib/date-picker', () => {
   experiment('.getMaxDate', () => {
@@ -59,22 +58,22 @@ experiment('internal/modules/agreements/forms/lib/date-picker', () => {
     });
 
     test('a date before the licence start date gives an error', async () => {
-      const { error } = Joi.validate('2018-12-31', validator);
+      const { error } = validator.validate('2018-12-31');
       expect(error).to.not.be.null();
     });
 
     test('the licence start date gives no error', async () => {
-      const { error } = Joi.validate('2019-01-01', validator);
-      expect(error).to.be.null();
+      const { error } = validator.validate('2019-01-01');
+      expect(error).to.be.undefined();
     });
 
     test('the licence end date gives no error', async () => {
-      const { error } = Joi.validate('2019-12-31', validator);
-      expect(error).to.be.null();
+      const { error } = validator.validate('2019-12-31');
+      expect(error).to.be.undefined();
     });
 
     test('a date after the licence end date gives an error', async () => {
-      const { error } = Joi.validate('2020-01-01', validator);
+      const { error } = validator.validate('2020-01-01');
       expect(error).to.not.be.null();
     });
   });

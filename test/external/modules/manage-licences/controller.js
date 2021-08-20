@@ -13,6 +13,7 @@ const {
 
 const services = require('external/lib/connectors/services');
 const controller = require('external/modules/manage-licences/controller');
+const uuid = require('uuid');
 
 const editableRolesResponse = [
   {
@@ -155,6 +156,60 @@ experiment('postChangeAccess', () => {
       expect(entityId).to.equal('test-entity-id');
       expect(colleagueEntityId).to.equal('test-colleague-id');
       expect(role).to.equal('user_returns');
+    });
+  });
+});
+
+experiment('postAddAccess', () => {
+  beforeEach(async => {
+    sandbox.stub(services.idm.users, 'createUserWithoutPassword').resolves({ error: '' });
+    sandbox.stub(services.idm.users, 'resetPassword').resolves({ error: '' });
+    sandbox.stub(services.crm.entities, 'getOrCreateIndividual').resolves({ entity_id: 1 });
+    sandbox.stub(services.crm.entityRoles, 'addColleagueRole').resolves({ error: '' });
+    sandbox.stub(services.idm.users, 'findOneByEmail').resolves();
+    sandbox.stub(services.idm.users, 'updateExternalId').resolves();
+  });
+
+  afterEach(async => {
+    sandbox.restore();
+  });
+
+  experiment('when the payload is valid', () => {
+    const request = {
+      defra: { entityId: 19 },
+      view: {},
+      payload: {
+        email: 'test@email.com',
+        returns: false,
+        csrf_token: uuid()
+      }
+    };
+    const h = {
+      view: sandbox.stub()
+    };
+
+    test('the user is redirected to the success page', async () => {
+      await controller.postAddAccess(request, h);
+      expect(h.view.lastCall.args[0]).to.equal('nunjucks/manage-licences/add-access-success');
+    });
+  });
+  experiment('when the payload is not valid', () => {
+    const request = {
+      defra: { entityId: 19 },
+      view: {},
+      payload: {
+        email: 'anInvalidEmail',
+        returns: false,
+        csrf_token: uuid()
+      }
+    };
+    const h = {
+      view: sandbox.stub()
+    };
+
+    test('when the email is invalid the user is redirected back to the add access page', async () => {
+      await controller.postAddAccess(request, h);
+      expect(h.view.lastCall.args[0]).to.equal('nunjucks/manage-licences/add-access');
     });
   });
 });

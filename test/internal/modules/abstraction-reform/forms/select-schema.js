@@ -3,7 +3,7 @@ const Lab = require('@hapi/lab');
 const { expect } = require('@hapi/code');
 const { find } = require('lodash');
 const { selectSchemaForm } = require('internal/modules/abstraction-reform/forms/select-schema');
-const { getWR22 } = require('internal/modules/abstraction-reform/lib/schema');
+const { getWR22 } = require('@envage/water-abstraction-helpers').digitise;
 
 const lab = exports.lab = Lab.script();
 

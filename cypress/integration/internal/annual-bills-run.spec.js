@@ -30,13 +30,16 @@ describe('annual bill run', () => {
       });
 
       describe('user selects annual billing type', () => {
-        cy.get('#selectedBillingType').click();
+        cy.get('[type="radio"]').check('annual');
         cy.get('button.govuk-button').click();
       });
 
-      describe('user cancels the bill after generating it', () => {
-        cy.get('.govuk-radios__item').last().children().first().click();
+      describe('user selects the test region', () => {
+        cy.get('[type="radio"]#selectedBillingRegion-9').last().check();
         cy.get('button.govuk-button').click();
+      });
+
+      describe('user cancels the bill after generating it', () => {                
         cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Annual bill run');
         cy.url().should('contain', '/summary');
         cy.get('div.govuk-grid-column-two-thirds').eq(3).children(1).contains('Cancel bill run').click();
@@ -45,15 +48,15 @@ describe('annual bill run', () => {
       });
 
       describe('user generates the annual bill ', () => {
-        cy.get('#selectedBillingType').click();
+        cy.get('[type="radio"]').check('annual');        
         cy.get('button.govuk-button').click();
-        cy.get('.govuk-radios__item').last().children().first().click();
+        cy.get('[type="radio"]#selectedBillingRegion-9').last().check();
         cy.get('button.govuk-button').click();
         cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Annual bill run');
         cy.url().should('contain', '/summary');
         cy.get('#tab_other-abstractors').click();
         cy.get('div.govuk-grid-column-two-thirds').eq(3).children(0).contains('Confirm bill run').click();
-        cy.get('.govuk-heading-l').should('contain', 'You are about to send this bill run');
+        cy.get('.govuk-heading-l').should('contain', 'You\'re about to send this bill run');
         cy.get('button.govuk-button').click();
         cy.get('.govuk-panel__title', { timeout: 20000 }).contains('Bill run sent');
         cy.get('div.govuk-grid-column-two-thirds').eq(1).children(3).contains('Go to bill run').click();
@@ -70,9 +73,9 @@ describe('annual bill run', () => {
       cy.get('.govuk-button.govuk-button--start').click();
       cy.get('#navbar-notifications').click();
       cy.get('.govuk-link').contains('Create a bill run').click();
-      cy.get('#selectedBillingType').click();
+      cy.get('[type="radio"]').check('annual');        
       cy.get('button.govuk-button').click();
-      cy.get('.govuk-radios__item').last().children().first().click();
+      cy.get('[type="radio"]#selectedBillingRegion-9').last().check();
       cy.get('button.govuk-button').click();
       cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Annual bill run');
       cy.get('#tab_other-abstractors').click();

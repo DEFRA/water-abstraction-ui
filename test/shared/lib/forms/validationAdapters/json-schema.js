@@ -40,16 +40,6 @@ experiment('validate', () => {
   });
 });
 
-experiment('createSchemaFromForm', () => {
-  // forms are generated from a JSON schema, so in this adapter the interface
-  // is a bit broken. Expecting an error to provent forms generating schemas.
-  test('throws an imlementation error because it should not be required', async () => {
-    expect(() => {
-      adapter.createSchemaFromForm({});
-    }).to.throw();
-  });
-});
-
 experiment('formatErrors', () => {
   const error = {
     errors: [ { keyword: 'required',

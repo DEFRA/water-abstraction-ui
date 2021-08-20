@@ -1,7 +1,7 @@
 'use strict';
 
 const Boom = require('boom');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 const { partialRight, partial } = require('lodash');
 
@@ -101,6 +101,7 @@ const validBatchStatusSchema = Joi.array().min(1).required().items(
  */
 const redirectOnBatchStatus = async (request, h) => {
   const { batch } = request.pre;
+  const { invoiceId } = request.query;
   const { validBatchStatuses } = request.route.settings.app;
 
   Joi.assert(validBatchStatuses, validBatchStatusSchema, `Invalid batch statuses ${validBatchStatuses} in route definition, see config.app.validBatchStatuses`);
@@ -110,7 +111,7 @@ const redirectOnBatchStatus = async (request, h) => {
   }
 
   // Redirect to the correct page for this batch
-  const path = routing.getBillingBatchRoute(batch, { isBackEnabled: true, isErrorRoutesIncluded: true, showSuccessPage: true });
+  const path = routing.getBillingBatchRoute(batch, { isBackEnabled: true, isErrorRoutesIncluded: true, showSuccessPage: true, invoiceId });
   return h.redirect(path).takeover();
 };
 

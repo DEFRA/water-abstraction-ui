@@ -1,3 +1,4 @@
+const Joi = require('joi');
 const { formFactory, setValues } = require('shared/lib/forms');
 const { getContinueField, getCsrfTokenField } =
  require('shared/modules/returns/forms/common');
@@ -12,3 +13,8 @@ exports.form = (request, data) => setValues({
     getContinueField()
   ]
 }, { isNil: data.isNil });
+
+exports.schema = () => Joi.object().keys({
+  csrf_token: Joi.string().uuid().required(),
+  isNil: Joi.boolean().required()
+});

@@ -685,7 +685,7 @@ experiment('internal/modules/charge-information/controller', () => {
       test('an error is displayed', async () => {
         const [ form ] = h.postRedirectGet.lastCall.args;
         const field = find(form.fields, { name: 'startDate' }).options.choices[1].fields[0];
-        expect(field.errors[0].message).to.equal("Date must be today or up to six years' in the past");
+        expect(field.errors[0].message).to.equal("Date must be today or up to five years' in the past");
       });
     });
   });

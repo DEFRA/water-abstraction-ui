@@ -1,7 +1,7 @@
 'use strict';
 
 const { get } = require('lodash');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 const { formFactory, fields } = require('shared/lib/forms/');
 const { getCommonErrors, getDateValidator } = require('./lib/date-picker');
@@ -64,14 +64,14 @@ const dateSignedForm = request => {
 
 const dateSignedSchema = (request, refDate) => {
   const { licence } = request.pre;
-  return {
+  return Joi.object({
     csrf_token: Joi.string().uuid().required(),
     isDateSignedKnown: Joi.boolean().required(),
     dateSigned: Joi.when('isDateSignedKnown', {
       is: true,
       then: getDateValidator(licence)
     })
-  };
+  });
 };
 
 exports.form = dateSignedForm;

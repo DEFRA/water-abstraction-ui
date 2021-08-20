@@ -293,7 +293,8 @@ experiment('internal/modules/billing/pre-handlers', () => {
               validBatchStatuses: ['processing']
             }
           }
-        }
+        },
+        query: {}
       };
       const result = await preHandlers.redirectOnBatchStatus(request, h);
       expect(result).to.equal(h.continue);
@@ -313,7 +314,8 @@ experiment('internal/modules/billing/pre-handlers', () => {
               validBatchStatuses: ['ready', 'sent']
             }
           }
-        }
+        },
+        query: {}
       };
       await preHandlers.redirectOnBatchStatus(request, h);
 

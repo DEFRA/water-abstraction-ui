@@ -1,12 +1,12 @@
 'use strict';
 
 const preHandlers = require('./pre-handlers');
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const controller = require('./controller');
 const { createRoutePair } = require('shared/lib/route-helpers');
 
-const { charging } = require('internal/lib/constants').scope;
-const allowedScopes = [charging];
+const { manageBillingAccounts } = require('internal/lib/constants').scope;
+const allowedScopes = [manageBillingAccounts];
 
 module.exports = {
 
@@ -17,13 +17,13 @@ module.exports = {
         scope: allowedScopes
       },
       validate: {
-        query: {
+        query: Joi.object().keys({
           q: Joi.string().required(),
           form: Joi.string().guid().optional()
-        },
-        params: {
+        }),
+        params: Joi.object().keys({
           key: Joi.string().required()
-        }
+        })
       },
       pre: [{
         method: preHandlers.getSessionData, assign: 'sessionData'
@@ -40,9 +40,9 @@ module.exports = {
         scope: allowedScopes
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           key: Joi.string().required()
-        }
+        })
       },
       pre: [{
         method: preHandlers.getSessionData, assign: 'sessionData'
@@ -57,9 +57,9 @@ module.exports = {
         scope: allowedScopes
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           key: Joi.string().required()
-        }
+        })
       },
       pre: [{
         method: preHandlers.getSessionData, assign: 'sessionData'

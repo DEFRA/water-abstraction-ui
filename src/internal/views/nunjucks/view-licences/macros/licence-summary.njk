@@ -6,7 +6,7 @@
 {% from "nunjucks/view-licences/macros/purposes.njk" import purposes %}
 {% from "nunjucks/view-licences/macros/gauging-stations.njk" import gaugingStations %}
 
-{% macro licenceSummary(documentId, summary, showName=true, showRename=true) %}
+{% macro licenceSummary(documentId, summary, showName, showRename, gaugingStationsData, waterAbstractionAlertsFeatureEnabled) %}
 
 <dl class="govuk-summary-list">
 
@@ -81,6 +81,13 @@
 
   {{ points(summary.points, link) }}
 
+
+  {% set link %}
+  <a href="/monitoring-stations/0/search">
+    Monitoring station
+  </a>
+  {% endset %}
+
   {% set link %}
   <a href="/licences/{{ documentId }}/conditions">
     View details of your abstraction {{ 'condition' | pluralize(summary.conditions) }}
@@ -88,7 +95,10 @@
   {% endset %}
 
   {% set baseUrl %}/licences/{{ documentId }}{% endset %}
-  {{ gaugingStations(summary.gaugingStations, baseUrl) }}
+
+  {% if waterAbstractionAlertsFeatureEnabled  %}
+    {{gaugingStations(gaugingStationsData, baseUrl)  }}
+  {% endif %}
   {{ conditions(summary.conditions, link) }}
   {{ amounts(summary.aggregateQuantity) }}
 </dl>

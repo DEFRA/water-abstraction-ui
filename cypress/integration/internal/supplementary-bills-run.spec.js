@@ -26,7 +26,7 @@ describe('supplementary bill run', () => {
       });
 
       describe('user enters the create a new bill flow', () => {
-        cy.get('.govuk-link').eq(11).contains('Create a bill run').click();
+        cy.get('.govuk-link').contains('Create a bill run').click();
       });
 
       describe('user selects supplementary billing type', () => {
@@ -48,7 +48,7 @@ describe('supplementary bill run', () => {
         cy.get('.govuk-link').eq(4).click();
         cy.url().should('contain', '/billing/batch/');
         cy.get('.govuk-caption-l').contains('Billing account');
-        cy.get('div.meta__row').eq(1).contains('Test Region');
+        cy.get('div.meta__row').contains('Test Region');
         // click on back
         cy.get('.govuk-back-link').click();
       });
@@ -58,7 +58,7 @@ describe('supplementary bill run', () => {
       });
 
       describe('send the bill run', () => {
-        cy.get('.govuk-heading-l').contains('You are about to send this bill run');
+        cy.get('.govuk-heading-l').contains('You\'re about to send this bill run');
         cy.get('button.govuk-button').contains('Send bill run').click();
       });
 

@@ -42,13 +42,21 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
       request = {
         auth: {
           credentials: {
-            scope: [scope.returns]
+            scope: [
+              scope.returns,
+              scope.billing,
+              scope.manageAgreements,
+              scope.viewChargeVersions,
+              scope.chargeVersionWorkflowEditor,
+              scope.chargeVersionWorkflowReviewer
+            ]
           }
         },
         params: {
           licenceId
         },
         pre: {
+          gaugingStations: { data: [] },
           licence: {
             id: licenceId,
             licenceNumber: '01/123',
@@ -87,6 +95,10 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
             id: uuid(),
             agreement: {
               code: 'S127'
+            },
+            dateRange: {
+              startDate: '2020-01-01',
+              endDate: null
             }
           }],
           returns: {
@@ -133,6 +145,11 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
     test('includes the documentId', async () => {
       const [, view] = h.view.lastCall.args;
       expect(view.documentId).to.equal(documentId);
+    });
+
+    test('maps the gauging stations', async () => {
+      const [, { gaugingStationsData }] = h.view.lastCall.args;
+      expect(gaugingStationsData).to.equal([]);
     });
 
     test('includes the licence, bills, notifications, primaryUser and summary from request.pre', async () => {
@@ -190,11 +207,6 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
       expect(links.addAgreement).to.equal(`/licences/${licenceId}/agreements/select-type`);
     });
 
-    test('includes flag for charging user', async () => {
-      const [, { isChargingUser }] = h.view.lastCall.args;
-      expect(isChargingUser).to.be.a.boolean();
-    });
-
     test('includes validity message', async () => {
       const [, { validityMessage }] = h.view.lastCall.args;
       expect(validityMessage).to.equal('This licence starts on 1 January 3000');
@@ -205,19 +217,23 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
       expect(back).to.equal('/licences');
     });
     experiment('when the licence has ended less than 6 years ago', () => {
-      test('createChargeVersions flag is true', async () => {
-        request.pre.licence.endDate = moment().add(-5, 'years');
+      test('links to manage charge versions and agreements are omitted', async () => {
+        request.pre.licence.endDate = moment().add(-5, 'years').format('YYYY-MM-DD');
         await controller.getLicenceSummary(request, h);
-        const [, { createChargeVersions }] = h.view.lastCall.args;
-        expect(createChargeVersions).to.be.true();
+        const [, { links }] = h.view.lastCall.args;
+        expect(links.setupCharge).to.equal(`/licences/${licenceId}/charge-information/create`);
+        expect(links.makeNonChargeable).to.equal(`/licences/${licenceId}/charge-information/non-chargeable-reason?start=1`);
+        expect(links.addAgreement).to.equal(`/licences/${licenceId}/agreements/select-type`);
       });
     });
     experiment('when the licence has ended more than 6 years ago', () => {
       test('createChargeVersions flag is false', async () => {
-        request.pre.licence.endDate = moment().add(-7, 'years');
+        request.pre.licence.endDate = moment().add(-7, 'years').format('YYYY-MM-DD');
         await controller.getLicenceSummary(request, h);
-        const [, { createChargeVersions }] = h.view.lastCall.args;
-        expect(createChargeVersions).to.be.false();
+        const [, { links }] = h.view.lastCall.args;
+        expect(links.setupCharge).to.be.false();
+        expect(links.makeNonChargeable).to.be.false();
+        expect(links.addAgreement).to.be.false();
       });
     });
   });

@@ -54,18 +54,35 @@ const mapTransaction = trans => ({
   agreements: trans.agreements.map(agreementsMapper.mapAgreement)
 });
 
-const mapInvoiceLicence = invoiceLicence => {
+const mapInvoiceLicence = (batch, invoice, invoiceLicence) => {
   const { licenceNumber, id: licenceId } = invoiceLicence.licence;
   const { id, hasTransactionErrors, transactions } = invoiceLicence;
+  const deleteLink = isDeleteInvoiceLicenceLinkVisible(batch, invoice)
+    ? `/billing/batch/${batch.id}/invoice/${invoice.id}/delete-licence/${invoiceLicence.id}`
+    : null;
   return {
     id,
     licenceNumber,
     hasTransactionErrors,
-    link: `/licences/${licenceId}`,
     transactions: sortBy(transactions, getSortKey).map(mapTransaction),
-    totals: getTransactionTotals(transactions)
+    totals: getTransactionTotals(transactions),
+    links: {
+      view: `/licences/${licenceId}`,
+      delete: deleteLink
+    }
   };
 };
+
+const isDeleteInvoiceLicenceLinkVisible = (batch, invoice) =>
+  isReadyBatch(batch) &&
+  !isRebilledInvoice(invoice) &&
+  isInvoiceWithMultipleLicences(invoice);
+
+const isReadyBatch = batch => batch.status === 'ready';
+
+const isRebilledInvoice = invoice => invoice.rebillingState !== null;
+
+const isInvoiceWithMultipleLicences = invoice => invoice.invoiceLicences.length > 1;
 
 const mapBatchType = (type) => type === 'two_part_tariff' ? 'Two-part tariff' : sentenceCase(type);
 

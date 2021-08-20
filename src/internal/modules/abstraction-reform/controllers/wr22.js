@@ -1,10 +1,9 @@
 const { find } = require('lodash');
 const { handleRequest, getValues } = require('shared/lib/forms');
 const { mapRequestData } = require('shared/lib/forms/validationAdapters/json-schema');
-const { mapARItem } = require('../lib/helpers');
-const { getSchemaCategories, getSchemaCategory } = require('../lib/schema-helpers');
-const { selectSchemaCategoryForm } = require('../forms/select-schema-category');
-const { selectSchemaForm } = require('../forms/select-schema');
+const { mapARItem, getSchemaCategories, getSchemaCategory, getWR22 } = require('@envage/water-abstraction-helpers').digitise;
+const { selectSchemaCategoryForm, selectSchemaCategoryFormSchema } = require('../forms/select-schema-category');
+const { selectSchemaForm, selectSchemaFormSchema } = require('../forms/select-schema');
 const { load } = require('../lib/loader');
 const { getPermissions } = require('../lib/permissions');
 const { diff } = require('../lib/diff');
@@ -15,8 +14,6 @@ const {
   findDataItem, getEditFormAndSchema, getAddFormAndSchema,
   addActionFactory, editActionFactory, persistActions, getSchema
 } = wr22Helpers;
-
-const { getWR22 } = require('../lib/schema');
 
 const { deleteForm } = require('../forms/delete');
 
@@ -78,7 +75,7 @@ const getSelectSchemaCategory = async (request, h) => {
 const postSelectSchemaCategory = async (request, h) => {
   const { documentId } = request.params;
 
-  const form = handleRequest(selectSchemaCategoryForm(request, request.categories), request);
+  const form = handleRequest(selectSchemaCategoryForm(request, request.categories), request, selectSchemaCategoryFormSchema);
 
   if (form.isValid) {
     const { category } = getValues(form);
@@ -127,7 +124,7 @@ const postSelectSchema = async (request, h) => {
 
   const category = find(request.categories, { slug });
 
-  const form = handleRequest(selectSchemaForm(request, request.wr22Schema, category), request);
+  const form = handleRequest(selectSchemaForm(request, request.wr22Schema, category), request, selectSchemaFormSchema);
 
   // If validation errors in form, redisplay with error message
   if (!form.isValid) {

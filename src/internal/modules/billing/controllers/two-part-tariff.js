@@ -1,21 +1,16 @@
-const { partialRight } = require('lodash');
-const Boom = require('@hapi/boom');
+'use strict';
+
 const services = require('internal/lib/connectors/services');
 const twoPartTariffQuantityForm = require('../forms/two-part-tariff-quantity');
-const twoPartTariffQuantityConfirmForm = require('../forms/two-part-tariff-quantity-confirm');
 const confirmForm = require('shared/lib/forms/confirm-form');
 const mappers = require('../lib/mappers');
 const twoPartTariff = require('../lib/two-part-tariff');
 const routing = require('../lib/routing');
+const { groupBy } = require('lodash');
 
 const forms = require('shared/lib/forms');
 
-const getLicenceFilter = action => {
-  const isError = action === 'review';
-  return row => row.twoPartTariffError === isError;
-};
-
-const getTwoPartTariffAction = async (request, h, action) => {
+const getTwoPartTariffReview = async (request, h) => {
   const { batch } = request.pre;
 
   const licencesData = await services.water.billingBatches.getBatchLicences(batch.id);
@@ -23,15 +18,12 @@ const getTwoPartTariffAction = async (request, h, action) => {
   // Get totals of licences with/without errors
   const totals = twoPartTariff.getTotals(licencesData);
 
-  // if there are no errors, show ready page
-  if (totals.errors === 0) action = 'ready';
-
+  // group by licence for mid year transfers or inversions
+  const licenceGroups = Object.values(groupBy(licencesData, 'licenceRef'));
   // gets 2pt matching error messages and define error types
-  const licences = licencesData
-    .filter(getLicenceFilter(action))
-    .map(licence => twoPartTariff.mapLicence(batch, licence, action));
+  const licences = licenceGroups.map(licenceGroup => twoPartTariff.mapLicence(batch, licenceGroup));
 
-  return h.view('nunjucks/billing/two-part-tariff-' + action, {
+  return h.view('nunjucks/billing/two-part-tariff-review', {
     ...request.view,
     batch,
     reviewLink: `/billing/batch/${batch.id}/two-part-tariff-review`,
@@ -42,29 +34,27 @@ const getTwoPartTariffAction = async (request, h, action) => {
   });
 };
 
-const getTwoPartTariffReview = partialRight(getTwoPartTariffAction, 'review');
-const getTwoPartTariffViewReady = partialRight(getTwoPartTariffAction, 'ready');
-
 /**
  * Allows user to view issues with a single invoice licence
  */
 const getLicenceReview = async (request, h) => {
   const { batch, licence } = request.pre;
   const { licenceId, action } = request.params;
+  const licenceData = await getCurrentLicenceData(licence.licenceNumber);
 
-  const pageTitle = action === 'review'
-    ? `Review returns data issues for ${licence.licenceNumber}`
-    : `View returns data for ${licence.licenceNumber}`;
   const backLinkTail = action === 'review' ? 'review' : 'ready';
 
-  const billingVolumes = await services.water.billingBatches.getBatchLicenceBillingVolumes(batch.id, licenceId);
-
+  const billingVolumeData = await services.water.billingBatches.getBatchLicenceBillingVolumes(batch.id, licenceId);
+  const totals = twoPartTariff.getTotals(billingVolumeData);
+  const billingVolumeGroups = twoPartTariff.decorateBillingVolumes(batch, licence, billingVolumeData);
   return h.view('nunjucks/billing/two-part-tariff-licence-review', {
     ...request.view,
-    pageTitle,
+    pageTitle: `Review data issues for ${licence.licenceNumber}`,
     batch,
     licence,
-    billingVolumeGroups: twoPartTariff.getBillingVolumeGroups(batch, licence, billingVolumes),
+    ...licenceData,
+    billingVolumeGroups,
+    totals,
     back: `/billing/batch/${batch.id}/two-part-tariff-${backLinkTail}`
   });
 };
@@ -78,9 +68,7 @@ const getCurrentLicenceData = async licenceRef => {
   const doc = await services.crm.documents.getWaterLicence(licenceRef);
   if (doc) {
     const summary = await services.water.licences.getSummaryByDocumentId(doc.document_id);
-
     const aggregateConditions = mappers.mapConditions(summary.data.conditions.filter(row => row.code === 'AGG'));
-
     return {
       returnsLink: `/licences/${doc.document_id}/returns`,
       aggregateConditions,
@@ -95,17 +83,15 @@ const getCurrentLicenceData = async licenceRef => {
  */
 const getBillingVolumeReview = async (request, h, form) => {
   const { batch, licence, billingVolume } = request.pre;
-
-  const licenceData = await getCurrentLicenceData(licence.licenceNumber);
+  const { chargePeriod } = billingVolume.chargePeriod;
 
   return h.view('nunjucks/billing/two-part-tariff-quantities', {
-    error: twoPartTariff.getBillingVolumeError(billingVolume),
     licence,
     ...request.view,
-    pageTitle: `Review quantity to bill for ${billingVolume.chargeElement.description}`,
-    caption: `Licence ${licence.licenceNumber}`,
-    ...licenceData,
+    pageTitle: 'Set the billable returns quantity for this bill run',
+    caption: `${billingVolume.chargeElement.purposeUse.name}, ${billingVolume.chargeElement.description}`,
     billingVolume,
+    chargePeriod,
     form: form || twoPartTariffQuantityForm.form(request, billingVolume),
     back: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}`
   });
@@ -139,45 +125,7 @@ const postBillingVolumeReview = async (request, h) => {
 
   if (form.isValid) {
     const quantity = getFormQuantity(form, billingVolume);
-    const path = `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}/billing-volume/${billingVolume.id}/confirm?quantity=${quantity}`;
-    return h.redirect(path);
-  }
-  return getBillingVolumeReview(request, h, form);
-};
 
-/**
- * Confirmation step when quantity is selected
- */
-const getConfirmQuantity = async (request, h) => {
-  const { batch, licence, billingVolume } = request.pre;
-  const { quantity } = request.query;
-
-  const form = twoPartTariffQuantityConfirmForm.form(request, quantity);
-
-  return h.view('nunjucks/billing/two-part-tariff-quantities-confirm', {
-    ...request.view,
-    quantity,
-    licence,
-    form,
-    pageTitle: `You're about to set the billable quantity to ${quantity}ML`,
-    caption: `Licence ${licence.licenceNumber}`,
-    back: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}/billing-volume/${billingVolume.id}`,
-    billingVolume
-  });
-};
-
-/**
- * Post handler for confirming billable volume
- * Updates the quantity in the water service
- */
-const postConfirmQuantity = async (request, h) => {
-  const { batch, licence, billingVolume } = request.pre;
-
-  const schema = twoPartTariffQuantityConfirmForm.schema(billingVolume);
-  const form = forms.handleRequest(twoPartTariffQuantityConfirmForm.form(request), request, schema);
-
-  if (form.isValid) {
-    const { quantity } = forms.getValues(form);
     await services.water.billingVolumes.updateVolume(billingVolume.id, quantity);
 
     // If all TPT errors are resolved, go to main TPT batch review screen
@@ -191,8 +139,7 @@ const postConfirmQuantity = async (request, h) => {
 
     return h.redirect(path);
   }
-
-  return Boom.badRequest();
+  return getBillingVolumeReview(request, h, form);
 };
 
 /**
@@ -205,12 +152,11 @@ const getRemoveLicence = async (request, h) => {
   const action = `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}/remove`;
   const form = confirmForm.form(request, 'Remove licence', action);
 
-  return h.view('nunjucks/billing/confirm-page-with-metadata', {
+  return h.view('nunjucks/billing/confirm-licence', {
     ...request.view,
     ...request.pre,
     form,
-    metadataType: 'licence',
-    pageTitle: `You are about to remove this licence from the bill run`,
+    pageTitle: `You're about to remove this licence from the bill run`,
     back: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}`
   });
 };
@@ -235,12 +181,11 @@ const getApproveReview = (request, h) => {
   const action = `/billing/batch/${batch.id}/approve-review`;
   const form = confirmForm.form(request, 'Confirm', action);
 
-  return h.view('nunjucks/billing/confirm-page-with-metadata', {
+  return h.view('nunjucks/billing/confirm-batch', {
     ...request.view,
     batch,
     form,
-    metadataType: 'batch',
-    pageTitle: 'You are about to generate the two-part tariff bills',
+    pageTitle: 'You\'re about to generate the two-part tariff bills',
     back: `/billing/batch/${batch.id}/two-part-tariff-ready`
   });
 };
@@ -252,12 +197,9 @@ const postApproveReview = async (request, h) => {
 };
 
 exports.getTwoPartTariffReview = getTwoPartTariffReview;
-exports.getTwoPartTariffViewReady = getTwoPartTariffViewReady;
 exports.getLicenceReview = getLicenceReview;
 exports.getBillingVolumeReview = getBillingVolumeReview;
 exports.postBillingVolumeReview = postBillingVolumeReview;
-exports.getConfirmQuantity = getConfirmQuantity;
-exports.postConfirmQuantity = postConfirmQuantity;
 exports.getRemoveLicence = getRemoveLicence;
 exports.postRemoveLicence = postRemoveLicence;
 exports.getApproveReview = getApproveReview;

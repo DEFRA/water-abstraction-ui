@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const { capitalize } = require('lodash');
 const { LOSS_CATEGORIES, CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants');
@@ -11,7 +11,9 @@ const options = (selectedPurposeUse) => {
 
   return LOSS_CATEGORIES.map(category => {
     const option = { value: category, label: capitalize(category) };
-    if (category === lossFactor) { option.hint = 'This is the default loss category for the purpose chosen'; };
+    if (category === lossFactor) {
+      option.hint = 'This is the default loss category for the purpose chosen';
+    }
     return option;
   });
 };
@@ -21,7 +23,7 @@ const options = (selectedPurposeUse) => {
  *
  * @param {Object} request The Hapi request object
  * @param {Boolean}  data object containing selected and default options for the form
-  */
+ */
 const form = request => {
   const { csrfToken } = request.view;
   const data = getChargeElementData(request);
@@ -44,12 +46,10 @@ const form = request => {
   return f;
 };
 
-const schema = (request) => {
-  return {
-    csrf_token: Joi.string().uuid().required(),
-    loss: Joi.string().valid(LOSS_CATEGORIES).required()
-  };
-};
+const schema = () => Joi.object().keys({
+  csrf_token: Joi.string().uuid().required(),
+  loss: Joi.string().valid(...LOSS_CATEGORIES).required()
+});
 
 exports.schema = schema;
 

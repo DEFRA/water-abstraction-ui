@@ -1,0 +1,41 @@
+
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "./two-part-tariff-review-quantities.njk" import authorisedQuantity, billableQuantity, reportedVolume, billableVolume %}
+{% macro billingVolumeTableRow(billingVolume) %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+    {{ govukTable({
+      firstCellIsHeader: true,
+      rows: [
+        [ { text: "Issue", classes: "thick_black_underline govuk-!-width-one-quarter" }, { text: billingVolume.error, classes: "thick_black_underline"  }, { text: "", classes: "thick_black_underline" } ],
+        [ { text: "Billable returns" }, 
+          { text: billableVolume(billingVolume) }, 
+          { html: "<a href=" + billingVolume.editLink + ">
+                      Change
+                      <span class='govuk-visually-hidden'>
+                        element "
+                        + billingVolume.chargeElement.description +
+                      "</span>
+                    </a>"
+          }
+        ],
+        [ { text: "Reported returns", classes: "thick_black_underline"  }, { text: reportedVolume(billingVolume), classes: "thick_black_underline" }, { text: "", classes: "thick_black_underline"  } ],
+        [ { text: "Billing account" }, { text: billingVolume.invoiceAccount.accountNumber }, { text: "" } ],
+        [ { text: "Purpose" }, { text: billingVolume.chargeElement.purposeUse.name }, { text: "" } ],
+        [ { text: "Description" }, { text: billingVolume.chargeElement.description }, { text: "" } ],
+        [ { text: "Charge period" }, { text: billingVolume.chargePeriod.startDate | date + " to " + billingVolume.chargePeriod.endDate | date }, { text: "" } ],
+        [ { text: "Abstraction period" }, { text: billingVolume.chargeElement.abstractionPeriod | abstractionPeriod }, { text: "" } ],
+        [ { text: "Annual quantities" }, 
+          { html: authorisedQuantity(billingVolume.chargeElement) + "<br>" +
+                  billableQuantity(billingVolume.chargeElement)
+                  },
+          { text: "" }
+        ],
+        [ { text: "Source" }, { text: billingVolume.chargeElement.source | sentenceCase }, { text: "" } ],
+        [ { text: "Season" }, { text: billingVolume.chargeElement.season | sentenceCase }, { text: "" } ],
+        [ { text: "Loss" }, { text: billingVolume.chargeElement.loss | sentenceCase }, { text: "" } ]
+      ]
+    }) }}
+    </div>
+  </div>
+{% endmacro %}

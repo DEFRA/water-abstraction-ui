@@ -6,8 +6,8 @@ const constants = require('external/lib/constants');
 const allowedScopes = [constants.scope.licenceHolder, constants.scope.colleagueWithReturns];
 const steps = require('shared/modules/returns/steps');
 const storageAdapter = new FlowStorageAdapter(services.water.returns);
-
 const controller = require('../controllers/edit');
+const preHandlers = require('../pre-handlers');
 
 const { createRoute: sharedCreateRoute } = require('shared/modules/returns/route-helpers');
 
@@ -15,6 +15,9 @@ const createRoute = (...args) => {
   const route = sharedCreateRoute(...args);
   set(route, 'options.auth.scope', allowedScopes);
   set(route, 'options.plugins.flow.adapter', storageAdapter);
+  set(route, 'options.pre', [
+    preHandlers.redirectIfReturnNotDue
+  ]);
   return route;
 };
 
@@ -29,6 +32,7 @@ module.exports = [
   createRoute('POST', steps.STEP_START, controller.postAmounts, {
     pageTitle: 'Abstraction return - has any water been abstracted?',
     form: require('../forms/amounts').form,
+    schema: require('../forms/amounts').schema,
     showMeta: true
   }),
 

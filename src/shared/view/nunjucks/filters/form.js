@@ -217,7 +217,7 @@ const mapFormRadioField = (field) => {
   const options = {
     idPrefix: field.name,
     name: field.name,
-    attibutes: {
+    attributes: {
       id: field.name
     },
     hint: {

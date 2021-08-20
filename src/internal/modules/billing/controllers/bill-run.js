@@ -62,6 +62,7 @@ const getBillingBatchInvoice = async (request, h) => {
   if (invoice.originalInvoiceId !== null) {
     invoice.originalInvoice = getOriginalInvoice(invoice);
   }
+  const invoiceLicenceMapper = invoiceLicence => mappers.mapInvoiceLicence(batch, invoice, invoiceLicence);
 
   return h.view('nunjucks/billing/batch-invoice', {
     ...request.view,
@@ -71,7 +72,7 @@ const getBillingBatchInvoice = async (request, h) => {
     financialYearEnding: invoice.financialYear.yearEnding,
     batch,
     batchType: mappers.mapBatchType(batch.type),
-    invoiceLicences: invoice.invoiceLicences.map(mappers.mapInvoiceLicence),
+    invoiceLicences: invoice.invoiceLicences.map(invoiceLicenceMapper),
     isCredit: get(invoice, 'totals.netTotal', 0) < 0,
     caption: getCaption(invoice),
     errors: mappers.mapInvoiceLevelErrors(invoice),
@@ -100,10 +101,10 @@ const getBillingBatchList = async (request, h) => {
 const billingBatchAction = (request, h, action) => {
   const { batch } = request.pre;
   const titleAction = (action === 'confirm') ? 'send' : 'cancel';
-  return h.view('nunjucks/billing/confirm-page-with-metadata', {
+  return h.view('nunjucks/billing/confirm-batch', {
     ...request.view,
     batch,
-    pageTitle: `You are about to ${titleAction} this bill run`,
+    pageTitle: `You're about to ${titleAction} this bill run`,
     secondTitle: getBillRunPageTitle(batch),
     metadataType: 'batch',
     form: cancelOrConfirmBatchForm(request, action),
@@ -171,10 +172,10 @@ const getBillingBatchDeleteInvoice = async (request, h) => {
     formText.button = 'Cancel this reissue';
   } else {
     formText.title = `You're about to remove this bill from the ${batchType} bill run`;
-    formText.button = 'Remove bill';
+    formText.button = 'Remove this bill';
   }
 
-  return h.view('nunjucks/billing/confirm-page-with-metadata', {
+  return h.view('nunjucks/billing/confirm-invoice', {
     ...request.view,
     pageTitle: formText.title,
     batch,

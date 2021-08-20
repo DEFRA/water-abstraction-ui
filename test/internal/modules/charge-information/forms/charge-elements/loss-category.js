@@ -70,12 +70,12 @@ experiment('internal/modules/charge-information/forms/charge-element/loss-catego
   experiment('.schema', () => {
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
-        const result = schema(createRequest()).csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
-        expect(result.error).to.be.null();
+        const result = schema(createRequest()).validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', loss: LOSS_CATEGORIES[0] });
+        expect(result.error).to.be.undefined();
       });
 
       test('fails for a string that is not a uuid', async () => {
-        const result = schema(createRequest()).csrf_token.validate('sciccors');
+        const result = schema(createRequest()).validate({ csrf_token: 'sciccors', loss: LOSS_CATEGORIES[0] });
         expect(result.error).to.exist();
       });
     });
@@ -83,13 +83,13 @@ experiment('internal/modules/charge-information/forms/charge-element/loss-catego
     experiment('loss', () => {
       LOSS_CATEGORIES.forEach(option => {
         test('validates for a string', async () => {
-          const result = schema().loss.validate(option);
+          const result = schema().validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', loss: option });
           expect(result.error).to.not.exist();
         });
       });
 
       test('can not be any other string', async () => {
-        const result = schema().loss.validate('test');
+        const result = schema().validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', loss: 'test' });
         expect(result.error).to.exist();
       });
     });

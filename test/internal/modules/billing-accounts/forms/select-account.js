@@ -1,6 +1,5 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
 const uuid = require('uuid/v4');
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
@@ -74,34 +73,58 @@ experiment('internal/billing-accounts/forms/select-account', () => {
 experiment('invoice-accounts/forms/select-company schema', () => {
   experiment('csrf token', () => {
     test('validates for a uuid', async () => {
-      const result = selectAccountForm.schema(createRequest()).csrf_token.validate(uuid());
-      expect(result.error).to.be.null();
+      const result = selectAccountForm.schema(createRequest()).validate({
+        csrf_token: uuid(),
+        accountSearch: '',
+        account: BILLING_ACCOUNT_HOLDER
+      });
+      expect(result.error).to.be.undefined();
     });
 
     test('fails for a string that is not a uuid', async () => {
-      const result = selectAccountForm.schema(createRequest()).csrf_token.validate('noodles');
+      const result = selectAccountForm.schema(createRequest()).validate({
+        csrf_token: 'potato',
+        accountSearch: '',
+        account: BILLING_ACCOUNT_HOLDER
+      });
       expect(result.error).to.exist();
     });
   });
 
   experiment('selected account', () => {
     test('It allows billing account holder', async () => {
-      const result = selectAccountForm.schema(createRequest()).account.validate(BILLING_ACCOUNT_HOLDER);
-      expect(result.error).to.be.null();
+      const result = selectAccountForm.schema(createRequest()).validate({
+        csrf_token: uuid(),
+        accountSearch: '',
+        account: BILLING_ACCOUNT_HOLDER
+      });
+      expect(result.error).to.be.undefined();
     });
 
     test('It allows other account holder', async () => {
-      const result = selectAccountForm.schema(createRequest()).account.validate(OTHER_ACCOUNT);
-      expect(result.error).to.be.null();
+      const result = selectAccountForm.schema(createRequest()).validate({
+        csrf_token: uuid(),
+        accountSearch: '',
+        account: OTHER_ACCOUNT
+      });
+      expect(result.error).to.be.undefined();
     });
 
     test('It fails for an invalid value', async () => {
-      const result = selectAccountForm.schema(createRequest()).account.validate('noodles');
-      expect(result.error).to.not.be.null();
+      const result = selectAccountForm.schema(createRequest()).validate({
+        csrf_token: uuid(),
+        accountSearch: '',
+        account: 'slipper ltd.'
+      });
+      expect(result.error).to.exist();
     });
 
     test('fails if blank', async () => {
-      const result = selectAccountForm.schema(createRequest()).account.validate();
+      const result = selectAccountForm.schema(createRequest()).validate({
+        csrf_token: uuid(),
+        accountSearch: '',
+        account: null
+      });
       expect(result.error).to.exist();
     });
   });
@@ -113,8 +136,8 @@ experiment('invoice-accounts/forms/select-company schema', () => {
         account: BILLING_ACCOUNT_HOLDER
       };
 
-      const result = Joi.validate(data, selectAccountForm.schema());
-      expect(result.error).to.be.null();
+      const result = selectAccountForm.schema().validate(data);
+      expect(result.error).to.be.undefined();
     });
 
     test('is valid if a company name is entered', async () => {
@@ -123,8 +146,8 @@ experiment('invoice-accounts/forms/select-company schema', () => {
         account: OTHER_ACCOUNT,
         accountSearch: 'some company name'
       };
-      const result = Joi.validate(data, selectAccountForm.schema());
-      expect(result.error).to.be.null();
+      const result = selectAccountForm.schema().validate(data);
+      expect(result.error).to.be.undefined();
     });
 
     test('fails if no company search name has been entered', async () => {
@@ -133,7 +156,7 @@ experiment('invoice-accounts/forms/select-company schema', () => {
         selectedCompany: 'company_search',
         companySearch: ''
       };
-      const result = Joi.validate(data, selectAccountForm.schema());
+      const result = selectAccountForm.schema().validate(data);
       expect(result.error).to.exist();
     });
   });

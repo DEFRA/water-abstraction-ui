@@ -71,24 +71,24 @@ experiment('internal/modules/charge-information/forms/charge-element/purpose', (
   experiment('.schema', () => {
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
-        const result = schema(createRequest()).csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
-        expect(result.error).to.be.null();
+        const result = schema(createRequest()).validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', purpose: 'c5afe238-fb77-4131-be80-384aaf245842' });
+        expect(result.error).to.be.undefined();
       });
 
       test('fails for a string that is not a uuid', async () => {
-        const result = schema(createRequest()).csrf_token.validate('sciccors');
+        const result = schema(createRequest()).validate({ csrf_token: 'sciccors', purpose: 'c5afe238-fb77-4131-be80-384aaf245842' });
         expect(result.error).to.exist();
       });
     });
 
     experiment('purpose', () => {
       test('validates for a uuid', async () => {
-        const result = schema().purpose.validate('c5afe238-fb77-4131-be80-384aaf245842');
+        const result = schema().validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', purpose: 'c5afe238-fb77-4131-be80-384aaf245842' });
         expect(result.error).to.not.exist();
       });
 
       test('can not be a nomral string', async () => {
-        const result = schema().purpose.validate('not-a-uuid');
+        const result = schema().validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', purpose: '🔥' });
         expect(result.error).to.exist();
       });
     });

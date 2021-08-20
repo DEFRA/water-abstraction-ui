@@ -26,9 +26,17 @@ experiment('internal/modules/billing/lib/routing', () => {
     });
 
     experiment('when batch status is "ready"', () => {
-      test('returns the expected url', () => {
+      test('returns the batch summary url if no invoice ID is supplied', () => {
         batch.status = 'ready';
         expect(getBillingBatchRoute(batch)).to.equal('/billing/batch/test-batch-id/summary');
+      });
+
+      test('returns the invoice page if an invoice ID is supplied', () => {
+        batch.status = 'ready';
+        const options = {
+          invoiceId: 'test-invoice-id'
+        };
+        expect(getBillingBatchRoute(batch, options)).to.equal('/billing/batch/test-batch-id/invoice/test-invoice-id');
       });
     });
 

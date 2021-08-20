@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const controller = require('./controller');
 const { scope } = require('../../lib/constants');
 
@@ -47,14 +47,14 @@ module.exports = {
       },
       description: 'Manage licences - remove access form',
       validate: {
-        params: {
+        params: Joi.object().keys({
           colleagueEntityID: Joi.string().uuid().required()
-        }
+        })
       },
       plugins: {
         viewContext: {
           activeNavLink: 'manage',
-          pageTitle: 'You are about to remove access'
+          pageTitle: 'You\'re about to remove access'
         }
       }
     }
@@ -75,10 +75,10 @@ module.exports = {
         }
       },
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           colleagueEntityID: Joi.string().uuid().required(),
           csrf_token: Joi.string().guid().required()
-        }
+        })
       }
     }
   },
@@ -117,11 +117,11 @@ module.exports = {
       },
       description: 'Manage licences - add access process',
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           email: Joi.string().max(254).allow(''),
           returns: Joi.boolean(),
           csrf_token: Joi.string().guid().required()
-        }
+        })
       }
     }
   },
@@ -136,9 +136,9 @@ module.exports = {
         scope: scope.licenceHolder
       },
       validate: {
-        params: {
+        params: Joi.object().keys({
           colleagueEntityID: Joi.string().uuid().required()
-        }
+        })
       },
       plugins: {
         viewContext: {
@@ -158,12 +158,12 @@ module.exports = {
         scope: scope.licenceHolder
       },
       validate: {
-        payload: {
+        payload: Joi.object().keys({
           csrf_token: Joi.string().uuid().required(),
           colleagueEntityID: Joi.string().uuid().required(),
           returnsEntityRoleID: Joi.string().uuid().allow(''),
           returns: Joi.string()
-        }
+        })
       }
     }
   }

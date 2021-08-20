@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const { uniqBy } = require('lodash');
 const { CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants');
@@ -40,12 +40,10 @@ const form = request => {
   return f;
 };
 
-const schema = (request) => {
-  return {
-    csrf_token: Joi.string().uuid().required(),
-    purpose: Joi.string().uuid().required()
-  };
-};
+const schema = (request) => Joi.object().keys({
+  csrf_token: Joi.string().uuid().required(),
+  purpose: Joi.string().uuid().required()
+});
 
 exports.schema = schema;
 

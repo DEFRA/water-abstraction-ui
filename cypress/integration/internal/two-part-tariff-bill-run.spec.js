@@ -30,50 +30,46 @@ describe('two-part-tariff bill run', () => {
       });
 
       describe('user selects two-part-tariff billing type', () => {
-        cy.get('#selectedBillingType-3').click();
-        cy.get('#twoPartTariffSeason').click();
+        cy.get('[type="radio"]').check('two_part_tariff');
+        cy.get('[type="radio"]').check('summer');
         cy.get('button.govuk-button').click();
       });
 
       describe('user selects the test region', () => {
-        cy.get('#selectedBillingRegion-9').click();
+        cy.get('[type="radio"]#selectedBillingRegion-9').last().check();
         cy.get('button.govuk-button').click();
       });
 
       describe('user waits for batch to finish generating', () => {
-        cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Review licences with returns data issues');
+        cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Review data issues');
         cy.url().should('contain', '/two-part-tariff-review');
       });
 
       describe('user view returns data', () => {
         cy.get('.govuk-link').contains('Review').click();
         cy.url().should('contain', '/billing/batch/');
-        cy.get('.govuk-heading-xl').contains('Review returns data issues for L1');
-        cy.get(':nth-child(6) > a').contains('Change').click();
+        cy.get('.govuk-heading-xl').contains('Review data issues for L1');
+        cy.get('a[href*="billing-volume"]').click();
       });
 
       describe('user verifys the review bill', () => {
         cy.get('#quantity').click();
         cy.url().should('contain', '/billing/batch/');
-        cy.get('.govuk-heading-xl').contains('Review quantity to bill for CE2');
-        cy.get('.govuk-button').contains('Continue').click();
-      });
-
-      describe('user confirms the review bill', () => {
-        cy.url().should('contain', '/billing/batch/');
-        cy.get('.govuk-caption-l').contains('Licence L1');
-        cy.get('.govuk-button').contains('Continue').click();
+        cy.get('.govuk-heading-l').contains('Set the billable returns quantity for this bill run');
+        cy.get('.govuk-caption-l').contains('Spray Irrigation - Direct, CE2');
+        cy.get('[type="radio"]').check('authorised');
+        cy.get('.govuk-button').contains('Confirm').click();
       });
 
       describe('user reviews licenses for bill', () => {
         cy.url().should('contain', '/billing/batch/');
-        cy.get('.govuk-heading-xl').contains('Review licences with returns data issues');
+        cy.get('.govuk-heading-xl').contains('Review data issues');
         cy.get('.govuk-button').contains('Continue').click();
       });
 
       describe('user genrates the bill', () => {
         cy.url().should('contain', '/billing/batch/');
-        cy.get('.govuk-heading-l', { timeout: 20000 }).contains('You are about to generate the two-part tariff bills');
+        cy.get('.govuk-heading-l', { timeout: 20000 }).contains('You\'re about to generate the two-part tariff bills');
         cy.get('.govuk-button').contains('Confirm').click();
       });
 
@@ -89,7 +85,7 @@ describe('two-part-tariff bill run', () => {
       });
 
       describe('send the bill run', () => {
-        cy.get('.govuk-heading-l').contains('You are about to send this bill run');
+        cy.get('.govuk-heading-l').contains(`You're about to send this bill run`);
         cy.get('.govuk-button').contains('Send bill run').click();
       });
 

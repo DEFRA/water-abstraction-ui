@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const { formFactory, fields, applyErrors } = require('shared/lib/forms');
 
 const createEmailField = () => {
@@ -7,13 +7,14 @@ const createEmailField = () => {
     type: 'email',
     controlClass: 'govuk-!-width-one-half',
     errors: {
-      'any.empty': {
+      'string.empty': {
         message: 'Enter an email address'
       },
       'string.email': {
         message: 'Enter an email address in the correct format, like name@example.com'
       }
-    }
+    },
+    autoComplete: 'off'
   });
 };
 
@@ -23,13 +24,11 @@ const createPasswordField = () => {
     type: 'password',
     controlClass: 'govuk-!-width-one-half',
     errors: {
-      'any.empty': {
+      'string.empty': {
         message: 'Enter your password'
       }
     },
-    attr: {
-      autocomplete: 'off'
-    }
+    autoComplete: 'off'
   });
 };
 
@@ -49,10 +48,10 @@ const form = () => {
   return f;
 };
 
-const schema = {
+const schema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required()
-};
+});
 
 // Enter if empty, Check your if it's wrong
 const applyErrorState = form => {

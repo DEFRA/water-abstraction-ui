@@ -1,10 +1,10 @@
 const uuidv4 = require('uuid/v4');
-const statuses = require('./statuses');
+const { statuses, actionTypes } = require('@envage/water-abstraction-helpers').digitise;
 const {
   EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT, EDIT_CONDITION, SET_STATUS,
   EDIT_VERSION, EDIT_PARTY, EDIT_ADDRESS,
   ADD_DATA, EDIT_DATA, DELETE_DATA
-} = require('./action-types');
+} = actionTypes;
 
 const formatUser = (defra) => {
   const { userId: id, userName: email } = defra;

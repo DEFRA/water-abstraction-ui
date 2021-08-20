@@ -2,7 +2,7 @@
  * HAPI Route handlers for registering a user account
  * @module controllers/registration
  */
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 const querystring = require('querystring');
 const config = require('../../config');
 const services = require('../../lib/connectors/services');
@@ -32,9 +32,9 @@ const getUrlWithEmailParam = (email, options) => {
 };
 
 const validateEmail = requestPayload => {
-  const { error, value } = Joi.validate(requestPayload, {
+  const { error, value } = Joi.object({
     email: Joi.string().trim().required().email().lowercase()
-  });
+  }).validate(requestPayload);
 
   if (error) {
     throw error;

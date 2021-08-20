@@ -6,6 +6,7 @@ const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').scri
 
 const rebillingDateForm = require('internal/modules/billing-accounts/forms/rebilling-date-from');
 const { findField, findButton } = require('../../../../lib/form-test');
+const { request } = require('@envage/water-abstraction-helpers/src/http');
 
 const createRequest = () => ({
   view: {
@@ -116,6 +117,16 @@ experiment('invoice-accounts/forms/select-company schema', () => {
         const result = rebillingDateForm.schema(createRequest()).validate({
           csrf_token: uuid(),
           fromDate: '2020-06-fas'
+        });
+        expect(result.error).to.exist();
+      });
+
+      test('It fails when there are no rebillable bills', async () => {
+        const request = createRequest();
+        request.pre.rebillableBills = [];
+        const result = rebillingDateForm.schema(request).validate({
+          csrf_token: uuid(),
+          fromDate: '2020-05-01'
         });
         expect(result.error).to.exist();
       });

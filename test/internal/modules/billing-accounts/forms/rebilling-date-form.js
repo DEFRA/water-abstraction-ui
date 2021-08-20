@@ -6,7 +6,6 @@ const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').scri
 
 const rebillingDateForm = require('internal/modules/billing-accounts/forms/rebilling-date-from');
 const { findField, findButton } = require('../../../../lib/form-test');
-const { request } = require('@envage/water-abstraction-helpers/src/http');
 
 const createRequest = () => ({
   view: {

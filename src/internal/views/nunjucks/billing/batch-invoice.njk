@@ -76,12 +76,12 @@ invoiceDebitsTotal %}
       {% macro displayBillingState(inv) %}
         {% if inv.rebillingState == 'rebill' and inv.originalInvoiceId != null %}Reissued <span class="screen-reader-only">bill</span> {% endif %}
         {% if inv.rebillingState == 'reversal' and inv.originalInvoiceId != null %}Reversed <span class="screen-reader-only">bill</span> {% endif %}
-        {% if inv.originalInvoiceId == null %}Original <span class="screen-reader-only">bill</span>{% endif %}
+        {% if inv.originalInvoiceId == inv.id %}Original <span class="screen-reader-only">bill</span>{% endif %}
       {% endmacro %}
 
       {% macro displayInvoiceNumber(inv) %}
         {% if inv.originalInvoiceId != null %}
-          <a href="/billing/batch/{{batch.id}}/invoice/{{inv.id}}">
+          <a href="/billing/batch/{{inv.billingBatchId}}/invoice/{{inv.id}}">
             {{inv.invoiceNumber}}
           </a>
         {% else %}

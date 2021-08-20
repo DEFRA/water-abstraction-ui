@@ -11,6 +11,9 @@ const getMostRecentBill = bills =>
   sortBy(bills, bill => moment(bill.dateCreated).unix()).pop();
 
 const getMaxDate = bills => {
+  if (bills.length === 0) {
+    return null;
+  }
   const mostRecentBill = getMostRecentBill(bills);
   return moment(mostRecentBill.batch.dateCreated);
 };
@@ -26,6 +29,9 @@ const form = request => {
   const maxDate = isoToReadable(
     getMaxDate(request.pre.rebillableBills)
   );
+  const maxDateError = maxDate
+    ? `There are no bills available for reissue for this date.  Enter a date on or before ${maxDate}.`
+    : 'There are no bills available for reissue for this billing account.';
 
   const f = formFactory(request.path);
 
@@ -49,7 +55,7 @@ const form = request => {
         message: 'Enter a real date'
       },
       'date.max': {
-        message: `There are no bills available for reissue for this date.  Enter a date on or before ${maxDate}.`
+        message: maxDateError
       }
     }
   }, fromDate));
@@ -61,7 +67,8 @@ const form = request => {
 };
 
 const schema = request => {
-  const maxDate = getMaxDate(request.pre.rebillableBills).format('YYYY-MM-DD');
+  // if the max date is null default to a date in the past to display the message when no bills are available for re-issue
+  const maxDate = isoToReadable(getMaxDate(request.pre.rebillableBills)) || '01 January 1999';
   return Joi.object().keys({
     fromDate: Joi.date().iso().max(maxDate).required(),
     csrf_token: Joi.string().guid().required()

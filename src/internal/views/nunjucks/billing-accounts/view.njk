@@ -38,17 +38,21 @@
 
     {% if moreBillsLink %}
     <p>
-      <a href="{{ moreBillsLink }}">View all sent bills 
+      <a href="{{ moreBillsLink }}">View all sent bills </a>
     </p>
     {% endif %}
 
     
     <p>
-    {{ govukButton({
-      text: "Reissue a bill",
-      href: rebillingLink,
-      classes: "govuk-button--secondary"
-    }) }}
+    {% if rebillable %}
+      {{ govukButton({
+        text: "Reissue a bill",
+        href: rebillingLink,
+        classes: "govuk-button--secondary"
+      }) }}
+    {% else %}
+      There are no rebillable bills for the billing account.
+    {% endif %}
     </p>
   
 

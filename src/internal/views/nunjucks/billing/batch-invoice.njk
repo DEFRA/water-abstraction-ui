@@ -78,11 +78,11 @@ invoiceDebitsTotal %}
         <!-- Is "rebill" (as opposed to "rebilled") in invoices -->
         {% set rebillingStateRebillInInvoices = false %}
         {% for linkedInvoice in invoice.linkedInvoices %}
-          {% if linkedInvoice.rebillingState == 'rebill' %}
+          {% if linkedInvoice.rebillingState == 'rebilled' %}
             {% set rebillingStateRebillInInvoices = true %}
           {% endif %}
         {% endfor%}
-        {% if invoice.rebillingState == 'rebill' %}
+        {% if invoice.rebillingState == 'rebilled' %}
           {% set rebillingStateRebillInInvoices = true %}
         {% endif %}
 
@@ -103,7 +103,21 @@ invoiceDebitsTotal %}
 
         <!-- "Reissue" becoming "Original" invoice -->
         {% if inv.rebillingState == 'rebilled' and inv.originalInvoiceId != inv.id and rebillingStateRebillInInvoices == true %}
-          Original <span class="screen-reader-only">bill</span>
+
+          <!--- check if any invoice linking id as originalInvoice -->
+          {% set originalInvoice = false %}
+          {% for linkedInvoice in invoice.linkedInvoices %}
+            {% if linkedInvoice.originalInvoiceId == inv.id %}
+               {% set originalInvoice = true %}
+            {% endif %}
+          {% endfor%}
+
+          {% if originalInvoice  == true %}
+            Original <span class="screen-reader-only">bill</span>
+          {% else %}
+            Reissue <span class="screen-reader-only">bill</span>
+          {% endif%}
+
         {% endif %}
 
         {% if inv.rebillingState == 'reversal' and inv.originalInvoiceId != null %}

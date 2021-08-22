@@ -73,10 +73,42 @@ invoiceDebitsTotal %}
       {{ batchMetadata(batch, invoice)}}
 
       <!-- Bills linked to reissue -->
-      {% macro displayBillingState(inv) %}
-        {% if inv.rebillingState == 'rebill' and inv.originalInvoiceId != null %}Reissued <span class="screen-reader-only">bill</span> {% endif %}
-        {% if inv.rebillingState == 'reversal' and inv.originalInvoiceId != null %}Reversed <span class="screen-reader-only">bill</span> {% endif %}
-        {% if inv.originalInvoiceId == inv.id %}Original <span class="screen-reader-only">bill</span>{% endif %}
+      {% macro displayBillingState(inv, billingBatchId) %}
+
+        <!-- Is "rebill" (as opposed to "rebilled") in invoices -->
+        {% set rebillingStateRebillInInvoices = false %}
+        {% for linkedInvoice in invoice.linkedInvoices %}
+          {% if linkedInvoice.rebillingState == 'rebill' %}
+            {% set rebillingStateRebillInInvoices = true %}
+          {% endif %}
+        {% endfor%}
+        {% if invoice.rebillingState == 'rebill' %}
+          {% set rebillingStateRebillInInvoices = true %}
+        {% endif %}
+
+        {% if inv.rebillingState == 'rebill' and inv.originalInvoiceId != null %}
+          Reissued <span class="screen-reader-only">bill</span>
+        {% endif %}
+
+        <!-- Original invoices -->
+        {% if inv.rebillingState == 'rebilled' and inv.originalInvoiceId == null %}
+          Original <span class="screen-reader-only">bill</span>
+        {% else %}
+          {% if inv.originalInvoiceId == inv.id %}Original <span class="screen-reader-only">bill</span>{% endif %}
+        {% endif %}
+
+        {% if inv.rebillingState == 'rebilled' and inv.originalInvoiceId != inv.id and rebillingStateRebillInInvoices == false %}
+          Reissue <span class="screen-reader-only">bill</span>
+        {% endif %}
+
+        <!-- "Reissue" becoming "Original" invoice -->
+        {% if inv.rebillingState == 'rebilled' and inv.originalInvoiceId != inv.id and rebillingStateRebillInInvoices == true %}
+          Original <span class="screen-reader-only">bill</span>
+        {% endif %}
+
+        {% if inv.rebillingState == 'reversal' and inv.originalInvoiceId != null %}
+          Reversed <span class="screen-reader-only">bill</span>
+        {% endif %}
       {% endmacro %}
 
       {% macro displayInvoiceNumber(inv) %}
@@ -115,7 +147,7 @@ invoiceDebitsTotal %}
         <!-- curently displayed bill -->
         <div class="meta__row">
           <dt class="meta__key">
-            {{ displayBillingState(invoice)}}
+            {{ displayBillingState(invoice, invoice.batch.billingBatchId)}}
           </dt>
           <dd class="meta__value">
             {{ invoice.invoiceNumber }}, this bill
@@ -125,7 +157,7 @@ invoiceDebitsTotal %}
           {% if linkedInvoice.invoiceNumber != null %}
           <div class="meta__row">
             <dt class="meta__key">
-              {{ displayBillingState(linkedInvoice) }}
+              {{ displayBillingState(linkedInvoice, invoice.batch.billingBatchId) }}
             </dt>
             <dd class="meta__value">
               {{ displayInvoiceNumber(linkedInvoice) }}

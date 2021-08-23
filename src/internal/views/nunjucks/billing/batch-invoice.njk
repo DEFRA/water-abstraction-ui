@@ -74,53 +74,20 @@ invoiceDebitsTotal %}
 
       <!-- Bills linked to reissue -->
       {% macro displayBillingState(inv, billingBatchId) %}
-
         <!-- Is "rebill" (as opposed to "rebilled") in invoices -->
-        {% set rebillingStateRebillInInvoices = false %}
-        {% for linkedInvoice in invoice.linkedInvoices %}
-          {% if linkedInvoice.rebillingState == 'rebilled' %}
-            {% set rebillingStateRebillInInvoices = true %}
-          {% endif %}
-        {% endfor%}
-        {% if invoice.rebillingState == 'rebilled' %}
-          {% set rebillingStateRebillInInvoices = true %}
-        {% endif %}
-
-        {% if inv.rebillingState == 'rebill' and inv.originalInvoiceId != null %}
+        {% if inv.rebillingStateLabel == 'rebill' and inv.originalInvoiceId != null %}
           Reissued <span class="screen-reader-only">bill</span>
         {% endif %}
 
-        <!-- Original invoices -->
-        {% if inv.rebillingState == 'rebilled' and inv.originalInvoiceId == null %}
-          Original <span class="screen-reader-only">bill</span>
-        {% else %}
-          {% if inv.originalInvoiceId == inv.id %}Original <span class="screen-reader-only">bill</span>{% endif %}
-        {% endif %}
-
-        {% if inv.rebillingState == 'rebilled' and inv.originalInvoiceId != inv.id and rebillingStateRebillInInvoices == false %}
+        {% if inv.rebillingStateLabel == 'rebilled' and inv.originalInvoiceId != inv.id %}
           Reissue <span class="screen-reader-only">bill</span>
         {% endif %}
 
-        <!-- "Reissue" becoming "Original" invoice -->
-        {% if inv.rebillingState == 'rebilled' and inv.originalInvoiceId != inv.id and rebillingStateRebillInInvoices == true %}
-
-          <!--- check if any invoice linking id as originalInvoice -->
-          {% set originalInvoice = false %}
-          {% for linkedInvoice in invoice.linkedInvoices %}
-            {% if linkedInvoice.originalInvoiceId == inv.id %}
-               {% set originalInvoice = true %}
-            {% endif %}
-          {% endfor%}
-
-          {% if originalInvoice  == true %}
-            Original <span class="screen-reader-only">bill</span>
-          {% else %}
-            Reissue <span class="screen-reader-only">bill</span>
-          {% endif%}
-
+        {% if inv.rebillingStateLabel == 'original' %}
+          Original <span class="screen-reader-only">bill</span>
         {% endif %}
 
-        {% if inv.rebillingState == 'reversal' and inv.originalInvoiceId != null %}
+        {% if inv.rebillingStateLabel == 'reversal' and inv.originalInvoiceId != null %}
           Reversed <span class="screen-reader-only">bill</span>
         {% endif %}
       {% endmacro %}
@@ -137,19 +104,6 @@ invoiceDebitsTotal %}
           </a>
         {% endif %}
       {% endmacro %}
-
-      {% macro setOriginalBillInvoiceNumber(invoice) %}
-        {% set originalBillInvoiceNumber = '' %}
-        {% for inv in invoice.linkedInvoices %}
-          {% if inv.invoiceNumber != null %}
-            {% if inv.originalInvoiceId == null %}
-              {% set originalBillInvoiceNumber = inv.invoiceNumber %}
-            {% endif %}
-          {% endif %}
-        {% endfor %}
-      {% endmacro %}
-
-      {{ setOriginalBillInvoiceNumber(invoice) }}
 
       {% set htmlBillsLinked %}
       <h2 class="govuk-heading-m">This bill is linked to a reissue</h2>
@@ -239,7 +193,12 @@ invoiceDebitsTotal %}
   {% set buttonLabel = 'Remove bill' %}
   <!-- Warning text for reissue -->
   {% if batch.status == 'ready' %}
-    {{ setOriginalBillInvoiceNumber(invoice) }}
+    {% set originalBillInvoiceNumber = '' %}
+    {% for inv in invoice.linkedInvoices %}
+      {% if inv.invoiceNumber and inv.rebillingStateLabel == 'original' %}
+        {% set originalBillInvoiceNumber = inv.invoiceNumber %}
+      {% endif %}
+    {% endfor %}
 
     {% if originalBillInvoiceNumber %}
       {% set warningText = "This bill is linked to the reissue of bill " + originalBillInvoiceNumber %}

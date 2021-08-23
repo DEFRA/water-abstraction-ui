@@ -28,7 +28,7 @@ const getBillingAccountRedirectLink = request => {
  */
 const getBillingAccount = (request, h) => {
   const { billingAccountId } = request.params;
-  const { billingAccount, bills } = request.pre;
+  const { billingAccount, bills, rebillableBills } = request.pre;
   const { back } = request.query;
 
   const moreBillsLink = (bills.pagination.pageCount > 1) &&
@@ -44,7 +44,8 @@ const getBillingAccount = (request, h) => {
     changeAddressLink: getBillingAccountRedirectLink(request),
     bills: bills.data,
     moreBillsLink,
-    rebillingLink: `/billing-accounts/${billingAccountId}/rebilling`
+    rebillingLink: `/billing-accounts/${billingAccountId}/rebilling`,
+    rebillable: rebillableBills.length > 0
   });
 };
 

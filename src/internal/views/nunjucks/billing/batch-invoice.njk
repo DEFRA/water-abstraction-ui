@@ -74,13 +74,8 @@ invoiceDebitsTotal %}
 
       <!-- Bills linked to reissue -->
       {% macro displayBillingState(inv, billingBatchId) %}
-        <!-- Is "rebill" (as opposed to "rebilled") in invoices -->
-        {% if inv.rebillingStateLabel == 'rebill' and inv.originalInvoiceId != null %}
+        {% if inv.rebillingStateLabel == 'rebill' or inv.rebillingStateLabel == 'rebilled'  %}
           Reissued <span class="screen-reader-only">bill</span>
-        {% endif %}
-
-        {% if inv.rebillingStateLabel == 'rebilled' and inv.originalInvoiceId != inv.id %}
-          Reissue <span class="screen-reader-only">bill</span>
         {% endif %}
 
         {% if inv.rebillingStateLabel == 'original' %}

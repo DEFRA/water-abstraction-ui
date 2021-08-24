@@ -13,7 +13,7 @@ const {
   STATUS_APPROVED,
   STATUS_NALD_UPDATE,
   STATUS_LICENCE_REVIEW
-} = require('internal/modules/abstraction-reform/lib/statuses');
+} = require('@envage/water-abstraction-helpers').digitise.statuses;
 
 const lab = exports.lab = Lab.script();
 

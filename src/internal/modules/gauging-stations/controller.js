@@ -5,7 +5,6 @@ const formHandler = require('shared/lib/form-handler');
 const formHelpers = require('shared/lib/forms');
 const session = require('./lib/session');
 const helpers = require('./lib/helpers');
-
 const { waterAbstractionAlerts: isWaterAbstractionAlertsEnabled } = require('../../config').featureToggles;
 
 /**
@@ -269,13 +268,13 @@ const getRemoveTags = async (request, h) => {
     caption,
     pageTitle,
     form: formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceView), /* Generates deduplicated list */
-    sessionData: session.get(request)
+    sessionData: session.get(request),
+    back: `/monitoring-stations/${request.params.gaugingStationId}/`
   });
 };
 
 const postRemoveTagOrMultiple = async (request, h) => {
   const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceView); // Back to view
-
   // Must select one radio
   if (!form.isValid) {
     return h.postRedirectGet(form);
@@ -313,18 +312,17 @@ const getRemoveTagsConditions = async (request, h) => {
     caption,
     pageTitle,
     form: formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceConditions),
-    sessionData
+    sessionData,
+    back: `/monitoring-stations/${request.params.gaugingStationId}/untagging-licence/remove-tag`
   });
 };
 
 const postRemoveTagsLicenceSelected = async (request, h) => {
-  const form = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceConditions);
-
-  if (!form.isValid) {
-    return h.postRedirectGet(form);
+  const formCheckBox = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceConditions);
+  if (!formCheckBox.isValid) {
+    return h.postRedirectGet(formCheckBox);
   }
 
-  const formCheckBox = await formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceConditions);
   const selectedCondition = formCheckBox.fields.find(field => field.name === 'selectedCondition');
   session.merge(request, {
     selectedCondition: selectedCondition
@@ -369,7 +367,8 @@ const getRemoveTagComplete = async (request, h) => {
     caption,
     pageTitle,
     form: formHandler.handleFormRequest(request, linkageForms.removeTagConfirm),
-    sessionData: session.get(request)
+    sessionData: session.get(request),
+    back: `/monitoring-stations/${request.params.gaugingStationId}/untagging-licence/remove-tag`
   });
 };
 

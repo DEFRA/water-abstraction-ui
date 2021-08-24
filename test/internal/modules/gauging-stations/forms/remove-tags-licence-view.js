@@ -121,7 +121,8 @@ experiment('internal/modules/gauging-stations/forms/remove-tags-licence-view.js'
           selectedLicence: '6e21a77b-1525-459d-acb8-3615e5d53f06',
           csrf_token: '6e21a77b-1525-459d-acb8-3615e5d53f06'
         };
-        const { error: validationError, value } = removeTagsLicenceViewSchema.validate(payload);
+        const schema = removeTagsLicenceViewSchema();
+        const { error: validationError, value } = schema.validate(payload);
         expect(validationError).to.equal(undefined);
         expect(value).to.equal(payload);
       });

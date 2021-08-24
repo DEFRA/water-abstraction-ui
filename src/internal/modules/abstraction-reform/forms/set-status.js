@@ -8,7 +8,7 @@ const {
   STATUS_APPROVED,
   STATUS_NALD_UPDATE,
   STATUS_LICENCE_REVIEW
-} = require('../lib/statuses');
+} = require('@envage/water-abstraction-helpers').digitise.statuses;
 
 const choices = [
   {

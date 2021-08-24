@@ -3,7 +3,10 @@
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 
-const { form, schema } = require('../../../../../../src/internal/modules/charge-information/forms/charge-element/quantities');
+const {
+  form,
+  schema
+} = require('../../../../../../src/internal/modules/charge-information/forms/charge-element/quantities');
 const { findField, findButton } = require('../../../../../lib/form-test');
 
 const createRequest = chargeElements => ({
@@ -76,60 +79,106 @@ experiment('internal/modules/charge-information/forms/charge-element/quantities'
   experiment('.schema', () => {
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
-        const result = schema(createRequest()).extract('csrf_token').validate('c5afe238-fb77-4131-be80-384aaf245842');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          authorisedAnnualQuantity: '1'
+        }, { allowUnknown: true });
         expect(result.error).to.be.undefined();
       });
 
       test('fails for a string that is not a uuid', async () => {
-        const result = schema(createRequest()).extract('csrf_token').validate('scissors');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'scissors',
+          authorisedAnnualQuantity: '1'
+        }, { allowUnknown: true });
         expect(result.error).to.exist();
       });
     });
 
     experiment('authorisedAnnualQuantity', () => {
       test('validates for a number string', async () => {
-        const result = schema().extract('authorisedAnnualQuantity').validate('132');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          authorisedAnnualQuantity: '123'
+        }, { allowUnknown: true });
         expect(result.error).to.not.exist();
       });
 
       test('validates for a number string with 6 decimal places', async () => {
-        const result = schema().extract('authorisedAnnualQuantity').validate('132.123456');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          authorisedAnnualQuantity: '132.123456'
+        }, { allowUnknown: true });
         expect(result.error).to.not.exist();
       });
 
+      test('must not have more than 6 decimal places', async () => {
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          authorisedAnnualQuantity: '132.1234567'
+        }, { allowUnknown: true });
+        expect(result.error).to.exist();
+      });
+
       test('must not be zero', async () => {
-        const result = schema().extract('authorisedAnnualQuantity').validate('0');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          authorisedAnnualQuantity: '0'
+        }, { allowUnknown: true });
         expect(result.error).to.exist();
       });
 
       test('must be a number', async () => {
-        const result = schema().extract('authorisedAnnualQuantity').validate('gsgsd');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          authorisedAnnualQuantity: 'asdasdasd'
+        }, { allowUnknown: true });
+
         expect(result.error).to.exist();
       });
 
-      test('can not null or empty', async () => {
-        const result = schema().extract('authorisedAnnualQuantity').validate('');
+      test('can not be empty', async () => {
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          authorisedAnnualQuantity: ''
+        }, { allowUnknown: true });
         expect(result.error).to.exist();
       });
     });
     experiment('billableAnnualQuantity', () => {
       test('validates for a string', async () => {
-        const result = schema().extract('billableAnnualQuantity').validate('123');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          authorisedAnnualQuantity: '132.123456',
+          billableAnnualQuantity: '123'
+        }, { allowUnknown: true });
         expect(result.error).to.not.exist();
       });
 
       test('cannot be a string describing -0.x', async () => {
-        const result = schema().extract('billableAnnualQuantity').validate('-0.123');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          authorisedAnnualQuantity: '132.123456',
+          billableAnnualQuantity: '-0.123'
+        }, { allowUnknown: true });
         expect(result.error).to.exist();
       });
 
       test('validates for a string describing 0.x', async () => {
-        const result = schema().extract('billableAnnualQuantity').validate('0.123');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          authorisedAnnualQuantity: '132.123456',
+          billableAnnualQuantity: '0.123'
+        }, { allowUnknown: true });
         expect(result.error).to.not.exist();
       });
 
       test('can be empty', async () => {
-        const result = schema().extract('billableAnnualQuantity').validate('');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          authorisedAnnualQuantity: '132.123456',
+          billableAnnualQuantity: ''
+        }, { allowUnknown: true });
         expect(result.error).not.to.exist();
       });
     });

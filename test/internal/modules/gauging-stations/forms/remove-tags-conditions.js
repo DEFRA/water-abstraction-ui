@@ -121,7 +121,8 @@ experiment('internal/modules/gauging-stations/forms/remove-tags-conditions.js', 
           selectedCondition: ['6e21a77b-1525-459d-acb8-3615e5d53f06'],
           csrf_token: '6e21a77b-1525-459d-acb8-3615e5d53f06'
         };
-        const { error: validationError, value } = removeTagsConditionsSchema.validate(payload);
+        const schema = removeTagsConditionsSchema();
+        const { error: validationError, value } = schema.validate(payload);
         expect(validationError).to.equal(undefined);
         expect(value).to.equal(payload);
       });

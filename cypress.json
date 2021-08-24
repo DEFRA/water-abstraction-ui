@@ -1,6 +1,6 @@
 {
   "chromeWebSecurity": false,
-  "projectId": "tidgxq",
+  "projectId": "wrls",
   "baseUrl": "http://localhost:8008",
   "reporter": "cypress-multi-reporters",
   "reporterOptions": {

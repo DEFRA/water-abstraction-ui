@@ -27,7 +27,7 @@ const handleFormRequest = (request, formContainer) => {
     form = forms.handleRequest(
       formContainer.form(request),
       request,
-      typeof formContainer.schema === 'function' ? formContainer.schema(request) : formContainer.customValidation(request)
+      formContainer.schema(request)
     );
   }
 

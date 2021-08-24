@@ -60,7 +60,7 @@ const form = request => {
   return f;
 };
 
-const schema = (request) => Joi.object({
+const schema = (request) => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   startDate: Joi.date().raw().required(),
   endDate: Joi.date().required()

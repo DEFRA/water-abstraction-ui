@@ -82,7 +82,7 @@ invoiceDebitsTotal %}
           Original <span class="screen-reader-only">bill</span>
         {% endif %}
 
-        {% if inv.rebillingStateLabel == 'reversal' and inv.originalInvoiceId != null %}
+        {% if inv.rebillingStateLabel == 'reversal' %}
           Reversed <span class="screen-reader-only">bill</span>
         {% endif %}
       {% endmacro %}
@@ -144,7 +144,7 @@ invoiceDebitsTotal %}
         }}
 
         {% if batch.status == 'sent' %}
-          {% if (invoice.linkedInvoices.length) or (invoice.rebillingState == 'rebilled') %}
+          {% if invoice.linkedInvoices.length %}
           {{ govukInsetText({
             html: htmlBillsLinked })
           }}

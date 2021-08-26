@@ -64,7 +64,11 @@ const createRequest = (query = {}) => ({
         totalRows: 30,
         pageCount: 3
       }
-    }
+    },
+    rebillableBills: [
+      { test: 'test bill 1' },
+      { test: 'test bill 2' }
+    ]
   },
   query,
   billingAccountEntryRedirect: sandbox.stub().returns(addressChangeLink)

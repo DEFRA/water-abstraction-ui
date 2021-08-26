@@ -9,6 +9,11 @@ class BillingInvoiceService extends ServiceClient {
       }
     });
   }
+
+  resetIsFlaggedForRebillingByBatch (batchId) {
+    const uri = this.joinUrl('billing/invoices/rebillingflag', batchId);
+    return this.serviceRequest.patch(uri);
+  }
 }
 
 module.exports = BillingInvoiceService;

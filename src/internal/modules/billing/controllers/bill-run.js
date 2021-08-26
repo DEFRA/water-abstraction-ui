@@ -121,6 +121,14 @@ const postBillingBatchCancel = async (request, h) => {
   } catch (err) {
     logger.info(`Did not successfully delete batch ${batchId}`);
   }
+
+  try {
+    // Reset batches linked with original_billing_invoice_id
+    await services.water.billingInvoices.resetIsFlaggedForRebillingByBatch(batchId);
+  } catch (err) {
+    logger.info(`Did not successfully reset flag for batch ${batchId}`);
+  }
+
   return h.redirect(BATCH_LIST_ROUTE);
 };
 

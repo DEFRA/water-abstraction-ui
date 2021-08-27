@@ -24,11 +24,11 @@
   {% endif %}
 {% endmacro %}
 
-{% macro removeInvoiceFromBatchButton(batch, invoice) %}
+{% macro removeInvoiceFromBatchButton(batch, invoice, buttonText) %}
   {% if batch.status == 'ready' %}
     {{
     govukButton({
-      text: "Remove bill",
+      text: buttonText,
       href: '/billing/batch/' + batch.id + '/delete-invoice/' + invoice.id,
       classes: "govuk-button--secondary"
     })

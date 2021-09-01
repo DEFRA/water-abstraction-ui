@@ -9,12 +9,16 @@ const getDeleteInvoiceLicence = async (request, h) => {
 
   const batchType = mappers.mapBatchType(batch.type).toLowerCase();
 
+  const invoiceLicenceTotal = invoiceLicence.transactions.reduce((accruedValue, transaction) =>
+    !isNaN(transaction.value) ? accruedValue + parseInt(transaction.value) : accruedValue, 0);
+
   return h.view('nunjucks/billing/confirm-invoice-licence.njk', {
     ...request.view,
     pageTitle: `You're about to remove this licence from the ${batchType} bill run`,
     batch,
     invoice,
     invoiceLicence,
+    invoiceLicenceTotal,
     form: confirmForm.form(request, 'Remove this licence'),
     back: `/billing/batch/${batchId}/invoice/${invoice.id}`
   });

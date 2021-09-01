@@ -263,7 +263,8 @@ const routes = {
           batchId: Joi.string().uuid()
         }),
         query: Joi.object().keys({
-          back: Joi.number().integer().default(1).optional()
+          back: Joi.number().integer().default(1).optional(),
+          invoiceId: Joi.string().uuid().optional()
         })
       },
       pre: [

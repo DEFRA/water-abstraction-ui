@@ -6,10 +6,11 @@ const mappers = require('../lib/mappers');
 const getDeleteInvoiceLicence = async (request, h) => {
   const { batchId } = request.params;
   const { batch, invoice, invoiceLicence } = request.pre;
+  const { transactions } = invoiceLicence;
 
   const batchType = mappers.mapBatchType(batch.type).toLowerCase();
 
-  const invoiceLicenceTotal = invoiceLicence.transactions.reduce((accruedValue, transaction) =>
+  const invoiceLicenceTotal = transactions && transactions.reduce((accruedValue, transaction) =>
     !isNaN(transaction.value) ? accruedValue + parseInt(transaction.value) : accruedValue, 0);
 
   return h.view('nunjucks/billing/confirm-invoice-licence.njk', {

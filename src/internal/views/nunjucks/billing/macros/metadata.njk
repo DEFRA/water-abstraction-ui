@@ -30,7 +30,7 @@
    <div class="meta__row">
     <dt class="meta__key">Total</dt>
 
-    {% if invoiceLicenceTotal %}
+    {% if invoiceLicence and invoiceLicenceTotal %}
         <script>
             console.log({{ invoiceLicenceTotal | dump | safe }})
         </script>

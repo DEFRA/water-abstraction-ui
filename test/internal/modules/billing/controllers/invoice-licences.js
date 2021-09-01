@@ -57,7 +57,7 @@ experiment('internal/modules/billing/controllers/invoice-licences', () => {
       pre: {
         batch,
         invoice,
-        invoicelicence: invoice.invoiceLicences[0]
+        invoiceLicence: invoice.invoiceLicences[0]
       },
       view: {
         csrfToken

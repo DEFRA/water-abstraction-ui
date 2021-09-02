@@ -64,6 +64,38 @@ const invoice = {
   rebillingState: null
 };
 
+const invoiceWithLinks = {
+  id: '1',
+  invoiceLicences: [
+    {
+      id: 'invoice-licence-id',
+      transactions: [],
+      licence: {
+        licenceNumber: '12/34/56'
+      },
+      hasTransactionErrors: false
+    }
+  ],
+  dateCreated: '2020-01-27T13:51:29.234Z',
+  totals: {
+    netTotal: '1234.56'
+  },
+  invoiceAccount: {
+    id: 'invoice-account-id',
+    accountNumber: 'A12345678A',
+    company: {
+      name: 'COMPANY NAME'
+    }
+  },
+  financialYear: {
+    yearEnding: 2020
+  },
+  originalInvoiceId: '4abf7d0a-6148-4781-8c6a-7a8b9267b4a9',
+  rebillingState: 'rebill',
+  isFlaggedForRebilling: true,
+  linkedInvoices: []
+};
+
 const batchInvoicesResult = [
   {
     id: '4abf7d0a-6148-4781-8c6a-7a8b9267b4a9',
@@ -310,6 +342,49 @@ experiment('internal/modules/billing/controller', () => {
       test('credit debit summary block is displayed', async () => {
         const [, view] = h.view.lastCall.args;
         expect(view.isCreditDebitBlockVisible).to.be.true();
+      });
+    });
+
+    experiment('linkedInvoices sent to nunjucks', () => {
+      const invoiceNumber = 'A12345';
+
+      beforeEach(async () => {
+        invoiceWithLinks.linkedInvoices = [];
+        invoiceWithLinks.linkedInvoices.push({
+          id: '4abf7d0a-6148-4781-8c6a-7a8b9267b4a9',
+          accountNumber: 'A12345678A',
+          name: 'Test company 1',
+          netTotal: 12345,
+          licenceNumbers: [
+            '01/123/A'
+          ],
+          isWaterUndertaker: false,
+          originalInvoiceId: '9a806cbb-f1b9-49ae-b551-98affa2d2b9b',
+          rebillingState: 'rebill',
+          displayLabel: 'A12345b',
+          originalInvoice: { id: '4abf7d0a-6148-4781-8c6a-7a8b9267b4a9a', displayLabel: 'A12345' }
+        });
+
+        services.water.billingBatches.getBatchInvoice.resolves({
+          ...invoiceWithLinks,
+          invoiceNumber
+        });
+        await controller.getBillingBatchInvoice(request, h);
+      });
+
+      test('the expected view template is used for bill run type', async () => {
+        const [templateName] = h.view.lastCall.args;
+        expect(templateName).to.equal('nunjucks/billing/batch-invoice');
+      });
+
+      test('linkedInvoices array populated', async () => {
+        const [, view] = h.view.lastCall.args;
+        expect(view.invoice.linkedInvoices.length).to.equal(1);
+      });
+
+      test('passes the expected data in the view context', async () => {
+        const [, context] = h.view.lastCall.args;
+        expect(context.invoice.rebillingState).to.contain('rebill');
       });
     });
 

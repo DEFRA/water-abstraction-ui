@@ -24,14 +24,8 @@
   {% endif %}
 {% endmacro %}
 
-{% macro removeInvoiceFromBatchButton(batch, invoice) %}
-  {% if invoice.rebillingState in['reversal', 'rebill'] %}
-    {% set buttonText = "Cancel this reissue" %}
-  {% else %}
-    {% set buttonText = "Remove from bill run" %}
-  {% endif %}
-
-  {% if batch.status == 'ready' %}  
+{% macro removeInvoiceFromBatchButton(batch, invoice, buttonText) %}
+  {% if batch.status == 'ready' %}
     {{
     govukButton({
       text: buttonText,

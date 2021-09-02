@@ -31,9 +31,6 @@
     <dt class="meta__key">Total</dt>
 
     {% if invoiceLicence and invoiceLicenceTotal %}
-        <script>
-            console.log({{ invoiceLicenceTotal | dump | safe }})
-        </script>
         <dd class="meta__value">{{ invoiceLicenceTotal | charge(true) }}</dd>
     {% else %}
         <dd class="meta__value">{{ invoice.netTotal | charge(true) }}</dd>

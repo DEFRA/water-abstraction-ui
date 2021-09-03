@@ -122,15 +122,26 @@
                         </a>
                     </td>
                     <td class="govuk-table__cell">
-                        {% for linkage in licenceGaugingStation.linkages %}
-                            {{linkage.abstractionPeriod | abstractionPeriod}}
-                            <br/>
-                        {% endfor %}
+                        <table>
+                            {% for linkage in licenceGaugingStation.linkages %}
+                                <tr>
+                                    <td>
+                                        {{linkage.abstractionPeriod | abstractionPeriod}}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
                     </td>
                     <td class="govuk-table__cell" colspan="1" >
-                        {% for linkage in licenceGaugingStation.linkages %}
-                            {{ 'Reduce' if linkage.alertType.includes('reduce') else 'Stop' }}<br/>
-                        {% endfor %}
+                        <table>
+                            {% for linkage in licenceGaugingStation.linkages %}
+                                <tr>
+                                    <td>
+                                        {{ 'Reduce' if linkage.alertType.includes('reduce') else 'Stop' }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                        </table>
                     </td>
 
                     <td class="govuk-table__cell" colspan="2">

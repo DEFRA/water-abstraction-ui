@@ -21,7 +21,7 @@ describe('Inviting users to submit the returns', () => {
       // assert once the user is signed in
     });
 
-    describe('click on Invitations link to send the retunrs invitations', () => {
+    describe('click on Invitations link to send the returns invitations', () => {
       cy.get('#navbar-notifications').click();
       cy.get('.govuk-link').eq(8).should('contain', 'Invitations').click();
       cy.url().should('contain', '/returns-notifications/invitations');

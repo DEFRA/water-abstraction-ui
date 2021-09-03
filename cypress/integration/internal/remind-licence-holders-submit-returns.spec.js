@@ -10,7 +10,7 @@ describe('Sending returns reminders to users ', () => {
     tearDown();
   });
 
-  it('sening reminder to users asking to submit the returns', () => {
+  it('sending reminder to users asking to submit the returns', () => {
     // cy.visit to visit the URL
     cy.visit(Cypress.env('ADMIN_URI'));
     // Enter the user name and Password
@@ -21,7 +21,7 @@ describe('Sending returns reminders to users ', () => {
       // assert once the user is signed in
     });
 
-    describe('click on reminders link in the manege menu', () => {
+    describe('click on reminders link in the manage menu', () => {
       cy.get('#navbar-notifications').click();
       cy.get('.govuk-link').contains('Reminder').click();
       cy.url().should('contain', '/returns-notifications/reminders');

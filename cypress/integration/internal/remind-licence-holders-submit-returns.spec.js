@@ -1,6 +1,6 @@
 const { setUp, tearDown } = require('../../support/setup');
 
-describe('Inviting users to submit the returns', () => {
+describe('Sending returns reminders to users ', () => {
   before(() => {
     tearDown();
     setUp('barebones');

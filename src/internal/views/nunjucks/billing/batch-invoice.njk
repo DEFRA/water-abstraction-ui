@@ -188,12 +188,40 @@ invoiceDebitsTotal %}
   {% set buttonLabel = 'Remove bill' %}
   <!-- Warning text for reissue -->
   {% if batch.status == 'ready' %}
-    {% set originalBillInvoiceNumber = '' %}
+    {% set originalBillInvoiceNumber = null %}
+    {% set originalInvoiceId = null %}
+    {% set creditInvoiceId = null %}
+    {% set rebillInvoiceId = null %}
+    {% set pairedWithInvoiceId = null %}
+
     {% for inv in invoice.linkedInvoices %}
+      {% if inv.rebillingStateLabel == 'reversal' %}
+        {% set creditInvoiceId = inv.id %}
+      {% endif %}
+
+      {% if inv.rebillingStateLabel == 'rebill' %}
+        {% set rebillInvoiceId = inv.id %}
+      {% endif %}
+
       {% if inv.invoiceNumber and inv.rebillingStateLabel == 'original' %}
         {% set originalBillInvoiceNumber = inv.invoiceNumber %}
+        {% set originalInvoiceId = inv.id %}
       {% endif %}
+
     {% endfor %}
+
+    <!-- Credit can either by in current invoice or linked invoices -->
+    {% if creditInvoiceId != 'null' %}
+      {% if invoice.rebillingStateLabel == 'reversal' %}
+        {% set pairedWithInvoiceId = rebillInvoiceId %}
+      {% endif %}
+    {% endif %}
+
+    {% if rebillInvoiceId != 'null' %}
+      {% if invoice.rebillingStateLabel == 'rebill' %}
+        {% set pairedWithInvoiceId = creditInvoiceId %}
+      {% endif %}
+    {% endif %}
 
     {% if originalBillInvoiceNumber %}
       {% set warningText = "This bill is linked to the reissue of bill " + originalBillInvoiceNumber %}
@@ -209,7 +237,7 @@ invoiceDebitsTotal %}
 
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-two-thirds">
-      {{ removeInvoiceFromBatchButton(batch, invoice, buttonLabel) }}
+      {{ removeInvoiceFromBatchButton(batch, invoice, originalInvoiceId, pairedWithInvoiceId, buttonLabel) }}
     </div>
   </div>
 

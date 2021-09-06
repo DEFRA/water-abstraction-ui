@@ -115,11 +115,11 @@ const billingBatchAction = (request, h, action) => {
 const getBillingBatchCancel = async (request, h) => billingBatchAction(request, h, 'cancel');
 
 const postBillingBatchCancel = async (request, h) => {
-  const { batchId } = request.params;
-
+  const { batchId, originalInvoiceId, rebillInvoiceId } = request.params;
   try {
     // Reset flag for rebilling on linked batches (before cancelling)
-    await services.water.billingInvoices.resetIsFlaggedForRebillingByBatch(batchId);
+    // remove rebill/reissue flag in the water service for the original invoice id
+    await services.water.billingInvoices.resetIsFlaggedForRebillingByBatch(batchId, originalInvoiceId, rebillInvoiceId);
   } catch (err) {
     logger.info(`Did not successfully reset flag for batch ${batchId}`);
   }
@@ -196,8 +196,8 @@ const getBillingBatchDeleteInvoice = async (request, h) => {
 };
 
 const postBillingBatchDeleteInvoice = async (request, h) => {
-  const { batchId, invoiceId } = request.params;
-  await services.water.billingBatches.deleteInvoiceFromBatch(batchId, invoiceId);
+  const { batchId, invoiceId, originalInvoiceId, rebillInvoiceId } = request.params;
+  await services.water.billingBatches.deleteInvoiceFromBatch(batchId, invoiceId, originalInvoiceId, rebillInvoiceId);
   return h.redirect(`/billing/batch/${batchId}/summary`);
 };
 

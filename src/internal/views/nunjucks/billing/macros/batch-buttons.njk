@@ -24,12 +24,12 @@
   {% endif %}
 {% endmacro %}
 
-{% macro removeInvoiceFromBatchButton(batch, invoice, buttonText) %}
+{% macro removeInvoiceFromBatchButton(batch, invoice, originalInvoiceId, rebillInvoiceId, buttonText) %}
   {% if batch.status == 'ready' %}
     {{
     govukButton({
       text: buttonText,
-      href: '/billing/batch/' + batch.id + '/delete-invoice/' + invoice.id,
+      href: '/billing/batch/' + batch.id + '/delete-invoice/' + invoice.id + '/org/' + originalInvoiceId + '/rebill/' + rebillInvoiceId,
       classes: "govuk-button--secondary"
     })
   }}

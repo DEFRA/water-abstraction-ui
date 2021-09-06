@@ -109,8 +109,8 @@
           <tr class="govuk-table__row">
             <th scope="col" class="govuk-table__header ">Licence</th>
             <th scope="col" class="govuk-table__header ">Abstraction period</th>
-            <th scope="col" colspan="3" class="govuk-table__header ">Flow and level restriction<br> type and threshold </th>
-            <th scope="col" colspan="2" class="govuk-table__header ">Last type of alert  <br>sent and date issued</th>
+            <th scope="col" colspan="3" class="govuk-table__header ">Flow and level restriction<br>type and threshold </th>
+            <th scope="col" colspan="2" class="govuk-table__header ">Last type of alert<br>sent and date issued</th>
           </tr>
         </thead>
         <tbody class="govuk-table__body">
@@ -122,15 +122,26 @@
                         </a>
                     </td>
                     <td class="govuk-table__cell">
-                        {% for linkage in licenceGaugingStation.linkages %}
-                            {{linkage.abstractionPeriod | abstractionPeriod}}
-                            <br/>
-                        {% endfor %}
+                        <table>
+                            {% for linkage in licenceGaugingStation.linkages %}
+                                <tr>
+                                    <td>
+                                        {{linkage.abstractionPeriod | abstractionPeriod}}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
                     </td>
                     <td class="govuk-table__cell" colspan="1" >
-                        {% for linkage in licenceGaugingStation.linkages %}
-                            {{ 'Reduce' if linkage.alertType.includes('reduce') else 'Stop' }}<br/>
-                        {% endfor %}
+                        <table>
+                            {% for linkage in licenceGaugingStation.linkages %}
+                                <tr>
+                                    <td>
+                                        {{ 'Reduce' if linkage.alertType.includes('reduce') else 'Stop' }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                        </table>
                     </td>
 
                     <td class="govuk-table__cell" colspan="2">
@@ -148,8 +159,8 @@
                     <table>
                         {% for linkage in licenceGaugingStation.linkages %}
                             <tr>
-                                <td>{{ linkage.comstatus | titleCase }}</td>
-                                <td style="padding-left: 1em;">{{ linkage.dateStatusUpdated | date if linkage.dateStatusUpdated else 'Not set'}}</td>
+                                <td>{{ linkage.comstatus | titleCase if linkage.dateStatusUpdated else '' }}</td>
+                                <td style="padding-left: 1em;">{{ linkage.dateStatusUpdated | date if linkage.dateStatusUpdated else ''}}</td>
                             </tr>
                         {% endfor %}
                     </table>

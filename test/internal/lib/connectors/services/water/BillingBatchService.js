@@ -149,13 +149,26 @@ experiment('services/water/BillingBatchService', () => {
     });
   });
 
-  experiment('.deleteInvoiceFromBatch', () => {
+  experiment('.deleteInvoiceFromBatch (w/o originalInvoiceId, rebillInvoiceId)', () => {
     test('passes the expected URL to the service request', async () => {
       const batchId = uuid();
       const invoiceId = uuid();
       await service.deleteInvoiceFromBatch(batchId, invoiceId);
       const [url] = serviceRequest.delete.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/invoices/${invoiceId}`);
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/invoices/${invoiceId}/org/undefined/rebill/undefined`);
+    });
+  });
+
+  experiment('.deleteInvoiceFromBatch (with originalInvoiceId, rebillInvoiceId)', () => {
+    test('passes the expected URL to the service request', async () => {
+      const batchId = uuid();
+      const invoiceId = uuid();
+      const originalInvoiceId = uuid();
+      const rebillInvoiceId = uuid();
+
+      await service.deleteInvoiceFromBatch(batchId, invoiceId, originalInvoiceId, rebillInvoiceId);
+      const [url] = serviceRequest.delete.lastCall.args;
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/invoices/${invoiceId}/org/${originalInvoiceId}/rebill/${rebillInvoiceId}`);
     });
   });
 

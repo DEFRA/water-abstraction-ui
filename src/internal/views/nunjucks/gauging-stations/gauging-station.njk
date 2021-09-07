@@ -149,8 +149,7 @@
                         <table>
                             {% for linkage in licenceGaugingStation.linkages %}
                                 <tr>
-                                    <td  class="govuk-table__cell--numeric">{{ linkage.thresholdValue }}</td>
-                                    <td>{{ linkage.thresholdUnit }}</td>
+                                    <td  class="govuk-table__cell--numeric">{{ linkage.thresholdValue }} {{ linkage.thresholdUnit }}</td>
                                 </tr>
                             {% endfor %}
                         </table>

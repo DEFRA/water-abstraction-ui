@@ -172,19 +172,23 @@
             <p class="govuk-body">There are no licences tagged with restrictions for this monitoring station</p>
         {% endif %}
 
-        <div class="govuk-button-group">
-          {{ govukButton({
-            text: "Tag a licence",
-            href: "/monitoring-stations/" + station.gaugingStationId + "/tagging-licence",
-            classes: "govuk-button--secondary"
-          }) }}
 
-        {% if licenceGaugingStations.length %}
-          {{ govukButton({
-            text: "Remove a tag",
-            href: "/monitoring-stations/" + station.gaugingStationId + "/untagging-licence/remove-tag",
-            classes: "govuk-button--secondary"
-          }) }}
+        <div class="govuk-button-group">
+          {% if hasPermissionToManageLinks %}
+              {{ govukButton({
+                text: "Tag a licence",
+                href: "/monitoring-stations/" + station.gaugingStationId + "/tagging-licence",
+                classes: "govuk-button--secondary"
+              }) }}
+
+
+            {% if licenceGaugingStations.length %}
+              {{ govukButton({
+                text: "Remove a tag",
+                href: "/monitoring-stations/" + station.gaugingStationId + "/untagging-licence/remove-tag",
+                classes: "govuk-button--secondary"
+              }) }}
+          {% endif %}
         {% endif %}
 {% endif %}
 </div>

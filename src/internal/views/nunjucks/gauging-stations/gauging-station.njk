@@ -86,7 +86,8 @@
   </div>
 </div>
 
-{% if isWaterAbstractionAlertsEnabled %}
+{# The following bit is hidden with 1==2 because we want to allow EOs to tag stuff but not yet send alerts out. #}
+{% if isWaterAbstractionAlertsEnabled and 1==2 %}
     {% if licenceGaugingStations.length %}
       <div class="govuk-grid-row govuk-!-margin-bottom-6">
         <div class="govuk-grid-column-full">

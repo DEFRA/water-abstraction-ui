@@ -122,7 +122,7 @@
                         </a>
                     </td>
                     <td class="govuk-table__cell">
-                        <table>
+                        <table role="presentation">
                             {% for linkage in licenceGaugingStation.linkages %}
                                 <tr>
                                     <td>
@@ -133,19 +133,19 @@
                         </table>
                     </td>
                     <td class="govuk-table__cell" colspan="1" >
-                        <table>
+                       <table role="presentation">
                             {% for linkage in licenceGaugingStation.linkages %}
                                 <tr>
                                     <td>
                                         {{ 'Reduce' if linkage.alertType.includes('reduce') else 'Stop' }}
                                     </td>
                                 </tr>
-                                {% endfor %}
+                            {% endfor %}
                         </table>
                     </td>
 
                     <td class="govuk-table__cell" colspan="2">
-                        <table>
+                        <table role="presentation">
                             {% for linkage in licenceGaugingStation.linkages %}
                                 <tr>
                                     <td  class="govuk-table__cell--numeric">{{ linkage.thresholdValue }} {{ linkage.thresholdUnit }}</td>
@@ -155,14 +155,18 @@
                     </td>
 
                     <td class="govuk-table__cell" colspan="2">
-                    <table>
-                        {% for linkage in licenceGaugingStation.linkages %}
-                            <tr>
-                                <td>{{ linkage.comstatus | titleCase if linkage.dateStatusUpdated else '' }}</td>
-                                <td style="padding-left: 1em;">{{ linkage.dateStatusUpdated | date if linkage.dateStatusUpdated else ''}}</td>
-                            </tr>
-                        {% endfor %}
-                    </table>
+                        <table role="presentation">
+                            {% for linkage in licenceGaugingStation.linkages %}
+                                <tr>
+                                {% if linkage.dateStatusUpdated %}
+                                    <td>{{ linkage.comstatus | titleCase }}</td>
+                                    {% else %}
+                                    <td><br/></td>
+                                {% endif %}
+                                    <td style="padding-left: 1em;">{{ linkage.dateStatusUpdated | date if linkage.dateStatusUpdated else ''}}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
                     </td>
                 </tr>
             {% endfor %}

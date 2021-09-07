@@ -86,7 +86,8 @@
   </div>
 </div>
 
-{% if isWaterAbstractionAlertsEnabled %}
+{# The following bit is hidden with 1==2 because we want to allow EOs to tag stuff but not yet send alerts out. #}
+{% if isWaterAbstractionAlertsEnabled and 1==2 %}
     {% if licenceGaugingStations.length %}
       <div class="govuk-grid-row govuk-!-margin-bottom-6">
         <div class="govuk-grid-column-full">
@@ -109,8 +110,8 @@
           <tr class="govuk-table__row">
             <th scope="col" class="govuk-table__header ">Licence</th>
             <th scope="col" class="govuk-table__header ">Abstraction period</th>
-            <th scope="col" colspan="3" class="govuk-table__header ">Flow and level restriction<br> type and threshold </th>
-            <th scope="col" colspan="2" class="govuk-table__header ">Last type of alert  <br>sent and date issued</th>
+            <th scope="col" colspan="3" class="govuk-table__header ">Flow and level restriction<br>type and threshold </th>
+            <th scope="col" colspan="2" class="govuk-table__header ">Last type of alert<br>sent and date issued</th>
           </tr>
         </thead>
         <tbody class="govuk-table__body">
@@ -122,37 +123,51 @@
                         </a>
                     </td>
                     <td class="govuk-table__cell">
-                        {% for linkage in licenceGaugingStation.linkages %}
-                            {{linkage.abstractionPeriod | abstractionPeriod}}
-                            <br/>
-                        {% endfor %}
-                    </td>
-                    <td class="govuk-table__cell" colspan="1" >
-                        {% for linkage in licenceGaugingStation.linkages %}
-                            {{ 'Reduce' if linkage.alertType.includes('reduce') else 'Stop' }}<br/>
-                        {% endfor %}
-                    </td>
-
-                    <td class="govuk-table__cell" colspan="2">
-                        <table>
+                        <table role="presentation">
                             {% for linkage in licenceGaugingStation.linkages %}
                                 <tr>
-                                    <td  class="govuk-table__cell--numeric">{{ linkage.thresholdValue }}</td>
-                                    <td>{{ linkage.thresholdUnit }}</td>
+                                    <td>
+                                        {{linkage.abstractionPeriod | abstractionPeriod}}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </td>
+                    <td class="govuk-table__cell" colspan="1" >
+                       <table role="presentation">
+                            {% for linkage in licenceGaugingStation.linkages %}
+                                <tr>
+                                    <td>
+                                        {{ 'Reduce' if linkage.alertType.includes('reduce') else 'Stop' }}
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </table>
                     </td>
 
                     <td class="govuk-table__cell" colspan="2">
-                    <table>
-                        {% for linkage in licenceGaugingStation.linkages %}
-                            <tr>
-                                <td>{{ linkage.comstatus | titleCase }}</td>
-                                <td style="padding-left: 1em;">{{ linkage.dateStatusUpdated | date if linkage.dateStatusUpdated else 'Not set'}}</td>
-                            </tr>
-                        {% endfor %}
-                    </table>
+                        <table role="presentation">
+                            {% for linkage in licenceGaugingStation.linkages %}
+                                <tr>
+                                    <td  class="govuk-table__cell--numeric">{{ linkage.thresholdValue }} {{ linkage.thresholdUnit }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </td>
+
+                    <td class="govuk-table__cell" colspan="2">
+                        <table role="presentation">
+                            {% for linkage in licenceGaugingStation.linkages %}
+                                <tr>
+                                {% if linkage.dateStatusUpdated %}
+                                    <td>{{ linkage.comstatus | titleCase }}</td>
+                                    {% else %}
+                                    <td><br/></td>
+                                {% endif %}
+                                    <td style="padding-left: 1em;">{{ linkage.dateStatusUpdated | date if linkage.dateStatusUpdated else ''}}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
                     </td>
                 </tr>
             {% endfor %}
@@ -162,19 +177,23 @@
             <p class="govuk-body">There are no licences tagged with restrictions for this monitoring station</p>
         {% endif %}
 
-        <div class="govuk-button-group">
-          {{ govukButton({
-            text: "Tag a licence",
-            href: "/monitoring-stations/" + station.gaugingStationId + "/tagging-licence",
-            classes: "govuk-button--secondary"
-          }) }}
 
-        {% if licenceGaugingStations.length %}
-          {{ govukButton({
-            text: "Remove a tag",
-            href: "/monitoring-stations/" + station.gaugingStationId + "/untagging-licence/remove-tag",
-            classes: "govuk-button--secondary"
-          }) }}
+        <div class="govuk-button-group">
+          {% if hasPermissionToManageLinks %}
+              {{ govukButton({
+                text: "Tag a licence",
+                href: "/monitoring-stations/" + station.gaugingStationId + "/tagging-licence",
+                classes: "govuk-button--secondary"
+              }) }}
+
+
+            {% if licenceGaugingStations.length %}
+              {{ govukButton({
+                text: "Remove a tag",
+                href: "/monitoring-stations/" + station.gaugingStationId + "/untagging-licence/remove-tag",
+                classes: "govuk-button--secondary"
+              }) }}
+          {% endif %}
         {% endif %}
 {% endif %}
 </div>

@@ -184,7 +184,7 @@ invoiceDebitsTotal %}
       </div>
     </div>
   {% endif %}
-  
+
   {% set buttonLabel = 'Remove bill' %}
   <!-- Warning text for reissue -->
   {% if batch.status == 'ready' %}
@@ -232,10 +232,7 @@ invoiceDebitsTotal %}
 
           <div class="govuk-button-group">
             {% if invoiceLicence.links.delete %}
-              {#
-              -- Uncomment when deleting invoice licence fully implemented
               {{ removeLicenceFromBatchButton(invoiceLicence.links.delete) }}
-              #}
             {% endif %}
             <a class="govuk-link" href="{{ invoiceLicence.links.view }}">View licence</a>
           </div>

@@ -6,6 +6,8 @@ const formHelpers = require('shared/lib/forms');
 const session = require('./lib/session');
 const helpers = require('./lib/helpers');
 const { waterAbstractionAlerts: isWaterAbstractionAlertsEnabled } = require('../../config').featureToggles;
+const { hasScope } = require('../../lib/permissions');
+const { manageGaugingStationLicenceLinks } = require('../../lib/constants').scope;
 
 /**
  * Main Gauging station page
@@ -18,10 +20,13 @@ const getMonitoringStation = async (request, h) => {
   const { licenceGaugingStations, station } = request.pre;
   const { data } = licenceGaugingStations;
 
+  const hasPermissionToManageLinks = hasScope(request, [manageGaugingStationLicenceLinks]);
+
   return h.view('nunjucks/gauging-stations/gauging-station', {
     ...request.view,
     pageTitle: helpers.createTitle(station),
     station,
+    hasPermissionToManageLinks,
     isWaterAbstractionAlertsEnabled,
     licenceGaugingStations: helpers.groupByLicence(data),
     back: '/licences'

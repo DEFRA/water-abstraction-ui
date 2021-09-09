@@ -9,6 +9,7 @@ const { scope } = require('../../lib/constants');
 const { hasScope } = require('../../lib/permissions');
 const { featureToggles } = require('../../config');
 const returnsMapper = require('../../lib/mappers/returns');
+const services = require('../../lib/connectors/services');
 
 const getDocumentId = doc => doc.document_id;
 
@@ -113,12 +114,13 @@ const getMarkLicenceForSupplementaryBilling = (request, h) => {
   });
 };
 
-const postMarkLicenceForSupplementaryBilling = (request, h) => {
+const postMarkLicenceForSupplementaryBilling = async (request, h) => {
   const { licenceId } = request.params;
   const { document } = request.pre;
   const { system_external_id: licenceRef } = document;
 
   // TODO Call backend to mark the licence for supplementary billing
+  await services.water.licences.postMarkLicenceForSupplementaryBilling(licenceId);
 
   return h.view('nunjucks/billing/marked-licence-for-supplementary-billing', {
     ...request.view,

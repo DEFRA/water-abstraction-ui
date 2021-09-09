@@ -72,14 +72,25 @@ const mapChargeVersions = (chargeVersions, chargeVersionWorkflows, options) => {
 };
 
 const getLicenceAgreementLinks = (licenceAgreement, options) => {
+  const hasNotEnded = isNull(licenceAgreement.dateRange.endDate);
+  const is2PTAgreement = get(licenceAgreement, 'agreement.code') === 'S127';
+
   if (!options.manageAgreements) {
     return [];
   }
   const deleteLink = getLink('Delete', `/licences/${options.licenceId}/agreements/${licenceAgreement.id}/delete`);
   const endLink = getLink('End', `/licences/${options.licenceId}/agreements/${licenceAgreement.id}/end`);
-  return isNull(licenceAgreement.dateRange.endDate)
+  const recalculateLink = getLink('Recalculate bills', `/licences/${options.licenceId}/mark-for-supplementary-billing`);
+
+  const compiledLinks = hasNotEnded
     ? [deleteLink, endLink]
     : [deleteLink];
+
+  if (hasNotEnded && is2PTAgreement) {
+    compiledLinks.push(recalculateLink);
+  }
+
+  return compiledLinks;
 };
 
 const mapLicenceAgreement = (licenceAgreement, options) => ({

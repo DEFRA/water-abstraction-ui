@@ -74,6 +74,7 @@ const mapChargeVersions = (chargeVersions, chargeVersionWorkflows, options) => {
 const getLicenceAgreementLinks = (licenceAgreement, options) => {
   const hasNotEnded = isNull(licenceAgreement.dateRange.endDate);
   const is2PTAgreement = get(licenceAgreement, 'agreement.code') === 'S127';
+  const isNotMarkedForSupplementaryBilling = options.includeInSupplementaryBilling === 'no';
 
   if (!options.manageAgreements) {
     return [];
@@ -86,7 +87,7 @@ const getLicenceAgreementLinks = (licenceAgreement, options) => {
     ? [deleteLink, endLink]
     : [deleteLink];
 
-  if (hasNotEnded && is2PTAgreement) {
+  if (hasNotEnded && is2PTAgreement && isNotMarkedForSupplementaryBilling) {
     compiledLinks.push(recalculateLink);
   }
 

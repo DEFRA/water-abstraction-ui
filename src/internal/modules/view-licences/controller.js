@@ -66,7 +66,7 @@ const getLicenceSummary = async (request, h) => {
     ...pick(request.pre, ['licence', 'bills', 'notifications', 'primaryUser', 'summary']),
     gaugingStationsData: uniqWith(gaugingStationsData, isEqual),
     chargeVersions,
-    agreements: mappers.mapLicenceAgreements(agreements, { licenceId, ...permissions }),
+    agreements: mappers.mapLicenceAgreements(agreements, { licenceId, includeInSupplementaryBilling: licence.includeInSupplementaryBilling, ...permissions }),
     returns: {
       pagination: returns.pagination,
       data: returnsMapper.mapReturns(returns.data, request)

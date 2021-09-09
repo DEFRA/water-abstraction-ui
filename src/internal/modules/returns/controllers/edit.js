@@ -357,12 +357,17 @@ const postConfirm = async (request, h) => {
 const getSubmitted = async (request, h) => {
   const data = await services.water.returns.getReturn(request.query.returnId);
 
+  const licence = await services.water.licences.getLicenceByLicenceNumber(data.licenceNumber);
+
   const returnUrl = `/returns/return?id=${data.returnId}`;
+
+  const markForSupplementaryBillingUrl = `/licences/${licence.id}/mark-for-supplementary-billing`;
 
   return h.view('nunjucks/returns/submitted', {
     ...request.view,
     data,
     returnUrl,
+    markForSupplementaryBillingUrl,
     pageTitle: `Abstraction return - ${data.isNil ? 'nil ' : ''}submitted`
   });
 };

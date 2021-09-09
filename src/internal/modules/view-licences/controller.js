@@ -119,7 +119,7 @@ const postMarkLicenceForSupplementaryBilling = async (request, h) => {
   const { document } = request.pre;
   const { system_external_id: licenceRef } = document;
 
-  // TODO Call backend to mark the licence for supplementary billing
+  // Call backend to mark the licence for supplementary billing
   await services.water.licences.postMarkLicenceForSupplementaryBilling(licenceId);
 
   return h.view('nunjucks/billing/marked-licence-for-supplementary-billing', {

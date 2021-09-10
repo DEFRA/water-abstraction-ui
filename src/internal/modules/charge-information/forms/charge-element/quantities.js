@@ -7,16 +7,18 @@ const { CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants');
 const { getChargeElementData, getChargeElementActionUrl } = require('../../lib/form-helpers');
 
 const getErrors = key => {
-  const errors = { 'string.pattern.base': {
-    message: `Enter a number for the ${key} quantity using 6 decimal places or fewer, the number must be more than 0`
-  } };
+  const errors = {
+    'string.pattern.base': {
+      message: `Enter a number for the ${key} quantity using 6 decimal places or fewer, the number must be more than 0`
+    }
+  };
   if (key === 'authorised') {
     const requiredAuthorisedQuantityError = {
       message: `Enter an authorised quantity`
     };
     errors['any.required'] = requiredAuthorisedQuantityError;
     errors['string.empty'] = requiredAuthorisedQuantityError;
-  };
+  }
 
   return errors;
 };
@@ -36,7 +38,7 @@ const getFormField = (key, data) => {
  *
  * @param {Object} request The Hapi request object
  * @param {Boolean}  data object containing selected and default options for the form
-  */
+ */
 const form = request => {
   const { csrfToken } = request.view;
   const data = getChargeElementData(request);
@@ -57,13 +59,13 @@ const form = request => {
   return f;
 };
 
-const schema = (request) => {
-  const nonZeroNumberWithWSixDpRegex = /^\s*(?=.*[1-9])\d*(?:\.\d{1,6})?\s*$/;
-  return {
+const schema = () => {
+  const nonZeroNumberWithWSixDpRegex = new RegExp(/^\s*(?=.*[1-9])\d*(?:\.\d{1,6})?\s*$/);
+  return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
-    authorisedAnnualQuantity: Joi.string().regex(nonZeroNumberWithWSixDpRegex).required(),
-    billableAnnualQuantity: Joi.string().allow('').regex(nonZeroNumberWithWSixDpRegex).optional()
-  };
+    authorisedAnnualQuantity: Joi.string().pattern(nonZeroNumberWithWSixDpRegex).required(),
+    billableAnnualQuantity: Joi.string().pattern(nonZeroNumberWithWSixDpRegex).allow('', null)
+  });
 };
 exports.schema = schema;
 exports.form = form;

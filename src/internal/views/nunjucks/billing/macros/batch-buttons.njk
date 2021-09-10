@@ -24,11 +24,11 @@
   {% endif %}
 {% endmacro %}
 
-{% macro removeInvoiceFromBatchButton(batch, invoice) %}
+{% macro removeInvoiceFromBatchButton(batch, invoice, buttonText) %}
   {% if batch.status == 'ready' %}
     {{
     govukButton({
-      text: "Remove bill",
+      text: buttonText,
       href: '/billing/batch/' + batch.id + '/delete-invoice/' + invoice.id,
       classes: "govuk-button--secondary"
     })
@@ -47,13 +47,16 @@
 {% endmacro %}
 
 {% macro removeLicenceFromBatchButton(link) %}
-  {{
-      govukButton({
-        text: "Remove licence",
-        href: link,
-        classes: "govuk-button--secondary"
-      })
-    }}
+    {# The following is hidden with 1==2 because of WATER-3190 being blocked by CMEA-141 #}
+    {% if 1==2 %}
+      {{
+          govukButton({
+            text: "Remove licence",
+            href: link,
+            classes: "govuk-button--secondary"
+          })
+      }}
+    {% endif %}
 {% endmacro %}
 
 {% macro twoPartTariffContinueButton(batch) %}

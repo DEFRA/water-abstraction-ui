@@ -1,6 +1,6 @@
 const Ajv = require('ajv');
 const ajv = new Ajv({ allErrors: true, errorDataPath: 'property' });
-
+const Joi = require('joi');
 const { get, set } = require('lodash');
 
 /**
@@ -70,8 +70,13 @@ const validate = (requestData, schema) => {
   };
 };
 
-const createSchemaFromForm = () => {
-  throw new Error('Forms are generated from schemas so not necessary to regenerate back from the form');
+const createSchemaFromForm = (form) => {
+  // throw new Error('Forms are generated from schemas so not necessary to regenerate back from the form');
+
+  // Below is a fabricated, pointless validator to allow Digitise forms to be submitted successfully.
+  // Please see WATER-3284 for details as to why this is the case.
+  const schema = form.fields.map(f => ({ [f.name]: Joi.any() }));
+  return Object.assign.apply(Object, schema);
 };
 
 /**

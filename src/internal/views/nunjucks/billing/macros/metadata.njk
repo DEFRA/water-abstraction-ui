@@ -1,13 +1,13 @@
 {% macro accountMetadata(invoice) %}
   <div class="meta__row">
-    <dt class="meta__key">Account</dt>
+    <dt class="meta__key">Billing account</dt>
     <dd class="meta__value">{{ invoice.invoiceAccount.accountNumber }}</dd>
   </div>
 {% endmacro %}
 
 {% macro billingContactMetadata (invoice) %}
   <div class="meta__row">
-    <dt class="meta__key">Billing Contact</dt>
+    <dt class="meta__key">Billing address</dt>
     <dd class="meta__value">{{ invoice.invoiceAccount.company.name | titleCase }}</dd>
   </div>
 {% endmacro %}
@@ -26,10 +26,15 @@
   </div>
 {% endmacro %}
 
-{% macro invoiceTotalMetadata (invoice) %}
+{% macro invoiceTotalMetadata (invoice, invoiceLicence, invoiceLicenceTotal) %}
    <div class="meta__row">
     <dt class="meta__key">Total</dt>
-    <dd class="meta__value">{{ invoice.netTotal | charge(true) }}</dd>
+
+    {% if invoiceLicence and invoiceLicenceTotal %}
+        <dd class="meta__value">{{ invoiceLicenceTotal | charge(true) }}</dd>
+    {% else %}
+        <dd class="meta__value">{{ invoice.netTotal | charge(true) }}</dd>
+    {% endif %}
   </div>
 {% endmacro %}
 
@@ -100,12 +105,12 @@
   </dl>
 {% endmacro %}
 
-{% macro invoiceLicenceMetadata(invoice, invoiceLicence) %}
+{% macro invoiceLicenceMetadata(invoice, invoiceLicence, invoiceLicenceTotal) %}
   <dl class="meta govuk-!-margin-bottom-3">
     {{ accountMetadata(invoice) }}
     {{ billingContactMetadata(invoice) }}
     {{ licenceMetadata(invoiceLicence) }}
     {{ financialYearMetadata(invoice) }}
-    {{ invoiceTotalMetadata(invoice) }}
+    {{ invoiceTotalMetadata(invoice, invoiceLicence, invoiceLicenceTotal) }}
   </dl>
 {% endmacro %}

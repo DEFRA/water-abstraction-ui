@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const controller = require('./controllers/edit');
 const reportsController = require('./controllers/reports');
-const statuses = require('./lib/statuses');
+const { statuses } = require('@envage/water-abstraction-helpers').digitise;
 const { scope } = require('../../lib/constants');
 const allowedScopes = [scope.abstractionReformUser, scope.abstractionReformApprover];
 

@@ -4,3 +4,6 @@ exports.whichLicence = require('./which-licence');
 exports.whichCondition = require('./which-condition');
 exports.checkYourAnswers = require('./check-your-answers');
 exports.manuallyDefinedAbstractionPeriod = require('./manually-defined-abstraction-period');
+exports.removeTagsLicenceView = require('./remove-tags-licence-view');
+exports.removeTagsLicenceConditions = require('./remove-tags-conditions');
+exports.removeTagConfirm = require('./remove-tag-confirm');

@@ -1,4 +1,5 @@
-const { STATUS_IN_PROGRESS, STATUS_IN_REVIEW } = require('./statuses');
+const { statuses } = require('@envage/water-abstraction-helpers').digitise;
+const { STATUS_IN_PROGRESS, STATUS_IN_REVIEW } = statuses;
 const { isARApprover } = require('../../../lib/permissions');
 
 /**

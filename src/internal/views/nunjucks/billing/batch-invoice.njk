@@ -72,18 +72,85 @@ invoiceDebitsTotal %}
 
       {{ batchMetadata(batch, invoice)}}
 
+      <!-- Bills linked to reissue -->
+      {% macro displayBillingState(inv, billingBatchId) %}
+        {% if inv.rebillingStateLabel == 'rebill' or inv.rebillingStateLabel == 'rebilled'  %}
+          Reissued <span class="screen-reader-only">bill</span>
+        {% endif %}
+
+        {% if inv.rebillingStateLabel == 'original' %}
+          Original <span class="screen-reader-only">bill</span>
+        {% endif %}
+
+        {% if inv.rebillingStateLabel == 'reversal' %}
+          Reversed <span class="screen-reader-only">bill</span>
+        {% endif %}
+      {% endmacro %}
+
+      {% macro displayInvoiceNumber(inv) %}
+        {% if inv.originalInvoiceId != null %}
+          <a href="/billing/batch/{{inv.billingBatchId}}/invoice/{{inv.id}}">
+            {{inv.invoiceNumber}}
+          </a>
+        {% else %}
+          <!-- original bill has different batchid -->
+          <a class="govuk-link" href="/billing/batch/{{inv.billingBatchId}}/invoice/{{inv.id}}">
+            {{inv.invoiceNumber}}
+          </a>
+        {% endif %}
+      {% endmacro %}
+
+      {% set htmlBillsLinked %}
+      <h2 class="govuk-heading-m">This bill is linked to a reissue</h2>
+      <dl class="meta govuk-!-margin-bottom-3">
+        <div class="meta__row">
+          <dt class="meta__key">Date created</dt>
+          <dd class="meta__value">{{batch.dateCreated | date }}</dd>
+        </div>
+        <!-- curently displayed bill -->
+        <div class="meta__row">
+          <dt class="meta__key">
+            {{ displayBillingState(invoice, invoice.batch.billingBatchId)}}
+          </dt>
+          <dd class="meta__value">
+            {{ invoice.invoiceNumber }}, this bill
+          </dd>
+        </div>
+        {% for linkedInvoice in invoice.linkedInvoices %}
+          {% if linkedInvoice.invoiceNumber != null %}
+          <div class="meta__row">
+            <dt class="meta__key">
+              {{ displayBillingState(linkedInvoice, invoice.batch.billingBatchId) }}
+            </dt>
+            <dd class="meta__value">
+              {{ displayInvoiceNumber(linkedInvoice) }}
+            </dd>
+          </div>
+          {% endif %}
+        {% endfor %}
+      </dl>
+      {% endset %}
+
       <div class="govuk-!-margin-bottom-9">
         {% set html %}
-
-        <p class="govuk-!-font-weight-bold govuk-!-margin-0">
-          <a href="{{ links.billingAccount }}">Billing account {{ invoice.invoiceAccount.accountNumber }}</a>
-        </p>
-        {{ invoiceAddress(invoice, invoice.invoiceAccount.company) }}
+          <p class="govuk-!-font-weight-bold govuk-!-margin-0">
+            <a href="{{ links.billingAccount }}">Billing account {{ invoice.invoiceAccount.accountNumber }}</a>
+          </p>
+          {{ invoiceAddress(invoice, invoice.invoiceAccount.company) }}
         {% endset %}
         {{ govukDetails({
           summaryText: "Billing account details",
           html: html })
         }}
+
+        {% if batch.status == 'sent' %}
+          {% if invoice.linkedInvoices.length %}
+          {{ govukInsetText({
+            html: htmlBillsLinked })
+          }}
+          {% endif %}
+        {% endif %}
+
       </div>
     </div>
   </div>
@@ -118,9 +185,31 @@ invoiceDebitsTotal %}
     </div>
   {% endif %}
 
+  {% set buttonLabel = 'Remove bill' %}
+  <!-- Warning text for reissue -->
+  {% if batch.status == 'ready' %}
+    {% set originalBillInvoiceNumber = '' %}
+    {% for inv in invoice.linkedInvoices %}
+      {% if inv.invoiceNumber and inv.rebillingStateLabel == 'original' %}
+        {% set originalBillInvoiceNumber = inv.invoiceNumber %}
+      {% endif %}
+    {% endfor %}
+
+    {% if originalBillInvoiceNumber %}
+      {% set warningText = "This bill is linked to the reissue of bill " + originalBillInvoiceNumber %}
+      {% set buttonLabel = 'Cancel this reissue' %}
+
+      {{ govukWarningText({
+        text: warningText,
+        iconFallbackText: "Warning"
+      }) }}
+    {% endif %}
+
+  {% endif %}
+
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-two-thirds">
-      {{ removeInvoiceFromBatchButton(batch, invoice) }}
+      {{ removeInvoiceFromBatchButton(batch, invoice, buttonLabel) }}
     </div>
   </div>
 
@@ -143,10 +232,7 @@ invoiceDebitsTotal %}
 
           <div class="govuk-button-group">
             {% if invoiceLicence.links.delete %}
-              {#
-              -- Uncomment when deleting invoice licence fully implemented
               {{ removeLicenceFromBatchButton(invoiceLicence.links.delete) }}
-              #}
             {% endif %}
             <a class="govuk-link" href="{{ invoiceLicence.links.view }}">View licence</a>
           </div>

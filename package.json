@@ -1,6 +1,6 @@
 {
   "name": "water-abstraction-ui",
-  "version": "1.74.0",
+  "version": "2.7.1",
   "description": "Web app for Water Abstraction service",
   "main": "index.js",
   "repository": {
@@ -22,7 +22,7 @@
     "test:shared": "lab ./test/shared",
     "test-cov-html": "lab -r html -o coverage.html",
     "test:cypress": "node_modules/.bin/cypress open",
-    "test:cypress-silently": "node_modules/.bin/cypress run && npm run test:cypress-prepare-report",
+    "test:cypress-silently": "npm run pretest && node_modules/.bin/cypress run && npm run test:cypress-prepare-report",
     "test:cypress-prepare-report": "mochawesome-merge ./cypress/reports/mocha/*.json > ./cypress/reports/mocha/combined-report.json && marge --reportDir cypress/reports/mocha/ ./cypress/reports/mocha/combined-report.json",
     "lint": "eslint .",
     "codecov": "codecov",
@@ -68,8 +68,8 @@
     "snyk": "^1.483.0"
   },
   "dependencies": {
-    "@envage/hapi-pg-rest-api": "github:DEFRA/hapi-pg-rest-api#master",
-    "@envage/water-abstraction-helpers": "github:DEFRA/water-abstraction-helpers#Upgrade-to-joi-17",
+    "@envage/hapi-pg-rest-api": "^7.0.0",
+    "@envage/water-abstraction-helpers": "^4.5.1",
     "@hapi/boom": "^7.4.2",
     "@hapi/catbox-redis": "^6.0.2",
     "@hapi/good": "^8.2.4",

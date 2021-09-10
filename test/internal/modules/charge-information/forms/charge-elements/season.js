@@ -76,12 +76,19 @@ experiment('internal/modules/charge-information/forms/charge-element/season', ()
   experiment('.schema', () => {
     experiment('csrf token', () => {
       test('validates for a uuid', async () => {
-        const result = schema(createRequest()).csrf_token.validate('c5afe238-fb77-4131-be80-384aaf245842');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          season: SEASONS[0]
+        }, { allowUnknown: true });
+
         expect(result.error).to.be.undefined();
       });
 
       test('fails for a string that is not a uuid', async () => {
-        const result = schema(createRequest()).csrf_token.validate('sciccors');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'cupcakes',
+          season: SEASONS[0]
+        }, { allowUnknown: true });
         expect(result.error).to.exist();
       });
     });
@@ -89,13 +96,19 @@ experiment('internal/modules/charge-information/forms/charge-element/season', ()
     experiment('season', () => {
       SEASONS.forEach(option => {
         test('validates for a string', async () => {
-          const result = schema().season.validate(option);
+          const result = schema(createRequest()).validate({
+            csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+            season: SEASONS[0]
+          }, { allowUnknown: true });
           expect(result.error).to.not.exist();
         });
       });
 
       test('can not be any other string', async () => {
-        const result = schema().season.validate('test');
+        const result = schema(createRequest()).validate({
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          season: 'Autumn'
+        }, { allowUnknown: true });
         expect(result.error).to.exist();
       });
     });

@@ -155,7 +155,7 @@ experiment('services/water/BillingBatchService', () => {
       const invoiceId = uuid();
       await service.deleteInvoiceFromBatch(batchId, invoiceId);
       const [url] = serviceRequest.delete.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/invoices/${invoiceId}/org/undefined/rebill/undefined`);
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/invoices/${invoiceId}`);
     });
   });
 
@@ -168,7 +168,7 @@ experiment('services/water/BillingBatchService', () => {
 
       await service.deleteInvoiceFromBatch(batchId, invoiceId, originalInvoiceId, rebillInvoiceId);
       const [url] = serviceRequest.delete.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/invoices/${invoiceId}/org/${originalInvoiceId}/rebill/${rebillInvoiceId}`);
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/invoices/${invoiceId}?originalInvoiceId=${originalInvoiceId}&rebillInvoiceId=${rebillInvoiceId}`);
     });
   });
 

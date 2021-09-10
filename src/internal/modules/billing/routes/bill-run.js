@@ -198,7 +198,7 @@ const routes = {
   },
   getBillingBatchDeleteInvoice: {
     method: 'GET',
-    path: '/billing/batch/{batchId}/delete-invoice/{invoiceId}/org/{originalInvoiceId}/rebill/{rebillInvoiceId}',
+    path: '/billing/batch/{batchId}/delete-invoice/{invoiceId}',
     handler: controller.getBillingBatchDeleteInvoice,
     config: {
       auth: { scope: allowedScopes },
@@ -211,9 +211,11 @@ const routes = {
       validate: {
         params: Joi.object().keys({
           batchId: Joi.string().uuid(),
-          invoiceId: Joi.string().uuid(),
-          originalInvoiceId: Joi.string().uuid(),
-          rebillInvoiceId: Joi.string().uuid()
+          invoiceId: Joi.string().uuid()
+        }),
+        query: Joi.object().keys({
+          originalInvoiceId: Joi.string().uuid().optional(),
+          rebillInvoiceId: Joi.string().uuid().optional()
         })
       },
       pre: [
@@ -225,7 +227,7 @@ const routes = {
   },
   postBillingBatchDeleteInvoice: {
     method: 'POST',
-    path: '/billing/batch/{batchId}/delete-invoice/{invoiceId}/org/{originalInvoiceId}/rebill/{rebillInvoiceId}',
+    path: '/billing/batch/{batchId}/delete-invoice/{invoiceId}',
     handler: controller.postBillingBatchDeleteInvoice,
     config: {
       auth: { scope: allowedScopes },
@@ -237,11 +239,11 @@ const routes = {
       validate: {
         params: Joi.object().keys({
           batchId: Joi.string().uuid(),
-          invoiceId: Joi.string().uuid(),
-          originalInvoiceId: Joi.string().uuid(),
-          rebillInvoiceId: Joi.string().uuid()
+          invoiceId: Joi.string().uuid()
         }),
         payload: Joi.object().keys({
+          originalInvoiceId: Joi.string().uuid().optional(),
+          rebillInvoiceId: Joi.string().uuid().optional(),
           csrf_token: Joi.string().uuid().required()
         })
       }

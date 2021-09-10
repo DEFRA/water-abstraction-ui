@@ -29,7 +29,7 @@
     {{
     govukButton({
       text: buttonText,
-      href: '/billing/batch/' + batch.id + '/delete-invoice/' + invoice.id + '/org/' + originalInvoiceId + '/rebill/' + rebillInvoiceId,
+      href: '/billing/batch/' + batch.id + '/delete-invoice/' + invoice.id + '?originalInvoiceId=' + originalInvoiceId + '&rebillInvoiceId=' + rebillInvoiceId,
       classes: "govuk-button--secondary"
     })
   }}

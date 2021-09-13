@@ -151,7 +151,7 @@ const createRequest = () => ({
 });
 
 experiment('internal/modules/billing/controller', () => {
-  let h, request, batchData;
+  let h, request, requestWithRebilling, batchData;
 
   beforeEach(async () => {
     batchData = createBatchData();
@@ -182,6 +182,7 @@ experiment('internal/modules/billing/controller', () => {
     sandbox.stub(csv, 'csvDownload');
 
     request = createRequest();
+    requestWithRebilling = createRequest();
   });
 
   afterEach(async () => {
@@ -700,6 +701,46 @@ experiment('internal/modules/billing/controller', () => {
       expect(context.invoice).to.equal(request.pre.invoice);
       expect(context.form).to.be.an.object();
       expect(context.batch).to.equal(batchData);
+      expect(context.back).to.equal('/billing/batch/test-batch-id/summary');
+    });
+  });
+
+  experiment('.getBillingBatchDeleteInvoice with rebillingState', () => {
+    const invoiceNumber = 'A12345';
+
+    beforeEach(async () => {
+      invoiceWithLinks.linkedInvoices = [];
+      invoiceWithLinks.linkedInvoices.push({
+        id: '4abf7d0a-6148-4781-8c6a-7a8b9267b4a9',
+        accountNumber: 'A12345678A',
+        name: 'Test company 1',
+        netTotal: 12345,
+        licenceNumbers: [
+          '01/123/A'
+        ],
+        isWaterUndertaker: false,
+        originalInvoiceId: '9a806cbb-f1b9-49ae-b551-98affa2d2b9b',
+        rebillingState: 'rebill',
+        displayLabel: 'A12345b',
+        originalInvoice: { id: '4abf7d0a-6148-4781-8c6a-7a8b9267b4a9a', displayLabel: 'A12345' }
+      });
+
+      services.water.billingBatches.getBatchInvoice.resolves({
+        ...invoiceWithLinks,
+        invoiceNumber
+      });
+      requestWithRebilling.pre.invoice = invoiceWithLinks;
+      await controller.getBillingBatchDeleteInvoice(requestWithRebilling, h);
+    });
+
+    test('configures the expected view template', async () => {
+      const [view] = h.view.lastCall.args;
+      expect(view).to.equal('nunjucks/billing/confirm-invoice');
+    });
+
+    test('sets the correct view data', async () => {
+      const [, context] = h.view.lastCall.args;
+      expect(context.pageTitle).to.equal('You\'re about to cancel the reissue of A12345b');
       expect(context.back).to.equal('/billing/batch/test-batch-id/summary');
     });
   });

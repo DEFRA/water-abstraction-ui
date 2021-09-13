@@ -41,9 +41,6 @@ jobs:
       postgres:
         # Docker Hub image
         image: postgres:13-alpine
-        stdin_open: true
-        tty: true
-        command: postgres -c 'max_connections=200'
         # Provide the password for postgres
         env:
           POSTGRES_USER: water
@@ -167,7 +164,6 @@ jobs:
           cd water-abstraction-tactical-crm && pm2 start ecosystem.config.json --update-env && cd ..
           cd water-abstraction-tactical-idm && pm2 start ecosystem.config.json --update-env && cd ..
           cd water-abstraction-returns && pm2 start ecosystem.config.json --update-env && cd ..
-          cd water-abstraction-import && pm2 start ecosystem.config.json --update-env && cd ..
           npm i
           pm2 start ecosystem.config.json
           curl --location --request GET 'http://127.0.0.1:8001/status'

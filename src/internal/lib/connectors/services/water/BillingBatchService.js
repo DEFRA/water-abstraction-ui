@@ -1,6 +1,7 @@
 'use strict';
 
 const ServiceClient = require('shared/lib/connectors/services/ServiceClient');
+const queryString = require('querystring');
 
 class BillingBatchService extends ServiceClient {
   getBatch (batchId, includeTotals = false) {
@@ -61,9 +62,10 @@ class BillingBatchService extends ServiceClient {
     return this.serviceRequest.post(uri, options);
   }
 
-  deleteInvoiceFromBatch (batchId, invoiceId) {
-    const uri = this.joinUrl(`/billing/batches/${batchId}/invoices/${invoiceId}`);
-    return this.serviceRequest.delete(uri);
+  deleteInvoiceFromBatch (batchId, invoiceId, originalInvoiceId, rebillInvoiceId) {
+    const url = this.joinUrl(`billing/batches/${batchId}/invoices/${invoiceId}`);
+    const path = (originalInvoiceId && rebillInvoiceId) ? `${url}?${queryString.stringify({ originalInvoiceId, rebillInvoiceId })}` : url;
+    return this.serviceRequest.delete(path);
   }
 
   /**

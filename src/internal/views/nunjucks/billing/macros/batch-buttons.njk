@@ -34,12 +34,23 @@
   {% endif %}
 {% endmacro %}
 
-{% macro removeInvoiceFromBatchButton(batch, invoice, buttonText) %}
+{% macro removeInvoiceFromBatchButton(batch, invoice, originalInvoiceId, rebillInvoiceId, buttonText) %}  
   {% if batch.status == 'ready' %}
+    {% set baseLink = '/billing/batch/' + batch.id + '/delete-invoice/' + invoice.id %}
+    {% set queryTail = {
+        originalInvoiceId: originalInvoiceId,
+        rebillInvoiceId: rebillInvoiceId
+      } | queryString %}
+   
+    {% if (originalInvoiceId | length) > 0 and (rebillInvoiceId | length) > 0 %}
+      {% set removeLink = baseLink + '?' + queryTail %}  
+    {% else %}
+      {% set removeLink = baseLink %}
+    {% endif %}
     {{
     govukButton({
       text: buttonText,
-      href: '/billing/batch/' + batch.id + '/delete-invoice/' + invoice.id,
+      href: removeLink,
       classes: "govuk-button--secondary"
     })
   }}

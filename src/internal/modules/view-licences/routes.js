@@ -92,5 +92,56 @@ module.exports = {
         method: preHandlers.loadBills, assign: 'bills'
       }]
     }
+  },
+
+  getMarkLicenceForSupplementaryBilling: {
+    method: 'GET',
+    path: '/licences/{licenceId}/mark-for-supplementary-billing',
+    handler: controller.getMarkLicenceForSupplementaryBilling,
+    config: {
+      auth: {
+        scope: scope.billing
+      },
+      description: 'Displays the confirmation page for adding the licence to supplementary billing',
+      validate: {
+        params: Joi.object().keys({
+          licenceId: Joi.string().guid().required()
+        })
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'view'
+        }
+      },
+      pre: [{
+        method: preHandlers.loadLicenceDocument, assign: 'document'
+      }]
+    }
+  },
+
+  postMarkLicenceForSupplementaryBilling: {
+    method: 'POST',
+    path: '/licences/{licenceId}/mark-for-supplementary-billing',
+    handler: controller.postMarkLicenceForSupplementaryBilling,
+    config: {
+      auth: {
+        scope: scope.billing
+      },
+      description: 'Handles the addition of the licence to supplementary billing',
+      validate: {
+        params: Joi.object().keys({
+          licenceId: Joi.string().guid().required()
+        })
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'view'
+        }
+      },
+      pre: [{
+        method: preHandlers.loadLicenceDocument, assign: 'document'
+      }]
+    }
   }
+
 };

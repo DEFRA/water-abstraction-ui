@@ -109,6 +109,9 @@ experiment('returns edit controller: ', () => {
     };
     sandbox.stub(forms, 'getValues').returns({});
     sandbox.stub(services.water.returns, 'getReturn').resolves(waterResponse);
+    sandbox.stub(services.water.licences, 'getLicenceByLicenceNumber').resolves({
+      id: 'some-id'
+    });
   });
 
   afterEach(async () => {

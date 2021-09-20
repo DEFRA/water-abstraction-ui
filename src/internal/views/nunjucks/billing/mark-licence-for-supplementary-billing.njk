@@ -1,0 +1,12 @@
+{% extends "./nunjucks/layout.njk" %}
+
+{% block content %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            {{ title(pageTitle, caption) }}
+            <p>When you create the bill run, this licence will have bills for the last 6 years.</p>
+
+            {{ formRender(form) }}
+        </div>
+    </div>
+{% endblock %}

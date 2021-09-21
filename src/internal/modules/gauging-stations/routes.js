@@ -364,6 +364,44 @@ module.exports = {
         scope: allowedScopes
       }
     }
-  }
+  },
 
+  getSendAlertCheckLicenceMatches: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/check-licence-matches',
+    handler: controller.getSendAlertCheckLicenceMatches,
+    config: {
+      description: 'Asks the user to confirm the pre-selected licences for sending a water abstraction alert',
+      pre: [
+        { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
+      ],
+      auth: {
+        scope: allowedScopes
+      }
+    }
+  },
+
+  getSendAlertExcludeLicence: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/exclude-licence/{licenceId}',
+    handler: controller.getSendAlertExcludeLicence,
+    config: {
+      description: 'Asks the user to confirm that they wish to exclude a licence from a water abstraction alert sending process',
+      auth: {
+        scope: allowedScopes
+      }
+    }
+  },
+
+  getSendAlertExcludeLicenceConfirm: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/exclude-licence/{licenceId}/confirm',
+    handler: controller.getSendAlertExcludeLicenceConfirm,
+    config: {
+      description: 'Excludes a licence from a water abstraction alert sending process',
+      auth: {
+        scope: allowedScopes
+      }
+    }
+  }
 };

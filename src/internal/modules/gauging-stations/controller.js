@@ -426,6 +426,7 @@ const getSendAlertSelectAlertThresholds = async (request, h) => {
 };
 
 const postSendAlertSelectAlertThresholds = async (request, h) => {
+  const { licenceGaugingStations } = request.pre;
   const form = await formHandler.handleFormRequest(request, linkageForms.sendingAlertThresholds);
   if (!form.isValid) {
     return h.postRedirectGet(form);
@@ -433,11 +434,59 @@ const postSendAlertSelectAlertThresholds = async (request, h) => {
 
   const selectedAlertThresholds = form.fields.find(field => field.name === 'alertThresholds');
 
+  const validOptions = selectedAlertThresholds.value.map(each => JSON.parse(each));
+
   session.merge(request, {
-    alertThresholds: selectedAlertThresholds
+    alertThresholds: selectedAlertThresholds,
+    selectedLicences: licenceGaugingStations.data.filter(eachLGS => validOptions.some(eachOption => eachLGS.thresholdValue === eachOption.value && eachLGS.thresholdUnit === eachOption.unit))
   });
 
   return h.redirect(request.path.replace(/\/[^\/]*$/, '/check-licence-matches'));
+};
+
+const getSendAlertCheckLicenceMatches = async (request, h) => {
+  const pageTitle = 'Check the licence matches for the selected thresholds';
+  const caption = await helpers.getCaption(request);
+
+  const sessionData = session.get(request);
+  const { selectedLicences } = sessionData;
+
+  return h.view('nunjucks/gauging-stations/check-licences-for-sending-alerts', {
+    ...request.view,
+    caption,
+    pageTitle,
+    selectedLicences,
+    excludeLicencePreURL: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/exclude-licence`
+  });
+};
+
+const getSendAlertExcludeLicence = async (request, h) => {
+  const sessionData = session.get(request);
+  const { selectedLicences } = sessionData;
+  if (!selectedLicences.find(l => l.licenceId === request.params.licenceId)) {
+    return h.redirect(`/monitoring-stations/${request.params.gaugingStationId}/send-alert/check-licence-matches`);
+  }
+  const pageTitle = `You're about to remove licence ${selectedLicences.find(l => l.licenceId === request.params.licenceId).licenceRef} from the send list`;
+  const caption = await helpers.getCaption(request);
+
+  return h.view('nunjucks/gauging-stations/exclude-licence-for-sending-alerts', {
+    ...request.view,
+    caption,
+    pageTitle,
+    confirmURL: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/exclude-licence/${request.params.licenceId}/confirm`,
+    back: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/alert-thresholds`
+  });
+};
+
+const getSendAlertExcludeLicenceConfirm = async (request, h) => {
+  const sessionData = session.get(request);
+  const { selectedLicences } = sessionData;
+
+  session.merge(request, {
+    selectedLicences: selectedLicences.filter(l => l.licenceId !== request.params.licenceId)
+  });
+
+  return h.redirect(`/monitoring-stations/${request.params.gaugingStationId}/send-alert/check-licence-matches`);
 };
 
 exports.getNewTaggingFlow = getNewTaggingFlow;
@@ -465,3 +514,6 @@ exports.getSendAlertSelectAlertType = getSendAlertSelectAlertType;
 exports.postSendAlertSelectAlertType = postSendAlertSelectAlertType;
 exports.getSendAlertSelectAlertThresholds = getSendAlertSelectAlertThresholds;
 exports.postSendAlertSelectAlertThresholds = postSendAlertSelectAlertThresholds;
+exports.getSendAlertCheckLicenceMatches = getSendAlertCheckLicenceMatches;
+exports.getSendAlertExcludeLicence = getSendAlertExcludeLicence;
+exports.getSendAlertExcludeLicenceConfirm = getSendAlertExcludeLicenceConfirm;

@@ -1,0 +1,77 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "title.njk" import title %}
+
+{% block pageTitle %}
+  {{pageTitle}} - GOV.UK
+{% endblock %}
+
+
+
+{% block content %}
+<a href="/monitoring-stations/325fa5ce-42f4-47a9-81fc-6d8004c4a4b0/send-alert/alert-thresholds" class="govuk-back-link" data-no-js> Back </a>
+
+
+<div class="govuk-grid-row govuk-!-margin-bottom-6">
+    <div class="govuk-grid-column-full">
+     {{ title(pageTitle, caption) }}
+    </div>
+</div>
+
+
+<table class="govuk-table">
+  <caption class="govuk-table__caption govuk-table__caption--m">Licences with conditions linked to this monitoring station</caption>
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header ">Licence</th>
+      <th scope="col" class="govuk-table__header ">Abstraction period</th>
+      <th scope="col" colspan="2" class="govuk-table__header govuk-!-width-one-quarter">Flow and level restriction<br>type and threshold </th>
+      <th scope="col" colspan="2" class="govuk-table__header ">Last type of alert<br>sent and date issued</th>
+      <th scope="col" class="govuk-table__header  govuk-table__header--numeric ">Action</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+  {% for selectedLicence in selectedLicences %}
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell">
+        <a href="/licences/{{selectedLicence.licenceId}}">
+          {{selectedLicence.licenceRef}}
+        </a>
+      </td>
+      <td class="govuk-table__cell ">
+         {{
+           {
+             startDay: selectedLicence.abstractionPeriodStartDay,
+             startMonth: selectedLicence.abstractionPeriodStartMonth,
+             endDay: selectedLicence.abstractionPeriodEndDay,
+             endMonth: selectedLicence.abstractionPeriodEndMonth
+           } | abstractionPeriod
+         }}
+      </td>
+
+      <td class="govuk-table__cell">
+          {{selectedLicence.alertType | sentenceCase }}
+      </td>
+
+      <td class="govuk-table__cell govuk-table__cell--numeric">
+        {{selectedLicence.thresholdValue}}
+        {{selectedLicence.thresholdUnit }}
+      </td>
+
+      <td class="govuk-table__cell ">
+        {% if selectedLicence.dateStatusUpdated %}
+          {{selectedLicence.comstatus}}
+        {% endif %}
+      </td>
+
+      <td class="govuk-table__cell">
+        {{ selectedLicence.dateStatusUpdated | date if selectedLicence.dateStatusUpdated else ''}}
+      </td>
+
+      <td class="govuk-table__cell govuk-table__header--numeric">
+        <a class="govuk-link" href="{{excludeLicencePreURL}}/{{ selectedLicence.licenceId }}">Remove</a></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<!--End content block-->
+{% endblock %}

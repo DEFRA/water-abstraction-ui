@@ -425,6 +425,21 @@ const getSendAlertSelectAlertThresholds = async (request, h) => {
   });
 };
 
+const postSendAlertSelectAlertThresholds = async (request, h) => {
+  const form = await formHandler.handleFormRequest(request, linkageForms.sendingAlertThresholds);
+  if (!form.isValid) {
+    return h.postRedirectGet(form);
+  }
+
+  const selectedAlertThresholds = form.fields.find(field => field.name === 'alertThresholds');
+
+  session.merge(request, {
+    alertThresholds: selectedAlertThresholds
+  });
+
+  return h.redirect(request.path.replace(/\/[^\/]*$/, '/check-licence-matches'));
+};
+
 exports.getNewTaggingFlow = getNewTaggingFlow;
 exports.getNewTaggingThresholdAndUnit = getNewTaggingThresholdAndUnit;
 exports.postNewTaggingThresholdAndUnit = postNewTaggingThresholdAndUnit;
@@ -449,3 +464,4 @@ exports.getRemoveTagsConditions = getRemoveTagsConditions;
 exports.getSendAlertSelectAlertType = getSendAlertSelectAlertType;
 exports.postSendAlertSelectAlertType = postSendAlertSelectAlertType;
 exports.getSendAlertSelectAlertThresholds = getSendAlertSelectAlertThresholds;
+exports.postSendAlertSelectAlertThresholds = postSendAlertSelectAlertThresholds;

@@ -349,6 +349,21 @@ module.exports = {
         scope: allowedScopes
       }
     }
+  },
+
+  postSendAlertSelectAlertThresholds: {
+    method: 'POST',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/alert-thresholds',
+    handler: controller.postSendAlertSelectAlertThresholds,
+    config: {
+      description: 'Accepts the input of the user after selecting an alert thresholds for sending a new water abstraction alert',
+      pre: [
+        { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
+      ],
+      auth: {
+        scope: allowedScopes
+      }
+    }
   }
 
 };

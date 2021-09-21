@@ -15,21 +15,20 @@ const sendAlertThresholdsForm = request => {
     thresholdValue: n.thresholdValue
   }));
 
-  const defaultAlertThresholds = get(session.get(request), 'sendingAlertThresholds.value');
+  const selectedAlertThresholds = get(session.get(request), 'alertThresholds.value');
 
-  uniqBy(validOptions, 'thresholdUnit').map(eachUnit => f.fields.push(fields.radio('volumeLimited', {
+  uniqBy(validOptions, 'thresholdUnit').map(eachUnit => f.fields.push(fields.checkbox('alertThresholds', {
     label: `${capitalize(helpers.deduceRestrictionTypeFromUnit(eachUnit.thresholdUnit))} thresholds for this station (${eachUnit.thresholdUnit})`,
-    hint: 'For example, you must not exceed 4000Ml in total from the start of your abstraction period.',
     errors: {
       'any.required': {
         message: 'Select if the licence holder needs to stop abstraction when they reach a certain amount'
       }
     },
     choices: validOptions.filter(x => x.thresholdUnit === eachUnit.thresholdUnit).map(eachValue => ({
-      value: eachValue.thresholdValue,
-      label: eachValue.thresholdValue
+      value: JSON.stringify({ value: eachValue.thresholdValue, unit: eachValue.thresholdUnit }),
+      label: `${eachValue.thresholdValue} ${eachValue.thresholdUnit}`
     }))
-  })));
+  }, selectedAlertThresholds)));
 
   f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
@@ -38,7 +37,7 @@ const sendAlertThresholdsForm = request => {
 
 const sendAlertThresholdsSchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
-  alertType: Joi.string().required().allow('warning', 'stop', 'reduce', 'resume')
+  alertThresholds: Joi.array().min(1)
 });
 
 exports.form = sendAlertThresholdsForm;

@@ -114,16 +114,16 @@ module.exports = {
     handler: controller.postRemoveTagComplete
   },
 
-  getNewFlow: {
+  getNewTaggingFlow: {
     method: 'GET',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence',
-    handler: controller.getNewFlow
+    handler: controller.getNewTaggingFlow
   },
 
-  getThresholdAndUnit: {
+  getNewTaggingThresholdAndUnit: {
     method: 'GET',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/threshold-and-unit',
-    handler: controller.getThresholdAndUnit,
+    handler: controller.getNewTaggingThresholdAndUnit,
     config: {
       description: 'Gets the entry page for linking a licence to a given gauging station - Requires the user to enter a Threshold and Unit for triggering an alert',
       auth: {
@@ -138,10 +138,10 @@ module.exports = {
     }
   },
 
-  postThresholdAndUnit: {
+  postNewTaggingThresholdAndUnit: {
     method: 'POST',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/threshold-and-unit',
-    handler: controller.postThresholdAndUnit,
+    handler: controller.postNewTaggingThresholdAndUnit,
     config: {
       description: 'Accepts a specified threshold and unit, and forwards user to the next step in the flow',
       auth: {
@@ -150,10 +150,10 @@ module.exports = {
     }
   },
 
-  getAlertType: {
+  getNewTaggingAlertType: {
     method: 'GET',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/alert-type',
-    handler: controller.getAlertType,
+    handler: controller.getNewTaggingAlertType,
     config: {
       description: 'Gets the form for selecting an alert type',
       auth: {
@@ -162,10 +162,10 @@ module.exports = {
     }
   },
 
-  postAlertType: {
+  postNewTaggingAlertType: {
     method: 'POST',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/alert-type',
-    handler: controller.postAlertType,
+    handler: controller.postNewTaggingAlertType,
     config: {
       description: 'Accepts a specified threshold and unit, and forwards user to the next step in the flow',
       auth: {
@@ -174,10 +174,10 @@ module.exports = {
     }
   },
 
-  getLicenceNumber: {
+  getNewTaggingLicenceNumber: {
     method: 'GET',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/licence-number',
-    handler: controller.getLicenceNumber,
+    handler: controller.getNewTaggingLicenceNumber,
     config: {
       description: 'Gets the form for entering a licence number',
       auth: {
@@ -186,10 +186,10 @@ module.exports = {
     }
   },
 
-  postLicenceNumber: {
+  postNewTaggingLicenceNumber: {
     method: 'POST',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/licence-number',
-    handler: controller.postLicenceNumber,
+    handler: controller.postNewTaggingLicenceNumber,
     config: {
       description: 'Takes a licence number, and forwards user to the next step in the flow',
       auth: {
@@ -201,10 +201,10 @@ module.exports = {
     }
   },
 
-  getCondition: {
+  getNewTaggingCondition: {
     method: 'GET',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/condition',
-    handler: controller.getCondition,
+    handler: controller.getNewTaggingCondition,
     config: {
       description: 'Gets the form for selecting a relevant licence condition',
       auth: {
@@ -216,10 +216,10 @@ module.exports = {
     }
   },
 
-  postCondition: {
+  postNewTaggingCondition: {
     method: 'POST',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/condition',
-    handler: controller.postCondition,
+    handler: controller.postNewTaggingCondition,
     config: {
       description: 'Takes input of the condition GUID. Accepts Null to indicate a linkage which is not condition-specific.',
       auth: {
@@ -231,10 +231,10 @@ module.exports = {
     }
   },
 
-  getManuallyDefinedAbstractionPeriod: {
+  getNewTaggingManuallyDefinedAbstractionPeriod: {
     method: 'GET',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/abstraction-period',
-    handler: controller.getManuallyDefinedAbstractionPeriod,
+    handler: controller.getNewTaggingManuallyDefinedAbstractionPeriod,
     config: {
       description: 'Gets the form for inputting a manually-defined abstraction period',
       auth: {
@@ -243,10 +243,10 @@ module.exports = {
     }
   },
 
-  postManuallyDefinedAbstractionPeriod: {
+  postNewTaggingManuallyDefinedAbstractionPeriod: {
     method: 'POST',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/abstraction-period',
-    handler: controller.postManuallyDefinedAbstractionPeriod,
+    handler: controller.postNewTaggingManuallyDefinedAbstractionPeriod,
     config: {
       description: 'Takes the input of a manually-defined abstraction period.',
       auth: {
@@ -255,10 +255,10 @@ module.exports = {
     }
   },
 
-  getCheckYourAnswers: {
+  getNewTaggingCheckYourAnswers: {
     method: 'GET',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/check',
-    handler: controller.getCheckYourAnswers,
+    handler: controller.getNewTaggingCheckYourAnswers,
     config: {
       description: 'Gets the check your answers page',
       auth: {
@@ -270,10 +270,10 @@ module.exports = {
     }
   },
 
-  postCheckYourAnswers: {
+  postNewTaggingCheckYourAnswers: {
     method: 'POST',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/check',
-    handler: controller.postCheckYourAnswers,
+    handler: controller.postNewTaggingCheckYourAnswers,
     config: {
       description: 'Posts the payload.',
       auth: {
@@ -285,15 +285,70 @@ module.exports = {
     }
   },
 
-  getFlowComplete: {
+  getNewTaggingFlowComplete: {
     method: 'GET',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/complete',
-    handler: controller.getFlowComplete,
+    handler: controller.getNewTaggingFlowComplete,
     config: {
       description: 'Gets the completion confirmation page',
       auth: {
         scope: allowedScopes
       }
     }
+  },
+
+  getSendAlert: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert',
+    handler: (request, h) => h.redirect(`/monitoring-stations/${request.params.gaugingStationId}/send-alert/alert-type`),
+    config: {
+      description: 'Redirects the user to the first step of the WAA sending flow',
+      auth: {
+        scope: allowedScopes
+      }
+    }
+  },
+
+  getSendAlertSelectAlertType: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/alert-type',
+    handler: controller.getSendAlertSelectAlertType,
+    config: {
+      description: 'Asks the user to select an alert type for sending a new water abstraction alert',
+      pre: [
+        { method: preHandlers.loadGaugingStation, assign: 'station' }
+      ],
+      auth: {
+        scope: allowedScopes
+      }
+    }
+  },
+
+  postSendAlertSelectAlertType: {
+    method: 'POST',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/alert-type',
+    handler: controller.postSendAlertSelectAlertType,
+    config: {
+      description: 'Accepts the input of the user after selecting an alert type for sending a new water abstraction alert',
+      auth: {
+        scope: allowedScopes
+      }
+    }
+  },
+
+  getSendAlertSelectAlertThresholds: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/alert-thresholds',
+    handler: controller.getSendAlertSelectAlertThresholds,
+    config: {
+      description: 'Asks the user to select the applicable alert thresholds for sending a water abstraction alert',
+      pre: [
+        { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
+      ],
+      auth: {
+        scope: allowedScopes
+      }
+    }
   }
+
 };

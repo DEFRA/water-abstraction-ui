@@ -33,7 +33,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
 
   afterEach(async () => sandbox.restore());
 
-  experiment('.getNewFlow', () => {
+  experiment('.getNewTaggingFlow', () => {
     const request = {
       path: 'http://example.com/monitoring-stations/123/tagging-licence/start'
     };
@@ -41,12 +41,12 @@ experiment('internal/modules/gauging-stations/controller', () => {
     const h = { redirect: sandbox.spy() };
 
     test('redirects the user to the start of the flow', async () => {
-      await controller.getNewFlow(request, h);
+      await controller.getNewTaggingFlow(request, h);
       expect(h.redirect.calledWith(`${request.path}/../threshold-and-unit`));
     });
   });
 
-  experiment('.getThresholdAndUnit', () => {
+  experiment('.getNewTaggingThresholdAndUnit', () => {
     const request = {
       path: 'http://example.com/monitoring-stations/123/tagging-licence/threshold',
       method: 'get',
@@ -58,7 +58,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
     const h = { view: sandbox.spy() };
 
     beforeEach(() => {
-      controller.getThresholdAndUnit(request, h);
+      controller.getNewTaggingThresholdAndUnit(request, h);
     });
     afterEach(async () => sandbox.restore());
 
@@ -70,7 +70,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
     });
   });
 
-  experiment('.postThresholdAndUnit', () => {
+  experiment('.postNewTaggingThresholdAndUnit', () => {
     const request = {
       path: 'http://example.com/monitoring-stations/123/tagging-licence/threshold',
       method: 'post',
@@ -104,7 +104,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
           ...formContent,
           isValid: false
         });
-        controller.postThresholdAndUnit(request, h);
+        controller.postNewTaggingThresholdAndUnit(request, h);
       });
       afterEach(async () => sandbox.restore());
       test('does not call session.merge', () => {
@@ -124,7 +124,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
           ...formContent,
           isValid: true
         });
-        await controller.postThresholdAndUnit(request, h);
+        await controller.postNewTaggingThresholdAndUnit(request, h);
       });
       afterEach(async () => sandbox.restore());
       test('calls session.merge with the expected data', () => {
@@ -136,7 +136,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
     });
   });
 
-  experiment('.getAlertType', () => {
+  experiment('.getNewTaggingAlertType', () => {
     const request = {
       path: 'http://example.com/monitoring-stations/123/tagging-licence/alert-type',
       method: 'get',
@@ -148,7 +148,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
     const h = { view: sandbox.spy() };
 
     beforeEach(() => {
-      controller.getAlertType(request, h);
+      controller.getNewTaggingAlertType(request, h);
     });
     afterEach(async () => sandbox.restore());
 
@@ -160,7 +160,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
     });
   });
 
-  experiment('.postAlertType', () => {
+  experiment('.postNewTaggingAlertType', () => {
     const request = {
       path: 'http://example.com/monitoring-stations/123/tagging-licence/alert-type',
       method: 'post',
@@ -215,7 +215,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
           ...formContent,
           isValid: false
         });
-        controller.postAlertType(request, h);
+        controller.postNewTaggingAlertType(request, h);
       });
       afterEach(async () => sandbox.restore());
 
@@ -233,7 +233,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
           ...formContent,
           isValid: true
         });
-        controller.postAlertType(request, h);
+        controller.postNewTaggingAlertType(request, h);
       });
       afterEach(async () => sandbox.restore());
 
@@ -695,7 +695,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
     });
   });
 
-  experiment('.getLicenceNumber', () => {
+  experiment('.getNewTaggingLicenceNumber', () => {
     const request = {
       path: 'http://example.com/monitoring-stations/123/tagging-licence/licence-number',
       method: 'get',
@@ -707,7 +707,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
     const h = { view: sandbox.spy() };
 
     beforeEach(() => {
-      controller.getLicenceNumber(request, h);
+      controller.getNewTaggingLicenceNumber(request, h);
     });
     afterEach(async () => sandbox.restore());
 
@@ -720,7 +720,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
     });
   });
 
-  experiment('.postLicenceNumber', () => {
+  experiment('.postNewTaggingLicenceNumber', () => {
     const request = {
       path: 'http://example.com/monitoring-stations/123/tagging-licence/licence-number',
       method: 'post',
@@ -759,7 +759,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
           ...formContent,
           isValid: false
         });
-        controller.postLicenceNumber(request, h);
+        controller.postNewTaggingLicenceNumber(request, h);
       });
       afterEach(async () => sandbox.restore());
 
@@ -777,7 +777,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
           ...formContent,
           isValid: true
         });
-        controller.postLicenceNumber(request, h);
+        controller.postNewTaggingLicenceNumber(request, h);
       });
       afterEach(async () => sandbox.restore());
 
@@ -793,7 +793,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
           request['pre'] = {
             isLicenceNumberValid: false
           };
-          controller.postLicenceNumber(request, h);
+          controller.postNewTaggingLicenceNumber(request, h);
         });
         afterEach(async () => sandbox.restore());
 
@@ -808,7 +808,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
     });
   });
 
-  experiment('.getCondition', () => {
+  experiment('.getNewTaggingCondition', () => {
     const request = {
       path: 'http://example.com/monitoring-stations/123/tagging-licence/condition',
       method: 'get',
@@ -821,7 +821,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
 
     beforeEach(() => {
       session.get.returns({ licenceNumber: { value: 'AB/123' } });
-      controller.getCondition(request, h);
+      controller.getNewTaggingCondition(request, h);
     });
     afterEach(async () => sandbox.restore());
 
@@ -837,7 +837,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
     });
   });
 
-  experiment('.postCondition', () => {
+  experiment('.postNewTaggingCondition', () => {
     const request = {
       path: 'http://example.com/monitoring-stations/123/tagging-licence/condition',
       method: 'post',
@@ -877,7 +877,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
           ...formContent,
           isValid: false
         });
-        controller.postCondition(request, h);
+        controller.postNewTaggingCondition(request, h);
       });
       afterEach(async () => sandbox.restore());
 
@@ -895,7 +895,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
           ...formContent,
           isValid: true
         });
-        controller.postCondition(request, h);
+        controller.postNewTaggingCondition(request, h);
       });
       afterEach(async () => sandbox.restore());
 
@@ -911,7 +911,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
     });
   });
 
-  experiment('.getManuallyDefinedAbstractionPeriod', () => {
+  experiment('.getNewTaggingManuallyDefinedAbstractionPeriod', () => {
     const request = {
       path: 'http://example.com/monitoring-stations/123/tagging-licence/abstraction-period',
       method: 'get',
@@ -923,7 +923,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
     const h = { view: sandbox.spy() };
 
     beforeEach(() => {
-      controller.getManuallyDefinedAbstractionPeriod(request, h);
+      controller.getNewTaggingManuallyDefinedAbstractionPeriod(request, h);
     });
     afterEach(async () => sandbox.restore());
 
@@ -936,7 +936,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
     });
   });
 
-  experiment('.postManuallyDefinedAbstractionPeriod', () => {
+  experiment('.postNewTaggingManuallyDefinedAbstractionPeriod', () => {
     const request = {
       path: 'http://example.com/monitoring-stations/123/tagging-licence/abstraction-period',
       method: 'post',
@@ -981,7 +981,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
           ...formContent,
           isValid: false
         });
-        controller.postManuallyDefinedAbstractionPeriod(request, h);
+        controller.postNewTaggingManuallyDefinedAbstractionPeriod(request, h);
       });
       afterEach(async () => sandbox.restore());
 
@@ -999,7 +999,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
           ...formContent,
           isValid: true
         });
-        controller.postManuallyDefinedAbstractionPeriod(request, h);
+        controller.postNewTaggingManuallyDefinedAbstractionPeriod(request, h);
       });
       afterEach(async () => sandbox.restore());
 
@@ -1015,7 +1015,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
     });
   });
 
-  experiment('.getCheckYourAnswers', () => {
+  experiment('.getNewTaggingCheckYourAnswers', () => {
     const request = {
       path: 'http://example.com/monitoring-stations/123/tagging-licence/check',
       method: 'get',
@@ -1028,7 +1028,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
 
     beforeEach(() => {
       session.get.returns({ licenceNumber: { value: 'AB/123' } });
-      controller.getCheckYourAnswers(request, h);
+      controller.getNewTaggingCheckYourAnswers(request, h);
     });
     afterEach(async () => sandbox.restore());
 
@@ -1049,7 +1049,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
     });
   });
 
-  experiment('.postCheckYourAnswers', () => {
+  experiment('.postNewTaggingCheckYourAnswers', () => {
     const request = {
       path: 'http://example.com/monitoring-stations/123/tagging-licence/condition',
       method: 'post',
@@ -1077,7 +1077,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
           ...formContent,
           isValid: false
         });
-        controller.postCheckYourAnswers(request, h);
+        controller.postNewTaggingCheckYourAnswers(request, h);
       });
       afterEach(async () => sandbox.restore());
 
@@ -1095,7 +1095,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
           ...formContent,
           isValid: true
         });
-        controller.postCheckYourAnswers(request, h);
+        controller.postNewTaggingCheckYourAnswers(request, h);
       });
       afterEach(async () => sandbox.restore());
 
@@ -1108,7 +1108,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
       });
     });
 
-    experiment('.getFlowComplete', () => {
+    experiment('.getNewTaggingFlowComplete', () => {
       const request = {
         path: 'http://example.com/monitoring-stations/123/tagging-licence/new-tag-complete',
         method: 'get',
@@ -1124,7 +1124,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
 
       beforeEach(() => {
         session.get.returns({ licenceNumber: { value: 'AB/123' } });
-        controller.getFlowComplete(request, h);
+        controller.getNewTaggingFlowComplete(request, h);
       });
       afterEach(async () => sandbox.restore());
 

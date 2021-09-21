@@ -1,9 +1,9 @@
 const Joi = require('joi');
 const { get } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms/');
-const session = require('../lib/session');
+const session = require('../../lib/session');
 
-const alertTypeForm = request => {
+const newTagAlertTypeForm = request => {
   const f = formFactory(request.path);
 
   const defaultAlertType = get(session.get(request), 'alertType.value');
@@ -45,7 +45,7 @@ const alertTypeForm = request => {
   return f;
 };
 
-const alertTypeSchema = () => Joi.object().keys({
+const newTagAlertTypeSchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   alertType: Joi.string().required().allow('stop', 'reduce'),
   volumeLimited: Joi.boolean().when(
@@ -57,5 +57,5 @@ const alertTypeSchema = () => Joi.object().keys({
   )
 });
 
-exports.form = alertTypeForm;
-exports.schema = alertTypeSchema;
+exports.form = newTagAlertTypeForm;
+exports.schema = newTagAlertTypeSchema;

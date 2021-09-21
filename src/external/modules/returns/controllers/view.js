@@ -53,7 +53,7 @@ const getReturn = async (request, h) => {
   const { licenceNumber } = data;
 
   // Load licence from CRM to check user has access
-  const [ documentHeader ] = await helpers.getLicenceNumbers(request, { system_external_id: licenceNumber, includeExpired: false });
+  const [ documentHeader ] = await helpers.getNewTaggingLicenceNumbers(request, { system_external_id: licenceNumber, includeExpired: false });
 
   const canView = documentHeader && data.isCurrent && model.metadata.isCurrent;
 

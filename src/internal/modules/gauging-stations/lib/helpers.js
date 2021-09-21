@@ -264,3 +264,4 @@ exports.selectedConditionWithLinkages = selectedConditionWithLinkages;
 exports.groupLicenceConditions = groupLicenceConditions;
 exports.addCheckboxFields = addCheckboxFields;
 exports.isSelectedCheckbox = isSelectedCheckbox;
+exports.deduceRestrictionTypeFromUnit = deduceRestrictionTypeFromUnit;

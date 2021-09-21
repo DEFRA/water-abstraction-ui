@@ -101,7 +101,7 @@ class TaskData {
    * Get licence numbers
    * @return {Array}
    */
-  getLicenceNumbers () {
+  getNewTaggingLicenceNumbers () {
     return this.data.licenceNumbers;
   }
 

@@ -451,6 +451,10 @@ const getSendAlertCheckLicenceMatches = async (request, h) => {
   const sessionData = session.get(request);
   const { selectedLicences } = sessionData;
 
+  if (selectedLicences.length === 0) {
+    return h.redirect(request.path.replace(/\/[^\/]*$/, '/alert-thresholds'));
+  }
+
   return h.view('nunjucks/gauging-stations/check-licences-for-sending-alerts', {
     ...request.view,
     caption,

@@ -9,3 +9,4 @@ exports.removeTagsLicenceConditions = require('./remove-tag/remove-tags-conditio
 exports.removeTagConfirm = require('./remove-tag/remove-tag-confirm');
 exports.sendingAlertType = require('./send-alert/alert-type');
 exports.sendingAlertThresholds = require('./send-alert/alert-thresholds');
+exports.sendingAlertEmail = require('./send-alert/alert-email');

@@ -403,5 +403,41 @@ module.exports = {
         scope: allowedScopes
       }
     }
+  },
+
+  getSendAlertEmailAddress: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/email-address',
+    handler: controller.getSendAlertEmailAddress,
+    config: {
+      description: 'Asks the user to set the email address that should be used for sending the alert',
+      auth: {
+        scope: allowedScopes
+      }
+    }
+  },
+
+  postSendAlertEmailAddress: {
+    method: 'POST',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/email-address',
+    handler: controller.postSendAlertEmailAddress,
+    config: {
+      description: 'Sets the email address that should be used for sending the alert',
+      auth: {
+        scope: allowedScopes
+      }
+    }
+  },
+
+  getSendAlertCheck: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/check',
+    handler: controller.getSendAlertCheck,
+    config: {
+      description: 'Asks the user to confirm the details of the alert are correct before triggering comms',
+      auth: {
+        scope: allowedScopes
+      }
+    }
   }
 };

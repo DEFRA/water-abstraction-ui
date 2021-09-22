@@ -9,3 +9,7 @@
 .display-none {
   display: none;
 }
+
+.govuk-table__override_no_bottom_border{
+  border-bottom: none !important;
+}

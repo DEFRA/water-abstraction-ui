@@ -5,6 +5,7 @@ const formHandler = require('shared/lib/form-handler');
 const formHelpers = require('shared/lib/forms');
 const session = require('./lib/session');
 const helpers = require('./lib/helpers');
+const { groupBy } = require('lodash');
 const { waterAbstractionAlerts: isWaterAbstractionAlertsEnabled } = require('../../config').featureToggles;
 const { hasScope } = require('../../lib/permissions');
 const { manageGaugingStationLicenceLinks } = require('../../lib/constants').scope;
@@ -436,9 +437,13 @@ const postSendAlertSelectAlertThresholds = async (request, h) => {
 
   const validOptions = selectedAlertThresholds.value.map(each => JSON.parse(each));
 
+  const selectedGroupedLicences = Object.values(groupBy(licenceGaugingStations.data.filter(eachLGS =>
+    validOptions.some(eachOption =>
+      eachLGS.thresholdValue === eachOption.value && eachLGS.thresholdUnit === eachOption.unit)), 'licenceId'));
+
   session.merge(request, {
     alertThresholds: selectedAlertThresholds,
-    selectedLicences: licenceGaugingStations.data.filter(eachLGS => validOptions.some(eachOption => eachLGS.thresholdValue === eachOption.value && eachLGS.thresholdUnit === eachOption.unit))
+    selectedGroupedLicences
   });
 
   return h.redirect(request.path.replace(/\/[^\/]*$/, '/check-licence-matches'));
@@ -449,9 +454,16 @@ const getSendAlertCheckLicenceMatches = async (request, h) => {
   const caption = await helpers.getCaption(request);
 
   const sessionData = session.get(request);
-  const { selectedLicences } = sessionData;
+  const { selectedGroupedLicences } = sessionData;
 
-  if (selectedLicences.length === 0) {
+  const flattenedSelectedGroupedLicences = Object.values(selectedGroupedLicences).map(n => n.map(q => {
+    return {
+      ...q,
+      dateStatusUpdated: n.length > 1 ? n.reduce((a, b) => (new Date(a.dateStatusUpdated) > new Date(b.dateStatusUpdated) ? a.dateStatusUpdated : b.dateStatusUpdated)) : n[0].dateStatusUpdated
+    };
+  }));
+
+  if (flattenedSelectedGroupedLicences.length === 0) {
     return h.redirect(request.path.replace(/\/[^\/]*$/, '/alert-thresholds'));
   }
 
@@ -459,18 +471,22 @@ const getSendAlertCheckLicenceMatches = async (request, h) => {
     ...request.view,
     caption,
     pageTitle,
-    selectedLicences,
+    selectedGroupedLicences: flattenedSelectedGroupedLicences,
+    continueUrl: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/email-address`,
     excludeLicencePreURL: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/exclude-licence`
   });
 };
 
 const getSendAlertExcludeLicence = async (request, h) => {
   const sessionData = session.get(request);
-  const { selectedLicences } = sessionData;
-  if (!selectedLicences.find(l => l.licenceId === request.params.licenceId)) {
+  const { selectedGroupedLicences } = sessionData;
+
+  const flattenedSelectedLicencesArray = Object.values(selectedGroupedLicences).flat();
+
+  if (!flattenedSelectedLicencesArray.find(l => l.licenceId === request.params.licenceId)) {
     return h.redirect(`/monitoring-stations/${request.params.gaugingStationId}/send-alert/check-licence-matches`);
   }
-  const pageTitle = `You're about to remove licence ${selectedLicences.find(l => l.licenceId === request.params.licenceId).licenceRef} from the send list`;
+  const pageTitle = `You're about to remove licence ${flattenedSelectedLicencesArray.find(l => l.licenceId === request.params.licenceId).licenceRef} from the send list`;
   const caption = await helpers.getCaption(request);
 
   return h.view('nunjucks/gauging-stations/exclude-licence-for-sending-alerts', {
@@ -484,13 +500,51 @@ const getSendAlertExcludeLicence = async (request, h) => {
 
 const getSendAlertExcludeLicenceConfirm = async (request, h) => {
   const sessionData = session.get(request);
-  const { selectedLicences } = sessionData;
+  const { selectedGroupedLicences } = sessionData;
+  const flattenedSelectedLicencesArray = Object.values(selectedGroupedLicences).flat();
+
+  const temp = groupBy(flattenedSelectedLicencesArray.filter(l => l.licenceId !== request.params.licenceId), 'licenceId');
 
   session.merge(request, {
-    selectedLicences: selectedLicences.filter(l => l.licenceId !== request.params.licenceId)
+    selectedGroupedLicences: temp
   });
 
   return h.redirect(`/monitoring-stations/${request.params.gaugingStationId}/send-alert/check-licence-matches`);
+};
+
+const getSendAlertEmailAddress = async (request, h) => {
+  const pageTitle = 'Select an email address to include in the alerts';
+  const caption = await helpers.getCaption(request);
+
+  return h.view('nunjucks/form', {
+    ...request.view,
+    caption,
+    pageTitle,
+    form: formHandler.handleFormRequest(request, linkageForms.sendingAlertEmail),
+    back: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/check-licence-matches`
+  });
+};
+
+const postSendAlertEmailAddress = async (request, h) => {
+  const form = await formHandler.handleFormRequest(request, linkageForms.sendingAlertEmail);
+  if (!form.isValid) {
+    return h.postRedirectGet(form);
+  }
+
+  const useLoggedInUserEmailAddress = form.fields.find(field => field.name === 'useLoggedInUserEmailAddress');
+
+  const customEmailAddress = useLoggedInUserEmailAddress === true ? null : useLoggedInUserEmailAddress.options.choices[2].fields[0];
+
+  session.merge(request, {
+    useLoggedInUserEmailAddress,
+    customEmailAddress
+  });
+
+  return h.redirect(request.path.replace(/\/[^\/]*$/, '/check'));
+};
+
+const getSendAlertCheck = (request, h) => {
+  return 'ok';
 };
 
 exports.getNewTaggingFlow = getNewTaggingFlow;
@@ -521,3 +575,6 @@ exports.postSendAlertSelectAlertThresholds = postSendAlertSelectAlertThresholds;
 exports.getSendAlertCheckLicenceMatches = getSendAlertCheckLicenceMatches;
 exports.getSendAlertExcludeLicence = getSendAlertExcludeLicence;
 exports.getSendAlertExcludeLicenceConfirm = getSendAlertExcludeLicenceConfirm;
+exports.getSendAlertEmailAddress = getSendAlertEmailAddress;
+exports.postSendAlertEmailAddress = postSendAlertEmailAddress;
+exports.getSendAlertCheck = getSendAlertCheck;

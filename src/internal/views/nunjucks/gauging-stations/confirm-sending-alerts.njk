@@ -15,7 +15,7 @@
 </div>
 
 <table class="govuk-table">
-  <caption class="govuk-table__caption "><p class="govuk-body govuk-!-font-weight-bold">You're sending this alert for {{licenceCount}} licences.</p>
+  <caption class="govuk-table__caption "><p class="govuk-body govuk-!-font-weight-bold">You're sending this alert for {{licenceCount}} {{'licence' | pluralize(licenceCount) }}.</p>
     <p class="govuk-body"> The alert will be sent by:</p>
   </caption>
   <thead class="govuk-table__head">
@@ -27,7 +27,33 @@
     </tr>
   </thead>
   <tbody class="govuk-table__body">
-
+    {% for notification in notifications %}
+        <tr class="govuk-table__row">
+            <td class="govuk-table__cell">
+            {% if notification.personalisation.address_line_1 %}
+                <p class="govuk-body govuk-!-margin-0">{{notification.personalisation.address_line_1}}</p>
+            {% endif %}
+            {% if notification.personalisation.address_line_2 %}
+                <p class="govuk-body govuk-!-margin-0">{{notification.personalisation.address_line_2}}</p>
+            {% endif %}
+            {% if notification.personalisation.address_line_3 %}
+                <p class="govuk-body govuk-!-margin-0">{{notification.personalisation.address_line_3}}</p>
+            {% endif %}
+            {% if notification.personalisation.address_line_4 %}
+                <p class="govuk-body govuk-!-margin-0">{{notification.personalisation.address_line_4}}</p>
+            {% endif %}
+            </td>
+            <td class="govuk-table__cell">
+                <a href='/licences/{{notification.personalisation.licenceId}}'>{{notification.personalisation.licenceRef}}</a>
+            </td>
+            <td class="govuk-table__cell">
+                {{notification.messageType | sentenceCase}}
+            </td>
+            <td class="govuk-table__cell">
+                Preview TODO
+            </td>
+        </tr>
+    {% endfor %}
   </tbody>
 </table>
 

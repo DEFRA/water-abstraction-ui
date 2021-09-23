@@ -538,29 +538,58 @@ const postSendAlertEmailAddress = async (request, h) => {
 
   const customEmailAddress = useLoggedInUserEmailAddress.value === true ? null : useLoggedInUserEmailAddress.options.choices[2].fields[0];
 
-  session.merge(request, {
-    useLoggedInUserEmailAddress,
-    customEmailAddress
-  });
-
   const preparedBatchAlertsData = await helpers.getBatchAlertData(request);
 
   const senderEmail = useLoggedInUserEmailAddress.value === true ? request.defra.userName : customEmailAddress.value;
+  console.log(preparedBatchAlertsData);
   const response = await services.water.batchNotifications.prepareWaterAbstractionAlerts(senderEmail, preparedBatchAlertsData);
-  console.log(response);
 
-  return h.redirect(request.path.replace(/\/[^\/]*$/, '/check'));
+  session.merge(request, {
+    useLoggedInUserEmailAddress,
+    customEmailAddress,
+    notificationEventId: response.data.id
+  });
+
+  return h.redirect(request.path.replace(/\/[^\/]*$/, '/processing'));
+};
+
+const getSendAlertProcessing = async (request, h) => {
+  const pageTitle = 'Processing notifications';
+  const caption = await helpers.getCaption(request);
+
+  // Check if the batch is ready yet.
+  // If the batch is ready, send the user to the check page
+
+  const { notificationEventId } = session.get(request);
+  const event = await services.water.events.findOne(notificationEventId);
+
+  if (event.data.status === 'processing') {
+    return h.view('nunjucks/gauging-stations/processing-sending-alerts', {
+      ...request.view,
+      caption,
+      pageTitle
+    });
+  } else {
+    return h.redirect(request.path.replace(/\/[^\/]*$/, '/check'));
+  }
 };
 
 const getSendAlertCheck = async (request, h) => {
   const pageTitle = 'Check the alert for each licence and send';
   const caption = await helpers.getCaption(request);
 
+  const { notificationEventId } = session.get(request);
+  const event = await services.water.events.findOne(notificationEventId);
+  const { data: notifications } = await services.water.notifications.getNotificationMessages(notificationEventId);
+  console.log('vvvvvv');
+  console.log(notifications);
+
   return h.view('nunjucks/gauging-stations/confirm-sending-alerts', {
     ...request.view,
     caption,
     pageTitle,
-    licenceCount: 0,
+    licenceCount: event.data.licences.length,
+    notifications,
     confirmAndSendUrl: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/confirm`,
     back: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/alert-thresholds`
   });
@@ -596,4 +625,5 @@ exports.getSendAlertExcludeLicence = getSendAlertExcludeLicence;
 exports.getSendAlertExcludeLicenceConfirm = getSendAlertExcludeLicenceConfirm;
 exports.getSendAlertEmailAddress = getSendAlertEmailAddress;
 exports.postSendAlertEmailAddress = postSendAlertEmailAddress;
+exports.getSendAlertProcessing = getSendAlertProcessing;
 exports.getSendAlertCheck = getSendAlertCheck;

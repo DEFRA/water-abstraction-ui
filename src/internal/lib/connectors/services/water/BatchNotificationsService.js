@@ -33,6 +33,16 @@ class BatchNotificationsService extends ServiceClient {
     const url = this.joinUrl('batch-notifications/send', eventId);
     return this.serviceRequest.post(url, { body: { issuer } });
   };
+
+  getBatchNotificationByEventId (eventId) {
+    const uri = this.joinUrl('batch-notifications');
+    const options = {
+      qs: {
+        eventId
+      }
+    };
+    return this.serviceRequest.get(uri, options);
+  }
 }
 
 module.exports = BatchNotificationsService;

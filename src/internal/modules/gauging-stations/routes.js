@@ -443,6 +443,18 @@ module.exports = {
     }
   },
 
+  getSendAlertProcessing: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/processing',
+    handler: controller.getSendAlertProcessing,
+    config: {
+      description: 'Displays a holding page while the notifications batch is being prepared',
+      auth: {
+        scope: sendingAllowedScopes
+      }
+    }
+  },
+
   getSendAlertCheck: {
     method: 'GET',
     path: '/monitoring-stations/{gaugingStationId}/send-alert/check',

@@ -442,7 +442,7 @@ const postSendAlertSelectAlertThresholds = async (request, h) => {
   const selectedGroupedLicences = Object.values(groupBy(licenceGaugingStations.data.filter(eachLGS =>
     validOptions.some(eachOption =>
       eachLGS.thresholdValue === eachOption.value && eachLGS.thresholdUnit === eachOption.unit &&
-      (eachLGS.alertType === sendingAlertType.value || eachLGS.alertType === 'stop_or_reduce'))), 'licenceId'));
+      (eachLGS.alertType === sendingAlertType.value || eachLGS.alertType === 'stop_or_reduce' || sendingAlertType.value === 'warning' || sendingAlertType.value === 'resume'))), 'licenceId'));
 
   session.merge(request, {
     alertThresholds: selectedAlertThresholds,
@@ -581,8 +581,6 @@ const getSendAlertCheck = async (request, h) => {
   const { notificationEventId } = session.get(request);
   const event = await services.water.events.findOne(notificationEventId);
   const { data: notifications } = await services.water.notifications.getNotificationMessages(notificationEventId);
-  console.log('vvvvvv');
-  console.log(notifications);
 
   return h.view('nunjucks/gauging-stations/confirm-sending-alerts', {
     ...request.view,
@@ -590,8 +588,30 @@ const getSendAlertCheck = async (request, h) => {
     pageTitle,
     licenceCount: event.data.licences.length,
     notifications,
-    confirmAndSendUrl: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/confirm`,
+    confirmAndSendUrl: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/success`,
+    previewNotificationPreUrl: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/preview`,
     back: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/alert-thresholds`
+  });
+};
+
+const getSendAlertPreview = async (request, h) => {
+  return 'The preview will go here eventually, when the templates are built.';
+};
+
+const getSendAlertConfirm = async (request, h) => {
+  const pageTitle = 'Check the alert for each licence and send';
+  const caption = await helpers.getCaption(request);
+
+  const { notificationEventId } = session.get(request);
+  const event = await services.water.events.findOne(notificationEventId);
+
+  return h.view('nunjucks/gauging-stations/confirm-sending-successful', {
+    ...request.view,
+    caption,
+    pageTitle,
+    recipientCount: event.data.metadata.recipients,
+    notificationsReportUrl: '/notifications/report',
+    monitoringStationUrl: `/monitoring-stations/${request.params.gaugingStationId}`
   });
 };
 
@@ -627,3 +647,5 @@ exports.getSendAlertEmailAddress = getSendAlertEmailAddress;
 exports.postSendAlertEmailAddress = postSendAlertEmailAddress;
 exports.getSendAlertProcessing = getSendAlertProcessing;
 exports.getSendAlertCheck = getSendAlertCheck;
+exports.getSendAlertPreview = getSendAlertPreview;
+exports.getSendAlertConfirm = getSendAlertConfirm;

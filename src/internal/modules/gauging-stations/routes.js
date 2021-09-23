@@ -465,5 +465,29 @@ module.exports = {
         scope: sendingAllowedScopes
       }
     }
+  },
+
+  getSendAlertPreview: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/preview/{eventId}',
+    handler: controller.getSendAlertPreview,
+    config: {
+      description: 'Previews a specific water abstraction alert given an eventId',
+      auth: {
+        scope: sendingAllowedScopes
+      }
+    }
+  },
+
+  getSendAlertConfirm: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/success',
+    handler: controller.getSendAlertConfirm,
+    config: {
+      description: 'Triggers the sending of the water abstraction alert',
+      auth: {
+        scope: sendingAllowedScopes
+      }
+    }
   }
 };

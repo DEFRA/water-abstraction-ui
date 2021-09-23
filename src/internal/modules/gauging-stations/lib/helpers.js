@@ -271,6 +271,11 @@ const getBatchAlertData = async (request) => {
   };
 };
 
+const getIssuer = request => {
+  const { customEmailAddress, useLoggedInUserEmailAddress } = session.get(request);
+  return useLoggedInUserEmailAddress.value === true ? request.defra.userName : customEmailAddress.value;
+};
+
 exports.blankGuid = blankGuid;
 exports.createTitle = createTitle;
 exports.redirectTo = redirectTo;
@@ -288,3 +293,4 @@ exports.addCheckboxFields = addCheckboxFields;
 exports.isSelectedCheckbox = isSelectedCheckbox;
 exports.deduceRestrictionTypeFromUnit = deduceRestrictionTypeFromUnit;
 exports.getBatchAlertData = getBatchAlertData;
+exports.getIssuer = getIssuer;

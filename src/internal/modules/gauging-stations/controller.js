@@ -540,9 +540,8 @@ const postSendAlertEmailAddress = async (request, h) => {
 
   const preparedBatchAlertsData = await helpers.getBatchAlertData(request);
 
-  const senderEmail = useLoggedInUserEmailAddress.value === true ? request.defra.userName : customEmailAddress.value;
-  console.log(preparedBatchAlertsData);
-  const response = await services.water.batchNotifications.prepareWaterAbstractionAlerts(senderEmail, preparedBatchAlertsData);
+  const issuer = helpers.getIssuer(request);
+  const response = await services.water.batchNotifications.prepareWaterAbstractionAlerts(issuer, preparedBatchAlertsData);
 
   session.merge(request, {
     useLoggedInUserEmailAddress,
@@ -605,6 +604,9 @@ const getSendAlertConfirm = async (request, h) => {
   const { notificationEventId } = session.get(request);
   const event = await services.water.events.findOne(notificationEventId);
 
+  const issuer = helpers.getIssuer(request);
+  await services.water.batchNotifications.sendWaterAbstractionAlerts(notificationEventId, issuer);
+  session.clear(request);
   return h.view('nunjucks/gauging-stations/confirm-sending-successful', {
     ...request.view,
     caption,

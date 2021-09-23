@@ -6,6 +6,7 @@ const formHelpers = require('shared/lib/forms');
 const session = require('./lib/session');
 const helpers = require('./lib/helpers');
 const { groupBy } = require('lodash');
+const services = require('../../lib/connectors/services');
 const { waterAbstractionAlerts: isWaterAbstractionAlertsEnabled } = require('../../config').featureToggles;
 const { hasScope } = require('../../lib/permissions');
 const { manageGaugingStationLicenceLinks } = require('../../lib/constants').scope;
@@ -432,6 +433,7 @@ const postSendAlertSelectAlertThresholds = async (request, h) => {
   if (!form.isValid) {
     return h.postRedirectGet(form);
   }
+  const { sendingAlertType } = session.get(request);
 
   const selectedAlertThresholds = form.fields.find(field => field.name === 'alertThresholds');
 
@@ -439,7 +441,8 @@ const postSendAlertSelectAlertThresholds = async (request, h) => {
 
   const selectedGroupedLicences = Object.values(groupBy(licenceGaugingStations.data.filter(eachLGS =>
     validOptions.some(eachOption =>
-      eachLGS.thresholdValue === eachOption.value && eachLGS.thresholdUnit === eachOption.unit)), 'licenceId'));
+      eachLGS.thresholdValue === eachOption.value && eachLGS.thresholdUnit === eachOption.unit &&
+      (eachLGS.alertType === sendingAlertType.value || eachLGS.alertType === 'stop_or_reduce'))), 'licenceId'));
 
   session.merge(request, {
     alertThresholds: selectedAlertThresholds,
@@ -533,18 +536,34 @@ const postSendAlertEmailAddress = async (request, h) => {
 
   const useLoggedInUserEmailAddress = form.fields.find(field => field.name === 'useLoggedInUserEmailAddress');
 
-  const customEmailAddress = useLoggedInUserEmailAddress === true ? null : useLoggedInUserEmailAddress.options.choices[2].fields[0];
+  const customEmailAddress = useLoggedInUserEmailAddress.value === true ? null : useLoggedInUserEmailAddress.options.choices[2].fields[0];
 
   session.merge(request, {
     useLoggedInUserEmailAddress,
     customEmailAddress
   });
 
+  const preparedBatchAlertsData = await helpers.getBatchAlertData(request);
+
+  const senderEmail = useLoggedInUserEmailAddress.value === true ? request.defra.userName : customEmailAddress.value;
+  const response = await services.water.batchNotifications.prepareWaterAbstractionAlerts(senderEmail, preparedBatchAlertsData);
+  console.log(response);
+
   return h.redirect(request.path.replace(/\/[^\/]*$/, '/check'));
 };
 
-const getSendAlertCheck = (request, h) => {
-  return 'ok';
+const getSendAlertCheck = async (request, h) => {
+  const pageTitle = 'Check the alert for each licence and send';
+  const caption = await helpers.getCaption(request);
+
+  return h.view('nunjucks/gauging-stations/confirm-sending-alerts', {
+    ...request.view,
+    caption,
+    pageTitle,
+    licenceCount: 0,
+    confirmAndSendUrl: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/confirm`,
+    back: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/alert-thresholds`
+  });
 };
 
 exports.getNewTaggingFlow = getNewTaggingFlow;

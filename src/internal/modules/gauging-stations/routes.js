@@ -4,8 +4,9 @@ const Joi = require('joi');
 const controller = require('./controller');
 const preHandlers = require('./lib/prehandlers');
 const helpers = require('./lib/helpers');
-const { manageGaugingStationLicenceLinks } = require('internal/lib/constants').scope;
-const allowedScopes = [manageGaugingStationLicenceLinks];
+const { manageGaugingStationLicenceLinks, hofNotifications } = require('internal/lib/constants').scope;
+const taggingAllowedScopes = [manageGaugingStationLicenceLinks];
+const sendingAllowedScopes = [hofNotifications];
 
 module.exports = {
 
@@ -68,7 +69,7 @@ module.exports = {
     config: {
       description: 'Accepts a specified tag',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       },
       pre: [
         { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
@@ -83,7 +84,7 @@ module.exports = {
     config: {
       description: 'Accepts a specified tag',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       },
       pre: [
         { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
@@ -96,6 +97,9 @@ module.exports = {
     path: '/monitoring-stations/{gaugingStationId}/untagging-licence/remove-tag-complete',
     handler: controller.getRemoveTagComplete,
     config: {
+      auth: {
+        scope: taggingAllowedScopes
+      },
       description: 'remove linking a licence to a given gauging station - Comfirm removal',
       validate: {
         params: Joi.object({
@@ -111,13 +115,23 @@ module.exports = {
   postRemoveTagComplete: {
     method: 'POST',
     path: '/monitoring-stations/{gaugingStationId}/untagging-licence/remove-tag-complete',
-    handler: controller.postRemoveTagComplete
+    handler: controller.postRemoveTagComplete,
+    config: {
+      auth: {
+        scope: taggingAllowedScopes
+      }
+    }
   },
 
   getNewTaggingFlow: {
     method: 'GET',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence',
-    handler: controller.getNewTaggingFlow
+    handler: controller.getNewTaggingFlow,
+    config: {
+      auth: {
+        scope: taggingAllowedScopes
+      }
+    }
   },
 
   getNewTaggingThresholdAndUnit: {
@@ -127,7 +141,7 @@ module.exports = {
     config: {
       description: 'Gets the entry page for linking a licence to a given gauging station - Requires the user to enter a Threshold and Unit for triggering an alert',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       },
       validate: {
         params: Joi.object().keys({
@@ -145,7 +159,7 @@ module.exports = {
     config: {
       description: 'Accepts a specified threshold and unit, and forwards user to the next step in the flow',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       }
     }
   },
@@ -157,7 +171,7 @@ module.exports = {
     config: {
       description: 'Gets the form for selecting an alert type',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       }
     }
   },
@@ -169,7 +183,7 @@ module.exports = {
     config: {
       description: 'Accepts a specified threshold and unit, and forwards user to the next step in the flow',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       }
     }
   },
@@ -181,7 +195,7 @@ module.exports = {
     config: {
       description: 'Gets the form for entering a licence number',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       }
     }
   },
@@ -193,7 +207,7 @@ module.exports = {
     config: {
       description: 'Takes a licence number, and forwards user to the next step in the flow',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       },
       pre: [
         { method: helpers.isLicenceNumberValid, assign: 'isLicenceNumberValid' }
@@ -208,7 +222,7 @@ module.exports = {
     config: {
       description: 'Gets the form for selecting a relevant licence condition',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       },
       pre: [
         { method: helpers.fetchConditionsForLicence, assign: 'conditionsForSelectedLicence' }
@@ -223,7 +237,7 @@ module.exports = {
     config: {
       description: 'Takes input of the condition GUID. Accepts Null to indicate a linkage which is not condition-specific.',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       },
       pre: [
         { method: helpers.fetchConditionsForLicence, assign: 'conditionsForSelectedLicence' }
@@ -238,7 +252,7 @@ module.exports = {
     config: {
       description: 'Gets the form for inputting a manually-defined abstraction period',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       }
     }
   },
@@ -250,7 +264,7 @@ module.exports = {
     config: {
       description: 'Takes the input of a manually-defined abstraction period.',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       }
     }
   },
@@ -262,7 +276,7 @@ module.exports = {
     config: {
       description: 'Gets the check your answers page',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       },
       pre: [
         { method: helpers.fetchConditionsForLicence, assign: 'conditionsForSelectedLicence' }
@@ -277,7 +291,7 @@ module.exports = {
     config: {
       description: 'Posts the payload.',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       },
       pre: [
         { method: helpers.fetchConditionsForLicence, assign: 'conditionsForSelectedLicence' }
@@ -292,7 +306,7 @@ module.exports = {
     config: {
       description: 'Gets the completion confirmation page',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       }
     }
   },
@@ -304,7 +318,7 @@ module.exports = {
     config: {
       description: 'Redirects the user to the first step of the WAA sending flow',
       auth: {
-        scope: allowedScopes
+        scope: sendingAllowedScopes
       }
     }
   },
@@ -319,7 +333,7 @@ module.exports = {
         { method: preHandlers.loadGaugingStation, assign: 'station' }
       ],
       auth: {
-        scope: allowedScopes
+        scope: sendingAllowedScopes
       }
     }
   },
@@ -331,7 +345,7 @@ module.exports = {
     config: {
       description: 'Accepts the input of the user after selecting an alert type for sending a new water abstraction alert',
       auth: {
-        scope: allowedScopes
+        scope: sendingAllowedScopes
       }
     }
   },
@@ -346,7 +360,7 @@ module.exports = {
         { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
       ],
       auth: {
-        scope: allowedScopes
+        scope: sendingAllowedScopes
       }
     }
   },
@@ -361,7 +375,7 @@ module.exports = {
         { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
       ],
       auth: {
-        scope: allowedScopes
+        scope: sendingAllowedScopes
       }
     }
   },
@@ -376,7 +390,7 @@ module.exports = {
         { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
       ],
       auth: {
-        scope: allowedScopes
+        scope: sendingAllowedScopes
       }
     }
   },
@@ -388,7 +402,7 @@ module.exports = {
     config: {
       description: 'Asks the user to confirm that they wish to exclude a licence from a water abstraction alert sending process',
       auth: {
-        scope: allowedScopes
+        scope: sendingAllowedScopes
       }
     }
   },
@@ -400,7 +414,7 @@ module.exports = {
     config: {
       description: 'Excludes a licence from a water abstraction alert sending process',
       auth: {
-        scope: allowedScopes
+        scope: sendingAllowedScopes
       }
     }
   },
@@ -412,7 +426,7 @@ module.exports = {
     config: {
       description: 'Asks the user to set the email address that should be used for sending the alert',
       auth: {
-        scope: allowedScopes
+        scope: sendingAllowedScopes
       }
     }
   },
@@ -424,7 +438,7 @@ module.exports = {
     config: {
       description: 'Sets the email address that should be used for sending the alert',
       auth: {
-        scope: allowedScopes
+        scope: sendingAllowedScopes
       }
     }
   },
@@ -436,7 +450,7 @@ module.exports = {
     config: {
       description: 'Asks the user to confirm the details of the alert are correct before triggering comms',
       auth: {
-        scope: allowedScopes
+        scope: sendingAllowedScopes
       }
     }
   }

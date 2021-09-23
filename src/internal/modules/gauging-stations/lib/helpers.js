@@ -249,6 +249,28 @@ const groupLicenceConditions = request => {
   })).value();
 };
 
+const getBatchAlertData = async (request) => {
+  const { selectedGroupedLicences } = session.get(request);
+
+  return {
+    linkages: selectedGroupedLicences.map(n => n.map(m => ({
+      licenceGaugingStationId: m.licenceGaugingStationId,
+      licenceId: m.licenceId,
+      abstractionPeriodStartDay: m.abstractionPeriodStartDay,
+      abstractionPeriodStartMonth: m.abstractionPeriodStartMonth,
+      abstractionPeriodEndDay: m.abstractionPeriodEndDay,
+      abstractionPeriodEndMonth: m.abstractionPeriodEndMonth,
+      restrictionType: m.restrictionType,
+      alertType: m.alertType,
+      thresholdValue: m.thresholdValue,
+      thresholdUnit: m.thresholdUnit,
+      licenceVersionPurposeConditionId: m.licenceVersionPurposeConditionId,
+      licenceRef: m.licenceRef,
+      label: m.label
+    })))
+  };
+};
+
 exports.blankGuid = blankGuid;
 exports.createTitle = createTitle;
 exports.redirectTo = redirectTo;
@@ -265,3 +287,4 @@ exports.groupLicenceConditions = groupLicenceConditions;
 exports.addCheckboxFields = addCheckboxFields;
 exports.isSelectedCheckbox = isSelectedCheckbox;
 exports.deduceRestrictionTypeFromUnit = deduceRestrictionTypeFromUnit;
+exports.getBatchAlertData = getBatchAlertData;

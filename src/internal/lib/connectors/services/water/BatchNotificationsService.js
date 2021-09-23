@@ -25,6 +25,10 @@ class BatchNotificationsService extends ServiceClient {
     return this.prepareBatchNotification('paperReturnForms', issuer, data);
   }
 
+  prepareWaterAbstractionAlerts (issuer, data) {
+    return this.prepareBatchNotification('waterAbstractionAlerts', issuer, data);
+  }
+
   sendReminders (eventId, issuer) {
     const url = this.joinUrl('batch-notifications/send', eventId);
     return this.serviceRequest.post(url, { body: { issuer } });

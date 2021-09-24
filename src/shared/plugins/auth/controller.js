@@ -150,16 +150,18 @@ const postSignin = async (request, h) => {
   const { email, password } = request.payload;
 
   // Request JWT token before IM login
-  /*
-  const res = await validateCognitoUser(request, h);
-  if (res) {
-    // let accessToken = res.getAccessToken().getJwtToken();
-    console.log(JSON.stringify(res));
-  } else {
-    console.log('Failed to login');
+  try {
+    const res = await validateCognitoUser(request, h);
+    if (res) {
+      // let accessToken = res.getAccessToken().getJwtToken();
+      console.log(JSON.stringify(res));
+    } else {
+      console.log('Failed to login');
+    }
+  } catch (ex) {
+    console.log('Please check credentials for account created in Cognito. Ex: ' + ex.message);
   }
-  */
-  
+
   const user = await h.realm.pluginOptions.authenticate(email, password);
 
   // Forced reset

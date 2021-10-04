@@ -19,7 +19,7 @@ describe('check and update different status for a licence in returns tab as inte
     cy.get('.govuk-button.govuk-button--start').click();
 
     // assert once the user is signed in
-    cy.contains('Licences, users and returns');
+    cy.contains('Search');
 
     // search for a license by using Licence Number
     cy.get('#query').clear();

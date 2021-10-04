@@ -250,9 +250,10 @@ const groupLicenceConditions = request => {
 };
 
 const getBatchAlertData = async (request) => {
-  const { selectedGroupedLicences } = session.get(request);
-
+  const { selectedGroupedLicences, sendingAlertType } = session.get(request);
+  console.log(selectedGroupedLicences);
   return {
+    sendingAlertType: sendingAlertType.value,
     linkages: selectedGroupedLicences.map(n => n.map(m => ({
       licenceGaugingStationId: m.licenceGaugingStationId,
       licenceId: m.licenceId,
@@ -271,8 +272,8 @@ const getBatchAlertData = async (request) => {
   };
 };
 
-const getIssuer = request => {
-  const { customEmailAddress, useLoggedInUserEmailAddress } = session.get(request);
+const getIssuer = async request => {
+  const { customEmailAddress, useLoggedInUserEmailAddress } = await session.get(request);
   return useLoggedInUserEmailAddress.value === true ? request.defra.userName : customEmailAddress.value;
 };
 

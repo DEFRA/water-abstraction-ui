@@ -504,9 +504,7 @@ const getSendAlertExcludeLicence = async (request, h) => {
 const getSendAlertExcludeLicenceConfirm = async (request, h) => {
   const sessionData = session.get(request);
   const { selectedGroupedLicences } = sessionData;
-  const flattenedSelectedLicencesArray = Object.values(selectedGroupedLicences).flat();
-
-  const temp = groupBy(flattenedSelectedLicencesArray.filter(l => l.licenceId !== request.params.licenceId), 'licenceId');
+  const temp = selectedGroupedLicences.filter(eachGroup => eachGroup.some(groupElement => groupElement.licenceId !== request.params.licenceId));
 
   session.merge(request, {
     selectedGroupedLicences: temp
@@ -538,14 +536,18 @@ const postSendAlertEmailAddress = async (request, h) => {
 
   const customEmailAddress = useLoggedInUserEmailAddress.value === true ? null : useLoggedInUserEmailAddress.options.choices[2].fields[0];
 
+  session.merge(request, {
+    useLoggedInUserEmailAddress,
+    customEmailAddress
+  });
+
   const preparedBatchAlertsData = await helpers.getBatchAlertData(request);
 
-  const issuer = helpers.getIssuer(request);
+  const issuer = await helpers.getIssuer(request);
+
   const response = await services.water.batchNotifications.prepareWaterAbstractionAlerts(issuer, preparedBatchAlertsData);
 
   session.merge(request, {
-    useLoggedInUserEmailAddress,
-    customEmailAddress,
     notificationEventId: response.data.id
   });
 
@@ -604,7 +606,7 @@ const getSendAlertConfirm = async (request, h) => {
   const { notificationEventId } = session.get(request);
   const event = await services.water.events.findOne(notificationEventId);
 
-  const issuer = helpers.getIssuer(request);
+  const issuer = await helpers.getIssuer(request);
   await services.water.batchNotifications.sendWaterAbstractionAlerts(notificationEventId, issuer);
   session.clear(request);
   return h.view('nunjucks/gauging-stations/confirm-sending-successful', {

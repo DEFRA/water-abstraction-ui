@@ -441,16 +441,14 @@ const postSendAlertSelectAlertThresholds = async (request, h) => {
   const validOptions = selectedAlertThresholds.value.map(each => JSON.parse(each));
 
   const selectedGroupedLicences = Object.values(groupBy(licenceGaugingStations.data.filter(eachLGS =>
-    validOptions.some(eachOption => {
-      return (eachLGS.thresholdValue === eachOption.value && eachLGS.thresholdUnit === eachOption.unit) &&
+    validOptions.some(eachOption => (eachLGS.thresholdValue === eachOption.value && eachLGS.thresholdUnit === eachOption.unit) &&
+      (
+        ['resume', 'warning'].includes(sendingAlertType.value) ||
         (
-          ['resume', 'warning'].includes(sendingAlertType.value) ||
-          (
-            (eachLGS.alertType === 'stop_or_reduce' && eachOption.value === 'reduce') ||
-            sendingAlertType.value === 'reduce' || sendingAlertType.value === 'stop'
-          )
-        );
-    }
+          (eachLGS.alertType === 'stop_or_reduce' && eachOption.value === 'reduce') ||
+          sendingAlertType.value === 'reduce' || sendingAlertType.value === 'stop'
+        )
+      )
     )), 'licenceId'));
 
   session.merge(request, {
@@ -468,7 +466,9 @@ const getSendAlertCheckLicenceMatches = async (request, h) => {
 
   const sessionData = session.get(request);
   const { selectedGroupedLicences } = sessionData;
-
+  if (!selectedGroupedLicences) {
+    return h.redirect(request.path.replace(/\/[^\/]*$/, '/alert-thresholds'));
+  }
   const flattenedSelectedGroupedLicences = Object.values(selectedGroupedLicences).map(n => n.map(q => {
     return {
       ...q,

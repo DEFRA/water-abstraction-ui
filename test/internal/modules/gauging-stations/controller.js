@@ -1389,15 +1389,15 @@ experiment('internal/modules/gauging-stations/controller - sending', () => {
     const formContent = {
       fields: [{
         name: 'alertThresholds',
-        value: [{
-          unit: 'Ml/d',
-          value: 100
-        }]
+        value: ['{"unit":"Ml/d", "value":100}']
       }]
     };
 
     const storedData = {
-      alertThresholds: '{"unit":"Ml/d", "value":100}',
+      alertThresholds: {
+        name: 'alertThresholds',
+        value: ['{"unit":"Ml/d", "value":100}']
+      },
       selectedGroupedLicences: []
     };
 
@@ -1444,14 +1444,88 @@ experiment('internal/modules/gauging-stations/controller - sending', () => {
       });
       afterEach(async () => sandbox.restore());
       test('calls session.merge with the expected data', () => {
-        expect(session.merge.calledWith(request, storedData)).to.be.true();
+        expect(session.merge.lastCall.args[1]).to.equal(storedData);
       });
       test('calls handleFormRequest to process the payload through the form', () => {
         expect(formHandler.handleFormRequest.called).to.be.true();
       });
     });
   });
-  // getSendAlertCheckLicenceMatches
+
+  experiment('.getSendAlertSelectAlertThresholds', () => {
+    const request = {
+      path: 'http://example.com/monitoring-stations/123/send-alert/check-licence-matches',
+      method: 'get',
+      params: {
+        gaugingStationId: uuid()
+      },
+      yar: {
+        get: sandbox.stub().returns({}),
+        set: sandbox.spy()
+      },
+      view: {
+        path: 'http://example.com/monitoring-stations/123/send-alert/check-licence-matches',
+        csrfToken: 'some-token'
+      },
+      pre: {
+        licenceGaugingStations: { data: [] }
+      }
+
+    };
+
+    const h = { view: sandbox.spy(), redirect: sandbox.spy() };
+
+    experiment('when there are no matches', () => {
+      beforeEach(async () => {
+        request.yar.get.returns({ selectedGroupedLicences: undefined });
+        sandbox.stub(helpers, 'getCaption').resolves('a caption is output');
+        await controller.getSendAlertCheckLicenceMatches(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+
+      test('it redirects the user to the previous step', () => {
+        expect(h.redirect.calledWith('http://example.com/monitoring-stations/123/send-alert/alert-thresholds'));
+      });
+    });
+
+    experiment('when there are matches but they boil down to an empty/useless array', () => {
+      beforeEach(async () => {
+        request.yar.get.returns({ selectedGroupedLicences: {
+          'someLicenceId': []
+        } });
+        sandbox.stub(helpers, 'getCaption').resolves('a caption is output');
+        await controller.getSendAlertCheckLicenceMatches(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+
+      test('it redirects the user to the previous step', () => {
+        expect(h.redirect.calledWith('http://example.com/monitoring-stations/123/send-alert/alert-thresholds'));
+      });
+    });
+
+    experiment('when there are matches', () => {
+      beforeEach(async () => {
+        request.yar.get.returns({ selectedGroupedLicences: {
+          'someLicenceId': [
+            {
+              dateStatusUpdated: new Date()
+            }
+          ]
+        } });
+        sandbox.stub(helpers, 'getCaption').resolves('a caption is output');
+        await controller.getSendAlertCheckLicenceMatches(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+
+      test('calls the helper method which generates a caption', async () => {
+        expect(helpers.getCaption.called).to.be.true();
+      });
+      test('returns some gumph with h.view', () => {
+        expect(h.view.called).to.be.true();
+      });
+    });
+  });
+
   // getSendAlertExcludeLicence
   // getSendAlertExcludeLicenceConfirm
   // getSendAlertEmailAddress

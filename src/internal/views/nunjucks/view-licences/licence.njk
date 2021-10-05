@@ -1,11 +1,19 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "govuk/components/tabs/macro.njk" import govukTabs %}
 {% from "badge.njk" import badge %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
+
+
+    {% if licence.includeInSupplementaryBilling == 'yes' or licence.includeInSupplementaryBilling == 'reprocess'  %}
+        {{ govukNotificationBanner({
+              html: '<strong>This licence has been marked for the next supplementary bill run</strong>'
+        }) }}
+    {% endif %}
 
       {% if not primaryUser %}
         {{ title(licence.licenceNumber, 'Unregistered licence') }}
@@ -27,13 +35,13 @@
       <div class="govuk-tabs" data-module="govuk-tabs">
         <h2 class="govuk-tabs__title">Contents</h2>
 
-      
+
         <ul class="govuk-tabs__list">
 
           <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
             <a class="govuk-tabs__tab" href="#summary">Summary</a>
           </li>
-    
+
           <li class="govuk-tabs__list-item">
             <a class="govuk-tabs__tab" href="#returns">Returns</a>
           </li>
@@ -58,11 +66,11 @@
         <section class="govuk-tabs__panel" id="summary">
           {% include "nunjucks/view-licences/tabs/summary.njk" %}
         </section>
-     
+
         <section class="govuk-tabs__panel" id="returns">
           {% include "nunjucks/view-licences/tabs/returns.njk" %}
         </section>
-  
+
         <section class="govuk-tabs__panel" id="communications">
           {% include "nunjucks/view-licences/tabs/communications.njk" %}
         </section>
@@ -72,7 +80,7 @@
             {% include "nunjucks/view-licences/tabs/bills.njk" %}
           </section>
         {% endif %}
-        
+
         {% if chargeVersions %}
           <section class="govuk-tabs__panel" id="charge">
             {% include "nunjucks/view-licences/tabs/charge.njk" %}

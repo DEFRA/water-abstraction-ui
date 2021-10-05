@@ -188,13 +188,18 @@ invoiceDebitsTotal %}
   {% set buttonLabel = 'Remove bill' %}
   <!-- Warning text for reissue -->
   {% if batch.status == 'ready' %}
-    {% set originalBillInvoiceNumber = '' %}
-    {% for inv in invoice.linkedInvoices %}
-      {% if inv.invoiceNumber and inv.rebillingStateLabel == 'original' %}
+      {% set originalBillInvoiceNumber = null %}
+      {% set originalInvoiceId = null %}
+      {% set rebillingInvoiceId = null %}
+
+    {% for inv in invoice.linkedInvoices %}      
+      {% if inv.rebillingStateLabel === 'original' %}
         {% set originalBillInvoiceNumber = inv.invoiceNumber %}
+        {% set originalInvoiceId = inv.id %}      
+      {% elif inv.rebillingStateLabel === 'reversal' or inv.rebillingStateLabel === 'rebill' %}
+        {% set rebillingInvoiceId = inv.id %}
       {% endif %}
     {% endfor %}
-
     {% if originalBillInvoiceNumber %}
       {% set warningText = "This bill is linked to the reissue of bill " + originalBillInvoiceNumber %}
       {% set buttonLabel = 'Cancel this reissue' %}
@@ -204,14 +209,13 @@ invoiceDebitsTotal %}
         iconFallbackText: "Warning"
       }) }}
     {% endif %}
-
-  {% endif %}
-
-  <div class="govuk-grid-row govuk-!-margin-bottom-0">
-    <div class="govuk-grid-column-two-thirds">
-      {{ removeInvoiceFromBatchButton(batch, invoice, buttonLabel) }}
+  
+    <div class="govuk-grid-row govuk-!-margin-bottom-0">
+      <div class="govuk-grid-column-two-thirds">
+        {{ removeInvoiceFromBatchButton(batch, invoice, originalInvoiceId, rebillingInvoiceId, buttonLabel) }}
+      </div>
     </div>
-  </div>
+  {% endif %}
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">

@@ -212,6 +212,10 @@ const routes = {
         params: Joi.object().keys({
           batchId: Joi.string().uuid(),
           invoiceId: Joi.string().uuid()
+        }),
+        query: Joi.object().keys({
+          originalInvoiceId: Joi.string().uuid().optional(),
+          rebillInvoiceId: Joi.string().uuid().optional()
         })
       },
       pre: [
@@ -238,6 +242,8 @@ const routes = {
           invoiceId: Joi.string().uuid()
         }),
         payload: Joi.object().keys({
+          originalInvoiceId: Joi.string().uuid().optional(),
+          rebillInvoiceId: Joi.string().uuid().optional(),
           csrf_token: Joi.string().uuid().required()
         })
       }

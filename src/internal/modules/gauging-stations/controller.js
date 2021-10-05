@@ -410,6 +410,7 @@ const postSendAlertSelectAlertType = async (request, h) => {
     sendingAlertType: selectedAlertType
   });
 
+  // eslint-disable-next-line no-useless-escape
   return h.redirect(request.path.replace(/\/[^\/]*$/, '/alert-thresholds'));
 };
 
@@ -449,6 +450,7 @@ const postSendAlertSelectAlertThresholds = async (request, h) => {
     selectedGroupedLicences
   });
 
+  // eslint-disable-next-line no-useless-escape
   return h.redirect(request.path.replace(/\/[^\/]*$/, '/check-licence-matches'));
 };
 
@@ -467,6 +469,7 @@ const getSendAlertCheckLicenceMatches = async (request, h) => {
   }));
 
   if (flattenedSelectedGroupedLicences.length === 0) {
+    // eslint-disable-next-line no-useless-escape
     return h.redirect(request.path.replace(/\/[^\/]*$/, '/alert-thresholds'));
   }
 
@@ -551,6 +554,7 @@ const postSendAlertEmailAddress = async (request, h) => {
     notificationEventId: response.data.id
   });
 
+  // eslint-disable-next-line no-useless-escape
   return h.redirect(request.path.replace(/\/[^\/]*$/, '/processing'));
 };
 
@@ -571,6 +575,7 @@ const getSendAlertProcessing = async (request, h) => {
       pageTitle
     });
   } else {
+    // eslint-disable-next-line no-useless-escape
     return h.redirect(request.path.replace(/\/[^\/]*$/, '/check'));
   }
 };

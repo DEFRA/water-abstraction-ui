@@ -2,8 +2,6 @@
 
 const Lab = require('@hapi/lab');
 const lab = exports.lab = Lab.script();
-const sinon = require('sinon');
-const sandbox = sinon.createSandbox();
 const { expect } = require('@hapi/code');
 const routes = require('internal/modules/gauging-stations/routes');
 const controllers = require('internal/modules/gauging-stations/controller');

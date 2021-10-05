@@ -434,7 +434,7 @@ const postSendAlertSelectAlertThresholds = async (request, h) => {
   if (!form.isValid) {
     return h.postRedirectGet(form);
   }
-  const { sendingAlertType } = session.get(request);
+  const { sendingAlertType } = await session.get(request);
 
   const selectedAlertThresholds = form.fields.find(field => field.name === 'alertThresholds');
 
@@ -464,7 +464,7 @@ const getSendAlertCheckLicenceMatches = async (request, h) => {
   const pageTitle = 'Check the licence matches for the selected thresholds';
   const caption = await helpers.getCaption(request);
 
-  const sessionData = session.get(request);
+  const sessionData = await session.get(request);
   const { selectedGroupedLicences } = sessionData;
   if (!selectedGroupedLicences) {
     return h.redirect(request.path.replace(/\/[^\/]*$/, '/alert-thresholds'));
@@ -497,9 +497,8 @@ const getSendAlertCheckLicenceMatches = async (request, h) => {
 };
 
 const getSendAlertExcludeLicence = async (request, h) => {
-  const sessionData = session.get(request);
+  const sessionData = await session.get(request);
   const { selectedGroupedLicences } = sessionData;
-
   const flattenedSelectedLicencesArray = Object.values(selectedGroupedLicences).flat();
 
   if (!flattenedSelectedLicencesArray.find(l => l.licenceId === request.params.licenceId)) {
@@ -518,7 +517,7 @@ const getSendAlertExcludeLicence = async (request, h) => {
 };
 
 const getSendAlertExcludeLicenceConfirm = async (request, h) => {
-  const sessionData = session.get(request);
+  const sessionData = await session.get(request);
   const { selectedGroupedLicences } = sessionData;
   const temp = selectedGroupedLicences.filter(eachGroup => eachGroup.some(groupElement => groupElement.licenceId !== request.params.licenceId));
 
@@ -641,7 +640,7 @@ const getSendAlertConfirm = async (request, h) => {
   const pageTitle = 'Check the alert for each licence and send';
   const caption = await helpers.getCaption(request);
 
-  const { notificationEventId } = session.get(request);
+  const { notificationEventId } = await session.get(request);
   const event = await services.water.events.findOne(notificationEventId);
 
   const issuer = await helpers.getIssuer(request);

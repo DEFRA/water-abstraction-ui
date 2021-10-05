@@ -1490,9 +1490,11 @@ experiment('internal/modules/gauging-stations/controller - sending', () => {
 
     experiment('when there are matches but they boil down to an empty/useless array', () => {
       beforeEach(async () => {
-        request.yar.get.returns({ selectedGroupedLicences: {
-          'someLicenceId': []
-        } });
+        request.yar.get.returns({
+          selectedGroupedLicences: {
+            'someLicenceId': []
+          }
+        });
         sandbox.stub(helpers, 'getCaption').resolves('a caption is output');
         await controller.getSendAlertCheckLicenceMatches(request, h);
       });
@@ -1505,13 +1507,15 @@ experiment('internal/modules/gauging-stations/controller - sending', () => {
 
     experiment('when there are matches', () => {
       beforeEach(async () => {
-        request.yar.get.returns({ selectedGroupedLicences: {
-          'someLicenceId': [
-            {
-              dateStatusUpdated: new Date()
-            }
-          ]
-        } });
+        request.yar.get.returns({
+          selectedGroupedLicences: {
+            'someLicenceId': [
+              {
+                dateStatusUpdated: new Date()
+              }
+            ]
+          }
+        });
         sandbox.stub(helpers, 'getCaption').resolves('a caption is output');
         await controller.getSendAlertCheckLicenceMatches(request, h);
       });
@@ -1527,6 +1531,77 @@ experiment('internal/modules/gauging-stations/controller - sending', () => {
   });
 
   // getSendAlertExcludeLicence
+
+  experiment('.getSendAlertExcludeLicence', () => {
+    const request = {
+      path: 'http://example.com/monitoring-stations/123/send-alert/exclude-licence',
+      method: 'get',
+      params: {
+        gaugingStationId: '123'
+      },
+      yar: {
+        get: sandbox.stub().resolves({}),
+        set: sandbox.spy()
+      },
+      view: {
+        path: 'http://example.com/monitoring-stations/123/send-alert/exclude-licence',
+        csrfToken: 'some-token'
+      },
+      pre: {
+        licenceGaugingStations: { data: [] }
+      }
+
+    };
+
+    const h = { view: sandbox.spy(), redirect: sandbox.spy() };
+
+    experiment('when the licenceId is invalid', () => {
+      beforeEach(async () => {
+        request.params.licenceId = 'id-456';
+        request.yar.get.resolves({
+          selectedGroupedLicences: {
+            'someLicenceId': [
+              {
+                licenceId: 'id-123'
+              }
+            ]
+          }
+        });
+        await controller.getSendAlertExcludeLicence(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+
+      test('redirects the user to the previous page', async () => {
+        expect(h.redirect.calledWith('/monitoring-stations/123/send-alert/check-licence-matches')).to.be.true();
+      });
+    });
+
+    experiment('when the licenceId is valid', () => {
+      beforeEach(async () => {
+        request.params.licenceId = 'id-123';
+        request.yar.get.resolves({
+          selectedGroupedLicences: {
+            'someLicenceId': [
+              {
+                licenceId: 'id-123'
+              }
+            ]
+          }
+        });
+        sandbox.stub(helpers, 'getCaption').resolves('a caption is output');
+        await controller.getSendAlertExcludeLicence(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+
+      test('calls the helper method which generates a caption', async () => {
+        expect(helpers.getCaption.called).to.be.true();
+      });
+      test('returns some gumph with h.view', () => {
+        expect(h.view.called).to.be.true();
+      });
+    });
+  });
+
   // getSendAlertExcludeLicenceConfirm
   // getSendAlertEmailAddress
   // postSendAlertEmailAddress

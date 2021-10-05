@@ -442,7 +442,7 @@ const postSendAlertSelectAlertThresholds = async (request, h) => {
   const selectedGroupedLicences = Object.values(groupBy(licenceGaugingStations.data.filter(eachLGS =>
     validOptions.some(eachOption =>
       eachLGS.thresholdValue === eachOption.value && eachLGS.thresholdUnit === eachOption.unit &&
-      (eachLGS.alertType === sendingAlertType.value || eachLGS.alertType === 'stop_or_reduce' || sendingAlertType.value === 'warning' || sendingAlertType.value === 'resume'))), 'licenceId'));
+      (eachLGS.alertType === sendingAlertType.value || (eachLGS.alertType === 'stop_or_reduce' && (sendingAlertType.value === 'reduce' || sendingAlertType.value === 'stop')) || sendingAlertType.value === 'warning' || sendingAlertType.value === 'resume'))), 'licenceId'));
 
   session.merge(request, {
     alertThresholds: selectedAlertThresholds,
@@ -596,7 +596,28 @@ const getSendAlertCheck = async (request, h) => {
 };
 
 const getSendAlertPreview = async (request, h) => {
-  return 'The preview will go here eventually, when the templates are built.';
+  const { notificationId } = request.params;
+
+  const { data: scheduledNotification } = await services.water.notifications.getNotificationMessage(notificationId);
+  const { messageRef: template, personalisation, messageRef } = scheduledNotification;
+
+  let prefix = '';
+  if (messageRef.indexOf('resume') > -1) {
+    prefix = 'Resume ';
+  } else {
+    prefix = `${personalisation.alertType.replace(/(^\w|\s\w)/g, m => m.toUpperCase()).split('_').join(' ')}${messageRef.indexOf('warning') > -1 ? ' warning ' : ' '}`;
+  }
+  const pageTitle = `${prefix}message preview`;
+  const caption = await helpers.getCaption(request);
+
+  // return 'The preview will go here eventually, when the templates are built.';
+  return h.view(`nunjucks/gauging-stations/letter-preview/${template}`, {
+    ...request.view,
+    caption,
+    pageTitle,
+    personalisation,
+    back: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/check`
+  });
 };
 
 const getSendAlertConfirm = async (request, h) => {

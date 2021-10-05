@@ -469,7 +469,7 @@ module.exports = {
 
   getSendAlertPreview: {
     method: 'GET',
-    path: '/monitoring-stations/{gaugingStationId}/send-alert/preview/{eventId}',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/preview/{notificationId}',
     handler: controller.getSendAlertPreview,
     config: {
       description: 'Previews a specific water abstraction alert given an eventId',

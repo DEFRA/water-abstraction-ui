@@ -16,7 +16,7 @@ const formHandler = require('../../../../src/shared/lib/form-handler');
 const formHelpers = require('../../../../src/shared/lib/forms');
 const uuid = require('uuid').v4;
 
-experiment('internal/modules/gauging-stations/controller', () => {
+experiment('internal/modules/gauging-stations/controller - tagging', () => {
   beforeEach(async () => {
     sandbox.stub(formHandler, 'handleFormRequest').restore();
     sandbox.restore();
@@ -90,7 +90,8 @@ experiment('internal/modules/gauging-stations/controller', () => {
     };
 
     const storedData = {
-      threshold: { name: 'threshold',
+      threshold: {
+        name: 'threshold',
         value: 100
       },
       unit: {
@@ -171,11 +172,13 @@ experiment('internal/modules/gauging-stations/controller', () => {
 
     const formContent = {
       fields: [
-        { name: 'alertType',
+        {
+          name: 'alertType',
           value: 'reduce',
           options: {
             choices: [
-              { value: 'reduce',
+              {
+                value: 'reduce',
                 fields: [
                   { name: 'volumeLimited', value: false }
                 ]
@@ -188,11 +191,13 @@ experiment('internal/modules/gauging-stations/controller', () => {
     };
 
     const storedData = {
-      alertType: { name: 'alertType',
+      alertType: {
+        name: 'alertType',
         value: 'reduce',
         options: {
           choices: [
-            { value: 'reduce',
+            {
+              value: 'reduce',
               fields: [
                 { name: 'volumeLimited', value: false }
               ]
@@ -324,7 +329,8 @@ experiment('internal/modules/gauging-stations/controller', () => {
           easting: null,
           northing: null
         }
-      ] };
+      ]
+    };
     const params = {
       gaugingStationId: 'e3e95a10-a989-42ae-9692-feac91f06ffb'
     };
@@ -340,7 +346,8 @@ experiment('internal/modules/gauging-stations/controller', () => {
     };
 
     const formContentMultipleSelected = {
-      fields: [ { name: 'selectedCondition',
+      fields: [{
+        name: 'selectedCondition',
         options: {
           choices: [
             {
@@ -407,10 +414,11 @@ experiment('internal/modules/gauging-stations/controller', () => {
         },
         errors: [],
         value: '22c784b7-b141-4fd0-8ee1-78ea7ae783bc'
-      } ]
+      }]
     };
     const formContentMultipleSelectedNothing = {
-      fields: [ { name: 'selectedLicence',
+      fields: [{
+        name: 'selectedLicence',
         options: {
           choices: [
             {
@@ -443,10 +451,11 @@ experiment('internal/modules/gauging-stations/controller', () => {
         },
         errors: [],
         value: '0'
-      } ]
+      }]
     };
     const formContentSingleSelected = {
-      fields: [ { name: 'selectedLicence',
+      fields: [{
+        name: 'selectedLicence',
         options: {
           choices: [
             {
@@ -491,7 +500,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
         },
         errors: [],
         value: '6e21a77b-1525-459d-acb8-3615e5d53f06'
-      } ]
+      }]
     };
 
     const h = {
@@ -683,7 +692,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
       const h = { view: sandbox.spy() };
 
       beforeEach(async () => {
-        await formHandler.handleFormRequest.resolves({ form: { fields: [ { name: 'selectedLicence' } ] } });
+        await formHandler.handleFormRequest.resolves({ form: { fields: [{ name: 'selectedLicence' }] } });
         controller.getRemoveTagsConditions(request, h);
       });
 
@@ -742,7 +751,8 @@ experiment('internal/modules/gauging-stations/controller', () => {
     };
 
     const storedData = {
-      licenceNumber: { name: 'licenceNumber',
+      licenceNumber: {
+        name: 'licenceNumber',
         value: 'AB/123'
       }
     };
@@ -1139,7 +1149,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
   });
 });
 
-experiment('internal/modules/gauging-stations/controller', () => {
+experiment('internal/modules/gauging-stations/controller - viewing', () => {
   let h;
 
   const gaugingStationId = uuid();
@@ -1199,4 +1209,164 @@ experiment('internal/modules/gauging-stations/controller', () => {
     const [template] = h.view.lastCall.args;
     expect(template).to.equal('nunjucks/gauging-stations/gauging-station');
   });
+});
+
+experiment('internal/modules/gauging-stations/controller - sending', () => {
+  experiment('.getSendAlertSelectAlertType', () => {
+    const request = {
+      method: 'get',
+      params: {
+        gaugingStationId: uuid()
+      },
+      yar: {
+        get: sandbox.spy(),
+        set: sandbox.spy()
+      },
+      view: {
+        path: 'http://example.com/monitoring-stations/123/send-alert/alert-type',
+        csrfToken: 'some-token'
+      }
+    };
+
+    const h = { view: sandbox.spy() };
+
+    beforeEach(async () => {
+      sandbox.stub(helpers, 'getCaption').resolves('a caption is output');
+      await controller.getSendAlertSelectAlertType(request, h);
+    });
+    afterEach(async () => sandbox.restore());
+
+    test('calls the helper method which generates a caption', async () => {
+      expect(helpers.getCaption.called).to.be.true();
+    });
+    test('returns some gumph with h.view', () => {
+      expect(h.view.called).to.be.true();
+    });
+  });
+
+  experiment('.postSendAlertSelectAlertType', () => {
+    const request = {
+      path: 'http://example.com/monitoring-stations/123/send-alert/alert-type',
+      method: 'post',
+      params: {
+        gaugingStationId: uuid()
+      },
+      yar: {
+        get: sandbox.spy(),
+        set: sandbox.spy()
+      },
+      view: {
+        path: 'http://example.com/monitoring-stations/123/send-alert/alert-type',
+        csrfToken: 'some-token'
+      }
+    };
+
+    const h = {
+      view: sandbox.spy(),
+      postRedirectGet: sandbox.spy(),
+      redirect: sandbox.spy()
+    };
+
+    const formContent = {
+      fields: [{ name: 'alertType', value: 'warning' }]
+    };
+
+    const storedData = {
+      sendingAlertType: {
+        name: 'alertType',
+        value: 'warning'
+      }
+    };
+
+    experiment('when the payload is invalid', () => {
+      beforeEach(() => {
+        sandbox.stub(formHandler, 'handleFormRequest').resolves({});
+        sandbox.stub(session, 'get').resolves();
+        sandbox.stub(session, 'merge').resolves({});
+        sandbox.stub(session, 'clear').resolves({});
+        formHandler.handleFormRequest.resolves({
+          ...formContent,
+          isValid: false
+        });
+        controller.postSendAlertSelectAlertType(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+      test('does not call session.merge', () => {
+        expect(session.merge.called).to.be.false();
+      });
+      test('calls handleFormRequest to process the payload through the form', () => {
+        expect(formHandler.handleFormRequest.called).to.be.true();
+      });
+      test('redirects the user back to the form', () => {
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+    });
+
+    experiment('when the payload is valid', () => {
+      beforeEach(async () => {
+        sandbox.stub(formHandler, 'handleFormRequest').resolves({});
+        sandbox.stub(session, 'get').resolves();
+        sandbox.stub(session, 'merge').resolves({});
+        sandbox.stub(session, 'clear').resolves({});
+        await formHandler.handleFormRequest.resolves({
+          ...formContent,
+          isValid: true
+        });
+        await controller.postSendAlertSelectAlertType(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+      test('calls session.merge with the expected data', () => {
+        expect(session.merge.calledWith(request, storedData)).to.be.true();
+      });
+      test('calls handleFormRequest to process the payload through the form', () => {
+        expect(formHandler.handleFormRequest.called).to.be.true();
+      });
+    });
+  });
+
+  experiment('.getSendAlertSelectAlertThresholds', () => {
+    const request = {
+      method: 'get',
+      params: {
+        gaugingStationId: uuid()
+      },
+      yar: {
+        get: sandbox.spy(),
+        set: sandbox.spy()
+      },
+      view: {
+        path: 'http://example.com/monitoring-stations/123/send-alert/alert-thresholds',
+        csrfToken: 'some-token'
+      },
+      pre: {
+        licenceGaugingStations: { data: [] }
+      }
+
+    };
+
+    const h = { view: sandbox.spy() };
+
+    beforeEach(async () => {
+      sandbox.stub(helpers, 'getCaption').resolves('a caption is output');
+      await controller.getSendAlertSelectAlertThresholds(request, h);
+    });
+    afterEach(async () => sandbox.restore());
+
+    test('calls the helper method which generates a caption', async () => {
+      expect(helpers.getCaption.called).to.be.true();
+    });
+    test('returns some gumph with h.view', () => {
+      expect(h.view.called).to.be.true();
+    });
+  });
+  // postSendAlertSelectAlertThresholds
+  // getSendAlertCheckLicenceMatches
+  // getSendAlertExcludeLicence
+  // getSendAlertExcludeLicenceConfirm
+  // getSendAlertEmailAddress
+  // postSendAlertEmailAddress
+  // getSendAlertProcessing
+  // getSendAlertCheck
+  // getSendAlertPreview
+  // getSendAlertConfirm
 });

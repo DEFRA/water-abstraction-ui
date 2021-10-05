@@ -20,7 +20,7 @@ describe('search for licences as internal user', () => {
     cy.get('.govuk-button.govuk-button--start').click();
 
     // assert once the user is signed in
-    cy.contains('Licences, users and returns');
+    cy.contains('Search');
 
     // search for a license by using Licence holder Name
     cy.get('#query').clear();

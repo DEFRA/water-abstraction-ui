@@ -441,9 +441,17 @@ const postSendAlertSelectAlertThresholds = async (request, h) => {
   const validOptions = selectedAlertThresholds.value.map(each => JSON.parse(each));
 
   const selectedGroupedLicences = Object.values(groupBy(licenceGaugingStations.data.filter(eachLGS =>
-    validOptions.some(eachOption =>
-      eachLGS.thresholdValue === eachOption.value && eachLGS.thresholdUnit === eachOption.unit &&
-      (eachLGS.alertType === sendingAlertType.value || (eachLGS.alertType === 'stop_or_reduce' && (sendingAlertType.value === 'reduce' || sendingAlertType.value === 'stop')) || sendingAlertType.value === 'warning' || sendingAlertType.value === 'resume'))), 'licenceId'));
+    validOptions.some(eachOption => {
+      return (eachLGS.thresholdValue === eachOption.value && eachLGS.thresholdUnit === eachOption.unit) &&
+        (
+          ['resume', 'warning'].includes(sendingAlertType.value) ||
+          (
+            (eachLGS.alertType === 'stop_or_reduce' && eachOption.value === 'reduce') ||
+            sendingAlertType.value === 'reduce' || sendingAlertType.value === 'stop'
+          )
+        );
+    }
+    )), 'licenceId'));
 
   session.merge(request, {
     alertThresholds: selectedAlertThresholds,
@@ -464,7 +472,12 @@ const getSendAlertCheckLicenceMatches = async (request, h) => {
   const flattenedSelectedGroupedLicences = Object.values(selectedGroupedLicences).map(n => n.map(q => {
     return {
       ...q,
-      dateStatusUpdated: n.length > 1 ? n.reduce((a, b) => (new Date(a.dateStatusUpdated) > new Date(b.dateStatusUpdated) ? a.dateStatusUpdated : b.dateStatusUpdated)) : n[0].dateStatusUpdated
+      dateStatusUpdated: n.length > 1
+        ? n.reduce((a, b) =>
+          (new Date(a.dateStatusUpdated) > new Date(b.dateStatusUpdated)
+            ? a.dateStatusUpdated
+            : b.dateStatusUpdated))
+        : n[0].dateStatusUpdated
     };
   }));
 
@@ -615,7 +628,6 @@ const getSendAlertPreview = async (request, h) => {
   const pageTitle = `${prefix}message preview`;
   const caption = await helpers.getCaption(request);
 
-  // return 'The preview will go here eventually, when the templates are built.';
   return h.view(`nunjucks/gauging-stations/letter-preview/${template}`, {
     ...request.view,
     caption,

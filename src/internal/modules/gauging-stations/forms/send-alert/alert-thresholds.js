@@ -10,14 +10,19 @@ const sendAlertThresholdsForm = request => {
   const { licenceGaugingStations } = request.pre;
   const { data: licenceGaugingStationsData } = licenceGaugingStations;
 
-  const validOptions = uniqBy(licenceGaugingStationsData, v => [v.thresholdValue, v.thresholdUnit].join()).map(n => ({
+  const selectedAlertType = get(session.get(request), 'sendingAlertType.value');
+  const selectedAlertThresholds = get(session.get(request), 'alertThresholds.value');
+
+  const validOptions = uniqBy(licenceGaugingStationsData.filter(eachLGS => {
+    return eachLGS.alertType === selectedAlertType ||
+      ['warning', 'resume'].includes(selectedAlertType) ||
+      (eachLGS.alertType === 'stop_or_reduce' && selectedAlertType === 'reduce');
+  }), v => [v.thresholdValue, v.thresholdUnit].join()).map(n => ({
     thresholdUnit: n.thresholdUnit,
     thresholdValue: n.thresholdValue
   }));
 
-  const selectedAlertThresholds = get(session.get(request), 'alertThresholds.value');
-
-  uniqBy(validOptions, 'thresholdUnit').map(eachUnit => f.fields.push(fields.checkbox(`alertThresholds`, {
+  uniqBy(validOptions, 'thresholdUnit').forEach(eachUnit => f.fields.push(fields.checkbox(`alertThresholds`, {
     label: `${capitalize(helpers.deduceRestrictionTypeFromUnit(eachUnit.thresholdUnit))} thresholds for this station (${eachUnit.thresholdUnit})`,
     errors: {
       'any.required': {

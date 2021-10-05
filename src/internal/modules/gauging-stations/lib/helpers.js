@@ -249,7 +249,7 @@ const groupLicenceConditions = request => {
   })).value();
 };
 
-const getBatchAlertData = async (request) => {
+const getBatchAlertData = async request => {
   const { selectedGroupedLicences, sendingAlertType } = session.get(request);
   console.log(selectedGroupedLicences);
   return {

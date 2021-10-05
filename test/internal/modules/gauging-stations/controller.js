@@ -1359,7 +1359,98 @@ experiment('internal/modules/gauging-stations/controller - sending', () => {
       expect(h.view.called).to.be.true();
     });
   });
-  // postSendAlertSelectAlertThresholds
+
+  experiment('.postSendAlertSelectAlertThresholds', () => {
+    const request = {
+      path: 'http://example.com/monitoring-stations/123/send-alert/alert-thresholds',
+      method: 'post',
+      params: {
+        gaugingStationId: uuid()
+      },
+      yar: {
+        get: sandbox.spy(),
+        set: sandbox.spy()
+      },
+      view: {
+        path: 'http://example.com/monitoring-stations/123/send-alert/alert-thresholds',
+        csrfToken: 'some-token'
+      },
+      pre: {
+        licenceGaugingStations: { data: [] }
+      }
+    };
+
+    const h = {
+      view: sandbox.spy(),
+      postRedirectGet: sandbox.spy(),
+      redirect: sandbox.spy()
+    };
+
+    const formContent = {
+      fields: [{
+        name: 'alertThresholds',
+        value: [{
+          unit: 'Ml/d',
+          value: 100
+        }]
+      }]
+    };
+
+    const storedData = {
+      alertThresholds: '{"unit":"Ml/d", "value":100}',
+      selectedGroupedLicences: []
+    };
+
+    experiment('when the payload is invalid', () => {
+      beforeEach(() => {
+        sandbox.stub(formHandler, 'handleFormRequest').resolves({});
+        sandbox.stub(session, 'get').resolves();
+        sandbox.stub(session, 'merge').resolves({});
+        sandbox.stub(session, 'clear').resolves({});
+        formHandler.handleFormRequest.resolves({
+          ...formContent,
+          isValid: false
+        });
+        controller.postSendAlertSelectAlertThresholds(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+      test('does not call session.merge', () => {
+        expect(session.merge.called).to.be.false();
+      });
+      test('calls handleFormRequest to process the payload through the form', () => {
+        expect(formHandler.handleFormRequest.called).to.be.true();
+      });
+      test('redirects the user back to the form', () => {
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+    });
+
+    experiment('when the payload is valid', () => {
+      beforeEach(async () => {
+        sandbox.stub(formHandler, 'handleFormRequest').resolves({});
+        sandbox.stub(session, 'get').resolves({
+          sendingAlertType: {
+            name: 'sendingAlertType',
+            value: 'warning'
+          }
+        });
+        sandbox.stub(session, 'merge').resolves({});
+        sandbox.stub(session, 'clear').resolves({});
+        await formHandler.handleFormRequest.resolves({
+          ...formContent,
+          isValid: true
+        });
+        await controller.postSendAlertSelectAlertThresholds(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+      test('calls session.merge with the expected data', () => {
+        expect(session.merge.calledWith(request, storedData)).to.be.true();
+      });
+      test('calls handleFormRequest to process the payload through the form', () => {
+        expect(formHandler.handleFormRequest.called).to.be.true();
+      });
+    });
+  });
   // getSendAlertCheckLicenceMatches
   // getSendAlertExcludeLicence
   // getSendAlertExcludeLicenceConfirm

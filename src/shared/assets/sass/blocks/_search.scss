@@ -5,7 +5,7 @@
   @extend .govuk-input;
   margin-bottom: 15px;
   @include govuk-media-query($from: tablet) {
-    width: 33%;
+    width: 66%;
     margin-bottom: 0;
   }
 }

@@ -14,6 +14,7 @@ const helpers = require('../../../../src/internal/modules/gauging-stations/lib/h
 const session = require('../../../../src/internal/modules/gauging-stations/lib/session');
 const formHandler = require('../../../../src/shared/lib/form-handler');
 const formHelpers = require('../../../../src/shared/lib/forms');
+const services = require('internal/lib/connectors/services');
 const uuid = require('uuid').v4;
 
 experiment('internal/modules/gauging-stations/controller - tagging', () => {
@@ -1602,9 +1603,226 @@ experiment('internal/modules/gauging-stations/controller - sending', () => {
     });
   });
 
-  // getSendAlertExcludeLicenceConfirm
-  // getSendAlertEmailAddress
-  // postSendAlertEmailAddress
+  experiment('.getSendAlertExcludeLicenceConfirm', () => {
+    const gsId = uuid();
+    const l1Id = uuid();
+    const l2Id = uuid();
+    const request = {
+      path: `http://example.com/monitoring-stations/${gsId}/send-alert/exclude-licence/${l2Id}/confirm`,
+      method: 'get',
+      params: {
+        gaugingStationId: gsId,
+        licenceId: l2Id
+      },
+      yar: {
+        get: sandbox.stub().resolves({}),
+        set: sandbox.spy()
+      },
+      view: {
+        path: `http://example.com/monitoring-stations/${gsId}/send-alert/exclude-licence/${l2Id}/confirm`,
+        csrfToken: 'some-token'
+      },
+      pre: {
+        licenceGaugingStations: { data: [] }
+      }
+
+    };
+
+    const h = { view: sandbox.spy(), redirect: sandbox.spy() };
+
+    beforeEach(async () => {
+      request.params.licenceId = l2Id;
+      sandbox.stub(session, 'get').resolves({
+        selectedGroupedLicences:
+          [
+            [{
+              l1Id: {
+                licenceId: l1Id
+              }
+            }],
+            [{
+              l2Id: {
+                licenceId: l2Id
+              }
+            }]
+          ]
+      });
+      sandbox.stub(session, 'merge').resolves({});
+      sandbox.stub(session, 'clear').resolves({});
+      await controller.getSendAlertExcludeLicenceConfirm(request, h);
+    });
+    afterEach(async () => sandbox.restore());
+
+    test('grabs session data', async () => {
+      expect(session.get.called).to.be.true();
+    });
+
+    test('stores session data using merge', async () => {
+      expect(session.merge.called).to.be.true();
+    });
+
+    test('redirects the user to the check page', async () => {
+      expect(h.redirect.calledWith(`/monitoring-stations/${gsId}/send-alert/check-licence-matches`)).to.be.true();
+    });
+  });
+
+  experiment('.getSendAlertEmailAddress', () => {
+    const gsId = uuid();
+    const request = {
+      path: `http://example.com/monitoring-stations/${gsId}/send-alert/email-address`,
+      method: 'get',
+      defra: {
+        userName: 'some.person@defra.gov.uk'
+      },
+      params: {
+        gaugingStationId: gsId
+      },
+      yar: {
+        get: sandbox.stub().resolves({}),
+        set: sandbox.spy(),
+        clear: sandbox.spy()
+      },
+      view: {
+        path: `http://example.com/monitoring-stations/${gsId}/send-alert/email-address`,
+        csrfToken: 'some-token'
+      }
+    };
+
+    const h = { view: sandbox.stub().returns({}), redirect: sandbox.spy() };
+
+    beforeEach(async () => {
+      sandbox.stub(session, 'get').resolves({});
+      sandbox.stub(session, 'merge').resolves({});
+      sandbox.stub(session, 'clear').resolves({});
+      sandbox.stub(helpers, 'getCaption').resolves('a caption is output');
+      sandbox.stub(formHandler, 'handleFormRequest').resolves({});
+      await controller.getSendAlertEmailAddress(request, h);
+    });
+    afterEach(async () => sandbox.restore());
+
+    test('renders a caption', () => {
+      expect(helpers.getCaption.called).to.be.true();
+    });
+    test('renders a form', async () => {
+      expect(h.view.calledWith('nunjucks/form')).to.be.true();
+    });
+  });
+
+  experiment('.postSendAlertEmailAddress', () => {
+    const request = {
+      path: 'http://example.com/monitoring-stations/123/send-alert/email-address',
+      method: 'post',
+      params: {
+        gaugingStationId: uuid()
+      },
+      yar: {
+        get: sandbox.spy(),
+        set: sandbox.spy()
+      },
+      view: {
+        path: 'http://example.com/monitoring-stations/123/send-alert/email-address',
+        csrfToken: 'some-token'
+      }
+    };
+
+    const h = {
+      view: sandbox.spy(),
+      postRedirectGet: sandbox.spy(),
+      redirect: sandbox.spy()
+    };
+
+    const formContent = {
+      fields: [{
+        name: 'useLoggedInUserEmailAddress',
+        value: true
+      }]
+    };
+
+    const storedData = {
+      customEmailAddress: null,
+      useLoggedInUserEmailAddress: {
+        name: 'useLoggedInUserEmailAddress',
+        value: true
+      }
+    };
+
+    experiment('when the payload is invalid', () => {
+      beforeEach(() => {
+        sandbox.stub(formHandler, 'handleFormRequest').resolves({});
+        sandbox.stub(session, 'get').resolves();
+        sandbox.stub(session, 'merge').resolves({});
+        sandbox.stub(session, 'clear').resolves({});
+        formHandler.handleFormRequest.resolves({
+          ...formContent,
+          isValid: false
+        });
+        controller.postSendAlertEmailAddress(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+      test('does not call session.merge', () => {
+        expect(session.merge.called).to.be.false();
+      });
+      test('calls handleFormRequest to process the payload through the form', () => {
+        expect(formHandler.handleFormRequest.called).to.be.true();
+      });
+      test('redirects the user back to the form', () => {
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+    });
+
+    experiment('when the payload is valid', () => {
+      const arg1 = uuid();
+      const arg2 = uuid();
+      const notificationEventId = uuid();
+      beforeEach(async () => {
+        sandbox.stub(formHandler, 'handleFormRequest').resolves({});
+        sandbox.stub(helpers, 'getBatchAlertData').resolves(arg2);
+        sandbox.stub(helpers, 'getIssuer').resolves(arg1);
+        sandbox.stub(services.water.batchNotifications, 'prepareWaterAbstractionAlerts').resolves({
+          data: {
+            id: notificationEventId
+          }
+        });
+        sandbox.stub(session, 'get').resolves({
+          customEmailAddress: null,
+          useLoggedInUserEmailAddress: {
+            customEmailAddress: null,
+            name: 'useLoggedInUserEmailAddress',
+            value: true
+          }
+        });
+        sandbox.stub(session, 'merge').resolves({});
+        sandbox.stub(session, 'clear').resolves({});
+        await formHandler.handleFormRequest.resolves({
+          ...formContent,
+          isValid: true
+        });
+        await controller.postSendAlertEmailAddress(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+      test('calls session.merge with the expected data', () => {
+        expect(session.merge.firstCall.args[1]).to.equal(storedData);
+      });
+      test('calls handleFormRequest to process the payload through the form', () => {
+        expect(formHandler.handleFormRequest.called).to.be.true();
+      });
+      test('calls the helper method to prepare the batch alert', () => {
+        expect(helpers.getBatchAlertData.called).to.be.true();
+      });
+      test('calls the helper method to compose the sender email', () => {
+        expect(helpers.getIssuer.called).to.be.true();
+      });
+      test('calls the service endpoint for preparing the batch', () => {
+        expect(services.water.batchNotifications.prepareWaterAbstractionAlerts.calledWith(arg1, arg2)).to.be.true();
+      });
+      test('calls session.merge again to store the notification ID', () => {
+        expect(session.merge.lastCall.args[1]).to.equal({
+          notificationEventId
+        });
+      });
+    });
+  });
+
   // getSendAlertProcessing
   // getSendAlertCheck
   // getSendAlertPreview

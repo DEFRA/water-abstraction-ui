@@ -20,7 +20,7 @@ describe('tag a licence to a guaging station and untag ', () => {
       cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
       cy.get('.govuk-button.govuk-button--start').contains('Sign in').click();
       // assert once the user is signed in
-      cy.contains('Search');
+      cy.contains('Licences, users and returns');
 
       // search for a license by using Licence holder Name
       cy.get('#query').clear();

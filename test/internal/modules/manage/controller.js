@@ -47,7 +47,6 @@ experiment('manage - controller', () => {
         'licenceNotifications',
         'hofNotifications',
         'accounts',
-        'billing',
         'chargeInformationWorkflow'
       ]);
     });

@@ -22,7 +22,7 @@ const routes = {
       description: 'displays the bill run summary',
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -49,7 +49,7 @@ const routes = {
       description: 'displays the invoice for a specific bill run',
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -71,7 +71,7 @@ const routes = {
       plugins: {
         viewContext: {
           pageTitle: 'Bill runs',
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -90,7 +90,7 @@ const routes = {
       auth: { scope: allowedScopes },
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -130,7 +130,7 @@ const routes = {
       auth: { scope: allowedScopes },
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -153,7 +153,7 @@ const routes = {
       auth: { scope: allowedScopes },
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -205,7 +205,7 @@ const routes = {
       description: 'Request confirmation to remove invoice from bill run',
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -233,7 +233,7 @@ const routes = {
       auth: { scope: allowedScopes },
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -261,7 +261,7 @@ const routes = {
       auth: { scope: allowedScopes },
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -291,7 +291,7 @@ const routes = {
       auth: { scope: allowedScopes },
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {

@@ -19,7 +19,7 @@ describe('annual bill run', () => {
       cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
       cy.get('.govuk-button.govuk-button--start').click();
       // assert once the user is signed in
-      cy.contains('Licences, users and returns');
+      cy.contains('Search');
       // user clicks on manage link to set up the supplementary bill run
       describe('user clicks on Bill runs link', () => {
         cy.get('#navbar-bill-runs').click();

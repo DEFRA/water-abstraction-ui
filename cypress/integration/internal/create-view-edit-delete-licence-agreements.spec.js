@@ -18,7 +18,7 @@ describe('Licence agreement - Set up, View, End and Delete', () => {
     cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
     cy.get('.govuk-button.govuk-button--start').click();
     // assert the user is signed in
-    cy.contains('Licences, users and returns');
+    cy.contains('Search');
     cy.get('#query').clear();
     cy.get('#query').type('AT/CURR/MONTHLY/02').should('be.visible');
     cy.get('.search__button').click();

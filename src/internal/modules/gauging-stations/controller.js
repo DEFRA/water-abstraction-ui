@@ -467,6 +467,7 @@ const getSendAlertCheckLicenceMatches = async (request, h) => {
   const sessionData = await session.get(request);
   const { selectedGroupedLicences } = sessionData;
   if (!selectedGroupedLicences) {
+    // eslint-disable-next-line no-useless-escape
     return h.redirect(request.path.replace(/\/[^\/]*$/, '/alert-thresholds'));
   }
   const flattenedSelectedGroupedLicences = Object.values(selectedGroupedLicences).map(n => n.map(q => {
@@ -577,7 +578,8 @@ const getSendAlertProcessing = async (request, h) => {
   // Check if the batch is ready yet.
   // If the batch is ready, send the user to the check page
 
-  const { notificationEventId } = session.get(request);
+  const { notificationEventId } = await session.get(request);
+
   const event = await services.water.events.findOne(notificationEventId);
 
   if (event.data.status === 'processing') {

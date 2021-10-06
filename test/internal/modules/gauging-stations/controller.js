@@ -1823,7 +1823,82 @@ experiment('internal/modules/gauging-stations/controller - sending', () => {
     });
   });
 
-  // getSendAlertProcessing
+  experiment('.getSendAlertEmailAddress', () => {
+    const gsId = uuid();
+    const request = {
+      path: `http://example.com/monitoring-stations/${gsId}/send-alert/processing`,
+      method: 'get',
+      params: {
+        gaugingStationId: gsId
+      },
+      yar: {
+        get: sandbox.stub().resolves({}),
+        set: sandbox.spy(),
+        clear: sandbox.spy()
+      },
+      view: {
+        path: `http://example.com/monitoring-stations/${gsId}/send-alert/processing`,
+        csrfToken: 'some-token'
+      }
+    };
+
+    const h = { view: sandbox.stub().returns({}), redirect: sandbox.stub().returns({}) };
+
+    const notificationEventId = uuid();
+    beforeEach(async () => {
+      await sandbox.stub(session, 'get').resolves({
+        notificationEventId
+      });
+      sandbox.stub(session, 'merge').resolves({});
+      sandbox.stub(session, 'clear').resolves({});
+      sandbox.stub(helpers, 'getCaption').resolves('a caption is output');
+      sandbox.stub(services.water.events, 'findOne').resolves({
+        data: {
+          status: 'processing'
+        }
+      });
+      await controller.getSendAlertProcessing(request, h);
+    });
+    afterEach(async () => sandbox.restore());
+
+    test('renders a caption', () => {
+      expect(helpers.getCaption.called).to.be.true();
+    });
+    test('calls session.get to fetch the notification Id', () => {
+      expect(session.get.called).to.be.true();
+    });
+    test('calls the events service to fetch the event record', () => {
+      expect(services.water.events.findOne.calledWith(notificationEventId)).to.be.true();
+    });
+    experiment('when the event is still processing', () => {
+      beforeEach(async () => {
+        services.water.events.findOne.resolves({
+          data: {
+            status: 'processing'
+          }
+        });
+      });
+      afterEach(async () => sandbox.restore());
+      test('redirects to processing', async () => {
+        expect(h.view.calledWith('nunjucks/gauging-stations/processing-sending-alerts')).to.be.true();
+      });
+    });
+
+    experiment('when the event is done processing', () => {
+      beforeEach(async () => {
+        await services.water.events.findOne.resolves({
+          data: {
+            status: 'hurrah'
+          }
+        });
+        await controller.getSendAlertProcessing(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+      test('redirects to the check page', async () => {
+        expect(h.redirect.calledWith(`http://example.com/monitoring-stations/${gsId}/send-alert/check`)).to.be.true();
+      });
+    });
+  });
   // getSendAlertCheck
   // getSendAlertPreview
   // getSendAlertConfirm

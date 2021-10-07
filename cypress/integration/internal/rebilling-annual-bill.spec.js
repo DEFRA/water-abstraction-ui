@@ -1,6 +1,6 @@
 const { setUp, tearDown } = require('../../support/setup');
 
-describe('annual bill run', () => {
+describe('rebilling annual bill run', () => {
   beforeEach(() => {
     tearDown();
     setUp('annual-billing-2');
@@ -39,7 +39,7 @@ describe('annual bill run', () => {
         cy.get('button.govuk-button').click();
       });
 
-      describe('user generates the annual bill and mark a licence for rebill', () => {
+      describe('user generates the annual bill and verifys that bill sent succesfully', () => {
         cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Annual bill run');
         cy.url().should('contain', '/summary');
         cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Annual bill run');
@@ -55,8 +55,9 @@ describe('annual bill run', () => {
         cy.get(':nth-child(5) > .govuk-link').click();
         cy.get('.govuk-details__summary').contains('Billing account details').click();
         cy.get('div.govuk-details__text').contains('Billing account A99999999A').click();
-        // asserting the reissue button exists and clicking, enter the dates for the reissue
-        cy.wait(10000);
+      });
+
+      describe('user marks the bill for reissue and confirms', () => {
         cy.get('p > .govuk-button').contains('Reissue a bill').should('be.visible');
         cy.get('p > .govuk-button').click();
         cy.get('#fromDate-day').type('01');
@@ -69,18 +70,24 @@ describe('annual bill run', () => {
         cy.get('.govuk-panel').should('contain', 'You’ve marked 1 bill for reissue');
         cy.get('.govuk-grid-column-full > .govuk-button').contains('Create a supplementary bill run').should('be.visible');
         cy.get(':nth-child(6) > .govuk-link').contains('Return to billing account').should('be.visible');
-        // creating supplimentary bill for rebill
+      });
+
+      describe('user creates the supplementary bill for the bills marks reissue', () => {
         cy.get('.govuk-grid-column-full > .govuk-button').click();
-        // run billing
         cy.get('#selectedBillingType-2').click();
         cy.get('form > .govuk-button').click();
         cy.get('#selectedBillingRegion-9').check();
         cy.get('form > .govuk-button').click();
         cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('bill run');
-        // confirm and send the bill 
+        // confirm and send the bill
         cy.get('div.govuk-grid-column-two-thirds').eq(3).children(0).contains('Confirm bill run').click();
         cy.get('form > .govuk-button').contains('Send bill run').click();
         cy.get('.govuk-panel__title', { timeout: 20000 }).contains('Bill run sent');
+      });
+
+      describe('user asserts the rebilling generated from supplementary bill run', () => {
+        cy.get('.govuk-grid-column-two-thirds').contains('Go to bill run').click();
+        cy.get('#main-content').contains('2022').should('be.visible');
       });
     });
   });

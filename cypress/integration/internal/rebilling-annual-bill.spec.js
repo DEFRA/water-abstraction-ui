@@ -19,14 +19,14 @@ describe('rebilling annual bill run', () => {
       cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
       cy.get('.govuk-button.govuk-button--start').click();
       // assert once the user is signed in
-      cy.contains('Licences, users and returns');
-      // user clicks on manage link to set up the supplementary bill run
-      describe('user clicks on Manage link', () => {
-        cy.get('#navbar-notifications').click();
-      });
+      cy.get('.govuk-label').contains('Search').should('be.visible');
+      cy.get('#search-hint').contains('Enter a licence number, customer name, returns ID, registered email address or monitoring station').should('be.visible');
 
       describe('user enters the create a new bill flow', () => {
-        cy.get('.govuk-link').contains('Create a bill run').click();
+        cy.get('#navbar-bill-runs').click();
+        cy.contains('Bill runs').should('be.visible');
+        cy.contains('Create a supplementary, annual or two-part tariff bill run.').should('be.visible');
+        cy.get('#main-content > a.govuk-button').contains('Create a bill run').click();
       });
 
       describe('user selects annual billing type', () => {

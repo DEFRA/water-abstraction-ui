@@ -68,7 +68,6 @@ describe('internal user resetting their password:', () => {
   });
 
   it('is redirected to the search page', () => {
-    cy.contains('Licences, users and returns').should('be.visible');
     cy.contains('Search').should('be.visible');
     cy.url().should('include', '/licences');
   });

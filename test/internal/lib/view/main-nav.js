@@ -34,13 +34,19 @@ const getARUserRequest = () => {
 
 const getARApproverRequest = () => {
   const request = getARUserRequest(true);
-  set(request, 'auth.credentials.scope', [scope.internal, scope.abstractionReformApprover]);
+  set(request, 'auth.credentials.scope', [scope.internal, scope.abstractionReformApprover, scope.billing]);
   return request;
 };
 
 const getReturnsRequest = () => {
   const request = getAuthenticatedRequest(true);
   set(request, 'auth.credentials.scope', [scope.internal, scope.returns]);
+  return request;
+};
+
+const getBillingRequest = () => {
+  const request = getAuthenticatedRequest(true);
+  set(request, 'auth.credentials.scope', [scope.internal, scope.billing]);
   return request;
 };
 
@@ -58,6 +64,7 @@ experiment('getMainNav', () => {
     const links = getMainNav(request);
 
     expect(find(links, { id: 'view' }).active).to.equal(true);
+    expect(find(links, { id: 'bill-runs' }).active).to.equal(false);
     expect(find(links, { id: 'ar' }).active).to.equal(false);
     expect(find(links, { id: 'notifications' }).active).to.equal(false);
   });
@@ -77,7 +84,13 @@ experiment('getMainNav', () => {
   test('It should display correct links for AR approver', async () => {
     const request = getARApproverRequest();
     const ids = getIds(getMainNav(request));
-    expect(ids).to.equal(['view', 'ar', 'notifications']);
+    expect(ids).to.equal(['view', 'bill-runs', 'ar', 'notifications']);
+  });
+
+  test('It should display correct links for Billing user', async () => {
+    const request = getBillingRequest();
+    const ids = getIds(getMainNav(request));
+    expect(ids).to.equal(['view', 'bill-runs', 'notifications']);
   });
 
   test('It should display correct links for WIRS/returns user', async () => {

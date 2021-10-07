@@ -26,7 +26,9 @@ describe('two-part-tariff bill run', () => {
       });
 
       describe('user enters the create a new bill flow', () => {
-        cy.get(':nth-child(9) > :nth-child(1) > .govuk-link').click();
+        cy.get('#navbar-bill-runs').contains('Bill runs').click();
+        cy.get('#main-content > a.govuk-button').contains('Create a bill run').click();
+        // cy.get(':nth-child(9) > :nth-child(1) > .govuk-link').click();
       });
 
       describe('user selects two-part-tariff billing type', () => {

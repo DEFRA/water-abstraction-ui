@@ -28,7 +28,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Which kind of bill run do you want to create?',
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       }
     }
@@ -61,7 +61,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Select the region',
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       pre: [
@@ -94,7 +94,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'A bill run already exists',
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -116,7 +116,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'This bill run has already been run',
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {

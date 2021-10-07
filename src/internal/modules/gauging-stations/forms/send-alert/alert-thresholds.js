@@ -26,7 +26,10 @@ const sendAlertThresholdsForm = request => {
     label: `${capitalize(helpers.deduceRestrictionTypeFromUnit(eachUnit.thresholdUnit))} thresholds for this station (${eachUnit.thresholdUnit})`,
     errors: {
       'any.required': {
-        message: 'Select if the licence holder needs to stop abstraction when they reach a certain amount'
+        message: 'Select applicable threshold(s)'
+      },
+      'array.min': {
+        message: 'Select applicable threshold(s)'
       }
     },
     choices: validOptions.filter(x => x.thresholdUnit === eachUnit.thresholdUnit).map(eachValue => ({

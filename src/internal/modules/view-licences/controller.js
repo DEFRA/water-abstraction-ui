@@ -59,7 +59,6 @@ const getLicenceSummary = async (request, h) => {
 
   const contacts = await services.crm.documentRoles.getDocumentRolesByDocumentRef(encodeURIComponent(document.system_external_id));
 
-  console.log(contacts);
   return h.view('nunjucks/view-licences/licence.njk', {
     ...request.view,
     pageTitle: `Licence ${licence.licenceNumber}`,

@@ -57,6 +57,9 @@ const getLicenceSummary = async (request, h) => {
     }
   );
 
+  const contacts = await services.crm.documentRoles.getDocumentRolesByDocumentRef(encodeURIComponent(document.system_external_id));
+
+  console.log(contacts);
   return h.view('nunjucks/view-licences/licence.njk', {
     ...request.view,
     pageTitle: `Licence ${licence.licenceNumber}`,
@@ -66,6 +69,7 @@ const getLicenceSummary = async (request, h) => {
     ...pick(request.pre, ['licence', 'bills', 'notifications', 'primaryUser', 'summary']),
     gaugingStationsData: uniqWith(gaugingStationsData, isEqual),
     chargeVersions,
+    contacts,
     agreements: mappers.mapLicenceAgreements(agreements, { licenceId, includeInSupplementaryBilling: licence.includeInSupplementaryBilling, ...permissions }),
     returns: {
       pagination: returns.pagination,

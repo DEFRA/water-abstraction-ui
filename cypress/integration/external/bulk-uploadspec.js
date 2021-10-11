@@ -50,7 +50,10 @@ describe('Bulk upload returns test', () => {
     const filepath = 'downloads/big farm co ltd monthly return.csv';
     cy.get('input[type="file"]').attachFile(filepath);
     cy.get('button.govuk-button').click();
-    cy.contains('Uploading returns data')
-    cy.contains('Your data is ready to send', { timeout: 100000})
+    cy.contains('Uploading returns data');
+    cy.contains('Your data is ready to send', { timeout: 100000 });
+    // submit the bulk return
+    cy.get('form > .govuk-button').contains('Submit').click();
+    cy.contains('Returns submitted', { timeout: 200000 }).should('be.visible');
   });
 });

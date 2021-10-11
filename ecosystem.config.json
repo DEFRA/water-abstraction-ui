@@ -9,6 +9,7 @@
         "node_modules",
         "src/internal",
         "test",
+        "temp",
         "cypress",
         ".git"
       ],
@@ -31,6 +32,7 @@
         "node_modules",
         "src/external",
         "test",
+        "temp",
         "cypress",
         ".git"
       ],

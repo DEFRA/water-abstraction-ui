@@ -1,6 +1,6 @@
 'use strict';
 
-const { pick, uniqWith, isEqual } = require('lodash');
+const { pick, uniqWith, isEqual, get } = require('lodash');
 const moment = require('moment');
 const formHandler = require('shared/lib/form-handler');
 const forms = require('./forms');
@@ -68,6 +68,7 @@ const getLicenceSummary = async (request, h) => {
     ...pick(request.pre, ['licence', 'bills', 'notifications', 'primaryUser', 'summary']),
     gaugingStationsData: uniqWith(gaugingStationsData, isEqual),
     chargeVersions,
+    invoiceAccount: get(chargeVersions.find(cv => cv.status === 'current'), 'invoiceAccount', {}),
     contacts,
     agreements: mappers.mapLicenceAgreements(agreements, { licenceId, includeInSupplementaryBilling: licence.includeInSupplementaryBilling, ...permissions }),
     returns: {

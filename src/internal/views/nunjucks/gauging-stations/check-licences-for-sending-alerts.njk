@@ -1,0 +1,96 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "title.njk" import title %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block pageTitle %}
+  {{pageTitle}} - GOV.UK
+{% endblock %}
+
+
+{% block content %}
+<a href="/monitoring-stations/325fa5ce-42f4-47a9-81fc-6d8004c4a4b0/send-alert/alert-thresholds" class="govuk-back-link" data-no-js> Back </a>
+
+<div class="govuk-grid-row govuk-!-margin-bottom-6">
+    <div class="govuk-grid-column-full">
+     {{ title(pageTitle, caption) }}
+    </div>
+</div>
+
+<table class="govuk-table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header">Licence</th>
+      <th scope="col" class="govuk-table__header">Abstraction period</th>
+      <th scope="col" colspan="2" class="govuk-table__header govuk-!-width-one-quarter">Flow and level restriction<br>type and threshold </th>
+      <th scope="col" colspan="2" class="govuk-table__header">Last type of alert<br>sent and date issued</th>
+      <th scope="col" class="govuk-table__header  govuk-table__header--numeric ">Action</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+  {% for licenceGroup in selectedGroupedLicences %}
+
+    {% for linkage in licenceGroup %}
+  <tr>
+    {% if linkage === licenceGroup[0] %}
+        <td class="govuk-table__cell" rowspan={{licenceGroup.length}}>
+          <a href="/licences/{{licenceGroup[0].licenceId}}">
+            {{licenceGroup[0].licenceRef}}
+          </a>
+        </td>
+    {% endif %}
+          <td class="govuk-table__cell {{'govuk-table__override_no_bottom_border' if linkage !== licenceGroup[licenceGroup.length-1] else ''}}">
+             {{
+               {
+                 startDay: linkage.abstractionPeriodStartDay,
+                 startMonth: linkage.abstractionPeriodStartMonth,
+                 endDay: linkage.abstractionPeriodEndDay,
+                 endMonth: linkage.abstractionPeriodEndMonth
+               } | abstractionPeriod
+             }}
+          </td>
+
+          <td class="govuk-table__cell {{'govuk-table__override_no_bottom_border' if linkage !== licenceGroup[licenceGroup.length-1] else ''}}">
+              {{linkage.alertType | sentenceCase }}
+          </td>
+
+          <td class="govuk-table__cell govuk-table__cell--numeric {{'govuk-table__override_no_bottom_border' if linkage !== licenceGroup[licenceGroup.length-1] else ''}}">
+            {{linkage.thresholdValue}}
+            {{linkage.thresholdUnit }}
+          </td>
+
+          <td class="govuk-table__cell {{'govuk-table__override_no_bottom_border' if linkage !== licenceGroup[licenceGroup.length-1] else ''}}">
+            {% if linkage.dateStatusUpdated %}
+              {{linkage.comstatus | sentenceCase }}
+            {% endif %}
+          </td>
+
+          {% if linkage === licenceGroup[0] %}
+              <td class="govuk-table__cell {{'govuk-table__override_no_bottom_border' if linkage !== licenceGroup[licenceGroup.length-1] else ''}}">
+                {{ licenceGroup[0].dateStatusUpdated | date if licenceGroup[0].dateStatusUpdated else ''}}
+              </td>
+          {% else %}
+            <td class="govuk-table__cell {{'govuk-table__override_no_bottom_border' if linkage !== licenceGroup[licenceGroup.length-1] else ''}}" />
+          {% endif %}
+
+            {% if linkage === licenceGroup[0] %}
+                <td class="govuk-table__cell govuk-table__cell--numeric" rowspan={{licenceGroup.length}}>
+                  <a class="govuk-link" href="{{excludeLicencePreURL}}/{{ linkage.licenceId }}">Remove</a>
+                </td>
+            {% else %}
+             <td class="govuk-table__cell govuk-table__cell--numeric {{'govuk-table__override_no_bottom_border' if linkage !== licenceGroup[licenceGroup.length-1] else ''}}" rowspan={{licenceGroup.length}} />
+            {% endif %}
+            </tr>
+      {% endfor %}
+
+    {% endfor %}
+  </tbody>
+</table>
+
+    {{ govukButton({
+        text: "Continue",
+        href: continueUrl,
+        classes: "govuk-button--primary"
+      }) }}
+
+<!--End content block-->
+{% endblock %}

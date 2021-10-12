@@ -136,7 +136,7 @@ experiment('isBulkUpload', () => {
   });
 });
 
-experiment('getLicenceNumbers', () => {
+experiment('getNewTaggingLicenceNumbers', () => {
   beforeEach(async () => {
     sandbox.stub(services.crm.documents, 'findAll').resolves({});
   });
@@ -146,7 +146,7 @@ experiment('getLicenceNumbers', () => {
   });
 
   test('requests the required columns', async () => {
-    await helpers.getLicenceNumbers({});
+    await helpers.getNewTaggingLicenceNumbers({});
     const [, , columns] = services.crm.documents.findAll.lastCall.args;
     expect(columns).to.only.include([
       'system_external_id',
@@ -158,7 +158,7 @@ experiment('getLicenceNumbers', () => {
 
   test('does not expired licences for external users', async () => {
     const request = {};
-    await helpers.getLicenceNumbers(request);
+    await helpers.getNewTaggingLicenceNumbers(request);
     const [ filter ] = services.crm.documents.findAll.lastCall.args;
     expect(get(filter, 'includeExpired')).to.be.undefined();
   });

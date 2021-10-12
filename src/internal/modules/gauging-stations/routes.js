@@ -4,8 +4,9 @@ const Joi = require('joi');
 const controller = require('./controller');
 const preHandlers = require('./lib/prehandlers');
 const helpers = require('./lib/helpers');
-const { manageGaugingStationLicenceLinks } = require('internal/lib/constants').scope;
-const allowedScopes = [manageGaugingStationLicenceLinks];
+const { manageGaugingStationLicenceLinks, hofNotifications } = require('internal/lib/constants').scope;
+const taggingAllowedScopes = [manageGaugingStationLicenceLinks];
+const sendingAllowedScopes = [hofNotifications];
 
 module.exports = {
 
@@ -68,7 +69,7 @@ module.exports = {
     config: {
       description: 'Accepts a specified tag',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       },
       pre: [
         { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
@@ -83,7 +84,7 @@ module.exports = {
     config: {
       description: 'Accepts a specified tag',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       },
       pre: [
         { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
@@ -96,6 +97,9 @@ module.exports = {
     path: '/monitoring-stations/{gaugingStationId}/untagging-licence/remove-tag-complete',
     handler: controller.getRemoveTagComplete,
     config: {
+      auth: {
+        scope: taggingAllowedScopes
+      },
       description: 'remove linking a licence to a given gauging station - Comfirm removal',
       validate: {
         params: Joi.object({
@@ -111,23 +115,33 @@ module.exports = {
   postRemoveTagComplete: {
     method: 'POST',
     path: '/monitoring-stations/{gaugingStationId}/untagging-licence/remove-tag-complete',
-    handler: controller.postRemoveTagComplete
+    handler: controller.postRemoveTagComplete,
+    config: {
+      auth: {
+        scope: taggingAllowedScopes
+      }
+    }
   },
 
-  getNewFlow: {
+  getNewTaggingFlow: {
     method: 'GET',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence',
-    handler: controller.getNewFlow
+    handler: controller.getNewTaggingFlow,
+    config: {
+      auth: {
+        scope: taggingAllowedScopes
+      }
+    }
   },
 
-  getThresholdAndUnit: {
+  getNewTaggingThresholdAndUnit: {
     method: 'GET',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/threshold-and-unit',
-    handler: controller.getThresholdAndUnit,
+    handler: controller.getNewTaggingThresholdAndUnit,
     config: {
       description: 'Gets the entry page for linking a licence to a given gauging station - Requires the user to enter a Threshold and Unit for triggering an alert',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       },
       validate: {
         params: Joi.object().keys({
@@ -138,62 +152,62 @@ module.exports = {
     }
   },
 
-  postThresholdAndUnit: {
+  postNewTaggingThresholdAndUnit: {
     method: 'POST',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/threshold-and-unit',
-    handler: controller.postThresholdAndUnit,
+    handler: controller.postNewTaggingThresholdAndUnit,
     config: {
       description: 'Accepts a specified threshold and unit, and forwards user to the next step in the flow',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       }
     }
   },
 
-  getAlertType: {
+  getNewTaggingAlertType: {
     method: 'GET',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/alert-type',
-    handler: controller.getAlertType,
+    handler: controller.getNewTaggingAlertType,
     config: {
       description: 'Gets the form for selecting an alert type',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       }
     }
   },
 
-  postAlertType: {
+  postNewTaggingAlertType: {
     method: 'POST',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/alert-type',
-    handler: controller.postAlertType,
+    handler: controller.postNewTaggingAlertType,
     config: {
       description: 'Accepts a specified threshold and unit, and forwards user to the next step in the flow',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       }
     }
   },
 
-  getLicenceNumber: {
+  getNewTaggingLicenceNumber: {
     method: 'GET',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/licence-number',
-    handler: controller.getLicenceNumber,
+    handler: controller.getNewTaggingLicenceNumber,
     config: {
       description: 'Gets the form for entering a licence number',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       }
     }
   },
 
-  postLicenceNumber: {
+  postNewTaggingLicenceNumber: {
     method: 'POST',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/licence-number',
-    handler: controller.postLicenceNumber,
+    handler: controller.postNewTaggingLicenceNumber,
     config: {
       description: 'Takes a licence number, and forwards user to the next step in the flow',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       },
       pre: [
         { method: helpers.isLicenceNumberValid, assign: 'isLicenceNumberValid' }
@@ -201,14 +215,14 @@ module.exports = {
     }
   },
 
-  getCondition: {
+  getNewTaggingCondition: {
     method: 'GET',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/condition',
-    handler: controller.getCondition,
+    handler: controller.getNewTaggingCondition,
     config: {
       description: 'Gets the form for selecting a relevant licence condition',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       },
       pre: [
         { method: helpers.fetchConditionsForLicence, assign: 'conditionsForSelectedLicence' }
@@ -216,14 +230,14 @@ module.exports = {
     }
   },
 
-  postCondition: {
+  postNewTaggingCondition: {
     method: 'POST',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/condition',
-    handler: controller.postCondition,
+    handler: controller.postNewTaggingCondition,
     config: {
       description: 'Takes input of the condition GUID. Accepts Null to indicate a linkage which is not condition-specific.',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       },
       pre: [
         { method: helpers.fetchConditionsForLicence, assign: 'conditionsForSelectedLicence' }
@@ -231,38 +245,38 @@ module.exports = {
     }
   },
 
-  getManuallyDefinedAbstractionPeriod: {
+  getNewTaggingManuallyDefinedAbstractionPeriod: {
     method: 'GET',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/abstraction-period',
-    handler: controller.getManuallyDefinedAbstractionPeriod,
+    handler: controller.getNewTaggingManuallyDefinedAbstractionPeriod,
     config: {
       description: 'Gets the form for inputting a manually-defined abstraction period',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       }
     }
   },
 
-  postManuallyDefinedAbstractionPeriod: {
+  postNewTaggingManuallyDefinedAbstractionPeriod: {
     method: 'POST',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/abstraction-period',
-    handler: controller.postManuallyDefinedAbstractionPeriod,
+    handler: controller.postNewTaggingManuallyDefinedAbstractionPeriod,
     config: {
       description: 'Takes the input of a manually-defined abstraction period.',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       }
     }
   },
 
-  getCheckYourAnswers: {
+  getNewTaggingCheckYourAnswers: {
     method: 'GET',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/check',
-    handler: controller.getCheckYourAnswers,
+    handler: controller.getNewTaggingCheckYourAnswers,
     config: {
       description: 'Gets the check your answers page',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       },
       pre: [
         { method: helpers.fetchConditionsForLicence, assign: 'conditionsForSelectedLicence' }
@@ -270,14 +284,14 @@ module.exports = {
     }
   },
 
-  postCheckYourAnswers: {
+  postNewTaggingCheckYourAnswers: {
     method: 'POST',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/check',
-    handler: controller.postCheckYourAnswers,
+    handler: controller.postNewTaggingCheckYourAnswers,
     config: {
       description: 'Posts the payload.',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
       },
       pre: [
         { method: helpers.fetchConditionsForLicence, assign: 'conditionsForSelectedLicence' }
@@ -285,14 +299,194 @@ module.exports = {
     }
   },
 
-  getFlowComplete: {
+  getNewTaggingFlowComplete: {
     method: 'GET',
     path: '/monitoring-stations/{gaugingStationId}/tagging-licence/complete',
-    handler: controller.getFlowComplete,
+    handler: controller.getNewTaggingFlowComplete,
     config: {
       description: 'Gets the completion confirmation page',
       auth: {
-        scope: allowedScopes
+        scope: taggingAllowedScopes
+      }
+    }
+  },
+
+  getSendAlert: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert',
+    handler: (request, h) => h.redirect(`/monitoring-stations/${request.params.gaugingStationId}/send-alert/alert-type`),
+    config: {
+      description: 'Redirects the user to the first step of the WAA sending flow',
+      auth: {
+        scope: sendingAllowedScopes
+      }
+    }
+  },
+
+  getSendAlertSelectAlertType: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/alert-type',
+    handler: controller.getSendAlertSelectAlertType,
+    config: {
+      description: 'Asks the user to select an alert type for sending a new water abstraction alert',
+      pre: [
+        { method: preHandlers.loadGaugingStation, assign: 'station' }
+      ],
+      auth: {
+        scope: sendingAllowedScopes
+      }
+    }
+  },
+
+  postSendAlertSelectAlertType: {
+    method: 'POST',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/alert-type',
+    handler: controller.postSendAlertSelectAlertType,
+    config: {
+      description: 'Accepts the input of the user after selecting an alert type for sending a new water abstraction alert',
+      auth: {
+        scope: sendingAllowedScopes
+      }
+    }
+  },
+
+  getSendAlertSelectAlertThresholds: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/alert-thresholds',
+    handler: controller.getSendAlertSelectAlertThresholds,
+    config: {
+      description: 'Asks the user to select the applicable alert thresholds for sending a water abstraction alert',
+      pre: [
+        { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
+      ],
+      auth: {
+        scope: sendingAllowedScopes
+      }
+    }
+  },
+
+  postSendAlertSelectAlertThresholds: {
+    method: 'POST',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/alert-thresholds',
+    handler: controller.postSendAlertSelectAlertThresholds,
+    config: {
+      description: 'Accepts the input of the user after selecting an alert thresholds for sending a new water abstraction alert',
+      pre: [
+        { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
+      ],
+      auth: {
+        scope: sendingAllowedScopes
+      }
+    }
+  },
+
+  getSendAlertCheckLicenceMatches: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/check-licence-matches',
+    handler: controller.getSendAlertCheckLicenceMatches,
+    config: {
+      description: 'Asks the user to confirm the pre-selected licences for sending a water abstraction alert',
+      pre: [
+        { method: preHandlers.loadGaugingStationLicences, assign: 'licenceGaugingStations' }
+      ],
+      auth: {
+        scope: sendingAllowedScopes
+      }
+    }
+  },
+
+  getSendAlertExcludeLicence: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/exclude-licence/{licenceId}',
+    handler: controller.getSendAlertExcludeLicence,
+    config: {
+      description: 'Asks the user to confirm that they wish to exclude a licence from a water abstraction alert sending process',
+      auth: {
+        scope: sendingAllowedScopes
+      }
+    }
+  },
+
+  getSendAlertExcludeLicenceConfirm: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/exclude-licence/{licenceId}/confirm',
+    handler: controller.getSendAlertExcludeLicenceConfirm,
+    config: {
+      description: 'Excludes a licence from a water abstraction alert sending process',
+      auth: {
+        scope: sendingAllowedScopes
+      }
+    }
+  },
+
+  getSendAlertEmailAddress: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/email-address',
+    handler: controller.getSendAlertEmailAddress,
+    config: {
+      description: 'Asks the user to set the email address that should be used for sending the alert',
+      auth: {
+        scope: sendingAllowedScopes
+      }
+    }
+  },
+
+  postSendAlertEmailAddress: {
+    method: 'POST',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/email-address',
+    handler: controller.postSendAlertEmailAddress,
+    config: {
+      description: 'Sets the email address that should be used for sending the alert',
+      auth: {
+        scope: sendingAllowedScopes
+      }
+    }
+  },
+
+  getSendAlertProcessing: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/processing',
+    handler: controller.getSendAlertProcessing,
+    config: {
+      description: 'Displays a holding page while the notifications batch is being prepared',
+      auth: {
+        scope: sendingAllowedScopes
+      }
+    }
+  },
+
+  getSendAlertCheck: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/check',
+    handler: controller.getSendAlertCheck,
+    config: {
+      description: 'Asks the user to confirm the details of the alert are correct before triggering comms',
+      auth: {
+        scope: sendingAllowedScopes
+      }
+    }
+  },
+
+  getSendAlertPreview: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/preview/{notificationId}',
+    handler: controller.getSendAlertPreview,
+    config: {
+      description: 'Previews a specific water abstraction alert given an eventId',
+      auth: {
+        scope: sendingAllowedScopes
+      }
+    }
+  },
+
+  getSendAlertConfirm: {
+    method: 'GET',
+    path: '/monitoring-stations/{gaugingStationId}/send-alert/success',
+    handler: controller.getSendAlertConfirm,
+    config: {
+      description: 'Triggers the sending of the water abstraction alert',
+      auth: {
+        scope: sendingAllowedScopes
       }
     }
   }

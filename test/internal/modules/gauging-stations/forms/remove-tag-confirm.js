@@ -2,7 +2,7 @@
 
 const { expect } = require('@hapi/code');
 const { test, experiment, beforeEach } = exports.lab = require('@hapi/lab').script();
-const { form: removeTagConfirmForm, schema: removeTagConfirmSchema } = require('internal/modules/gauging-stations/forms/remove-tag-confirm');
+const { form: removeTagConfirmForm, schema: removeTagConfirmSchema } = require('internal/modules/gauging-stations/forms/remove-tag/remove-tag-confirm');
 
 experiment('internal/modules/gauging-stations/forms/remove-tag-confirm.js', () => {
   let request, form;

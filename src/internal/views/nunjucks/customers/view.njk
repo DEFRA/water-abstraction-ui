@@ -1,0 +1,41 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "title.njk" import title %}
+{% from "govuk/components/tabs/macro.njk" import govukTabs %}
+
+{% block content %}
+  {{ title(pageTitle, caption) }}
+
+    <div class="govuk-tabs" data-module="govuk-tabs">
+            <h2 class="govuk-tabs__title">Contents</h2>
+
+
+            <ul class="govuk-tabs__list">
+
+              <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+                <a class="govuk-tabs__tab" href="#licences">Licences</a>
+              </li>
+
+              <li class="govuk-tabs__list-item govuk-tabs__list-item">
+                <a class="govuk-tabs__tab" href="#billing-accounts">Billing accounts</a>
+              </li>
+
+
+              <li class="govuk-tabs__list-item">
+                <a class="govuk-tabs__tab" href="#contacts">Contacts</a>
+              </li>
+            </ul>
+
+            <section class="govuk-tabs__panel" id="licences">
+              {% include "nunjucks/customers/tabs/licences.njk" %}
+            </section>
+
+            <section class="govuk-tabs__panel" id="billing-accounts">
+              {% include "nunjucks/customers/tabs/billing-accounts.njk" %}
+            </section>
+
+            <section class="govuk-tabs__panel" id="contacts">
+              {% include "nunjucks/customers/tabs/contacts.njk" %}
+            </section>
+
+          </div>
+{% endblock %}

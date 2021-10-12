@@ -1,0 +1,25 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "title.njk" import title %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+
+
+{% block pageTitle %}
+  {{pageTitle}} - GOV.UK
+{% endblock %}
+
+{% block content %}
+    <div class="govuk-grid-row govuk-!-margin-bottom-6">
+        <div class="govuk-grid-column-full">
+         {{ title(pageTitle, caption) }}
+        </div>
+    </div>
+    <div class="govuk-inset-text">
+      We will not send a water abstraction alert for this licence.
+    </div>
+      {{ govukButton({
+        text: "Remove licence",
+        href: confirmURL,
+        classes: "govuk-button--primary"
+      }) }}
+{% endblock %}

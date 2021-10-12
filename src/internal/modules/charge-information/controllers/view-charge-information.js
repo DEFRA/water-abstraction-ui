@@ -21,6 +21,8 @@ const getViewChargeInformation = async (request, h) => {
   const { chargeVersionWorkflowId } = request.params;
   const backLink = await getLicencePageUrl(licence, true);
 
+  const { data: documentRoles } = await services.crm.documentRoles.getDocumentRolesByDocumentRef(licence.licenceNumber);
+  console.log(documentRoles);
   const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount);
 
   return h.view('nunjucks/charge-information/view', {
@@ -31,6 +33,7 @@ const getViewChargeInformation = async (request, h) => {
     chargeVersionWorkflowId,
     billingAccount,
     billingAccountAddress,
+    documentRoles,
     links: {
       billingAccount: hasScope(request, manageBillingAccounts) && `/billing-accounts/${billingAccount.id}`
     },

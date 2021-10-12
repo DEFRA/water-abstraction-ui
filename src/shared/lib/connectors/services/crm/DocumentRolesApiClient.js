@@ -5,7 +5,7 @@ const config = require('../../../../../internal/config');
 class DocumentsRolesApiClient extends ServiceClient {
   getDocumentRolesByDocumentRef (documentRef) {
     const serviceUrl = config.services.crm_v2;
-    const uri = urlJoin(serviceUrl, 'document', documentRef, 'document-roles');
+    const uri = urlJoin(serviceUrl, 'document', encodeURIComponent(documentRef), 'document-roles');
     return this.serviceRequest.get(uri);
   }
 }

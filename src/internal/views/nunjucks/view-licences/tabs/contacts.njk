@@ -4,7 +4,7 @@
 <h2 class="govuk-heading-l">Contact details</h2>
 
     {% if invoiceAccount.id %}
-        <p><a href='/billing-accounts/{{ invoiceAccount.id }}'>Go to customer contacts</a></p>
+        <p><a href='/billing-accounts/{{ invoiceAccount.id }}/#contacts'>Go to customer contacts</a></p>
     {% endif %}
 
     {% if contacts.data.length > 0 %}

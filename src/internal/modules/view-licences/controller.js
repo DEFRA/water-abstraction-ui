@@ -70,6 +70,7 @@ const getLicenceSummary = async (request, h) => {
     chargeVersions,
     invoiceAccount: get(chargeVersions.find(cv => cv.status === 'current'), 'invoiceAccount', {}),
     contacts,
+    licenceHolder: contacts.data.find(con => con.roleName === 'licenceHolder'),
     agreements: mappers.mapLicenceAgreements(agreements, { licenceId, includeInSupplementaryBilling: licence.includeInSupplementaryBilling, ...permissions }),
     returns: {
       pagination: returns.pagination,

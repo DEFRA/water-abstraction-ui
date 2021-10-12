@@ -22,7 +22,8 @@ const getViewChargeInformation = async (request, h) => {
   const backLink = await getLicencePageUrl(licence, true);
 
   const { data: documentRoles } = await services.crm.documentRoles.getDocumentRolesByDocumentRef(licence.licenceNumber);
-  console.log(documentRoles);
+  const licenceHolder = documentRoles.find(role => role.roleName === 'licenceHolder');
+
   const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount);
 
   return h.view('nunjucks/charge-information/view', {
@@ -33,7 +34,7 @@ const getViewChargeInformation = async (request, h) => {
     chargeVersionWorkflowId,
     billingAccount,
     billingAccountAddress,
-    documentRoles,
+    licenceHolder,
     links: {
       billingAccount: hasScope(request, manageBillingAccounts) && `/billing-accounts/${billingAccount.id}`
     },
@@ -51,12 +52,16 @@ const getReviewChargeInformation = async (request, h) => {
   const isApprover = hasScope(request, chargeVersionWorkflowReviewer);
   const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount);
   const validatedDraftChargeVersion = chargeInformationValidator.addValidation(draftChargeInformation);
+  const { data: documentRoles } = await services.crm.documentRoles.getDocumentRolesByDocumentRef(licence.licenceNumber);
+  const licenceHolder = documentRoles.find(role => role.roleName === 'licenceHolder');
+
   return h.view('nunjucks/charge-information/view', {
     ...getDefaultView(request, backLink),
     pageTitle: `Check charge information`,
     chargeVersion: validatedDraftChargeVersion,
     billingAccount,
     billingAccountAddress,
+    licenceHolder,
     licenceId: licence.id,
     isEditable: draftChargeInformation.status === 'changes_requested' || draftChargeInformation.status === 'review',
     isApprover,
@@ -79,11 +84,15 @@ const postReviewChargeInformation = async (request, h) => {
     reviewFormSchema(request)
   );
   if (!form.isValid) {
+    const { data: documentRoles } = await services.crm.documentRoles.getDocumentRolesByDocumentRef(licence.licenceNumber);
+    const licenceHolder = documentRoles.find(role => role.roleName === 'licenceHolder');
+
     return h.view('nunjucks/charge-information/view', {
       ...getDefaultView(request, backLink),
       pageTitle: `Check charge information`,
       chargeVersion: chargeInformationValidator.addValidation(draftChargeInformation),
       invoiceAccountAddress,
+      licenceHolder,
       licenceId: licence.id,
       chargeVersionWorkflowId,
       isEditable: draftChargeInformation.status === 'changes_requested',

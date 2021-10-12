@@ -180,13 +180,17 @@ const postUseAbstractionData = createPostHandler(
 );
 
 const getCheckData = async (request, h) => {
-  const { draftChargeInformation, isChargeable, billingAccount } = request.pre;
+  const { draftChargeInformation, isChargeable, billingAccount, licence } = request.pre;
   const { licenceId } = request.params;
   const back = isChargeable
     ? routing.getUseAbstractionData(licenceId, request.query)
     : routing.getEffectiveDate(licenceId, request.query);
 
   const isApprover = hasScope(request, chargeVersionWorkflowReviewer);
+
+  const { data: documentRoles } = await services.crm.documentRoles.getDocumentRolesByDocumentRef(licence.licenceNumber);
+  const licenceHolder = documentRoles.find(role => role.roleName === 'licenceHolder');
+
   const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount);
   const editChargeVersionWarning = await isOverridingChargeVersion(request, draftChargeInformation.dateRange.startDate);
   const action = routing.getCheckData(licenceId, request.query);
@@ -198,6 +202,7 @@ const getCheckData = async (request, h) => {
     licenceId: request.params.licenceId,
     billingAccountAddress,
     billingAccount,
+    licenceHolder,
     chargeVersionWorkflowId: request.query.chargeVersionWorkflowId,
     isChargeable,
     isEditable: true,

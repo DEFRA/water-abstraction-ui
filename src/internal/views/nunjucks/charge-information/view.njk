@@ -70,7 +70,7 @@ formErrorSummary %}
   {% if isEnabled %}
     Yes, agreements should apply to this element
   {% else %}
-    No, exclude this element from two-part tariff agreements 
+    No, exclude this element from two-part tariff agreements
   {% endif %}
 {% endmacro %}
 
@@ -97,11 +97,11 @@ formErrorSummary %}
             <dt class="govuk-summary-list__key">Billing account</dt>
             <dd class="govuk-summary-list__value">
 
-              {% if links.billingAccount %} 
+              {% if links.billingAccount %}
               <a href="{{ links.billingAccount }}">
               {% endif %}
                 {{ billingAccount.accountNumber }}
-              {% if links.billingAccount %} 
+              {% if links.billingAccount %}
               </a>
               {% endif %}
 
@@ -122,7 +122,7 @@ formErrorSummary %}
             {% endif %}
           </div>
 
-          {{ summaryListRow('Licence holder', company(billingAccount.company)) }}
+          {{ summaryListRow('Licence holder', company(licenceHolder)) }}
         {% endif %}
 
       </dl>
@@ -185,8 +185,8 @@ formErrorSummary %}
 
             {% if chargeElement.purposeUse.isTwoPartTariff %}
               {{ summaryListRow(
-                'Agreements apply', 
-                agreementsApplyText(chargeElement.isSection127AgreementEnabled), 
+                'Agreements apply',
+                agreementsApplyText(chargeElement.isSection127AgreementEnabled),
                 changeLink('/agreements', chargeElement.id)
               )}}
             {% endif %}

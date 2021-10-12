@@ -129,7 +129,7 @@ const loadPrimaryUser = async request => {
   return data || null;
 };
 
-const getLicenceNumberFromReturnId = returnId =>
+const getNewTaggingLicenceNumberFromReturnId = returnId =>
   returnId.split(/:/g)[2];
 
 /**
@@ -143,7 +143,7 @@ const getLicenceByReturnId = async request => {
     request.query.id
   ].find(identity);
 
-  const licenceNumber = getLicenceNumberFromReturnId(returnId);
+  const licenceNumber = getNewTaggingLicenceNumberFromReturnId(returnId);
 
   try {
     return await request.services.water.licences.getLicenceByLicenceNumber(licenceNumber);

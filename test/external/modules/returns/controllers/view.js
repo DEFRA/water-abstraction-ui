@@ -48,7 +48,7 @@ const testData = isCurrent => {
 experiment('external view controller', () => {
   beforeEach(() => {
     sandbox.stub(helpers, 'getReturnsViewData');
-    sandbox.stub(helpers, 'getLicenceNumbers');
+    sandbox.stub(helpers, 'getNewTaggingLicenceNumbers');
     sandbox.stub(services.water.returns, 'getReturn');
     sandbox.stub(WaterReturn.prototype, 'constructor');
   });
@@ -98,7 +98,7 @@ experiment('external view controller', () => {
 
   experiment('getReturn', () => {
     beforeEach(async () => {
-      helpers.getLicenceNumbers.returns([{ documentHeader: 'test-doc-header' }]);
+      helpers.getNewTaggingLicenceNumbers.returns([{ documentHeader: 'test-doc-header' }]);
       WaterReturn.prototype.constructor.returns({ metadata: { isCurrent: true } });
     });
     test('correct template is passed', async () => {

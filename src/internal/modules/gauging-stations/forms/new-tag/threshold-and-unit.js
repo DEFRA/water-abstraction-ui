@@ -2,9 +2,9 @@ const Joi = require('joi');
 const { get } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms/');
 const validUnits = ['Ml/d', 'm3/s', 'm3/d', 'l/s', 'mAOD', 'mASD', 'm'];
-const session = require('../lib/session');
+const session = require('../../lib/session');
 
-const thresholdAndUnitForm = request => {
+const newTagThresholdAndUnitForm = request => {
   const f = formFactory(request.path);
 
   const defaultThreshold = get(session.get(request), 'threshold.value');
@@ -52,11 +52,11 @@ const thresholdAndUnitForm = request => {
   return f;
 };
 
-const thresholdAndUnitSchema = () => Joi.object().keys({
+const newTagThresholdAndUnitSchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   threshold: Joi.number().min(0).max(1000000).required(),
   unit: Joi.string().required().allow(...validUnits)
 });
 
-exports.form = thresholdAndUnitForm;
-exports.schema = thresholdAndUnitSchema;
+exports.form = newTagThresholdAndUnitForm;
+exports.schema = newTagThresholdAndUnitSchema;

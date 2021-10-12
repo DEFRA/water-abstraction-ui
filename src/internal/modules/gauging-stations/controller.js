@@ -5,6 +5,8 @@ const formHandler = require('shared/lib/form-handler');
 const formHelpers = require('shared/lib/forms');
 const session = require('./lib/session');
 const helpers = require('./lib/helpers');
+const { groupBy } = require('lodash');
+const services = require('../../lib/connectors/services');
 const { waterAbstractionAlerts: isWaterAbstractionAlertsEnabled } = require('../../config').featureToggles;
 const { hasScope } = require('../../lib/permissions');
 const { manageGaugingStationLicenceLinks } = require('../../lib/constants').scope;
@@ -26,6 +28,7 @@ const getMonitoringStation = async (request, h) => {
     ...request.view,
     pageTitle: helpers.createTitle(station),
     station,
+    sendUrl: `/monitoring-stations/${station.gaugingStationId}/send-alert`,
     hasPermissionToManageLinks,
     isWaterAbstractionAlertsEnabled,
     licenceGaugingStations: helpers.groupByLicence(data),
@@ -33,9 +36,9 @@ const getMonitoringStation = async (request, h) => {
   });
 };
 
-const getNewFlow = (request, h) => h.redirect(`${request.path}/threshold-and-unit`);
+const getNewTaggingFlow = (request, h) => h.redirect(`${request.path}/threshold-and-unit`);
 
-const getThresholdAndUnit = async (request, h) => {
+const getNewTaggingThresholdAndUnit = async (request, h) => {
   const caption = await helpers.getCaption(request);
   const pageTitle = 'What is the licence hands-off flow or level threshold?';
   const { path } = request;
@@ -45,12 +48,12 @@ const getThresholdAndUnit = async (request, h) => {
     caption,
     pageTitle,
     back: path.replace(/\/[^/]*$/, ''),
-    form: formHandler.handleFormRequest(request, linkageForms.thresholdAndUnit)
+    form: formHandler.handleFormRequest(request, linkageForms.newTagThresholdAndUnitForm)
   });
 };
 
-const postThresholdAndUnit = async (request, h) => {
-  const form = await formHandler.handleFormRequest(request, linkageForms.thresholdAndUnit);
+const postNewTaggingThresholdAndUnit = async (request, h) => {
+  const form = await formHandler.handleFormRequest(request, linkageForms.newTagThresholdAndUnitForm);
 
   if (!form.isValid) {
     return h.postRedirectGet(form);
@@ -64,7 +67,7 @@ const postThresholdAndUnit = async (request, h) => {
   return helpers.redirectTo(request, h, '/alert-type');
 };
 
-const getAlertType = async (request, h) => {
+const getNewTaggingAlertType = async (request, h) => {
   const pageTitle = 'Does the licence holder need to stop or reduce at this threshold?';
   const caption = await helpers.getCaption(request);
   const { path } = request;
@@ -74,12 +77,12 @@ const getAlertType = async (request, h) => {
     caption,
     pageTitle,
     back: path.replace(/\/[^/]*$/, '/threshold-and-unit'),
-    form: formHandler.handleFormRequest(request, linkageForms.alertType)
+    form: formHandler.handleFormRequest(request, linkageForms.newTagAlertType)
   });
 };
 
-const postAlertType = async (request, h) => {
-  const form = await formHandler.handleFormRequest(request, linkageForms.alertType);
+const postNewTaggingAlertType = async (request, h) => {
+  const form = await formHandler.handleFormRequest(request, linkageForms.newTagAlertType);
 
   if (!form.isValid) {
     return h.postRedirectGet(form);
@@ -96,7 +99,7 @@ const postAlertType = async (request, h) => {
   return helpers.redirectTo(request, h, '/licence-number');
 };
 
-const getLicenceNumber = async (request, h) => {
+const getNewTaggingLicenceNumber = async (request, h) => {
   const pageTitle = 'Enter the licence number this threshold applies to';
   const caption = await helpers.getCaption(request);
   const { path } = request;
@@ -106,12 +109,12 @@ const getLicenceNumber = async (request, h) => {
     caption,
     pageTitle,
     back: path.replace(/\/[^/]*$/, '/alert-type'),
-    form: formHandler.handleFormRequest(request, linkageForms.whichLicence)
+    form: formHandler.handleFormRequest(request, linkageForms.newTagWhichLicence)
   });
 };
 
-const postLicenceNumber = async (request, h) => {
-  const form = await formHandler.handleFormRequest(request, linkageForms.whichLicence);
+const postNewTaggingLicenceNumber = async (request, h) => {
+  const form = await formHandler.handleFormRequest(request, linkageForms.newTagWhichLicence);
   const enteredLicenceNumber = form.fields.find(field => field.name === 'licenceNumber');
 
   if (!form.isValid) {
@@ -133,7 +136,7 @@ const postLicenceNumber = async (request, h) => {
   return helpers.redirectTo(request, h, '/condition');
 };
 
-const getCondition = async (request, h) => {
+const getNewTaggingCondition = async (request, h) => {
   const sessionData = session.get(request);
   const pageTitle = `Select the full condition for licence ${sessionData.licenceNumber.value}`;
   const caption = await helpers.getCaption(request);
@@ -144,12 +147,12 @@ const getCondition = async (request, h) => {
     caption,
     pageTitle,
     back: path.replace(/\/[^/]*$/, '/licence-number'),
-    form: formHandler.handleFormRequest(request, linkageForms.whichCondition)
+    form: formHandler.handleFormRequest(request, linkageForms.newTagWhichCondition)
   });
 };
 
-const postCondition = async (request, h) => {
-  const form = await formHandler.handleFormRequest(request, linkageForms.whichCondition);
+const postNewTaggingCondition = async (request, h) => {
+  const form = await formHandler.handleFormRequest(request, linkageForms.newTagWhichCondition);
 
   if (!form.isValid) {
     return h.postRedirectGet(form);
@@ -166,7 +169,7 @@ const postCondition = async (request, h) => {
   return helpers.redirectTo(request, h, conditionIsValid ? `/check` : '/abstraction-period');
 };
 
-const getManuallyDefinedAbstractionPeriod = async (request, h) => {
+const getNewTaggingManuallyDefinedAbstractionPeriod = async (request, h) => {
   const pageTitle = 'Enter an abstraction period for licence';
   const caption = await helpers.getCaption(request);
   const { path } = request;
@@ -176,12 +179,12 @@ const getManuallyDefinedAbstractionPeriod = async (request, h) => {
     caption,
     pageTitle,
     back: path.replace(/\/[^/]*$/, '/condition'),
-    form: formHandler.handleFormRequest(request, linkageForms.manuallyDefinedAbstractionPeriod)
+    form: formHandler.handleFormRequest(request, linkageForms.newTagManuallyDefinedAbstractionPeriod)
   });
 };
 
-const postManuallyDefinedAbstractionPeriod = async (request, h) => {
-  const form = await formHandler.handleFormRequest(request, linkageForms.manuallyDefinedAbstractionPeriod);
+const postNewTaggingManuallyDefinedAbstractionPeriod = async (request, h) => {
+  const form = await formHandler.handleFormRequest(request, linkageForms.newTagManuallyDefinedAbstractionPeriod);
 
   if (!form.isValid) {
     return h.postRedirectGet(form);
@@ -195,7 +198,7 @@ const postManuallyDefinedAbstractionPeriod = async (request, h) => {
   return helpers.redirectTo(request, h, '/check');
 };
 
-const getCheckYourAnswers = async (request, h) => {
+const getNewTaggingCheckYourAnswers = async (request, h) => {
   const pageTitle = 'Check the restriction details';
   const caption = await helpers.getCaption(request);
   const { path } = request;
@@ -218,15 +221,15 @@ const getCheckYourAnswers = async (request, h) => {
     caption,
     pageTitle,
     back: path.replace(/\/[^/]*$/, '/condition'),
-    form: formHandler.handleFormRequest(request, linkageForms.checkYourAnswers),
+    form: formHandler.handleFormRequest(request, linkageForms.newTagCheckYourAnswers),
     sessionData,
     selectedConditionText,
     abstractionPeriodData
   });
 };
 
-const postCheckYourAnswers = async (request, h) => {
-  const form = await formHandler.handleFormRequest(request, linkageForms.checkYourAnswers);
+const postNewTaggingCheckYourAnswers = async (request, h) => {
+  const form = await formHandler.handleFormRequest(request, linkageForms.newTagCheckYourAnswers);
 
   if (!form.isValid) {
     return h.postRedirectGet(form);
@@ -238,7 +241,7 @@ const postCheckYourAnswers = async (request, h) => {
   return h.redirect(request.path.replace(/\/[^\/]*$/, '/complete'));
 };
 
-const getFlowComplete = (request, h) => {
+const getNewTaggingFlowComplete = (request, h) => {
   const { licenceNumber } = session.get(request);
   session.clear(request);
   return h.view('nunjucks/gauging-stations/new-tag-complete', {
@@ -382,20 +385,293 @@ const postRemoveTagComplete = async (request, h) => {
   return helpers.redirectTo(request, h, '/../');
 };
 
-exports.getNewFlow = getNewFlow;
-exports.getThresholdAndUnit = getThresholdAndUnit;
-exports.postThresholdAndUnit = postThresholdAndUnit;
-exports.getAlertType = getAlertType;
-exports.postAlertType = postAlertType;
-exports.getLicenceNumber = getLicenceNumber;
-exports.postLicenceNumber = postLicenceNumber;
-exports.getCondition = getCondition;
-exports.postCondition = postCondition;
-exports.getManuallyDefinedAbstractionPeriod = getManuallyDefinedAbstractionPeriod;
-exports.postManuallyDefinedAbstractionPeriod = postManuallyDefinedAbstractionPeriod;
-exports.getCheckYourAnswers = getCheckYourAnswers;
-exports.postCheckYourAnswers = postCheckYourAnswers;
-exports.getFlowComplete = getFlowComplete;
+const getSendAlertSelectAlertType = async (request, h) => {
+  const pageTitle = 'Select the type of alert you need to send';
+  const caption = await helpers.getCaption(request);
+
+  return h.view('nunjucks/form', {
+    ...request.view,
+    caption,
+    pageTitle,
+    sessionData: session.get(request),
+    form: formHandler.handleFormRequest(request, linkageForms.sendingAlertType),
+    back: `/monitoring-stations/${request.params.gaugingStationId}`
+  });
+};
+
+const postSendAlertSelectAlertType = async (request, h) => {
+  const form = await formHandler.handleFormRequest(request, linkageForms.sendingAlertType);
+  if (!form.isValid) {
+    return h.postRedirectGet(form);
+  }
+
+  const selectedAlertType = form.fields.find(field => field.name === 'alertType');
+  session.merge(request, {
+    sendingAlertType: selectedAlertType
+  });
+
+  // eslint-disable-next-line no-useless-escape
+  return h.redirect(request.path.replace(/\/[^\/]*$/, '/alert-thresholds'));
+};
+
+const getSendAlertSelectAlertThresholds = async (request, h) => {
+  const pageTitle = 'Which thresholds do you need to send an alert for?';
+  const caption = await helpers.getCaption(request);
+
+  return h.view('nunjucks/form', {
+    ...request.view,
+    caption,
+    pageTitle,
+    sessionData: session.get(request),
+    form: formHandler.handleFormRequest(request, linkageForms.sendingAlertThresholds),
+    back: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/alert-type`
+  });
+};
+
+const postSendAlertSelectAlertThresholds = async (request, h) => {
+  const { licenceGaugingStations } = request.pre;
+  const form = await formHandler.handleFormRequest(request, linkageForms.sendingAlertThresholds);
+  if (!form.isValid) {
+    return h.postRedirectGet(form);
+  }
+  const { sendingAlertType } = await session.get(request);
+
+  const selectedAlertThresholds = form.fields.find(field => field.name === 'alertThresholds');
+
+  const validOptions = selectedAlertThresholds.value.map(each => JSON.parse(each));
+
+  const selectedGroupedLicences = Object.values(groupBy(licenceGaugingStations.data.filter(eachLGS =>
+    validOptions.some(eachOption => (eachLGS.thresholdValue === eachOption.value && eachLGS.thresholdUnit === eachOption.unit) &&
+      (
+        ['resume', 'warning'].includes(sendingAlertType.value) ||
+        (
+          (eachLGS.alertType === 'stop_or_reduce' && eachOption.value === 'reduce') ||
+          sendingAlertType.value === 'reduce' || sendingAlertType.value === 'stop'
+        )
+      )
+    )), 'licenceId'));
+
+  session.merge(request, {
+    alertThresholds: selectedAlertThresholds,
+    selectedGroupedLicences
+  });
+
+  // eslint-disable-next-line no-useless-escape
+  return h.redirect(request.path.replace(/\/[^\/]*$/, '/check-licence-matches'));
+};
+
+const getSendAlertCheckLicenceMatches = async (request, h) => {
+  const pageTitle = 'Check the licence matches for the selected thresholds';
+  const caption = await helpers.getCaption(request);
+
+  const sessionData = await session.get(request);
+  const { selectedGroupedLicences } = sessionData;
+  if (!selectedGroupedLicences) {
+    // eslint-disable-next-line no-useless-escape
+    return h.redirect(request.path.replace(/\/[^\/]*$/, '/alert-thresholds'));
+  }
+  const flattenedSelectedGroupedLicences = Object.values(selectedGroupedLicences).map(n => n.map(q => {
+    return {
+      ...q,
+      dateStatusUpdated: n.length > 1
+        ? n.reduce((a, b) =>
+          (new Date(a.dateStatusUpdated) > new Date(b.dateStatusUpdated)
+            ? a.dateStatusUpdated
+            : b.dateStatusUpdated))
+        : n[0].dateStatusUpdated
+    };
+  }));
+
+  if (flattenedSelectedGroupedLicences.length === 0) {
+    // eslint-disable-next-line no-useless-escape
+    return h.redirect(request.path.replace(/\/[^\/]*$/, '/alert-thresholds'));
+  }
+
+  return h.view('nunjucks/gauging-stations/check-licences-for-sending-alerts', {
+    ...request.view,
+    caption,
+    pageTitle,
+    selectedGroupedLicences: flattenedSelectedGroupedLicences,
+    continueUrl: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/email-address`,
+    excludeLicencePreURL: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/exclude-licence`
+  });
+};
+
+const getSendAlertExcludeLicence = async (request, h) => {
+  const sessionData = await session.get(request);
+  const { selectedGroupedLicences } = sessionData;
+  const flattenedSelectedLicencesArray = Object.values(selectedGroupedLicences).flat();
+
+  if (!flattenedSelectedLicencesArray.find(l => l.licenceId === request.params.licenceId)) {
+    return h.redirect(`/monitoring-stations/${request.params.gaugingStationId}/send-alert/check-licence-matches`);
+  }
+  const pageTitle = `You're about to remove licence ${flattenedSelectedLicencesArray.find(l => l.licenceId === request.params.licenceId).licenceRef} from the send list`;
+  const caption = await helpers.getCaption(request);
+
+  return h.view('nunjucks/gauging-stations/exclude-licence-for-sending-alerts', {
+    ...request.view,
+    caption,
+    pageTitle,
+    confirmURL: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/exclude-licence/${request.params.licenceId}/confirm`,
+    back: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/alert-thresholds`
+  });
+};
+
+const getSendAlertExcludeLicenceConfirm = async (request, h) => {
+  const sessionData = await session.get(request);
+  const { selectedGroupedLicences } = sessionData;
+  const temp = selectedGroupedLicences.filter(eachGroup => eachGroup.some(groupElement => groupElement.licenceId !== request.params.licenceId));
+
+  session.merge(request, {
+    selectedGroupedLicences: temp
+  });
+
+  return h.redirect(`/monitoring-stations/${request.params.gaugingStationId}/send-alert/check-licence-matches`);
+};
+
+const getSendAlertEmailAddress = async (request, h) => {
+  const pageTitle = 'Select an email address to include in the alerts';
+  const caption = await helpers.getCaption(request);
+
+  return h.view('nunjucks/form', {
+    ...request.view,
+    caption,
+    pageTitle,
+    form: formHandler.handleFormRequest(request, linkageForms.sendingAlertEmail),
+    back: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/check-licence-matches`
+  });
+};
+
+const postSendAlertEmailAddress = async (request, h) => {
+  const form = await formHandler.handleFormRequest(request, linkageForms.sendingAlertEmail);
+  if (!form.isValid) {
+    return h.postRedirectGet(form);
+  }
+
+  const useLoggedInUserEmailAddress = form.fields.find(field => field.name === 'useLoggedInUserEmailAddress');
+
+  const customEmailAddress = useLoggedInUserEmailAddress.value === true ? null : useLoggedInUserEmailAddress.options.choices[2].fields[0];
+
+  session.merge(request, {
+    useLoggedInUserEmailAddress,
+    customEmailAddress
+  });
+
+  const preparedBatchAlertsData = await helpers.getBatchAlertData(request);
+
+  const issuer = await helpers.getIssuer(request);
+
+  const response = await services.water.batchNotifications.prepareWaterAbstractionAlerts(issuer, preparedBatchAlertsData);
+
+  session.merge(request, {
+    notificationEventId: response.data.id
+  });
+
+  // eslint-disable-next-line no-useless-escape
+  return h.redirect(request.path.replace(/\/[^\/]*$/, '/processing'));
+};
+
+const getSendAlertProcessing = async (request, h) => {
+  const pageTitle = 'Processing notifications';
+  const caption = await helpers.getCaption(request);
+
+  // Check if the batch is ready yet.
+  // If the batch is ready, send the user to the check page
+
+  const { notificationEventId } = await session.get(request);
+
+  const event = await services.water.events.findOne(notificationEventId);
+
+  if (event.data.status === 'processing') {
+    return h.view('nunjucks/gauging-stations/processing-sending-alerts', {
+      ...request.view,
+      caption,
+      pageTitle
+    });
+  } else {
+    // eslint-disable-next-line no-useless-escape
+    return h.redirect(request.path.replace(/\/[^\/]*$/, '/check'));
+  }
+};
+
+const getSendAlertCheck = async (request, h) => {
+  const pageTitle = 'Check the alert for each licence and send';
+  const caption = await helpers.getCaption(request);
+
+  const { notificationEventId } = session.get(request);
+  const event = await services.water.events.findOne(notificationEventId);
+  const { data: notifications } = await services.water.notifications.getNotificationMessages(notificationEventId);
+
+  return h.view('nunjucks/gauging-stations/confirm-sending-alerts', {
+    ...request.view,
+    caption,
+    pageTitle,
+    licenceCount: event.data.licences.length,
+    notifications,
+    confirmAndSendUrl: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/success`,
+    previewNotificationPreUrl: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/preview`,
+    back: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/alert-thresholds`
+  });
+};
+
+const getSendAlertPreview = async (request, h) => {
+  const { notificationId } = request.params;
+
+  const { data: scheduledNotification } = await services.water.notifications.getNotificationMessage(notificationId);
+  const { messageRef: template, personalisation, messageRef } = scheduledNotification;
+
+  let prefix = '';
+  if (messageRef.indexOf('resume') > -1) {
+    prefix = 'Resume ';
+  } else {
+    prefix = `${personalisation.alertType.replace(/(^\w|\s\w)/g, m => m.toUpperCase()).split('_').join(' ')}${messageRef.indexOf('warning') > -1 ? ' warning ' : ' '}`;
+  }
+  const pageTitle = `${prefix}message preview`;
+  const caption = await helpers.getCaption(request);
+
+  return h.view(`nunjucks/gauging-stations/letter-preview/${template}`, {
+    ...request.view,
+    caption,
+    pageTitle,
+    personalisation,
+    back: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/check`
+  });
+};
+
+const getSendAlertConfirm = async (request, h) => {
+  const pageTitle = 'Check the alert for each licence and send';
+  const caption = await helpers.getCaption(request);
+
+  const { notificationEventId } = await session.get(request);
+  const event = await services.water.events.findOne(notificationEventId);
+
+  const issuer = await helpers.getIssuer(request);
+  await services.water.batchNotifications.sendWaterAbstractionAlerts(notificationEventId, issuer);
+  session.clear(request);
+  return h.view('nunjucks/gauging-stations/confirm-sending-successful', {
+    ...request.view,
+    caption,
+    pageTitle,
+    recipientCount: event.data.metadata.recipients,
+    notificationsReportUrl: '/notifications/report',
+    monitoringStationUrl: `/monitoring-stations/${request.params.gaugingStationId}`
+  });
+};
+
+exports.getNewTaggingFlow = getNewTaggingFlow;
+exports.getNewTaggingThresholdAndUnit = getNewTaggingThresholdAndUnit;
+exports.postNewTaggingThresholdAndUnit = postNewTaggingThresholdAndUnit;
+exports.getNewTaggingAlertType = getNewTaggingAlertType;
+exports.postNewTaggingAlertType = postNewTaggingAlertType;
+exports.getNewTaggingLicenceNumber = getNewTaggingLicenceNumber;
+exports.postNewTaggingLicenceNumber = postNewTaggingLicenceNumber;
+exports.getNewTaggingCondition = getNewTaggingCondition;
+exports.postNewTaggingCondition = postNewTaggingCondition;
+exports.getNewTaggingManuallyDefinedAbstractionPeriod = getNewTaggingManuallyDefinedAbstractionPeriod;
+exports.postNewTaggingManuallyDefinedAbstractionPeriod = postNewTaggingManuallyDefinedAbstractionPeriod;
+exports.getNewTaggingCheckYourAnswers = getNewTaggingCheckYourAnswers;
+exports.postNewTaggingCheckYourAnswers = postNewTaggingCheckYourAnswers;
+exports.getNewTaggingFlowComplete = getNewTaggingFlowComplete;
 exports.getMonitoringStation = getMonitoringStation;
 exports.getRemoveTags = getRemoveTags;
 exports.getRemoveTagComplete = getRemoveTagComplete;
@@ -403,3 +679,16 @@ exports.postRemoveTagOrMultiple = postRemoveTagOrMultiple;
 exports.postRemoveTagComplete = postRemoveTagComplete;
 exports.postRemoveTagsLicenceSelected = postRemoveTagsLicenceSelected;
 exports.getRemoveTagsConditions = getRemoveTagsConditions;
+exports.getSendAlertSelectAlertType = getSendAlertSelectAlertType;
+exports.postSendAlertSelectAlertType = postSendAlertSelectAlertType;
+exports.getSendAlertSelectAlertThresholds = getSendAlertSelectAlertThresholds;
+exports.postSendAlertSelectAlertThresholds = postSendAlertSelectAlertThresholds;
+exports.getSendAlertCheckLicenceMatches = getSendAlertCheckLicenceMatches;
+exports.getSendAlertExcludeLicence = getSendAlertExcludeLicence;
+exports.getSendAlertExcludeLicenceConfirm = getSendAlertExcludeLicenceConfirm;
+exports.getSendAlertEmailAddress = getSendAlertEmailAddress;
+exports.postSendAlertEmailAddress = postSendAlertEmailAddress;
+exports.getSendAlertProcessing = getSendAlertProcessing;
+exports.getSendAlertCheck = getSendAlertCheck;
+exports.getSendAlertPreview = getSendAlertPreview;
+exports.getSendAlertConfirm = getSendAlertConfirm;

@@ -1,8 +1,8 @@
 const Joi = require('joi');
 const { get } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms/');
-const helpers = require('../lib/helpers');
-const session = require('../lib/session');
+const helpers = require('../../lib/helpers');
+const session = require('../../lib/session');
 
 const conditionEntryForm = request => {
   const f = formFactory(request.path);

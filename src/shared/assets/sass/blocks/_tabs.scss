@@ -1,0 +1,22 @@
+//Added 5px margin bottom to the list item:
+
+@media (min-width: 40.0625em) {
+  .js-enabled .govuk-tabs__list-item {
+    margin-bottom: 5px;
+    margin-left: 0;
+    padding: 15px 20px;
+    float: left;
+    background-color: #f3f2f1;
+    text-align: center;
+  }
+}
+
+//Slightly tidier
+
+@media (min-width: 40.0625em) {
+  .js-enabled .govuk-tabs__list-item--selected {
+    position: relative;
+    padding: 17px 20px;
+    background-color: #ffffff;
+  }
+}

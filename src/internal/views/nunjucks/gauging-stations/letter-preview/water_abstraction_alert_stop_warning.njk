@@ -1,0 +1,76 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "title.njk" import title %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block pageTitle %}
+  {{pageTitle}} - GOV.UK
+{% endblock %}
+
+
+{% block content %}
+    <div class="govuk-grid-row govuk-!-margin-bottom-6">
+        <div class="govuk-grid-column-full">
+         {{ title(pageTitle, caption) }}
+        </div>
+    </div>
+
+    <div class="notification govuk-!-margin-bottom-6" style="background-color:#f3f2f1;">
+        <div class="govuk-grid-row govuk-!-padding-6">
+            <div class="govuk-grid-column-full">
+                <h1 class="govuk-heading-l">Water abstraction alert: You may need to stop water abstraction soon</h1>
+
+                <p>Dear licence contact,</p>
+
+                <p>The {{personalisation.flow_or_level}} at {{personalisation.monitoring_station_name}} monitoring station is close to the hands-off {{personalisation.flow_or_level}} threshold for your licence {{personalisation.licence_ref}}</p>
+
+                <p>This means you can still take water in line with the conditions of your licence. But you may need to stop soon.</p>
+
+                <h2 class="govuk-heading-l">What you need to do</h2>
+                <p>You have a hands-off {{personalisation.flow_or_level}} condition in your licence. This limits the amount of water you can take when the hands-off {{personalisation.flow_or_level}} threshold applies.</p>
+
+                <p>You should check the full details of your condition.</p>
+
+                <h2 class="govuk-heading-l">What happens next</h2>
+                <p>We'll write to you again if you need to stop taking water.</p>
+
+                <p>If you do not hear from us, you can continue to take water in line with your licence.</p>
+
+                <p>There may be other conditions that affect how much water you can take. You must meet all of your licence conditions.</p>
+
+                <h2 class="govuk-heading-l">Help with your hands-off {{personalisation.flow_or_level}} condition</h2>
+                <p>If you have an account, you can check all of your licence details online:</p>
+                <p>https://manage-water-abstraction-impoundment-licence.service.gov.uk/signin</p>
+
+                <p>If you're not sure how the hands-off {{personalisation.flow_or_level}} condition affects the amount of water you can take, email {{personalisation.issuer_email_address}}.</p>
+
+                <h2 class="govuk-heading-l">Your hands-off {{personalisation.flow_or_level}} licence condition</h2>
+
+                <ul>
+                    <li><p>Licence number: {{personalisation.licence_ref}}</p></li>
+                    {% if personalisation.source %}
+                        <li><p>{{personalisation.source}}</p></li>
+                    {% endif %}
+                    <li><p>Monitoring station name: {{personalisation.monitoring_station_name}}</p></li>
+                    <li><p>Hands-off {{personalisation.flow_or_level}} threshold: {{personalisation.threshold_value}} {{personalisation.threshold_unit}}</p></li>
+                </ul>
+
+                {% if personalisation.condition_text %}
+                    <p>{{personalisation.condition_text}}</p>
+                {% endif %}
+
+                <p>Yours sincerely,</p>
+
+                <p>Environment Agency Water Resources Licensing Service</p>
+                <br/>
+                <p>If you’re not sure an email is from the Environment Agency:</p>
+                <ul>
+                    <li><p>do not reply to it or click any links</p></li>
+                    <li><p>forward it to enquiries@environment-agency.gov.uk</p></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div>
+        <a href="{{back}}" class="govuk-link">back to mailing list</a>
+    </div>
+{% endblock %}

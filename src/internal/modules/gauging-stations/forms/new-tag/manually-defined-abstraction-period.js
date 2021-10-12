@@ -2,7 +2,7 @@ const Joi = require('joi');
 const { capitalize, get } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms/');
 
-const session = require('../lib/session');
+const session = require('../../lib/session');
 
 const errors = {
   empty: {

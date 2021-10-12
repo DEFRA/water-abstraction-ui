@@ -13,7 +13,7 @@ const returnsMapper = require('../../../lib/mappers/returns');
  * @param {Object} filter - additional filter params
  * @return {Promise} - resolved with array of objects with system_external_id (licence number) and document_name
  */
-const getLicenceNumbers = (request, filter = {}) => {
+const getNewTaggingLicenceNumbers = (request, filter = {}) => {
   const f = Object.assign({}, filter, {
     regime_entity_id: config.crm.regimes.water.entityId,
     includeExpired: true
@@ -148,7 +148,7 @@ const getReturnsViewData = async (request) => {
   // Get documents from CRM
   const filter = documentId ? { document_id: documentId } : {};
 
-  const documents = await getLicenceNumbers(request, filter);
+  const documents = await getNewTaggingLicenceNumbers(request, filter);
   const licenceNumbers = documents.map(row => row.system_external_id);
 
   const view = {
@@ -186,7 +186,7 @@ const getViewData = async (request, data) => {
 
 const endReadingKey = data => findLastKey(get(data, 'meters[0].readings'), key => key > 0);
 
-exports.getLicenceNumbers = getLicenceNumbers;
+exports.getNewTaggingLicenceNumbers = getNewTaggingLicenceNumbers;
 exports.getLicenceReturns = getLicenceReturns;
 exports.groupReturnsByYear = groupReturnsByYear;
 exports.mergeReturnsAndLicenceNames = mergeReturnsAndLicenceNames;

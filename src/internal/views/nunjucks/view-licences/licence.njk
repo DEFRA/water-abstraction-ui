@@ -42,6 +42,10 @@
             <a class="govuk-tabs__tab" href="#summary">Summary</a>
           </li>
 
+          <li class="govuk-tabs__list-item govuk-tabs__list-item">
+            <a class="govuk-tabs__tab" href="#contacts">Contact details</a>
+          </li>
+
           <li class="govuk-tabs__list-item">
             <a class="govuk-tabs__tab" href="#returns">Returns</a>
           </li>
@@ -65,6 +69,10 @@
 
         <section class="govuk-tabs__panel" id="summary">
           {% include "nunjucks/view-licences/tabs/summary.njk" %}
+        </section>
+
+        <section class="govuk-tabs__panel" id="contacts">
+          {% include "nunjucks/view-licences/tabs/contacts.njk" %}
         </section>
 
         <section class="govuk-tabs__panel" id="returns">

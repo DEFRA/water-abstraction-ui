@@ -1,0 +1,29 @@
+<table class="govuk-table">
+  <caption class="govuk-table__caption govuk-heading-l">Licences</caption>
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">Licence</th>
+      <th class="govuk-table__header" scope="col">Licence name</th>
+      <th class="govuk-table__header" scope="col">Start date</th>
+      <th class="govuk-table__header" scope="col">End date</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    {% for licence in licences %}
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell" scope="row">
+            <a href='/licences/{{ licence.id }}'>{{ licence.licenceNumber }}</a>
+        </td>
+        <td class="govuk-table__cell" scope="row">
+            {{ licence.name }}
+        </td>
+        <td class="govuk-table__cell" scope="row">
+            {{ licence.startDate | date }}
+        </td>
+        <td class="govuk-table__cell" scope="row">
+             {{ licence.endDate | date }}
+         </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

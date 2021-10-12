@@ -13,15 +13,18 @@ const getCustomer = async (request, h) => {
     thisLicence.name = documentName;
     return thisLicence;
   }));
-  console.log(invoiceAccounts[0].invoiceAccountAddresses);
+
+  const { data: contacts } = await services.water.companies.getContacts(companyId);
 
   return h.view('nunjucks/customers/view.njk', {
     ...request.view,
     pageTitle: company.name,
     company,
+    contacts,
     licences,
     invoiceAccounts: invoiceAccounts.map(eachInvoiceAccount => {
       eachInvoiceAccount.currentAddress = eachInvoiceAccount.invoiceAccountAddresses.find(address => address.dateRange.endDate === null);
+      return eachInvoiceAccount;
     }),
     caption: 'Customer',
     back: '/licences'

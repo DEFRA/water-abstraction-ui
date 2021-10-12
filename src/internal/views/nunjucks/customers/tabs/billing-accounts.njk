@@ -10,10 +10,33 @@
     {% for account in invoiceAccounts %}
       <tr class="govuk-table__row">
         <td class="govuk-table__cell" scope="row">
-            <a href='/billing-account/{{ account.id }}'>{{ account.accountNumber }}</a>
+            <a href='/billing-accounts/{{ account.id }}'>{{ account.accountNumber }}</a>
         </td>
         <td class="govuk-table__cell" scope="row">
-            {{ account.currentAddress | address }}
+            {% if account.currentAddress.address.addressLine1 %}
+                <p class="govuk-body govuk-!-margin-bottom-0">{{ account.currentAddress.address.addressLine1 }}</p>
+            {% endif %}
+            {% if account.currentAddress.address.addressLine2 %}
+                <p class="govuk-body govuk-!-margin-bottom-0">{{ account.currentAddress.address.addressLine2 }}</p>
+            {% endif %}
+            {% if account.currentAddress.address.addressLine3 %}
+                <p class="govuk-body govuk-!-margin-bottom-0">{{ account.currentAddress.address.addressLine3 }}</p>
+            {% endif %}
+            {% if account.currentAddress.address.addressLine4 %}
+                <p class="govuk-body govuk-!-margin-bottom-0">{{ account.currentAddress.address.addressLine4 }}</p>
+            {% endif %}
+            {% if account.currentAddress.address.town %}
+                <p class="govuk-body govuk-!-margin-bottom-0">{{ account.currentAddress.address.town }}</p>
+            {% endif %}
+            {% if account.currentAddress.address.county %}
+                <p class="govuk-body govuk-!-margin-bottom-0">{{ account.currentAddress.address.county }}</p>
+            {% endif %}
+            {% if account.currentAddress.address.country %}
+                <p class="govuk-body govuk-!-margin-bottom-0">{{ account.currentAddress.address.country }}</p>
+            {% endif %}
+            {% if account.currentAddress.address.postcode %}
+                <p class="govuk-body govuk-!-margin-bottom-0">{{ account.currentAddress.address.postcode }}</p>
+            {% endif %}
         </td>
       </tr>
     {% endfor %}

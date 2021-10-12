@@ -1,1 +1,17 @@
-contacts
+<table class="govuk-table">
+  <caption class="govuk-table__caption govuk-heading-l">Contacts</caption>
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">Name</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    {% for contact in contacts %}
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell" scope="row">
+            {{contact.contact.firstName}} {{contact.contact.lastName}}
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

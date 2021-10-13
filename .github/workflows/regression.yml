@@ -123,6 +123,7 @@ jobs:
       - name: Install IDM
         uses: actions/checkout@v2
         with:
+          ref: regression-ci
           repository: defra/water-abstraction-tactical-idm
           path: './water-abstraction-tactical-idm'
 
@@ -136,6 +137,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: defra/water-abstraction-permit-repository
+          ref: regression-ci
           path: './water-abstraction-permit-repository'
 
       - name: Install permit repo dependencies

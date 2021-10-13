@@ -9,7 +9,7 @@ jobs:
       COOKIE_SECRET: someSuperSecretStringThatYouWouldNeverGuess
       GOOGLE_ANALYTICS_PROPERTY_ID: ga-test
       PGUSER: water
-      PGHOST: postgres
+      PGHOST: localhost
       PGPASSWORD: water
       PGPORT: 5432
       PGDATABASE: water

@@ -133,6 +133,7 @@ experiment('internal/modules/charge-information/controller', () => {
     sandbox.stub(services.water.chargeVersionWorkflows, 'postChargeVersionWorkflow').resolves();
     sandbox.stub(services.water.chargeVersionWorkflows, 'deleteChargeVersionWorkflow').resolves();
     sandbox.stub(services.water.chargeVersionWorkflows, 'patchChargeVersionWorkflow').resolves();
+    sandbox.stub(services.crm.documentRoles, 'getDocumentRolesByDocumentRef').resolves({ data: [] });
     sandbox.stub(services.water.chargeVersions, 'getChargeVersionsByLicenceId').resolves({ data: [] });
     sandbox.stub(services.water.licences, 'getValidDocumentByLicenceIdAndDate').resolves({
       roles: [

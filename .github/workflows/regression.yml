@@ -14,7 +14,7 @@ jobs:
       PGPORT: 5432
       PGDATABASE: water
       ENVIRONMENT: test
-      DATABASE_URL: postgres://water:water@postgres:5432/water
+      DATABASE_URL: postgres://water:water@localhost:5432/water
       JWT_SECRET: i1ESOW3eC0Knwx1RXejhvpWtVL4RAOBmf0WkztZa
       JWT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6InRlc3QiLCJpYXQiOjE1MDMzMTg0NDV9.uBPV2bd6MoKlLA7pZskL0rqoUzL6_G7ZheEWEYxYcwQ
       NOTIFY_KEY: somerealnotifykey-00000000-0000-0000-0000-000000000000-00000000-0000-0000-0000-000000000000

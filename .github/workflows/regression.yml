@@ -9,12 +9,12 @@ jobs:
       COOKIE_SECRET: someSuperSecretStringThatYouWouldNeverGuess
       GOOGLE_ANALYTICS_PROPERTY_ID: ga-test
       PGUSER: water
-      PGHOST: 127.0.0.1
+      PGHOST: postgres
       PGPASSWORD: water
       PGPORT: 5432
       PGDATABASE: water
       ENVIRONMENT: test
-      DATABASE_URL: postgres://water:water@127.0.0.1:5432/water
+      DATABASE_URL: postgres://water:water@postgres:5432/water
       JWT_SECRET: i1ESOW3eC0Knwx1RXejhvpWtVL4RAOBmf0WkztZa
       JWT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6InRlc3QiLCJpYXQiOjE1MDMzMTg0NDV9.uBPV2bd6MoKlLA7pZskL0rqoUzL6_G7ZheEWEYxYcwQ
       NOTIFY_KEY: somerealnotifykey-00000000-0000-0000-0000-000000000000-00000000-0000-0000-0000-000000000000
@@ -50,7 +50,7 @@ jobs:
           POSTGRES_DB: water
         # Maps tcp port 5432 on service container to the host
         ports:
-          - 5432:5432
+          - 5432/tcp
         # Set health checks to wait until postgres has started. You must have this so the runner knows to wait till
         # postgres is up and running before proceeding
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5

@@ -5,7 +5,7 @@ const { test, experiment, beforeEach, afterEach } = exports.lab = require('@hapi
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 const session = require('internal/modules/gauging-stations/lib/session');
-const { form: removeTagsLicenceViewForm, schema: removeTagsLicenceViewSchema } = require('internal/modules/gauging-stations/forms/remove-tags-licence-view');
+const { form: removeTagsLicenceViewForm, schema: removeTagsLicenceViewSchema } = require('internal/modules/gauging-stations/forms/remove-tag/remove-tags-licence-view');
 
 experiment('internal/modules/gauging-stations/forms/remove-tags-licence-view.js', () => {
   let request, form;

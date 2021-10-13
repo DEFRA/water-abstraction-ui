@@ -49,6 +49,8 @@ const getCaption = invoice => invoice.invoiceNumber
   ? `Bill ${invoice.invoiceNumber}`
   : `Billing account ${invoice.invoiceAccount.accountNumber}`;
 
+const getOriginalInvoice = invoice => invoice.linkedInvoices.find(linkedInvoice => linkedInvoice.id === invoice.originalInvoiceId);
+
 const getBillingBatchInvoice = async (request, h) => {
   const { batchId, invoiceId } = request.params;
 
@@ -57,6 +59,9 @@ const getBillingBatchInvoice = async (request, h) => {
     services.water.billingBatches.getBatchInvoice(batchId, invoiceId)
   ]);
 
+  if (invoice.originalInvoiceId !== null) {
+    invoice.originalInvoice = getOriginalInvoice(invoice);
+  }
   const invoiceLicenceMapper = invoiceLicence => mappers.mapInvoiceLicence(batch, invoice, invoiceLicence);
 
   return h.view('nunjucks/billing/batch-invoice', {
@@ -111,11 +116,13 @@ const getBillingBatchCancel = async (request, h) => billingBatchAction(request, 
 
 const postBillingBatchCancel = async (request, h) => {
   const { batchId } = request.params;
+
   try {
     await services.water.billingBatches.cancelBatch(batchId);
   } catch (err) {
     logger.info(`Did not successfully delete batch ${batchId}`);
   }
+
   return h.redirect(BATCH_LIST_ROUTE);
 };
 
@@ -159,15 +166,28 @@ const getTransactionsCSV = async (request, h) => {
 const getBillingBatchDeleteInvoice = async (request, h) => {
   const { batchId } = request.params;
   const { batch, invoice } = request.pre;
-
+  const { originalInvoiceId, rebillInvoiceId } = request.query;
   const batchType = mappers.mapBatchType(batch.type).toLowerCase();
+  const formText = { title: '', button: '' };
+  if (invoice.rebillingState !== null) {
+    formText.title = `You're about to cancel the reissue of ${getOriginalInvoice(invoice).displayLabel}`;
+    formText.button = 'Cancel this reissue';
+  } else {
+    formText.title = `You're about to remove this bill from the ${batchType} bill run`;
+    formText.button = 'Remove this bill';
+  }
+
+  const options = {
+    originalInvoiceId,
+    rebillInvoiceId
+  };
 
   return h.view('nunjucks/billing/confirm-invoice', {
     ...request.view,
-    pageTitle: `You're about to remove this bill from the ${batchType} bill run`,
+    pageTitle: formText.title,
     batch,
     invoice,
-    form: confirmForm.form(request, 'Remove this bill'),
+    form: confirmForm.form(request, formText.button, options),
     metadataType: 'invoice',
     back: `/billing/batch/${batchId}/summary`
   });
@@ -175,7 +195,9 @@ const getBillingBatchDeleteInvoice = async (request, h) => {
 
 const postBillingBatchDeleteInvoice = async (request, h) => {
   const { batchId, invoiceId } = request.params;
-  await services.water.billingBatches.deleteInvoiceFromBatch(batchId, invoiceId);
+  const { originalInvoiceId, rebillInvoiceId } = request.payload;
+
+  await services.water.billingBatches.deleteInvoiceFromBatch(batchId, invoiceId, originalInvoiceId, rebillInvoiceId);
   return h.redirect(`/billing/batch/${batchId}/summary`);
 };
 

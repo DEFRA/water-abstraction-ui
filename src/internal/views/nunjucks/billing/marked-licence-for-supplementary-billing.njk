@@ -1,0 +1,20 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+{% from "./nunjucks/billing/macros/batch-buttons.njk" import createBillRun %}
+
+{% block content %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            {{
+                govukPanel({
+                  titleText: pageTitle,
+                  text: panelText
+                })
+            }}
+
+            {{ createBillRun('Create bill run') }}
+            <p>or</p>
+            <p><a href="/licences/{{ licenceId }}">Return to the licence</a></p>
+        </div>
+    </div>
+{% endblock %}

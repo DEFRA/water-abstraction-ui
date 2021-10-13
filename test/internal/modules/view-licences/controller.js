@@ -27,10 +27,12 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
       response: sandbox.stub().returns(),
       redirect: sandbox.stub()
     };
+    sandbox.stub(services.water.licences, 'postMarkLicenceForSupplementaryBilling').resolves();
     sandbox.stub(services.water.licences, 'getDocumentByLicenceId').resolves({
       metadata: {},
       system_external_id: 'test id'
     });
+    sandbox.stub(services.crm.documentRoles, 'getDocumentRolesByDocumentRef').resolves();
   });
 
   after(async () => {
@@ -120,6 +122,10 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
     test('uses the correct nunjucks template', async () => {
       const [template] = h.view.lastCall.args;
       expect(template).to.equal('nunjucks/view-licences/licence.njk');
+    });
+
+    test('calls the CRM to grab contact details', () => {
+      expect(services.crm.documentRoles.getDocumentRolesByDocumentRef.called).to.be.true();
     });
 
     test('sets the correct page title in the view', async () => {
@@ -251,9 +257,7 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
             Name: 'test-name'
           }
         },
-        bills: [
-
-        ]
+        bills: []
       },
       query: {
         page: 1
@@ -274,6 +278,69 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
         'pagination',
         'licenceId',
         'back']);
+    });
+  });
+
+  experiment('.getMarkLicenceForSupplementaryBilling', () => {
+    const tempLicenceId = uuid();
+    const request = {
+      view: {},
+      method: 'get',
+      params: {
+        licenceId: tempLicenceId
+      },
+      pre: {
+        document: {
+          system_external_id: '10/10/10'
+        }
+      },
+      yar: { get: sandbox.spy() }
+    };
+    beforeEach(async () => {
+      await controller.getMarkLicenceForSupplementaryBilling(request, h);
+    });
+
+    test('returns the correct view data objects', async () => {
+      const keys = Object.keys(h.view.lastCall.args[1]);
+
+      expect(keys).to.include([
+        'pageTitle',
+        'caption',
+        'form',
+        'back']);
+    });
+  });
+
+  experiment('.postMarkLicenceForSupplementaryBilling', () => {
+    const tempLicenceId = uuid();
+    const request = {
+      view: {},
+      method: 'get',
+      params: {
+        licenceId: tempLicenceId
+      },
+      pre: {
+        document: {
+          system_external_id: '10/10/10'
+        }
+      },
+      yar: { get: sandbox.spy() }
+    };
+    beforeEach(async () => {
+      await controller.postMarkLicenceForSupplementaryBilling(request, h);
+    });
+
+    test('calls the backend', () => {
+      expect(services.water.licences.postMarkLicenceForSupplementaryBilling.calledWith(tempLicenceId)).to.be.true();
+    });
+
+    test('returns the correct view data objects', async () => {
+      const keys = Object.keys(h.view.lastCall.args[1]);
+
+      expect(keys).to.include([
+        'pageTitle',
+        'panelText',
+        'licenceId']);
     });
   });
 });

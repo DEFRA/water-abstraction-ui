@@ -1,6 +1,6 @@
 const { setUp, tearDown } = require('../../support/setup');
 
-describe('tag a licence to a guaging station and untag ', () => {
+describe('tag a licence to a gauging station, send a warning, and remove the tag', () => {
   before(() => {
     tearDown();
     setUp('barebones');
@@ -20,7 +20,7 @@ describe('tag a licence to a guaging station and untag ', () => {
       cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
       cy.get('.govuk-button.govuk-button--start').contains('Sign in').click();
       // assert once the user is signed in
-      cy.contains('Licences, users and returns');
+      cy.contains('Search');
 
       // search for a license by using Licence holder Name
       cy.get('#query').clear();
@@ -74,7 +74,73 @@ describe('tag a licence to a guaging station and untag ', () => {
         .should('contain', '104')
         .should('contain', 'Ml/d');
     });
-    describe('User Un-tags the licence', () => {
+
+    describe('User issues a stop warning', () => {
+      cy.get('a[href*="/send-alert"]').click();
+      describe('sees the correct form page title', () => {
+        cy.get('h1').contains('Select the type of alert you need to send');
+      });
+      describe('sees the four valid options', () => {
+        cy.get('.govuk-radios').children().should('have.lengthOf', 4);
+        cy.get('.govuk-radios').children(0).should('contain', 'Warning');
+        cy.get('.govuk-radios').children(1).should('contain', 'Reduce');
+        cy.get('.govuk-radios').children(2).should('contain', 'Stop');
+        cy.get('.govuk-radios').children(3).should('contain', 'Resume');
+      });
+      describe('shows an error message if the user doesnt select an option', () => {
+        cy.get('form > .govuk-button').contains('Continue').click();
+        cy.get('.govuk-error-summary').contains('Select the type of the alert');
+      });
+      describe('proceeds to the next step if the user has selected a valid option', () => {
+        cy.get('.govuk-radios__input[value="warning"]').click();
+        cy.get('form > .govuk-button').contains('Continue').click();
+        cy.get('h1').contains('Which thresholds do you need to send an alert for?');
+      });
+      describe('sees the one licence linkage as a threshold selection option', () => {
+        cy.get('h1').contains('Which thresholds do you need to send an alert for?');
+        cy.get('.govuk-checkboxes').children().should('have.lengthOf', 1);
+      });
+      describe('selects the available option', () => {
+        cy.get('.govuk-checkboxes__label').contains('104 Ml/d').click();
+        cy.get('form > .govuk-button').contains('Continue').click();
+      })
+      describe('sees the check page which displays the right licence', () => {
+        cy.get('h1').contains('Check the licence matches for the selected thresholds')
+        cy.get('.govuk-table__row').children(0).should('have.lengthOf', 5)
+        cy.get('.govuk-table__body > tr').children(1).should('contain.text', 'AT/CURR/WEEKLY/01');
+      })
+      describe('user confirms and is forwarded to the next step', () => {
+        cy.get('.govuk-button').contains('Continue').click();
+        cy.get('h1').contains('Select an email address to include in the alerts')
+      })
+      describe('the user sees two options - the first is for sending using the logged in email address', () => {
+        cy.get('.govuk-radios').children().should('have.lengthOf', 4);
+        // 4 children, which is comprised of two radios, a divider, and a conditional input box
+        cy.get('.govuk-radios').children(0).should('contain', '@defra.gov.uk');
+        cy.get('.govuk-radios').children(1).should('contain', 'or');
+        cy.get('.govuk-radios').children(2).should('contain', 'Use another email address');
+        cy.get('.govuk-radios__input[value="true"]').click();
+        cy.get('.govuk-button').contains('Continue').click();
+      })
+      describe('Sees the processing page', () => {
+        cy.get('h1').contains('Processing notifications')
+      })
+      describe('eventually sees the preview page', () => {
+        describe('which is comprised of a single licence', () => {
+          cy.get('table > caption', { timeout: 30000 }).contains('You\'re sending this alert for 1 licence.')
+        })
+      })
+      describe('confirms sending, and is presented with the success page', () => {
+        cy.get('.govuk-button').contains('Confirm and send').click();
+        cy.get('h1').contains('Alert sent')
+        cy.get('.govuk-panel__body').contains('You sent a warning alert')
+      })
+      describe('clicks on the button to return to the gauging station page', () => {
+        cy.get('a').contains('Return to monitoring station').click();
+      })
+    });
+
+    describe('User un-tags the licence', () => {
       cy.get('a.govuk-button.govuk-button--secondary').eq(1).click({ force: true });
       cy.get('.govuk-heading-l').contains('Which licence do you want to remove a tag from?');
       cy.get('.govuk-radios__item > #selectedLicence').check();

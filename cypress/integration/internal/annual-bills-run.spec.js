@@ -19,14 +19,14 @@ describe('annual bill run', () => {
       cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
       cy.get('.govuk-button.govuk-button--start').click();
       // assert once the user is signed in
-      cy.contains('Licences, users and returns');
+      cy.contains('Search');
       // user clicks on manage link to set up the supplementary bill run
-      describe('user clicks on Manage link', () => {
-        cy.get('#navbar-notifications').click();
+      describe('user clicks on Bill runs link', () => {
+        cy.get('#navbar-bill-runs').click();
       });
 
       describe('user enters the create a new bill flow', () => {
-        cy.get('.govuk-link').contains('Create a bill run').click();
+        cy.get('.govuk-button').contains('Create a bill run').click();
       });
 
       describe('user selects annual billing type', () => {
@@ -71,8 +71,8 @@ describe('annual bill run', () => {
       cy.get('input#email').type(users.billingAndData);
       cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
       cy.get('.govuk-button.govuk-button--start').click();
-      cy.get('#navbar-notifications').click();
-      cy.get('.govuk-link').contains('Create a bill run').click();
+      cy.get('#navbar-bill-runs').click();
+      cy.get('.govuk-button').contains('Create a bill run').click();
       cy.get('[type="radio"]').check('annual');        
       cy.get('button.govuk-button').click();
       cy.get('[type="radio"]#selectedBillingRegion-9').last().check();

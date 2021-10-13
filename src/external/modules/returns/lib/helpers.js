@@ -29,7 +29,7 @@ const getCurrentCycle = (date) => {
  * @param {Object} filter - additional filter params
  * @return {Promise} - resolved with array of objects with system_external_id (licence number) and document_name
  */
-const getLicenceNumbers = (request, filter = {}) => {
+const getNewTaggingLicenceNumbers = (request, filter = {}) => {
   const f = Object.assign({}, filter, {
     regime_entity_id: config.crm.regimes.water.entityId,
     company_entity_id: get(request, 'defra.companyId')
@@ -221,7 +221,7 @@ const getReturnsViewData = async (request) => {
   // Get documents from CRM
   const filter = documentId ? { document_id: documentId } : {};
 
-  const documents = await getLicenceNumbers(request, filter);
+  const documents = await getNewTaggingLicenceNumbers(request, filter);
   const licenceNumbers = documents.map(row => row.system_external_id);
 
   const bulkUpload = await isBulkUpload(licenceNumbers);
@@ -246,7 +246,7 @@ const getReturnsViewData = async (request) => {
   return view;
 };
 
-exports.getLicenceNumbers = getLicenceNumbers;
+exports.getNewTaggingLicenceNumbers = getNewTaggingLicenceNumbers;
 exports.getLicenceReturns = getLicenceReturns;
 exports.isBulkUpload = isBulkUpload;
 exports.groupReturnsByYear = groupReturnsByYear;

@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
-const { toLongForm, groupLicenceConditions } = require('../lib/helpers');
+const { toLongForm, groupLicenceConditions } = require('../../lib/helpers');
 const { createSchema } = require('shared/lib/joi.helpers');
 
 const removeTagsLicenceForm = request => {

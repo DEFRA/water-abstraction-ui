@@ -10,7 +10,7 @@ module.exports = {
       description: 'Internal search',
       plugins: {
         viewContext: {
-          pageTitle: 'Search licences, users and returns',
+          pageTitle: 'Search',
           activeNavLink: 'view'
         }
       },

@@ -22,7 +22,7 @@ const routes = {
       description: 'displays the bill run summary',
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -49,7 +49,7 @@ const routes = {
       description: 'displays the invoice for a specific bill run',
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -71,7 +71,7 @@ const routes = {
       plugins: {
         viewContext: {
           pageTitle: 'Bill runs',
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -90,7 +90,7 @@ const routes = {
       auth: { scope: allowedScopes },
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -130,7 +130,7 @@ const routes = {
       auth: { scope: allowedScopes },
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -153,7 +153,7 @@ const routes = {
       auth: { scope: allowedScopes },
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -205,13 +205,17 @@ const routes = {
       description: 'Request confirmation to remove invoice from bill run',
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
         params: Joi.object().keys({
           batchId: Joi.string().uuid(),
           invoiceId: Joi.string().uuid()
+        }),
+        query: Joi.object().keys({
+          originalInvoiceId: Joi.string().uuid().optional(),
+          rebillInvoiceId: Joi.string().uuid().optional()
         })
       },
       pre: [
@@ -229,7 +233,7 @@ const routes = {
       auth: { scope: allowedScopes },
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -238,6 +242,8 @@ const routes = {
           invoiceId: Joi.string().uuid()
         }),
         payload: Joi.object().keys({
+          originalInvoiceId: Joi.string().uuid().optional(),
+          rebillInvoiceId: Joi.string().uuid().optional(),
           csrf_token: Joi.string().uuid().required()
         })
       }
@@ -255,7 +261,7 @@ const routes = {
       auth: { scope: allowedScopes },
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -285,7 +291,7 @@ const routes = {
       auth: { scope: allowedScopes },
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {

@@ -24,6 +24,12 @@ const form = (request, buttonText = 'Submit', options = {}) => {
   const { csrfToken } = request.view;
   const f = formFactory(getPath(request, options), 'POST');
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
+  if (options.originalInvoiceId) {
+    f.fields.push(fields.hidden('originalInvoiceId', {}, `${options.originalInvoiceId}`));
+  }
+  if (options.rebillInvoiceId) {
+    f.fields.push(fields.hidden('rebillInvoiceId', {}, `${options.rebillInvoiceId}`));
+  }
   f.fields.push(fields.button(null, {
     label: buttonText,
     controlClass: options.isWarning && 'govuk-button--warning'

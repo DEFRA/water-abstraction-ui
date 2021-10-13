@@ -83,6 +83,19 @@ jobs:
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS water"
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS water_import"
           
+      - name: Install returns service
+        uses: actions/checkout@v2
+        with:
+          repository: defra/water-abstraction-returns
+          ref: regression-ci
+          path: './water-abstraction-returns'
+
+      - name: Install returns service dependencies
+        run: |
+          cd ./water-abstraction-returns
+          npm i
+          npm run migrate
+          
       - name: Install water service
         uses: actions/checkout@v2
         with:
@@ -140,19 +153,6 @@ jobs:
       - name: Install import repo dependencies
         run: |
           cd ./water-abstraction-import
-          npm i
-          npm run migrate
-      
-      - name: Install returns service
-        uses: actions/checkout@v2
-        with:
-          repository: defra/water-abstraction-returns
-          ref: regression-ci
-          path: './water-abstraction-returns'
-
-      - name: Install returns service dependencies
-        run: |
-          cd ./water-abstraction-returns
           npm i
           npm run migrate
           

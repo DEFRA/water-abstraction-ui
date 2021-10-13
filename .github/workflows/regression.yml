@@ -9,12 +9,12 @@ jobs:
       COOKIE_SECRET: someSuperSecretStringThatYouWouldNeverGuess
       GOOGLE_ANALYTICS_PROPERTY_ID: ga-test
       PGUSER: water
-      PGHOST: localhost
+      PGHOST: 127.0.0.1
       PGPASSWORD: water
       PGPORT: 5432
       PGDATABASE: water
       ENVIRONMENT: test
-      DATABASE_URL: postgres://water:water@localhost:5432/water
+      DATABASE_URL: postgres://water:water@127.0.0.1:5432/water
       JWT_SECRET: i1ESOW3eC0Knwx1RXejhvpWtVL4RAOBmf0WkztZa
       JWT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6InRlc3QiLCJpYXQiOjE1MDMzMTg0NDV9.uBPV2bd6MoKlLA7pZskL0rqoUzL6_G7ZheEWEYxYcwQ
       NOTIFY_KEY: somerealnotifykey-00000000-0000-0000-0000-000000000000-00000000-0000-0000-0000-000000000000
@@ -188,5 +188,5 @@ jobs:
         if: always()
         with:
           name: Cypress Report
-          path: ./cypress/reports/mocha/ ./cypress/reports/mocha/combined-report.json",
+          path: ~/cypress/reports/mocha/ ./cypress/reports/mocha/combined-report.json",
       

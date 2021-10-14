@@ -193,5 +193,4 @@ jobs:
         if: always()
         with:
           name: Cypress Report
-          path: ~/water-abstraction-ui/water-abstraction-ui/cypress/reports/mocha/ ./cypress/reports/mocha/combined-report.json",
-      
+          path: /home/runner/work/water-abstraction-ui/water-abstraction-ui/cypress/reports 

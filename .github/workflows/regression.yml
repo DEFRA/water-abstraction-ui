@@ -179,6 +179,8 @@ jobs:
           curl --location --request GET 'http://127.0.0.1:8006/status'
           curl --location --request GET 'http://127.0.0.1:8007/status'
           curl --location --request GET 'http://localhost:8001/water/1.0/service-status'
+          echo $HOME
+          ls
           npm run test:cypress-silently
           npm run test:cypress-prepare-report
         
@@ -191,5 +193,5 @@ jobs:
         if: always()
         with:
           name: Cypress Report
-          path: ~/water-abstraction-ui/cypress/reports/mocha/ ./cypress/reports/mocha/combined-report.json",
+          path: ~/water-abstraction-ui/water-abstraction-ui/cypress/reports/mocha/ ./cypress/reports/mocha/combined-report.json",
       

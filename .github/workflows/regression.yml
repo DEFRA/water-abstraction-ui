@@ -84,32 +84,6 @@ jobs:
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS water_import"
           
           
-      - name: Install IDM
-        uses: actions/checkout@v2
-        with:
-          ref: regression-ci
-          repository: defra/water-abstraction-tactical-idm
-          path: './water-abstraction-tactical-idm'
-
-      - name: Install IDM dependencies
-        run: |
-          cd ./water-abstraction-tactical-idm
-          npm i
-          npm run migrate
-          
-      - name: Install permit repo
-        uses: actions/checkout@v2
-        with:
-          repository: defra/water-abstraction-permit-repository
-          ref: regression-ci
-          path: './water-abstraction-permit-repository'
-
-      - name: Install permit repo dependencies
-        run: |
-          cd ./water-abstraction-permit-repository
-          npm i
-          npm run migrate
-          
       - name: Install returns service
         uses: actions/checkout@v2
         with:
@@ -144,6 +118,32 @@ jobs:
       - name: Install CRM dependencies
         run: |
           cd ./water-abstraction-tactical-crm
+          npm i
+          npm run migrate
+          
+      - name: Install IDM
+        uses: actions/checkout@v2
+        with:
+          ref: regression-ci
+          repository: defra/water-abstraction-tactical-idm
+          path: './water-abstraction-tactical-idm'
+
+      - name: Install IDM dependencies
+        run: |
+          cd ./water-abstraction-tactical-idm
+          npm i
+          npm run migrate
+          
+      - name: Install permit repo
+        uses: actions/checkout@v2
+        with:
+          repository: defra/water-abstraction-permit-repository
+          ref: regression-ci
+          path: './water-abstraction-permit-repository'
+
+      - name: Install permit repo dependencies
+        run: |
+          cd ./water-abstraction-permit-repository
           npm i
           npm run migrate
           

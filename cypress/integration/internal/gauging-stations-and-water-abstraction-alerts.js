@@ -77,9 +77,6 @@ describe('tag a licence to a gauging station, send a warning, and remove the tag
 
     describe('User issues a stop warning by clicking on Create a water abstraction alert', () => {
       cy.get('.govuk-grid-column-full').contains('Create a water abstraction alert').click();
-      //cy.containts('Create a water abstraction alert').click();
-      //cy.get('.govuk-button').contains('Create a water abstraction alert').focused().click();
-      cy.get('a[href*="/send-alert"]').click();
       describe('sees the correct form page title', () => {
         cy.get('h1').contains('Select the type of alert you need to send');
       });

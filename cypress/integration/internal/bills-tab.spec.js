@@ -59,7 +59,8 @@ describe('B&D user able to view bills tab', () => {
       cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
       cy.get('.govuk-button.govuk-button--start').click();
       // assert once the user is signed in
-      cy.contains('Licences, users and returns');
+      cy.contains('Search').should('be.visible');
+      cy.contains('Enter a licence number, customer name, returns ID, registered email address or monitoring station').should('be.visible');
       // search for a license
       cy.get('#query').type(LICENCE_NUMBER).should('be.visible');
       cy.get('.search__button').click();

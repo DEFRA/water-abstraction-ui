@@ -3,6 +3,7 @@
 const moment = require('moment');
 const { sortBy, get, isNull } = require('lodash');
 const agreementMapper = require('shared/lib/mappers/agreements');
+const config = require('../../../config');
 
 const validityMessageMap = new Map()
   .set('expiredDate', 'expired on')
@@ -87,7 +88,7 @@ const getLicenceAgreementLinks = (licenceAgreement, options) => {
     ? [deleteLink, endLink]
     : [deleteLink];
 
-  if (hasNotEnded && is2PTAgreement && isNotMarkedForSupplementaryBilling) {
+  if (hasNotEnded && is2PTAgreement && isNotMarkedForSupplementaryBilling && config.featureToggles.recalculateBills) {
     compiledLinks.push(recalculateLink);
   }
 

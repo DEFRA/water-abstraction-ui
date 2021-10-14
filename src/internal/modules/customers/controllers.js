@@ -31,4 +31,25 @@ const getCustomer = async (request, h) => {
   });
 };
 
+/* Purpose for contact email, e.g. WAA alerts */
+const getContactPurpose = async (request, h) => {
+  const { companyId } = request.params;
+  const { emailPurpose } = request.params;
+
+  const company = await services.water.companies.getCompany(companyId);
+  const { data: contacts } = await services.water.companies.getContacts(companyId);
+
+  return h.view('nunjucks/customers/contact-purpose-view.njk', {
+    ...request.view,
+    pageTitle: company.name,
+    company,
+    companyId,
+    emailPurpose,
+    contacts,
+    caption: 'Contact purpose',
+    back: '/'
+  });
+};
+
+exports.getContactPurpose = getContactPurpose;
 exports.getCustomer = getCustomer;

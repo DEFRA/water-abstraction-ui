@@ -1,0 +1,85 @@
+<!-- Display list of contact with agreed purpose e.g. /customer/{companyId}/emailpurpose/waa -->
+
+{% for contact in contacts %}
+{% if contact.emailAddress != null and emailPurpose in contact.emailpurpose %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-l">
+      <span class="govuk-caption-l">{{ pageTitle }}</span>
+      Manage contact settings for {{contact.contact.firstName}} {{contact.contact.lastName}}
+    </h1>
+  </div>
+</div>
+
+<div class="govuk-grid-row govuk-!-margin-bottom-6">
+  <div class="govuk-grid-column-full">
+  <!--set the action text to be add if there isn't an email address already there-->
+  <!--set the action text to be created in NALD if the contact wasn't created in WRLS-->
+
+  <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Contact details</h2>
+
+  <dl class="govuk-summary-list">
+
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">
+        Name
+      </dt>
+      <dd class="govuk-summary-list__value">
+        {{contact.contact.firstName}} {{contact.contact.lastName}}
+      </dd>
+      <dd class="govuk-summary-list__actions">
+          <a class="govuk-link" href="change-name?contactID=3">
+            Change<span class="govuk-visually-hidden"> name</span>
+            </a>
+      </dd>
+    </div>
+  
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">
+        Email address
+      </dt>
+      <dd class="govuk-summary-list__value">
+        {{ contact.emailAddress }}
+      </dd>
+      <dd class="govuk-summary-list__actions">
+          <a class="govuk-link" href="change-email-address">
+            Change<span class="govuk-visually-hidden"> email address</span>
+          </a>
+      </dd>
+    </div>
+  </dl>
+
+  </div>
+</div>
+
+<div class="govuk-grid-row govuk-!-margin-bottom-6">
+  <div class="govuk-grid-column-full">
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Email alerts</h2>
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Water abstraction alerts
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {% if 'waa' in contact.emailpurpose %}
+          enabled
+          {% endif %}
+
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a class="govuk-link" href="notices">
+            Change<span class="govuk-visually-hidden"> water abstraction alerts</span>
+          </a>
+        </dd>   
+      </div>
+    </dl>
+  </div>
+</div>
+
+{% endif %}
+{% endfor %}
+
+<p class="govuk-body"><a href="/customer/{{companyId}}/#contacts" class="govuk-link">Back to customer</a></p>
+
+

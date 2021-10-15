@@ -28,6 +28,7 @@ const BATCH_LIST_ROUTE = '/billing/batch/list';
  */
 const getBillingBatchSummary = async (request, h) => {
   const { batch } = request.pre;
+
   const invoices = await services.water.billingBatches.getBatchInvoices(batch.id);
 
   return h.view('nunjucks/billing/batch-summary', {

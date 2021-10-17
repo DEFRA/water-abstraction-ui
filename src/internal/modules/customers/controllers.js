@@ -35,18 +35,30 @@ const getCustomer = async (request, h) => {
 const getContactPurpose = async (request, h) => {
   const { companyId } = request.params;
   const { emailPurpose } = request.params;
-
-  const company = await services.water.companies.getCompany(companyId);
-  const { data: contacts } = await services.water.companies.getContacts(companyId);
+  let company = null;
+  let userMessage = null;
+  let contacts = [];
+  let companyName = '';
+  try {
+    company = await services.water.companies.getCompany(companyId);
+    const { data } = await services.water.companies.getContacts(companyId);
+    contacts = data;
+    companyName = company.name;
+  } catch (ex) {
+    if (ex.statusCode == '500') {
+      userMessage = 'Manage/Add contact settings';
+    }
+  }
 
   return h.view('nunjucks/customers/contact-purpose-view.njk', {
     ...request.view,
-    pageTitle: company.name,
+    pageTitle: companyName,
     company,
     companyId,
     emailPurpose,
     contacts,
     caption: 'Contact purpose',
+    userMessage,
     back: '/'
   });
 };

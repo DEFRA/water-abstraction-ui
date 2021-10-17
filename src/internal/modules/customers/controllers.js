@@ -45,7 +45,7 @@ const getContactPurpose = async (request, h) => {
     contacts = data;
     companyName = company.name;
   } catch (ex) {
-    if (ex.statusCode == '500') {
+    if (ex.statusCode === '500') {
       userMessage = 'Manage/Add contact settings';
     }
   }

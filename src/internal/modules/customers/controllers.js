@@ -1,5 +1,5 @@
 const services = require('../../../internal/lib/connectors/services');
-const { uniqBy, omit, isUndefined } = require('lodash');
+const { uniqBy } = require('lodash');
 const { logger } = require('../../logger');
 
 const getCustomer = async (request, h) => {

@@ -72,8 +72,44 @@ jobs:
         ports:
           # Maps port 6379 on service container to the host
           - 6379:6379
+      charge-module:
+        image: environmentagency/sroc-charging-module-api:latest
+        ports:
+        - 3006:3000
+        env:
+          ENVIRONMENT: tra
+          POSTGRES_USER: water
+          POSTGRES_HOST: localhost
+          POSTGRES_PASSWORD: water
+          POSTGRES_PORT: 5432
+          POSTGRES_DB: water
+          AIRBRAKE_HOST: ${{ secrets.CM_AIRBRAKE_HOST }}
+          AIRBRAKE_KEY: ${{ secrets.CM_AIRBRAKE_KEY }}
+          ADMIN_CLIENT_ID: ${{ secrets.CM_ADMIN_CLIENT_ID }}
+          SYSTEM_CLIENT_ID: ${{ secrets.CM_SYSTEM_CLIENT_ID }}
+          RULES_SERVICE_URL: ${{ secrets.CM_RULES_SERVICE_URL }}
+          RULES_SERVICE_USER: ${{ secrets.CM_RULES_SERVICE_USER }}
+          RULES_SERVICE_PASSWORD: ${{ secrets.CM_RULES_SERVICE_PASSWORD }}
+          CFD_APP: TCM_WaterQuality_RuleApp
+          CFD_RULESET: WaterQuality_RuleSet
+          WML_APP: TCM_WasteFacilities_RuleApp
+          WML_RULESET: WasteFacilities_RuleSet
+          PAS_APP: TCM_Installations_RuleApp
+          PAS_RULESET: Installations_RuleSet
+          WRLS_APP: TEST_WRLS_Pre_SRoC_RuleApp
+          WRLS_RULESET: WRLS_Pre_SRoC_RuleSet
+          WRLS_SROC_APP: TEST_WRLS_SRoC_RuleApp
+          WRLS_SROC_RULESET: WRLS_SRoC_RuleSet
+          SROC_MINIMUM_DATE: '01-APR-2020'
+          RULES_SERVICE_TIMEOUT: 5000
+          IGNORE_JWT_EXPIRATION: true
+          PORT: 3000
       
     steps:
+      - name: Initialise the charging module
+        run: |
+        
+        
       - name: Checkout
         uses: actions/checkout@v2
           
@@ -88,46 +124,6 @@ jobs:
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS returns"
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS water"
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS water_import"
-          
-      - name: Install charging module
-        uses: actions/checkout@v2
-        with:
-          repository: defra/sroc-charging-module-api
-          path: './charging-module'
-          
-      - name: Install charging module dependencies
-        run: |
-          cd ./charging-module
-          npm i
-          
-      - name: Run the charging module
-        run: |
-          cd ./charging-module
-          echo "ENVIRONMENT=tra" >> .env
-          echo "AIRBRAKE_HOST=${{ secrets.CM_AIRBRAKE_HOST }}" >> .env
-          echo "AIRBRAKE_KEY=${{ secrets.CM_AIRBRAKE_KEY }}" >> .env
-          echo "ADMIN_CLIENT_ID=${{ secrets.CM_ADMIN_CLIENT_ID }}" >> .env
-          echo "SYSTEM_CLIENT_ID=${{ secrets.CM_SYSTEM_CLIENT_ID }}" >> .env
-          echo "RULES_SERVICE_URL=${{ secrets.CM_RULES_SERVICE_URL }}" >> .env
-          echo "RULES_SERVICE_USER=${{ secrets.CM_RULES_SERVICE_USER }}" >> .env
-          echo "RULES_SERVICE_PASSWORD=${{ secrets.CM_RULES_SERVICE_PASSWORD }}" >> .env
-          echo "CFD_APP=TCM_WaterQuality_RuleApp" >> .env
-          echo "CFD_RULESET=WaterQuality_RuleSet" >> .env
-          echo "WML_APP=TCM_WasteFacilities_RuleApp" >> .env
-          echo "WML_RULESET=WasteFacilities_RuleSet" >> .env
-          echo "PAS_APP=TCM_Installations_RuleApp" >> .env
-          echo "PAS_RULESET=Installations_RuleSet" >> .env
-          echo "WRLS_APP=TEST_WRLS_Pre_SRoC_RuleApp" >> .env
-          echo "WRLS_RULESET=WRLS_Pre_SRoC_RuleSet" >> .env
-          echo "WRLS_SROC_APP=TEST_WRLS_SRoC_RuleApp" >> .env
-          echo "WRLS_SROC_RULESET=WRLS_SRoC_RuleSet" >> .env
-          echo "SROC_MINIMUM_DATE='01-APR-2020'" >> .env
-          echo "RULES_SERVICE_TIMEOUT=5000" >> .env
-          echo "IGNORE_JWT_EXPIRATION=true" >> .env
-          echo "PORT=3000" >> .env
-          npm run migrate-db
-          npm run seed-db
-          npm start
           
       - name: Install returns service
         uses: actions/checkout@v2

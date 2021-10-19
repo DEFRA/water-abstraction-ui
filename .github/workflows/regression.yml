@@ -13,7 +13,6 @@ jobs:
       PGPASSWORD: water
       PGPORT: 5432
       PGDATABASE: water
-      ENVIRONMENT: test
       DATABASE_URL: postgres://water:water@localhost:5432/water
       JWT_SECRET: i1ESOW3eC0Knwx1RXejhvpWtVL4RAOBmf0WkztZa
       JWT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6InRlc3QiLCJpYXQiOjE1MDMzMTg0NDV9.uBPV2bd6MoKlLA7pZskL0rqoUzL6_G7ZheEWEYxYcwQ
@@ -24,7 +23,7 @@ jobs:
       NOTIFY_CALLBACK_TOKEN: some-token
       TRAVIS: 1
       TEST_MODE: 1
-      NODE_ENV: local
+      NODE_ENV: development
       CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
       WATER_URI: http://127.0.0.1:8001/water/1.0
       WATER_URI_INTERNAL: http://127.0.0.1:8001/water/1.0
@@ -40,7 +39,26 @@ jobs:
       POSTGRES_PASSWORD: water
       POSTGRES_PORT: 5432
       POSTGRES_DB: water
-      CHARGE_MODULE_ORIGIN: http://localhost:3006
+      CHARGE_MODULE_ORIGIN: http://localhost:3000
+      ENVIRONMENT: tra
+      ADMIN_CLIENT_ID: ${{ secrets.CM_ADMIN_CLIENT_ID }}
+      SYSTEM_CLIENT_ID: ${{ secrets.CM_SYSTEM_CLIENT_ID }}
+      RULES_SERVICE_URL: ${{ secrets.CM_RULES_SERVICE_URL }}
+      RULES_SERVICE_USER: ${{ secrets.CM_RULES_SERVICE_USER }}
+      RULES_SERVICE_PASSWORD: ${{ secrets.CM_RULES_SERVICE_PASSWORD }}
+      CFD_APP: TCM_WaterQuality_RuleApp
+      CFD_RULESET: WaterQuality_RuleSet
+      WML_APP: TCM_WasteFacilities_RuleApp
+      WML_RULESET: WasteFacilities_RuleSet
+      PAS_APP: TCM_Installations_RuleApp
+      PAS_RULESET: Installations_RuleSet
+      WRLS_APP: TEST_WRLS_Pre_SRoC_RuleApp
+      WRLS_RULESET: WRLS_Pre_SRoC_RuleSet
+      WRLS_SROC_APP: TEST_WRLS_SRoC_RuleApp
+      WRLS_SROC_RULESET: WRLS_SRoC_RuleSet
+      SROC_MINIMUM_DATE: '01-APR-2020'
+      RULES_SERVICE_TIMEOUT: 5000
+      IGNORE_JWT_EXPIRATION: true
       
     services:
       # Label used to access the service container
@@ -103,28 +121,6 @@ jobs:
       - name: Run the charging module
         run: |
           cd ./charging-module
-          touch .env
-          echo "NODE_ENV=development" >> .env
-          echo "ENVIRONMENT=tra" >> .env
-          echo "ADMIN_CLIENT_ID=${{ secrets.CM_ADMIN_CLIENT_ID }}" >> .env
-          echo "SYSTEM_CLIENT_ID=${{ secrets.CM_SYSTEM_CLIENT_ID }}" >> .env
-          echo "RULES_SERVICE_URL=${{ secrets.CM_RULES_SERVICE_URL }}" >> .env
-          echo "RULES_SERVICE_USER=${{ secrets.CM_RULES_SERVICE_USER }}" >> .env
-          echo "RULES_SERVICE_PASSWORD=${{ secrets.CM_RULES_SERVICE_PASSWORD }}" >> .env
-          echo "CFD_APP=TCM_WaterQuality_RuleApp" >> .env
-          echo "CFD_RULESET=WaterQuality_RuleSet" >> .env
-          echo "WML_APP=TCM_WasteFacilities_RuleApp" >> .env
-          echo "WML_RULESET=WasteFacilities_RuleSet" >> .env
-          echo "PAS_APP=TCM_Installations_RuleApp" >> .env
-          echo "PAS_RULESET=Installations_RuleSet" >> .env
-          echo "WRLS_APP=TEST_WRLS_Pre_SRoC_RuleApp" >> .env
-          echo "WRLS_RULESET=WRLS_Pre_SRoC_RuleSet" >> .env
-          echo "WRLS_SROC_APP=TEST_WRLS_SRoC_RuleApp" >> .env
-          echo "WRLS_SROC_RULESET=WRLS_SRoC_RuleSet" >> .env
-          echo "SROC_MINIMUM_DATE='01-APR-2020'" >> .env
-          echo "RULES_SERVICE_TIMEOUT=5000" >> .env
-          echo "IGNORE_JWT_EXPIRATION=true" >> .env
-          echo "PORT=3000" >> .env
           npm run create-db
           npm run migrate-db
           npm run seed-db

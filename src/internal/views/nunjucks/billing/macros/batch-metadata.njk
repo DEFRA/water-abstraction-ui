@@ -24,5 +24,9 @@
       <dd class="meta__value">{{  invoice.financialYear.yearEnding-1 }} to {{ invoice.financialYear.yearEnding }}</dd>
     </div>
     {% endif %}
+    {% if batch.transactionFileReference and batch.status == 'sent' %}
+        <dt class="meta__key">Transaction file</dt>
+        <dd class="meta__value">{{ batch.transactionFileReference }}</dd>
+    {% endif %}
   </dl>
 {% endmacro %}

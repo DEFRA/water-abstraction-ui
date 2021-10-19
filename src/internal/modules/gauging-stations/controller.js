@@ -491,6 +491,7 @@ const getSendAlertCheckLicenceMatches = async (request, h) => {
     ...request.view,
     caption,
     pageTitle,
+    customBackUrl: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/alert-thresholds`,
     selectedGroupedLicences: flattenedSelectedGroupedLicences,
     continueUrl: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/email-address`,
     excludeLicencePreURL: `/monitoring-stations/${request.params.gaugingStationId}/send-alert/exclude-licence`

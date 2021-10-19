@@ -22,9 +22,9 @@ describe('remove charge info workflow as B&D user', () => {
     cy.get('.govuk-button.govuk-button--start').click();
     cy.getCookie('session');
     cy.get('#navbar-notifications').click();
-    cy.get('.govuk-heading-m').eq(5).should('have.text', 'View charge information workflow');
+    cy.get('#main-content').contains('View charge information workflow').should('be.visible');
     // navigates to charge info workflow page
-    cy.get('[href*="/charge-information-workflow"]').click();
+    cy.contains('Check licences in workflow').click();
     cy.get('.govuk-heading-xl').should('contain.text', 'Charge information workflow');
 
     describe('sees the workflow tabs', () => {

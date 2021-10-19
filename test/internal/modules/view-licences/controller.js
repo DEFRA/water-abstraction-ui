@@ -32,7 +32,7 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
       metadata: {},
       system_external_id: 'test id'
     });
-    sandbox.stub(services.crm.documentRoles, 'getDocumentRolesByDocumentRef').resolves();
+    sandbox.stub(services.crm.documentRoles, 'getDocumentRolesByDocumentRef').resolves({ data: [] });
   });
 
   after(async () => {

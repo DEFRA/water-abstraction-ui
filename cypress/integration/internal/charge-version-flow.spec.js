@@ -30,7 +30,7 @@ describe('B&D user able to view charge information tab', () => {
       cy.url().should('contain', '/licences/');
       cy.contains(LICENCE_NUMBER).should('be.visible');
     });
-    
+
     describe('sees the licence tabs and the bills tab is not shown', () => {
       cy.get('ul.govuk-tabs__list').children().should('have.lengthOf.at.least', 3);
       cy.get('#tab_summary').should('have.text', 'Summary');
@@ -43,8 +43,8 @@ describe('B&D user able to view charge information tab', () => {
 
   describe('Charge version workflow journey', () => {
     before(() => {
-    tearDown();
-    setUp('billing-data');
+      tearDown();
+      setUp('billing-data');
     });
 
     after(() => {
@@ -59,7 +59,8 @@ describe('B&D user able to view charge information tab', () => {
         cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
         cy.get('.govuk-button.govuk-button--start').click();
         // assert once the user is signed in
-        cy.contains('Licences, users and returns');
+        cy.contains('Search').should('be.visible');
+        cy.contains('Enter a licence number, customer name, returns ID, registered email address or monitoring station').should('be.visible');
         // search for a license
         cy.get('#query').type(LICENCE_NUMBER).should('be.visible');
         cy.get('.search__button').click();
@@ -70,7 +71,7 @@ describe('B&D user able to view charge information tab', () => {
         cy.url().should('contain', '/licences/');
         cy.contains(LICENCE_NUMBER).should('be.visible');
       });
-      
+
       describe('sees the licence tabs Summary, returns, communications, bills and charge information', () => {
         cy.get('ul.govuk-tabs__list').children().should('have.lengthOf.at.least', 3);
         cy.get('#tab_summary').should('have.text', 'Summary');
@@ -93,13 +94,13 @@ describe('B&D user able to view charge information tab', () => {
         cy.get('.govuk-heading-l').contains('Select reason for new charge information');
         cy.get('[type="radio"]#reason').click();
         cy.get('button.govuk-button').click();
-      }); 
+      });
 
       describe('user sets start date', () => {
         cy.get('.govuk-heading-l').contains('Set charge start date');
         cy.get('[type="radio"]#startDate').click();
         cy.get('button.govuk-button').click();
-      }); 
+      });
 
       describe('user selects billing contact', () => {
         cy.get('.govuk-heading-l').contains('Who should the bills go to?');
@@ -150,15 +151,15 @@ describe('B&D user able to view charge information tab', () => {
         cy.get('[type="radio"]#reviewOutcome').click();
         cy.get('.govuk-button').contains('Continue').click();
       });
-      
+
       describe('navigates to the Charge information tab', () => {
         cy.get('#charge > .govuk-heading-l').should('have.text', 'Charge information');
       });
-  
+
       describe('user sees the new charge version', () => {
         cy.get('.govuk-table__body').contains('td', 'Billing contact change');
         cy.get('.govuk-table__body').contains('td', 'Approved');
       });
     });
   });
-}); 
+});

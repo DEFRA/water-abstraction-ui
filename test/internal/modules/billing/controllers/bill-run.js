@@ -241,7 +241,7 @@ experiment('internal/modules/billing/controller', () => {
         });
 
         test('the page title including the region name and batch type', async () => {
-          expect(view.pageTitle).to.equal('Supplementary bill run');
+          expect(view.pageTitle).to.equal('Anglian supplementary bill run');
         });
 
         test('includes the correct sub-heading', async () => {
@@ -551,7 +551,7 @@ experiment('internal/modules/billing/controller', () => {
       expect(context).to.contain({ foo: 'bar' });
       expect(context.batch).to.equal(batchData);
       expect(context.pageTitle).to.equal(`You're about to cancel this bill run`);
-      expect(context.secondTitle).to.equal(`Supplementary bill run`);
+      expect(context.secondTitle).to.equal(`Anglian supplementary bill run`);
       expect(context.form).to.be.an.object();
       expect(context.form.action).to.equal(`/billing/batch/${request.params.batchId}/cancel`);
       expect(context.back).to.equal('/billing/batch/test-batch-id/summary');
@@ -595,7 +595,7 @@ experiment('internal/modules/billing/controller', () => {
       expect(context).to.contain({ foo: 'bar' });
       expect(context.batch).to.equal(batchData);
       expect(context.pageTitle).to.equal(`You're about to send this bill run`);
-      expect(context.secondTitle).to.equal(`Supplementary bill run`);
+      expect(context.secondTitle).to.equal(`Anglian supplementary bill run`);
       expect(context.form).to.be.an.object();
       expect(context.form.action).to.equal(`/billing/batch/${request.params.batchId}/confirm`);
       expect(context.back).to.equal('/billing/batch/test-batch-id/summary');
@@ -865,7 +865,7 @@ experiment('internal/modules/billing/controller', () => {
 
     test('outputs the page title to the view', async () => {
       const [, { pageTitle }] = h.view.lastCall.args;
-      expect(pageTitle).to.equal('Two-part tariff bill run');
+      expect(pageTitle).to.equal('Anglian two-part tariff bill run');
     });
 
     test('outputs the batch from request.pre to the view', async () => {

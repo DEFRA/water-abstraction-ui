@@ -13,13 +13,16 @@ describe('supplementary bill run', () => {
   it('user logs in', () => {
     // cy.visit to visit the URL
     cy.visit(Cypress.env('ADMIN_URI'));
+
     // Enter the user name and Password
     cy.fixture('users.json').then(users => {
       cy.get('input#email').type(users.billingAndData);
       cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
       cy.get('.govuk-button.govuk-button--start').click();
+
       // assert once the user is signed in
       cy.contains('Search');
+
       // user clicks on manage link to set up the supplementary bill run
       describe('user clicks on Manage link', () => {
         cy.get('#navbar-notifications').click();
@@ -28,7 +31,6 @@ describe('supplementary bill run', () => {
       describe('user enters the create a new bill flow', () => {
         cy.get('#navbar-bill-runs').contains('Bill runs').click();
         cy.get('#main-content > a.govuk-button').contains('Create a bill run').click();
-        //cy.get('.govuk-link').contains('Create a bill run').click();
       });
 
       describe('user selects supplementary billing type', () => {
@@ -51,8 +53,7 @@ describe('supplementary bill run', () => {
         cy.url().should('contain', '/billing/batch/');
         cy.get('.govuk-caption-l').contains('Billing account');
         cy.get('div.meta__row').contains('Test Region');
-        // click on back
-        cy.get('.govuk-back-link').click();
+        cy.get('.govuk-back-link').click(); // click on back
       });
 
       describe('user confirms the bill', () => {

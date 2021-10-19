@@ -123,7 +123,6 @@ jobs:
           echo "RULES_SERVICE_TIMEOUT=5000" >> .env
           echo "IGNORE_JWT_EXPIRATION=true" >> .env
           echo "PORT=3000" >> .env
-          npm run create-db
           npm run migrate-db
           npm run seed-db
           npm start

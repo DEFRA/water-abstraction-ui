@@ -35,6 +35,12 @@ jobs:
       RETURNS_URI: http://127.0.0.1:8006/returns/1.0
       REDIS_HOST: localhost
       REDIS_PORT: 6379
+      POSTGRES_USER: water
+      POSTGRES_HOST: localhost
+      POSTGRES_PASSWORD: water
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: water
+      CHARGE_MODULE_ORIGIN: http://localhost:3006
       
     services:
       # Label used to access the service container
@@ -83,6 +89,43 @@ jobs:
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS water"
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS water_import"
           
+      - name: Install charging module
+        uses: actions/checkout@v2
+        with:
+          repository: defra/sroc-charging-module-api
+          path: './charging-module'
+          
+      - name: Install charging module dependencies
+        run: |
+          cd ./charging-module
+          npm i
+          
+      - name: Run the charging module
+        run: |
+          cd ./charging-module
+          echo "ENVIRONMENT=tra" >> .env
+          echo "ADMIN_CLIENT_ID=${{ secrets.CM_ADMIN_CLIENT_ID }}" >> .env
+          echo "SYSTEM_CLIENT_ID=${{ secrets.CM_SYSTEM_CLIENT_ID }}" >> .env
+          echo "RULES_SERVICE_URL=${{ secrets.CM_RULES_SERVICE_URL }}" >> .env
+          echo "RULES_SERVICE_USER=${{ secrets.CM_RULES_SERVICE_USER }}" >> .env
+          echo "RULES_SERVICE_PASSWORD=${{ secrets.CM_RULES_SERVICE_PASSWORD }}" >> .env
+          echo "CFD_APP=TCM_WaterQuality_RuleApp" >> .env
+          echo "CFD_RULESET=WaterQuality_RuleSet" >> .env
+          echo "WML_APP=TCM_WasteFacilities_RuleApp" >> .env
+          echo "WML_RULESET=WasteFacilities_RuleSet" >> .env
+          echo "PAS_APP=TCM_Installations_RuleApp" >> .env
+          echo "PAS_RULESET=Installations_RuleSet" >> .env
+          echo "WRLS_APP=TEST_WRLS_Pre_SRoC_RuleApp" >> .env
+          echo "WRLS_RULESET=WRLS_Pre_SRoC_RuleSet" >> .env
+          echo "WRLS_SROC_APP=TEST_WRLS_SRoC_RuleApp" >> .env
+          echo "WRLS_SROC_RULESET=WRLS_SRoC_RuleSet" >> .env
+          echo "SROC_MINIMUM_DATE='01-APR-2020'" >> .env
+          echo "RULES_SERVICE_TIMEOUT=5000" >> .env
+          echo "IGNORE_JWT_EXPIRATION=true" >> .env
+          echo "PORT=3000" >> .env
+          npm run migrate-db
+          npm run seed-db
+          npm start
           
       - name: Install returns service
         uses: actions/checkout@v2

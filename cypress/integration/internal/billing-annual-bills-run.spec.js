@@ -13,13 +13,16 @@ describe('annual bill run', () => {
   it('user logs in and generates annual bill', () => {
     // cy.visit to visit the URL
     cy.visit(Cypress.env('ADMIN_URI'));
+
     // Enter the user name and Password
     cy.fixture('users.json').then(users => {
       cy.get('input#email').type(users.billingAndData);
       cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
       cy.get('.govuk-button.govuk-button--start').click();
+
       // assert once the user is signed in
       cy.contains('Search');
+
       // user clicks on manage link to set up the supplementary bill run
       describe('user clicks on Bill runs link', () => {
         cy.get('#navbar-bill-runs').click();
@@ -39,7 +42,7 @@ describe('annual bill run', () => {
         cy.get('button.govuk-button').click();
       });
 
-      describe('user cancels the bill after generating it', () => {                
+      describe('user cancels the bill after generating it', () => {
         cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Annual bill run');
         cy.url().should('contain', '/summary');
         cy.get('div.govuk-grid-column-two-thirds').eq(3).children(1).contains('Cancel bill run').click();
@@ -48,7 +51,7 @@ describe('annual bill run', () => {
       });
 
       describe('user generates the annual bill ', () => {
-        cy.get('[type="radio"]').check('annual');        
+        cy.get('[type="radio"]').check('annual');
         cy.get('button.govuk-button').click();
         cy.get('[type="radio"]#selectedBillingRegion-9').last().check();
         cy.get('button.govuk-button').click();
@@ -73,7 +76,7 @@ describe('annual bill run', () => {
       cy.get('.govuk-button.govuk-button--start').click();
       cy.get('#navbar-bill-runs').click();
       cy.get('.govuk-button').contains('Create a bill run').click();
-      cy.get('[type="radio"]').check('annual');        
+      cy.get('[type="radio"]').check('annual');
       cy.get('button.govuk-button').click();
       cy.get('[type="radio"]#selectedBillingRegion-9').last().check();
       cy.get('button.govuk-button').click();

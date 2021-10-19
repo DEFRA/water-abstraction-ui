@@ -17,7 +17,7 @@ const { featureToggles } = require('../../../config');
 
 const confirmForm = require('shared/lib/forms/confirm-form');
 
-const getBillRunPageTitle = batch => `${mappers.mapBatchType(batch.type)} bill run`;
+const getBillRunPageTitle = batch => `${batch.region.displayName} ${mappers.mapBatchType(batch.type).toLowerCase()} bill run`;
 
 const BATCH_LIST_ROUTE = '/billing/batch/list';
 
@@ -140,7 +140,7 @@ const getBillingBatchConfirmSuccess = (request, h) => {
   return h.view('nunjucks/billing/batch-sent-success', {
     ...request.view,
     pageTitle: 'Bill run sent',
-    panelText: `You've sent the ${batch.region.displayName} ${getBillRunPageTitle(batch).toLowerCase()} ${batch.billRunNumber}`,
+    panelText: `You've sent the ${getBillRunPageTitle(batch)} ${batch.billRunNumber}`,
     batch
   });
 };

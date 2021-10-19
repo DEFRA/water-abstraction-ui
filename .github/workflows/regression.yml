@@ -104,6 +104,8 @@ jobs:
         run: |
           cd ./charging-module
           echo "ENVIRONMENT=tra" >> .env
+          echo "AIRBRAKE_HOST=${{ secrets.CM_AIRBRAKE_HOST }}" >> .env
+          echo "AIRBRAKE_KEY=${{ secrets.CM_AIRBRAKE_KEY }}" >> .env
           echo "ADMIN_CLIENT_ID=${{ secrets.CM_ADMIN_CLIENT_ID }}" >> .env
           echo "SYSTEM_CLIENT_ID=${{ secrets.CM_SYSTEM_CLIENT_ID }}" >> .env
           echo "RULES_SERVICE_URL=${{ secrets.CM_RULES_SERVICE_URL }}" >> .env

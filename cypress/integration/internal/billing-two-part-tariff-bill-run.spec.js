@@ -78,13 +78,13 @@ describe('two-part-tariff bill run', () => {
       });
 
       describe('user waits for batch to generate', () => {
-        cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Two-part tariff bill run');
+        cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('two-part tariff bill run');
         cy.url().should('contain', '/billing/batch/');
       });
 
       describe('user confirms the bill', () => {
         cy.url().should('contain', '/billing/batch/');
-        cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Two-part tariff bill run');
+        cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('two-part tariff bill run');
         cy.get('.govuk-button').contains('Confirm bill run').click();
       });
 

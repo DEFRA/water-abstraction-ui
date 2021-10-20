@@ -109,6 +109,9 @@ jobs:
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS water"
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS water_import"
           
+      - name: Install PM2
+        run: npm i -g pm2
+        
       - name: Install charging module
         uses: actions/checkout@v2
         with:
@@ -206,7 +209,6 @@ jobs:
       - name: Start pm2
         run: |
           PGPASSWORD=water psql -U water -tc "SELECT schemaname, tablename FROM pg_catalog.pg_tables pt"
-          npm i -g pm2
           cd water-abstraction-permit-repository && pm2 start ecosystem.config.json --update-env && cd ..
           cd water-abstraction-service && pm2 start ecosystem.config.json --update-env && cd ..
           cd water-abstraction-tactical-crm && pm2 start ecosystem.config.json --update-env && cd ..

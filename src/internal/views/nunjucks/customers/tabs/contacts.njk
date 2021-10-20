@@ -3,6 +3,8 @@
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
       <th class="govuk-table__header" scope="col">Name</th>
+      <th class="govuk-table__header" scope="col">Email address</th>
+      <th class="govuk-table__header" scope="col">Action</th>
     </tr>
   </thead>
   <tbody class="govuk-table__body">
@@ -10,6 +12,14 @@
       <tr class="govuk-table__row">
         <td class="govuk-table__cell" scope="row">
             {{contact.contact.firstName}} {{contact.contact.lastName}}
+        </td>
+        <td class="govuk-table__cell" scope="row">
+            {{contact.emailAddress}}
+        </td>
+        <td class="govuk-table__cell" scope="row">
+            <a class="govuk-link" href="/customer/{{contact.companyId}}/emailpurpose/waa">
+              Manage
+            </a>
         </td>
       </tr>
     {% endfor %}

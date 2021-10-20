@@ -59,6 +59,8 @@ jobs:
       SROC_MINIMUM_DATE: '01-APR-2020'
       RULES_SERVICE_TIMEOUT: 5000
       IGNORE_JWT_EXPIRATION: true
+      AIRBRAKE_HOST: ${{ secrets.CM_AIRBRAKE_HOST }}
+      AIRBRAKE_KEY: ${{ secrets.CM_AIRBRAKE_KEY }}
       
     services:
       # Label used to access the service container

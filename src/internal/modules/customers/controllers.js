@@ -33,15 +33,14 @@ const getCustomer = async (request, h) => {
 
 /* Purpose for contact email, e.g. WAA alerts */
 const getContactPurpose = async (request, h) => {
-  const { companyId } = request.params;
-  const { emailPurpose } = request.params;
+  const { companyId, contactId } = request.params;
   let company = null;
   let userMessage = null;
   let contacts = [];
   let companyName = '';
   try {
     company = await services.water.companies.getCompany(companyId);
-    const { data } = await services.water.companies.getContacts(companyId);
+    const { data } = await services.water.companies.getContactPurpose(companyId, contactId);
     contacts = data;
     companyName = company.name;
   } catch (ex) {
@@ -55,9 +54,9 @@ const getContactPurpose = async (request, h) => {
     pageTitle: companyName,
     company,
     companyId,
-    emailPurpose,
+    contactId,
     contacts,
-    caption: 'Contact purpose',
+    caption: 'WAA Contact details',
     userMessage,
     back: '/'
   });

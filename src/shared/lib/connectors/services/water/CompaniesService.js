@@ -27,6 +27,12 @@ class CompaniesService extends ServiceClient {
     return this.serviceRequest.get(url);
   }
 
+  // Contact emails etc for e.g. sending abstraction alerts
+  getContactPurpose (entityId, contactId) {
+    const url = this.joinUrl('companies', entityId, 'customercontact', contactId);
+    return this.serviceRequest.get(url);
+  }
+
   getAddresses (entityId) {
     const url = this.joinUrl('companies', entityId, 'addresses');
     return this.serviceRequest.get(url);

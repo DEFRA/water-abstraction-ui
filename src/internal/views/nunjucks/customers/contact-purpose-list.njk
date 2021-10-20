@@ -1,4 +1,3 @@
-<!-- Display list of contact with agreed purpose e.g. /customer/{companyId}/emailpurpose/waa -->
 {% macro contactEmailPurposeView(contactId, firstName, lastName, emailAddress, emailPurpose, companyId, pageTitle, userMessage) %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
@@ -30,7 +29,7 @@
           {{firstName}} {{lastName}}
         </dd>
         <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" href="/customer/{{companyId}}/emailpurpose/contact/{{contactId}}/name">
+            <a class="govuk-link" href="/customer/{{companyId}}/customercontact/{{contactId}}/name">
               Change<span class="govuk-visually-hidden"> name</span>
               </a>
         </dd>
@@ -43,7 +42,7 @@
           {{ emailAddress }}
         </dd>
         <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" href="/customer/{{companyId}}/emailpurpose/contact/{{contactId}}/emailaddress">
+            <a class="govuk-link" href="/customer/{{companyId}}/customercontact/{{contactId}}/emailaddress">
               Change<span class="govuk-visually-hidden"> email address</span>
             </a>
         </dd>
@@ -63,12 +62,13 @@
           </dt>
           <dd class="govuk-summary-list__value">
             {% if 'waa' == emailPurpose %}
-            enabled
+            Yes
+            {% else %}
+            No
             {% endif %}
-
           </dd>
           <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" href="/customer/{{companyId}}/emailpurpose/contact/{{contactId}}/notices">
+            <a class="govuk-link" href="/customer/{{companyId}}/customercontact/{{contactId}}/notices">
               Change<span class="govuk-visually-hidden"> water abstraction alerts</span>
             </a>
           </dd>
@@ -80,14 +80,12 @@
 
 {% if contacts != null and contacts.length > 0 %}
   {% for contact in contacts %}
-    {% if contact.emailAddress != null %}
       {% set contactId = contact.contact.id %}
       {% set firstName = contact.contact.firstName %}
       {% set lastName = contact.contact.lastName %}
       {% set emailAddress = contact.emailAddress %}
-      {% set emailPurpose = 'waa' %}
+      {% set emailPurpose = contact.emailPurpose %}
       {{ contactEmailPurposeView(contactId, firstName, lastName, emailAddress, emailPurpose, companyId, pageTitle, userMessage) }}
-    {% endif %}
   {% endfor %}
 {% else %} 
   <!-- No existing data found -->

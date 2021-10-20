@@ -68,7 +68,7 @@ const getLicenceSummary = async (request, h) => {
     ...pick(request.pre, ['licence', 'bills', 'notifications', 'primaryUser', 'summary']),
     gaugingStationsData: uniqWith(gaugingStationsData, isEqual),
     chargeVersions,
-    invoiceAccount: get(chargeVersions.find(cv => cv.status === 'current'), 'invoiceAccount', {}),
+    invoiceAccount: chargeVersions ? get(chargeVersions.find(cv => cv.status === 'current'), 'invoiceAccount', {}) : {},
     contacts,
     licenceHolder: contacts.data.find(con => con.roleName === 'licenceHolder'),
     agreements: mappers.mapLicenceAgreements(agreements, { licenceId, includeInSupplementaryBilling: licence.includeInSupplementaryBilling, ...permissions }),

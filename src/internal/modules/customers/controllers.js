@@ -1,4 +1,6 @@
 const services = require('../../../internal/lib/connectors/services');
+const { uniqBy } = require('lodash');
+const { logger } = require('../../logger');
 
 const getCustomer = async (request, h) => {
   const { companyId } = request.params;
@@ -9,9 +11,13 @@ const getCustomer = async (request, h) => {
 
   const licences = await Promise.all(crmLicences.map(async crmLicence => {
     const thisLicence = await services.water.licences.getLicenceByLicenceNumber(crmLicence.documentRef);
-    const { document_name: documentName } = await services.crm.documents.getWaterLicence(crmLicence.documentRef);
-    thisLicence.name = documentName;
-    return thisLicence;
+    try {
+      const { document_name: documentName } = await services.crm.documents.getWaterLicence(crmLicence.documentRef);
+      thisLicence.name = documentName;
+      return thisLicence;
+    } catch (e) {
+      return logger.info('Could not fetch a licence from the CRM', e);
+    }
   }));
 
   const { data: contacts } = await services.water.companies.getContacts(companyId);
@@ -20,12 +26,12 @@ const getCustomer = async (request, h) => {
     ...request.view,
     pageTitle: company.name,
     company,
-    contacts,
-    licences,
-    invoiceAccounts: invoiceAccounts.map(eachInvoiceAccount => {
+    contacts: uniqBy(contacts, 'id'),
+    licences: uniqBy(licences, 'id'),
+    invoiceAccounts: uniqBy(invoiceAccounts.map(eachInvoiceAccount => {
       eachInvoiceAccount.currentAddress = eachInvoiceAccount.invoiceAccountAddresses.find(address => address.dateRange.endDate === null);
       return eachInvoiceAccount;
-    }),
+    }), 'id'),
     caption: 'Customer',
     back: '/licences'
   });

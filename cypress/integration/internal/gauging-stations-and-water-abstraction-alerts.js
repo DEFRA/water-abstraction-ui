@@ -75,8 +75,8 @@ describe('tag a licence to a gauging station, send a warning, and remove the tag
         .should('contain', 'Ml/d');
     });
 
-    describe('User issues a stop warning', () => {
-      cy.get('a[href*="/send-alert"]').click();
+    describe('User issues a stop warning by clicking on Create a water abstraction alert', () => {
+      cy.get('.govuk-grid-column-full').contains('Create a water abstraction alert').click();
       describe('sees the correct form page title', () => {
         cy.get('h1').contains('Select the type of alert you need to send');
       });
@@ -103,16 +103,16 @@ describe('tag a licence to a gauging station, send a warning, and remove the tag
       describe('selects the available option', () => {
         cy.get('.govuk-checkboxes__label').contains('104 Ml/d').click();
         cy.get('form > .govuk-button').contains('Continue').click();
-      })
+      });
       describe('sees the check page which displays the right licence', () => {
-        cy.get('h1').contains('Check the licence matches for the selected thresholds')
-        cy.get('.govuk-table__row').children(0).should('have.lengthOf', 5)
+        cy.get('h1').contains('Check the licence matches for the selected thresholds');
+        cy.get('.govuk-table__row').children(0).should('have.lengthOf', 5);
         cy.get('.govuk-table__body > tr').children(1).should('contain.text', 'AT/CURR/WEEKLY/01');
-      })
+      });
       describe('user confirms and is forwarded to the next step', () => {
         cy.get('.govuk-button').contains('Continue').click();
-        cy.get('h1').contains('Select an email address to include in the alerts')
-      })
+        cy.get('h1').contains('Select an email address to include in the alerts');
+      });
       describe('the user sees two options - the first is for sending using the logged in email address', () => {
         cy.get('.govuk-radios').children().should('have.lengthOf', 4);
         // 4 children, which is comprised of two radios, a divider, and a conditional input box
@@ -121,23 +121,23 @@ describe('tag a licence to a gauging station, send a warning, and remove the tag
         cy.get('.govuk-radios').children(2).should('contain', 'Use another email address');
         cy.get('.govuk-radios__input[value="true"]').click();
         cy.get('.govuk-button').contains('Continue').click();
-      })
+      });
       describe('Sees the processing page', () => {
-        cy.get('h1').contains('Processing notifications')
-      })
+        cy.get('h1').contains('Processing notifications');
+      });
       describe('eventually sees the preview page', () => {
         describe('which is comprised of a single licence', () => {
-          cy.get('table > caption', { timeout: 30000 }).contains('You\'re sending this alert for 1 licence.')
-        })
-      })
+          cy.get('table > caption', { timeout: 30000 }).contains('You\'re sending this alert for 1 licence.');
+        });
+      });
       describe('confirms sending, and is presented with the success page', () => {
         cy.get('.govuk-button').contains('Confirm and send').click();
-        cy.get('h1').contains('Alert sent')
-        cy.get('.govuk-panel__body').contains('You sent a warning alert')
-      })
+        cy.get('h1').contains('Alert sent');
+        cy.get('.govuk-panel__body').contains('You sent a warning alert');
+      });
       describe('clicks on the button to return to the gauging station page', () => {
         cy.get('a').contains('Return to monitoring station').click();
-      })
+      });
     });
 
     describe('User un-tags the licence', () => {

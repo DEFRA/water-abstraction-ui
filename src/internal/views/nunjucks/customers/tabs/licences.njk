@@ -10,20 +10,22 @@
   </thead>
   <tbody class="govuk-table__body">
     {% for licence in licences %}
-      <tr class="govuk-table__row">
-        <td class="govuk-table__cell" scope="row">
-            <a href='/licences/{{ licence.id }}'>{{ licence.licenceNumber }}</a>
-        </td>
-        <td class="govuk-table__cell" scope="row">
-            {{ licence.name }}
-        </td>
-        <td class="govuk-table__cell" scope="row">
-            {{ licence.startDate | date }}
-        </td>
-        <td class="govuk-table__cell" scope="row">
-             {{ licence.endDate | date }}
-         </td>
-      </tr>
+        {% if licence.id %}
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell" scope="row">
+                <a href='/licences/{{ licence.id }}'>{{ licence.licenceNumber }}</a>
+            </td>
+            <td class="govuk-table__cell" scope="row">
+                {{ licence.name }}
+            </td>
+            <td class="govuk-table__cell" scope="row">
+                {{ licence.startDate | date }}
+            </td>
+            <td class="govuk-table__cell" scope="row">
+                 {{ licence.endDate | date }}
+             </td>
+          </tr>
+      {% endif %}
     {% endfor %}
   </tbody>
 </table>

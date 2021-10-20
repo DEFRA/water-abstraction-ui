@@ -126,7 +126,7 @@ jobs:
           npm run create-db
           npm run migrate-db
           npm run seed-db
-          npm start
+          pm2 start index.js
           
       - name: Install returns service
         uses: actions/checkout@v2

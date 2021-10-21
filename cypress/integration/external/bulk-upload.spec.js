@@ -43,10 +43,9 @@ describe('Bulk upload returns test', () => {
         setTimeout(function () { doc.location.reload(); }, 5000);
       });
       cy.get('.govuk-list > :nth-child(1) > a').click();
-      // cy.readFile(downloadFolder);
     });
     cy.get('.govuk-grid-column-two-thirds > .govuk-button').click();
-    // cy.get('#file').dblclick();
+
     const filepath = 'downloads/big farm co ltd monthly return.csv';
     cy.get('input[type="file"]').attachFile(filepath);
     cy.get('button.govuk-button').click();

@@ -1,0 +1,64 @@
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
+<h2 class="govuk-heading-l">Contact details</h2>
+
+    {% if licenceHolder.companyId %}
+        <p><a href='/customer/{{ licenceHolder.companyId }}/#contacts'>Go to customer contacts</a></p>
+    {% endif %}
+
+    {% if contacts.data.length > 0 %}
+        <table class="govuk-table phone--hide">
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+                <th class="govuk-table__header" scope="col">Name</th>
+                <th class="govuk-table__header" scope="col">Communication type</th>
+                <th class="govuk-table__header" scope="col">Send to</th>
+              </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+                {% for contact in contacts.data %}
+                    <tr class="govuk-table__row">
+                      <td class="govuk-table__cell" scope="row">
+                        {% if contact.firstName and contact.lastName %}
+                            {{ contact.firstName }} {{contact.lastName}}
+                        {% else %}
+                            {{ contact.name }}
+                        {% endif %}
+                      </td>
+                      <td class="govuk-table__cell">
+                        {{ contact.roleLabel }}
+                      </td>
+                      <td class="govuk-table__cell">
+                        {% if contact.address1 %}
+                            <p class="govuk-body govuk-!-margin-bottom-0">{{ contact.address1 }}</p>
+                        {% endif %}
+                        {% if contact.address2 %}
+                            <p class="govuk-body govuk-!-margin-bottom-0">{{ contact.address2 }}</p>
+                        {% endif %}
+                        {% if contact.address3 %}
+                            <p class="govuk-body govuk-!-margin-bottom-0">{{ contact.address3 }}</p>
+                        {% endif %}
+                        {% if contact.address4 %}
+                            <p class="govuk-body govuk-!-margin-bottom-0">{{ contact.address4 }}</p>
+                        {% endif %}
+                        {% if contact.town %}
+                            <p class="govuk-body govuk-!-margin-bottom-0">{{ contact.town }}</p>
+                        {% endif %}
+                        {% if contact.county %}
+                            <p class="govuk-body govuk-!-margin-bottom-0">{{ contact.county }}</p>
+                        {% endif %}
+                        {% if contact.country %}
+                            <p class="govuk-body govuk-!-margin-bottom-0">{{ contact.country }}</p>
+                        {% endif %}
+                        {% if contact.postcode %}
+                            <p class="govuk-body govuk-!-margin-bottom-0">{{ contact.postcode }}</p>
+                        {% endif %}
+                      </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+    {% else %}
+        <p>No contacts found.</p>
+    {% endif %}

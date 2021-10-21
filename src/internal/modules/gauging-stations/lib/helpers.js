@@ -249,6 +249,34 @@ const groupLicenceConditions = request => {
   })).value();
 };
 
+const getBatchAlertData = async request => {
+  const { selectedGroupedLicences, sendingAlertType } = session.get(request);
+  console.log(selectedGroupedLicences);
+  return {
+    sendingAlertType: sendingAlertType.value,
+    linkages: selectedGroupedLicences.map(n => n.map(m => ({
+      licenceGaugingStationId: m.licenceGaugingStationId,
+      licenceId: m.licenceId,
+      abstractionPeriodStartDay: m.abstractionPeriodStartDay,
+      abstractionPeriodStartMonth: m.abstractionPeriodStartMonth,
+      abstractionPeriodEndDay: m.abstractionPeriodEndDay,
+      abstractionPeriodEndMonth: m.abstractionPeriodEndMonth,
+      restrictionType: m.restrictionType,
+      alertType: m.alertType,
+      thresholdValue: m.thresholdValue,
+      thresholdUnit: m.thresholdUnit,
+      licenceVersionPurposeConditionId: m.licenceVersionPurposeConditionId,
+      licenceRef: m.licenceRef,
+      label: m.label
+    })))
+  };
+};
+
+const getIssuer = async request => {
+  const { customEmailAddress, useLoggedInUserEmailAddress } = await session.get(request);
+  return useLoggedInUserEmailAddress.value === true ? request.defra.userName : customEmailAddress.value;
+};
+
 exports.blankGuid = blankGuid;
 exports.createTitle = createTitle;
 exports.redirectTo = redirectTo;
@@ -264,3 +292,6 @@ exports.selectedConditionWithLinkages = selectedConditionWithLinkages;
 exports.groupLicenceConditions = groupLicenceConditions;
 exports.addCheckboxFields = addCheckboxFields;
 exports.isSelectedCheckbox = isSelectedCheckbox;
+exports.deduceRestrictionTypeFromUnit = deduceRestrictionTypeFromUnit;
+exports.getBatchAlertData = getBatchAlertData;
+exports.getIssuer = getIssuer;

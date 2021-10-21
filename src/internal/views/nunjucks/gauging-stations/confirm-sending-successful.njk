@@ -1,0 +1,40 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "forms/index.njk" import formRender %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+
+      <div class="govuk-grid-column-full">
+
+      <div class="govuk-panel govuk-panel--confirmation">
+        <h1 class="govuk-panel__title">
+          Alert sent
+        </h1>
+
+        <div class="govuk-panel__body">
+          You sent a warning alert to<br><strong>{{recipientCount}} {{'recipient' | pluralize(recipientCount)}} </strong>
+        </div>
+
+      </div>
+
+          <p class="govuk-body govuk-!-font-weight-bold">  Go to Notices:
+            </p><ul class="govuk-list govuk-list--bullet">
+              <li>for a report of licences that have been sent an alert</li>
+              <li>to check the alert status of a licence</li>
+              </ul>
+          <p>  <a href="{{notificationsReportUrl}}">
+              Notices
+            </a>
+          </p>
+
+          <p class="govuk-body">or</p>
+
+          <p class="govuk-body"> <a class="govuk-link" href="{{monitoringStationUrl}}">Return to monitoring station</a></p>
+
+        </div>
+
+  </div>
+
+{% endblock %}

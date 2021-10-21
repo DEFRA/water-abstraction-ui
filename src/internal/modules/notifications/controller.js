@@ -334,7 +334,7 @@ async function getSendViewContext (id, data, sender) {
   const taskData = new TaskData(task, data);
 
   // Generate preview
-  const licenceNumbers = taskData.getLicenceNumbers();
+  const licenceNumbers = taskData.getNewTaggingLicenceNumbers();
   const params = taskData.getParameters();
   const { error, data: previewData } = await services.water.notifications.sendNotification(id, licenceNumbers, params, sender);
 

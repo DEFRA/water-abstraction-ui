@@ -13,20 +13,24 @@ describe('two-part-tariff bill run', () => {
   it('user logs in', () => {
     // cy.visit to visit the URL
     cy.visit(Cypress.env('ADMIN_URI'));
+
     // Enter the user name and Password
     cy.fixture('users.json').then(users => {
       cy.get('input#email').type(users.billingAndData);
       cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
       cy.get('.govuk-button.govuk-button--start').click();
+
       // assert once the user is signed in
       cy.contains('Search');
+
       // user clicks on manage link to set up the two-part-tariff bill run
       describe('user clicks on Manage link', () => {
         cy.get('#navbar-notifications').click();
       });
 
       describe('user enters the create a new bill flow', () => {
-        cy.get(':nth-child(9) > :nth-child(1) > .govuk-link').click();
+        cy.get('#navbar-bill-runs').contains('Bill runs').click();
+        cy.get('#main-content > a.govuk-button').contains('Create a bill run').click();
       });
 
       describe('user selects two-part-tariff billing type', () => {
@@ -74,13 +78,13 @@ describe('two-part-tariff bill run', () => {
       });
 
       describe('user waits for batch to generate', () => {
-        cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Two-part tariff bill run');
+        cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('two-part tariff bill run');
         cy.url().should('contain', '/billing/batch/');
       });
 
       describe('user confirms the bill', () => {
         cy.url().should('contain', '/billing/batch/');
-        cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Two-part tariff bill run');
+        cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('two-part tariff bill run');
         cy.get('.govuk-button').contains('Confirm bill run').click();
       });
 

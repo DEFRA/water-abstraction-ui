@@ -1,6 +1,6 @@
 'use strict';
 
-const { pick, uniqWith, isEqual } = require('lodash');
+const { pick, uniqWith, isEqual, get } = require('lodash');
 const moment = require('moment');
 const formHandler = require('shared/lib/form-handler');
 const forms = require('./forms');
@@ -57,6 +57,8 @@ const getLicenceSummary = async (request, h) => {
     }
   );
 
+  const contacts = await services.crm.documentRoles.getDocumentRolesByDocumentRef(document.system_external_id);
+
   return h.view('nunjucks/view-licences/licence.njk', {
     ...request.view,
     pageTitle: `Licence ${licence.licenceNumber}`,
@@ -66,6 +68,9 @@ const getLicenceSummary = async (request, h) => {
     ...pick(request.pre, ['licence', 'bills', 'notifications', 'primaryUser', 'summary']),
     gaugingStationsData: uniqWith(gaugingStationsData, isEqual),
     chargeVersions,
+    invoiceAccount: chargeVersions ? get(chargeVersions.find(cv => cv.status === 'current'), 'invoiceAccount', {}) : {},
+    contacts,
+    licenceHolder: contacts.data.find(con => con.roleName === 'licenceHolder'),
     agreements: mappers.mapLicenceAgreements(agreements, { licenceId, includeInSupplementaryBilling: licence.includeInSupplementaryBilling, ...permissions }),
     returns: {
       pagination: returns.pagination,

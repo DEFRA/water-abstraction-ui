@@ -15,12 +15,12 @@ Cypress.Commands.add('simulateNotifyCallback', async (notificationId) => {
   };
 
   const url = `${Cypress.env('USER_URI')}notify/callback`;
-  return axios.post(url, requestBody, {
+  await axios.post(url, requestBody, {
     headers: {
       authorization: `Bearer ${Cypress.env('NOTIFY_CALLBACK_TOKEN')}`
     }
-
   });
+  return 'OK'
 });
 
 Cypress.Commands.add('getLastNotifications', async (baseUrl, email) => {

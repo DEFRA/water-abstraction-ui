@@ -3,6 +3,7 @@ const EntityRolesApiClient = require('shared/lib/connectors/services/crm/EntityR
 const DocumentVerificationsApiClient = require('shared/lib/connectors/services/crm/DocumentVerificationsApiClient');
 const DocumentsApiClient = require('shared/lib/connectors/services/crm/DocumentsApiClient');
 const VerificationsApiClient = require('shared/lib/connectors/services/crm/VerificationsApiClient');
+const DocumentRolesApiClient = require('shared/lib/connectors/services/crm/DocumentRolesApiClient');
 
 const { logger } = require('../../../../logger');
 
@@ -11,5 +12,6 @@ module.exports = config => ({
   entityRoles: new EntityRolesApiClient(config, logger),
   documentVerifications: new DocumentVerificationsApiClient(config, logger),
   documents: new DocumentsApiClient(config, logger),
+  documentRoles: new DocumentRolesApiClient(config, logger),
   verifications: new VerificationsApiClient(config, logger)
 });

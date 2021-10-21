@@ -127,4 +127,17 @@ experiment('internal/NotificationsApiClient', () => {
       expect(url).to.equal(`https://example.com/water/notifications/${eventId}/messages`);
     });
   });
+
+  experiment('.getNotificationMessage', () => {
+    const id = 'test-id';
+
+    beforeEach(async () => {
+      await client.getNotificationMessage(id);
+    });
+
+    test('calls the expected URL', async () => {
+      const [url] = serviceRequest.get.lastCall.args;
+      expect(url).to.equal(`https://example.com/water/notifications/${id}/message`);
+    });
+  });
 });

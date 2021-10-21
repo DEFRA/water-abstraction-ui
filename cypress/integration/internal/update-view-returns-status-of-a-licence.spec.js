@@ -59,7 +59,7 @@ describe('check and update different status for a licence in returns tab as inte
     });
 
     describe('check the updated returns status', () => {
-      cy.get('#navbar-view').contains('Licences').click();
+      cy.get('#navbar-view').contains('Search').click();
       cy.get('#query').type('AT/CURR/MONTHLY/02').should('be.visible');
       cy.get('.search__button').click();
       cy.contains('Licences').should('be.visible');

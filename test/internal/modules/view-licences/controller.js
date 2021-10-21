@@ -32,6 +32,7 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
       metadata: {},
       system_external_id: 'test id'
     });
+    sandbox.stub(services.crm.documentRoles, 'getDocumentRolesByDocumentRef').resolves({ data: [] });
   });
 
   after(async () => {
@@ -121,6 +122,10 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
     test('uses the correct nunjucks template', async () => {
       const [template] = h.view.lastCall.args;
       expect(template).to.equal('nunjucks/view-licences/licence.njk');
+    });
+
+    test('calls the CRM to grab contact details', () => {
+      expect(services.crm.documentRoles.getDocumentRolesByDocumentRef.called).to.be.true();
     });
 
     test('sets the correct page title in the view', async () => {

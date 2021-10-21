@@ -108,6 +108,8 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
     sandbox.stub(services.crm.documents, 'getWaterLicence').returns({
       document_id: 'test-document-id'
     });
+    sandbox.stub(services.crm.documentRoles, 'getDocumentRolesByDocumentRef').resolves({ data: [] });
+
     h = {
       view: sandbox.stub()
     };

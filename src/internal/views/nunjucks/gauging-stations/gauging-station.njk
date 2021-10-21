@@ -86,23 +86,18 @@
   </div>
 </div>
 
-{# The following bit is hidden with 1==2 because we want to allow EOs to tag stuff but not yet send alerts out. #}
-{% if isWaterAbstractionAlertsEnabled and 1==2 %}
+{% if isWaterAbstractionAlertsEnabled %}
     {% if licenceGaugingStations.length %}
       <div class="govuk-grid-row govuk-!-margin-bottom-6">
         <div class="govuk-grid-column-full">
           {{ govukButton({
         text: "Create a water abstraction alert",
-        href: "send-alert"
+        href: sendUrl
       }) }}
         </div>
       </div>
     {% endif %}
-{% endif %}
 
-
-
-{% if isWaterAbstractionAlertsEnabled %}
     {% if licenceGaugingStations.length %}
         <table class="govuk-table">
         <caption class="govuk-table__caption govuk-table__caption--m">Licences linked to this monitoring station</caption>

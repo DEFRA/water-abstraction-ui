@@ -5,6 +5,7 @@ const testMode = parseInt(process.env.TEST_MODE) === 1;
 
 const isLocal = process.env.NODE_ENV === 'local';
 const isTest = process.env.NODE_ENV === 'test';
+const crmUri = process.env.CRM_URI || 'http://127.0.0.1:8002/crm/1.0';
 
 const { internal } = require('./lib/constants').scope;
 
@@ -98,7 +99,8 @@ module.exports = {
 
   services: {
     water: process.env.WATER_URI || 'http://127.0.0.1:8001/water/1.0',
-    crm: process.env.CRM_URI || 'http://127.0.0.1:8002/crm/1.0',
+    crm: crmUri,
+    crm_v2: crmUri.replace('1.0', '2.0'),
     idm: process.env.IDM_URI || 'http://127.0.0.1:8003/idm/1.0',
     permits: process.env.PERMIT_URI || 'http://127.0.0.1:8004/API/1.0/',
     returns: process.env.RETURNS_URI || 'http://127.0.0.1:8006/returns/1.0'
@@ -143,6 +145,7 @@ module.exports = {
     chargeInformation: true,
     manageInvoiceAccounts: true,
     deleteAllBillingData: ['local', 'dev', 'development', 'test', 'qa'].includes(process.env.NODE_ENV),
-    waterAbstractionAlerts: true
+    waterAbstractionAlerts: true,
+    recalculateBills: false
   }
 };

@@ -15,7 +15,7 @@
       ],
       "script": "server-external.js",
       "env": {
-        "watch": true
+        "watch": false
       },
       "env_production": {
         "watch": false,
@@ -38,7 +38,7 @@
       ],
       "script": "server-internal.js",
       "env": {
-        "watch": true
+        "watch": false
       },
       "env_production": {
         "watch": false,

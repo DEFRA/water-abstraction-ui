@@ -165,19 +165,10 @@ const getCreateCompanyContact = async (request, h) => {
     key,
     back: `/customer/${request.params.companyId}`,
     redirectPath: `/customer/${request.params.companyId}?newContactKey=${key}`,
-    companyId
+    companyId,
+    disableExistingContactSelection: true
   });
   return h.redirect(path);
-};
-
-const getUpdateContactDetails = async (request, h) => {
-  // do stuff
-  return 'ok';
-};
-
-const postUpdateContactDetails = async (request, h) => {
-  // do stuff
-  return 'ok';
 };
 
 exports.getCustomer = getCustomer;
@@ -187,5 +178,3 @@ exports.postAddCustomerContactEmail = postAddCustomerContactEmail;
 exports.getUpdateCustomerWaterAbstractionAlertsPreferences = getUpdateCustomerWaterAbstractionAlertsPreferences;
 exports.postUpdateCustomerWaterAbstractionAlertsPreferences = postUpdateCustomerWaterAbstractionAlertsPreferences;
 exports.getCreateCompanyContact = getCreateCompanyContact;
-exports.getUpdateContactDetails = getUpdateContactDetails;
-exports.postUpdateContactDetails = postUpdateContactDetails;

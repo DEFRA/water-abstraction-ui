@@ -9,7 +9,11 @@ const parseContactName = contact => {
 
 const handleNewContact = async (request, h) => {
   const contact = request.getNewContact(`newCompanyContact.${request.params.companyId}.${request.defra.userId}`);
-  const persistedContactRecord = await services.water.contacts.postContact(contact);
+
+  const parsedContact = { ...contact, salutation: contact.title };
+  delete parsedContact.title;
+
+  const persistedContactRecord = await services.water.contacts.postContact(parsedContact);
   await services.water.companies.postCompanyContact(request.params.companyId, persistedContactRecord.id, 'additionalContact');
 
   return h.redirect(`/customer/${request.params.companyId}/contacts/${persistedContactRecord.id}/email?isNew=1`);

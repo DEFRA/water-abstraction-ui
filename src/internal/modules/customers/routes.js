@@ -42,6 +42,9 @@ module.exports = {
         params: Joi.object().keys({
           companyId: Joi.string().guid().required(),
           contactId: Joi.string().guid().required()
+        }),
+        query: Joi.object().keys({
+          isNew: Joi.number().optional()
         })
       }
     }
@@ -87,6 +90,28 @@ module.exports = {
           companyId: Joi.string().guid().required()
         })
       }
+    }
+  },
+  getUpdateContactDetails: {
+    method: 'GET',
+    path: '/customer/{companyId}/contacts/{contactId}/details',
+    handler: controllers.getUpdateContactDetails,
+    config: {
+      description: 'Gets the page for editing a contact\'s details',
+      validate: {
+        params: Joi.object().keys({
+          companyId: Joi.string().guid().required(),
+          contactId: Joi.string().guid().required()
+        })
+      }
+    }
+  },
+  postUpdateContactDetails: {
+    method: 'POST',
+    path: '/customer/{companyId}/contacts/{contactId}/details',
+    handler: controllers.postUpdateContactDetails,
+    config: {
+      description: 'POSTs the page for editing a contact\'s details'
     }
   }
 };

@@ -12,7 +12,7 @@ const handleNewContact = async (request, h) => {
   const persistedContactRecord = await services.water.contacts.postContact(contact);
   await services.water.companies.postCompanyContact(request.params.companyId, persistedContactRecord.id, 'additionalContact');
 
-  return h.redirect(`/customer/${request.params.companyId}`);
+  return h.redirect(`/customer/${request.params.companyId}/contacts/${persistedContactRecord.id}/email?isNew=1`);
 };
 
 exports.parseContactName = parseContactName;

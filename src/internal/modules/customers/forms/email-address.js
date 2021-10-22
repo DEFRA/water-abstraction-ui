@@ -3,14 +3,12 @@ const { get } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms/');
 const session = require('../session');
 
-const emailAddressForm = async request => {
-  const { companyId, contactId } = request.params;
+const emailAddressForm = request => {
   const f = formFactory(request.path);
 
-  const { data: companyContacts } = await services.water.companies.getContacts(companyId);
-  const companyContact = companyContacts.find(row => row.contact.id === contactId);
-
-  const defaultEmailValue = get(session.get(request), 'email.value') || companyContact.contact.email;
+  const defaultEmailValue =
+    get(session.get(request), 'email.value') ||
+    get(session.get(request), 'emailAddressFromDatabase');
 
   f.fields.push(fields.text('email', {
     errors: {
@@ -23,6 +21,8 @@ const emailAddressForm = async request => {
     }
   }, defaultEmailValue));
 
+  f.fields.push(fields.hidden('isNew', {}, request.query.isNew));
+
   f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
   return f;
@@ -30,7 +30,8 @@ const emailAddressForm = async request => {
 
 const emailAddressSchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
-  email: Joi.string().email().required()
+  email: Joi.string().email().required(),
+  isNew: Joi.number().optional()
 });
 
 exports.form = emailAddressForm;

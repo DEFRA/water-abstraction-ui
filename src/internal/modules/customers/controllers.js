@@ -72,6 +72,11 @@ const getAddCustomerContactEmail = async (request, h) => {
   const companyContact = companyContacts.find(row => row.contact.id === contactId);
   const contactName = parseContactName(companyContact.contact);
 
+  session.merge(request, {
+    waterAbstractionAlertsEnabledValueFromDatabase: companyContact.waterAbstractionAlertsEnabled,
+    emailAddressFromDatabase: companyContact.contact.email
+  });
+
   const pageTitle = `Enter an email address for ${contactName}`;
   const { path } = request;
 
@@ -85,15 +90,29 @@ const getAddCustomerContactEmail = async (request, h) => {
 };
 
 const postAddCustomerContactEmail = async (request, h) => {
+  const { companyId, contactId } = request.params;
   const form = await formHandler.handleFormRequest(request, forms.emailAddress);
+  const { data: companyContacts } = await services.water.companies.getContacts(companyId);
+  const companyContact = companyContacts.find(row => row.contact.id === contactId);
+  const company = await services.water.companies.getCompany(companyId);
 
   if (!form.isValid) {
     return h.postRedirectGet(form);
   }
 
   const email = form.fields.find(field => field.name === 'email').value;
-  await services.water.contacts.patchContact(request.params.contactId, { email });
+  const isNew = form.fields.find(field => field.name === 'isNew').value;
 
+  await services.water.contacts.patchContact(contactId, { email });
+
+  if (isNew) {
+    return h.view('nunjucks/customers/contact-added.njk', {
+      ...request.view,
+      contactName: parseContactName(companyContact.contact),
+      contactId: contactId,
+      company
+    });
+  }
   return h.redirect(request.path.replace(/\/[^\/]*$/, ''));
 };
 
@@ -151,6 +170,16 @@ const getCreateCompanyContact = async (request, h) => {
   return h.redirect(path);
 };
 
+const getUpdateContactDetails = async (request, h) => {
+  // do stuff
+  return 'ok';
+};
+
+const postUpdateContactDetails = async (request, h) => {
+  // do stuff
+  return 'ok';
+};
+
 exports.getCustomer = getCustomer;
 exports.getCustomerContact = getCustomerContact;
 exports.getAddCustomerContactEmail = getAddCustomerContactEmail;
@@ -158,3 +187,5 @@ exports.postAddCustomerContactEmail = postAddCustomerContactEmail;
 exports.getUpdateCustomerWaterAbstractionAlertsPreferences = getUpdateCustomerWaterAbstractionAlertsPreferences;
 exports.postUpdateCustomerWaterAbstractionAlertsPreferences = postUpdateCustomerWaterAbstractionAlertsPreferences;
 exports.getCreateCompanyContact = getCreateCompanyContact;
+exports.getUpdateContactDetails = getUpdateContactDetails;
+exports.postUpdateContactDetails = postUpdateContactDetails;

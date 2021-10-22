@@ -31,7 +31,7 @@ const generateBillingAccountMetadata = billingAccount => {
     </dd>
   </div>` : '';
 
-  metadataHtml += billingAccount.dateLastTransactionFileReferenceUpdated ? `<div class="govuk-summary-list__row-with-minimal-spacing">
+  metadataHtml += moment(billingAccount.dateLastTransactionFileReferenceUpdated).isValid() ? `<div class="govuk-summary-list__row-with-minimal-spacing">
     <dt class="govuk-summary-list__value">
       Last updated
     </dt>

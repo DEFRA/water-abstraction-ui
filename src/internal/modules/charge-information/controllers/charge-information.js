@@ -2,6 +2,7 @@
 
 const uuid = require('uuid');
 const { get } = require('lodash');
+const moment = require('moment');
 const { isEmpty } = require('lodash');
 const forms = require('../forms');
 const actions = require('../lib/actions');
@@ -78,10 +79,16 @@ const getBillingAccountRedirectKey = (licenceId, chargeVersionWorkflowId) =>
  * @param {Object} document
  * @return {Object} data for billing account plugin handover
  */
-const mapBillingAccountHandoverData = (licence, document, currentState, chargeVersionWorkflowId, isCheckAnswers = false) => {
+const mapBillingAccountHandoverData = async (licence, document, currentState, chargeVersionWorkflowId, isCheckAnswers = false) => {
   const { licenceNumber, id, region: { id: regionId } } = licence;
-  // Get company ID from document
-  const { company: { id: companyId } } = document.roles.find(role => role.roleName === 'licenceHolder');
+
+  // Get company ID from document r
+  const { data: documentRoles } = await services.crm.documentRoles.getFullHistoryOfDocumentRolesByDocumentRef(document.licenceNumber);
+
+  const { companyId } = documentRoles.find(x => x.roleName === 'licenceHolder' &&
+    moment(x.startDate).isSameOrBefore(currentState.dateRange.startDate, 'd') &&
+    (!x.endDate || moment(x.endDate).isAfter(currentState.dateRange.startDate, 'd'))
+  );
 
   // Get currently selected billing account ID
   const billingAccountId = get(currentState, 'invoiceAccount.id');
@@ -94,9 +101,11 @@ const mapBillingAccountHandoverData = (licence, document, currentState, chargeVe
     regionId,
     back: `/licences/${id}/charge-information/start-date`,
     redirectPath: routing.getHandleBillingAccount(id, { returnToCheckData: isCheckAnswers, chargeVersionWorkflowId }),
-    ...billingAccountId && { data: {
-      id: billingAccountId
-    } },
+    ...billingAccountId && {
+      data: {
+        id: billingAccountId
+      }
+    },
     startDate
   };
 };
@@ -116,7 +125,7 @@ const getBillingAccount = async (request, h) => {
   const document = await services.water.licences.getValidDocumentByLicenceIdAndDate(licenceId, startDate);
 
   // Return redirect path to billing account entry flow
-  const data = mapBillingAccountHandoverData(request.pre.licence, document, currentState, chargeVersionWorkflowId, returnToCheckData);
+  const data = await mapBillingAccountHandoverData(request.pre.licence, document, currentState, chargeVersionWorkflowId, returnToCheckData);
   const path = request.billingAccountEntryRedirect(data);
   return h.redirect(path);
 };
@@ -194,6 +203,7 @@ const getCheckData = async (request, h) => {
   const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount);
   const editChargeVersionWarning = await isOverridingChargeVersion(request, draftChargeInformation.dateRange.startDate);
   const action = routing.getCheckData(licenceId, request.query);
+
   const view = {
     ...getDefaultView(request, back),
     action,

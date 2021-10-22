@@ -58,14 +58,15 @@ const mapLicence = (batch, licenceGroup) => {
 };
 
 const getTotals = licences => {
-  const errors = licences.reduce((acc, row) => (
+  const dedupLicences = licences.filter((item, ind, arr) => arr.findIndex(temp => (temp.licenceId === item.licenceId)) === ind);
+  const errors = dedupLicences.reduce((acc, row) => (
     row.twoPartTariffError ? acc + 1 : acc
   ), 0);
 
   const totals = {
     errors,
-    ready: licences.length - errors,
-    total: licences.length
+    ready: dedupLicences.length - errors,
+    total: dedupLicences.length
   };
   return totals;
 };

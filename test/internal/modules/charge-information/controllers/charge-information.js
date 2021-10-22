@@ -134,6 +134,9 @@ experiment('internal/modules/charge-information/controller', () => {
     sandbox.stub(services.water.chargeVersionWorkflows, 'deleteChargeVersionWorkflow').resolves();
     sandbox.stub(services.water.chargeVersionWorkflows, 'patchChargeVersionWorkflow').resolves();
     sandbox.stub(services.crm.documentRoles, 'getDocumentRolesByDocumentRef').resolves({ data: [] });
+    sandbox.stub(services.crm.documentRoles, 'getFullHistoryOfDocumentRolesByDocumentRef').resolves({ data: [{
+      companyId: 'some-company-id'
+    }] });
     sandbox.stub(services.water.chargeVersions, 'getChargeVersionsByLicenceId').resolves({ data: [] });
     sandbox.stub(services.water.licences, 'getValidDocumentByLicenceIdAndDate').resolves({
       roles: [
@@ -693,6 +696,10 @@ experiment('internal/modules/charge-information/controller', () => {
 
   experiment('.getBillingAccount', () => {
     beforeEach(async () => {
+      services.crm.documentRoles.getFullHistoryOfDocumentRolesByDocumentRef.resolves({ data: [{
+        companyId: 'some-company-id',
+        roleName: 'licenceHolder'
+      }] });
       request = createRequest();
       request.query = { chargeVersionWorkflowId: 'test-cv-workflow-id' };
       await controller.getBillingAccount(request, h);

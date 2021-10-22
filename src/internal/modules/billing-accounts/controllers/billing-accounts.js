@@ -2,7 +2,7 @@
 
 const { pick } = require('lodash');
 const titleCase = require('title-case');
-const { getCurrentAddress } = require('../lib/helpers');
+const { getCurrentAddress, generateBillingAccountMetadata } = require('../lib/helpers');
 
 const getBillingAccountCaption = billingAccount =>
   `Billing account ${billingAccount.accountNumber}`;
@@ -34,6 +34,8 @@ const getBillingAccount = (request, h) => {
   const moreBillsLink = (bills.pagination.pageCount > 1) &&
     `/billing-accounts/${billingAccountId}/bills`;
 
+  const metadataHtml = generateBillingAccountMetadata(billingAccount);
+
   return h.view('nunjucks/billing-accounts/view', {
     ...request.view,
     caption: getBillingAccountCaption(billingAccount),
@@ -45,7 +47,8 @@ const getBillingAccount = (request, h) => {
     bills: bills.data,
     moreBillsLink,
     rebillingLink: `/billing-accounts/${billingAccountId}/rebilling`,
-    rebillable: rebillableBills.length > 0
+    rebillable: rebillableBills.length > 0,
+    metadataHtml
   });
 };
 

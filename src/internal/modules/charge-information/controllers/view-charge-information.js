@@ -21,8 +21,12 @@ const getViewChargeInformation = async (request, h) => {
   const { chargeVersionWorkflowId } = request.params;
   const backLink = await getLicencePageUrl(licence, true);
 
-  const { data: documentRoles } = await services.crm.documentRoles.getDocumentRolesByDocumentRef(licence.licenceNumber);
-  const licenceHolder = documentRoles.find(role => role.roleName === 'licenceHolder');
+  const { data: documentRoles } = await services.crm.documentRoles.getFullHistoryOfDocumentRolesByDocumentRef(licence.licenceNumber);
+
+  const licenceHolder = documentRoles.find(role => role.roleName === 'licenceHolder' &&
+    moment(role.startDate).isSameOrBefore(chargeVersion.dateRange.startDate, 'd') &&
+    (!role.endDate || moment(role.endDate).isAfter(chargeVersion.dateRange.startDate, 'd'))
+  );
 
   const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount);
 

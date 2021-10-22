@@ -113,6 +113,7 @@ const postAddCustomerContactEmail = async (request, h) => {
       company
     });
   }
+  // eslint-disable-next-line no-useless-escape
   return h.redirect(request.path.replace(/\/[^\/]*$/, ''));
 };
 
@@ -150,6 +151,7 @@ const postUpdateCustomerWaterAbstractionAlertsPreferences = async (request, h) =
   const waterAbstractionAlertsEnabled = form.fields.find(field => field.name === 'waterAbstractionAlertsEnabled').value;
   await services.water.companies.patchCompanyContact(request.params.companyId, request.params.contactId, { waterAbstractionAlertsEnabled });
 
+  // eslint-disable-next-line no-useless-escape
   return h.redirect(request.path.replace(/\/[^\/]*$/, ''));
 };
 

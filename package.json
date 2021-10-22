@@ -43,6 +43,7 @@
     "chromedriver": "^89.0.0",
     "codecov": "^3.7.1",
     "cypress": "^8.0.0",
+    "cypress-file-upload": "^5.0.8",
     "cypress-multi-reporters": "^1.5.0",
     "del": "^3.0.0",
     "eslint": "^5.16.0",

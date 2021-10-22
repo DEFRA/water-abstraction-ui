@@ -2,6 +2,7 @@
 {% from "title.njk" import title %}
 {% from "crm/invoice-address.njk" import invoiceAddress %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
 {% from "./nunjucks/billing-accounts/macros/bills-table.njk" import billsTable %}
 
 {% block content %}
@@ -9,6 +10,11 @@
 
   <div class="govuk-grid-row govuk-!-margin-bottom-6">
     <div class="govuk-grid-column-two-thirds">
+
+      {{ govukDetails({
+        summaryText: "Billing account details",
+        html: '<dl class="govuk-summary-list govuk-summary-list--no-border">'+metadataHtml+'</dl>'
+      }) }}
 
       <h2 class="govuk-heading-m">
         Billing address
@@ -18,10 +24,10 @@
         {{ invoiceAddress(currentAddress, billingAccount.company) }}
       </p>
 
-      {{ govukButton({ 
-        text : 'Change address', 
-        classes: 'govuk-button--secondary', 
-        href: changeAddressLink 
+      {{ govukButton({
+        text : 'Change address',
+        classes: 'govuk-button--secondary',
+        href: changeAddressLink
       }) }}
 
     </div>
@@ -42,7 +48,7 @@
     </p>
     {% endif %}
 
-    
+
     <p>
     {% if rebillable %}
       {{ govukButton({
@@ -54,11 +60,11 @@
       The sent bills were created in NALD. You cannot reissue these bills in the service.
     {% endif %}
     </p>
-  
+
 
   </div>
 </div>
 
 {% endif %}
-  
+
 {% endblock %}

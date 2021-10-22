@@ -23,9 +23,9 @@ const getViewChargeInformation = async (request, h) => {
 
   const { data: documentRoles } = await services.crm.documentRoles.getFullHistoryOfDocumentRolesByDocumentRef(licence.licenceNumber);
 
-  const licenceHolder = documentRoles.find(x => x.roleName === 'licenceHolder' &&
-    moment(x.startDate).isSameOrBefore(chargeVersion.dateRange.startDate, 'd') &&
-    (!x.endDate || moment(x.endDate).isAfter(chargeVersion.dateRange.startDate, 'd'))
+  const licenceHolder = documentRoles.find(role => role.roleName === 'licenceHolder' &&
+    moment(role.startDate).isSameOrBefore(chargeVersion.dateRange.startDate, 'd') &&
+    (!role.endDate || moment(role.endDate).isAfter(chargeVersion.dateRange.startDate, 'd'))
   );
 
   const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount);

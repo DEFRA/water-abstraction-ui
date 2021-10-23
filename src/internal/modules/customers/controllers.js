@@ -163,11 +163,11 @@ const getCreateCompanyContact = async (request, h) => {
   const key = `newCompanyContact.${request.params.companyId}.${request.defra.userId}`;
 
   const path = request.contactEntryRedirect({
+    companyId,
     caption,
     key,
     back: `/customer/${request.params.companyId}`,
     redirectPath: `/customer/${request.params.companyId}?newContactKey=${key}`,
-    companyId,
     disableExistingContactSelection: true
   });
   return h.redirect(path);

@@ -41,6 +41,7 @@ experiment('internal/modules/customers/controllers', () => {
       contact: CONTACT_OBJECT
     }] });
     await sandbox.stub(services.water.companies, 'postCompanyContact').resolves({});
+    await sandbox.stub(services.water.companies, 'patchCompanyContact').resolves({});
     await sandbox.stub(services.water.companies, 'getCompany').resolves({});
     await sandbox.stub(services.water.companies, 'getCompanyInvoiceAccounts').resolves({ data: [] });
     await sandbox.stub(services.water.companies, 'getCompanyLicences').resolves(EXPECTED_GET_COMPANY_LICENCES_RESPONSE);
@@ -249,6 +250,104 @@ experiment('internal/modules/customers/controllers', () => {
       });
       test('calls patchContact endpoint', () => {
         expect(services.water.contacts.patchContact.called).to.be.true();
+      });
+    });
+  });
+
+  experiment('.getUpdateCustomerWaterAbstractionAlertsPreferences', () => {
+    const request = {
+      params: {
+        companyId: uuid(),
+        contactId: CONTACT_ID
+      },
+      defra: {
+        userId: '1000'
+      },
+      path: `http://defra.wrls/customers/123/contact/456/water-abstraction-alerts-preferences`
+    };
+
+    const h = {
+      view: sandbox.spy(),
+      redirect: sandbox.spy()
+    };
+
+    beforeEach(async () => {
+      sandbox.stub(helpers, 'parseContactName').resolves(CONTACT_OBJECT);
+      await controllers.getUpdateCustomerWaterAbstractionAlertsPreferences(request, h);
+    });
+    test('calls the service method for fetching a company', async () => {
+      expect(services.water.companies.getCompany.calledWith(request.params.companyId)).to.be.true();
+    });
+    test('calls the service method for fetching the company contacts', async () => {
+      expect(services.water.companies.getContacts.calledWith(request.params.companyId)).to.be.true();
+    });
+    test('calls the helper method for parsing a contact display name', async () => {
+      expect(helpers.parseContactName.calledWith(CONTACT_OBJECT)).to.be.true();
+    });
+    test('calls session.merge to store waterAbstractionAlertsEnabled and email', () => {
+      expect(session.merge.calledWith({
+        waterAbstractionAlertsEnabledValueFromDatabase: CONTACT_OBJECT.waterAbstractionAlertsEnabled
+      }));
+    });
+  });
+
+  experiment('.postUpdateCustomerWaterAbstractionAlertsPreferences', () => {
+    const request = {
+      path: `http://defra.wrls/customers/123/contact/456/water-abstraction-alerts-preferences`,
+      method: 'post',
+      view: {
+        csrfToken: 'some-token'
+      },
+      params: {
+        companyId: uuid(),
+        contactId: CONTACT_ID
+      },
+      defra: {
+        userId: '1000'
+      }
+    };
+
+    const h = {
+      view: sandbox.spy(),
+      postRedirectGet: sandbox.spy(),
+      redirect: sandbox.spy()
+    };
+
+    const formContent = {
+      fields: [{ name: 'waterAbstractionAlertsEnabled', value: true }]
+    };
+
+    experiment('when the payload is invalid', () => {
+      beforeEach(() => {
+        formHandler.handleFormRequest.resolves({
+          ...formContent,
+          isValid: false
+        });
+        controllers.postUpdateCustomerWaterAbstractionAlertsPreferences(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+      test('calls handleFormRequest to process the payload through the form', () => {
+        expect(formHandler.handleFormRequest.called).to.be.true();
+      });
+      test('redirects the user back to the form', () => {
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+    });
+
+    experiment('when the payload is valid', () => {
+      beforeEach(async () => {
+        await formHandler.handleFormRequest.resolves({
+          ...formContent,
+          isValid: true
+        });
+        await controllers.postUpdateCustomerWaterAbstractionAlertsPreferences(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+      test('calls handleFormRequest to process the payload through the form', () => {
+        expect(formHandler.handleFormRequest.called).to.be.true();
+      });
+      test('calls patchContact endpoint', () => {
+        expect(services.water.companies.patchCompanyContact.called).to.be.true();
       });
     });
   });

@@ -12,7 +12,6 @@ const controllers = require('../../../../src/internal/modules/customers/controll
 const helpers = require('../../../../src/internal/modules/customers/helpers');
 const session = require('../../../../src/internal/modules/customers/session.js');
 const formHandler = require('../../../../src/shared/lib/form-handler');
-const formHelpers = require('../../../../src/shared/lib/forms');
 const services = require('../../../../src/internal/lib/connectors/services');
 const uuid = require('uuid').v4;
 

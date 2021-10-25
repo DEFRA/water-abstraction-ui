@@ -158,6 +158,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     } });
     sandbox.stub(services.crm.documents, 'getWaterLicence');
     sandbox.stub(services.water.licences, 'getSummaryByDocumentId');
+    sandbox.stub(services.water.licences, 'getDocumentByLicenceId').resolves({ metadata: { IsCurrent: true } });
     sandbox.stub(services.water.billingInvoiceLicences, 'getInvoiceLicence');
     sandbox.stub(services.water.billingInvoiceLicences, 'deleteInvoiceLicence');
     sandbox.stub(services.water.billingVolumes, 'updateVolume');
@@ -337,6 +338,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     };
 
     beforeEach(async () => {
+      services.water.licences.getSummaryByDocumentId.resolves({ data: { conditions: [] } });
       services.water.billingBatches.getBatchLicenceBillingVolumes.resolves(billingVolumes);
       await controller.getLicenceReview(request, h);
     });

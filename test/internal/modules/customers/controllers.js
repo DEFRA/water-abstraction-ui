@@ -215,17 +215,6 @@ experiment('internal/modules/customers/controllers', () => {
       fields: [{ name: 'email', value: 'some.valid.email@defra.gov.uk' }, { name: 'isNew', value: undefined }]
     };
 
-    const storedData = {
-      email: {
-        name: 'email',
-        value: 'some.valid.email@defra.gov.uk'
-      },
-      isNew: {
-        name: 'isNew',
-        value: undefined
-      }
-    };
-
     experiment('when the payload is invalid', () => {
       beforeEach(() => {
         formHandler.handleFormRequest.resolves({

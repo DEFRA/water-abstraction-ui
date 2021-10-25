@@ -11,19 +11,27 @@
     {% for contact in contacts %}
       <tr class="govuk-table__row">
         <td class="govuk-table__cell" scope="row">
+        {% if contact.contact.type == 'department' %}
+            {{contact.contact.department}}
+        {% else %}
             {{contact.contact.firstName}} {{contact.contact.lastName}}
+        {% endif %}
         </td>
         <td class="govuk-table__cell" scope="row">
             {{contact.contact.email}}
         </td>
         <td class="govuk-table__cell" scope="row">
-            <a href='/customer/{{company.id}}/contacts/{{contact.contact.id}}'>Manage</a>
+            {% if hasPermissionToManageContacts %}
+                <a href='/customer/{{company.id}}/contacts/{{contact.contact.id}}'>Manage</a>
+            {% endif %}
         </td>
       </tr>
     {% endfor %}
   </tbody>
 </table>
 
-<a href="/customer/{{company.id}}/contacts/new" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
-  Set up a new contact
-</a>
+{% if hasPermissionToManageContacts %}
+    <a href="/customer/{{company.id}}/contacts/new" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+      Set up a new contact
+    </a>
+{% endif %}

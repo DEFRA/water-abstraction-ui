@@ -4,7 +4,7 @@ const parseContactName = contact => {
   if (contact.type === 'department') {
     return contact.department;
   }
-  return `${contact.firstName} ${contact.lastName}`;
+  return `${contact.firstName || ''} ${contact.lastName || ''}`;
 };
 
 const handleNewContact = async (request, h) => {

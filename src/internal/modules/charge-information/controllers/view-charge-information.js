@@ -40,7 +40,7 @@ const getViewChargeInformation = async (request, h) => {
     billingAccountAddress,
     licenceHolder,
     links: {
-      billingAccount: hasScope(request, manageBillingAccounts) && `/billing-accounts/${billingAccount.id}`
+      billingAccount: hasScope(request, manageBillingAccounts) && billingAccount && `/billing-accounts/${billingAccount.id}`
     },
     // @TODO: use request.pre.isChargeable to determine this
     // after the chargeVersion import ticket has been completed

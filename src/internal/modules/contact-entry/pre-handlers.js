@@ -23,10 +23,10 @@ const loadCompany = async (request, h) => {
 };
 
 const loadCompanyContacts = async (request, h) => {
-  const { companyId } = getSessionDataFromRequest(request);
-  return isNull(companyId)
+  const data = getSessionDataFromRequest(request);
+  return isNull(data.companyId) || data.disableExistingContactSelection === true
     ? []
-    : companyPreHandlers.loadCompanyContacts(request, h, companyId);
+    : companyPreHandlers.loadCompanyContacts(request, h, data.companyId);
 };
 
 exports.getSessionData = getSessionData;

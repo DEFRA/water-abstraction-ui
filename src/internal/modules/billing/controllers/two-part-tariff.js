@@ -40,7 +40,7 @@ const getTwoPartTariffReview = async (request, h) => {
 const getLicenceReview = async (request, h) => {
   const { batch, licence } = request.pre;
   const { licenceId, action } = request.params;
-  const licenceData = await getCurrentLicenceData(licence.licenceNumber);
+  const licenceData = await getCurrentLicenceData(licenceId);
 
   const backLinkTail = action === 'review' ? 'review' : 'ready';
 
@@ -64,15 +64,19 @@ const getLicenceReview = async (request, h) => {
  * @param {String} licenceRef - licence number
  * @return {Promise<Object>} resolves with licence summary and conditions
  */
-const getCurrentLicenceData = async licenceRef => {
-  const doc = await services.crm.documents.getWaterLicence(licenceRef);
-  if (doc) {
+const getCurrentLicenceData = async licenceId => {
+  const doc = await services.water.licences.getDocumentByLicenceId(licenceId);
+  if (doc.metadata.IsCurrent) {
     const summary = await services.water.licences.getSummaryByDocumentId(doc.document_id);
     const aggregateConditions = mappers.mapConditions(summary.data.conditions.filter(row => row.code === 'AGG'));
     return {
       returnsLink: `/licences/${doc.document_id}/returns`,
       aggregateConditions,
       aggregateQuantity: summary.data.aggregateQuantity
+    };
+  } else {
+    return {
+      returnsLink: `/licences/${doc.document_id}/returns`
     };
   }
 };

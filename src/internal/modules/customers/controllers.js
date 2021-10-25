@@ -1,7 +1,7 @@
 const services = require('../../../internal/lib/connectors/services');
 const { uniqBy } = require('lodash');
 const { logger } = require('../../logger');
-const { parseContactName, handleNewContact } = require('./helpers');
+const helpers = require('./helpers');
 const session = require('./session');
 const forms = require('./forms');
 const formHandler = require('shared/lib/form-handler');
@@ -11,7 +11,7 @@ const getCustomer = async (request, h) => {
   const { newContactKey } = request.query;
 
   if (newContactKey) {
-    return handleNewContact(request, h);
+    return helpers.handleNewContact(request, h);
   }
 
   const company = await services.water.companies.getCompany(companyId);
@@ -52,7 +52,7 @@ const getCustomerContact = async (request, h) => {
   const company = await services.water.companies.getCompany(companyId);
   const { data: companyContacts } = await services.water.companies.getContacts(companyId);
   const companyContact = companyContacts.find(row => row.contact.id === contactId);
-  const contactName = parseContactName(companyContact.contact);
+  const contactName = helpers.parseContactName(companyContact.contact);
 
   return h.view('nunjucks/customers/contact.njk', {
     ...request.view,
@@ -70,7 +70,7 @@ const getAddCustomerContactEmail = async (request, h) => {
   const caption = company.name;
   const { data: companyContacts } = await services.water.companies.getContacts(companyId);
   const companyContact = companyContacts.find(row => row.contact.id === contactId);
-  const contactName = parseContactName(companyContact.contact);
+  const contactName = helpers.parseContactName(companyContact.contact);
 
   session.merge(request, {
     waterAbstractionAlertsEnabledValueFromDatabase: companyContact.waterAbstractionAlertsEnabled,
@@ -108,7 +108,7 @@ const postAddCustomerContactEmail = async (request, h) => {
   if (isNew) {
     return h.view('nunjucks/customers/contact-added.njk', {
       ...request.view,
-      contactName: parseContactName(companyContact.contact),
+      contactName: helpers.parseContactName(companyContact.contact),
       contactId: contactId,
       company
     });
@@ -123,7 +123,7 @@ const getUpdateCustomerWaterAbstractionAlertsPreferences = async (request, h) =>
   const caption = company.name;
   const { data: companyContacts } = await services.water.companies.getContacts(companyId);
   const companyContact = companyContacts.find(row => row.contact.id === contactId);
-  const contactName = parseContactName(companyContact.contact);
+  const contactName = helpers.parseContactName(companyContact.contact);
 
   session.merge(request, {
     waterAbstractionAlertsEnabledValueFromDatabase: companyContact.waterAbstractionAlertsEnabled

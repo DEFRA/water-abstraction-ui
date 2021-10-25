@@ -9,9 +9,6 @@ const {
 } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
 
-const { returns: { date: { createReturnCycles } } } = require('@envage/water-abstraction-helpers');
-const { last } = require('lodash');
-
 const ContactsService = require('shared/lib/connectors/services/water/ContactsService');
 const { serviceRequest } = require('@envage/water-abstraction-helpers');
 

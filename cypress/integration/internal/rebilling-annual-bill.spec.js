@@ -40,9 +40,9 @@ describe('rebilling annual bill run', () => {
       });
 
       describe('user generates the annual bill and verifys that bill sent succesfully', () => {
-        cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Annual bill run');
+        cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('annual bill run');
         cy.url().should('contain', '/summary');
-        cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Annual bill run');
+        cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('annual bill run');
         cy.url().should('contain', '/summary');
         cy.get('#tab_other-abstractors').click();
         cy.get('div.govuk-grid-column-two-thirds').eq(3).children(0).contains('Confirm bill run').click();
@@ -50,7 +50,7 @@ describe('rebilling annual bill run', () => {
         cy.get('button.govuk-button').click();
         cy.get('.govuk-panel__title', { timeout: 20000 }).contains('Bill run sent');
         cy.get('div.govuk-grid-column-two-thirds').eq(1).children(3).contains('Go to bill run').click();
-        cy.get('.govuk-heading-xl').contains('Annual bill run');
+        cy.get('.govuk-heading-xl').contains('annual bill run');
         cy.get('#tab_other-abstractors').click();
         cy.get(':nth-child(5) > .govuk-link').click();
         cy.get('.govuk-details__summary').contains('Billing account details').click();

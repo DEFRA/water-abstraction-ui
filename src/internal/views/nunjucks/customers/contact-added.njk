@@ -1,0 +1,36 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "forms/index.njk" import formRender %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+
+      <div class="govuk-grid-column-full">
+
+      <div class="govuk-panel govuk-panel--confirmation">
+        <h1 class="govuk-panel__title">
+          Contact set up
+        </h1>
+
+        <div class="govuk-panel__body">
+          You set up {{contactName}} as a contact for {{company.name}}
+        </div>
+
+      </div>
+
+          <p class="govuk-body govuk-!-font-weight-bold">
+            <a href="/customer/{{company.id}}#contacts">
+              Go to contacts
+            </a>
+          </p>
+
+          <p class="govuk-body">or</p>
+
+          <p class="govuk-body"> <a class="govuk-link" href="/customer/{{company.id}}/contacts/{{contactId}}/water-abstraction-alerts-preferences">Set up this contact to get water abstraction alerts</a></p>
+
+        </div>
+
+  </div>
+
+{% endblock %}

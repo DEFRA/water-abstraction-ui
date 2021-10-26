@@ -21,8 +21,12 @@ const getViewChargeInformation = async (request, h) => {
   const { chargeVersionWorkflowId } = request.params;
   const backLink = await getLicencePageUrl(licence, true);
 
-  const { data: documentRoles } = await services.crm.documentRoles.getDocumentRolesByDocumentRef(licence.licenceNumber);
-  const licenceHolder = documentRoles.find(role => role.roleName === 'licenceHolder');
+  const { data: documentRoles } = await services.crm.documentRoles.getFullHistoryOfDocumentRolesByDocumentRef(licence.licenceNumber);
+
+  const licenceHolder = documentRoles.find(role => role.roleName === 'licenceHolder' &&
+    moment(role.startDate).isSameOrBefore(chargeVersion.dateRange.startDate, 'd') &&
+    (!role.endDate || moment(role.endDate).isAfter(chargeVersion.dateRange.startDate, 'd'))
+  );
 
   const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount);
 
@@ -36,7 +40,7 @@ const getViewChargeInformation = async (request, h) => {
     billingAccountAddress,
     licenceHolder,
     links: {
-      billingAccount: hasScope(request, manageBillingAccounts) && `/billing-accounts/${billingAccount.id}`
+      billingAccount: hasScope(request, manageBillingAccounts) && billingAccount && `/billing-accounts/${billingAccount.id}`
     },
     // @TODO: use request.pre.isChargeable to determine this
     // after the chargeVersion import ticket has been completed

@@ -40,7 +40,7 @@ describe('rebilling supplementary bill run', () => {
       });
 
       describe('user waits for batch to finish generating', () => {
-        cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Supplementary bill run');
+        cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('supplementary bill run');
         cy.url().should('contain', '/summary');
       });
 

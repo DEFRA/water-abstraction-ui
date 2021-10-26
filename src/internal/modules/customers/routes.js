@@ -44,7 +44,7 @@ module.exports = {
           contactId: Joi.string().guid().required()
         }),
         query: Joi.object().keys({
-          isNew: Joi.number().optional(),
+          isNew: Joi.any().optional(),
           form: Joi.string().guid().optional()
         })
       }

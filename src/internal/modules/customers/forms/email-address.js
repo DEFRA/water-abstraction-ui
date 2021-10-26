@@ -31,7 +31,7 @@ const emailAddressForm = request => {
 const emailAddressSchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   email: Joi.string().email().required(),
-  isNew: Joi.number().optional()
+  isNew: Joi.any().optional()
 });
 
 exports.form = emailAddressForm;

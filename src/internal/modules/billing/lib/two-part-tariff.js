@@ -76,6 +76,7 @@ const getBillingVolumeError = billingVolume =>
 /**
  * Decorates transactions with edit link and error message
  * @param {Object} batch
+ * @param licence
  * @param {Array} billingVolumes
  * @return {Array} an array of transaction objects
  */

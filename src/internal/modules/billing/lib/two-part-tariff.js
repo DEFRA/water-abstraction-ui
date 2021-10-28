@@ -58,16 +58,16 @@ const mapLicence = (batch, licenceGroup) => {
 };
 
 const getTotals = licences => {
-  const errors = licences.reduce((acc, row) => (
+  const dedupLicences = licences.filter((item, ind, arr) => arr.findIndex(temp => (temp.licenceId === item.licenceId)) === ind);
+  const errors = dedupLicences.reduce((acc, row) => (
     row.twoPartTariffError ? acc + 1 : acc
   ), 0);
 
-  const totals = {
+  return {
     errors,
-    ready: licences.length - errors,
-    total: licences.length
+    ready: dedupLicences.length - errors,
+    total: dedupLicences.length
   };
-  return totals;
 };
 
 const getBillingVolumeError = billingVolume =>
@@ -92,7 +92,21 @@ const decorateBillingVolumes = (batch, licence, billingVolumes) => {
   );
 };
 
+const decorateBillingVolumesByFinancialYear = (batch, licence, billingVolumes) => {
+  // Add 2PT error message
+  const arr = billingVolumes.map(billingVolume => ({
+    billingVolume: {
+      ...billingVolume,
+      editLink: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}/billing-volume/${billingVolume.id}`,
+      error: getBillingVolumeError(billingVolume)
+    }
+  }));
+  // Group by fin year ending
+  return groupBy(arr, 'billingVolume.financialYear.yearEnding');
+};
+
 exports.getTotals = getTotals;
 exports.mapLicence = mapLicence;
 exports.decorateBillingVolumes = decorateBillingVolumes;
+exports.decorateBillingVolumesByFinancialYear = decorateBillingVolumesByFinancialYear;
 exports.getBillingVolumeError = getBillingVolumeError;

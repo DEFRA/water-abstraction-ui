@@ -3,7 +3,7 @@
 {% macro batchTitle(pageTitle, batch, isLargeHeading=true) %}
 
   {% set caption %}
-    Bill run {{ batch.billRunNumber }}
+     {{batch.region.displayName}} bill run
   {% endset %}
 
   <section class="govuk-!-margin-bottom-6">

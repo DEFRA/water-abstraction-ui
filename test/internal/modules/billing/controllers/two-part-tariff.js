@@ -79,6 +79,79 @@ const batchLicences = [
     billingVolumeEdited: true
   }
 ];
+
+
+const abstractionPeriods = {
+  allYear: {
+    startDay: 1,
+    startMonth: 1,
+    endDay: 31,
+    endMonth: 12
+  },
+  summer: {
+    startDay: 1,
+    startMonth: 5,
+    endDay: 31,
+    endMonth: 10
+  }
+};
+
+const purposes = {
+  a: {
+    code: '400',
+    name: 'Watering sunflowers'
+  },
+  b: {
+    code: '401',
+    name: 'Washing patios'
+  }
+};
+
+const billingVolumes = [{
+  id: uuid(),
+  twoPartTariffError: true,
+  twoPartTariffStatus: 20,
+  financialYear: { yearEnding: 2020 },
+  chargeElement: {
+    description: 'Purpose A - borehole A',
+    purposeUse: purposes.a,
+    abstractionPeriod: abstractionPeriods.allYear
+  }
+},
+{
+  id: uuid(),
+  twoPartTariffError: false,
+  twoPartTariffStatus: null,
+  financialYear: { yearEnding: 2021 },
+  chargeElement: {
+    description: 'Purpose A - borehole B',
+    purposeUse: purposes.a,
+    abstractionPeriod: abstractionPeriods.allYear
+  }
+},
+{
+  id: uuid(),
+  twoPartTariffError: false,
+  twoPartTariffStatus: null,
+  financialYear: { yearEnding: 2021 },
+  chargeElement: {
+    description: 'Purpose A - borehole c',
+    purposeUse: purposes.a,
+    abstractionPeriod: abstractionPeriods.summer
+  }
+},
+{
+  id: uuid(),
+  twoPartTariffError: false,
+  twoPartTariffStatus: null,
+  financialYear: { yearEnding: 2019 },
+  chargeElement: {
+    description: 'Purpose B - borehole d',
+    purposeUse: purposes.b,
+    abstractionPeriod: abstractionPeriods.summer
+  }
+}];
+
 const secondHeader = sandbox.stub();
 const header = sandbox.stub().returns({ header: secondHeader });
 
@@ -250,73 +323,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
   });
 
   experiment('.getLicenceReview', () => {
-    const abstractionPeriods = {
-      allYear: {
-        startDay: 1,
-        startMonth: 1,
-        endDay: 31,
-        endMonth: 12
-      },
-      summer: {
-        startDay: 1,
-        startMonth: 5,
-        endDay: 31,
-        endMonth: 10
-      }
-    };
-
-    const purposes = {
-      a: {
-        code: '400',
-        name: 'Watering sunflowers'
-      },
-      b: {
-        code: '401',
-        name: 'Washing patios'
-      }
-    };
-
-    const billingVolumes = [{
-      id: uuid(),
-      twoPartTariffError: true,
-      twoPartTariffStatus: 20,
-      chargeElement: {
-        description: 'Purpose A - borehole A',
-        purposeUse: purposes.a,
-        abstractionPeriod: abstractionPeriods.allYear
-      }
-    },
-    {
-      id: uuid(),
-      twoPartTariffError: false,
-      twoPartTariffStatus: null,
-      chargeElement: {
-        description: 'Purpose A - borehole B',
-        purposeUse: purposes.a,
-        abstractionPeriod: abstractionPeriods.allYear
-      }
-    },
-    {
-      id: uuid(),
-      twoPartTariffError: false,
-      twoPartTariffStatus: null,
-      chargeElement: {
-        description: 'Purpose A - borehole c',
-        purposeUse: purposes.a,
-        abstractionPeriod: abstractionPeriods.summer
-      }
-    },
-    {
-      id: uuid(),
-      twoPartTariffError: false,
-      twoPartTariffStatus: null,
-      chargeElement: {
-        description: 'Purpose B - borehole d',
-        purposeUse: purposes.b,
-        abstractionPeriod: abstractionPeriods.summer
-      }
-    }];
-
+  
     const request = {
       pre: {
         batch: {
@@ -410,27 +417,16 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     test('transactions with same purpose and abstraction period are grouped', async () => {
       const [, { billingVolumeGroups }] = h.view.lastCall.args;
       expect(billingVolumeGroups).to.be.an.array().length(3);
+      
+      const descOne = billingVolumeGroups[0][1][0].map(desc => desc.chargeElement.description);
+      const descTwo = billingVolumeGroups[0][1][1].map(desc => desc.chargeElement.description);
+      const descThree = billingVolumeGroups[1][1][0].map(desc => desc.chargeElement.description);
+      const descFour = billingVolumeGroups[2][1][0].map(desc => desc.chargeElement.description);
 
-      const groups = billingVolumeGroups.map(group => group.map(tx => tx.chargeElement.description));
-
-      expect(groups[0]).to.only.include(['Purpose A - borehole A', 'Purpose A - borehole B']);
-      expect(groups[1]).to.only.include(['Purpose A - borehole c']);
-      expect(groups[2]).to.only.include(['Purpose B - borehole d']);
-    });
-
-    test('grouped transactions have an edit link', async () => {
-      const [, { billingVolumeGroups: [[{ editLink }]] }] = h.view.lastCall.args;
-      const expectedLink = [
-        `/billing/batch/${request.pre.batch.id}`,
-        `/two-part-tariff/licence/${request.params.licenceId}`,
-        `/billing-volume/${billingVolumes[0].id}`
-      ].join('');
-      expect(editLink).to.equal(expectedLink);
-    });
-
-    test('grouped transactions have a two-part tariff error message', async () => {
-      const [, { billingVolumeGroups: [[{ error }]] }] = h.view.lastCall.args;
-      expect(error).to.equal('Checking query');
+      expect(descOne).to.only.equal(['Purpose A - borehole B']);
+      expect(descTwo).to.only.equal(['Purpose A - borehole c']);
+      expect(descThree).to.only.equal(['Purpose A - borehole A']);
+      expect(descFour).to.only.equal(['Purpose B - borehole d']);
     });
   });
 
@@ -879,5 +875,45 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
         '/billing/batch/test-batch-id/processing?back=1'
       ));
     });
+  });
+
+  experiment('.getRemoveFinancialYearEnding', () => {
+  
+    const request = {
+      pre: {
+        batch: {
+          id: 'test-batch-id'
+        },
+        licence: {
+          id: 'test-licence-id',
+          licenceNumber: '01/123/ABC'
+        }
+      },
+      params: {
+        batchId: 'test-batch-id',
+        licenceId: 'test-licence-id',
+        yearEnding: '2019'
+      },
+      view: {
+        foo: 'bar'
+      }
+    };
+
+    beforeEach(async () => {
+      services.water.billingBatches.getBatchLicenceBillingVolumes.resolves(billingVolumes);
+      await controller.getRemoveFinancialYearEnding(request, h);
+    });
+
+    test('the billing volumes are loaded from the water service for the current batch and selected licence', async () => {
+      expect(services.water.billingBatches.getBatchLicenceBillingVolumes.calledWith(
+        request.params.batchId, request.params.licenceId
+      )).to.be.true();
+    });
+
+    test('the page title is set correctly', async () => {
+      const [, { pageTitle }] = h.view.lastCall.args;
+      expect(pageTitle).to.equal('You\'re about to remove this year licence from the bill run');
+    });
+
   });
 });

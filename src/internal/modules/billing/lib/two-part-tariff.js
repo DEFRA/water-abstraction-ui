@@ -1,7 +1,7 @@
 'use strict';
 
 const routing = require('./routing');
-const { groupBy } = require('lodash');
+const { groupBy, hasIn, sortedUniq } = require('lodash');
 /**
  * Map of two-part tariff status codes to human-readable error messages
  * @type {Map}
@@ -58,14 +58,15 @@ const mapLicence = (batch, licenceGroup) => {
 };
 
 const getTotals = licences => {
-  const errors = licences.reduce((acc, row) => (
+  const dedupLicences = licences.filter((item, ind, arr) => arr.findIndex(temp => (temp.licenceId === item.licenceId)) === ind);
+  const errors = dedupLicences.reduce((acc, row) => (
     row.twoPartTariffError ? acc + 1 : acc
   ), 0);
 
   const totals = {
     errors,
-    ready: licences.length - errors,
-    total: licences.length
+    ready: dedupLicences.length - errors,
+    total: dedupLicences.length
   };
   return totals;
 };
@@ -73,26 +74,63 @@ const getTotals = licences => {
 const getBillingVolumeError = billingVolume =>
   statusMessages.get(billingVolume.twoPartTariffStatus);
 
+
 /**
  * Decorates transactions with edit link and error message
  * @param {Object} batch
+ * @param {Object} license
  * @param {Array} billingVolumes
  * @return {Array} an array of transaction objects
  */
 const decorateBillingVolumes = (batch, licence, billingVolumes) => {
-  // Add 2PT error message
-  const arr = billingVolumes.map(billingVolume => ({
-    ...billingVolume,
-    editLink: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}/billing-volume/${billingVolume.id}`,
-    error: getBillingVolumeError(billingVolume)
-  }));
-  // Group by purpose use and abs period
-  return Object.values(
-    groupBy(arr, getBillingVolumeGroup)
-  );
+  let billingVolumesWithLinks = {};
+  for (const [key, value] of Object.entries(billingVolumes)) {
+    const arr = value.map(value => ({
+      ...value,
+      editLink: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}/billing-volume/${value.id}`,
+      error: getBillingVolumeError(value)
+      // totals: getTotals(value)
+    }));
+    billingVolumesWithLinks[key] = Object.values(groupBy(arr, getBillingVolumeGroup));
+  }
+
+  return Object.entries(billingVolumesWithLinks).reverse();
+};
+
+/**
+ * Returns an array of billing account numbers.
+ * @param {Array} billingVolumesValue
+ * @return {Array} an array of transaction objects
+ */
+
+const filterInvoiceAccountNumber = (billingVolumesValue) => {
+  let accountNumber = [];
+  for (const [key, value] of Object.entries(billingVolumesValue)) {
+    if (hasIn(value, 'invoiceAccount.accountNumber')) accountNumber.push(value['invoiceAccount']['accountNumber']);
+  }
+
+  return accountNumber;
+};
+
+/**
+ * Returns an array of unique billing account numbers within year ending.
+ * @param {Array} billingVolumes
+ * @param {String} financialYearEnding
+ * @return {Array} an array of transaction objects
+ */
+
+const decorateBillingVolumesAccount = (billingVolumes, financialYearEnding) => {
+    let foundAccountNumber = []
+    for (const [billingVolumesValuesKey, billingVolumesValue] of Object.entries(billingVolumes)) {
+      if (billingVolumesValuesKey === financialYearEnding) { 
+        foundAccountNumber.push(filterInvoiceAccountNumber(billingVolumesValue)); 
+      }
+    }
+    return sortedUniq(foundAccountNumber);
 };
 
 exports.getTotals = getTotals;
 exports.mapLicence = mapLicence;
 exports.decorateBillingVolumes = decorateBillingVolumes;
 exports.getBillingVolumeError = getBillingVolumeError;
+exports.decorateBillingVolumesAccount = decorateBillingVolumesAccount;

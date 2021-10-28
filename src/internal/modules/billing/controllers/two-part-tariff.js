@@ -7,6 +7,8 @@ const mappers = require('../lib/mappers');
 const twoPartTariff = require('../lib/two-part-tariff');
 const routing = require('../lib/routing');
 const { groupBy } = require('lodash');
+const deleteFinancialYearEndingForm = require('../forms/delete-financial-year-ending');
+const { handleFormRequest } = require('shared/lib/form-handler');
 
 const forms = require('shared/lib/forms');
 
@@ -43,10 +45,11 @@ const getLicenceReview = async (request, h) => {
   const licenceData = await getCurrentLicenceData(licenceId);
 
   const backLinkTail = action === 'review' ? 'review' : 'ready';
-
   const billingVolumeData = await services.water.billingBatches.getBatchLicenceBillingVolumes(batch.id, licenceId);
+  const billingVolumeDataGroupedByYear = groupBy(billingVolumeData, 'financialYear.yearEnding', 'desc');
+  const billingVolumeGroups = twoPartTariff.decorateBillingVolumes(batch, licence, billingVolumeDataGroupedByYear);
   const totals = twoPartTariff.getTotals(billingVolumeData);
-  const billingVolumeGroups = twoPartTariff.decorateBillingVolumes(batch, licence, billingVolumeData);
+  
   return h.view('nunjucks/billing/two-part-tariff-licence-review', {
     ...request.view,
     pageTitle: `Review data issues for ${licence.licenceNumber}`,
@@ -200,6 +203,48 @@ const postApproveReview = async (request, h) => {
   return h.redirect(routing.getBillingBatchRoute(batch, { isBackEnabled: true }));
 };
 
+/**
+ * Confirm removal of licence from year ending
+ */
+ const getRemoveFinancialYearEnding = async (request, h) => {
+  const { batchId, licenceId, financialYearEnding} = request.params;
+  const { batch, licence } = request.pre;
+  const billingVolumeData = await services.water.billingBatches.getBatchLicenceBillingVolumes(batch.id, licence.id);
+  const billingVolumeDataGroupedByYear = groupBy(billingVolumeData, 'financialYear.yearEnding', 'desc');
+  const billingVolumeGroups = twoPartTariff.decorateBillingVolumes(batch, licence, billingVolumeDataGroupedByYear);
+  const billingAccountNumbers =  twoPartTariff.decorateBillingVolumesAccount(billingVolumeDataGroupedByYear, financialYearEnding);
+
+  return h.view('nunjucks/billing/two-part-tariff-licence-remove-year-ending', {
+    financialYearEnding,
+    batch,
+    licence,
+    billingVolumeGroups,
+    billingAccountNumbers,
+    pageTitle: `You're about to remove this year licence from the bill run`,
+    back:`/billing/batch/${batchId}/two-part-tariff/licence/${licenceId}`,
+    form: deleteFinancialYearEndingForm.form(request, false)
+  });
+};
+
+
+
+/**
+ * remove removal of licence from year ending
+ */
+ const postRemoveFinancialYearEnding = async (request, h) => {
+  const { batchId, licenceId, financialYearEnding} = request.params;
+  const { batch, licence } = request.pre;
+  const form = handleFormRequest(request, deleteFinancialYearEndingForm);
+  
+  if (!form.isValid) {
+    return h.postRedirectGet(form);
+  }
+
+  await services.water.billingVolumes.deleteBatchLicenceBillingVolume(batchId, licenceId, financialYearEnding);
+  
+  return h.redirect(routing.getTwoPartTariffLicenceReviewRoute(batch, licenceId));
+};
+
 exports.getTwoPartTariffReview = getTwoPartTariffReview;
 exports.getLicenceReview = getLicenceReview;
 exports.getBillingVolumeReview = getBillingVolumeReview;
@@ -208,3 +253,6 @@ exports.getRemoveLicence = getRemoveLicence;
 exports.postRemoveLicence = postRemoveLicence;
 exports.getApproveReview = getApproveReview;
 exports.postApproveReview = postApproveReview;
+exports.getRemoveFinancialYearEnding = getRemoveFinancialYearEnding;
+exports.postRemoveFinancialYearEnding = postRemoveFinancialYearEnding;
+

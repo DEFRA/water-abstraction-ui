@@ -21,6 +21,17 @@ class BillingVolumeService extends ServiceClient {
       body: { volume }
     });
   }
+
+    /**
+   * Get billing volume by ID
+   * @param {Number} batchId
+   * @param {Number} licenceId
+   * @param {String} financialYearEnding
+   */
+  deleteBatchLicenceBillingVolume(batchId, licenceId, financialYearEnding) {
+    const uri = this.joinUrl(`billing/batches/${batchId}/licences/${licenceId}/financial-year-ending/${financialYearEnding}`);
+    return this.serviceRequest.delete(uri);
+  }
 }
 
 module.exports = BillingVolumeService;

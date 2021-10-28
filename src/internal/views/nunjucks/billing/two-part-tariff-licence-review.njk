@@ -1,6 +1,6 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "./nunjucks/billing/macros/batch-title.njk" import batchTitle %}
-{% from "./nunjucks/billing/macros/batch-buttons.njk" import removeTPTLicenceFromBatchButton %}
+{% from "./nunjucks/billing/macros/batch-buttons.njk" import removeTPTLicenceFromBatchButton, removeTPTYearlyLicenceFromBatchButton %}
 {% from "./nunjucks/billing/macros/two-part-tariff-licence-review-table.njk" import billingVolumeTableRow %}
 {% from "govuk/components/details/macro.njk" import govukDetails %}
 
@@ -16,6 +16,7 @@
   <div class="govuk-grid-row govuk-!-margin-bottom-0">
     <div class="govuk-grid-column-full">
     {{ batchTitle(pageTitle, batch) }}
+    {{ removeTPTLicenceFromBatchButton(batch, licence) }}
       {% set summaryHtml %}
         <dl class="meta">
           {% for condition in aggregateConditions %}
@@ -35,6 +36,7 @@
       </div>
     </div>
     {% if aggregateConditions.length > 0 %}
+    
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
         {{ govukDetails({
@@ -52,7 +54,7 @@
       </div>
     </div>
     {% endif %}
-    {{ removeTPTLicenceFromBatchButton(batch, licence) }}
+    
     
     {% if totals.errors > 0 %}    
       <h2 class="govuk-heading-l">
@@ -66,16 +68,25 @@
         {% endfor %}
       {% endfor %}
     {% endif %}
-        {% if totals.ready > 0 %}    
-      <h2 class="govuk-heading-l">
-        {{totals.ready}} ready for billing
-      </h2>
-      {% for billingVolumes in billingVolumeGroups %}
-        {% for billingVolume in billingVolumes %}
-          {% if billingVolume.twoPartTariffError == false %}
-           {{ billingVolumeTableRow(billingVolume) }}
-          {% endif %}
+    <br />
+    <br />
+
+    {% for billingYear, volume in billingVolumeGroups  %}
+        <br />
+        <h2 class="govuk-heading-l govuk-!-margin-bottom-3" > Financial year {{ billingYear | int -1 }}  To  {{ billingYear }}  </h2>
+        {% for billingVolumes in volume %}
+            {% if billingVolumeGroups.length > 1 %}
+              {{ removeTPTYearlyLicenceFromBatchButton(batch, licence, billingYear) }}
+            {% endif %}
+            <h2 class="govuk-heading-l">
+                {{billingVolumes.length}} ready for billing
+            </h2>
+            {% for billingVolumesF in billingVolumes %}
+              {% if billingVolumesF.twoPartTariffError == false %}
+                  {{ billingVolumeTableRow(billingVolumesF) }}
+              {% endif %}
+            {% endfor %}
         {% endfor %}
-      {% endfor %}
-    {% endif %}
+    {% endfor %}
+
 {% endblock %}

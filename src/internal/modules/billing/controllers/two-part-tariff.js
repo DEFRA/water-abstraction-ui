@@ -8,7 +8,7 @@ const { handleFormRequest } = require('shared/lib/form-handler');
 const mappers = require('../lib/mappers');
 const twoPartTariff = require('../lib/two-part-tariff');
 const routing = require('../lib/routing');
-const { groupBy, get } = require('lodash');
+const { groupBy, uniq } = require('lodash');
 
 const forms = require('shared/lib/forms');
 
@@ -212,9 +212,9 @@ const getRemoveFinancialYearEnding = async (request, h) => {
   const { batchId, licenceId, financialYearEnding } = request.params;
   const { batch, licence } = request.pre;
   const billingVolumeData = await services.water.billingBatches.getBatchLicenceBillingVolumes(batch.id, licence.id);
-  const billingAccountNumbers = billingVolumeData
+  const billingAccountNumbers = uniq(billingVolumeData
     .filter(bv => bv.financialYear.yearEnding !== financialYearEnding)
-    .map(bv => bv.invoiceAccount.accountNumber);
+    .map(bv => bv.invoiceAccount.accountNumber));
 
   return h.view('nunjucks/billing/two-part-tariff-licence-remove-year-ending', {
     financialYearEnding,

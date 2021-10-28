@@ -24,7 +24,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Review data issues',
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {

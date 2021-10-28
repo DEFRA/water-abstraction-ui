@@ -9,7 +9,8 @@ const OPTIONS_SCHEMA = Joi.object().keys({
   key: Joi.string().required(),
   redirectPath: Joi.string().required(),
   companyId: Joi.string().guid().required().allow(null),
-  data: Joi.object().optional()
+  data: Joi.object().optional(),
+  disableExistingContactSelection: Joi.boolean().optional().default(false)
 });
 
 /**

@@ -2,6 +2,7 @@ const { expect, fail } = require('@hapi/code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
 const sinon = require('sinon');
 const fs = require('fs');
+const config = require('external/config');
 const EventEmitter = require('events');
 
 const uploadHelpers = require('external/modules/returns/lib/upload-helpers');
@@ -37,6 +38,7 @@ experiment('upload Helpers', () => {
 
   beforeEach(async () => {
     sandbox.stub(fileCheck, 'virusCheck');
+    sandbox.stub(config, 'testMode').value(false);
     write = new EventEmitter();
     sandbox.spy(write, 'on');
 
@@ -147,25 +149,25 @@ experiment('upload Helpers', () => {
 
   experiment('getUploadedFileStatus', () => {
     test('returns OK status when virus check passes and supported file type', async () => {
-      fileCheck.virusCheck.resolves({ isClean: true });
+      await fileCheck.virusCheck.resolves({ isClean: true });
       const status = await uploadHelpers.getUploadedFileStatus('fileName', 'xml');
       expect(status).to.equal(uploadHelpers.fileStatuses.OK);
     });
 
     test('returns virus status when virus check fails', async () => {
-      fileCheck.virusCheck.resolves({ isClean: false });
+      await fileCheck.virusCheck.resolves({ isClean: false });
       const status = await uploadHelpers.getUploadedFileStatus('fileName', 'xml');
       expect(status).to.equal(uploadHelpers.fileStatuses.VIRUS);
     });
 
     test('returns invalid type status when unsupported file type supplied', async () => {
-      fileCheck.virusCheck.resolves({ isClean: true });
+      await fileCheck.virusCheck.resolves({ isClean: true });
       const checkResults = await uploadHelpers.getUploadedFileStatus('fileName', 'ppt');
       expect(checkResults).to.equal(uploadHelpers.fileStatuses.INVALID_TYPE);
     });
 
     test('logs the error if the file is infected', async () => {
-      fileCheck.virusCheck.resolves({ isClean: false });
+      await fileCheck.virusCheck.resolves({ isClean: false });
       await uploadHelpers.getUploadedFileStatus('fileName', 'xml');
       expect(logger.error.callCount).to.equal(1);
     });

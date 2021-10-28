@@ -7,6 +7,7 @@ const uuidv4 = require('uuid/v4');
 const util = require('util');
 const mkdirp = util.promisify(require('mkdirp'));
 const { logger } = require('../../../logger');
+const config = require('../../../config');
 
 /**
  * Get path to temp folder & assign uuid filename
@@ -84,7 +85,7 @@ const fileStatuses = {
  */
 const getUploadedFileStatus = async (file, type) => {
   // Run virus check on temp file
-  const checkResult = await fileCheck.virusCheck(file);
+  const checkResult = config.testMode ? { isClean: true } : await fileCheck.virusCheck(file);
   // Set redirectUrl if virusCheck failed
   if (!checkResult.isClean) {
     logger.error('Uploaded file failed virus scan', checkResult.err);

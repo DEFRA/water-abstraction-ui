@@ -3,10 +3,10 @@
 const controller = require('./controller');
 const preHandlers = require('./pre-handlers');
 const { createRoutePair } = require('shared/lib/route-helpers');
-const { billing } = require('internal/lib/constants').scope;
+const { billing, hofNotifications } = require('internal/lib/constants').scope;
 const Joi = require('joi');
 
-const allowedScopes = [billing];
+const allowedScopes = [billing, hofNotifications];
 
 module.exports = {
 

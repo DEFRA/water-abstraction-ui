@@ -9,12 +9,13 @@
         "node_modules",
         "src/internal",
         "test",
+        "temp",
         "cypress",
         ".git"
       ],
       "script": "server-external.js",
       "env": {
-        "watch": true
+        "watch": false
       },
       "env_production": {
         "watch": false,
@@ -31,12 +32,13 @@
         "node_modules",
         "src/external",
         "test",
+        "temp",
         "cypress",
         ".git"
       ],
       "script": "server-internal.js",
       "env": {
-        "watch": true
+        "watch": false
       },
       "env_production": {
         "watch": false,

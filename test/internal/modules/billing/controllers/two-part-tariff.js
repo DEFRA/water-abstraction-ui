@@ -158,6 +158,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     } });
     sandbox.stub(services.crm.documents, 'getWaterLicence');
     sandbox.stub(services.water.licences, 'getSummaryByDocumentId');
+    sandbox.stub(services.water.licences, 'getDocumentByLicenceId').resolves({ metadata: { IsCurrent: true } });
     sandbox.stub(services.water.billingInvoiceLicences, 'getInvoiceLicence');
     sandbox.stub(services.water.billingInvoiceLicences, 'deleteInvoiceLicence');
     sandbox.stub(services.water.billingVolumes, 'updateVolume');
@@ -337,6 +338,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     };
 
     beforeEach(async () => {
+      services.water.licences.getSummaryByDocumentId.resolves({ data: { conditions: [] } });
       services.water.billingBatches.getBatchLicenceBillingVolumes.resolves(billingVolumes);
       await controller.getLicenceReview(request, h);
     });
@@ -353,6 +355,21 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     });
 
     experiment('when action is "review"', () => {
+      test('the page title is set', async () => {
+        const [, { pageTitle }] = h.view.lastCall.args;
+        expect(pageTitle).to.equal('Review data issues for 01/123/ABC');
+      });
+
+      test('a back link is set', async () => {
+        const [, { back }] = h.view.lastCall.args;
+        expect(back).to.equal(`/billing/batch/${request.pre.batch.id}/two-part-tariff-review`);
+      });
+    });
+
+    experiment('for an expired licence the returns summary link is availble the data visible', () => {
+      beforeEach(async => {
+        services.water.licences.getDocumentByLicenceId.resolves({ metadata: { IsCurrent: false } });
+      });
       test('the page title is set', async () => {
         const [, { pageTitle }] = h.view.lastCall.args;
         expect(pageTitle).to.equal('Review data issues for 01/123/ABC');

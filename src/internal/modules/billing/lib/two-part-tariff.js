@@ -74,7 +74,6 @@ const getTotals = licences => {
 const getBillingVolumeError = billingVolume =>
   statusMessages.get(billingVolume.twoPartTariffStatus);
 
-
 /**
  * Decorates transactions with edit link and error message
  * @param {Object} batch
@@ -120,13 +119,13 @@ const filterInvoiceAccountNumber = (billingVolumesValue) => {
  */
 
 const decorateBillingVolumesAccount = (billingVolumes, financialYearEnding) => {
-    let foundAccountNumber = []
-    for (const [billingVolumesValuesKey, billingVolumesValue] of Object.entries(billingVolumes)) {
-      if (billingVolumesValuesKey === financialYearEnding) { 
-        foundAccountNumber.push(filterInvoiceAccountNumber(billingVolumesValue)); 
-      }
+  let foundAccountNumber = [];
+  for (const [billingVolumesValuesKey, billingVolumesValue] of Object.entries(billingVolumes)) {
+    if (billingVolumesValuesKey === financialYearEnding) {
+      foundAccountNumber.push(filterInvoiceAccountNumber(billingVolumesValue));
     }
-    return sortedUniq(foundAccountNumber);
+  }
+  return sortedUniq(foundAccountNumber);
 };
 
 exports.getTotals = getTotals;

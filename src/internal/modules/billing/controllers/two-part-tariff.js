@@ -49,7 +49,7 @@ const getLicenceReview = async (request, h) => {
   const billingVolumeDataGroupedByYear = groupBy(billingVolumeData, 'financialYear.yearEnding', 'desc');
   const billingVolumeGroups = twoPartTariff.decorateBillingVolumes(batch, licence, billingVolumeDataGroupedByYear);
   const totals = twoPartTariff.getTotals(billingVolumeData);
-  
+
   return h.view('nunjucks/billing/two-part-tariff-licence-review', {
     ...request.view,
     pageTitle: `Review data issues for ${licence.licenceNumber}`,
@@ -206,13 +206,13 @@ const postApproveReview = async (request, h) => {
 /**
  * Confirm removal of licence from year ending
  */
- const getRemoveFinancialYearEnding = async (request, h) => {
-  const { batchId, licenceId, financialYearEnding} = request.params;
+const getRemoveFinancialYearEnding = async (request, h) => {
+  const { batchId, licenceId, financialYearEnding } = request.params;
   const { batch, licence } = request.pre;
   const billingVolumeData = await services.water.billingBatches.getBatchLicenceBillingVolumes(batch.id, licence.id);
   const billingVolumeDataGroupedByYear = groupBy(billingVolumeData, 'financialYear.yearEnding', 'desc');
   const billingVolumeGroups = twoPartTariff.decorateBillingVolumes(batch, licence, billingVolumeDataGroupedByYear);
-  const billingAccountNumbers =  twoPartTariff.decorateBillingVolumesAccount(billingVolumeDataGroupedByYear, financialYearEnding);
+  const billingAccountNumbers = twoPartTariff.decorateBillingVolumesAccount(billingVolumeDataGroupedByYear, financialYearEnding);
 
   return h.view('nunjucks/billing/two-part-tariff-licence-remove-year-ending', {
     financialYearEnding,
@@ -221,27 +221,25 @@ const postApproveReview = async (request, h) => {
     billingVolumeGroups,
     billingAccountNumbers,
     pageTitle: `You're about to remove this year licence from the bill run`,
-    back:`/billing/batch/${batchId}/two-part-tariff/licence/${licenceId}`,
+    back: `/billing/batch/${batchId}/two-part-tariff/licence/${licenceId}`,
     form: deleteFinancialYearEndingForm.form(request, false)
   });
 };
 
-
-
 /**
  * remove removal of licence from year ending
  */
- const postRemoveFinancialYearEnding = async (request, h) => {
-  const { batchId, licenceId, financialYearEnding} = request.params;
+const postRemoveFinancialYearEnding = async (request, h) => {
+  const { batchId, licenceId, financialYearEnding } = request.params;
   const { batch, licence } = request.pre;
   const form = handleFormRequest(request, deleteFinancialYearEndingForm);
-  
+
   if (!form.isValid) {
     return h.postRedirectGet(form);
   }
 
   await services.water.billingVolumes.deleteBatchLicenceBillingVolume(batchId, licenceId, financialYearEnding);
-  
+
   return h.redirect(routing.getTwoPartTariffLicenceReviewRoute(batch, licenceId));
 };
 
@@ -255,4 +253,3 @@ exports.getApproveReview = getApproveReview;
 exports.postApproveReview = postApproveReview;
 exports.getRemoveFinancialYearEnding = getRemoveFinancialYearEnding;
 exports.postRemoveFinancialYearEnding = postRemoveFinancialYearEnding;
-

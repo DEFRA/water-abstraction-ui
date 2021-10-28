@@ -80,7 +80,6 @@ const batchLicences = [
   }
 ];
 
-
 const abstractionPeriods = {
   allYear: {
     startDay: 1,
@@ -323,7 +322,6 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
   });
 
   experiment('.getLicenceReview', () => {
-  
     const request = {
       pre: {
         batch: {
@@ -417,7 +415,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     test('transactions with same purpose and abstraction period are grouped', async () => {
       const [, { billingVolumeGroups }] = h.view.lastCall.args;
       expect(billingVolumeGroups).to.be.an.array().length(3);
-      
+
       const descOne = billingVolumeGroups[0][1][0].map(desc => desc.chargeElement.description);
       const descTwo = billingVolumeGroups[0][1][1].map(desc => desc.chargeElement.description);
       const descThree = billingVolumeGroups[1][1][0].map(desc => desc.chargeElement.description);
@@ -878,7 +876,6 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
   });
 
   experiment('.getRemoveFinancialYearEnding', () => {
-  
     const request = {
       pre: {
         batch: {
@@ -914,6 +911,5 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       const [, { pageTitle }] = h.view.lastCall.args;
       expect(pageTitle).to.equal('You\'re about to remove this year licence from the bill run');
     });
-
   });
 });

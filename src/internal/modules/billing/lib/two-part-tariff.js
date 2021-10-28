@@ -1,7 +1,7 @@
 'use strict';
 
 const routing = require('./routing');
-const { groupBy, hasIn, sortedUniq } = require('lodash');
+const { groupBy, get, sortedUniq } = require('lodash');
 /**
  * Map of two-part tariff status codes to human-readable error messages
  * @type {Map}
@@ -77,7 +77,7 @@ const getBillingVolumeError = billingVolume =>
 /**
  * Decorates transactions with edit link and error message
  * @param {Object} batch
- * @param {Object} license
+ * @param licence
  * @param {Array} billingVolumes
  * @return {Array} an array of transaction objects
  */
@@ -104,9 +104,9 @@ const decorateBillingVolumes = (batch, licence, billingVolumes) => {
 
 const filterInvoiceAccountNumber = (billingVolumesValue) => {
   let accountNumber = [];
-  for (const [key, value] of Object.entries(billingVolumesValue)) {
-    if (hasIn(value, 'invoiceAccount.accountNumber')) accountNumber.push(value['invoiceAccount']['accountNumber']);
-  }
+  Object.entries(billingVolumesValue).forEach(value => {
+    return get(value, 'invoiceAccount.accountNumber');
+  });
 
   return accountNumber;
 };

@@ -46,6 +46,7 @@ const getLicenceReview = async (request, h) => {
 
   const backLinkTail = action === 'review' ? 'review' : 'ready';
   const billingVolumeData = await services.water.billingBatches.getBatchLicenceBillingVolumes(batch.id, licenceId);
+  console.log(billingVolumeData);
   const billingVolumeDataGroupedByYear = groupBy(billingVolumeData, 'financialYear.yearEnding', 'desc');
   const billingVolumeGroups = twoPartTariff.decorateBillingVolumes(batch, licence, billingVolumeDataGroupedByYear);
   const totals = twoPartTariff.getTotals(billingVolumeData);
@@ -231,7 +232,7 @@ const getRemoveFinancialYearEnding = async (request, h) => {
  */
 const postRemoveFinancialYearEnding = async (request, h) => {
   const { batchId, licenceId, financialYearEnding } = request.params;
-  const { batch, licence } = request.pre;
+  const { batch } = request.pre;
   const form = handleFormRequest(request, deleteFinancialYearEndingForm);
 
   if (!form.isValid) {

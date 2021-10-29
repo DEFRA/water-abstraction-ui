@@ -14,8 +14,8 @@
                 {{contactName}}
              </dd>
              <dd class="govuk-summary-list__actions">
-              {% if companyContact.contact.dataSource == 'wrls' and 1==2 %}
-                <a class="govuk-link" href="">
+              {% if companyContact.contact.dataSource == 'wrls' %}
+                <a class="govuk-link" href="{{companyContact.contact.id}}/name">
                 Change<span class="govuk-visually-hidden"> name</span>
                 </a>
               {% elseif companyContact.contact.dataSource == 'nald' %}

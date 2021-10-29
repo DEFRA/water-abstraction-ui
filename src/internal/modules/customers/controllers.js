@@ -1,9 +1,10 @@
 const services = require('../../../internal/lib/connectors/services');
-const { uniqBy } = require('lodash');
+const { uniqBy, omit, omitBy, isEmpty } = require('lodash');
 const { logger } = require('../../logger');
 const helpers = require('./helpers');
 const session = require('./session');
 const forms = require('./forms');
+const formsHelper = require('shared/lib/forms');
 const formHandler = require('shared/lib/form-handler');
 const { hasScope } = require('../../lib/permissions');
 const { hofNotifications } = require('../../lib/constants').scope;
@@ -66,6 +67,50 @@ const getCustomerContact = async (request, h) => {
     contactName,
     companyContact
   });
+};
+
+const getUpdateCustomerContactName = async (request, h) => {
+  const { companyId, contactId } = request.params;
+  const company = await services.water.companies.getCompany(companyId);
+  const caption = company.name;
+  const { data: companyContacts } = await services.water.companies.getContacts(companyId);
+  const companyContact = companyContacts.find(row => row.contact.id === contactId);
+
+  session.merge(request, {
+    contactFromDatabase: companyContact.contact
+  });
+
+  const pageTitle = `Enter a name`;
+  const { path } = request;
+
+  return h.view('nunjucks/form', {
+    ...request.view,
+    caption,
+    pageTitle,
+    back: path.replace(/\/[^/]*$/, ''),
+    form: formHandler.handleFormRequest(request, forms.contact)
+  });
+};
+
+const postUpdateCustomerContactName = async (request, h) => {
+  const { contactId } = request.params;
+  const form = await formHandler.handleFormRequest(request, forms.contact);
+
+  if (!form.isValid) {
+    return h.postRedirectGet(form);
+  }
+
+  // Retrieve contact data but remember that the back end knows the title as salutation
+  const { title, ...data } = {
+    ...omit(omitBy(formsHelper.getValues(form), isEmpty), 'csrf_token')
+  };
+
+  data.salutation = title;
+
+  await services.water.contacts.patchContact(contactId, data);
+
+  // eslint-disable-next-line no-useless-escape
+  return h.redirect(request.path.replace(/\/[^\/]*$/, ''));
 };
 
 const getAddCustomerContactEmail = async (request, h) => {
@@ -146,6 +191,7 @@ const getUpdateCustomerWaterAbstractionAlertsPreferences = async (request, h) =>
 };
 
 const postUpdateCustomerWaterAbstractionAlertsPreferences = async (request, h) => {
+  const { companyId, contactId } = request.params;
   const form = await formHandler.handleFormRequest(request, forms.waterAbstractionAlertsPreference);
 
   if (!form.isValid) {
@@ -153,7 +199,15 @@ const postUpdateCustomerWaterAbstractionAlertsPreferences = async (request, h) =
   }
 
   const waterAbstractionAlertsEnabled = form.fields.find(field => field.name === 'waterAbstractionAlertsEnabled').value;
-  await services.water.companies.patchCompanyContact(request.params.companyId, request.params.contactId, { waterAbstractionAlertsEnabled });
+  await services.water.companies.patchCompanyContact(companyId, contactId, { waterAbstractionAlertsEnabled });
+
+  const { data: companyContacts } = await services.water.companies.getContacts(companyId);
+  const companyContact = companyContacts.find(row => row.contact.id === contactId);
+
+  if (waterAbstractionAlertsEnabled && !companyContact.contact.email) {
+    // eslint-disable-next-line no-useless-escape
+    return h.redirect(request.path.replace(/\/[^\/]*$/, '/email'));
+  }
 
   // eslint-disable-next-line no-useless-escape
   return h.redirect(request.path.replace(/\/[^\/]*$/, ''));
@@ -179,6 +233,8 @@ const getCreateCompanyContact = async (request, h) => {
 
 exports.getCustomer = getCustomer;
 exports.getCustomerContact = getCustomerContact;
+exports.getUpdateCustomerContactName = getUpdateCustomerContactName;
+exports.postUpdateCustomerContactName = postUpdateCustomerContactName;
 exports.getAddCustomerContactEmail = getAddCustomerContactEmail;
 exports.postAddCustomerContactEmail = postAddCustomerContactEmail;
 exports.getUpdateCustomerWaterAbstractionAlertsPreferences = getUpdateCustomerWaterAbstractionAlertsPreferences;

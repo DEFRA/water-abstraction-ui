@@ -202,5 +202,48 @@ module.exports = {
         })
       }
     }
+  },
+  getRemoveFinancialYearEnding: {
+    method: 'GET',
+    path: '/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}/financial-year-ending/{financialYearEnding}/remove',
+    handler: controller.getRemoveFinancialYearEnding,
+    config: {
+      pre: [
+        ...pre,
+        { method: preHandlers.loadLicence, assign: 'licence' }
+      ],
+      auth: { scope: allowedScopes },
+      description: 'confirm remove financial year billing volume records',
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications'
+        }
+      },
+      validate: {
+        params: Joi.object().keys({
+          batchId: VALID_GUID,
+          licenceId: VALID_GUID,
+          financialYearEnding: Joi.string().required()
+        })
+      }
+    }
+  },
+  postRemoveFinancialYearEnding: {
+    method: 'POST',
+    path: '/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}/financial-year-ending/{financialYearEnding}/remove',
+    handler: controller.postRemoveFinancialYearEnding,
+    config: {
+      pre: [
+        ...pre,
+        { method: preHandlers.loadLicence, assign: 'licence' }
+      ],
+      auth: { scope: allowedScopes },
+      description: 'confirm remove financial year billing volume records',
+      plugins: {
+        viewContext: {
+          activeNavLink: 'notifications'
+        }
+      }
+    }
   }
 };

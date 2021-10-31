@@ -280,6 +280,9 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       id: uuid(),
       twoPartTariffError: true,
       twoPartTariffStatus: 20,
+      financialYear: {
+        yearEnding: 2020
+      },
       chargeElement: {
         description: 'Purpose A - borehole A',
         purposeUse: purposes.a,
@@ -290,6 +293,9 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       id: uuid(),
       twoPartTariffError: false,
       twoPartTariffStatus: null,
+      financialYear: {
+        yearEnding: 2020
+      },
       chargeElement: {
         description: 'Purpose A - borehole B',
         purposeUse: purposes.a,
@@ -300,6 +306,9 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       id: uuid(),
       twoPartTariffError: false,
       twoPartTariffStatus: null,
+      financialYear: {
+        yearEnding: 2021
+      },
       chargeElement: {
         description: 'Purpose A - borehole c',
         purposeUse: purposes.a,
@@ -310,6 +319,9 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       id: uuid(),
       twoPartTariffError: false,
       twoPartTariffStatus: null,
+      financialYear: {
+        yearEnding: 2022
+      },
       chargeElement: {
         description: 'Purpose B - borehole d',
         purposeUse: purposes.b,
@@ -407,30 +419,15 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
       expect(batch).to.equal(request.pre.batch);
     });
 
-    test('transactions with same purpose and abstraction period are grouped', async () => {
+    test('transactions with same financial year', async () => {
       const [, { billingVolumeGroups }] = h.view.lastCall.args;
-      expect(billingVolumeGroups).to.be.an.array().length(3);
+      expect(Object.values(billingVolumeGroups)).to.be.an.array().length(3);
 
-      const groups = billingVolumeGroups.map(group => group.map(tx => tx.chargeElement.description));
+      const groups = Object.values(billingVolumeGroups).map(group => group.map(bv => bv.billingVolume.chargeElement.description));
 
       expect(groups[0]).to.only.include(['Purpose A - borehole A', 'Purpose A - borehole B']);
       expect(groups[1]).to.only.include(['Purpose A - borehole c']);
       expect(groups[2]).to.only.include(['Purpose B - borehole d']);
-    });
-
-    test('grouped transactions have an edit link', async () => {
-      const [, { billingVolumeGroups: [[{ editLink }]] }] = h.view.lastCall.args;
-      const expectedLink = [
-        `/billing/batch/${request.pre.batch.id}`,
-        `/two-part-tariff/licence/${request.params.licenceId}`,
-        `/billing-volume/${billingVolumes[0].id}`
-      ].join('');
-      expect(editLink).to.equal(expectedLink);
-    });
-
-    test('grouped transactions have a two-part tariff error message', async () => {
-      const [, { billingVolumeGroups: [[{ error }]] }] = h.view.lastCall.args;
-      expect(error).to.equal('Checking query');
     });
   });
 

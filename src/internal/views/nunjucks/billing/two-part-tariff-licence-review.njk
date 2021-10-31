@@ -67,10 +67,10 @@
 
       {% for financialYear in financialYears %}
       <h2 class="govuk-heading-l govuk-!-margin-bottom-3" > Financial year {{ financialYear | int - 1 }} to {{ financialYear }} </h2>
+        {% if financialYears.length > 1 %}
+          {{ removeTPTYearlyLicenceFromBatchButton(batch, licence, financialYear) }}
+        {% endif %}
         {% for billingVolumeGroup in billingVolumeGroups[financialYear] %}
-            {% if financialYears.length > 1 %}
-                {{ removeTPTYearlyLicenceFromBatchButton(batch, licence, billingVolumeGroup.billingVolume.financialYear.yearEnding) }}
-            {% endif %}
             {{ billingVolumeTableRow(billingVolumeGroup.billingVolume) }}
 
         {% endfor %}

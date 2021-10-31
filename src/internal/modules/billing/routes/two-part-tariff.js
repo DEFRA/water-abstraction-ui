@@ -213,7 +213,7 @@ module.exports = {
         { method: preHandlers.loadLicence, assign: 'licence' }
       ],
       auth: { scope: allowedScopes },
-      description: 'confirm remove licence from TPT batch',
+      description: 'confirm remove financial year billing volume records',
       plugins: {
         viewContext: {
           activeNavLink: 'notifications'
@@ -238,7 +238,7 @@ module.exports = {
         { method: preHandlers.loadLicence, assign: 'licence' }
       ],
       auth: { scope: allowedScopes },
-      description: 'confirm remove licence from TPT batch',
+      description: 'confirm remove financial year billing volume records',
       plugins: {
         viewContext: {
           activeNavLink: 'notifications'

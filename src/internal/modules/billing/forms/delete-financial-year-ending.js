@@ -12,7 +12,7 @@ const deleteFinancialYearEndingSchema = () => {
   });
 };
 
-const deleteFinancialYearEndingForm = (request) => {
+const deleteFinancialYearEndingForm = request => {
   const { csrfToken } = request.view;
   const { batchId, licenceId, financialYearEnding } = request.params;
   const f = formFactory(request.path);

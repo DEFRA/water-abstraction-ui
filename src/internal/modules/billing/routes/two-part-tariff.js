@@ -47,7 +47,7 @@ module.exports = {
       description: 'review a single licence within a 2PT batch',
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -72,7 +72,7 @@ module.exports = {
       description: 'review billing volume quantities in TPT batch',
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -98,7 +98,7 @@ module.exports = {
       description: 'review billing volume quantities in TPT batch',
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -123,7 +123,7 @@ module.exports = {
       description: 'confirm remove licence from TPT batch',
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -147,7 +147,7 @@ module.exports = {
       description: 'confirm remove licence from TPT batch',
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -171,7 +171,7 @@ module.exports = {
       description: 'approve tpt review to continue bill run',
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {
@@ -193,7 +193,7 @@ module.exports = {
       description: 'approve tpt review to continue bill run',
       plugins: {
         viewContext: {
-          activeNavLink: 'notifications'
+          activeNavLink: 'bill-runs'
         }
       },
       validate: {

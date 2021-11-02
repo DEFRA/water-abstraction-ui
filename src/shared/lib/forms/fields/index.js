@@ -6,6 +6,7 @@ const text = require('./text');
 const checkbox = require('./checkbox');
 const dropdown = require('./dropdown');
 const paragraph = require('./paragraph');
+const warningText = require('./warningText');
 const file = require('./file');
 const link = require('./link');
 
@@ -17,5 +18,6 @@ exports.text = text;
 exports.checkbox = checkbox;
 exports.dropdown = dropdown;
 exports.paragraph = paragraph;
+exports.warningText = warningText;
 exports.file = file;
 exports.link = link;

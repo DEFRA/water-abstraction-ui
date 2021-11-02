@@ -19,6 +19,17 @@ const CONTACT_OBJECT = {
   id: CONTACT_ID,
   firstName: 'Bruce',
   lastName: 'Gooday',
+  fullName: 'Bruce Gooday',
+  type: 'person',
+  email: null
+};
+
+const BILLING_CONTACT_ID = uuid();
+const BILLING_CONTACT_OBJECT = {
+  id: BILLING_CONTACT_ID,
+  firstName: 'Ima',
+  lastName: 'Billing',
+  fullName: 'Ima Billing',
   type: 'person',
   email: null
 };
@@ -26,7 +37,25 @@ const CONTACT_OBJECT = {
 const DEPARTMENT_CONTACT_ID = uuid();
 const DEPARTMENT_CONTACT_OBJECT = {
   id: DEPARTMENT_CONTACT_ID,
-  department: 'Cheese'
+  department: 'Cheese',
+  fullName: 'Cheese'
+};
+const ADDITIONAL_CONTACT_ROLE = {
+  name: 'additionalContact'
+};
+const BILLING_ROLE = {
+  name: 'billing'
+};
+
+const COMPANY_CONTACT_ARRAY = [
+  { id: uuid(), contact: CONTACT_OBJECT, role: ADDITIONAL_CONTACT_ROLE },
+  { id: uuid(), contact: BILLING_CONTACT_OBJECT, role: ADDITIONAL_CONTACT_ROLE },
+  { id: uuid(), contact: BILLING_CONTACT_OBJECT, role: BILLING_ROLE },
+  { id: uuid(), contact: DEPARTMENT_CONTACT_OBJECT, waterAbstractionAlertsEnabled: false }
+];
+
+const COMPANY_OBJECT = {
+  name: 'ACME'
 };
 
 const EXPECTED_GET_COMPANY_LICENCES_RESPONSE = { data: [
@@ -41,13 +70,10 @@ experiment('internal/modules/customers/controllers', () => {
     await sandbox.stub(services.water.contacts, 'postContact').resolves({
       id: '123'
     });
-    await sandbox.stub(services.water.companies, 'getContacts').resolves({ data: [
-      { contact: CONTACT_OBJECT },
-      { contact: DEPARTMENT_CONTACT_OBJECT, waterAbstractionAlertsEnabled: false }
-    ] });
+    await sandbox.stub(services.water.companies, 'getContacts').resolves({ data: COMPANY_CONTACT_ARRAY });
     await sandbox.stub(services.water.companies, 'postCompanyContact').resolves({});
     await sandbox.stub(services.water.companies, 'patchCompanyContact').resolves({});
-    await sandbox.stub(services.water.companies, 'getCompany').resolves({});
+    await sandbox.stub(services.water.companies, 'getCompany').resolves(COMPANY_OBJECT);
     await sandbox.stub(services.water.companies, 'getCompanyInvoiceAccounts').resolves({ data: [] });
     await sandbox.stub(services.water.companies, 'getCompanyLicences').resolves(EXPECTED_GET_COMPANY_LICENCES_RESPONSE);
     await sandbox.stub(services.water.licences, 'getLicenceByLicenceNumber').resolves({});
@@ -55,9 +81,9 @@ experiment('internal/modules/customers/controllers', () => {
       document_name: 'some-document-name'
     });
 
-    await sandbox.stub(session, 'get').resolves();
-    await sandbox.stub(session, 'merge').resolves({});
-    await sandbox.stub(session, 'clear').resolves({});
+    await sandbox.stub(session, 'get').returns({ companyContactId: COMPANY_CONTACT_ARRAY[0].id });
+    await sandbox.stub(session, 'merge').returns({});
+    await sandbox.stub(session, 'clear').returns({});
     await sandbox.stub(formHandler, 'handleFormRequest').resolves({});
   });
 
@@ -564,6 +590,87 @@ experiment('internal/modules/customers/controllers', () => {
         const { companyId, contactId } = request.params;
         expect(args).to.equal([companyId, contactId, { waterAbstractionAlertsEnabled }]);
       });
+    });
+  });
+
+  experiment('.getSelectRemoveCompanyContact', () => {
+    const companyId = uuid();
+    const request = {
+      params: {
+        companyId
+      },
+      defra: {
+        userId: '1000'
+      },
+      path: `http://defra.wrls/customers/123/contacts/remove`
+    };
+
+    const h = {
+      view: sandbox.spy(),
+      redirect: sandbox.spy()
+    };
+
+    beforeEach(async () => {
+      await controllers.getSelectRemoveCompanyContact(request, h);
+    });
+
+    test('calls the service method for fetching a company', async () => {
+      expect(services.water.companies.getCompany.calledWith(companyId)).to.be.true();
+    });
+    test('calls the service method for fetching the company contacts', async () => {
+      expect(services.water.companies.getContacts.calledWith(companyId)).to.be.true();
+    });
+    test('calls session.merge to store waterAbstractionAlertsEnabled and email', () => {
+      const { args } = session.merge.lastCall;
+      expect(args).to.equal([request, {
+        companyId,
+        companyContactsForRemoval: COMPANY_CONTACT_ARRAY
+          .filter(({ role }) => role === ADDITIONAL_CONTACT_ROLE)
+          .map(({ contact, id }) => ({ companyContactId: id, name: contact.fullName })),
+        billingContactsExist: true,
+        naldContactsExist: false
+      }]);
+    });
+  });
+
+  experiment('.getCheckRemoveCompanyContact', () => {
+    const companyId = uuid();
+    const companyContactId = COMPANY_CONTACT_ARRAY[0].id;
+
+    const request = {
+      params: {
+        companyId
+      },
+      defra: {
+        userId: '1000'
+      },
+      path: `http://defra.wrls/customers/123/contacts/remove/check`
+    };
+
+    const h = {
+      view: sandbox.spy(),
+      redirect: sandbox.spy()
+    };
+
+    beforeEach(async () => {
+      await controllers.getCheckRemoveCompanyContact(request, h);
+    });
+
+    test('calls the service method for fetching a company', async () => {
+      expect(services.water.companies.getCompany.calledWith(companyId)).to.be.true();
+    });
+    test('calls the service method for fetching the company contacts', async () => {
+      expect(services.water.companies.getContacts.calledWith(companyId)).to.be.true();
+    });
+    test('calls session.merge to store the ', () => {
+      const { args } = session.merge.lastCall;
+      expect(args).to.equal([request, {
+        companyId,
+        companyContactId,
+        isLastEmailContact: false,
+        contactName: CONTACT_OBJECT.fullName,
+        companyName: COMPANY_OBJECT.name
+      }]);
     });
   });
 });

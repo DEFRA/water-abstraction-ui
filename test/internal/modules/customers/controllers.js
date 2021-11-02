@@ -152,6 +152,104 @@ experiment('internal/modules/customers/controllers', () => {
     });
   });
 
+  experiment('.getUpdateCustomerContactName', () => {
+    const request = {
+      params: {
+        companyId: uuid(),
+        contactId: CONTACT_ID
+      },
+      defra: {
+        userId: '1000'
+      },
+      path: `http://defra.wrls/customers/123/contact/456/contact`
+    };
+
+    const h = {
+      view: sandbox.spy(),
+      redirect: sandbox.spy()
+    };
+
+    beforeEach(async () => {
+      sandbox.stub(helpers, 'parseContactName').resolves(CONTACT_OBJECT);
+      await controllers.getUpdateCustomerContactName(request, h);
+    });
+    test('calls the service method for fetching a company', async () => {
+      expect(services.water.companies.getCompany.calledWith(request.params.companyId)).to.be.true();
+    });
+    test('calls the service method for fetching the company contacts', async () => {
+      expect(services.water.companies.getContacts.calledWith(request.params.companyId)).to.be.true();
+    });
+    test('calls session.merge to store contact', () => {
+      expect(session.merge.calledWith({
+        contact: CONTACT_OBJECT
+      }));
+    });
+  });
+
+  experiment('.postUpdateCustomerContactName', () => {
+    const request = {
+      path: `http://defra.wrls/customers/123/contact/456/contact`,
+      method: 'post',
+      view: {
+        csrfToken: 'some-token'
+      },
+      params: {
+        companyId: uuid(),
+        contactId: CONTACT_ID
+      },
+      defra: {
+        userId: '1000'
+      }
+    };
+
+    const h = {
+      view: sandbox.spy(),
+      postRedirectGet: sandbox.spy(),
+      redirect: sandbox.spy()
+    };
+
+    const formContent = {
+      fields: [{ name: 'email', value: 'some.valid.email@defra.gov.uk' }, { name: 'isNew', value: undefined }]
+    };
+
+    experiment('when the payload is invalid', () => {
+      beforeEach(() => {
+        formHandler.handleFormRequest.resolves({
+          ...formContent,
+          isValid: false
+        });
+        controllers.postUpdateCustomerContactName(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+      test('does not call session.merge', () => {
+        expect(session.merge.called).to.be.false();
+      });
+      test('calls handleFormRequest to process the payload through the form', () => {
+        expect(formHandler.handleFormRequest.called).to.be.true();
+      });
+      test('redirects the user back to the form', () => {
+        expect(h.postRedirectGet.called).to.be.true();
+      });
+    });
+
+    experiment('when the payload is valid', () => {
+      beforeEach(async () => {
+        await formHandler.handleFormRequest.resolves({
+          ...formContent,
+          isValid: true
+        });
+        await controllers.postUpdateCustomerContactName(request, h);
+      });
+      afterEach(async () => sandbox.restore());
+      test('calls handleFormRequest to process the payload through the form', () => {
+        expect(formHandler.handleFormRequest.called).to.be.true();
+      });
+      test('calls patchContact endpoint', () => {
+        expect(services.water.contacts.patchContact.called).to.be.true();
+      });
+    });
+  });
+
   experiment('.getAddCustomerContactEmail', () => {
     const request = {
       params: {

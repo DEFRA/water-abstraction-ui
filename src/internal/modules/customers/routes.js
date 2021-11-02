@@ -32,6 +32,32 @@ module.exports = {
       }
     }
   },
+  getUpdateCustomerContactName: {
+    method: 'GET',
+    path: '/customer/{companyId}/contacts/{contactId}/name',
+    handler: controllers.getUpdateCustomerContactName,
+    config: {
+      description: 'Gets the page for editing a contact\'s name',
+      validate: {
+        params: Joi.object().keys({
+          companyId: Joi.string().guid().required(),
+          contactId: Joi.string().guid().required()
+        }),
+        query: Joi.object().keys({
+          isNew: Joi.any().optional(),
+          form: Joi.string().guid().optional()
+        })
+      }
+    }
+  },
+  postAddCustomerContactName: {
+    method: 'POST',
+    path: '/customer/{companyId}/contacts/{contactId}/name',
+    handler: controllers.postUpdateCustomerContactName,
+    config: {
+      description: 'POSTs the page for editing a contact\'s name'
+    }
+  },
   getAddCustomerContactEmail: {
     method: 'GET',
     path: '/customer/{companyId}/contacts/{contactId}/email',

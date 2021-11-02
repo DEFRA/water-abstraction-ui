@@ -1,0 +1,52 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "./nunjucks/billing/macros/batch-title.njk" import batchTitle %}
+{% from "./nunjucks/billing/macros/batch-buttons.njk" import removeTPTLicenceFromBatchButton, removeTPTYearlyLicenceFromBatchButton %}
+{% from "./nunjucks/billing/macros/two-part-tariff-licence-review-table.njk" import billingVolumeTableRow %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "forms/index.njk" import formRender, formErrorSummary %}
+
+{% macro metaRow(key, value, includePadding) %}
+  <div class="meta__row">
+    <dt class="meta__key">{{ key }}</dt>
+    <dd class="meta__value{% if includePadding %} govuk-!-padding-bottom-3{% endif %}">{{ value }}</dd>
+  </div>
+{% endmacro %}
+
+{% block content %}
+
+  <div class="govuk-grid-row govuk-!-margin-bottom-6">
+    <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-xl "><span class="govuk-caption-l">{{ batch.region.displayName }} supplementary bill run</span>You’re about to remove second part charges from the bill run</h1>
+      <dl class="govuk-summary-list govuk-summary-list--no-border">
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key meta-data__label govuk-!-padding-0 govuk-!-font-weight-regular">
+                Licence
+              </dt>
+              <dd class="govuk-summary-list__value meta-data__value govuk-!-padding-0">
+                {{ licence.licenceNumber }}
+              </dd>
+            </div>
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key meta-data__label govuk-!-padding-0 govuk-!-font-weight-regular">
+                Financial year
+              </dt>
+              <dd class="govuk-summary-list__value meta-data__value govuk-!-padding-0">
+                {{financialYearEnding}}
+              </dd>
+            </div>
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key meta-data__label govuk-!-padding-0 govuk-!-font-weight-regular">
+                {{ 'Billing account' | pluralize(billingAccountNumbers[0]) }}
+              </dt>
+              <dd class="govuk-summary-list__value meta-data__value govuk-!-padding-0">
+                {% for billingAccount in billingAccountNumbers %}
+                  {{billingAccount}}<br/>
+                {% endfor %}
+              </dd>
+            </div>
+      </dl>
+
+       {{ formRender(form) }}
+    </div>
+  </div>
+{% endblock %}

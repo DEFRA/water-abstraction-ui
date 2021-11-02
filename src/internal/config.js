@@ -146,6 +146,6 @@ module.exports = {
     manageInvoiceAccounts: true,
     deleteAllBillingData: ['local', 'dev', 'development', 'test', 'qa'].includes(process.env.NODE_ENV),
     waterAbstractionAlerts: true,
-    recalculateBills: false
+    recalculateBills: true
   }
 };

@@ -100,3 +100,13 @@
     })
   }}
 {% endmacro %}
+
+{% macro removeTPTYearlyLicenceFromBatchButton(batch, licence, financialYearEnding) %}
+  {{
+      govukButton({
+        text: "Remove financial year",
+        href: '/billing/batch/' + batch.id + '/two-part-tariff/licence/' + licence.id + '/financial-year-ending/' + financialYearEnding + '/remove',
+        classes: "govuk-button--secondary"
+      })
+    }}
+{% endmacro %}

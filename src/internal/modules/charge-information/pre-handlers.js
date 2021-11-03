@@ -122,9 +122,30 @@ const decorateChargeVersion = chargeVersionWorkflow => {
 const getChargeVersionWorkflow = async id =>
   services.water.chargeVersionWorkflows.getChargeVersionWorkflow(id);
 
-const loadChargeVersionWorkflows = async () => {
+const loadChargeVersionWorkflows = async request => {
+  const { page = 1, perPage = 11, tabFilter = 'to_setup' } = request.query;
   try {
-    const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows();
+    const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(page, perPage, tabFilter);
+    return sortBy(workflows, ['licence.startDate']);
+  } catch (err) {
+    return errorHandler(err, `Could not retrieve charge version workflows.`);
+  }
+};
+
+const loadChargeVersionWorkflowsReview = async request => {
+  const { page = 1, perPage = 11, tabFilter = 'review' } = request.query;
+  try {
+    const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(page, perPage, tabFilter);
+    return sortBy(workflows, ['licence.startDate']);
+  } catch (err) {
+    return errorHandler(err, `Could not retrieve charge version workflows.`);
+  }
+};
+
+const loadChargeVersionWorkflowsChangeRequest = async request => {
+  const { page = 1, perPage = 11, tabFilter = 'changes_requested' } = request.query;
+  try {
+    const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(page, perPage, tabFilter);
     return sortBy(workflows, ['licence.startDate']);
   } catch (err) {
     return errorHandler(err, `Could not retrieve charge version workflows.`);
@@ -189,6 +210,8 @@ exports.loadChargeableChangeReasons = loadChargeableChangeReasons;
 exports.loadChargeVersion = loadChargeVersion;
 exports.loadChargeVersions = loadChargeVersions;
 exports.loadChargeVersionWorkflows = loadChargeVersionWorkflows;
+exports.loadChargeVersionWorkflowsReview = loadChargeVersionWorkflowsReview;
+exports.loadChargeVersionWorkflowsChangeRequest = loadChargeVersionWorkflowsChangeRequest;
 exports.loadChargeVersionWorkflow = loadChargeVersionWorkflow;
 exports.loadChargeInformation = loadChargeInformation;
 exports.loadDefaultCharges = loadDefaultCharges;

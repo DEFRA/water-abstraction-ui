@@ -1,4 +1,5 @@
 {% extends "./nunjucks/layout.njk" %}
+{% from "paginate.njk" import paginate %}
 {% from "govuk/components/tabs/macro.njk" import govukTabs %}
 {% block content %}
   <div class="govuk-grid-row">
@@ -21,6 +22,7 @@
 
         <section class="govuk-tabs__panel" id="toSetUp">
           {% include "nunjucks/charge-information/workflow-tabs/to-set-up.njk" %}
+          {{ paginate(licencesCounts.pagination, '/charge-information-workflow#toSetUp') }}
         </section>
         <section class="govuk-tabs__panel" id="review">
           {% include "nunjucks/charge-information/workflow-tabs/review.njk" %}

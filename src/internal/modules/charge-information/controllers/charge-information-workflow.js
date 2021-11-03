@@ -4,6 +4,7 @@ const { hasScope } = require('internal/lib/permissions');
 const { deleteChargeInfo } = require('../forms');
 const services = require('../../../lib/connectors/services');
 const { sortBy } = require('lodash');
+
 const getChargeVersionWorkflowsByStatus = (workflows, status) =>
   workflows.filter(workflow => workflow.status === status);
 
@@ -14,13 +15,24 @@ const getChargeVersionWorkflowsForTabs = workflows => ({
 });
 
 const getChargeInformationWorkflow = async (request, h) => {
-  const { toSetUp, review, changeRequest } = getChargeVersionWorkflowsForTabs(request.pre.chargeInformationWorkflows);
+  let { toSetUp, pagination } = getChargeVersionWorkflowsForTabs(request.pre.chargeInformationWorkflows);
+  const { review } = getChargeVersionWorkflowsForTabs(request.pre.chargeInformationWorkflowsReview);
+  const { changeRequest } = getChargeVersionWorkflowsForTabs(request.pre.chargeInformationWorkflowsChangeRequest);
+
+  if (!pagination) {
+    pagination = {
+      perPage: 10,
+      page: 1
+    };
+  }
+
   const view = {
     back: '/manage',
     ...request.view,
     pageTitle: 'Charge information workflow',
     licences: { changeRequest, toSetUp, review: sortBy(review, ['chargeVersion.dateRange.startDate']) },
     licencesCounts: {
+      pagination: pagination,
       toSetUp: toSetUp.length,
       review: review.length,
       changeRequest: changeRequest.length

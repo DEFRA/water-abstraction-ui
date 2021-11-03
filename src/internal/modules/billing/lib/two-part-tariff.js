@@ -1,7 +1,7 @@
 'use strict';
 
 const routing = require('./routing');
-const { groupBy } = require('lodash');
+const { groupBy, uniqBy } = require('lodash');
 /**
  * Map of two-part tariff status codes to human-readable error messages
  * @type {Map}
@@ -58,15 +58,16 @@ const mapLicence = (batch, licenceGroup) => {
 };
 
 const getTotals = licences => {
-  const dedupLicences = licences.filter((item, ind, arr) => arr.findIndex(temp => (temp.licenceId === item.licenceId)) === ind);
-  const errors = dedupLicences.reduce((acc, row) => (
+  const deduplicatedLicences = uniqBy(licences.sort((a, b) => b.twoPartTariffError - a.twoPartTariffError), 'licenceId');
+
+  const errors = deduplicatedLicences.reduce((acc, row) => (
     row.twoPartTariffError ? acc + 1 : acc
   ), 0);
 
   return {
     errors,
-    ready: dedupLicences.length - errors,
-    total: dedupLicences.length
+    ready: deduplicatedLicences.length - errors,
+    total: deduplicatedLicences.length
   };
 };
 

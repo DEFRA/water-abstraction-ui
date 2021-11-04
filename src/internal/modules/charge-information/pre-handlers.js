@@ -128,7 +128,6 @@ const loadChargeVersionWorkflows = async request => {
     const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(page, perPage, tabFilter);
     const workflowdata = sortBy(workflows.data, ['licence.startDate']);
     const pagination = workflows.pagination;
-
     return {
       data: workflowdata,
       pagination

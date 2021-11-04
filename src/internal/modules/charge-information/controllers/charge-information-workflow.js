@@ -21,6 +21,9 @@ const getChargeInformationWorkflow = async (request, h) => {
   const { changeRequest } = getChargeVersionWorkflowsForTabs(request.pre.chargeInformationWorkflowsChangeRequest);
   let pagination = request.pre.chargeInformationWorkflows.pagination ? request.pre.chargeInformationWorkflows.pagination : { perPage, pageCount: 1, totalRows: perPage };
   pagination.page = page || 1;
+  pagination.perPage = pagination.perPage || perPage;
+  pagination.pageCount = pagination.pageCount || 1;
+  pagination.totalRows = pagination.totalRows || perPage;
 
   const view = {
     back: '/manage',
@@ -37,7 +40,6 @@ const getChargeInformationWorkflow = async (request, h) => {
   };
 
   view.paginationUrl = `/charge-information-workflow`;
-
   return h.view('nunjucks/charge-information/workflow', view);
 };
 

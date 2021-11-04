@@ -15,16 +15,12 @@ const getChargeVersionWorkflowsForTabs = workflows => ({
 });
 
 const getChargeInformationWorkflow = async (request, h) => {
-  let { toSetUp, pagination } = getChargeVersionWorkflowsForTabs(request.pre.chargeInformationWorkflows);
+  let { toSetUp } = getChargeVersionWorkflowsForTabs(request.pre.chargeInformationWorkflows.data);
+  let { page, perPage } = request.query;
   const { review } = getChargeVersionWorkflowsForTabs(request.pre.chargeInformationWorkflowsReview);
   const { changeRequest } = getChargeVersionWorkflowsForTabs(request.pre.chargeInformationWorkflowsChangeRequest);
-
-  if (!pagination) {
-    pagination = {
-      perPage: 10,
-      page: 1
-    };
-  }
+  let pagination = request.pre.chargeInformationWorkflows.pagination ? request.pre.chargeInformationWorkflows.pagination : { perPage, pageCount: 1, totalRows: perPage };
+  pagination.page = page || 1;
 
   const view = {
     back: '/manage',
@@ -32,13 +28,16 @@ const getChargeInformationWorkflow = async (request, h) => {
     pageTitle: 'Charge information workflow',
     licences: { changeRequest, toSetUp, review: sortBy(review, ['chargeVersion.dateRange.startDate']) },
     licencesCounts: {
-      pagination: pagination,
-      toSetUp: toSetUp.length,
+      pagination,
+      toSetUp: pagination.totalRows,
       review: review.length,
       changeRequest: changeRequest.length
     },
     isReviewer: hasScope(request, chargeVersionWorkflowReviewer)
   };
+
+  view.paginationUrl = `/charge-information-workflow`;
+
   return h.view('nunjucks/charge-information/workflow', view);
 };
 

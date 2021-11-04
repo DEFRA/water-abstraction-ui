@@ -22,7 +22,7 @@
 
         <section class="govuk-tabs__panel" id="toSetUp">
           {% include "nunjucks/charge-information/workflow-tabs/to-set-up.njk" %}
-          {{ paginate(licencesCounts.pagination, '/charge-information-workflow#toSetUp') }}
+          {{ paginate(licencesCounts.pagination, paginationUrl) }}
         </section>
         <section class="govuk-tabs__panel" id="review">
           {% include "nunjucks/charge-information/workflow-tabs/review.njk" %}

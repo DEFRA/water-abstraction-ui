@@ -126,7 +126,13 @@ const loadChargeVersionWorkflows = async request => {
   const { page = 1, perPage = 11, tabFilter = 'to_setup' } = request.query;
   try {
     const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(page, perPage, tabFilter);
-    return sortBy(workflows, ['licence.startDate']);
+    const workflowdata = sortBy(workflows.data, ['licence.startDate']);
+    const pagination = workflows.pagination;
+
+    return {
+      data: workflowdata,
+      pagination
+    };
   } catch (err) {
     return errorHandler(err, `Could not retrieve charge version workflows.`);
   }
@@ -136,7 +142,7 @@ const loadChargeVersionWorkflowsReview = async request => {
   const { page = 1, perPage = 11, tabFilter = 'review' } = request.query;
   try {
     const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(page, perPage, tabFilter);
-    return sortBy(workflows, ['licence.startDate']);
+    return sortBy(workflows.data, ['licence.startDate']);
   } catch (err) {
     return errorHandler(err, `Could not retrieve charge version workflows.`);
   }
@@ -146,7 +152,7 @@ const loadChargeVersionWorkflowsChangeRequest = async request => {
   const { page = 1, perPage = 11, tabFilter = 'changes_requested' } = request.query;
   try {
     const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(page, perPage, tabFilter);
-    return sortBy(workflows, ['licence.startDate']);
+    return sortBy(workflows.data, ['licence.startDate']);
   } catch (err) {
     return errorHandler(err, `Could not retrieve charge version workflows.`);
   }

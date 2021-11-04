@@ -50,12 +50,38 @@ module.exports = {
       }
     }
   },
-  postAddCustomerContactName: {
+  postUpdateCustomerContactName: {
     method: 'POST',
     path: '/customer/{companyId}/contacts/{contactId}/name',
     handler: controllers.postUpdateCustomerContactName,
     config: {
       description: 'POSTs the page for editing a contact\'s name'
+    }
+  },
+  getUpdateCustomerContactDepartment: {
+    method: 'GET',
+    path: '/customer/{companyId}/contacts/{contactId}/department',
+    handler: controllers.getUpdateCustomerContactDepartment,
+    config: {
+      description: 'Gets the page for editing a contact\'s department',
+      validate: {
+        params: Joi.object().keys({
+          companyId: Joi.string().guid().required(),
+          contactId: Joi.string().guid().required()
+        }),
+        query: Joi.object().keys({
+          isNew: Joi.any().optional(),
+          form: Joi.string().guid().optional()
+        })
+      }
+    }
+  },
+  postUpdateCustomerContactDepartment: {
+    method: 'POST',
+    path: '/customer/{companyId}/contacts/{contactId}/department',
+    handler: controllers.postUpdateCustomerContactDepartment,
+    config: {
+      description: 'POSTs the page for editing a contact\'s department'
     }
   },
   getAddCustomerContactEmail: {

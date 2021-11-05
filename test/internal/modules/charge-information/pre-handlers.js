@@ -52,7 +52,7 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
     });
 
     sandbox.stub(services.water.chargeVersionWorkflows, 'getChargeVersionWorkflows').resolves(
-      [{ licence: { startDate: '2002-05-03' } }, { licence: { startDate: '2000-09-30' } }]
+      { data: [ { licence: { startDate: '2002-05-03' } }, { licence: { startDate: '2000-09-30' } } ] }
     );
 
     sandbox.stub(services.water.chargeVersionWorkflows, 'getLicencesWithoutChargeInformation').resolves({
@@ -290,8 +290,8 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
         expect(services.water.chargeVersionWorkflows.getChargeVersionWorkflows.called).to.be.true();
       });
       test('returns the results ordered by licence start date', async () => {
-        expect(result[0]).to.equal({ licence: { startDate: '2000-09-30' } });
-        expect(result[1]).to.equal({ licence: { startDate: '2002-05-03' } });
+        expect(result.data[0]).to.equal({ licence: { startDate: '2000-09-30' } });
+        expect(result.data[1]).to.equal({ licence: { startDate: '2002-05-03' } });
       });
     });
     experiment('when the service response is invalid', () => {

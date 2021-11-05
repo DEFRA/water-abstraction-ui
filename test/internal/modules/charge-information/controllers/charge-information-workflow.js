@@ -27,7 +27,9 @@ const createRequest = () => ({
   },
   query: {},
   pre: {
-    chargeInformationWorkflows: [],
+    chargeInformationWorkflows: { data: Object.values({ status: 'to_setup' }) },
+    chargeInformationWorkflowsReview: Object.values({ status: 'review' }),
+    chargeInformationWorkflowsChangeRequest: Object.values({ status: 'changes_requested' }),
     chargeInformationWorkflow: {
       licence: { foo: 'bar' },
       licenceHolderRole: { bar: 'baz' }
@@ -59,7 +61,7 @@ experiment('internal/modules/charge-information/controller', () => {
   experiment('.getChargeInformationWorkflow', () => {
     beforeEach(async () => {
       request = createRequest();
-      request.query = { isChargeable: true };
+      request.query = { isChargeable: true, page: 1, perPage: 10, tabFilter: 'to_setup' };
       await controller.getChargeInformationWorkflow(request, h);
     });
 

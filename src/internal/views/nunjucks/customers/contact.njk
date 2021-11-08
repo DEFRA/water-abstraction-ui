@@ -14,14 +14,20 @@
                 {{contactName}}
              </dd>
              <dd class="govuk-summary-list__actions">
-              {% if companyContact.contact.dataSource == 'wrls' %}
-                <a class="govuk-link" href="{{companyContact.contact.id}}/name">
-                Change<span class="govuk-visually-hidden"> name</span>
-                </a>
-              {% elseif companyContact.contact.dataSource == 'nald' %}
-                <p class="govuk-!-margin-bottom-0">Created in NALD</p>
-              {% else %}
-              {% endif %}
+                 {% if companyContact.contact.dataSource == 'wrls' %}
+                    {% if companyContact.contact.type == 'department' %}
+                        <a class="govuk-link" href="{{companyContact.contact.id}}/department">
+                            Change<span class="govuk-visually-hidden"> name</span>
+                        </a>
+                    {% else %}
+                        <a class="govuk-link" href="{{companyContact.contact.id}}/name">
+                            Change<span class="govuk-visually-hidden"> name</span>
+                        </a>
+                    {% endif %}
+                {% elseif companyContact.contact.dataSource == 'nald' %}
+                    <p class="govuk-!-margin-bottom-0">Created in NALD</p>
+                {% else %}
+                {% endif %}
              </dd>
           </div>
           <div class="govuk-summary-list__row">

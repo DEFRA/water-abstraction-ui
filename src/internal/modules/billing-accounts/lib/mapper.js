@@ -34,7 +34,7 @@ const mapContactToWaterApi = contact =>
     ...pick(contact, [
       'id',
       'type',
-      'title',
+      'salutation',
       'firstName',
       'initials',
       'middleInitials',

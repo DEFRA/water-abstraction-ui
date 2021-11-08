@@ -1,5 +1,5 @@
 const services = require('../../../internal/lib/connectors/services');
-const { uniqBy, omit, omitBy, isEmpty } = require('lodash');
+const { uniqBy, omit } = require('lodash');
 const { logger } = require('../../logger');
 const helpers = require('./helpers');
 const session = require('./session');
@@ -63,7 +63,7 @@ const getCustomerContact = async (request, h) => {
     ...request.view,
     pageTitle: `Manage contact settings for ${contactName}`,
     caption: company.name,
-    back: `/customer/${companyId}`,
+    back: `/customer/${companyId}#contacts`,
     contactName,
     companyContact
   });
@@ -88,13 +88,13 @@ const getUpdateCustomerContactName = async (request, h) => {
     caption,
     pageTitle,
     back: path.replace(/\/[^/]*$/, ''),
-    form: formHandler.handleFormRequest(request, forms.contact)
+    form: formHandler.handleFormRequest(request, forms.name)
   });
 };
 
 const postUpdateCustomerContactName = async (request, h) => {
   const { contactId } = request.params;
-  const form = await formHandler.handleFormRequest(request, forms.contact);
+  const form = await formHandler.handleFormRequest(request, forms.name);
 
   if (!form.isValid) {
     return h.postRedirectGet(form);
@@ -102,10 +102,51 @@ const postUpdateCustomerContactName = async (request, h) => {
 
   // Retrieve contact data but remember that the back end knows the title as salutation
   const { title, ...data } = {
-    ...omit(omitBy(formsHelper.getValues(form), isEmpty), 'csrf_token')
+    ...omit(formsHelper.getValues(form), 'csrf_token')
   };
 
   data.salutation = title;
+
+  await services.water.contacts.patchContact(contactId, data);
+
+  // eslint-disable-next-line no-useless-escape
+  return h.redirect(request.path.replace(/\/[^\/]*$/, ''));
+};
+
+const getUpdateCustomerContactDepartment = async (request, h) => {
+  const { companyId, contactId } = request.params;
+  const company = await services.water.companies.getCompany(companyId);
+  const caption = company.name;
+  const { data: companyContacts } = await services.water.companies.getContacts(companyId);
+  const companyContact = companyContacts.find(row => row.contact.id === contactId);
+
+  session.merge(request, {
+    departmentFromDatabase: companyContact.contact.department
+  });
+
+  const pageTitle = `Enter a department`;
+  const { path } = request;
+
+  return h.view('nunjucks/form', {
+    ...request.view,
+    caption,
+    pageTitle,
+    back: path.replace(/\/[^/]*$/, ''),
+    form: formHandler.handleFormRequest(request, forms.department)
+  });
+};
+
+const postUpdateCustomerContactDepartment = async (request, h) => {
+  const { contactId } = request.params;
+  const form = await formHandler.handleFormRequest(request, forms.department);
+
+  if (!form.isValid) {
+    return h.postRedirectGet(form);
+  }
+
+  const data = {
+    ...omit(formsHelper.getValues(form), 'csrf_token')
+  };
 
   await services.water.contacts.patchContact(contactId, data);
 
@@ -235,6 +276,8 @@ exports.getCustomer = getCustomer;
 exports.getCustomerContact = getCustomerContact;
 exports.getUpdateCustomerContactName = getUpdateCustomerContactName;
 exports.postUpdateCustomerContactName = postUpdateCustomerContactName;
+exports.getUpdateCustomerContactDepartment = getUpdateCustomerContactDepartment;
+exports.postUpdateCustomerContactDepartment = postUpdateCustomerContactDepartment;
 exports.getAddCustomerContactEmail = getAddCustomerContactEmail;
 exports.postAddCustomerContactEmail = postAddCustomerContactEmail;
 exports.getUpdateCustomerWaterAbstractionAlertsPreferences = getUpdateCustomerWaterAbstractionAlertsPreferences;

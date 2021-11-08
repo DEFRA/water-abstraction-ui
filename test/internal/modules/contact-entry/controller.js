@@ -227,15 +227,19 @@ experiment('src/internal/modules/contact-entry/controller', () => {
       });
 
       test('the contact is stored in the session', async () => {
-        expect(session.merge.calledWith(
+        // Note that title is saved as salutation
+        const { title: salutation, ...contact } = CONTACT;
+        const { args } = session.merge.lastCall;
+        expect(args).to.equal([
           request, KEY, {
             data: {
               type: CONTACT_TYPES.person,
               source: 'wrls',
-              ...CONTACT
+              salutation,
+              ...contact
             }
           }
-        )).to.be.true();
+        ]);
       });
 
       test('redirects to the redirect path', async () => {

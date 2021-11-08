@@ -32,7 +32,7 @@ const createContactForm = request => {
   const f = formFactory(request.path);
   const contact = helpers.getContactFromSession(request);
 
-  f.fields.push(getOptionalInputField('title', contact.title));
+  f.fields.push(getOptionalInputField('title', contact.salutation));
   f.fields.push(getNameField('first name', contact.firstName));
   f.fields.push(getOptionalInputField('middle initials', contact.middleInitials), true);
   f.fields.push(getNameField('last name', contact.lastName));

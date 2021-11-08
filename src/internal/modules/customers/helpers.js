@@ -4,16 +4,13 @@ const parseContactName = contact => {
   if (contact.type === 'department') {
     return contact.department;
   }
-  return `${contact.firstName || ''} ${contact.lastName || ''}`;
+  return contact.fullName;
 };
 
 const handleNewContact = async (request, h) => {
   const contact = request.getNewContact(`newCompanyContact.${request.params.companyId}.${request.defra.userId}`);
 
-  const parsedContact = { ...contact, salutation: contact.title };
-  delete parsedContact.title;
-
-  const persistedContactRecord = await services.water.contacts.postContact(parsedContact);
+  const persistedContactRecord = await services.water.contacts.postContact(contact);
   await services.water.companies.postCompanyContact(request.params.companyId, persistedContactRecord.id, 'additionalContact');
 
   return h.redirect(`/customer/${request.params.companyId}/contacts/${persistedContactRecord.id}/email?isNew=1`);

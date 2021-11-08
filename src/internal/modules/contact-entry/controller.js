@@ -77,10 +77,20 @@ const postCreateContact = async (request, h) => {
     return h.postRedirectGet(form);
   }
 
+  // Retrieve contact data but remember that the back end knows the title as salutation
+  const { title, ...formValues
+  } = {
+    ...omit(omitBy(forms.getValues(form), isEmpty), 'csrf_token')
+  };
+
+  if (title) {
+    formValues.salutation = title;
+  }
+
   const data = {
     type: CONTACT_TYPES.person,
     source: 'wrls',
-    ...omit(omitBy(forms.getValues(form), isEmpty), 'csrf_token')
+    ...formValues
   };
 
   const { key } = request.params;

@@ -112,7 +112,7 @@ const loadSummary = async request => {
     return null;
   }
 
-  const { data } = await request.services.water.licences.getSummaryByDocumentId(documentId);
+  const { data } = await request.services.water.licences.getSummaryByDocumentId(documentId, { includeExpired: true });
   return data;
 };
 

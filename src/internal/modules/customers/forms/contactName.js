@@ -25,15 +25,15 @@ const getNameField = (name, value) =>
   }, value);
 
 /**
- * Returns an object to create a new contact
+ * Returns an object to update a contact name
  * @param {Object} request The Hapi request object
   */
-const createContactForm = request => {
+const updateContactNameForm = request => {
   const f = formFactory(request.path);
 
   const contact = get(session.get(request), 'contactFromDatabase');
 
-  f.fields.push(getOptionalInputField('title', contact.title));
+  f.fields.push(getOptionalInputField('title', contact.salutation));
   f.fields.push(getNameField('first name', contact.firstName));
   f.fields.push(getOptionalInputField('middle initials', contact.middleInitials), true);
   f.fields.push(getNameField('last name', contact.lastName));
@@ -45,7 +45,7 @@ const createContactForm = request => {
   return f;
 };
 
-const createContactSchema = () => Joi.object().keys({
+const updateContactNameSchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   title: Joi.string().trim().optional().allow(''),
   firstName: Joi.string().trim().required(),
@@ -55,5 +55,5 @@ const createContactSchema = () => Joi.object().keys({
   suffix: Joi.string().trim().optional().allow('')
 });
 
-exports.schema = createContactSchema;
-exports.form = createContactForm;
+exports.schema = updateContactNameSchema;
+exports.form = updateContactNameForm;

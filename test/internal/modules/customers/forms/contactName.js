@@ -5,7 +5,7 @@ const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
 const sandbox = require('sinon').createSandbox();
 
-const createContact = require('internal/modules/customers/forms/contact');
+const createContact = require('internal/modules/customers/forms/contactName');
 const { findField, findButton } = require('../../../../lib/form-test');
 const session = require('../../../../../src/internal/modules/customers/session.js');
 
@@ -15,11 +15,11 @@ const createRequest = () => ({
   }
 });
 
-experiment('internal/modules/customers/forms/contact', () => {
+experiment('internal/modules/customers/forms/contactName', () => {
   let request;
   beforeEach(() => {
     const contactFromDatabase = {
-      title: 'Lance Corporal',
+      salutation: 'Lance Corporal',
       firstName: 'Valtteri',
       lastName: 'Bottas'
     };

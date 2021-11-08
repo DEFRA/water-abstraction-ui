@@ -122,11 +122,12 @@ const decorateChargeVersion = chargeVersionWorkflow => {
 const getChargeVersionWorkflow = async id =>
   services.water.chargeVersionWorkflows.getChargeVersionWorkflow(id);
 
+const chargeVersionWorkflowsOrder = ['licence.startDate'];
 const loadChargeVersionWorkflows = async request => {
-  const { page = 1, perPage = 11, tabFilter = 'to_setup' } = request.query;
+  const { paget1 = 1, perPage = 10, tabFilter = 'to_setup' } = request.query;
   try {
-    const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(page, perPage, tabFilter);
-    const workflowdata = sortBy(workflows.data, ['licence.startDate']);
+    const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(paget1, perPage, tabFilter);
+    const workflowdata = sortBy(workflows.data, chargeVersionWorkflowsOrder);
     const pagination = workflows.pagination;
     return {
       data: workflowdata,
@@ -138,20 +139,20 @@ const loadChargeVersionWorkflows = async request => {
 };
 
 const loadChargeVersionWorkflowsReview = async request => {
-  const { page = 1, perPage = 11, tabFilter = 'review' } = request.query;
+  const { paget2 = 1, perPage = 10, tabFilter = 'review' } = request.query;
   try {
-    const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(page, perPage, tabFilter);
-    return sortBy(workflows.data, ['licence.startDate']);
+    const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(paget2, perPage, tabFilter);
+    return sortBy(workflows.data, chargeVersionWorkflowsOrder);
   } catch (err) {
     return errorHandler(err, `Could not retrieve charge version workflows.`);
   }
 };
 
 const loadChargeVersionWorkflowsChangeRequest = async request => {
-  const { page = 1, perPage = 11, tabFilter = 'changes_requested' } = request.query;
+  const { paget3 = 1, perPage = 10, tabFilter = 'changes_requested' } = request.query;
   try {
-    const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(page, perPage, tabFilter);
-    return sortBy(workflows.data, ['licence.startDate']);
+    const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(paget3, perPage, tabFilter);
+    return sortBy(workflows.data, chargeVersionWorkflowsOrder);
   } catch (err) {
     return errorHandler(err, `Could not retrieve charge version workflows.`);
   }

@@ -1,5 +1,30 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "paginate.njk" import paginate %}
+{% macro paginate(pagination, path, params, tabPage, tabNumber) %}
+
+  {% set next %}{{ path }}?{{ params | merge({ page : (pagination.page | int)+1}) | queryString | safe | replace("page=", "paget"+tabNumber+"=") }}{{tabPage}}{% endset %}
+  {% set previous %}{{ path }}?{{ params | merge({ page : pagination.page-1}) | queryString | safe | replace("page=", "paget"+tabNumber+"=") }}{{tabPage}}{% endset %}
+
+Params etc:
+  {{params}}
+
+  {{pagination | dump}}
+
+  {% if pagination.pageCount > 1 %}
+  <nav class="pagination">
+    <h3 class="govuk-visually-hidden">Pagination menu</h3>
+    <p class="pagination__current-page">Page {{ pagination.page }} of {{ pagination.pageCount }}</p>
+    <ul class="pagination__list">
+      {% if pagination.page > 1 %}
+      <li class="pagination__previous"><a class="pagination__link" href="{{ previous }}">&#8592; Previous page</a></li>
+      {% endif %}
+      {% if pagination.page < pagination.pageCount %}
+      <li class="pagination__next"><a class="pagination__link" href="{{ next }}">Next page &#8594;</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+{% endmacro %}
+
 {% from "govuk/components/tabs/macro.njk" import govukTabs %}
 {% block content %}
   <div class="govuk-grid-row">
@@ -22,13 +47,15 @@
 
         <section class="govuk-tabs__panel" id="toSetUp">
           {% include "nunjucks/charge-information/workflow-tabs/to-set-up.njk" %}
-          {{ paginate(licencesCounts.pagination, paginationUrl) }}
+          {{ paginate(licencesCounts.paginationt1, paginationUrl,'' ,'#toSetUp', '1') }}
         </section>
         <section class="govuk-tabs__panel" id="review">
           {% include "nunjucks/charge-information/workflow-tabs/review.njk" %}
+          {{ paginate(licencesCounts.paginationt2, paginationReviewUrl, '', '#review', '2') }}
         </section>
         <section class="govuk-tabs__panel" id="changeRequest">
           {% include "nunjucks/charge-information/workflow-tabs/change-request.njk" %}
+          {{ paginate(licencesCounts.paginationt3, paginationChangeRequestUrl, '', '#changeRequest', '3') }}
         </section>
       </div>
     </div>

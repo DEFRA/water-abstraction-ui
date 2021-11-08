@@ -15,15 +15,20 @@ const getChargeVersionWorkflowsForTabs = workflows => ({
 });
 
 const getChargeInformationWorkflow = async (request, h) => {
-  let { toSetUp } = getChargeVersionWorkflowsForTabs(request.pre.chargeInformationWorkflows.data);
-  let { page, perPage } = request.query;
+  const { toSetUp } = getChargeVersionWorkflowsForTabs(request.pre.chargeInformationWorkflows.data);
+  const { paget1, paget2, paget3, perPage } = request.query;
   const { review } = getChargeVersionWorkflowsForTabs(request.pre.chargeInformationWorkflowsReview);
   const { changeRequest } = getChargeVersionWorkflowsForTabs(request.pre.chargeInformationWorkflowsChangeRequest);
-  let pagination = request.pre.chargeInformationWorkflows.pagination ? request.pre.chargeInformationWorkflows.pagination : { perPage, pageCount: 1, totalRows: perPage };
-  pagination.page = page || 1;
-  pagination.perPage = pagination.perPage || perPage;
-  pagination.pageCount = pagination.pageCount || 1;
-  pagination.totalRows = pagination.totalRows || perPage;
+  const paginationt1 = request.pre.chargeInformationWorkflows.pagination ? request.pre.chargeInformationWorkflows.pagination : { perPage, pageCount: 1, totalRows: perPage };
+  const paginationt2 = request.pre.chargeInformationWorkflowsReview.pagination ? request.pre.chargeInformationWorkflowsReview.pagination : { perPage, pageCount: 1, totalRows: perPage };
+  const paginationt3 = request.pre.chargeInformationWorkflowsChangeRequest.pagination ? request.pre.chargeInformationWorkflowsChangeRequest.pagination : { perPage, pageCount: 1, totalRows: perPage };
+
+  paginationt1.page = paget1 || 1;
+  paginationt2.page = paget2 || 1;
+  paginationt3.page = paget3 || 1;
+
+  paginationt2.totalRows = review.length;
+  paginationt3.totalRows = changeRequest.length;
 
   const view = {
     back: '/manage',
@@ -31,15 +36,20 @@ const getChargeInformationWorkflow = async (request, h) => {
     pageTitle: 'Charge information workflow',
     licences: { changeRequest, toSetUp, review: sortBy(review, ['chargeVersion.dateRange.startDate']) },
     licencesCounts: {
-      pagination,
-      toSetUp: pagination.totalRows,
-      review: review.length,
-      changeRequest: changeRequest.length
+      paginationt1,
+      paginationt2,
+      paginationt3,
+      toSetUp: paginationt1.totalRows,
+      review: paginationt2.totalRows,
+      changeRequest: paginationt3.totalRows
     },
     isReviewer: hasScope(request, chargeVersionWorkflowReviewer)
   };
 
   view.paginationUrl = `/charge-information-workflow`;
+  view.paginationReviewUrl = `/charge-information-workflow`;
+  view.paginationChangeRequestUrl = `/charge-information-workflow`;
+
   return h.view('nunjucks/charge-information/workflow', view);
 };
 

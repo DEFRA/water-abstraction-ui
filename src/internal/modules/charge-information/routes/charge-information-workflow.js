@@ -22,7 +22,9 @@ module.exports = {
       },
       validate: {
         query: Joi.object().keys({
-          page: Joi.number().integer().min(1).default(1),
+          paget1: Joi.number().integer().min(1).default(1),
+          paget2: Joi.number().integer().min(1).default(1),
+          paget3: Joi.number().integer().min(1).default(1),
           perPage: Joi.number().integer().min(1).default(100),
           tabFilter: Joi.string().optional()
         })

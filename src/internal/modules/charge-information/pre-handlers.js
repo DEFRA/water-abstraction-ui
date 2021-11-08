@@ -123,6 +123,7 @@ const getChargeVersionWorkflow = async id =>
   services.water.chargeVersionWorkflows.getChargeVersionWorkflow(id);
 
 const chargeVersionWorkflowsOrder = ['licence.startDate'];
+
 const loadChargeVersionWorkflows = async request => {
   const { paget1 = 1, perPage = 10, tabFilter = 'to_setup' } = request.query;
   try {
@@ -134,7 +135,7 @@ const loadChargeVersionWorkflows = async request => {
       pagination
     };
   } catch (err) {
-    return errorHandler(err, `Could not retrieve charge version workflows.`);
+    return errorHandler(err, `Could not retrieve charge version workflows tab setup.`);
   }
 };
 
@@ -142,9 +143,14 @@ const loadChargeVersionWorkflowsReview = async request => {
   const { paget2 = 1, perPage = 10, tabFilter = 'review' } = request.query;
   try {
     const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(paget2, perPage, tabFilter);
-    return sortBy(workflows.data, chargeVersionWorkflowsOrder);
+    const workflowdata = sortBy(workflows.data, chargeVersionWorkflowsOrder);
+    const pagination = workflows.pagination;
+    return {
+      data: workflowdata,
+      pagination
+    };
   } catch (err) {
-    return errorHandler(err, `Could not retrieve charge version workflows.`);
+    return errorHandler(err, `Could not retrieve charge version workflows tab review.`);
   }
 };
 
@@ -152,9 +158,14 @@ const loadChargeVersionWorkflowsChangeRequest = async request => {
   const { paget3 = 1, perPage = 10, tabFilter = 'changes_requested' } = request.query;
   try {
     const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(paget3, perPage, tabFilter);
-    return sortBy(workflows.data, chargeVersionWorkflowsOrder);
+    const workflowdata = sortBy(workflows.data, chargeVersionWorkflowsOrder);
+    const pagination = workflows.pagination;
+    return {
+      data: workflowdata,
+      pagination
+    };
   } catch (err) {
-    return errorHandler(err, `Could not retrieve charge version workflows.`);
+    return errorHandler(err, `Could not retrieve charge version workflows tab changes requested.`);
   }
 };
 

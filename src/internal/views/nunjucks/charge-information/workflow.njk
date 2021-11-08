@@ -4,11 +4,6 @@
   {% set next %}{{ path }}?{{ params | merge({ page : (pagination.page | int)+1}) | queryString | safe | replace("page=", "paget"+tabNumber+"=") }}{{tabPage}}{% endset %}
   {% set previous %}{{ path }}?{{ params | merge({ page : pagination.page-1}) | queryString | safe | replace("page=", "paget"+tabNumber+"=") }}{{tabPage}}{% endset %}
 
-Params etc:
-  {{params}}
-
-  {{pagination | dump}}
-
   {% if pagination.pageCount > 1 %}
   <nav class="pagination">
     <h3 class="govuk-visually-hidden">Pagination menu</h3>

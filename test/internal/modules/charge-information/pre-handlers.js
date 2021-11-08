@@ -306,7 +306,7 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
         expect(services.water.chargeVersionWorkflows.getChargeVersionWorkflows.called).to.be.true();
       });
       test('returns an error', async () => {
-        expect(result.message).to.equal('Could not retrieve charge version workflows.');
+        expect(result.message).to.equal('Could not retrieve charge version workflows tab setup.');
       });
     });
   });

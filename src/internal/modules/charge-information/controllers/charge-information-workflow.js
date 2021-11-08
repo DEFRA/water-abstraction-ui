@@ -15,20 +15,17 @@ const getChargeVersionWorkflowsForTabs = workflows => ({
 });
 
 const getChargeInformationWorkflow = async (request, h) => {
-  const { toSetUp } = getChargeVersionWorkflowsForTabs(request.pre.chargeInformationWorkflows.data);
   const { paget1, paget2, paget3, perPage } = request.query;
-  const { review } = getChargeVersionWorkflowsForTabs(request.pre.chargeInformationWorkflowsReview);
-  const { changeRequest } = getChargeVersionWorkflowsForTabs(request.pre.chargeInformationWorkflowsChangeRequest);
-  const paginationt1 = request.pre.chargeInformationWorkflows.pagination ? request.pre.chargeInformationWorkflows.pagination : { perPage, pageCount: 1, totalRows: perPage };
-  const paginationt2 = request.pre.chargeInformationWorkflowsReview.pagination ? request.pre.chargeInformationWorkflowsReview.pagination : { perPage, pageCount: 1, totalRows: perPage };
-  const paginationt3 = request.pre.chargeInformationWorkflowsChangeRequest.pagination ? request.pre.chargeInformationWorkflowsChangeRequest.pagination : { perPage, pageCount: 1, totalRows: perPage };
+  const { toSetUp } = getChargeVersionWorkflowsForTabs(request.pre.chargeInformationWorkflows.data);
+  const { review } = getChargeVersionWorkflowsForTabs(request.pre.chargeInformationWorkflowsReview.data);
+  const { changeRequest } = getChargeVersionWorkflowsForTabs(request.pre.chargeInformationWorkflowsChangeRequest.data);
+  const paginationt1 = request.pre.chargeInformationWorkflows.pagination ? request.pre.chargeInformationWorkflows.pagination : { perPage, pageCount: 1, totalRows: toSetUp.length };
+  const paginationt2 = request.pre.chargeInformationWorkflowsReview.pagination ? request.pre.chargeInformationWorkflowsReview.pagination : { perPage, pageCount: 1, totalRows: review.length };
+  const paginationt3 = request.pre.chargeInformationWorkflowsChangeRequest.pagination ? request.pre.chargeInformationWorkflowsChangeRequest.pagination : { perPage, pageCount: 1, totalRows: changeRequest.length };
 
   paginationt1.page = paget1 || 1;
   paginationt2.page = paget2 || 1;
   paginationt3.page = paget3 || 1;
-
-  paginationt2.totalRows = review.length;
-  paginationt3.totalRows = changeRequest.length;
 
   const view = {
     back: '/manage',

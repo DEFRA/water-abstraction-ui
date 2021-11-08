@@ -11,11 +11,7 @@
     {% for contact in contacts %}
       <tr class="govuk-table__row">
         <td class="govuk-table__cell" scope="row">
-        {% if contact.contact.type == 'department' %}
-            {{contact.contact.department}}
-        {% else %}
             {{contact.contact.fullName}}
-        {% endif %}
         </td>
         <td class="govuk-table__cell" scope="row">
             {{contact.contact.email}}

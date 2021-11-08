@@ -57,7 +57,7 @@ const getCustomerContact = async (request, h) => {
   const company = await services.water.companies.getCompany(companyId);
   const { data: companyContacts } = await services.water.companies.getContacts(companyId);
   const companyContact = companyContacts.find(row => row.contact.id === contactId);
-  const contactName = helpers.parseContactName(companyContact.contact);
+  const contactName = companyContact.contact.fullName;
 
   return h.view('nunjucks/customers/contact.njk', {
     ...request.view,
@@ -160,7 +160,7 @@ const getAddCustomerContactEmail = async (request, h) => {
   const caption = company.name;
   const { data: companyContacts } = await services.water.companies.getContacts(companyId);
   const companyContact = companyContacts.find(row => row.contact.id === contactId);
-  const contactName = helpers.parseContactName(companyContact.contact);
+  const contactName = companyContact.contact.fullName;
 
   session.merge(request, {
     waterAbstractionAlertsEnabledValueFromDatabase: companyContact.waterAbstractionAlertsEnabled,
@@ -198,7 +198,7 @@ const postAddCustomerContactEmail = async (request, h) => {
   if (isNew) {
     return h.view('nunjucks/customers/contact-added.njk', {
       ...request.view,
-      contactName: helpers.parseContactName(companyContact.contact),
+      contactName: companyContact.contact.fullName,
       contactId: contactId,
       company
     });
@@ -213,7 +213,7 @@ const getUpdateCustomerWaterAbstractionAlertsPreferences = async (request, h) =>
   const caption = company.name;
   const { data: companyContacts } = await services.water.companies.getContacts(companyId);
   const companyContact = companyContacts.find(row => row.contact.id === contactId);
-  const contactName = helpers.parseContactName(companyContact.contact);
+  const contactName = companyContact.contact.fullName;
 
   session.merge(request, {
     waterAbstractionAlertsEnabledValueFromDatabase: companyContact.waterAbstractionAlertsEnabled

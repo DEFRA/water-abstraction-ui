@@ -27,9 +27,9 @@ const createRequest = () => ({
   },
   query: {},
   pre: {
-    chargeInformationWorkflows: { data: Object.values({ status: 'to_setup' }) },
-    chargeInformationWorkflowsReview: { data: Object.values({ status: 'review' }) },
-    chargeInformationWorkflowsChangeRequest: { data: Object.values({ status: 'changes_requested' }) },
+    chargeInformationWorkflows: { data: [{ status: 'to_setup' }, { status: 'to_setup' }, { status: 'to_setup' }] },
+    chargeInformationWorkflowsReview: { data: [{ status: 'review' }, { status: 'review' }] },
+    chargeInformationWorkflowsChangeRequest: { data: [{ status: 'changes_requested' }] },
     chargeInformationWorkflow: {
       licence: { foo: 'bar' },
       licenceHolderRole: { bar: 'baz' }
@@ -61,7 +61,7 @@ experiment('internal/modules/charge-information/controller', () => {
   experiment('.getChargeInformationWorkflow', () => {
     beforeEach(async () => {
       request = createRequest();
-      request.query = { isChargeable: true, page: 1, perPage: 10, tabFilter: 'to_setup' };
+      request.query = { isChargeable: true, page: 1, perPage: 2, tabFilter: 'to_setup' };
       await controller.getChargeInformationWorkflow(request, h);
     });
 
@@ -99,18 +99,18 @@ experiment('internal/modules/charge-information/controller', () => {
       const { licencesCounts } = h.view.lastCall.args[1];
       const { paginationt1 } = licencesCounts;
       const { perPage, pageCount, totalRows, page } = paginationt1;
-      expect(perPage).to.equal(10);
+      expect(perPage).to.equal(2);
       expect(pageCount).to.equal(1);
-      expect(totalRows).to.equal(0);
+      expect(totalRows).to.equal(3);
       expect(page).to.equal(1);
     });
 
     test('uses correct labels for tabs', async () => {
       const { licencesCounts } = h.view.lastCall.args[1];
       const { toSetUp, review, changeRequest } = licencesCounts;
-      expect(toSetUp).to.equal(0);
-      expect(review).to.equal(0);
-      expect(changeRequest).to.equal(0);
+      expect(toSetUp).to.equal(3);
+      expect(review).to.equal(2);
+      expect(changeRequest).to.equal(1);
     });
   });
 
@@ -132,7 +132,7 @@ experiment('internal/modules/charge-information/controller', () => {
       const { perPage, pageCount, totalRows, page } = paginationt2;
       expect(perPage).to.equal(10);
       expect(pageCount).to.equal(1);
-      expect(totalRows).to.equal(0);
+      expect(totalRows).to.equal(2);
       expect(page).to.equal(1);
     });
   });
@@ -155,7 +155,7 @@ experiment('internal/modules/charge-information/controller', () => {
       const { perPage, pageCount, totalRows, page } = paginationt3;
       expect(perPage).to.equal(10);
       expect(pageCount).to.equal(1);
-      expect(totalRows).to.equal(0);
+      expect(totalRows).to.equal(1);
       expect(page).to.equal(1);
     });
   });

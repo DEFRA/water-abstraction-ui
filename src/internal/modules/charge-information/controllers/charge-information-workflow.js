@@ -19,9 +19,13 @@ const getChargeInformationWorkflow = async (request, h) => {
   const { toSetUp } = getChargeVersionWorkflowsForTabs(request.pre.chargeInformationWorkflows.data);
   const { review } = getChargeVersionWorkflowsForTabs(request.pre.chargeInformationWorkflowsReview.data);
   const { changeRequest } = getChargeVersionWorkflowsForTabs(request.pre.chargeInformationWorkflowsChangeRequest.data);
-  const paginationt1 = request.pre.chargeInformationWorkflows.pagination ? request.pre.chargeInformationWorkflows.pagination : { perPage, pageCount: 1, totalRows: toSetUp.length };
-  const paginationt2 = request.pre.chargeInformationWorkflowsReview.pagination ? request.pre.chargeInformationWorkflowsReview.pagination : { perPage, pageCount: 1, totalRows: review.length };
-  const paginationt3 = request.pre.chargeInformationWorkflowsChangeRequest.pagination ? request.pre.chargeInformationWorkflowsChangeRequest.pagination : { perPage, pageCount: 1, totalRows: changeRequest.length };
+  let paginationt1 = request.pre.chargeInformationWorkflows.pagination;
+  let paginationt2 = request.pre.chargeInformationWorkflowsReview.pagination;
+  let paginationt3 = request.pre.chargeInformationWorkflowsChangeRequest.pagination;
+
+  paginationt1 = paginationt1 || { perPage, pageCount: 1, totalRows: toSetUp.length };
+  paginationt2 = paginationt2 || { perPage, pageCount: 1, totalRows: review.length };
+  paginationt3 = paginationt3 || { perPage, pageCount: 1, totalRows: changeRequest.length };
 
   paginationt1.page = paget1 || 1;
   paginationt2.page = paget2 || 1;

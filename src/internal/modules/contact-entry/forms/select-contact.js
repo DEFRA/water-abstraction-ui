@@ -4,7 +4,6 @@ const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const { CONTACT_TYPES } = require('../lib/constants');
 const helpers = require('../lib/helpers');
-const { mapContactToString } = require('shared/lib/mappers/contact');
 
 const hasExistingContacts = contacts => contacts.length > 0;
 
@@ -41,7 +40,7 @@ const getNewContactChoices = (contacts, contactData) => {
 
 const getContactList = contacts => contacts.map(contact => ({
   value: contact.id,
-  label: mapContactToString(contact)
+  label: contact.fullName
 }));
 
 const getContactChoices = (contacts, contactData) => {

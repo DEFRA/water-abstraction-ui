@@ -9,7 +9,6 @@ const sandbox = sinon.createSandbox();
 const { expect } = require('@hapi/code');
 
 const controllers = require('../../../../src/internal/modules/customers/controllers');
-const helpers = require('../../../../src/internal/modules/customers/helpers');
 const session = require('../../../../src/internal/modules/customers/session.js');
 const formHandler = require('../../../../src/shared/lib/form-handler');
 const services = require('../../../../src/internal/lib/connectors/services');
@@ -147,7 +146,6 @@ experiment('internal/modules/customers/controllers', () => {
     };
 
     beforeEach(async () => {
-      sandbox.stub(helpers, 'parseContactName').resolves(CONTACT_OBJECT);
       await controllers.getCustomerContact(request, h);
     });
 
@@ -156,9 +154,6 @@ experiment('internal/modules/customers/controllers', () => {
     });
     test('calls the service method for fetching the company contacts', async () => {
       expect(services.water.companies.getContacts.calledWith(request.params.companyId)).to.be.true();
-    });
-    test('calls the helper method for parsing a contact display name', async () => {
-      expect(helpers.parseContactName.calledWith(CONTACT_OBJECT)).to.be.true();
     });
   });
 
@@ -180,7 +175,6 @@ experiment('internal/modules/customers/controllers', () => {
     };
 
     beforeEach(async () => {
-      sandbox.stub(helpers, 'parseContactName').resolves(CONTACT_OBJECT);
       await controllers.getUpdateCustomerContactName(request, h);
     });
 
@@ -289,7 +283,6 @@ experiment('internal/modules/customers/controllers', () => {
     };
 
     beforeEach(async () => {
-      sandbox.stub(helpers, 'parseContactName').resolves(CONTACT_OBJECT);
       await controllers.getAddCustomerContactEmail(request, h);
     });
 
@@ -298,9 +291,6 @@ experiment('internal/modules/customers/controllers', () => {
     });
     test('calls the service method for fetching the company contacts', async () => {
       expect(services.water.companies.getContacts.calledWith(request.params.companyId)).to.be.true();
-    });
-    test('calls the helper method for parsing a contact display name', async () => {
-      expect(helpers.parseContactName.calledWith(CONTACT_OBJECT)).to.be.true();
     });
     test('calls session.merge to store waterAbstractionAlertsEnabled and email', () => {
       const { args } = session.merge.lastCall;
@@ -497,7 +487,6 @@ experiment('internal/modules/customers/controllers', () => {
     };
 
     beforeEach(async () => {
-      sandbox.stub(helpers, 'parseContactName').resolves(CONTACT_OBJECT);
       await controllers.getUpdateCustomerWaterAbstractionAlertsPreferences(request, h);
     });
 
@@ -506,9 +495,6 @@ experiment('internal/modules/customers/controllers', () => {
     });
     test('calls the service method for fetching the company contacts', async () => {
       expect(services.water.companies.getContacts.calledWith(request.params.companyId)).to.be.true();
-    });
-    test('calls the helper method for parsing a contact display name', async () => {
-      expect(helpers.parseContactName.calledWith(CONTACT_OBJECT)).to.be.true();
     });
     test('calls session.merge to store waterAbstractionAlertsEnabled and email', () => {
       const { args } = session.merge.lastCall;

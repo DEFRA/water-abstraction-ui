@@ -8,6 +8,8 @@ const findField = (form, query) => {
   return find(form.fields, query);
 };
 const findButton = form => findField(form, field => get(field, 'options.widget') === 'button');
+const findWarningText = form => findField(form, field => get(field, 'options.widget') === 'warning-text');
 
 exports.findField = findField;
 exports.findButton = findButton;
+exports.findWarningText = findWarningText;

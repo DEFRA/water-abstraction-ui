@@ -27,7 +27,10 @@
 </table>
 
 {% if hasPermissionToManageContacts %}
-    <a href="/customer/{{company.id}}/contacts/new" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
-      Set up a new contact
+    <a href="/customer/{{company.id}}/contacts/new" role="button" draggable="false" class="govuk-button govuk-!-margin-right-3" data-module="govuk-button">
+        Set up a new contact
+    </a>
+    <a href="/customer/{{company.id}}/contacts/remove" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+        Remove a contact
     </a>
 {% endif %}

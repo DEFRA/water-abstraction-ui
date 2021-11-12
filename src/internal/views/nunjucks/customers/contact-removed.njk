@@ -1,0 +1,25 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "forms/index.njk" import formRender %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+
+      <div class="govuk-grid-column-full">
+
+          {{ govukPanel({
+              titleText: "Contact removed",
+              html: confirmationMessage
+          }) }}
+
+          <p class="govuk-body">
+            <a href="/customer/{{companyId}}#contacts">
+              Go to contacts
+            </a>
+          </p>
+        </div>
+
+  </div>
+
+{% endblock %}

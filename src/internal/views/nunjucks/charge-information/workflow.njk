@@ -1,8 +1,8 @@
 {% extends "./nunjucks/layout.njk" %}
-{% macro paginate(pagination, path, params, tabPage, tabNumber) %}
+{% macro paginate(pagination, tabLink) %}
 
-  {% set next %}{{ path }}?{{ params | merge({ page : (pagination.page | int)+1}) | queryString | safe | replace("page=", "paget"+tabNumber+"=") }}{{tabPage}}{% endset %}
-  {% set previous %}{{ path }}?{{ params | merge({ page : pagination.page-1}) | queryString | safe | replace("page=", "paget"+tabNumber+"=") }}{{tabPage}}{% endset %}
+  {% set next %}/charge-information-workflow?{{ pagination.next | queryString | safe }}{{tabLink}}{% endset %}
+  {% set previous %}/charge-information-workflow?{{ pagination.previous | queryString | safe }}{{tabLink}}{% endset %}
 
   {% if pagination.pageCount > 1 %}
   <nav class="pagination">
@@ -42,15 +42,15 @@
 
         <section class="govuk-tabs__panel" id="toSetUp">
           {% include "nunjucks/charge-information/workflow-tabs/to-set-up.njk" %}
-          {{ paginate(licencesCounts.paginationt1, paginationUrl,'' ,'#toSetUp', '1') }}
+          {{ paginate(licences.toSetUp.pagination, '#toSetUp') }}
         </section>
         <section class="govuk-tabs__panel" id="review">
           {% include "nunjucks/charge-information/workflow-tabs/review.njk" %}
-          {{ paginate(licencesCounts.paginationt2, paginationReviewUrl, '', '#review', '2') }}
+          {{ paginate(licences.review.pagination, '#review') }}
         </section>
         <section class="govuk-tabs__panel" id="changeRequest">
           {% include "nunjucks/charge-information/workflow-tabs/change-request.njk" %}
-          {{ paginate(licencesCounts.paginationt3, paginationChangeRequestUrl, '', '#changeRequest', '3') }}
+          {{ paginate(licences.changeRequest.pagination, '#changeRequest') }}
         </section>
       </div>
     </div>

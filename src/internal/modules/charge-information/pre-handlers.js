@@ -125,14 +125,17 @@ const getChargeVersionWorkflow = async id =>
 const chargeVersionWorkflowsOrder = ['licence.startDate'];
 
 const loadChargeVersionWorkflows = async request => {
-  const { paget1 = 1, perPage = 10, tabFilter = 'to_setup' } = request.query;
+  const { toSetupPageNumber, reviewPageNumber, changeRequestPageNumber } = request.query;
   try {
-    const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(paget1, perPage, tabFilter);
-    const workflowdata = sortBy(workflows.data, chargeVersionWorkflowsOrder);
-    const pagination = workflows.pagination;
+    const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(toSetupPageNumber, 100, 'to_setup');
     return {
-      data: workflowdata,
-      pagination
+      data: sortBy(workflows.data, chargeVersionWorkflowsOrder),
+      pagination: {
+        ...workflows.pagination,
+        page: toSetupPageNumber,
+        next: { toSetupPageNumber: toSetupPageNumber + 1, reviewPageNumber, changeRequestPageNumber },
+        previous: { toSetupPageNumber: toSetupPageNumber - 1, reviewPageNumber, changeRequestPageNumber }
+      }
     };
   } catch (err) {
     return errorHandler(err, `Could not retrieve charge version workflows tab setup.`);
@@ -140,14 +143,17 @@ const loadChargeVersionWorkflows = async request => {
 };
 
 const loadChargeVersionWorkflowsReview = async request => {
-  const { paget2 = 1, perPage = 10, tabFilter = 'review' } = request.query;
+  const { reviewPageNumber, toSetupPageNumber, changeRequestPageNumber } = request.query;
   try {
-    const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(paget2, perPage, tabFilter);
-    const workflowdata = sortBy(workflows.data, chargeVersionWorkflowsOrder);
-    const pagination = workflows.pagination;
+    const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(reviewPageNumber, 100, 'review');
     return {
-      data: workflowdata,
-      pagination
+      data: sortBy(workflows.data, chargeVersionWorkflowsOrder),
+      pagination: {
+        ...workflows.pagination,
+        page: reviewPageNumber,
+        next: { reviewPageNumber: reviewPageNumber + 1, toSetupPageNumber, changeRequestPageNumber },
+        previous: { reviewPageNumber: reviewPageNumber - 1, toSetupPageNumber, changeRequestPageNumber }
+      }
     };
   } catch (err) {
     return errorHandler(err, `Could not retrieve charge version workflows tab review.`);
@@ -155,14 +161,17 @@ const loadChargeVersionWorkflowsReview = async request => {
 };
 
 const loadChargeVersionWorkflowsChangeRequest = async request => {
-  const { paget3 = 1, perPage = 10, tabFilter = 'changes_requested' } = request.query;
+  const { changeRequestPageNumber, toSetupPageNumber, reviewPageNumber } = request.query;
   try {
-    const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(paget3, perPage, tabFilter);
-    const workflowdata = sortBy(workflows.data, chargeVersionWorkflowsOrder);
-    const pagination = workflows.pagination;
+    const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(changeRequestPageNumber, 100, 'changes_requested');
     return {
-      data: workflowdata,
-      pagination
+      data: sortBy(workflows.data, chargeVersionWorkflowsOrder),
+      pagination: {
+        ...workflows.pagination,
+        page: changeRequestPageNumber,
+        next: { changeRequestPageNumber: changeRequestPageNumber + 1, toSetupPageNumber, reviewPageNumber },
+        previous: { changeRequestPageNumber: changeRequestPageNumber - 1, toSetupPageNumber, reviewPageNumber }
+      }
     };
   } catch (err) {
     return errorHandler(err, `Could not retrieve charge version workflows tab changes requested.`);

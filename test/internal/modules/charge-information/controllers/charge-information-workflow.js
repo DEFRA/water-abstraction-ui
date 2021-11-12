@@ -27,9 +27,9 @@ const createRequest = () => ({
   },
   query: {},
   pre: {
-    chargeInformationWorkflows: { data: [{ status: 'to_setup' }, { status: 'to_setup' }, { status: 'to_setup' }] },
-    chargeInformationWorkflowsReview: { data: [{ status: 'review' }, { status: 'review' }] },
-    chargeInformationWorkflowsChangeRequest: { data: [{ status: 'changes_requested' }] },
+    chargeInformationWorkflows: { data: [{ status: 'to_setup' }, { status: 'to_setup' }, { status: 'to_setup' }], pagination: { totalRows: 1 } },
+    chargeInformationWorkflowsReview: { data: [{ status: 'review' }, { status: 'review' }], pagination: { totalRows: 1 } },
+    chargeInformationWorkflowsChangeRequest: { data: [{ status: 'changes_requested' }], pagination: { totalRows: 1 } },
     chargeInformationWorkflow: {
       licence: { foo: 'bar' },
       licenceHolderRole: { bar: 'baz' }
@@ -61,7 +61,7 @@ experiment('internal/modules/charge-information/controller', () => {
   experiment('.getChargeInformationWorkflow', () => {
     beforeEach(async () => {
       request = createRequest();
-      request.query = { isChargeable: true, page: 1, perPage: 2, tabFilter: 'to_setup' };
+      request.query = { toSetupPageNumber: 1 };
       await controller.getChargeInformationWorkflow(request, h);
     });
 
@@ -95,21 +95,11 @@ experiment('internal/modules/charge-information/controller', () => {
       expect(isReviewer).to.be.a.boolean();
     });
 
-    test('uses correct paging information for tab1', async () => {
-      const { licencesCounts } = h.view.lastCall.args[1];
-      const { paginationt1 } = licencesCounts;
-      const { perPage, pageCount, totalRows, page } = paginationt1;
-      expect(perPage).to.equal(2);
-      expect(pageCount).to.equal(1);
-      expect(totalRows).to.equal(3);
-      expect(page).to.equal(1);
-    });
-
     test('uses correct labels for tabs', async () => {
       const { licencesCounts } = h.view.lastCall.args[1];
       const { toSetUp, review, changeRequest } = licencesCounts;
-      expect(toSetUp).to.equal(3);
-      expect(review).to.equal(2);
+      expect(toSetUp).to.equal(1);
+      expect(review).to.equal(1);
       expect(changeRequest).to.equal(1);
     });
   });
@@ -125,16 +115,6 @@ experiment('internal/modules/charge-information/controller', () => {
       const [template] = h.view.lastCall.args;
       expect(template).to.equal('nunjucks/charge-information/workflow');
     });
-
-    test('uses correct paging information for tab2', async () => {
-      const { licencesCounts } = h.view.lastCall.args[1];
-      const { paginationt2 } = licencesCounts;
-      const { perPage, pageCount, totalRows, page } = paginationt2;
-      expect(perPage).to.equal(10);
-      expect(pageCount).to.equal(1);
-      expect(totalRows).to.equal(2);
-      expect(page).to.equal(1);
-    });
   });
 
   experiment('.getChargeInformationWorkflowChangeRequested', () => {
@@ -147,16 +127,6 @@ experiment('internal/modules/charge-information/controller', () => {
     test('uses the correct template', async () => {
       const [template] = h.view.lastCall.args;
       expect(template).to.equal('nunjucks/charge-information/workflow');
-    });
-
-    test('uses correct paging information for tab2', async () => {
-      const { licencesCounts } = h.view.lastCall.args[1];
-      const { paginationt3 } = licencesCounts;
-      const { perPage, pageCount, totalRows, page } = paginationt3;
-      expect(perPage).to.equal(10);
-      expect(pageCount).to.equal(1);
-      expect(totalRows).to.equal(1);
-      expect(page).to.equal(1);
     });
   });
 

@@ -8,6 +8,7 @@
 {% from "./search.njk" import formSearchWidget %}
 {% from "./file.njk" import formFileWidget %}
 {% from "./link.njk" import formLinkWidget %}
+{% from "./warning-text.njk" import formWarningTextWidget %}
 
 {% macro formWidget(field, form) %}
 
@@ -27,6 +28,9 @@
   {% endif %}
   {% if widget=='paragraph' %}
     {{ formParagraphWidget(field) }}
+  {% endif %}
+  {% if widget=='warning-text' %}
+    {{ formWarningTextWidget(field) }}
   {% endif %}
   {% if widget=='checkbox' %}
     {{ formCheckboxWidget(field) }}

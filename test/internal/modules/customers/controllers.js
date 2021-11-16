@@ -220,7 +220,7 @@ experiment('internal/modules/customers/controllers', () => {
     const title = 'Sir';
     const firstName = 'Fred';
     const lastName = 'Flintstone';
-    const department = undefined;
+    const department = null;
 
     const request = {
       path: `http://defra.wrls/customers/123/contacts/456/name`,

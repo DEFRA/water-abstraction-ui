@@ -9,7 +9,9 @@ const returnStatuses = {
 
 const crmRoles = {
   licenceHolder: 'licenceHolder',
-  returnsTo: 'returnsTo'
+  returnsTo: 'returnsTo',
+  billing: 'billing',
+  additionalContact: 'additionalContact'
 };
 
 const transactionStatuses = {

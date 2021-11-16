@@ -24,6 +24,7 @@ experiment('services/water/CompaniesService', () => {
     sandbox.stub(serviceRequest, 'get');
     sandbox.stub(serviceRequest, 'patch');
     sandbox.stub(serviceRequest, 'post');
+    sandbox.stub(serviceRequest, 'delete');
     service = new CompaniesService(BASE_URL);
   });
 
@@ -76,6 +77,15 @@ experiment('services/water/CompaniesService', () => {
       await service.patchCompanyContact('entity_1', 'entity_2', { some: 'payload' });
       const expectedUrl = `${BASE_URL}/companies/entity_1/contacts/entity_2`;
       const [url] = serviceRequest.patch.lastCall.args;
+      expect(url).to.equal(expectedUrl);
+    });
+  });
+
+  experiment('.deleteCompanyContact', () => {
+    test('passes the expected URL to the service request', async () => {
+      await service.deleteCompanyContact('entity_1', 'entity_2');
+      const expectedUrl = `${BASE_URL}/companies/entity_1/contacts/entity_2`;
+      const [url] = serviceRequest.delete.lastCall.args;
       expect(url).to.equal(expectedUrl);
     });
   });

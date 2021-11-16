@@ -7,6 +7,7 @@ const forms = require('./forms');
 const formsHelper = require('shared/lib/forms');
 const formHandler = require('shared/lib/form-handler');
 const { hasScope } = require('../../lib/permissions');
+const { addressSources, crmRoles } = require('shared/lib/constants');
 const { hofNotifications } = require('../../lib/constants').scope;
 
 const getCustomer = async (request, h) => {
@@ -272,6 +273,119 @@ const getCreateCompanyContact = async (request, h) => {
   return h.redirect(path);
 };
 
+const getSelectRemoveCompanyContact = async (request, h) => {
+  const { companyId } = request.params;
+  const company = await services.water.companies.getCompany(companyId);
+  const { data: companyContacts } = await services.water.companies.getContacts(companyId);
+
+  const billingContactIds = [];
+  const naldContactIds = [];
+
+  companyContacts.forEach(companyContact => {
+    const { role = {}, contact = {} } = companyContact;
+    if (role.name === crmRoles.billing && !billingContactIds.includes(contact.id)) {
+      billingContactIds.push(contact.id);
+    }
+    if (contact.dataSource === addressSources.nald && !naldContactIds.includes(contact.id)) {
+      naldContactIds.push(contact.id);
+    }
+  });
+
+  const companyContactsForRemoval = companyContacts
+    .filter(({ role = {} }) => role.name === crmRoles.additionalContact)
+    .map(({ contact, id }) => {
+      return {
+        name: contact.fullName,
+        companyContactId: id
+      };
+    });
+
+  session.merge(request, {
+    companyId,
+    companyContactsForRemoval: uniqBy(companyContactsForRemoval, 'companyContactId'),
+    billingContactsExist: !!billingContactIds.length,
+    naldContactsExist: !!naldContactIds.length
+  });
+
+  const pageTitle = companyContactsForRemoval.length ? 'Select which contact you would like to remove' : '';
+  const caption = companyContactsForRemoval.length ? company.name : null;
+  const { path } = request;
+
+  return h.view('nunjucks/form', {
+    ...request.view,
+    caption,
+    pageTitle,
+    back: path.replace(/\/[^/]*$/, ''),
+    form: formHandler.handleFormRequest(request, forms.selectContactForRemoval)
+  });
+};
+
+const postSelectRemoveCompanyContact = async (request, h) => {
+  const form = await formHandler.handleFormRequest(request, forms.selectContactForRemoval);
+
+  if (!form.isValid) {
+    return h.postRedirectGet(form);
+  }
+
+  const companyContactId = form.fields.find(field => field.name === 'companyContactId').value;
+
+  session.merge(request, { companyContactId });
+
+  // eslint-disable-next-line no-useless-escape
+  return h.redirect(request.path + '/check');
+};
+
+const getCheckRemoveCompanyContact = async (request, h) => {
+  const { companyId } = request.params;
+  const company = await services.water.companies.getCompany(companyId);
+  const { data: companyContacts } = await services.water.companies.getContacts(companyId);
+
+  const { companyContactId } = session.get(request) || {};
+  const companyContact = companyContacts.find(({ id }) => id === companyContactId);
+
+  // If the deleted contact was the last remaining contact receiving email WAAs for the company, then the sending logic reverts to sending WAAs by letter to the licence holder.
+  const contactsWithWaterAbstractionAlertsEnabled = companyContacts.filter(({ waterAbstractionAlertsEnabled }) => waterAbstractionAlertsEnabled);
+  const isLastEmailContact = contactsWithWaterAbstractionAlertsEnabled.length === 1 && contactsWithWaterAbstractionAlertsEnabled[0].id === companyContactId;
+  const contactName = companyContact.contact.fullName;
+  const companyName = company.name;
+
+  session.merge(request, { companyId, companyContactId, isLastEmailContact, contactName, companyName });
+
+  const pageTitle = `You’re about to remove ${companyContact.contact.fullName} from ${company.name}`;
+  const { path } = request;
+
+  return h.view('nunjucks/form', {
+    ...request.view,
+    pageTitle,
+    back: path.replace(/\/[^/]*$/, ''),
+    form: formHandler.handleFormRequest(request, forms.checkContactForRemoval)
+  });
+};
+
+const postCheckRemoveCompanyContact = async (request, h) => {
+  const form = await formHandler.handleFormRequest(request, forms.checkContactForRemoval);
+
+  if (!form.isValid) {
+    return h.postRedirectGet(form);
+  }
+
+  const { companyId, companyContactId } = session.get(request) || {};
+
+  await services.water.companies.deleteCompanyContact(companyId, companyContactId);
+
+  return h.redirect(request.path.replace('/check', '/confirmation'));
+};
+
+const getConfirmationRemoveCompanyContact = async (request, h) => {
+  const { companyId, contactName, companyName } = session.get(request) || {};
+
+  return h.view('nunjucks/customers/contact-removed.njk', {
+    ...request.view,
+    companyId,
+    confirmationMessage: `${contactName} is no longer a contact for ${companyName}`
+  });
+};
+
 exports.getCustomer = getCustomer;
 exports.getCustomerContact = getCustomerContact;
 exports.getUpdateCustomerContactName = getUpdateCustomerContactName;
@@ -283,3 +397,8 @@ exports.postAddCustomerContactEmail = postAddCustomerContactEmail;
 exports.getUpdateCustomerWaterAbstractionAlertsPreferences = getUpdateCustomerWaterAbstractionAlertsPreferences;
 exports.postUpdateCustomerWaterAbstractionAlertsPreferences = postUpdateCustomerWaterAbstractionAlertsPreferences;
 exports.getCreateCompanyContact = getCreateCompanyContact;
+exports.getSelectRemoveCompanyContact = getSelectRemoveCompanyContact;
+exports.postSelectRemoveCompanyContact = postSelectRemoveCompanyContact;
+exports.getCheckRemoveCompanyContact = getCheckRemoveCompanyContact;
+exports.postCheckRemoveCompanyContact = postCheckRemoveCompanyContact;
+exports.getConfirmationRemoveCompanyContact = getConfirmationRemoveCompanyContact;

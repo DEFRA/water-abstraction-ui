@@ -144,5 +144,50 @@ module.exports = {
         })
       }
     }
+  },
+  getRemoveCompanyContact: {
+    method: 'GET',
+    path: '/customer/{companyId}/contacts/remove',
+    handler: controllers.getSelectRemoveCompanyContact,
+    config: {
+      description: 'Entry point for selecting a company contact to remove',
+      validate: {
+        params: Joi.object().keys({
+          companyId: Joi.string().guid().required()
+        })
+      }
+    }
+  },
+  postRemoveCompanyContact: {
+    method: 'POST',
+    path: '/customer/{companyId}/contacts/remove',
+    handler: controllers.postSelectRemoveCompanyContact,
+    config: {
+      description: 'POSTs the page for selecting a company contact to remove'
+    }
+  },
+  getCheckRemoveCompanyContact: {
+    method: 'GET',
+    path: '/customer/{companyId}/contacts/remove/check',
+    handler: controllers.getCheckRemoveCompanyContact,
+    config: {
+      description: 'Entry point for checking a company contact should be removed'
+    }
+  },
+  postCheckRemoveCompanyContact: {
+    method: 'POST',
+    path: '/customer/{companyId}/contacts/remove/check',
+    handler: controllers.postCheckRemoveCompanyContact,
+    config: {
+      description: 'POSTs the page for removing a company contact'
+    }
+  },
+  getConfirmationRemoveCompanyContact: {
+    method: 'GET',
+    path: '/customer/{companyId}/contacts/remove/confirmation',
+    handler: controllers.getConfirmationRemoveCompanyContact,
+    config: {
+      description: 'Entry point for checking a company contact should be removed'
+    }
   }
 };

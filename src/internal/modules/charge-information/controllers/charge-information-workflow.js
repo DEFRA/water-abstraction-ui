@@ -14,7 +14,14 @@ const getChargeInformationWorkflow = async (request, h) => {
     back: '/manage',
     ...request.view,
     pageTitle: 'Charge information workflow',
-    licences: { changeRequest, toSetUp, review: { data: [...sortBy(review.data, ['chargeVersion.dateRange.startDate'])], pagination: review.pagination } },
+    licences: {
+      changeRequest,
+      toSetUp,
+      review: {
+        data: [...sortBy(review.data, ['chargeVersion.dateRange.startDate'])],
+        pagination: review.pagination
+      }
+    },
     licencesCounts: {
       toSetUp: toSetUp.pagination.totalRows,
       review: review.pagination.totalRows,

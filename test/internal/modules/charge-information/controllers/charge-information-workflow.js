@@ -27,9 +27,18 @@ const createRequest = () => ({
   },
   query: {},
   pre: {
-    chargeInformationWorkflows: { data: [{ status: 'to_setup' }, { status: 'to_setup' }, { status: 'to_setup' }], pagination: { totalRows: 1 } },
-    chargeInformationWorkflowsReview: { data: [{ status: 'review' }, { status: 'review' }], pagination: { totalRows: 1 } },
-    chargeInformationWorkflowsChangeRequest: { data: [{ status: 'changes_requested' }], pagination: { totalRows: 1 } },
+    chargeInformationWorkflows: {
+      data: [{ status: 'to_setup' }, { status: 'to_setup' }, { status: 'to_setup' }],
+      pagination: { totalRows: 1 }
+    },
+    chargeInformationWorkflowsReview: {
+      data: [{ status: 'review' }, { status: 'review' }],
+      pagination: { totalRows: 1 }
+    },
+    chargeInformationWorkflowsChangeRequest: {
+      data: [{ status: 'changes_requested' }],
+      pagination: { totalRows: 1 }
+    },
     chargeInformationWorkflow: {
       licence: { foo: 'bar' },
       licenceHolderRole: { bar: 'baz' }

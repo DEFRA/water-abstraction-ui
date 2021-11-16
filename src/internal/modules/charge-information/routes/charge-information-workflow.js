@@ -20,8 +20,17 @@ module.exports = {
           activeNavLink: 'view'
         }
       },
+      validate: {
+        query: Joi.object().keys({
+          toSetupPageNumber: Joi.number().integer().min(1).default(1),
+          reviewPageNumber: Joi.number().integer().min(1).default(1),
+          changeRequestPageNumber: Joi.number().integer().min(1).default(1)
+        })
+      },
       pre: [
-        { method: preHandlers.loadChargeVersionWorkflows, assign: 'chargeInformationWorkflows' }
+        { method: preHandlers.loadChargeVersionWorkflows, assign: 'chargeInformationWorkflows' },
+        { method: preHandlers.loadChargeVersionWorkflowsReview, assign: 'chargeInformationWorkflowsReview' },
+        { method: preHandlers.loadChargeVersionWorkflowsChangeRequest, assign: 'chargeInformationWorkflowsChangeRequest' }
       ]
     }
   },

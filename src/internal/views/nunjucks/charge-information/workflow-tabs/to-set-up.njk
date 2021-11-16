@@ -20,7 +20,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for row in licences.toSetUp %}
+                {% for row in licences.toSetUp.data %}
                     <tr class="govuk-table__row">
                         <td class="govuk-table__cell">{{row.licence.licenceNumber}}</td>
                         <td class="govuk-table__cell">{{row.licenceHolderRole.company.name}}</td>

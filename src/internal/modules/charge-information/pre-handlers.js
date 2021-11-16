@@ -122,12 +122,59 @@ const decorateChargeVersion = chargeVersionWorkflow => {
 const getChargeVersionWorkflow = async id =>
   services.water.chargeVersionWorkflows.getChargeVersionWorkflow(id);
 
-const loadChargeVersionWorkflows = async () => {
+const chargeVersionWorkflowsOrder = ['licence.startDate'];
+
+const loadChargeVersionWorkflows = async request => {
+  const { toSetupPageNumber, reviewPageNumber, changeRequestPageNumber } = request.query;
   try {
-    const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows();
-    return sortBy(workflows, ['licence.startDate']);
+    const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(toSetupPageNumber, 100, 'to_setup');
+    return {
+      data: sortBy(workflows.data, chargeVersionWorkflowsOrder),
+      pagination: {
+        ...workflows.pagination,
+        page: toSetupPageNumber,
+        next: { toSetupPageNumber: toSetupPageNumber + 1, reviewPageNumber, changeRequestPageNumber },
+        previous: { toSetupPageNumber: toSetupPageNumber - 1, reviewPageNumber, changeRequestPageNumber }
+      }
+    };
   } catch (err) {
-    return errorHandler(err, `Could not retrieve charge version workflows.`);
+    return errorHandler(err, `Could not retrieve charge version workflows tab setup.`);
+  }
+};
+
+const loadChargeVersionWorkflowsReview = async request => {
+  const { reviewPageNumber, toSetupPageNumber, changeRequestPageNumber } = request.query;
+  try {
+    const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(reviewPageNumber, 100, 'review');
+    return {
+      data: sortBy(workflows.data, chargeVersionWorkflowsOrder),
+      pagination: {
+        ...workflows.pagination,
+        page: reviewPageNumber,
+        next: { reviewPageNumber: reviewPageNumber + 1, toSetupPageNumber, changeRequestPageNumber },
+        previous: { reviewPageNumber: reviewPageNumber - 1, toSetupPageNumber, changeRequestPageNumber }
+      }
+    };
+  } catch (err) {
+    return errorHandler(err, `Could not retrieve charge version workflows tab review.`);
+  }
+};
+
+const loadChargeVersionWorkflowsChangeRequest = async request => {
+  const { changeRequestPageNumber, toSetupPageNumber, reviewPageNumber } = request.query;
+  try {
+    const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(changeRequestPageNumber, 100, 'changes_requested');
+    return {
+      data: sortBy(workflows.data, chargeVersionWorkflowsOrder),
+      pagination: {
+        ...workflows.pagination,
+        page: changeRequestPageNumber,
+        next: { changeRequestPageNumber: changeRequestPageNumber + 1, toSetupPageNumber, reviewPageNumber },
+        previous: { changeRequestPageNumber: changeRequestPageNumber - 1, toSetupPageNumber, reviewPageNumber }
+      }
+    };
+  } catch (err) {
+    return errorHandler(err, `Could not retrieve charge version workflows tab changes requested.`);
   }
 };
 
@@ -189,6 +236,8 @@ exports.loadChargeableChangeReasons = loadChargeableChangeReasons;
 exports.loadChargeVersion = loadChargeVersion;
 exports.loadChargeVersions = loadChargeVersions;
 exports.loadChargeVersionWorkflows = loadChargeVersionWorkflows;
+exports.loadChargeVersionWorkflowsReview = loadChargeVersionWorkflowsReview;
+exports.loadChargeVersionWorkflowsChangeRequest = loadChargeVersionWorkflowsChangeRequest;
 exports.loadChargeVersionWorkflow = loadChargeVersionWorkflow;
 exports.loadChargeInformation = loadChargeInformation;
 exports.loadDefaultCharges = loadDefaultCharges;

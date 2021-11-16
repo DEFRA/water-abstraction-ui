@@ -27,7 +27,18 @@ const createRequest = () => ({
   },
   query: {},
   pre: {
-    chargeInformationWorkflows: [],
+    chargeInformationWorkflows: {
+      data: [{ status: 'to_setup' }, { status: 'to_setup' }, { status: 'to_setup' }],
+      pagination: { totalRows: 1 }
+    },
+    chargeInformationWorkflowsReview: {
+      data: [{ status: 'review' }, { status: 'review' }],
+      pagination: { totalRows: 1 }
+    },
+    chargeInformationWorkflowsChangeRequest: {
+      data: [{ status: 'changes_requested' }],
+      pagination: { totalRows: 1 }
+    },
     chargeInformationWorkflow: {
       licence: { foo: 'bar' },
       licenceHolderRole: { bar: 'baz' }
@@ -59,7 +70,7 @@ experiment('internal/modules/charge-information/controller', () => {
   experiment('.getChargeInformationWorkflow', () => {
     beforeEach(async () => {
       request = createRequest();
-      request.query = { isChargeable: true };
+      request.query = { toSetupPageNumber: 1 };
       await controller.getChargeInformationWorkflow(request, h);
     });
 
@@ -91,6 +102,40 @@ experiment('internal/modules/charge-information/controller', () => {
     test('passes the isReviewer flag', async () => {
       const { isReviewer } = h.view.lastCall.args[1];
       expect(isReviewer).to.be.a.boolean();
+    });
+
+    test('uses correct labels for tabs', async () => {
+      const { licencesCounts } = h.view.lastCall.args[1];
+      const { toSetUp, review, changeRequest } = licencesCounts;
+      expect(toSetUp).to.equal(1);
+      expect(review).to.equal(1);
+      expect(changeRequest).to.equal(1);
+    });
+  });
+
+  experiment('.getChargeInformationWorkflowReview', () => {
+    beforeEach(async () => {
+      request = createRequest();
+      request.query = { isChargeable: true, page: 1, perPage: 10, tabFilter: 'review' };
+      await controller.getChargeInformationWorkflow(request, h);
+    });
+
+    test('uses the correct template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/charge-information/workflow');
+    });
+  });
+
+  experiment('.getChargeInformationWorkflowChangeRequested', () => {
+    beforeEach(async () => {
+      request = createRequest();
+      request.query = { isChargeable: true, page: 1, perPage: 10, tabFilter: 'changes_requested' };
+      await controller.getChargeInformationWorkflow(request, h);
+    });
+
+    test('uses the correct template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/charge-information/workflow');
     });
   });
 

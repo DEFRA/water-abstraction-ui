@@ -23,7 +23,7 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
         licenceId: 'test-licence-id',
         chargeVersionWorkflowId: 'test-charge-version-workflow-id'
       },
-      query: {},
+      query: { },
       setDraftChargeInformation: sandbox.stub(),
       getDraftChargeInformation: sandbox.stub().returns({ dateRange: { startDate: START_DATE } }),
       server: {
@@ -52,9 +52,8 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
     });
 
     sandbox.stub(services.water.chargeVersionWorkflows, 'getChargeVersionWorkflows').resolves(
-      [{ licence: { startDate: '2002-05-03' } }, { licence: { startDate: '2000-09-30' } }]
+      { status: 'review', data: [ { licence: { startDate: '2002-05-03' } }, { licence: { startDate: '2000-09-30' } } ] }
     );
-
     sandbox.stub(services.water.chargeVersionWorkflows, 'getLicencesWithoutChargeInformation').resolves({
       data: []
     });
@@ -290,8 +289,8 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
         expect(services.water.chargeVersionWorkflows.getChargeVersionWorkflows.called).to.be.true();
       });
       test('returns the results ordered by licence start date', async () => {
-        expect(result[0]).to.equal({ licence: { startDate: '2000-09-30' } });
-        expect(result[1]).to.equal({ licence: { startDate: '2002-05-03' } });
+        expect(result.data[0]).to.equal({ licence: { startDate: '2000-09-30' } });
+        expect(result.data[1]).to.equal({ licence: { startDate: '2002-05-03' } });
       });
     });
     experiment('when the service response is invalid', () => {
@@ -306,7 +305,7 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
         expect(services.water.chargeVersionWorkflows.getChargeVersionWorkflows.called).to.be.true();
       });
       test('returns an error', async () => {
-        expect(result.message).to.equal('Could not retrieve charge version workflows.');
+        expect(result.message).to.equal('Could not retrieve charge version workflows tab setup.');
       });
     });
   });
@@ -331,6 +330,60 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
             }]
           }
         } });
+    });
+  });
+
+  experiment('loadChargeVersionWorkflows with paging', () => {
+    beforeEach(async () => {
+      request = {
+        query: { paget1: 2, perPage: 10, tabFilter: 'to_setup' }
+      };
+
+      result = await preHandlers.loadChargeVersionWorkflows(request);
+    });
+    test('calls the service method', async () => {
+      expect(services.water.chargeVersionWorkflows.getChargeVersionWorkflows.called).to.be.true();
+    });
+    test('returns the result of the call', async () => {
+      const { data } = result;
+      expect(data[0].licence.startDate).to.equal('2000-09-30');
+      expect(data[1].licence.startDate).to.equal('2002-05-03');
+    });
+  });
+
+  experiment('loadChargeVersionWorkflowsReview with paging', () => {
+    beforeEach(async () => {
+      request = {
+        query: { paget2: 2, perPage: 20, tabFilter: 'review' }
+      };
+
+      result = await preHandlers.loadChargeVersionWorkflowsReview(request);
+    });
+    test('calls the service method', async () => {
+      expect(services.water.chargeVersionWorkflows.getChargeVersionWorkflows.called).to.be.true();
+    });
+    test('returns the result of the call', async () => {
+      const { data } = result;
+      expect(data[0].licence.startDate).to.equal('2000-09-30');
+      expect(data[1].licence.startDate).to.equal('2002-05-03');
+    });
+  });
+
+  experiment('loadChargeVersionWorkflowsChangeRequest with paging', () => {
+    beforeEach(async () => {
+      request = {
+        query: { paget3: 1, perPage: 30, tabFilter: 'changes_requested' }
+      };
+
+      result = await preHandlers.loadChargeVersionWorkflowsChangeRequest(request);
+    });
+    test('calls the service method', async () => {
+      expect(services.water.chargeVersionWorkflows.getChargeVersionWorkflows.called).to.be.true();
+    });
+    test('returns the result of the call', async () => {
+      const { data } = result;
+      expect(data[0].licence.startDate).to.equal('2000-09-30');
+      expect(data[1].licence.startDate).to.equal('2002-05-03');
     });
   });
 

@@ -2,9 +2,97 @@
 {% from "sort-icon.njk" import sortIcon %}
 {% from "badge.njk" import badge %}
 {% from "paginate.njk" import paginate %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% block content %}
   {{ title(pageTitle) }}
+
+<table class="govuk-table">
+<caption class="govuk-table__caption govuk-table__caption--m govuk-!-margin-bottom-0">
+
+  <div class="govuk-!-margin-bottom-3"> View sent notices </div>
+
+  <p class="govuk-body">Select notice type for more details.</p>
+
+</caption>
+</table>
+
+{% set filterHTML %}
+
+  <h2 class="govuk-heading-m govuk-!-margin-bottom-3">Filter By</h2>
+  {{ govukCheckboxes({
+    idPrefix: "filter",
+    name: "filter",
+    fieldset: {
+      legend: {
+        text: "Notification type",
+        isPageHeading: true,
+        classes: "govuk-fieldset__legend--s"
+      }
+    },
+    items: [
+      {
+        value: "Returns: send paper forms",
+        text: "Returns: send paper forms"
+      },
+      {
+        value: "Returns: invitation",
+        text: "Returns: invitation"
+      },
+      {
+        value: "Returns: reminder",
+        text: "Returns: reminder"
+      },
+      {
+        value: "Expiring licence(s): invitation to renew",
+        text: "Expiring licence(s): invitation to renew"
+      },
+      {
+        value: "Hands off flow: levels warning",
+        text: "Hands off flow: levels warning"
+      },
+      {
+        value: "Hands off flow: stop or reduce abstraction",
+        text: "Hands off flow: stop or reduce abstraction"
+      },
+      {
+        value: "Hands off flow: resume abstraction",
+        text: "Hands off flow: resume abstraction"
+      }
+    ]
+  }) }}
+
+  {{ govukInput({
+    label: {
+      html: "<strong>Sent by</strong>"
+    },
+    classes: "govuk-!-width-one-third",
+    id: "sentBy",
+    name: "sentBy"
+  }) }}
+
+  <div class="govuk-button-group">
+    {{ govukButton({
+      text: "Apply filters"
+    }) }}
+
+    {{ govukButton({
+      text: "Clear filters",
+      classes: "govuk-button--secondary"
+    }) }}
+  </div>
+
+{% endset %}
+
+
+{{ govukDetails({
+  summaryText: "Filters",
+  html: filterHTML
+}) }}
+
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">

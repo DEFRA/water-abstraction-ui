@@ -23,7 +23,8 @@ describe('notify callback attempt', function () {
 
     cy.fixture('users.json').then(users => { // Load the fixtures again (Probably not necessary if we were storing the email in a local variable!)
       cy.getLastNotifications(Cypress.env('USER_URI'), users.notifyCallbackTestEmail).then(scheduledNotificationAfterCallback => { // Once again, grab the last notification from the service that was sent to that email address
-        expect(scheduledNotificationAfterCallback.notify_status).to.equal('delivered'); // Check that it now has a status of 'Delivered'
+        
+        { timeout: 40000 }expect(scheduledNotificationAfterCallback.notify_status).to.equal('delivered'); // Check that it now has a status of 'Delivered'
       });
     });
   });

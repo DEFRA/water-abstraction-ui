@@ -8,7 +8,7 @@ const formsHelper = require('shared/lib/forms');
 const formHandler = require('shared/lib/form-handler');
 const { hasScope } = require('../../lib/permissions');
 const { addressSources, crmRoles } = require('shared/lib/constants');
-const { hofNotifications } = require('../../lib/constants').scope;
+const { hofNotifications, manageBillingAccounts } = require('../../lib/constants').scope;
 
 const getCustomer = async (request, h) => {
   const { companyId } = request.params;
@@ -35,12 +35,14 @@ const getCustomer = async (request, h) => {
 
   const { data: contacts } = await services.water.companies.getContacts(companyId);
   const hasPermissionToManageContacts = hasScope(request, [hofNotifications]);
+  const hasPermissionToManageBillingAccounts = hasScope(request, [manageBillingAccounts]);
 
   return h.view('nunjucks/customers/view.njk', {
     ...request.view,
     pageTitle: company.name,
     company,
     hasPermissionToManageContacts,
+    hasPermissionToManageBillingAccounts,
     contacts: uniqBy(contacts, 'id'),
     licences: uniqBy(licences, 'id'),
     invoiceAccounts: uniqBy(invoiceAccounts.map(eachInvoiceAccount => {

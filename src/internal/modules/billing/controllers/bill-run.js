@@ -127,6 +127,20 @@ const postBillingBatchCancel = async (request, h) => {
   return h.redirect(BATCH_LIST_ROUTE);
 };
 
+const getBillingBatchStatusToError = async (request, h) => billingBatchAction(request, h, 'cancel/status');
+
+const postBillingBatchStatusToError = async (request, h) => {
+  const { batchId } = request.params;
+
+  try {
+    await services.water.billingBatches.setBatchStatusToError(batchId);
+  } catch (err) {
+    logger.info(`Did not successfully change batch ${batchId} status`);
+  }
+
+  return h.redirect(BATCH_LIST_ROUTE);
+};
+
 const getBillingBatchConfirm = async (request, h) => billingBatchAction(request, h, 'confirm');
 
 const postBillingBatchConfirm = async (request, h) => {
@@ -220,6 +234,7 @@ const getBillingBatchProcessing = async (request, h) => {
   }
 
   return h.view('nunjucks/billing/batch-processing', {
+    batch,
     ...request.view,
     caption: moment(batch.createdAt).format('D MMMM YYYY'),
     pageTitle: `${batch.region.displayName} ${mappers.mapBatchType(batch.type).toLowerCase()} bill run`,
@@ -270,3 +285,5 @@ exports.getBillingBatchProcessing = getBillingBatchProcessing;
 exports.getBillingBatchEmpty = getBillingBatchEmpty;
 
 exports.postDeleteAllBillingData = postDeleteAllBillingData;
+exports.getBillingBatchStatusToError = getBillingBatchStatusToError;
+exports.postBillingBatchStatusToError = postBillingBatchStatusToError;

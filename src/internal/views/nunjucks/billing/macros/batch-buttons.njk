@@ -23,7 +23,7 @@
 {% endmacro %}
 
 {% macro cancelStatusBatchButton(batch) %}
-  {% if batch.status in['processing'] and batch.type in['supplementary', 'annual'] %}
+  {% if batch.status in['processing'] %}
     {{
     govukButton({
       text: "Cancel bill run",

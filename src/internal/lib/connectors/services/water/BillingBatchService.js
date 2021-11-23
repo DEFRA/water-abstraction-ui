@@ -138,7 +138,7 @@ class BillingBatchService extends ServiceClient {
    */
   setBatchStatusToError(batchId) {
     const uri = this.joinUrl(`/billing/batches/${batchId}/status/error`);
-    return this.serviceRequest.put(uri);
+    return this.serviceRequest.post(uri);
   }
 }
 

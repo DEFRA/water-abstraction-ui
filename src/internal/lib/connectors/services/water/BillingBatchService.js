@@ -136,7 +136,7 @@ class BillingBatchService extends ServiceClient {
    * Sets a batch via the water service which will set status to error
    * @param {String} batchId UUID of the batch to set status for
    */
-  setBatchStatusToError(batchId) {
+  setBatchStatusToError (batchId) {
     const uri = this.joinUrl(`/billing/batches/${batchId}/status/error`);
     return this.serviceRequest.post(uri);
   }

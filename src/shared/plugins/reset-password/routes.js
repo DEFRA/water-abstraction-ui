@@ -13,13 +13,13 @@ module.exports = [
           flash: VALID_FLASH
         })
       },
-      handler: controller.getResetPassword,
       plugins: {
         viewContext: {
           pageTitle: 'Reset your password'
         }
       }
-    }
+    },
+    handler: controller.getResetPassword
   },
   {
     method: 'POST',
@@ -112,6 +112,7 @@ module.exports = [
       validate: {
         query: Joi.object().keys({
           resetGuid: VALID_GUID,
+          forced: Joi.number().optional(),
           ...VALID_UTM
         }).allow(null)
       },

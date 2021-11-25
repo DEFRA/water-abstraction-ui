@@ -618,7 +618,7 @@ experiment('internal/modules/billing/controller', () => {
       expect(redirectPath).to.equal('/billing/batch/test-batch-id/processing');
     });
 
-    test('if fails to set batch status to error, the user is redirected to the batch summary, an error is thrown', async () => {
+    test('if the approval fails, the user is redirected to the batch summary, an error is thrown', async () => {
       services.water.billingBatches.approveBatch.rejects();
       const func = () => controller.postBillingBatchConfirm(request, h);
       expect(func()).to.reject();
@@ -909,7 +909,7 @@ experiment('internal/modules/billing/controller', () => {
       expect(redirectPath).to.equal('/billing/batch/list');
     });
 
-    test('if the approval fails, the user is redirected to the batch summary, an error is thrown', async () => {
+    test('if fails to set batch status to error, the user is redirected to the batch summary, an error is thrown', async () => {
       services.water.billingBatches.setBatchStatusToError.rejects();
       await controller.postBillingBatchStatusToError(request, h);
 

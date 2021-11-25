@@ -1,21 +1,21 @@
 'use strict';
 
-const SESSION_KEY = 'notificationFilterPlugin';
+const SESSION_KEY_FILTER = 'notificationFilterPlugin';
 
-const getSessionKey = userKey => `${SESSION_KEY}.${userKey}`;
+const getUserSessionKey = userKey => `${SESSION_KEY_FILTER}.${userKey}`;
 
-const get = (request, key) => request.yar.get(getSessionKey(key));
+const getSelectedFilter = (request, key) => request.yar.get(getUserSessionKey(key));
 
-const set = (request, key, data) => request.yar.set(getSessionKey(key), data);
+const setSelectedFilter = (request, key, data) => request.yar.set(getUserSessionKey(key), data);
 
-const merge = (request, key, data) => {
-  const existingData = get(request, key);
-  return set(request, key, {
+const mergeRequest = (request, key, data) => {
+  const existingData = getSelectedFilter(request, key);
+  return setSelectedFilter(request, key, {
     ...existingData,
     ...data
   });
 };
 
-exports.get = get;
-exports.set = set;
-exports.merge = merge;
+exports.get = getSelectedFilter;
+exports.set = setSelectedFilter;
+exports.merge = mergeRequest;

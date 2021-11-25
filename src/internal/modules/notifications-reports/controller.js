@@ -17,7 +17,7 @@ const session = require('./lib/session');
  * @param  {String} query - the search query entered by the user
  * @return {Object}       form object
  */
-const searchForm = (query) => {
+const searchForm = query => {
   const f = formFactory('/notifications', 'GET');
 
   f.fields.push(fields.text('query', {

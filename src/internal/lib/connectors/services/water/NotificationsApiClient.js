@@ -32,7 +32,7 @@ class NotificationsApiClient extends SharedNotificationsApiClient {
    * Gets a list of notifications
    * @param {Number} page
    */
-  getNotifications (page = 1, filter, sentBy = '') {
+  getNotifications (page, filter, sentBy = '') {
     if (filter) {
       filter = filter.toString();
     }

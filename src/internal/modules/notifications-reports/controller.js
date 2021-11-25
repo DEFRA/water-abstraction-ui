@@ -9,7 +9,6 @@ const Joi = require('joi');
 const { formFactory, fields, setValues } = require('shared/lib/forms');
 const forms = require('shared/lib/forms');
 const { mapResponseToView } = require('./lib/message-mapper');
-const session = require('./lib/session');
 
 /**
  * Creates a form object for internal users to search by notification type and sent by email
@@ -37,21 +36,7 @@ const searchForm = query => {
       'string.empty': {
         message: 'Enter a Sent by email or select Notification type'
       }
-    },
-    choices: [
-      { value: 'notification_letter', label: 'Returns: send paper forms' },
-      { value: 'returns_invitation_letter', label: 'Returns: invitation' },
-      { value: 'returns_final_reminder', label: 'Returns: reminder' },
-      { value: 'expiry_notification_email', label: 'Expiring licence(s): invitation to renew' },
-      { value: 'water_abstraction_alert_reduce_warning', label: 'Hands off flow: levels warning' },
-      { value: 'water_abstraction_alert_reduce_or_stop_warning', label: 'Hands off flow: stop or reduce abstraction' },
-      { value: 'water_abstraction_alert_resume', label: 'Hands off flow: resume abstraction' },
-
-      { value: 'water_abstraction_alert_stop_warning', label: 'Hands off flow: stop abstraction warning' },
-      { value: 'water_abstraction_alert_reduce', label: 'Hands off flow: reduce abstraction' },
-      { value: 'water_abstraction_alert_stop', label: 'Hands off flow: stop abstraction' }
-    ]
-
+    }
   }));
 
   return setValues(f, { query });
@@ -69,14 +54,8 @@ async function getNotificationsList (request, h) {
   const { view } = request;
 
   form = forms.handleRequest(form, request, searchFormSchema());
-  const { query } = forms.getValues(form);
-
-  session.merge(request, {
-    selected: filter
-  });
-
   const { pagination, data } = await services.water.notifications.getNotifications(page, filter, sentBy);
-  Object.assign(view, mapResponseToView(data, request), { query });
+  Object.assign(view, mapResponseToView(data, request));
   view.form = form;
 
   return h.view('nunjucks/notifications-reports/list', {

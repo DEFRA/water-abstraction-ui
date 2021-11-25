@@ -235,4 +235,14 @@ experiment('services/water/BillingBatchService', () => {
       expect(url).to.equal(`https://example.com/water/1.0/billing/batches`);
     });
   });
+
+  experiment('.setBatchStatusToError', () => {
+    test('passes the expected URL to the service request', async () => {
+      const batchId = uuid();
+      await service.setBatchStatusToError(batchId);
+      const [url] = serviceRequest.post.lastCall.args;
+      console.log(url);
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/status/error`);
+    });
+  });
 });

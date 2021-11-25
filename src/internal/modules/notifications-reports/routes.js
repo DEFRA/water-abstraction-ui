@@ -16,7 +16,32 @@ module.exports = {
       description: 'View list of notifications sent',
       validate: {
         query: Joi.object().keys({
-          page: Joi.number().integer().min(1).default(1)
+          page: Joi.number().integer().min(1).default(1),
+          filter: [ Joi.array().optional(), Joi.string().allow('') ],
+          sentBy: Joi.string().optional().allow('')
+        })
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Notification report',
+          activeNavLink: 'notifications'
+        }
+      }
+    }
+  },
+
+  postNotificationsList: {
+    method: 'POST',
+    path: '/notifications/report',
+    handler: controller.getNotificationsList,
+    config: {
+      auth: { scope: allNotifications },
+      description: 'View list of notifications sent',
+      validate: {
+        query: Joi.object().keys({
+          page: Joi.number().integer().min(1).default(1),
+          filter: [ Joi.array().optional(), Joi.string().allow('') ],
+          sentBy: Joi.string().allow('')
         })
       },
       plugins: {

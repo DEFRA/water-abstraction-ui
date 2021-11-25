@@ -20,6 +20,10 @@
 </caption>
 </table>
 
+{% if not filter %}
+  {% set filter = [] %}
+{% endif %}
+
 {% set filterHTML %}
 
   <h2 class="govuk-heading-m govuk-!-margin-bottom-3">Filter By</h2>
@@ -35,32 +39,55 @@
     },
     items: [
       {
-        value: "Returns: send paper forms",
-        text: "Returns: send paper forms"
+        value: "notification_letter",
+        text: "Returns: send paper forms",
+        checked: filter.includes("notification_letter")
       },
       {
-        value: "Returns: invitation",
-        text: "Returns: invitation"
+        value: "returns_invitation_letter",
+        text: "Returns: invitation",
+        checked: filter.includes("returns_invitation_letter")
       },
       {
-        value: "Returns: reminder",
-        text: "Returns: reminder"
+        value: "returns_final_reminder",
+        text: "Returns: reminder",
+        checked: filter.includes("returns_final_reminder")
       },
       {
-        value: "Expiring licence(s): invitation to renew",
-        text: "Expiring licence(s): invitation to renew"
+        value: "expiry_notification_email",
+        text: "Expiring licence(s): invitation to renew",
+        checked: filter.includes("expiry_notification_email")
       },
       {
-        value: "Hands off flow: levels warning",
-        text: "Hands off flow: levels warning"
+        value: "water_abstraction_alert_reduce_warning",
+        text: "Hands off flow: levels warning",
+        checked: filter.includes("water_abstraction_alert_reduce_warning")
       },
       {
-        value: "Hands off flow: stop or reduce abstraction",
-        text: "Hands off flow: stop or reduce abstraction"
+        value: "water_abstraction_alert_reduce_or_stop_warning",
+        text: "Hands off flow: stop or reduce abstraction",
+        checked: filter.includes("water_abstraction_alert_reduce_or_stop_warning")
       },
       {
-        value: "Hands off flow: resume abstraction",
-        text: "Hands off flow: resume abstraction"
+        value: "water_abstraction_alert_resume",
+        text: "Hands off flow: resume abstraction",
+        checked: filter.includes("water_abstraction_alert_resume")
+      },
+
+      {
+        value: "water_abstraction_alert_reduce",
+        text: "Hands off flow: reduce abstraction warning",
+        checked: filter.includes("water_abstraction_alert_reduce")
+      },
+      {
+        value: "water_abstraction_alert_stop",
+        text: "Hands off flow: stop abstraction",
+        checked: filter.includes("water_abstraction_alert_stop")
+      },
+      {
+        value: "water_abstraction_alert_stop_warning",
+        text: "Hands off flow: stop abstraction warning",
+        checked: filter.includes("water_abstraction_alert_stop_warning")
       }
     ]
   }) }}
@@ -81,29 +108,46 @@
 
     {{ govukButton({
       text: "Clear filters",
-      classes: "govuk-button--secondary"
+      classes: "govuk-button--secondary",
+      href: '/notifications/report#focus'
     }) }}
   </div>
 
 {% endset %}
 
 
+<form action novalidate>
+
 {{ govukDetails({
   summaryText: "Filters",
-  html: filterHTML
+  html: filterHTML,
+  open: true
 }) }}
 
+</form>
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <table class="govuk-table">
+      {% if events.length == 0 %}
+      <table class="govuk-table" id="focus>
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell" scope="col">
+            No notifications found
+            </td>
+          </tr>
+        </thead>
+      </table>
+      {% else %}
+
+      <table class="govuk-table" id="focus>
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
             <th class="govuk-table__header" scope="col">
               Date
             </th>
             <th class="govuk-table__header" scope="col">
-              Notification type
+              Notification
             </th>
             <th class="govuk-table__header" scope="col">
               Sent by
@@ -140,6 +184,7 @@
           {% endfor %}
         </tbody>
       </table>
+      {% endif %}
 
       {{ paginate(pagination, '/notifications/report') }}
     </div>

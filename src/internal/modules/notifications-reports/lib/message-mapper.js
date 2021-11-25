@@ -20,4 +20,12 @@ const mapMessage = message => ({
   badge: messageStatusBadgeMapper(message.displayStatus)
 });
 
+const mapResponseToView = (response, request) => {
+  const { filter } = request.query;
+  return {
+    ...response,
+    filter
+  };
+};
+exports.mapResponseToView = mapResponseToView;
 exports.mapMessage = mapMessage;

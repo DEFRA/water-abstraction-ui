@@ -40,6 +40,11 @@ experiment('internal/modules/notification-reports/controller.js', () => {
       params: {
         id: eventId
       },
+      yar: {
+        get: sandbox.stub(),
+        set: sandbox.stub(),
+        clear: sandbox.stub()
+      },
       query: {
         page: 3
       },
@@ -66,7 +71,9 @@ experiment('internal/modules/notification-reports/controller.js', () => {
 
     test('calls the water service notifications API', async () => {
       expect(services.water.notifications.getNotifications.calledWith(
-        request.query.page
+        request.query.page,
+        request.query.filter,
+        request.query.sentBy
       )).to.be.true();
     });
 

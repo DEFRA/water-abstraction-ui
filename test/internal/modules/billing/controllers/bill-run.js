@@ -935,7 +935,7 @@ experiment('internal/modules/billing/controller', () => {
       expect(context.pageTitle).to.equal(`You're about to cancel this bill run`);
       expect(context.secondTitle).to.equal(`Anglian supplementary bill run`);
       expect(context.form).to.be.an.object();
-      expect(context.form.action).to.equal(`/billing/batch/${request.params.batchId}/cancel/status`);
+      expect(context.form.action).to.equal(`/billing/batch/${request.params.batchId}/cancel/processing-batch`);
       expect(context.back).to.equal('/billing/batch/test-batch-id/summary');
     });
   });

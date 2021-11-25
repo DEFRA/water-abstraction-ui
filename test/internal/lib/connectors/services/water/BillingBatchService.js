@@ -241,7 +241,6 @@ experiment('services/water/BillingBatchService', () => {
       const batchId = uuid();
       await service.setBatchStatusToError(batchId);
       const [url] = serviceRequest.post.lastCall.args;
-      console.log(url);
       expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/status/error`);
     });
   });

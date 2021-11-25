@@ -184,7 +184,7 @@ const routes = {
 
   getBillingBatchStatusToError: {
     method: 'GET',
-    path: '/billing/batch/{batchId}/cancel/status',
+    path: '/billing/batch/{batchId}/cancel/processing-batch',
     handler: controller.getBillingBatchStatusToError,
     config: {
       auth: { scope: allowedScopes },
@@ -204,7 +204,7 @@ const routes = {
 
   postBillingBatchStatusToError: {
     method: 'POST',
-    path: '/billing/batch/{batchId}/cancel/status',
+    path: '/billing/batch/{batchId}/cancel/processing-batch',
     handler: controller.postBillingBatchStatusToError,
     config: {
       auth: { scope: allowedScopes },

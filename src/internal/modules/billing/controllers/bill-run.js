@@ -127,7 +127,7 @@ const postBillingBatchCancel = async (request, h) => {
   return h.redirect(BATCH_LIST_ROUTE);
 };
 
-const getBillingBatchStatusToError = async (request, h) => billingBatchAction(request, h, 'cancel/status');
+const getBillingBatchStatusToError = async (request, h) => billingBatchAction(request, h, 'cancel/processing-batch');
 
 const postBillingBatchStatusToError = async (request, h) => {
   const { batchId } = request.params;

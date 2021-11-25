@@ -10,7 +10,11 @@
     {% for account in invoiceAccounts %}
       <tr class="govuk-table__row">
         <td class="govuk-table__cell" scope="row">
+            {% if hasPermissionToManageBillingAccounts %}
             <a href='/billing-accounts/{{ account.id }}'>{{ account.accountNumber }}</a>
+            {% else %}
+                {{ account.accountNumber }}
+            {% endif %}
         </td>
         <td class="govuk-table__cell" scope="row">
             {% if account.currentAddress.address.addressLine1 %}

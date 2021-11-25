@@ -21,10 +21,11 @@ const mapMessage = message => ({
 });
 
 const mapResponseToView = (response, request) => {
-  const { filter } = request.query;
+  const { filter, sentBy } = request.query;
   return {
     ...response,
-    filter
+    filter,
+    sentBy
   };
 };
 exports.mapResponseToView = mapResponseToView;

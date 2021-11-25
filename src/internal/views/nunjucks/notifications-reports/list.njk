@@ -98,7 +98,8 @@
     },
     classes: "govuk-!-width-one-third",
     id: "sentBy",
-    name: "sentBy"
+    name: "sentBy",
+    value: sentBy
   }) }}
 
   <div class="govuk-button-group">
@@ -121,7 +122,7 @@
 {{ govukDetails({
   summaryText: "Filters",
   html: filterHTML,
-  open: true
+  open: ((filter.length > 0) or (sentBy.length > 0))
 }) }}
 
 </form>

@@ -12,7 +12,7 @@ const { mapResponseToView } = require('./lib/message-mapper');
 const session = require('./lib/session');
 
 /**
- * Creates a form object for internal users to search by name, return, licence
+ * Creates a form object for internal users to search by notification type and sent by email
  * number etc.
  * @param  {String} query - the search query entered by the user
  * @return {Object}       form object
@@ -20,9 +20,9 @@ const session = require('./lib/session');
 const searchForm = query => {
   const f = formFactory('/notifications', 'GET');
 
-  f.fields.push(fields.text('query', {
+  f.fields.push(fields.text('sentBy', {
     widget: 'search',
-    hint: 'Filter by Notification type',
+    hint: 'Filter by sent by email',
     errors: {
       'string.empty': {
         message: 'Enter a Sent by email or select Notification type'

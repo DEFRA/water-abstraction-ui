@@ -164,7 +164,8 @@ const longFormDictionary = [
   { dbitem: 'mAOD', translation: 'Ordnance datum (mAOD)', context: 'Units' },
   { dbitem: 'stop_or_reduce', translation: 'Reduce', context: 'AlertType' },
   { dbitem: 'stop', translation: 'Stop', context: 'AlertType' },
-  { dbitem: 'reduce', translation: 'Reduce', context: 'AlertType' }
+  { dbitem: 'reduce', translation: 'Reduce', context: 'AlertType' },
+  { dbitem: 'SLD', translation: 'South Level Datum', context: 'Units' }
 ];
 
 /* Converts database representation into description of tags, e.g. Stop at 115 Megalitres per day */

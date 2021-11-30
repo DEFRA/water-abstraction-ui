@@ -114,7 +114,7 @@ jobs:
           PGPASSWORD=water psql -U water -tc "CREATE EXTENSION pgcrypto;"
           PGPASSWORD=water psql -U water -tc "GRANT USAGE ON SCHEMA public TO water"
           PGPASSWORD=water psql -U water -tc "GRANT USAGE ON SCHEMA water TO water"
-          PGPASSWORD=water psql -U water -tc "select version"
+          PGPASSWORD=water psql -U water -tc "select version();"
 
       - name: Install PM2
         run: npm i -g pm2

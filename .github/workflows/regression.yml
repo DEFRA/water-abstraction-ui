@@ -154,13 +154,13 @@ jobs:
         run: |
           cd ./water-abstraction-returns
           npm i
-          ref: regression-ci
           npm run migrate
           
       - name: Install water service
         uses: actions/checkout@v2
         with:
           repository: defra/water-abstraction-service
+          ref: regression-ci
           path: './water-abstraction-service'
 
       - name: Install water service dependencies

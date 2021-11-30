@@ -111,7 +111,6 @@ jobs:
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS returns"
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS water"
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS water_import"
-          PGPASSWORD=water psql -U water -tc "CREATE EXTENSION pgcrypto with schema water;"
           PGPASSWORD=water psql -U water -tc "CREATE EXTENSION pgcrypto with schema public;"
           PGPASSWORD=water psql -U water -tc "GRANT USAGE ON SCHEMA public TO water"
           PGPASSWORD=water psql -U water -tc "GRANT USAGE ON SCHEMA water TO water"

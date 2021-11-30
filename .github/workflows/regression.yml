@@ -103,13 +103,21 @@ jobs:
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS public"
           PGPASSWORD=water psql -U water -tc "CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;"
           PGPASSWORD=water psql -U water -tc "set search_path = water, public;"
+          PGPASSWORD=water psql -U water -tc "DROP SCHEMA IF EXISTS idm"
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS idm"
+          PGPASSWORD=water psql -U water -tc "DROP SCHEMA IF EXISTS crm"
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS crm"
+          PGPASSWORD=water psql -U water -tc "DROP SCHEMA IF EXISTS crm_v2"
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS crm_v2"
+          PGPASSWORD=water psql -U water -tc "DROP SCHEMA IF EXISTS import"
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS import"
+          PGPASSWORD=water psql -U water -tc "DROP SCHEMA IF EXISTS permit"
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS permit"
+          PGPASSWORD=water psql -U water -tc "DROP SCHEMA IF EXISTS returns"
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS returns"
+          PGPASSWORD=water psql -U water -tc "DROP SCHEMA IF EXISTS water"
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS water"
+          PGPASSWORD=water psql -U water -tc "DROP SCHEMA IF EXISTS water_import"
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS water_import"
           PGPASSWORD=water psql -U water -tc "select version();"
           
@@ -146,6 +154,7 @@ jobs:
         run: |
           cd ./water-abstraction-returns
           npm i
+          ref: regression-ci
           npm run migrate
           
       - name: Install water service

@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const { get } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms/');
-const validUnits = ['Ml/d', 'm3/s', 'm3/d', 'l/s', 'mAOD', 'mASD', 'm'];
+const validUnits = ['Ml/d', 'm3/s', 'm3/d', 'l/s', 'mAOD', 'mASD', 'm', 'SLD'];
 const session = require('../../lib/session');
 
 const newTagThresholdAndUnitForm = request => {

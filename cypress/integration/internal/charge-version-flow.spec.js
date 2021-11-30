@@ -160,6 +160,10 @@ describe('B&D user able to view charge information tab', () => {
         cy.get('.govuk-table__body').contains('td', 'Billing contact change');
         cy.get('.govuk-table__body').contains('td', 'Approved');
       });
+
+      describe('licence should be flagged for the next supplementary bill run', () => {
+        cy.get('.govuk-notification-banner__content').contains('This licence has been marked for the next supplementary bill run').should('be.visible');
+      });
     });
   });
 });

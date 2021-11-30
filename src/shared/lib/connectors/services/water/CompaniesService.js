@@ -27,6 +27,26 @@ class CompaniesService extends ServiceClient {
     return this.serviceRequest.get(url);
   }
 
+  postCompanyContact (companyId, contactId, roleName) {
+    const url = this.joinUrl('companies', companyId, 'contacts');
+    return this.serviceRequest.post(url, {
+      body: {
+        contactId,
+        roleName
+      }
+    });
+  }
+
+  patchCompanyContact (companyId, contactId, payload) {
+    const url = this.joinUrl('companies', companyId, 'contacts', contactId);
+    return this.serviceRequest.patch(url, { body: payload });
+  }
+
+  deleteCompanyContact (companyId, contactId) {
+    const url = this.joinUrl('companies', companyId, 'contacts', contactId);
+    return this.serviceRequest.delete(url);
+  }
+
   getAddresses (entityId) {
     const url = this.joinUrl('companies', entityId, 'addresses');
     return this.serviceRequest.get(url);
@@ -82,4 +102,5 @@ class CompaniesService extends ServiceClient {
     return this.serviceRequest.get(url);
   }
 }
+
 module.exports = CompaniesService;

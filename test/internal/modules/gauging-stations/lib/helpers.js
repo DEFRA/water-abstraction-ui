@@ -360,6 +360,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
         expect(helpers.toLongForm('Ml/d', 'Units')).to.equal('Megalitres per day');
         expect(helpers.toLongForm('m³', 'Units')).to.equal('Cubic metres');
         expect(helpers.toLongForm('l/d', 'Units')).to.equal('Litres per day');
+        expect(helpers.toLongForm('SLD', 'Units')).to.equal('South Level Datum');
         expect(helpers.toLongForm('stop_or_reduce', 'AlertType')).to.equal('Reduce');
         expect(helpers.toLongForm('reduce', 'AlertType')).to.equal('Reduce');
         expect(helpers.toLongForm('stop', 'AlertType')).to.equal('Stop');
@@ -369,6 +370,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
         expect(helpers.toLongForm('gal', '')).to.equal('Gallons');
         expect(helpers.toLongForm('Ml/d', '')).to.equal('Megalitres per day');
         expect(helpers.toLongForm('m³', '')).to.equal('Cubic metres');
+        expect(helpers.toLongForm('SLD', '')).to.equal('South Level Datum');
         expect(helpers.toLongForm('l/d', '')).to.equal('Litres per day');
         expect(helpers.toLongForm('stop_or_reduce', '')).to.equal('Reduce');
         expect(helpers.toLongForm('reduce', '')).to.equal('Reduce');

@@ -3,10 +3,12 @@
 const services = require('internal/lib/connectors/services');
 const twoPartTariffQuantityForm = require('../forms/two-part-tariff-quantity');
 const confirmForm = require('shared/lib/forms/confirm-form');
+const deleteFinancialYearEndingForm = require('../forms/delete-financial-year-ending');
+const { handleFormRequest } = require('shared/lib/form-handler');
 const mappers = require('../lib/mappers');
 const twoPartTariff = require('../lib/two-part-tariff');
 const routing = require('../lib/routing');
-const { groupBy } = require('lodash');
+const { groupBy, uniq } = require('lodash');
 
 const forms = require('shared/lib/forms');
 
@@ -40,13 +42,15 @@ const getTwoPartTariffReview = async (request, h) => {
 const getLicenceReview = async (request, h) => {
   const { batch, licence } = request.pre;
   const { licenceId, action } = request.params;
-  const licenceData = await getCurrentLicenceData(licence.licenceNumber);
+  const licenceData = await getCurrentLicenceData(licenceId);
 
   const backLinkTail = action === 'review' ? 'review' : 'ready';
 
   const billingVolumeData = await services.water.billingBatches.getBatchLicenceBillingVolumes(batch.id, licenceId);
   const totals = twoPartTariff.getTotals(billingVolumeData);
-  const billingVolumeGroups = twoPartTariff.decorateBillingVolumes(batch, licence, billingVolumeData);
+  const billingVolumeGroups = twoPartTariff.decorateBillingVolumesByFinancialYear(batch, licence, billingVolumeData);
+  const financialYears = Object.keys(billingVolumeGroups);
+
   return h.view('nunjucks/billing/two-part-tariff-licence-review', {
     ...request.view,
     pageTitle: `Review data issues for ${licence.licenceNumber}`,
@@ -54,6 +58,7 @@ const getLicenceReview = async (request, h) => {
     licence,
     ...licenceData,
     billingVolumeGroups,
+    financialYears,
     totals,
     back: `/billing/batch/${batch.id}/two-part-tariff-${backLinkTail}`
   });
@@ -64,15 +69,19 @@ const getLicenceReview = async (request, h) => {
  * @param {String} licenceRef - licence number
  * @return {Promise<Object>} resolves with licence summary and conditions
  */
-const getCurrentLicenceData = async licenceRef => {
-  const doc = await services.crm.documents.getWaterLicence(licenceRef);
-  if (doc) {
+const getCurrentLicenceData = async licenceId => {
+  const doc = await services.water.licences.getDocumentByLicenceId(licenceId);
+  if (doc.metadata.IsCurrent) {
     const summary = await services.water.licences.getSummaryByDocumentId(doc.document_id);
     const aggregateConditions = mappers.mapConditions(summary.data.conditions.filter(row => row.code === 'AGG'));
     return {
       returnsLink: `/licences/${doc.document_id}/returns`,
       aggregateConditions,
       aggregateQuantity: summary.data.aggregateQuantity
+    };
+  } else {
+    return {
+      returnsLink: `/licences/${doc.document_id}/returns`
     };
   }
 };
@@ -196,6 +205,45 @@ const postApproveReview = async (request, h) => {
   return h.redirect(routing.getBillingBatchRoute(batch, { isBackEnabled: true }));
 };
 
+/**
+ * Confirm removal of licence from year ending
+ */
+const getRemoveFinancialYearEnding = async (request, h) => {
+  const { batchId, licenceId, financialYearEnding } = request.params;
+  const { batch, licence } = request.pre;
+  const billingVolumeData = await services.water.billingBatches.getBatchLicenceBillingVolumes(batch.id, licence.id);
+  const billingAccountNumbers = uniq(billingVolumeData
+    .filter(bv => bv.financialYear.yearEnding !== financialYearEnding)
+    .map(bv => bv.invoiceAccount.accountNumber));
+
+  return h.view('nunjucks/billing/two-part-tariff-licence-remove-year-ending', {
+    financialYearEnding,
+    batch,
+    licence,
+    billingAccountNumbers,
+    pageTitle: `You're about to remove this year licence from the bill run`,
+    back: `/billing/batch/${batchId}/two-part-tariff/licence/${licenceId}`,
+    form: deleteFinancialYearEndingForm.form(request, false)
+  });
+};
+
+/**
+ * remove removal of licence from year ending
+ */
+const postRemoveFinancialYearEnding = async (request, h) => {
+  const { batchId, licenceId, financialYearEnding } = request.params;
+  const { batch } = request.pre;
+  const form = handleFormRequest(request, deleteFinancialYearEndingForm);
+
+  if (!form.isValid) {
+    return h.postRedirectGet(form);
+  }
+
+  await services.water.billingVolumes.deleteBatchLicenceBillingVolume(batchId, licenceId, financialYearEnding);
+
+  return h.redirect(routing.getTwoPartTariffLicenceReviewRoute(batch, licenceId));
+};
+
 exports.getTwoPartTariffReview = getTwoPartTariffReview;
 exports.getLicenceReview = getLicenceReview;
 exports.getBillingVolumeReview = getBillingVolumeReview;
@@ -204,3 +252,5 @@ exports.getRemoveLicence = getRemoveLicence;
 exports.postRemoveLicence = postRemoveLicence;
 exports.getApproveReview = getApproveReview;
 exports.postApproveReview = postApproveReview;
+exports.getRemoveFinancialYearEnding = getRemoveFinancialYearEnding;
+exports.postRemoveFinancialYearEnding = postRemoveFinancialYearEnding;

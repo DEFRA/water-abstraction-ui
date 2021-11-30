@@ -114,7 +114,7 @@ module.exports = {
   yar: {
     maxCookieSize: 0,
     cache: {
-      expiresIn: 5 * 24 * 60 * 60 * 1000
+      expiresIn: 6 * 60 * 60 * 1000
     },
     cookieOptions: {
       password: process.env.COOKIE_SECRET,
@@ -146,6 +146,6 @@ module.exports = {
     manageInvoiceAccounts: true,
     deleteAllBillingData: ['local', 'dev', 'development', 'test', 'qa'].includes(process.env.NODE_ENV),
     waterAbstractionAlerts: true,
-    recalculateBills: false
+    recalculateBills: true
   }
 };

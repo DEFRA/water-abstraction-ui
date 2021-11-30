@@ -1,0 +1,6 @@
+exports.name = require('./contactName');
+exports.department = require('./contactDepartment');
+exports.emailAddress = require('./email-address');
+exports.waterAbstractionAlertsPreference = require('./water-abstraction-alerts-preference');
+exports.selectContactForRemoval = require('./contact-removal/select-contact-for-removal');
+exports.checkContactForRemoval = require('./contact-removal/check-contact-for-removal');

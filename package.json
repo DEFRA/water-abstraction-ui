@@ -1,6 +1,6 @@
 {
   "name": "water-abstraction-ui",
-  "version": "2.11.0",
+  "version": "2.12.1",
   "description": "Web app for Water Abstraction service",
   "main": "index.js",
   "repository": {
@@ -14,7 +14,7 @@
     "clean:reports": "rm -rf cypress/reports/*",
     "pretest": "npm run clean:reports",
     "install-assets": "gulp build",
-    "test:ci": "lab -l --bail -t 55 -m 0 -r lcov -o coverage/lcov.info -r console -o stdout",
+    "test:ci": "lab -l --bail -t 55 -m 0 -r html -o coverage/coverage.html -r lcov -o coverage/lcov.info -r console -o stdout",
     "test": "lab",
     "test:bail": "lab --bail",
     "test:external": "lab ./test/external",
@@ -46,6 +46,7 @@
     "chromedriver": "^89.0.0",
     "codecov": "^3.7.1",
     "cypress": "^8.0.0",
+    "cypress-file-upload": "^5.0.8",
     "cypress-multi-reporters": "^1.5.0",
     "del": "^3.0.0",
     "eslint": "^5.16.0",

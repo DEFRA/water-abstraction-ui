@@ -22,7 +22,9 @@ experiment('services/water/CompaniesService', () => {
 
   beforeEach(async () => {
     sandbox.stub(serviceRequest, 'get');
+    sandbox.stub(serviceRequest, 'patch');
     sandbox.stub(serviceRequest, 'post');
+    sandbox.stub(serviceRequest, 'delete');
     service = new CompaniesService(BASE_URL);
   });
 
@@ -55,6 +57,43 @@ experiment('services/water/CompaniesService', () => {
     test('passes the expected URL to the service request', async () => {
       await service.getContacts('entity_1');
       const expectedUrl = `${BASE_URL}/companies/entity_1/contacts`;
+      const [url] = serviceRequest.get.lastCall.args;
+      expect(url).to.equal(expectedUrl);
+    });
+  });
+
+  //
+  experiment('.postCompanyContact', () => {
+    test('passes the expected URL to the service request', async () => {
+      await service.postCompanyContact('entity_1', 'entity_2', 'someRole');
+      const expectedUrl = `${BASE_URL}/companies/entity_1/contacts`;
+      const [url] = serviceRequest.post.lastCall.args;
+      expect(url).to.equal(expectedUrl);
+    });
+  });
+
+  experiment('.patchCompanyContact', () => {
+    test('passes the expected URL to the service request', async () => {
+      await service.patchCompanyContact('entity_1', 'entity_2', { some: 'payload' });
+      const expectedUrl = `${BASE_URL}/companies/entity_1/contacts/entity_2`;
+      const [url] = serviceRequest.patch.lastCall.args;
+      expect(url).to.equal(expectedUrl);
+    });
+  });
+
+  experiment('.deleteCompanyContact', () => {
+    test('passes the expected URL to the service request', async () => {
+      await service.deleteCompanyContact('entity_1', 'entity_2');
+      const expectedUrl = `${BASE_URL}/companies/entity_1/contacts/entity_2`;
+      const [url] = serviceRequest.delete.lastCall.args;
+      expect(url).to.equal(expectedUrl);
+    });
+  });
+
+  experiment('.getCompanyLicences', () => {
+    test('passes the expected URL to the service request', async () => {
+      await service.getCompanyLicences('entity_1');
+      const expectedUrl = `${BASE_URL}/companies/entity_1/licences`;
       const [url] = serviceRequest.get.lastCall.args;
       expect(url).to.equal(expectedUrl);
     });

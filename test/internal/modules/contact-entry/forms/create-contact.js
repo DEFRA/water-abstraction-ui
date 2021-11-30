@@ -17,11 +17,11 @@ const createRequest = () => ({
 
 experiment('internal/modules/contact-entry/forms/create-contact', () => {
   let request;
-  beforeEach(async => {
+  beforeEach(async () => {
     request = createRequest();
 
     sandbox.stub(helpers, 'getContactFromSession').returns({
-      title: 'Lance Corporal',
+      salutation: 'Lance Corporal',
       firstName: 'Valtteri',
       lastName: 'Bottas'
     });

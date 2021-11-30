@@ -109,6 +109,7 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
       document_id: 'test-document-id'
     });
     sandbox.stub(services.crm.documentRoles, 'getDocumentRolesByDocumentRef').resolves({ data: [] });
+    sandbox.stub(services.crm.documentRoles, 'getFullHistoryOfDocumentRolesByDocumentRef').resolves({ data: [] });
 
     h = {
       view: sandbox.stub()

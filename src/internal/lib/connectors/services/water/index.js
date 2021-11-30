@@ -1,6 +1,7 @@
 // Shared services
 const CommunicationsService = require('shared/lib/connectors/services/water/CommunicationsService');
 const CompaniesService = require('shared/lib/connectors/services/water/CompaniesService');
+const ContactsService = require('shared/lib/connectors/services/water/ContactsService');
 const LicencesService = require('shared/lib/connectors/services/water/LicencesService');
 const LicenceVersionPurposeConditionsService = require('shared/lib/connectors/services/water/LicenceVersionPurposeConditionsService');
 const UsersService = require('shared/lib/connectors/services/water/UsersService');
@@ -44,6 +45,7 @@ module.exports = config => ({
   chargeVersionWorkflows: new ChargeVersionWorkflowsService(config.services.water, logger),
   communications: new CommunicationsService(config.services.water, logger),
   companies: new CompaniesService(config.services.water, logger),
+  contacts: new ContactsService(config.services.water, logger),
   licences: new LicencesService(config.services.water, logger),
   licenceVersionPurposeConditionsService: new LicenceVersionPurposeConditionsService(config.services.water, logger),
   users: new UsersService(config.services.water, logger),

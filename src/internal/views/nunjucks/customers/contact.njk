@@ -1,0 +1,69 @@
+{% extends "./nunjucks/layout.njk" %}
+{% from "title.njk" import title %}
+
+{% block content %}
+    {{ title(pageTitle, caption) }}
+    <div>
+       <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Contact details</h2>
+       <dl class="govuk-summary-list">
+          <div class="govuk-summary-list__row">
+             <dt class="govuk-summary-list__key">
+                Name
+             </dt>
+             <dd class="govuk-summary-list__value">
+                {{contactName}}
+             </dd>
+             <dd class="govuk-summary-list__actions">
+                 {% if companyContact.contact.dataSource == 'wrls' %}
+                    {% if companyContact.contact.type == 'department' %}
+                        <a class="govuk-link" href="{{companyContact.contact.id}}/department">
+                            Change<span class="govuk-visually-hidden"> name</span>
+                        </a>
+                    {% else %}
+                        <a class="govuk-link" href="{{companyContact.contact.id}}/name">
+                            Change<span class="govuk-visually-hidden"> name</span>
+                        </a>
+                    {% endif %}
+                {% elseif companyContact.contact.dataSource == 'nald' %}
+                    <p class="govuk-!-margin-bottom-0">Created in NALD</p>
+                {% else %}
+                {% endif %}
+             </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+             <dt class="govuk-summary-list__key">
+                Email address
+             </dt>
+             <dd class="govuk-summary-list__value">
+                {{ companyContact.contact.email }}
+             </dd>
+             <dd class="govuk-summary-list__actions">
+                <a class="govuk-link" href="{{companyContact.contact.id}}/email">
+                {{ "Change" if companyContact.contact.email else "Add" }}<span class="govuk-visually-hidden"> email address</span>
+                </a>
+             </dd>
+          </div>
+       </dl>
+    </div>
+    <div>
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Email alerts</h2>
+        <dl class="govuk-summary-list">
+          <div class="govuk-summary-list__row">
+             <dt class="govuk-summary-list__key">
+                Water abstraction alerts
+             </dt>
+             <dd class="govuk-summary-list__value">
+                {{ "Yes" if companyContact.waterAbstractionAlertsEnabled == true else "No" }}
+             </dd>
+             <dd class="govuk-summary-list__actions">
+                <a class="govuk-link" href="{{companyContact.contact.id}}/water-abstraction-alerts-preferences">
+                Change<span class="govuk-visually-hidden"> water abstraction alerts</span>
+                </a>
+             </dd>
+          </div>
+        </dl>
+    </div>
+    <div>
+      <p><a class="govuk-link" href={{back}}>Back to customer</a></p>
+    </div>
+{% endblock %}

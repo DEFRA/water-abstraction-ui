@@ -32,6 +32,10 @@ describe('tag a licence to a gauging station, send a warning, and remove the tag
 
       // asserting the liecence to tag
       cy.get('.govuk-caption-l').contains('Test Station 500').should('be.visible');
+
+      // assert the Unit of measurement dropdown contains SLD as it's last option
+      cy.get('#unit option').last().contains('SLD');
+
       // assert the validations for submitting the empty details
       cy.get('form > .govuk-button').contains('Continue').click();
       cy.get('.govuk-error-summary').contains('There is a problem').should('be.visible');

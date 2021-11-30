@@ -11,9 +11,16 @@ class ChargeVersionWorkflowsService extends ServiceClient {
   /**
    * Fetches all charge version workflows in progress
    */
-  getChargeVersionWorkflows () {
+  getChargeVersionWorkflows (page = 1, perPage = 25, tabFilter = 'review') {
+    // options: to_setup, review, changes_requested
     const url = this.joinUrl('charge-version-workflows');
-    return this.serviceRequest.get(url);
+    return this.serviceRequest.get(url, {
+      qs: {
+        page,
+        perPage,
+        tabFilter
+      }
+    });
   }
 
   /*

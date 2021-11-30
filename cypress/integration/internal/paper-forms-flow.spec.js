@@ -51,7 +51,7 @@ const checkAddress = (address) => {
 describe('Step through the returns paper forms flow:', function () {
   before(() => {
     tearDown();
-    setUp('barebones');
+    setUp('bulk-return');
     cy.visit(Cypress.env('ADMIN_URI'));
     cy.fixture('users.json').then(users => {
       cy.get('input#email').type(users.billingAndData);

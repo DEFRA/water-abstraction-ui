@@ -55,7 +55,7 @@ const getValues = (form) => {
   const values = {};
   mapFields(form, (field) => {
     if (field.name) {
-      values[field.name] = field.value;
+      values[field.name] = field.value === '' ? null : field.value;
     }
     return field;
   });

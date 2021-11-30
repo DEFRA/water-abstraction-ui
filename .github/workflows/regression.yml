@@ -111,7 +111,8 @@ jobs:
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS returns"
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS water"
           PGPASSWORD=water psql -U water -tc "CREATE SCHEMA IF NOT EXISTS water_import"
-          
+          PGPASSWORD=water psql -U water -tc "CREATE EXTENSION pgcrypto;"
+
       - name: Install PM2
         run: npm i -g pm2
         

@@ -127,10 +127,10 @@ jobs:
       - name: Run the charging module
         run: |
           cd ./charging-module
-          npm run create-db
-          npm run migrate-db
-          npm run seed-db
-          pm2 start index.js
+          POSTGRES_DB=chargedb npm run create-db
+          POSTGRES_DB=chargedb npm run migrate-db
+          POSTGRES_DB=chargedb npm run seed-db
+          POSTGRES_DB=chargedb pm2 start index.js
           
       - name: Install water service
         uses: actions/checkout@v2

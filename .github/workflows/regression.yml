@@ -139,13 +139,6 @@ jobs:
           ref: regression-ci
           path: './water-abstraction-service'
 
-      - name: Debugging queries
-        run: |
-          PGPASSWORD=water psql -U water -tc "select '§§§§§§1§'"
-          PGPASSWORD=water psql -U water -tc "SELECT table_schema||'.'||table_name AS full_rel_name FROM information_schema.tables WHERE table_schema = 'water';"
-          PGPASSWORD=water psql -U water -tc " SELECT EXISTS (SELECT FROM information_schema.tables WHERE  table_schema = 'water' AND table_name   = 'licences');"
-          PGPASSWORD=water psql -U water -tc "select * from water.licences where false;"
-
       - name: Install water service dependencies
         run: |
           cd ./water-abstraction-service

@@ -129,7 +129,7 @@ const postBillingBatchCancel = async (request, h) => {
 
 const getBillingBatchStatusToError = async (request, h) => billingBatchAction(request, h, 'cancel/processing-batch');
 
-const postBillingBatchStatusToError = async (request, h) => {
+const postBillingBatchStatusToCancel = async (request, h) => {
   const { batchId } = request.params;
 
   try {
@@ -286,4 +286,4 @@ exports.getBillingBatchEmpty = getBillingBatchEmpty;
 
 exports.postDeleteAllBillingData = postDeleteAllBillingData;
 exports.getBillingBatchStatusToError = getBillingBatchStatusToError;
-exports.postBillingBatchStatusToError = postBillingBatchStatusToError;
+exports.postBillingBatchStatusToCancel = postBillingBatchStatusToCancel;

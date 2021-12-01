@@ -894,9 +894,9 @@ experiment('internal/modules/billing/controller', () => {
     });
   });
 
-  experiment('.postBillingBatchStatusToError', () => {
+  experiment('.postBillingBatchStatusToCancel', () => {
     beforeEach(async () => {
-      await controller.postBillingBatchStatusToError(request, h);
+      await controller.postBillingBatchStatusToCancel(request, h);
     });
 
     test('the batch id is used to set error for batch via the water service', async () => {
@@ -911,7 +911,7 @@ experiment('internal/modules/billing/controller', () => {
 
     test('if fails to set batch status to error, the user is redirected to the batch summary, an error is thrown', async () => {
       services.water.billingBatches.setBatchStatusToError.rejects();
-      await controller.postBillingBatchStatusToError(request, h);
+      await controller.postBillingBatchStatusToCancel(request, h);
 
       const [redirectPath] = h.redirect.lastCall.args;
       expect(redirectPath).to.equal('/billing/batch/list');

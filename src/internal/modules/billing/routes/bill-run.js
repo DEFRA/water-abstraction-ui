@@ -202,10 +202,10 @@ const routes = {
     }
   },
 
-  postBillingBatchStatusToError: {
+  postBillingBatchStatusToCancel: {
     method: 'POST',
     path: '/billing/batch/{batchId}/cancel/processing-batch',
-    handler: controller.postBillingBatchStatusToError,
+    handler: controller.postBillingBatchStatusToCancel,
     config: {
       auth: { scope: allowedScopes },
       validate: {

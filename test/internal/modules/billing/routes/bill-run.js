@@ -33,13 +33,13 @@ experiment('internal/modules/billing/routes', () => {
 
   experiment('.getBillingBatchCancel', () => {
     test('limits scope to users with billing role', async () => {
-      expect(routes.postBillingBatchStatusToError.config.auth.scope);
+      expect(routes.postBillingBatchStatusToCancel.config.auth.scope);
     });
   });
 
-  experiment('.postBillingBatchStatusToError', () => {
+  experiment('.postBillingBatchStatusToCancel', () => {
     test('limits scope to users with billing role', async () => {
-      expect(routes.postBillingBatchStatusToError.config.auth.scope);
+      expect(routes.postBillingBatchStatusToCancel.config.auth.scope);
     });
   });
 

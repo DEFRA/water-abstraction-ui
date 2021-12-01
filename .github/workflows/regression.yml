@@ -136,8 +136,8 @@ jobs:
           POSTGRES_DB=chargedb npm run migrate-db
           POSTGRES_DB=chargedb npm run seed-db
           POSTGRES_DB=chargedb pm2 start index.js
-          PGPASSWORD=water psql -U water -tc "SELECT * FROM chargedb.authorised_systems;"
-          PGPASSWORD=water psql -U water -tc "SELECT * FROM chargedb.authorised_systems_regimes asr JOIN chargedb.regimes on regimes.id = asr.regime_id;"
+          POSTGRES_DB=chargedb PGPASSWORD=water psql -U water -tc "SELECT * FROM authorised_systems;"
+          POSTGRES_DB=chargedb PGPASSWORD=water psql -U water -tc "SELECT * FROM authorised_systems_regimes asr JOIN regimes on regimes.id = asr.regime_id;"
           
       - name: Install water service
         uses: actions/checkout@v2

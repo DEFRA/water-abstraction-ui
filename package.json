@@ -23,7 +23,7 @@
     "test-cov-html": "lab -r html -o coverage.html",
     "test:cypress": "node_modules/.bin/cypress open",
     "test:cypress-silently": "npm run pretest && node_modules/.bin/cypress run --spec cypress/integration/external/login.spec.js && npm run test:cypress-prepare-report",
-    "test:cypress-prepare-report": "mochawesome-merge ./cypress/reports/mocha/*.json > ./cypress/reports/mocha/combined-report.json && marge --reportDir cypress/reports/mocha/ ./cypress/reports/mocha/combined-report.json",
+    "test:cypress-prepare-report": "rm ./cypress/reports/mocha/combined-report.json && mochawesome-merge ./cypress/reports/mocha/*.json > ./cypress/reports/mocha/combined-report.txt > ./cypress/reports/mocha/combined-report.json && marge --reportDir cypress/reports/mocha/ ./cypress/reports/mocha/combined-report.json",
     "lint": "eslint .",
     "codecov": "codecov",
     "sass": "gulp sass",

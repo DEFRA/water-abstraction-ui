@@ -50,7 +50,7 @@ module.exports = {
   hapiAuthCookie: {
     cookie: 'sid',
     password: process.env.COOKIE_SECRET,
-    isSecure: !isLocal,
+    isSecure: !(isLocal || isTest || isDevelopment),
     isSameSite: 'Lax',
     ttl: 2 * 60 * 60 * 1000, // Set session to 2 hours,
     redirectTo: request => withQueryStringSubset('/welcome', request.query, '_ga'),
@@ -113,7 +113,7 @@ module.exports = {
     },
     cookieOptions: {
       password: process.env.COOKIE_SECRET,
-      isSecure: !isLocal,
+      isSecure: !(isLocal || isTest || isDevelopment),
       isSameSite: 'Lax',
       isHttpOnly: true,
       ttl: 5 * 24 * 60 * 60 * 1000

@@ -30,6 +30,7 @@ const data = {
 experiment('internal/modules/notification-reports/controller.js', () => {
   let request;
   let h;
+  const notificationCategories = [{ value: 'Water Abstraction Alert Reduce Warning', label: 'water_abstraction_alert_reduce_warning' }, { value: 'testvalue', label: 'testlabel' }];
 
   beforeEach(async () => {
     sandbox.stub(services.water.notifications, 'getNotifications');
@@ -63,7 +64,8 @@ experiment('internal/modules/notification-reports/controller.js', () => {
     beforeEach(async () => {
       services.water.notifications.getNotifications.resolves({
         data: data.events,
-        pagination: data.pagination
+        pagination: data.pagination,
+        notificationCategories
       });
 
       await controller.getNotificationsList(request, h);

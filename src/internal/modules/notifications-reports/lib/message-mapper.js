@@ -25,9 +25,11 @@ const checkBoxItems = (filter, notificationCategories) => {
     filter = [];
   }
   const returnsData = [];
-  notificationCategories.forEach(category => {
-    returnsData.push({ value: category.value, text: category.label });
-  });
+  if (notificationCategories) {
+    notificationCategories.forEach(category => {
+      returnsData.push({ value: category.value, text: category.label });
+    });
+  }
 
   return returnsData.map(row => {
     return {

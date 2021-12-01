@@ -132,12 +132,10 @@ jobs:
       - name: Run the charging module
         run: |
           cd ./charging-module
-          POSTGRES_DB=chargedb npm run create-db
-          POSTGRES_DB=chargedb npm run migrate-db
-          POSTGRES_DB=chargedb npm run seed-db
-          POSTGRES_DB=chargedb pm2 start index.js
-          PGPASSWORD=water psql -d chargedb -U water -tc "SELECT * FROM public.authorised_systems;"
-          PGPASSWORD=water psql -d chargedb -U water -tc "SELECT * FROM public.authorised_systems_regimes asr JOIN public.regimes on regimes.id = asr.regime_id;"
+          PORT=3000 POSTGRES_DB=chargedb npm run create-db
+          PORT=3000 POSTGRES_DB=chargedb npm run migrate-db
+          PORT=3000 POSTGRES_DB=chargedb npm run seed-db
+          PORT=3000 POSTGRES_DB=chargedb pm2 start index.js
           
       - name: Install water service
         uses: actions/checkout@v2

@@ -54,14 +54,15 @@ async function getNotificationsList (request, h) {
   const { view } = request;
 
   form = forms.handleRequest(form, request, searchFormSchema());
-  const { pagination, data } = await services.water.notifications.getNotifications(page, filter, sentBy);
-  Object.assign(view, mapResponseToView(data, request));
+  const { pagination, data, notificationCategories } = await services.water.notifications.getNotifications(page, filter, sentBy);
+  Object.assign(view, mapResponseToView(data, request, notificationCategories));
   view.form = form;
 
   return h.view('nunjucks/notifications-reports/list', {
     ...view,
     pagination,
-    events: data
+    events: data,
+    notificationCategories
   });
 }
 

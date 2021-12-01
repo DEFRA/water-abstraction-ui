@@ -20,18 +20,14 @@ const mapMessage = message => ({
   badge: messageStatusBadgeMapper(message.displayStatus)
 });
 
-const checkBoxItems = filter => {
+const checkBoxItems = (filter, notificationCategories) => {
   if (!filter) {
     filter = [];
   }
   const returnsData = [];
-  returnsData.push({ value: 'notification_letter', text: 'Returns: send paper forms' });
-  returnsData.push({ value: 'returns_invitation_letter', text: 'Returns: invitation' });
-  returnsData.push({ value: 'returns_final_reminder', text: 'Returns: reminder' });
-  returnsData.push({ value: 'expiry_notification_email', text: 'Expiring licence(s): invitation to renew' });
-  returnsData.push({ value: 'water_abstraction_alert_reduce_warning', text: 'Hands off flow: levels warning' });
-  returnsData.push({ value: 'water_abstraction_alert_reduce_or_stop_warning', text: 'Hands off flow: stop or reduce abstraction' });
-  returnsData.push({ value: 'water_abstraction_alert_resume', text: 'Hands off flow: resume abstraction' });
+  notificationCategories.forEach(category => {
+    returnsData.push({ value: category.value, text: category.label });
+  });
 
   return returnsData.map(row => {
     return {
@@ -41,13 +37,13 @@ const checkBoxItems = filter => {
   });
 };
 
-const mapResponseToView = (response, request) => {
+const mapResponseToView = (response, request, notificationCategories) => {
   const { filter, sentBy } = request.query;
   return {
     ...response,
     filter,
     sentBy,
-    checkBoxItems: checkBoxItems(filter)
+    checkBoxItems: checkBoxItems(filter, notificationCategories)
   };
 };
 exports.mapResponseToView = mapResponseToView;

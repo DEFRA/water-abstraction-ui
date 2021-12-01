@@ -29,6 +29,7 @@ jobs:
       WATER_URI_INTERNAL: http://127.0.0.1:8001/water/1.0
       PERMIT_URI: http://127.0.0.1:8004/API/1.0/
       ADMIN_URI: http://127.0.0.1:8005/API/1.0/
+      ADMIN_BASE_URL: http://127.0.0.1:8008
       CRM_URI: http://127.0.0.1:8002/crm/1.0
       IDM_URI: http://127.0.0.1:8003/idm/1.0
       IMPORT_URI: http://127.0.0.1:8007/import/1.0
@@ -224,6 +225,7 @@ jobs:
           npm i
           npm run install-assets
           pm2 start ecosystem.config.json
+          sleep 15
           curl --location --request GET 'http://127.0.0.1:8001/status'
           curl --location --request GET 'http://127.0.0.1:8002/status'
           curl --location --request GET 'http://127.0.0.1:8003/status'

@@ -234,6 +234,8 @@ jobs:
           curl --location --request GET 'http://127.0.0.1:8007/status'
           curl --location --request GET 'http://127.0.0.1:8008'
           curl --location --request GET 'http://localhost:8008'
+          curl --location --request GET 'http://127.0.0.1:8000'
+          curl --location --request GET 'http://localhost:8000'
           curl --location --request GET 'http://localhost:8001/water/1.0/service-status'
           echo $HOME
           ls
@@ -250,3 +252,9 @@ jobs:
         with:
           name: Cypress Report
           path: /home/runner/work/water-abstraction-ui/water-abstraction-ui/cypress/reports 
+          
+      - uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: Cypress Screenshots
+          path: /home/runner/work/water-abstraction-ui/water-abstraction-ui/cypress/screenshots 

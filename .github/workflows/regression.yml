@@ -63,6 +63,9 @@ jobs:
       IGNORE_JWT_EXPIRATION: true
       AIRBRAKE_HOST: ${{ secrets.CM_AIRBRAKE_HOST }}
       AIRBRAKE_KEY: ${{ secrets.CM_AIRBRAKE_KEY }}
+      COGNITO_HOST: ${{ secrets.CM_COGNITO_HOST }}
+      COGNITO_USERNAME: ${{ secrets.CM_COGNITO_USERNAME }}
+      COGNITO_PASSWORD: ${{ secrets.CM_COGNITO_PASSWORD }}
       
     services:
       # Label used to access the service container

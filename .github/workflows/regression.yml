@@ -223,7 +223,7 @@ jobs:
       - name: Install UI repo dependencies
         run: |
           cd ./water-abstraction-ui
-          npm i
+          npm ci
           npm run install-assets
           
       - name: Start Permit repo

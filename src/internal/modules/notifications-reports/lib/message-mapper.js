@@ -51,11 +51,11 @@ const mapResponseToView = (response, request, notificationCategories) => {
     if (typeof filter === 'string') {
       filter = [filter];
     }
-    filter.forEach(filter => {
-      filterString += 'filter=' + filter + '&';
+    filter.forEach(param => {
+      filterString += `filter=${param}&`;
     });
   }
-  filterString += 'sentBy=' + sentBy;
+  filterString += `sentBy=${sentBy}`;
   filterString = filterString.replace('undefined', '');
   return {
     ...response,

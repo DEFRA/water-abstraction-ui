@@ -272,6 +272,7 @@ jobs:
         run: sleep 30
         
       - name: Compile output report
+        if: always()
         run: cd water-abstraction-ui && npm run test:cypress-prepare-report
         
       - uses: actions/upload-artifact@v2

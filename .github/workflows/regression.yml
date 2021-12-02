@@ -98,12 +98,7 @@ jobs:
           # Maps port 6379 on service container to the host
           - 6379:6379
       
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          node-version: 12
-          
+    steps:          
       - name: Create database
         run: |
           PGPASSWORD=water psql -U water -tc "CREATE EXTENSION pgcrypto;"
@@ -145,6 +140,7 @@ jobs:
           repository: defra/water-abstraction-service
           ref: regression-ci
           path: './water-abstraction-service'
+          node-version: 12
 
       - name: Install water service dependencies
         run: |
@@ -159,6 +155,7 @@ jobs:
           repository: defra/water-abstraction-returns
           ref: regression-ci
           path: './water-abstraction-returns'
+          node-version: 12
 
       - name: Install returns service dependencies
         run: |
@@ -172,6 +169,7 @@ jobs:
           repository: defra/water-abstraction-tactical-crm
           ref: regression-ci
           path: './water-abstraction-tactical-crm'
+          node-version: 12
 
       - name: Install CRM dependencies
         run: |
@@ -185,6 +183,7 @@ jobs:
           ref: regression-ci
           repository: defra/water-abstraction-tactical-idm
           path: './water-abstraction-tactical-idm'
+          node-version: 12
 
       - name: Install IDM dependencies
         run: |
@@ -198,6 +197,7 @@ jobs:
           repository: defra/water-abstraction-permit-repository
           ref: regression-ci
           path: './water-abstraction-permit-repository'
+          node-version: 12
 
       - name: Install permit repo dependencies
         run: |
@@ -211,12 +211,18 @@ jobs:
           repository: defra/water-abstraction-import
           ref: regression-ci
           path: './water-abstraction-import'
+          node-version: 12
 
       - name: Install import repo dependencies
         run: |
           cd ./water-abstraction-import
           npm i
           npm run migrate
+
+      - name: Install UI repo
+        uses: actions/checkout@v2
+        with:
+          node-version: 12
           
       - name: Start pm2
         run: |

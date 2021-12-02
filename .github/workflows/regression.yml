@@ -98,7 +98,7 @@ jobs:
           # Maps port 6379 on service container to the host
           - 6379:6379
       
-    steps:          
+    steps:
       - name: Create database
         run: |
           PGPASSWORD=water psql -U water -tc "CREATE EXTENSION pgcrypto;"
@@ -140,7 +140,6 @@ jobs:
           repository: defra/water-abstraction-service
           ref: regression-ci
           path: './water-abstraction-service'
-          node-version: 12
 
       - name: Install water service dependencies
         run: |
@@ -155,7 +154,6 @@ jobs:
           repository: defra/water-abstraction-returns
           ref: regression-ci
           path: './water-abstraction-returns'
-          node-version: 12
 
       - name: Install returns service dependencies
         run: |
@@ -169,7 +167,6 @@ jobs:
           repository: defra/water-abstraction-tactical-crm
           ref: regression-ci
           path: './water-abstraction-tactical-crm'
-          node-version: 12
 
       - name: Install CRM dependencies
         run: |
@@ -183,7 +180,6 @@ jobs:
           ref: regression-ci
           repository: defra/water-abstraction-tactical-idm
           path: './water-abstraction-tactical-idm'
-          node-version: 12
 
       - name: Install IDM dependencies
         run: |
@@ -197,7 +193,6 @@ jobs:
           repository: defra/water-abstraction-permit-repository
           ref: regression-ci
           path: './water-abstraction-permit-repository'
-          node-version: 12
 
       - name: Install permit repo dependencies
         run: |
@@ -211,7 +206,6 @@ jobs:
           repository: defra/water-abstraction-import
           ref: regression-ci
           path: './water-abstraction-import'
-          node-version: 12
 
       - name: Install import repo dependencies
         run: |
@@ -222,21 +216,36 @@ jobs:
       - name: Install UI repo
         uses: actions/checkout@v2
         with:
-          node-version: 12
+          repository: defra/water-abstraction-ui
+          ref: regression-ci
+          path: './water-abstraction-ui'
           
-      - name: Start pm2
+      - name: Install UI repo dependencies
         run: |
-          PGPASSWORD=water psql -U water -tc "SELECT schemaname, tablename FROM pg_catalog.pg_tables pt"
-          cd water-abstraction-permit-repository && pm2 start ecosystem.config.json --update-env && cd ..
-          cd water-abstraction-service && pm2 start ecosystem.config.json --update-env && cd ..
-          cd water-abstraction-tactical-crm && pm2 start ecosystem.config.json --update-env && cd ..
-          cd water-abstraction-tactical-idm && pm2 start ecosystem.config.json --update-env && cd ..
-          cd water-abstraction-import && NODE_ENV=local pm2 start ecosystem.config.json --update-env && cd ..
-          cd water-abstraction-returns && pm2 start ecosystem.config.json --update-env && cd ..
-          npm -v
-          node -v
-          npm cache clean --force && npm i && npm run install-assets && pm2 start ecosystem.config.json
-          sleep 15
+          cd ./water-abstraction-ui
+          npm i
+          npm run install-assets
+          
+      - name: Start Permit repo
+        run: cd water-abstraction-permit-repository && pm2 start ecosystem.config.json --update-env
+          
+      - name: Start the abstraction service
+        run: cd water-abstraction-service && pm2 start ecosystem.config.json --update-env
+      
+      - name: Start the CRM service
+        run: cd water-abstraction-tactical-crm && pm2 start ecosystem.config.json --update-env
+      
+      - name: Start the IDM service
+        run: cd water-abstraction-tactical-idm && pm2 start ecosystem.config.json --update-env
+        
+      - name: Start the Import service
+        run: cd water-abstraction-import && NODE_ENV=local pm2 start ecosystem.config.json --update-env
+
+      - name: Start the Returns service
+        run: cd water-abstraction-returns && NODE_ENV=local pm2 start ecosystem.config.json --update-env
+
+      - name: Start the UI
+        run: cd water-abstraction-ui && pm2 start ecosystem.config.json && sleep 10
 
       - name: Check services are up
         run: |

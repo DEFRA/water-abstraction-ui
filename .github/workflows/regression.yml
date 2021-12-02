@@ -99,6 +99,10 @@ jobs:
           - 6379:6379
       
     steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          
       - name: Create database
         run: |
           PGPASSWORD=water psql -U water -tc "CREATE EXTENSION pgcrypto;"
@@ -223,7 +227,7 @@ jobs:
       - name: Install UI repo dependencies
         run: |
           cd ./water-abstraction-ui
-          npm i
+          npm ci
           npm run install-assets
           
       - name: Start Permit repo

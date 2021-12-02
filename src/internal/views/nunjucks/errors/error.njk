@@ -1,6 +1,6 @@
 {% extends "./nunjucks/layout.njk" %}
 
-{% set pageTitle %}There is a problem with this service{% endset %}
+{% set pageTitle %}Sorry, there is a problem with the service{% endset %}
 
 {% block content %}
 
@@ -9,11 +9,14 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
 
-      <p>Sorry, there is a technical problem.</p>
+      <p class="govuk-body">Try again later.</p>
 
-      <p>Please refresh your screen. If the problem continues, try again later.</p>
+      <p class="govuk-body">If you need help:</p>
 
-      <p>If you need help call the IT Service Desk on 0800 014 8255.</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>Email <a href="mailto://enquiries@environment-agency.gov.uk">enquiries@environment-agency.gov.uk</a></li>
+        <li>call us on 03708 506 506 (Monday to Friday, 8am to 6pm)</li>
+      </ul>
 
     </div>
   </div>

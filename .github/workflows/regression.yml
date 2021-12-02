@@ -266,13 +266,13 @@ jobs:
           curl --location --request GET 'http://localhost:8001/water/1.0/service-status'
           
       - name: Run e2e tests
-        run: npm run test:cypress-silently
+        run: cd water-abstraction-ui && npm run test:cypress-silently
         
       - name: Chill your beans
         run: sleep 30
         
       - name: Compile output report
-        run: npm run test:cypress-prepare-report
+        run: cd water-abstraction-ui && npm run test:cypress-prepare-report
         
       - uses: actions/upload-artifact@v2
         if: always()
@@ -284,10 +284,17 @@ jobs:
         if: always()
         with:
           name: Cypress Report
-          path: /home/runner/work/water-abstraction-ui/water-abstraction-ui/cypress/reports 
+          path: /home/runner/work/water-abstraction-ui/water-abstraction-ui/water-abstraction-ui/cypress/reports 
           
       - uses: actions/upload-artifact@v2
         if: always()
         with:
           name: Cypress Screenshots
-          path: /home/runner/work/water-abstraction-ui/water-abstraction-ui/cypress/screenshots 
+          path: /home/runner/work/water-abstraction-ui/water-abstraction-ui/water-abstraction-ui/cypress/screenshots 
+          
+          
+      - uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: Cypress Videos
+          path: /home/runner/work/water-abstraction-ui/water-abstraction-ui/water-abstraction-ui/cypress/videos 

@@ -235,10 +235,7 @@ jobs:
           cd water-abstraction-returns && pm2 start ecosystem.config.json --update-env && cd ..
           npm -v
           node -v
-          npm cache clean --force
-          npm i
-          npm run install-assets
-          pm2 start ecosystem.config.json
+          npm cache clean --force && npm i && npm run install-assets && pm2 start ecosystem.config.json
           sleep 15
 
       - name: Check services are up

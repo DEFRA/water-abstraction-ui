@@ -24,6 +24,9 @@ const checkBoxItems = (filter, notificationCategories) => {
   if (!filter) {
     filter = [];
   }
+  if (typeof filter === 'string') {
+    filter = [filter];
+  }
   const returnsData = [];
   if (notificationCategories) {
     notificationCategories.forEach(category => {
@@ -40,12 +43,26 @@ const checkBoxItems = (filter, notificationCategories) => {
 };
 
 const mapResponseToView = (response, request, notificationCategories) => {
-  const { filter, sentBy } = request.query;
+  const { sentBy } = request.query;
+  let { filter } = request.query;
+  let filterString = '&';
+  if (filter) {
+    // Only one item selected
+    if (typeof filter === 'string') {
+      filter = [filter];
+    }
+    filter.forEach(filter => {
+      filterString += 'filter=' + filter + '&';
+    });
+  }
+  filterString += 'sentBy=' + sentBy;
+  filterString = filterString.replace('undefined', '');
   return {
     ...response,
     filter,
     sentBy,
-    checkBoxItems: checkBoxItems(filter, notificationCategories)
+    checkBoxItems: checkBoxItems(filter, notificationCategories),
+    filterString
   };
 };
 exports.mapResponseToView = mapResponseToView;

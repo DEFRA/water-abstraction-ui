@@ -66,6 +66,14 @@ jobs:
       COGNITO_HOST: ${{ secrets.CM_COGNITO_HOST }}
       COGNITO_USERNAME: ${{ secrets.CM_COGNITO_USERNAME }}
       COGNITO_PASSWORD: ${{ secrets.CM_COGNITO_PASSWORD }}
+      S3_BUCKET: ${{ secrets.S3_BUCKET }}
+      S3_KEY: ${{ secrets.S3_KEY }}
+      S3_SECRET: ${{ secrets.S3_SECRET }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.S3_KEY }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET }}
+      UPLOAD_BUCKET: ${{ secrets.UPLOAD_BUCKET }}
+      ARCHIVE_BUCKET: ${{ secrets.ARCHIVE_BUCKET }}
       
     services:
       # Label used to access the service container
@@ -103,6 +111,21 @@ jobs:
         with:
           node-version: '14'
           
+      - name: Setup minio (S3 Mock Server)
+        run: |
+          docker run -d -p 9000:9000 --name minio \
+                     -e "MINIO_ACCESS_KEY=minioadmin" \
+                     -e "MINIO_SECRET_KEY=minioadmin" \
+                     -v /tmp/data:/data \
+                     -v /tmp/config:/root/.minio \
+                     minio/minio server /data
+
+          export AWS_ACCESS_KEY_ID=minioadmin
+          export AWS_SECRET_ACCESS_KEY=minioadmin
+          export AWS_EC2_METADATA_DISABLED=true
+
+          aws --endpoint-url http://127.0.0.1:9000/ s3 mb s3://testbucket
+
       - name: Create database
         run: |
           PGPASSWORD=water psql -U water -tc "CREATE EXTENSION pgcrypto;"

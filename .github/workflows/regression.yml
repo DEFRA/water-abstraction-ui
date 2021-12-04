@@ -66,6 +66,14 @@ jobs:
       COGNITO_HOST: ${{ secrets.CM_COGNITO_HOST }}
       COGNITO_USERNAME: ${{ secrets.CM_COGNITO_USERNAME }}
       COGNITO_PASSWORD: ${{ secrets.CM_COGNITO_PASSWORD }}
+      S3_BUCKET: ${{ secrets.S3_BUCKET }}
+      S3_KEY: ${{ secrets.S3_KEY }}
+      S3_SECRET: ${{ secrets.S3_SECRET }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.S3_KEY }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET }}
+      UPLOAD_BUCKET: ${{ secrets.UPLOAD_BUCKET }}
+      ARCHIVE_BUCKET: ${{ secrets.ARCHIVE_BUCKET }}
       
     services:
       # Label used to access the service container
@@ -102,7 +110,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-          
+
       - name: Create database
         run: |
           PGPASSWORD=water psql -U water -tc "CREATE EXTENSION pgcrypto;"
@@ -266,13 +274,14 @@ jobs:
           curl --location --request GET 'http://localhost:8001/water/1.0/service-status'
           
       - name: Run e2e tests
-        run: npm run test:cypress-silently
+        run: cd water-abstraction-ui && npm run test:cypress-silently
         
       - name: Chill your beans
         run: sleep 30
         
       - name: Compile output report
-        run: npm run test:cypress-prepare-report
+        if: always()
+        run: cd water-abstraction-ui && npm run test:cypress-prepare-report
         
       - uses: actions/upload-artifact@v2
         if: always()
@@ -284,10 +293,17 @@ jobs:
         if: always()
         with:
           name: Cypress Report
-          path: /home/runner/work/water-abstraction-ui/water-abstraction-ui/cypress/reports 
+          path: /home/runner/work/water-abstraction-ui/water-abstraction-ui/water-abstraction-ui/cypress/reports 
           
       - uses: actions/upload-artifact@v2
         if: always()
         with:
           name: Cypress Screenshots
-          path: /home/runner/work/water-abstraction-ui/water-abstraction-ui/cypress/screenshots 
+          path: /home/runner/work/water-abstraction-ui/water-abstraction-ui/water-abstraction-ui/cypress/screenshots 
+          
+          
+      - uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: Cypress Videos
+          path: /home/runner/work/water-abstraction-ui/water-abstraction-ui/water-abstraction-ui/cypress/videos 

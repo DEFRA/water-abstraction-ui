@@ -918,9 +918,9 @@ experiment('internal/modules/billing/controller', () => {
     });
   });
 
-  experiment('.getBillingBatchStatusToError', () => {
+  experiment('.getBillingBatchStatusToCancel', () => {
     beforeEach(async () => {
-      await controller.getBillingBatchStatusToError(request, h);
+      await controller.getBillingBatchStatusToCancel(request, h);
     });
 
     test('passes the expected view template', async () => {

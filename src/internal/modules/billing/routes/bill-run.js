@@ -182,10 +182,10 @@ const routes = {
     }
   },
 
-  getBillingBatchStatusToError: {
+  getBillingBatchStatusToCancel: {
     method: 'GET',
     path: '/billing/batch/{batchId}/cancel/processing-batch',
-    handler: controller.getBillingBatchStatusToError,
+    handler: controller.getBillingBatchStatusToCancel,
     config: {
       auth: { scope: allowedScopes },
       plugins: {

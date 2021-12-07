@@ -22,6 +22,19 @@
   {% endif %}
 {% endmacro %}
 
+{% macro cancelStatusBatchButton(batch) %}
+  {% if batch.status in['processing'] %}
+    {{
+    govukButton({
+      text: "Cancel bill run",
+      href: '/billing/batch/' + batch.id + '/cancel/processing-batch',
+      classes: "govuk-button--secondary"
+    })
+  }}
+  {% endif %}
+{% endmacro %}
+
+
 {% macro sendBatchButton(batch) %}
   {% if batch.status in['ready', 'review'] %}
     {{

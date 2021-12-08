@@ -91,7 +91,7 @@ const checkBatchStatusIsReview = partialRight(checkBatchStatus, 'review');
 const checkBatchStatusIsReady = partialRight(checkBatchStatus, 'ready');
 
 const validBatchStatusSchema = Joi.array().min(1).required().items(
-  Joi.string().valid('processing', 'review', 'ready', 'error', 'empty', 'sent')
+  Joi.string().valid('processing', 'review', 'ready', 'error', 'empty', 'sent', 'sending')
 );
 
 /**

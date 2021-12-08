@@ -78,6 +78,13 @@
   </div>
 {% endmacro %}
 
+{% macro batchStatusMetadata (batch) %}
+  <div class="meta__row">
+    <dt class="meta__key">Status</dt>
+    <dd class="meta__value">{{ batch.status | capitalize }}</dd>
+  </div>
+{% endmacro %}
+
 {% macro licenceNumberMetadata(licence) %}
   <dl class="meta govuk-!-margin-bottom-3">
     <div class="meta__row">
@@ -92,6 +99,7 @@
     {{ batchCreatedMetadata(batch) }}
     {{ batchRegionMetadata(batch) }}
     {{ batchTypeMetadata(batch) }}
+    {{ batchStatusMetadata(batch) }}
   </dl>
 {% endmacro %}
 

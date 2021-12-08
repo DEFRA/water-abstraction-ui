@@ -170,6 +170,7 @@ experiment('internal/modules/billing/controller', () => {
 
     sandbox.stub(services.water.billingBatches, 'cancelBatch').resolves();
     sandbox.stub(services.water.billingBatches, 'approveBatch').resolves();
+    sandbox.stub(services.water.billingBatches, 'setBatchStatusToError').resolves();
 
     sandbox.stub(services.water.billingBatches, 'deleteAllBillingData').resolves();
 
@@ -890,6 +891,52 @@ experiment('internal/modules/billing/controller', () => {
 
     test('redirects to the billing page', async () => {
       expect(h.redirect.calledWith('/billing/batch/list')).to.be.true();
+    });
+  });
+
+  experiment('.postBillingBatchStatusToCancel', () => {
+    beforeEach(async () => {
+      await controller.postBillingBatchStatusToCancel(request, h);
+    });
+
+    test('the batch id is used to set error for batch via the water service', async () => {
+      const [batchId] = services.water.billingBatches.setBatchStatusToError.lastCall.args;
+      expect(batchId).to.equal('test-batch-id');
+    });
+
+    test('the user is redirected back to the batch summary', async () => {
+      const [redirectPath] = h.redirect.lastCall.args;
+      expect(redirectPath).to.equal('/billing/batch/list');
+    });
+
+    test('if fails to set batch status to error, the user is redirected to the batch summary, an error is thrown', async () => {
+      services.water.billingBatches.setBatchStatusToError.rejects();
+      await controller.postBillingBatchStatusToCancel(request, h);
+
+      const [redirectPath] = h.redirect.lastCall.args;
+      expect(redirectPath).to.equal('/billing/batch/list');
+    });
+  });
+
+  experiment('.getBillingBatchStatusToCancel', () => {
+    beforeEach(async () => {
+      await controller.getBillingBatchStatusToCancel(request, h);
+    });
+
+    test('passes the expected view template', async () => {
+      const [view] = h.view.lastCall.args;
+      expect(view).to.equal('nunjucks/billing/confirm-batch');
+    });
+
+    test('passes the expected data in the view context', async () => {
+      const [, context] = h.view.lastCall.args;
+      expect(context).to.contain({ foo: 'bar' });
+      expect(context.batch).to.equal(batchData);
+      expect(context.pageTitle).to.equal(`You're about to cancel this bill run`);
+      expect(context.secondTitle).to.equal(`Anglian supplementary bill run`);
+      expect(context.form).to.be.an.object();
+      expect(context.form.action).to.equal(`/billing/batch/${request.params.batchId}/cancel/processing-batch`);
+      expect(context.back).to.equal('/billing/batch/test-batch-id/summary');
     });
   });
 });

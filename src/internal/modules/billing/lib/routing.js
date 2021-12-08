@@ -14,6 +14,7 @@ const getBillingBatchRoute = (batch, opts = {}) => {
 
   const routeMap = new Map()
     .set('processing', `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`)
+    .set('sending', `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`)
     .set('ready', opts.invoiceId ? `/billing/batch/${id}/invoice/${opts.invoiceId}` : `/billing/batch/${id}/summary`)
     .set('sent', opts.showSuccessPage ? `/billing/batch/${id}/confirm/success` : `/billing/batch/${id}/summary`)
     .set('review', `/billing/batch/${id}/two-part-tariff-review`);

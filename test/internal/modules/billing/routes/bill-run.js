@@ -98,7 +98,7 @@ experiment('internal/modules/billing/routes', () => {
 
     test('redirects unless batch status is "processing" or "error"', async () => {
       const { validBatchStatuses } = routes.getBillingBatchProcessing.config.app;
-      expect(validBatchStatuses).to.equal(['processing', 'error']);
+      expect(validBatchStatuses).to.equal(['processing', 'error', 'sending']);
     });
   });
 

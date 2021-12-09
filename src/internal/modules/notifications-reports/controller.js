@@ -65,12 +65,10 @@ async function getNotificationsList (request, h) {
       if (error.name === 'sentBy') {
         thisFormWithCustomErrors = applyErrors(form, [{ name: 'sentBy', summary: 'Invalid email entered' }]);
         sentByQuery = ''; // do not search with invalid query
-        return true;
       }
       if (error.name === 'filter') {
         thisFormWithCustomErrors = applyErrors(form, [{ name: 'filter', summary: 'Invalid filter selected' }]);
         filterQuery = ''; // do not search with invalid query
-        return true;
       }
     });
   }

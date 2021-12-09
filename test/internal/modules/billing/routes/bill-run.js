@@ -31,6 +31,18 @@ experiment('internal/modules/billing/routes', () => {
     });
   });
 
+  experiment('.getBillingBatchCancel', () => {
+    test('limits scope to users with billing role', async () => {
+      expect(routes.postBillingBatchStatusToCancel.config.auth.scope);
+    });
+  });
+
+  experiment('.postBillingBatchStatusToCancel', () => {
+    test('limits scope to users with billing role', async () => {
+      expect(routes.postBillingBatchStatusToCancel.config.auth.scope);
+    });
+  });
+
   experiment('.getTransactionsCSV', () => {
     test('limits scope to users with billing role', async () => {
       expect(routes.getTransactionsCSV.config.auth.scope);

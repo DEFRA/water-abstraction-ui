@@ -182,6 +182,43 @@ const routes = {
     }
   },
 
+  getBillingBatchStatusToCancel: {
+    method: 'GET',
+    path: '/billing/batch/{batchId}/cancel/processing-batch',
+    handler: controller.getBillingBatchStatusToCancel,
+    config: {
+      auth: { scope: allowedScopes },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'bill-runs'
+        }
+      },
+      validate: {
+        params: Joi.object().keys({
+          batchId: Joi.string().uuid()
+        })
+      },
+      pre: [{ method: preHandlers.loadBatch, assign: 'batch' }]
+    }
+  },
+
+  postBillingBatchStatusToCancel: {
+    method: 'POST',
+    path: '/billing/batch/{batchId}/cancel/processing-batch',
+    handler: controller.postBillingBatchStatusToCancel,
+    config: {
+      auth: { scope: allowedScopes },
+      validate: {
+        params: Joi.object().keys({
+          batchId: Joi.string().uuid().required()
+        }),
+        payload: Joi.object().keys({
+          csrf_token: Joi.string().uuid().required()
+        })
+      }
+    }
+  },
+
   getTransactionsCSV: {
     method: 'GET',
     path: '/billing/batch/{batchId}/transactions-csv',

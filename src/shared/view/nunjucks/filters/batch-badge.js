@@ -3,6 +3,7 @@
 const badge = {
   processing: { status: 'inactive', text: 'Building' },
   ready: { status: 'todo', text: 'Ready' },
+  sending: { status: 'inactive', text: 'Sending' },
   sent: { status: 'success', text: 'Sent' },
   review: { status: 'todo', text: 'Review' },
   error: { status: 'error', text: 'Error' },

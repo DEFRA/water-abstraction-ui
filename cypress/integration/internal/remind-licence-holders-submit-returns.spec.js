@@ -35,7 +35,7 @@ describe('Sending returns reminders to users ', () => {
     });
 
     describe('continue and send returns reminders', () => {
-      cy.url({ timeout: 20000 }).should('contain', '/batch-notification');
+      cy.url({ timeout: 40000 }).should('contain', '/batch-notification');
       cy.get('.govuk-heading-l').should('contain', 'Send returns reminders');
       cy.get('#main-content').should('contain', 'Mailing list is ready to send');
       cy.get('form > .govuk-button').click();

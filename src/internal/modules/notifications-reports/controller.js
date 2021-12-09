@@ -66,7 +66,7 @@ async function getNotificationsList (request, h) {
   let next = parseInt(page) + 1;
   pagination.next = next;
   pagination.previous = parseInt(page) - 1;
-  Object.assign(view, mapResponseToView(sentBy, data, request, notificationCategories));
+  Object.assign(view, mapResponseToView(data, request, notificationCategories, sentBy));
   view.form = form;
 
   if (!form.isValid) {

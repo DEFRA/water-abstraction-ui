@@ -42,7 +42,7 @@ const checkBoxItems = (filter, notificationCategories) => {
   });
 };
 
-const mapResponseToView = (sentBy = '', response, request, notificationCategories) => {
+const mapResponseToView = (response, request, notificationCategories, sentBy = '') => {
   let { filter } = request.query;
   let filterString = '&';
   if (filter) {

@@ -51,18 +51,31 @@ const searchFormSchema = () => Joi.object().keys({
 
 async function getNotificationsList (request, h) {
   const { page, filter } = request.query;
-  let { sentBy } = request.query;
+  const { sentBy } = request.query;
   const { view } = request;
-
   const form = handleRequest(searchForm(request, {}), request, searchFormSchema(), {
     abortEarly: true
   });
-
+  const { errors } = form;
+  let sentByQuery = sentBy;
+  let filterQuery = filter;
+  let thisFormWithCustomErrors = form;
   if (!form.isValid) {
-    sentBy = '';
+    errors.some(error => {
+      if (error.name === 'sentBy') {
+        thisFormWithCustomErrors = applyErrors(form, [{ name: 'sentBy', summary: 'Invalid email entered' }]);
+        sentByQuery = ''; // do not search with invalid query
+        return true;
+      }
+      if (error.name === 'filter') {
+        thisFormWithCustomErrors = applyErrors(form, [{ name: 'filter', summary: 'Invalid filter selected' }]);
+        filterQuery = ''; // do not search with invalid query
+        return true;
+      }
+    });
   }
 
-  const { pagination, data, notificationCategories } = await services.water.notifications.getNotifications(page, filter, sentBy);
+  const { pagination, data, notificationCategories } = await services.water.notifications.getNotifications(page, filterQuery, sentByQuery);
   const next = parseInt(page) + 1;
   pagination.next = next;
   pagination.previous = parseInt(page) - 1;
@@ -70,7 +83,6 @@ async function getNotificationsList (request, h) {
   view.form = form;
 
   if (!form.isValid) {
-    const thisFormWithCustomErrors = applyErrors(form, [{ name: 'sentBy', summary: 'Invalid email entered' }]);
     thisFormWithCustomErrors.isValid = false;
     view.form = thisFormWithCustomErrors;
   }

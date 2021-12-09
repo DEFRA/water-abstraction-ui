@@ -28,7 +28,7 @@ const data = {
 };
 
 experiment('internal/modules/notification-reports/controller.js', () => {
-  let request;
+  let request, requestFail;
   let h;
   const notificationCategories = [{ value: 'Water Abstraction Alert Reduce Warning', label: 'water_abstraction_alert_reduce_warning' }, { value: 'testvalue', label: 'testlabel' }];
 
@@ -47,7 +47,24 @@ experiment('internal/modules/notification-reports/controller.js', () => {
         clear: sandbox.stub()
       },
       query: {
-        page: 3
+        page: 3,
+        sentBy: ''
+      },
+      view: {}
+    };
+
+    requestFail = {
+      params: {
+        id: eventId
+      },
+      yar: {
+        get: sandbox.stub(),
+        set: sandbox.stub(),
+        clear: sandbox.stub()
+      },
+      query: {
+        page: 3,
+        sentBy: 'not-email'
       },
       view: {}
     };
@@ -94,46 +111,60 @@ experiment('internal/modules/notification-reports/controller.js', () => {
       expect(pagination).to.equal(data.pagination);
     });
 
-    /*
     test('uses the expected view template', async () => {
       const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/notifications-reports/report');
+      expect(template).to.equal('nunjucks/notifications-reports/list');
     });
 
-    test('gets the event using the id param from the request', async () => {
-      expect(services.water.events.findOne.calledWith('test-params-id')).to.be.true();
-    });
-
-    test('adds the event to the view context', async () => {
+    test('empty errors array in the view context', async () => {
       const [, viewContext] = h.view.lastCall.args;
-      expect(viewContext.event.metadata.taskConfigId).to.equal('test-task-config-id');
+      expect(viewContext.form.errors.length).to.equal(0);
+    });
+  });
+
+  experiment('getNotification with invalid email', () => {
+    beforeEach(async () => {
+      services.water.notifications.getNotifications.resolves({
+        data: data.events,
+        pagination: data.pagination,
+        notificationCategories
+      });
+
+      await controller.getNotificationsList(requestFail, h);
     });
 
-    test('uses the taskConfig id from the event to get the task config', async () => {
-      expect(services.water.taskConfigs.findOne.calledWith('test-task-config-id')).to.be.true();
+    test('Does not call the water service notifications API', async () => {
+      expect(services.water.notifications.getNotifications.calledWith(
+        requestFail.query.page,
+        requestFail.query.filter,
+        requestFail.query.sentBy
+      )).to.be.false();
     });
 
-    test('adds the task to the view context', async () => {
+    test('uses the expected view template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/notifications-reports/list');
+    });
+
+    test('outputs the events to the view', async () => {
+      const [, { events }] = h.view.lastCall.args;
+      expect(events).to.equal(data.events);
+    });
+
+    test('outputs the pagination to the view', async () => {
+      const [, { pagination }] = h.view.lastCall.args;
+      expect(pagination).to.equal(data.pagination);
+    });
+
+    test('uses the expected view template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/notifications-reports/list');
+    });
+
+    test('non-empty errors array to the view context', async () => {
       const [, viewContext] = h.view.lastCall.args;
-      expect(viewContext.task.id).to.equal('test-task-id');
+      expect(viewContext.form.errors.length).to.equal(1);
     });
-
-    test('gets the notitications using the event id', async () => {
-      expect(services.water.notifications.findMany.calledWith({
-        event_id: 'test-event-id'
-      })).to.be.true();
-    });
-
-    test('adds the messages to the view context', async () => {
-      const [, viewContext] = h.view.lastCall.args;
-      expect(viewContext.messages[0].badgeStatus.text).not.to.be.undefined();
-    });
-
-    test('adds the back URL to the view context', async () => {
-      const [, viewContext] = h.view.lastCall.args;
-      expect(viewContext.back).to.equal('/notifications/report');
-    });
-    */
   });
 
   experiment('.getNotification', () => {

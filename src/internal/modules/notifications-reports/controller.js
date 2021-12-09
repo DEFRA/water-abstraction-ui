@@ -62,15 +62,15 @@ async function getNotificationsList (request, h) {
     sentBy = '';
   }
 
-  let { pagination, data, notificationCategories } = await services.water.notifications.getNotifications(page, filter, sentBy);
-  let next = parseInt(page) + 1;
+  const { pagination, data, notificationCategories } = await services.water.notifications.getNotifications(page, filter, sentBy);
+  const next = parseInt(page) + 1;
   pagination.next = next;
   pagination.previous = parseInt(page) - 1;
   Object.assign(view, mapResponseToView(data, request, notificationCategories, sentBy));
   view.form = form;
 
   if (!form.isValid) {
-    let thisFormWithCustomErrors = applyErrors(form, [{ name: 'sentBy', summary: 'Invalid email entered' }]);
+    const thisFormWithCustomErrors = applyErrors(form, [{ name: 'sentBy', summary: 'Invalid email entered' }]);
     thisFormWithCustomErrors.isValid = false;
     view.form = thisFormWithCustomErrors;
   }

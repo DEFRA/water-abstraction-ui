@@ -15,13 +15,6 @@ module.exports = {
     config: {
       auth: { scope: allNotifications },
       description: 'View list of notifications sent',
-      validate: {
-        query: Joi.object().keys({
-          page: Joi.number().integer().min(1).default(1),
-          filter: [ Joi.array().optional(), Joi.string().allow('') ],
-          sentBy: Joi.string().optional().allow('')
-        })
-      },
       plugins: {
         viewContext: {
           pageTitle: notificationReportPageTitle,
@@ -38,13 +31,6 @@ module.exports = {
     config: {
       auth: { scope: allNotifications },
       description: 'View list of notifications sent',
-      validate: {
-        query: Joi.object().keys({
-          page: Joi.number().integer().min(1).default(1),
-          filter: [ Joi.array().optional(), Joi.string().allow('') ],
-          sentBy: Joi.string().allow('')
-        })
-      },
       plugins: {
         viewContext: {
           pageTitle: notificationReportPageTitle,

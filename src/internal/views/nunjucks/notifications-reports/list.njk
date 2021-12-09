@@ -6,6 +6,8 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
+{% from "forms/index.njk" import formRender, formErrorSummary %}
+
 {% macro paginate(pagination, query) %}
   {% set next %}/notifications/report?page={{ pagination.next | safe }}{{query}}{% endset %}
   {% set previous %}/notifications/report?page={{ pagination.previous | safe }}{{query}}{% endset %}
@@ -93,6 +95,9 @@
 }) }}
 
 </form>
+
+{{ formErrorSummary(form) }}
+
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">

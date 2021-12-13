@@ -1,5 +1,6 @@
 const chargeInformationRoutes = require('./routes/charge-information');
 const chargeElementRoutes = require('./routes/charge-element');
+const chargeCategoryRoutes = require('./routes/charge-category');
 const chargeInformationWorkflowRoutes = require('./routes/charge-information-workflow');
 const nonChargeableRoutes = require('./routes/non-chargeable');
 const viewChargeInformationRoutes = require('./routes/view-charge-information');
@@ -10,6 +11,7 @@ if (config.featureToggles.chargeInformation) {
     ...Object.values(chargeInformationRoutes),
     ...Object.values(chargeInformationWorkflowRoutes),
     ...Object.values(chargeElementRoutes),
+    ...Object.values(chargeCategoryRoutes),
     ...Object.values(nonChargeableRoutes),
     ...Object.values(viewChargeInformationRoutes)
   ];

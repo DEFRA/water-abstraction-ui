@@ -78,6 +78,7 @@ const prepareChargeInformation = (licenceId, chargeData) => ({
   licenceId,
   chargeVersion: {
     ...chargeData,
+    chargeCategories: [{ id: '26e710e2-fc42-41c1-97db-1979c6459746', chargeElements: chargeData.chargeElements.map(element => omit(element, 'id')) }],
     chargeElements: chargeData.chargeElements.map(element => omit(element, 'id')),
     status: 'draft'
   }

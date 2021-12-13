@@ -11,6 +11,7 @@ const createUrl = urlTail => (licenceId, queryParams = null) => {
 };
 
 exports.getChargeElementStep = (licenceId, elementId, step, queryParams) => createUrl(`charge-element/${elementId}/${step}`)(licenceId, queryParams);
+exports.getChargeCategoryStep = (licenceId, categoryId, step, queryParams) => createUrl(`charge-category/${categoryId}/${step}`)(licenceId, queryParams);
 
 exports.postReview = (chargeVersionWorkflowId, licenceId) => createUrl(`${chargeVersionWorkflowId}/review`)(licenceId);
 exports.getReview = (chargeVersionWorkflowId, licenceId) => createUrl(`${chargeVersionWorkflowId}/review`)(licenceId);

@@ -10,6 +10,7 @@ const ACTION_TYPES = {
   setReason: 'set.reason',
   setStartDate: 'set.startDate',
   setChargeElementData: 'set.chargeElementData',
+  setChargeCategoryData: 'set.chargeCategoryData',
   createChargeElement: 'create.chargeElement'
 };
 
@@ -76,6 +77,7 @@ const setChargeElementData = (request, formValues) => {
   const { elementId } = request.params;
 
   const data = getNewChargeElementData(request, formValues);
+  // TODO chargeCategories: [{ id: 'test-charge-category-id, chargeElements: []}];
   const chargeElementToUpdate = draftChargeInformation.chargeElements.find(element => element.id === elementId);
   chargeElementToUpdate
     ? Object.assign(chargeElementToUpdate, data)
@@ -112,6 +114,26 @@ const createChargeElement = id => ({
   }
 });
 
+const getNewChargeCategoryData = (request, formValues) => omit(formValues, 'csrf_token');
+
+const setChargeCategoryData = (request, formValues) => {
+  const { draftChargeInformation } = request.pre;
+  const { categoryId } = request.params;
+
+  const data = getNewChargeCategoryData(request, formValues);
+  // TODO chargeCategories: [{ id: 'test-charge-category-id, chargeElements: []}];
+  const chargeCategory = draftChargeInformation.chargeCategories.find(category => category.id === categoryId);
+  // const chargeElementToUpdate = chargeCategory.chargeElements.find(element => element.id === elementId);
+  chargeCategory
+    ? Object.assign(chargeCategory, data)
+    : draftChargeInformation.chargeCategories.push({ ...data, id: categoryId });
+
+  return {
+    type: ACTION_TYPES.setChargeCategoryData,
+    payload: draftChargeInformation.chargeCategories
+  };
+};
+
 exports.ACTION_TYPES = ACTION_TYPES;
 
 exports.clearData = clearData;
@@ -122,3 +144,4 @@ exports.setStartDate = setStartDate;
 exports.setChargeElementData = setChargeElementData;
 exports.removeChargeElement = removeChargeElement;
 exports.createChargeElement = createChargeElement;
+exports.setChargeCategoryData = setChargeCategoryData;

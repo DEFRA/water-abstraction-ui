@@ -17,7 +17,8 @@ const {
   getCurrentBillingAccountAddress
 } = require('../lib/helpers');
 const chargeInformationValidator = require('../lib/charge-information-validator');
-const { CHARGE_ELEMENT_FIRST_STEP, CHARGE_ELEMENT_STEPS } = require('../lib/charge-elements/constants');
+const { CHARGE_ELEMENT_STEPS } = require('../lib/charge-elements/constants');
+const { CHARGE_CATEGORY_FIRST_STEP } = require('../lib/charge-categories/constants');
 const services = require('../../../lib/connectors/services');
 const { reducer } = require('../lib/reducer');
 const { reviewForm } = require('../forms/review');
@@ -283,7 +284,7 @@ const redirectToStartOfElementFlow = (request, h) => {
   request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, nextState);
 
   // Enter charge element setup flow
-  return h.redirect(routing.getChargeElementStep(licenceId, chargeElementId, CHARGE_ELEMENT_FIRST_STEP, request.query));
+  return h.redirect(routing.getChargeCategoryStep(licenceId, chargeElementId, CHARGE_CATEGORY_FIRST_STEP, request.query));
 };
 
 const removeElement = async (request, h) => {

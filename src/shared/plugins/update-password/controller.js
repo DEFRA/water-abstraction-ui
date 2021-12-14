@@ -37,7 +37,7 @@ async function postSetPassword (request, h) {
     // All OK
     return h.redirect('/account/update-password/success');
   } catch (error) {
-    return h(error);
+    return h.view(error);
   }
 }
 

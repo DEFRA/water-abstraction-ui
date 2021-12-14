@@ -44,6 +44,70 @@ experiment('update password controller', () => {
     sandbox.restore();
   });
 
+  experiment('postSetPassword with error', () => {
+    beforeEach(async () => {
+      h = {
+        redirect: sandbox.spy(),
+        view: sandbox.spy(),
+        realm: {
+          pluginOptions: {
+            authenticate: sandbox.stub().resolves({ test: true }),
+            updatePassword: sandbox.stub().resolves({ error: 'There is a problem here' })
+          }
+        }
+      };
+      request = {
+        query: {
+          resetGuid: 'test-guid'
+        },
+        payload: {
+          userId: 'test-userId'
+        },
+        yar: {
+          set: sandbox.stub().resolves()
+        }
+      };
+      request.payload.password = 'test-password1';
+      request.defra = {
+        userName: 'test-userName'
+      };
+      await controller.postSetPassword(request, h);
+    });
+    afterEach(async () => {
+      sandbox.restore();
+    });
+
+    test('uses the correct response', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('There is a problem here');
+    });
+  });
+  experiment('getConfirmPassword with isLocal true', () => {
+    beforeEach(async () => {
+      request.view = { foo: 'bar' };
+      sandbox.stub(config, 'testMode').value(false);
+      sandbox.stub(config, 'isLocal').value(true);
+      await controller.getConfirmPassword(request, h);
+    });
+    afterEach(async () => {
+      sandbox.restore();
+    });
+
+    test('uses the correct template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/update-password/enter-new');
+    });
+
+    test('uses the view data from request.view', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.foo).to.equal('bar');
+    });
+
+    test('the isTestMode is setup to return to true', async () => {
+      const [, context] = h.view.lastCall.args;
+      expect(context.isTestMode).to.equal(true);
+    });
+  });
   // test the nunjucks/update-password/enter-new template
   experiment('getConfirmPassword in testMode', () => {
     beforeEach(async () => {

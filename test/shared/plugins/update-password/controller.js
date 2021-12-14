@@ -49,10 +49,9 @@ experiment('update password controller', () => {
     beforeEach(async () => {
       request.view = { foo: 'bar' };
       sandbox.stub(config, 'testMode').value(true);
-      sandbox.stub(config, 'isLocal').value(true);
+      sandbox.stub(config, 'isLocal').value(false);
       await controller.getConfirmPassword(request, h);
     });
-
     afterEach(async () => {
       sandbox.restore();
     });
@@ -65,6 +64,37 @@ experiment('update password controller', () => {
     test('uses the view data from request.view', async () => {
       const [, view] = h.view.lastCall.args;
       expect(view.foo).to.equal('bar');
+    });
+
+    test('the isTestMode is setup to return to true', async () => {
+      const [, context] = h.view.lastCall.args;
+      expect(context.isTestMode).to.equal(true);
+    });
+  });
+  experiment('getConfirmPassword without testMode', () => {
+    beforeEach(async () => {
+      request.view = { foo: 'bar' };
+      sandbox.stub(config, 'testMode').value(false);
+      sandbox.stub(config, 'isLocal').value(false);
+      await controller.getConfirmPassword(request, h);
+    });
+    afterEach(async () => {
+      sandbox.restore();
+    });
+
+    test('uses the correct template', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/update-password/enter-new');
+    });
+
+    test('uses the view data from request.view', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.foo).to.equal('bar');
+    });
+
+    test('the isTestMode is setup to return to false', async () => {
+      const [, context] = h.view.lastCall.args;
+      expect(context.isTestMode).to.equal(false);
     });
   });
 

@@ -109,6 +109,8 @@
 {% if errors.hasValidationErrors %}
   {% block bodyEnd %}
     {{ super() }}
-    {{ sendEvent(nonces.script, 'update_password_invalid_password') }}
+    {% if isTestMode==false %}
+      {{ sendEvent(nonces.script, 'update_password_invalid_password') }}
+    {% endif %}
   {% endblock %}
 {% endif %}

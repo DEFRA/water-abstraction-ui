@@ -5,6 +5,7 @@ const { experiment, test, beforeEach, afterEach } = exports.lab = Lab.script();
 const { expect } = require('@hapi/code');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
+const config = require('external/config');
 
 const controller = require('shared/plugins/update-password/controller');
 
@@ -41,6 +42,30 @@ experiment('update password controller', () => {
 
   afterEach(async () => {
     sandbox.restore();
+  });
+
+  // test the nunjucks/update-password/enter-new template
+  experiment('getConfirmPassword in testMode', () => {
+    beforeEach(async () => {
+      request.view = { foo: 'bar' };
+      sandbox.stub(config, 'testMode').value(true);
+      sandbox.stub(config, 'isLocal').value(true);
+      await controller.getConfirmPassword(request, h);
+    });
+
+    afterEach(async () => {
+      sandbox.restore();
+    }); 
+
+    test('uses the correcttemplate', async () => {
+      const [template] = h.view.lastCall.args;
+      expect(template).to.equal('nunjucks/update-password/enter-new');
+    });
+
+    test('uses the view data from request.view', async () => {
+      const [, view] = h.view.lastCall.args;
+      expect(view.foo).to.equal('bar');
+    });
   });
 
   // check the route exist to enter the new password

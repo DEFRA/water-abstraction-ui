@@ -41,6 +41,13 @@ const selectFirstBillRun = () => {
   });
 };
 
+const selectSecondBillRun = () => {
+  describe('user views the bill runs', () => {
+    cy.get('.govuk-heading-l', { timeout: 20000 }).contains('Bill runs');
+    cy.get('.govuk-table__cell .govuk-link').eq(1).click();
+  });
+};
+
 /**
  * create a bill run
  */
@@ -179,6 +186,7 @@ exports.getYearStart = getYearStart;
 exports.login = login;
 exports.viewBillRuns = viewBillRuns;
 exports.selectFirstBillRun = selectFirstBillRun;
+exports.selectSecondBillRun = selectSecondBillRun;
 exports.reviewLicence = reviewLicence;
 exports.viewChargeInformation = viewChargeInformation;
 exports.recalculateBills = recalculateBills;

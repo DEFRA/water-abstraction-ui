@@ -1,10 +1,17 @@
 const mapJoiPasswordError = require('shared/plugins/reset-password/map-joi-password-error');
+const config = require('external/config');
 
 /**
  * Update password - enter current password
  */
-const getConfirmPassword = async (request, h) =>
-  h.view('nunjucks/update-password/enter-new', { ...request.view });
+const getConfirmPassword = async (request, h) => {
+  const isTestMode = config.isLocal || config.testMode;
+  const view = {
+    ...request.view,
+    isTestMode
+  };
+  return h.view('nunjucks/update-password/enter-new', view);
+}
 
 /**
  * Update password form handler for signed-in user
@@ -13,6 +20,7 @@ const getConfirmPassword = async (request, h) =>
  * @param {String} request.payload.confirmPassword - password again
  */
 async function postSetPassword (request, h) {
+
   // Form validation error
   if (request.formError) {
     const errors = mapJoiPasswordError(request.formError);

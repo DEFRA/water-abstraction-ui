@@ -11,7 +11,7 @@ const getConfirmPassword = async (request, h) => {
     isTestMode
   };
   return h.view('nunjucks/update-password/enter-new', view);
-}
+};
 
 /**
  * Update password form handler for signed-in user
@@ -20,7 +20,6 @@ const getConfirmPassword = async (request, h) => {
  * @param {String} request.payload.confirmPassword - password again
  */
 async function postSetPassword (request, h) {
-
   // Form validation error
   if (request.formError) {
     const errors = mapJoiPasswordError(request.formError);

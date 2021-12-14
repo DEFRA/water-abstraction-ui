@@ -55,9 +55,9 @@ experiment('update password controller', () => {
 
     afterEach(async () => {
       sandbox.restore();
-    }); 
+    });
 
-    test('uses the correcttemplate', async () => {
+    test('uses the correct template', async () => {
       const [template] = h.view.lastCall.args;
       expect(template).to.equal('nunjucks/update-password/enter-new');
     });

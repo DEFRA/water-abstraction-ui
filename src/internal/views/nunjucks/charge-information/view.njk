@@ -8,6 +8,7 @@
 {% from "badge.njk" import badge %}
 {% from "forms/index.njk" import formRender,
 formErrorSummary %}
+{% from "./nunjucks/charge-information/macros/charge-chargeElements.njk" import chargeElementsForm %}
 
 {% macro summaryListRow(key, value, changeLink) %}
   <div class="govuk-summary-list__row">
@@ -62,6 +63,14 @@ formErrorSummary %}
   name: 'buttonAction',
   value: 'addElement',
   classes: 'govuk-button--secondary'
+  }) }}
+{% endmacro %}
+
+{% macro addChargeReferenceButton() %}
+  {{ govukButton({
+  text: 'Assign a charge reference',
+  name: 'buttonAction',
+  value: 'addChargeCategory'
   }) }}
 {% endmacro %}
 
@@ -216,12 +225,12 @@ formErrorSummary %}
             </div>
           {% endif %}
         </section>
+    {% if chargeVersion.chargeCategories.length > 0 %}
+      {%for chargeCategory in chargeVersion.chargeCategories %}
+        {% chargeElementsForm(chargeCategory.chargeElements, isEditable) %}
       {% endfor %}
-
-      {% if isEditable and chargeVersion.chargeElements.length === 0 %}
-        {{ addElementButton() }}
-      {% endif %}
-    </form>
+      {% chargeElementsForm(chargeVersion.chargeElements, isEditable) %}
+    {% endif %}
 
   </div>
 {% endmacro %}

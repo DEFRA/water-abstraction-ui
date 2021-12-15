@@ -3,7 +3,7 @@
 const uuid = require('uuid');
 const { get } = require('lodash');
 const moment = require('moment');
-const { isEmpty } = require('lodash');
+const { isEmpty, omit } = require('lodash');
 const forms = require('../forms');
 const actions = require('../lib/actions');
 const routing = require('../lib/routing');
@@ -192,10 +192,6 @@ const postUseAbstractionData = createPostHandler(
 const getCheckData = async (request, h) => {
   const { draftChargeInformation, isChargeable, billingAccount, licence } = request.pre;
   const { licenceId } = request.params;
-  const back = isChargeable
-    ? routing.getUseAbstractionData(licenceId, request.query)
-    : routing.getEffectiveDate(licenceId, request.query);
-
   const isApprover = hasScope(request, chargeVersionWorkflowReviewer);
 
   const { data: documentRoles } = await services.crm.documentRoles.getDocumentRolesByDocumentRef(licence.licenceNumber);
@@ -206,7 +202,7 @@ const getCheckData = async (request, h) => {
   const action = routing.getCheckData(licenceId, request.query);
 
   const view = {
-    ...getDefaultView(request, back),
+    ...omit(getDefaultView(request), 'back'),
     action,
     pageTitle: 'Check charge information',
     chargeVersion: chargeInformationValidator.addValidation(draftChargeInformation),

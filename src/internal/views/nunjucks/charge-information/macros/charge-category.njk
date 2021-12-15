@@ -1,0 +1,162 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+
+{% macro summaryListRow(key, value, changeLink) %}
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">{{ key }}</dt>
+    <dd class="govuk-summary-list__value">{{ value }}</dd>
+    {% if isEditable %}
+      <dd class="govuk-summary-list__actions">
+        {% if changeLink %}
+          <a class="govuk-link" href="{{ changeLink }}">Change</a>
+        {% endif %}
+      </dd>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{% macro addChargeCategoryButton() %}
+  {{ govukButton({
+  text: 'Asign a charge reference',
+  name: 'buttonAction',
+  value: 'addChargeCategory'
+  }) }}
+{% endmacro %}
+
+{% macro addElementButton() %}
+  {{ govukButton({
+  text: 'Add another element',
+  name: 'buttonAction',
+  value: 'addElement',
+  classes: 'govuk-button--secondary'
+  }) }}
+{% endmacro %}
+
+{% macro addChargeReferenceButton() %}
+  {{ govukButton({
+  text: 'Assign a charge reference',
+  name: 'buttonAction',
+  value: 'addChargeCategory'
+  }) }}
+{% endmacro %}
+
+{% macro removeElementButton(chargeElement) %}
+  {{ govukButton({
+    text: 'Remove element',
+    name: 'buttonAction',
+    value: 'removeElement:' + chargeElement.id,
+    classes: 'govuk-button--secondary'
+  }) }}
+{% endmacro %}
+
+{% macro changeLink(urlTail, chargeElementId) %}
+  {% set changeLinkRoot = '/licences/' + licenceId + '/charge-information' %}
+  {% if (chargeVersionWorkflowId | length) > 0 %}
+    {% set queryTail = {
+        returnToCheckData: true,
+        chargeVersionWorkflowId: chargeVersionWorkflowId
+      } | queryString %}
+  {% else %}
+    {% set queryTail = {
+      returnToCheckData: true
+    } | queryString %}
+  {% endif %}
+  {% if chargeElementId %}
+    {{ changeLinkRoot + '/charge-element/' + chargeElementId + urlTail + '?' + queryTail }}
+  {% else %}
+    {{ changeLinkRoot + urlTail + '?' + queryTail }}
+  {% endif %}
+{% endmacro %}
+
+{% macro chargeElementTable(chargeElements, isEditable) %}
+    {% for chargeElement in chargeElements %}
+      <section class="govuk-!-margin-bottom-7">
+        <h2 class="govuk-heading-m">
+          <span class="govuk-caption-m">Charge element {{loop.index}}</span>
+          
+          {%if chargeElement.description.length > 0 %}
+          {{chargeElement.purposeUse.name}}, {{chargeElement.description}}
+          {%else%}
+            {{chargeElement.purposeUse.name}}
+          {% endif %}
+        </h2>
+        {% for validationWarning in chargeElement.validationWarnings %}
+          {{
+          govukWarningText({
+            text: validationWarning,
+            iconFallbackText: "Warning",
+            classes: "govuk-!-margin-bottom-1"
+          })
+        }}
+        {% endfor %}
+        <dl class="govuk-summary-list">
+          {{ summaryListRow('Purpose', chargeElement.purposeUse.name, changeLink('/purpose', chargeElement.id)) }}
+          {{ summaryListRow('Description', chargeElement.description, changeLink('/description', chargeElement.id)) }}
+          {{ summaryListRow('Abstraction period', chargeElement.abstractionPeriod | abstractionPeriod, changeLink('/abstraction', chargeElement.id)) }}
+
+          {# Quantities have been combined to a single list row to avoid adjacent identical Change links going to the same page #}
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Annual quantities</dt>
+            <dd class="govuk-summary-list__value">
+              <ul class="govuk-list">
+                <li>
+                  {{ chargeElement.authorisedAnnualQuantity | number + 'ML authorised' }}
+                </li>
+                <li>
+                  {{chargeElement.billableAnnualQuantity | number + 'ML billable' if chargeElement.billableAnnualQuantity else 'Billable not set' }}
+                </li>
+              </ul>
+            </dd>
+            {% if isEditable %}
+              <dd class="govuk-summary-list__actions">
+                <a href="{{ changeLink('/quantities', chargeElement.id) }}">Change</a>
+              </dd>
+            {% endif %}
+          </div>
+
+
+          {% set timeLimited = 'No' %}
+          {% if chargeElement.timeLimitedPeriod %}
+            {% set timeLimited %}
+            {{ timeLimitedPeriod(chargeElement.timeLimitedPeriod) }}
+            {% endset %}
+          {% endif %}
+          {{ summaryListRow('Time limit', timeLimited, changeLink('/time', chargeElement.id)) }}
+          {{ summaryListRow('Source', chargeElement.source | title, changeLink('/source', chargeElement.id)) }}
+          {{ summaryListRow('Season', chargeElement.season | title, changeLink('/season', chargeElement.id)) }}
+          {{ summaryListRow('Loss', chargeElement.loss | title, changeLink('/loss', chargeElement.id)) }}
+          {{ summaryListRow('Environmental Improvement Unit Charge', chargeElement.eiucSource | title) }}
+
+          {% if chargeElement.purposeUse.isTwoPartTariff %}
+            {{ summaryListRow(
+              'Agreements apply',
+              agreementsApplyText(chargeElement.isSection127AgreementEnabled),
+              changeLink('/agreements', chargeElement.id)
+            )}}
+          {% endif %}
+        </dl>
+      </section>
+    {% endfor %}
+  
+{% endmacro %}
+
+{% macro chargeCategoryTable(chargeCategory, isEditable) %}
+
+  <h2 class="govuk-heading-l govuk-!-margin-bottom-4">
+  <span class="govuk-caption-l">Charge reference 3.20.23</span>
+  Medium loss, non-tidal abstraction, below 646ml per year </h2>
+  <hr class="govuk-section-break  govuk-!-margin-bottom-2 govuk-section-break--visible">
+  <h2 class="govuk-heading-m govuk-!-margin-bottom-3">Charge reference details</h2>
+  <dl class="govuk-summary-list">
+    {{ summaryListRow('Description', chargeCategory.description) }}
+    {{ summaryListRow('Source', chargeCategory.source) }}
+    {{ summaryListRow('Loss', chargeCategory.loss) }}
+    {{ summaryListRow('Volume', chargeCategory.quantity + 'ML') }}
+    {{ summaryListRow('Water availability', chargeCategory.availability) }}
+    {{ summaryListRow('Water model', chargeCategory.model) }}
+    {{ summaryListRow('Additional charges apply', chargeCategory.charges) }}
+    {{ summaryListRow('Adjustments apply', chargeCategory.adsjustments) }}
+    {{ summaryListRow('EUIC Region', 'Test region') }}
+  </dl>
+  {{ chargeElementTable(chargeCategory.chargeElements, isEditable) }}
+{% endmacro %}

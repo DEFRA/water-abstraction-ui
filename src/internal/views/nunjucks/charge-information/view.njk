@@ -8,7 +8,8 @@
 {% from "badge.njk" import badge %}
 {% from "forms/index.njk" import formRender,
 formErrorSummary %}
-{% from "./nunjucks/charge-information/macros/charge-chargeElements.njk" import chargeElementsForm %}
+{% from "nunjucks/charge-information/macros/charge-element.njk" import chargeElementTable %}
+{% from "nunjucks/charge-information/macros/charge-category.njk" import chargeCategoryTable %}
 
 {% macro summaryListRow(key, value, changeLink) %}
   <div class="govuk-summary-list__row">
@@ -145,92 +146,17 @@ formErrorSummary %}
       </dl>
     </section>
 
-    <form method="post"  action="{{action}}" novalidate="novalidate">
-      <input type="hidden" name="csrf_token" value="{{ csrfToken }}"/>
+  <form method="post"  action="{{action}}" novalidate="novalidate">
+    <input type="hidden" name="csrf_token" value="{{ csrfToken }}"/>
+    {# {% if chargeVersion.chargeElements.length > 0 %} #}
+        {{ chargeElementTable(chargeVersion, isEditable) }}
+    {# {% else %}
+      {% for chargeCategory in chargeVersion.chargeCategories %}
+        {{ chargeCategoryTable(chargeCategory, isEditable)}}
+      {% endfor %}   
+    {% endif %} #}
+</form>
 
-      {% for chargeElement in chargeVersion.chargeElements %}
-
-        <section class="govuk-!-margin-bottom-7">
-          <h2 class="govuk-heading-m govuk-!-margin-bottom-1">Element
-            {{loop.index}}</h2>
-          {% for validationWarning in chargeElement.validationWarnings %}
-            {{
-            govukWarningText({
-              text: validationWarning,
-              iconFallbackText: "Warning",
-              classes: "govuk-!-margin-bottom-1"
-            })
-          }}
-          {% endfor %}
-          <dl class="govuk-summary-list">
-            {{ summaryListRow('Purpose', chargeElement.purposeUse.name, changeLink('/purpose', chargeElement.id)) }}
-            {{ summaryListRow('Description', chargeElement.description, changeLink('/description', chargeElement.id)) }}
-            {{ summaryListRow('Abstraction period', chargeElement.abstractionPeriod | abstractionPeriod, changeLink('/abstraction', chargeElement.id)) }}
-
-            {# Quantities have been combined to a single list row to avoid adjacent identical Change links going to the same page #}
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Annual quantities</dt>
-              <dd class="govuk-summary-list__value">
-                <ul class="govuk-list">
-                  <li>
-                    {{ chargeElement.authorisedAnnualQuantity | number + 'ML authorised' }}
-                  </li>
-                  <li>
-                    {{chargeElement.billableAnnualQuantity | number + 'ML billable' if chargeElement.billableAnnualQuantity else 'Billable not set' }}
-                  </li>
-                </ul>
-              </dd>
-              {% if isEditable %}
-                <dd class="govuk-summary-list__actions">
-                  <a href="{{ changeLink('/quantities', chargeElement.id) }}">Change</a>
-                </dd>
-              {% endif %}
-            </div>
-
-
-            {% set timeLimited = 'No' %}
-            {% if chargeElement.timeLimitedPeriod %}
-              {% set timeLimited %}
-              {{ timeLimitedPeriod(chargeElement.timeLimitedPeriod) }}
-              {% endset %}
-            {% endif %}
-            {{ summaryListRow('Time limit', timeLimited, changeLink('/time', chargeElement.id)) }}
-            {{ summaryListRow('Source', chargeElement.source | title, changeLink('/source', chargeElement.id)) }}
-            {{ summaryListRow('Season', chargeElement.season | title, changeLink('/season', chargeElement.id)) }}
-            {{ summaryListRow('Loss', chargeElement.loss | title, changeLink('/loss', chargeElement.id)) }}
-            {{ summaryListRow('Environmental Improvement Unit Charge', chargeElement.eiucSource | title) }}
-
-            {% if chargeElement.purposeUse.isTwoPartTariff %}
-              {{ summaryListRow(
-                'Agreements apply',
-                agreementsApplyText(chargeElement.isSection127AgreementEnabled),
-                changeLink('/agreements', chargeElement.id)
-              )}}
-            {% endif %}
-          </dl>
-          {% if isEditable %}
-            <div class="govuk-grid-row">
-              <div class="govuk-grid-column-full">
-
-                {% if loop.last %}
-                  {{ addElementButton() }}
-                  <hr class="govuk-section-break  govuk-!-margin-bottom-6">
-                  {{ addChargeCategoryButton() }}
-                {% endif %}
-                {% if chargeVersion.chargeElements.length > 1 %}
-                  {{ removeElementButton(chargeElement) }}
-                {% endif %}
-
-              </div>
-            </div>
-          {% endif %}
-        </section>
-    {% if chargeVersion.chargeCategories.length > 0 %}
-      {%for chargeCategory in chargeVersion.chargeCategories %}
-        {% chargeElementsForm(chargeCategory.chargeElements, isEditable) %}
-      {% endfor %}
-      {% chargeElementsForm(chargeVersion.chargeElements, isEditable) %}
-    {% endif %}
 
   </div>
 {% endmacro %}

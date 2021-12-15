@@ -44,7 +44,7 @@ module.exports = {
   postChargeCategoryStep: {
     method: 'POST',
     path: '/licences/{licenceId}/charge-information/charge-category/{categoryId}/{step}',
-    handler: controller.postChargecategoryStep,
+    handler: controller.postChargeCategoryStep,
     options: {
       auth: {
         scope: allowedScopes

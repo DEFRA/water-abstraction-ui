@@ -14,13 +14,15 @@ const getRadioField = (licenceNumber, value) => fields.radio('charges', {
       message: 'Select if additional charges should apply'
     }
   },
-  choices: [{
-    value: true,
-    label: 'Yes'
-  }, {
-    value: false,
-    label: 'No'
-  }],
+  choices: [
+    // {
+    //   value: true,
+    //   label: 'Yes'
+    // },
+    {
+      value: false,
+      label: 'No'
+    }],
   mapper: 'booleanMapper'
 }, value);
 

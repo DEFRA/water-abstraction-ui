@@ -15,13 +15,15 @@ const getRadioField = (licenceNumber, value) => fields.radio('adjustments', {
       message: 'Select if adjustments should apply'
     }
   },
-  choices: [{
-    value: true,
-    label: 'Yes'
-  }, {
-    value: false,
-    label: 'No'
-  }],
+  choices: [
+    // {
+    //   value: true,
+    //   label: 'Yes'
+    // },
+    {
+      value: false,
+      label: 'No'
+    }],
   mapper: 'booleanMapper'
 }, value);
 

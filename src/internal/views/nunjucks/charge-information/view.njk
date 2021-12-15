@@ -48,6 +48,14 @@ formErrorSummary %}
   {% endif %}
 {% endmacro %}
 
+{% macro addChargeCategoryButton() %}
+  {{ govukButton({
+  text: 'Asign a charge reference',
+  name: 'buttonAction',
+  value: 'addChargeCategory'
+  }) }}
+{% endmacro %}
+
 {% macro addElementButton() %}
   {{ govukButton({
   text: 'Add another element',
@@ -197,6 +205,8 @@ formErrorSummary %}
 
                 {% if loop.last %}
                   {{ addElementButton() }}
+                  <hr class="govuk-section-break  govuk-!-margin-bottom-6">
+                  {{ addChargeCategoryButton() }}
                 {% endif %}
                 {% if chargeVersion.chargeElements.length > 1 %}
                   {{ removeElementButton(chargeElement) }}

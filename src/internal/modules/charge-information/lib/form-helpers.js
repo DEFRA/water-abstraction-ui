@@ -17,7 +17,7 @@ const getChargeElementActionUrl = (request, step) => {
 const getChargeCategoryData = request => {
   const { draftChargeInformation } = request.pre;
   const { categoryId } = request.params;
-  const chargeCategory = draftChargeInformation.chargeCategories.find(category => category.id === categoryId);
+  const chargeCategory = draftChargeInformation.draftChargeCategory || draftChargeInformation.chargeCategories.find(category => category.id === categoryId);
   return chargeCategory || {};
 };
 

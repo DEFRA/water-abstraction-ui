@@ -3,7 +3,7 @@ const moment = require('moment');
 const uuid = require('uuid/v4');
 const DATE_FORMAT = 'YYYY-MM-DD';
 const mappers = require('./charge-elements/mappers');
-
+const config = require('../../../config');
 const ACTION_TYPES = {
   clearData: 'clearData',
   setBillingAccount: 'set.invoiceAccount',
@@ -11,7 +11,9 @@ const ACTION_TYPES = {
   setStartDate: 'set.startDate',
   setChargeElementData: 'set.chargeElementData',
   setChargeCategoryData: 'set.chargeCategoryData',
-  createChargeElement: 'create.chargeElement'
+  createChargeElement: 'create.chargeElement',
+  createChargeCategory: 'create.chargeCategory',
+  saveChargeCategory: 'save.chargeCategory'
 };
 
 const setChangeReason = (request, formValues) => {
@@ -114,23 +116,38 @@ const createChargeElement = id => ({
   }
 });
 
-const getNewChargeCategoryData = (request, formValues) => omit(formValues, 'csrf_token');
+const createChargeCategory = id => ({
+  type: ACTION_TYPES.createChargeCategory,
+  payload: {
+    id
+  }
+});
 
 const setChargeCategoryData = (request, formValues) => {
   const { draftChargeInformation } = request.pre;
   const { categoryId } = request.params;
-
-  const data = getNewChargeCategoryData(request, formValues);
+  const data = omit(formValues, 'csrf_token');
   // TODO chargeCategories: [{ id: 'test-charge-category-id, chargeElements: []}];
-  const chargeCategory = draftChargeInformation.chargeCategories.find(category => category.id === categoryId);
-  // const chargeElementToUpdate = chargeCategory.chargeElements.find(element => element.id === elementId);
-  chargeCategory
-    ? Object.assign(chargeCategory, data)
-    : draftChargeInformation.chargeCategories.push({ ...data, id: categoryId });
+  draftChargeInformation.draftChargeCategory
+    ? Object.assign(draftChargeInformation.draftChargeCategory, data)
+    : draftChargeInformation.draftChargeCategory = { ...data, id: categoryId };
 
   return {
     type: ACTION_TYPES.setChargeCategoryData,
-    payload: draftChargeInformation.chargeCategories
+    payload: draftChargeInformation.draftChargeCategory
+  };
+};
+
+const saveChargeCategory = (request, formValues) => {
+  const data = getNewChargeCategoryData(request, formValues);
+  const { draftChargeInformation } = request.pre;
+  Object.assign(draftChargeInformation.draftChargeCategory, data);
+  return {
+    type: ACTION_TYPES.saveChargeCategory,
+    payload: {
+      ...draftChargeInformation.draftChargeCategory,
+      chargeElements: draftChargeInformation.chargeElements
+    }
   };
 };
 
@@ -145,3 +162,5 @@ exports.setChargeElementData = setChargeElementData;
 exports.removeChargeElement = removeChargeElement;
 exports.createChargeElement = createChargeElement;
 exports.setChargeCategoryData = setChargeCategoryData;
+exports.createChargeCategory = createChargeCategory;
+exports.saveChargeCategory = saveChargeCategory;

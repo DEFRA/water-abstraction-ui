@@ -17,7 +17,7 @@ const {
   getCurrentBillingAccountAddress
 } = require('../lib/helpers');
 const chargeInformationValidator = require('../lib/charge-information-validator');
-const { CHARGE_ELEMENT_STEPS } = require('../lib/charge-elements/constants');
+const { CHARGE_ELEMENT_STEPS, CHARGE_ELEMENT_FIRST_STEP } = require('../lib/charge-elements/constants');
 const { CHARGE_CATEGORY_FIRST_STEP } = require('../lib/charge-categories/constants');
 const services = require('../../../lib/connectors/services');
 const { reducer } = require('../lib/reducer');
@@ -272,6 +272,7 @@ const redirectToCancelPage = (request, h) => {
   const { chargeVersionWorkflowId } = request.query;
   return h.redirect(routing.getCancelData(request.params.licenceId, { chargeVersionWorkflowId }));
 };
+
 const redirectToStartOfElementFlow = (request, h) => {
   const { chargeVersionWorkflowId } = request.query;
   const { licenceId } = request.params;
@@ -284,7 +285,23 @@ const redirectToStartOfElementFlow = (request, h) => {
   request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, nextState);
 
   // Enter charge element setup flow
-  return h.redirect(routing.getChargeCategoryStep(licenceId, chargeElementId, CHARGE_CATEGORY_FIRST_STEP, request.query));
+  return h.redirect(routing.getChargeElementStep(licenceId, chargeElementId, CHARGE_ELEMENT_FIRST_STEP, request.query));
+};
+
+const redirectToStartOfCategoryFlow = (request, h) => {
+  const { chargeVersionWorkflowId } = request.query;
+  const { licenceId } = request.params;
+  const { draftChargeInformation: currentState } = request.pre;
+  currentState.chargeCategories = currentState.chargeCategories || [];
+
+  // Create new element to edit in the session state
+  const chargeCategoryId = uuid();
+  const action = actions.createChargeCategory(chargeCategoryId);
+  const nextState = reducer(currentState, action);
+  request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, nextState);
+
+  // Enter charge element setup flow
+  return h.redirect(routing.getChargeCategoryStep(licenceId, chargeCategoryId, CHARGE_CATEGORY_FIRST_STEP, request.query));
 };
 
 const removeElement = async (request, h) => {
@@ -297,7 +314,8 @@ const checkDataButtonActions = {
   confirm: submitDraftChargeInformation,
   cancel: redirectToCancelPage,
   addElement: redirectToStartOfElementFlow,
-  removeElement: removeElement
+  removeElement: removeElement,
+  addChargeCategory: redirectToStartOfCategoryFlow
 };
 
 const postCheckData = async (request, h) => {

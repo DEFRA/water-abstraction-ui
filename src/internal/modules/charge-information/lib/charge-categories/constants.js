@@ -24,7 +24,7 @@ const ROUTING_CONFIG = {
   availability: { pageTitle: 'Select the water availability', nextStep: CHARGE_CATEGORY_STEPS.model, back: CHARGE_CATEGORY_STEPS.availability },
   model: { pageTitle: 'Select the water model', nextStep: CHARGE_CATEGORY_STEPS.charges, back: CHARGE_CATEGORY_STEPS.model },
   charges: { pageTitle: 'Do additional charges apply?', nextStep: CHARGE_CATEGORY_STEPS.adjustments, back: CHARGE_CATEGORY_STEPS.model },
-  adjustments: { pageTitle: 'Do adjustments apply?', nextStep: CHARGE_CATEGORY_STEPS.description, back: CHARGE_CATEGORY_STEPS.charges }
+  adjustments: { pageTitle: 'Do adjustments apply?', back: CHARGE_CATEGORY_STEPS.charges }
 };
 
 const LOSS_HIGH = 'high';

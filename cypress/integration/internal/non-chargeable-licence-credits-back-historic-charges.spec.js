@@ -52,7 +52,8 @@ describe('non-chargeable licence credits back historic charges', () => {
       cy.get('[type="radio"]#reason').check();
       cy.get('button.govuk-button').contains('Continue').click();
       cy.get('.govuk-heading-l', { timeout: 20000 }).contains('Enter effective date');
-      cy.get('[type="radio"]#startDate-2').check();
+      //cy.get('.govuk-radios__label').contains('Another date').check();
+      cy.get('#startDate').contains('Another date').click();
       const yearStart = getYearStart();
       cy.get('#customDate-day').type(`${yearStart.date()}`);
       cy.get('#customDate-month').type(`${yearStart.month() + 1}`);

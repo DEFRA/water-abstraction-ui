@@ -161,8 +161,8 @@ formErrorSummary %}
 {% macro chargeCategoryTable(chargeCategory, isEditable, licenceId) %}
 
   <h2 class="govuk-heading-l govuk-!-margin-bottom-4">
-  <span class="govuk-caption-l">Charge reference 3.20.23</span>
-  Medium loss, non-tidal abstraction, below 646ml per year </h2>
+  <span class="govuk-caption-l">Charge reference {{ chargeCategory.chargeReference.reference }}</span>
+  {{ chargeCategory.chargeReference.shortDescription }} </h2>
   <hr class="govuk-section-break  govuk-!-margin-bottom-2 govuk-section-break--visible">
   <h2 class="govuk-heading-m govuk-!-margin-bottom-3">Charge reference details</h2>
   <dl class="govuk-summary-list">

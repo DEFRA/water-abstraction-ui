@@ -1,8 +1,9 @@
 'use-strict';
 const cleanObject = require('../../../../shared/lib/clean-object');
-const { omit } = require('lodash');
+const { omit, pick } = require('lodash');
 const forms = require('../forms/charge-category/index');
 const routing = require('../lib/routing');
+const services = require('../../../lib/connectors/services');
 const { getDefaultView, getPostedForm, applyFormResponse } = require('../lib/helpers');
 const { ROUTING_CONFIG,
   CHARGE_CATEGORY_FIRST_STEP, CHARGE_CATEGORY_STEPS } = require('../lib/charge-categories/constants');
@@ -55,6 +56,9 @@ const postChargeCategoryStep = async (request, h) => {
         chargeElements: draftChargeInformation.chargeElements,
         ...formData
       };
+      const keys = ['source', 'loss', 'availability', 'model', 'volume'];
+      const chargeReference = await services.water.chargeCategories.getChargeCategory(pick(chargeCategory, keys));
+      chargeCategory.chargeReference = pick(chargeReference, ['reference', 'shortDescription']);
       draftChargeInformation.chargeCategories.push(chargeCategory);
       draftChargeInformation.chargeElements = [];
       request.clearDraftChargeInformation(licenceId, chargeVersionWorkflowId);

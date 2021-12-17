@@ -12,6 +12,7 @@ const ChargeVersionWorkflowsService = require('shared/lib/connectors/services/wa
 const ReturnsService = require('./ReturnsService');
 const BatchNotificationsService = require('./BatchNotificationsService');
 const ChangeReasonsService = require('./ChangeReasonsService');
+const ChargeCategoryService = require('./ChargeCategoryService');
 const ReturnsNotificationsService = require('./ReturnsNotificationsService');
 const ReturnCyclesService = require('./ReturnCyclesService');
 const InternalSearchService = require('./InternalSearchService');
@@ -58,6 +59,7 @@ module.exports = config => ({
   billingInvoiceLicences: new BillingInvoiceLicenceService(config.services.water, logger),
   billingVolumes: new BillingVolumesService(config.services.water, logger),
   changeReasons: new ChangeReasonsService(config.services.water, logger),
+  chargeCategories: new ChargeCategoryService(config.services.water, logger),
   invoiceAccounts: new InvoiceAccountService(config.services.water, logger),
   internalSearch: new InternalSearchService(config.services.water, logger),
   regions: new RegionsService(config.services.water, logger),

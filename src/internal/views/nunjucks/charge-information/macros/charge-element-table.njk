@@ -10,7 +10,7 @@ formErrorSummary %}
 
 
 
-{% macro summaryListRow(key, value, changeLink) %}
+{% macro summaryListRow(key, value, changeLink, isEditable) %}
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">{{ key }}</dt>
     <dd class="govuk-summary-list__value">{{ value }}</dd>
@@ -91,8 +91,8 @@ formErrorSummary %}
   {% endif %}
 {% endmacro %}
 
-{% macro chargeElementTable(chargeVersion, isEditable) %}
-    {% for chargeElement in chargeVersion.chargeElements %}
+{% macro chargeElementTable(chargeElements, isEditable) %}
+    {% for chargeElement in chargeElements %}
 
       <section class="govuk-!-margin-bottom-7">
         <h2 class="govuk-heading-m govuk-!-margin-bottom-1">Element
@@ -107,9 +107,9 @@ formErrorSummary %}
         }}
         {% endfor %}
         <dl class="govuk-summary-list">
-          {{ summaryListRow('Purpose', chargeElement.purposeUse.name, changeLink('/purpose', chargeElement.id)) }}
-          {{ summaryListRow('Description', chargeElement.description, changeLink('/description', chargeElement.id)) }}
-          {{ summaryListRow('Abstraction period', chargeElement.abstractionPeriod | abstractionPeriod, changeLink('/abstraction', chargeElement.id)) }}
+          {{ summaryListRow('Purpose', chargeElement.purposeUse.name, changeLink('/purpose', chargeElement.id), isEditable) }}
+          {{ summaryListRow('Description', chargeElement.description, changeLink('/description', chargeElement.id), isEditable) }}
+          {{ summaryListRow('Abstraction period', chargeElement.abstractionPeriod | abstractionPeriod, changeLink('/abstraction', chargeElement.id), isEditable) }}
 
           {# Quantities have been combined to a single list row to avoid adjacent identical Change links going to the same page #}
           <div class="govuk-summary-list__row">
@@ -138,17 +138,18 @@ formErrorSummary %}
             {{ timeLimitedPeriod(chargeElement.timeLimitedPeriod) }}
             {% endset %}
           {% endif %}
-          {{ summaryListRow('Time limit', timeLimited, changeLink('/time', chargeElement.id)) }}
-          {{ summaryListRow('Source', chargeElement.source | title, changeLink('/source', chargeElement.id)) }}
-          {{ summaryListRow('Season', chargeElement.season | title, changeLink('/season', chargeElement.id)) }}
-          {{ summaryListRow('Loss', chargeElement.loss | title, changeLink('/loss', chargeElement.id)) }}
-          {{ summaryListRow('Environmental Improvement Unit Charge', chargeElement.eiucSource | title) }}
+          {{ summaryListRow('Time limit', timeLimited, changeLink('/time', chargeElement.id), isEditable) }}
+          {{ summaryListRow('Source', chargeElement.source | title, changeLink('/source', chargeElement.id), isEditable) }}
+          {{ summaryListRow('Season', chargeElement.season | title, changeLink('/season', chargeElement.id), isEditable) }}
+          {{ summaryListRow('Loss', chargeElement.loss | title, changeLink('/loss', chargeElement.id), isEditable) }}
+          {{ summaryListRow('Environmental Improvement Unit Charge', chargeElement.eiucSource | title,'',isEditable) }}
 
           {% if chargeElement.purposeUse.isTwoPartTariff %}
             {{ summaryListRow(
               'Agreements apply',
               agreementsApplyText(chargeElement.isSection127AgreementEnabled),
-              changeLink('/agreements', chargeElement.id)
+              changeLink('/agreements', chargeElement.id),
+              isEditable
             )}}
           {% endif %}
         </dl>

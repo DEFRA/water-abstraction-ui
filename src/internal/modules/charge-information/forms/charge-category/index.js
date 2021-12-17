@@ -2,9 +2,9 @@ module.exports = {
   description: require('./description'),
   source: require('./source'),
   loss: require('./loss'),
-  quantity: require('./quantity'),
+  volume: require('./volume'),
   availability: require('./availability'),
-  model: require('./model'),
-  charges: require('./charges'),
+  model: require('./water-model'),
+  charges: require('./additional-charges'),
   adjustments: require('./adjustments')
 };

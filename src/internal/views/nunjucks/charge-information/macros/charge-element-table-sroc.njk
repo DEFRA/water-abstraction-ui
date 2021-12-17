@@ -1,7 +1,14 @@
+{% from "title.njk" import title %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{% from "crm/address.njk" import address %}
+{% from "crm/company.njk" import company %}
+{% from "crm/contact.njk" import contact %}
+{% from "badge.njk" import badge %}
+{% from "forms/index.njk" import formRender,
+formErrorSummary %}
 
-{% macro summaryListRow(key, value, changeLink) %}
+{% macro summaryListRow(key, value, changeLink, isEditable) %}
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">{{ key }}</dt>
     <dd class="govuk-summary-list__value">{{ value }}</dd>
@@ -49,7 +56,15 @@
   }) }}
 {% endmacro %}
 
-{% macro changeLink(urlTail, chargeElementId) %}
+{% macro agreementsApplyText(isEnabled) %}
+  {% if isEnabled %}
+    Yes, agreements should apply to this element
+  {% else %}
+    No, exclude this element from two-part tariff agreements
+  {% endif %}
+{% endmacro %}
+
+{% macro changeLink(urlTail, chargeElementId, licenceId) %}
   {% set changeLinkRoot = '/licences/' + licenceId + '/charge-information' %}
   {% if (chargeVersionWorkflowId | length) > 0 %}
     {% set queryTail = {
@@ -68,7 +83,7 @@
   {% endif %}
 {% endmacro %}
 
-{% macro chargeElementTable(chargeElements, isEditable) %}
+{% macro chargeElementTable(chargeElements, isEditable, licenceId) %}
     {% for chargeElement in chargeElements %}
       <section class="govuk-!-margin-bottom-7">
         <h2 class="govuk-heading-m">
@@ -89,10 +104,12 @@
           })
         }}
         {% endfor %}
+
+
         <dl class="govuk-summary-list">
-          {{ summaryListRow('Purpose', chargeElement.purposeUse.name, changeLink('/purpose', chargeElement.id)) }}
-          {{ summaryListRow('Description', chargeElement.description, changeLink('/description', chargeElement.id)) }}
-          {{ summaryListRow('Abstraction period', chargeElement.abstractionPeriod | abstractionPeriod, changeLink('/abstraction', chargeElement.id)) }}
+          {{ summaryListRow('Purpose', chargeElement.purposeUse.name, changeLink('/purpose', chargeElement.id, licenceId), isEditable) }}
+          {{ summaryListRow('Description', chargeElement.description, changeLink('/description', chargeElement.id, licenceId), isEditable) }}
+          {{ summaryListRow('Abstraction period', chargeElement.abstractionPeriod | abstractionPeriod, changeLink('/abstraction', chargeElement.id, licenceId), isEditable) }}
 
           {# Quantities have been combined to a single list row to avoid adjacent identical Change links going to the same page #}
           <div class="govuk-summary-list__row">
@@ -109,7 +126,7 @@
             </dd>
             {% if isEditable %}
               <dd class="govuk-summary-list__actions">
-                <a href="{{ changeLink('/quantities', chargeElement.id) }}">Change</a>
+                <a href="{{ changeLink('/quantities', chargeElement.id, licenceId) }}">Change</a>
               </dd>
             {% endif %}
           </div>
@@ -121,17 +138,18 @@
             {{ timeLimitedPeriod(chargeElement.timeLimitedPeriod) }}
             {% endset %}
           {% endif %}
-          {{ summaryListRow('Time limit', timeLimited, changeLink('/time', chargeElement.id)) }}
-          {{ summaryListRow('Source', chargeElement.source | title, changeLink('/source', chargeElement.id)) }}
-          {{ summaryListRow('Season', chargeElement.season | title, changeLink('/season', chargeElement.id)) }}
-          {{ summaryListRow('Loss', chargeElement.loss | title, changeLink('/loss', chargeElement.id)) }}
-          {{ summaryListRow('Environmental Improvement Unit Charge', chargeElement.eiucSource | title) }}
+          {{ summaryListRow('Time limit', timeLimited, changeLink('/time', chargeElement.id, licenceId), isEditable) }}
+          {{ summaryListRow('Source', chargeElement.source | title, changeLink('/source', chargeElement.id, licenceId), isEditable) }}
+          {{ summaryListRow('Season', chargeElement.season | title, changeLink('/season', chargeElement.id, licenceId), isEditable) }}
+          {{ summaryListRow('Loss', chargeElement.loss | title, changeLink('/loss', chargeElement.id, licenceId), isEditable) }}
+          {{ summaryListRow('Environmental Improvement Unit Charge', chargeElement.eiucSource | title, '', isEditable) }}
 
           {% if chargeElement.purposeUse.isTwoPartTariff %}
             {{ summaryListRow(
               'Agreements apply',
               agreementsApplyText(chargeElement.isSection127AgreementEnabled),
-              changeLink('/agreements', chargeElement.id)
+              changeLink('/agreements', chargeElement.id, licenceId),
+              isEditable
             )}}
           {% endif %}
         </dl>
@@ -140,7 +158,7 @@
   
 {% endmacro %}
 
-{% macro chargeCategoryTable(chargeCategory, isEditable) %}
+{% macro chargeCategoryTable(chargeCategory, isEditable, licenceId) %}
 
   <h2 class="govuk-heading-l govuk-!-margin-bottom-4">
   <span class="govuk-caption-l">Charge reference 3.20.23</span>
@@ -151,12 +169,12 @@
     {{ summaryListRow('Description', chargeCategory.description) }}
     {{ summaryListRow('Source', chargeCategory.source) }}
     {{ summaryListRow('Loss', chargeCategory.loss) }}
-    {{ summaryListRow('Volume', chargeCategory.quantity + 'ML') }}
+    {{ summaryListRow('Volume', chargeCategory.volume + 'ML') }}
     {{ summaryListRow('Water availability', chargeCategory.availability) }}
     {{ summaryListRow('Water model', chargeCategory.model) }}
     {{ summaryListRow('Additional charges apply', chargeCategory.charges) }}
     {{ summaryListRow('Adjustments apply', chargeCategory.adsjustments) }}
     {{ summaryListRow('EUIC Region', 'Test region') }}
   </dl>
-  {{ chargeElementTable(chargeCategory.chargeElements, isEditable) }}
+  {{ chargeElementTable(chargeCategory.chargeElements, isEditable, licenceId) }}
 {% endmacro %}

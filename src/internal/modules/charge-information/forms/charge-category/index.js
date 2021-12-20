@@ -1,10 +1,10 @@
 module.exports = {
   description: require('./description'),
-  source: require('./source'),
-  loss: require('./loss'),
+  source: require('./default-form'),
+  loss: require('./default-form'),
   volume: require('./volume'),
-  availability: require('./availability'),
-  model: require('./water-model'),
-  charges: require('./additional-charges'),
-  adjustments: require('./adjustments')
+  availability: require('./default-form'),
+  model: require('./default-form'),
+  charges: require('./default-form'),
+  adjustments: require('./default-form')
 };

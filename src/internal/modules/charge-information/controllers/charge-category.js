@@ -59,7 +59,7 @@ const postChargeCategoryStep = async (request, h) => {
   const form = getPostedForm(request, forms[step]);
 
   if (form.isValid) {
-    if (step === CHARGE_CATEGORY_STEPS.adjustments && request.payload.adjustments === 'false') {
+    if (step === CHARGE_CATEGORY_STEPS.adjustments && request.payload.adjustments === 'No') {
       const { draftChargeInformation } = request.pre;
       const chargeCategory = draftChargeInformation.chargeCategories.find(category => category.id === categoryId);
       chargeCategory.chargeReference = await findChargeReference(chargeCategory);

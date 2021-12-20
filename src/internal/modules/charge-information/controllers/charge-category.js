@@ -41,6 +41,13 @@ const getChargeCategoryStep = async (request, h) => {
   });
 };
 
+const findChargeReference = async chargeCategory => {
+  const keys = ['source', 'loss', 'availability', 'model', 'volume'];
+  const chargeReference = await services.water.chargeCategories.getChargeCategory(pick(chargeCategory, keys));
+  chargeReference.shortDescription = `${chargeCategory.loss} loss, ${chargeCategory.source} abstraction, below ${chargeCategory.volume}ml per year`;
+  return { chargeReference: pick(chargeReference, ['reference', 'shortDescription']) };
+};
+
 const postChargeCategoryStep = async (request, h) => {
   const { step, licenceId, categoryId } = request.params;
   const { chargeVersionWorkflowId } = request.query;
@@ -49,20 +56,13 @@ const postChargeCategoryStep = async (request, h) => {
 
   if (form.isValid) {
     if (step === CHARGE_CATEGORY_STEPS.adjustments && request.payload.adjustments === 'false') {
-      const formData = omit(form, 'csrf_token');
       const { draftChargeInformation } = request.pre;
-      const chargeCategory = {
-        ...draftChargeInformation.draftChargeCategory,
-        chargeElements: draftChargeInformation.chargeElements,
-        ...formData
-      };
-      const keys = ['source', 'loss', 'availability', 'model', 'volume'];
-      const chargeReference = await services.water.chargeCategories.getChargeCategory(pick(chargeCategory, keys));
-      chargeCategory.chargeReference = pick(chargeReference, ['reference', 'shortDescription']);
-      draftChargeInformation.chargeCategories.push(chargeCategory);
-      draftChargeInformation.chargeElements = [];
-      request.clearDraftChargeInformation(licenceId, chargeVersionWorkflowId);
-      request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, omit(draftChargeInformation, ['draftChargeCategory']));
+      const chargeCategory = draftChargeInformation.chargeCategories.find(category => category.id === categoryId);
+      const chargeReference = await findChargeReference(chargeCategory);
+      chargeCategory
+        ? Object.assign(chargeCategory, chargeReference)
+        : draftChargeInformation.chargeCategories.push({ chargeReference, id: categoryId });
+      request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation);
       return h.redirect(routing.getCheckData(licenceId, { chargeVersionWorkflowId }));
     }
     await applyFormResponse(request, form, actions.setChargeCategoryData);

@@ -292,7 +292,12 @@ const redirectToStartOfCategoryFlow = (request, h) => {
 
   // Create new element to edit in the session state
   const chargeCategoryId = uuid();
-  const action = actions.createChargeCategory(chargeCategoryId);
+  // TODO assigns all the charge elements in the draft charge info object to the new charge category
+  // this will need to change to select which elements should be used.
+  const action = actions.createChargeCategory(chargeCategoryId, currentState.chargeElements);
+  // reset the charge elements in the draft charge info object because they
+  // have all been assigned to the charge category
+  currentState.chargeElements = [];
   const nextState = reducer(currentState, action);
   request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, nextState);
 

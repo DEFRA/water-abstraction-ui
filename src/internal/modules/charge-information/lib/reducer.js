@@ -1,5 +1,4 @@
 const { ACTION_TYPES } = require('./actions');
-const { omit } = require('lodash');
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -41,21 +40,18 @@ const reducer = (state, action) => {
           }
         ]
       };
-    case ACTION_TYPES.createChargeCategory:
-      return {
-        ...state,
-        draftChargeCategory: { id: action.payload.id }
-      };
-
     case ACTION_TYPES.setChargeCategoryData:
       return {
         ...state,
-        draftChargeCategory: action.payload
+        chargeCategories: action.payload
       };
-    case ACTION_TYPES.saveChargeCategory:
+    case ACTION_TYPES.createChargeCategory:
       return {
-        ...(omit(state, 'chargeElements')),
-        draftChargeCategory: action.payload
+        ...state,
+        chargeCategories: [
+          ...state.chargeCategories,
+          action.payload
+        ]
       };
     case ACTION_TYPES.clearData:
       return {};

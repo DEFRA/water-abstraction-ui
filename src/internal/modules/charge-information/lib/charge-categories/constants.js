@@ -27,13 +27,6 @@ const ROUTING_CONFIG = {
   adjustments: { pageTitle: 'Do adjustments apply?', back: CHARGE_CATEGORY_STEPS.charges }
 };
 
-const LOSS_HIGH = 'High';
-const LOSS_MEDIUM = 'Medium';
-const LOSS_LOW = 'Low';
-
-const AVAILABLE = 'Available';
-const RESTRICTED = 'Restricted availablity or no availability';
-
 const WATER_MODEL = {
   noModel: 'No model',
   tier1: 'Tier 1',
@@ -45,8 +38,16 @@ const SOURCES = {
   nonTidal: 'Non-tidal'
 };
 
-const LOSS_CATEGORIES = [LOSS_HIGH, LOSS_MEDIUM, LOSS_LOW];
-const WATER_AVAILABILITY = [AVAILABLE, RESTRICTED];
+const LOSS_CATEGORIES = {
+  high: 'High',
+  medium: 'Medium',
+  low: 'Low'
+};
+
+const WATER_AVAILABILITY = {
+  available: 'Available',
+  restricted: 'Restricted availablity or no availability'
+};
 
 exports.WATER_MODEL = WATER_MODEL;
 exports.WATER_AVAILABILITY = WATER_AVAILABILITY;

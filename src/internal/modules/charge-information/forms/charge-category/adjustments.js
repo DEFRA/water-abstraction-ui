@@ -5,28 +5,6 @@ const { formFactory, fields } = require('shared/lib/forms/');
 const { CHARGE_CATEGORY_STEPS } = require('../../lib/charge-categories/constants');
 const { getChargeCategoryActionUrl, getChargeCategoryData } = require('../../lib/form-helpers');
 
-const getRadioField = (licenceNumber, value) => fields.radio('adjustments', {
-  caption: `Licence ${licenceNumber}`,
-  label: 'Do adjustments apply?',
-  heading: true,
-  hint: 'Adjustments include any discounts or agreements that should apply to this charge',
-  errors: {
-    'any.required': {
-      message: 'Select if adjustments should apply'
-    }
-  },
-  choices: [
-    // {
-    //   value: true,
-    //   label: 'Yes'
-    // },
-    {
-      value: false,
-      label: 'No'
-    }],
-  mapper: 'booleanMapper'
-}, value);
-
 /**
  * Form to select if two-part tariff (section 127) agreement should be
  * disabled at element level
@@ -35,15 +13,28 @@ const getRadioField = (licenceNumber, value) => fields.radio('adjustments', {
  */
 const form = request => {
   const { csrfToken } = request.view;
-  const { licence: { licenceNumber } } = request.pre;
 
   const action = getChargeCategoryActionUrl(request, CHARGE_CATEGORY_STEPS.adjustments);
   const f = formFactory(action, 'POST');
 
   const { adjustments } = getChargeCategoryData(request);
-  f.fields.push(
-    getRadioField(licenceNumber, adjustments)
-  );
+  f.fields.push(fields.radio('adjustments', {
+    hint: 'Adjustments include any discounts or agreements that should apply to this charge',
+    errors: {
+      'any.required': {
+        message: 'Select yes if adjustments should apply'
+      }
+    },
+    choices: [
+      // {
+      //   value: true,
+      //   label: 'Yes'
+      // },
+      {
+        value: false,
+        label: 'No'
+      }]
+  }, adjustments));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 

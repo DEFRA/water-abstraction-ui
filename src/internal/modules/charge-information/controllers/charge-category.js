@@ -1,6 +1,6 @@
 'use-strict';
 const cleanObject = require('../../../../shared/lib/clean-object');
-const { omit, pick } = require('lodash');
+const { pick } = require('lodash');
 const forms = require('../forms/charge-category/index');
 const routing = require('../lib/routing');
 const services = require('../../../lib/connectors/services');
@@ -45,7 +45,11 @@ const findChargeReference = async chargeCategory => {
   const keys = ['source', 'loss', 'availability', 'model', 'volume'];
   const chargeReference = await services.water.chargeCategories.getChargeCategory(pick(chargeCategory, keys));
   chargeReference.shortDescription = `${chargeCategory.loss} loss, ${chargeCategory.source} abstraction, below ${chargeCategory.volume}ml per year`;
-  return { chargeReference: pick(chargeReference, ['reference', 'shortDescription']) };
+  return {
+    id: chargeReference.billingChargeCategoryId,
+    reference: chargeReference.reference,
+    description: chargeReference.shortDescription
+  };
 };
 
 const postChargeCategoryStep = async (request, h) => {
@@ -58,10 +62,7 @@ const postChargeCategoryStep = async (request, h) => {
     if (step === CHARGE_CATEGORY_STEPS.adjustments && request.payload.adjustments === 'false') {
       const { draftChargeInformation } = request.pre;
       const chargeCategory = draftChargeInformation.chargeCategories.find(category => category.id === categoryId);
-      const chargeReference = await findChargeReference(chargeCategory);
-      chargeCategory
-        ? Object.assign(chargeCategory, chargeReference)
-        : draftChargeInformation.chargeCategories.push({ chargeReference, id: categoryId });
+      chargeCategory.chargeReference = await findChargeReference(chargeCategory);
       request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation);
       return h.redirect(routing.getCheckData(licenceId, { chargeVersionWorkflowId }));
     }

@@ -74,11 +74,18 @@ const getDefaultView = (request, backLink, formContainer) => {
   return view;
 };
 
+const mapChargeCategories = chargeCategory => {
+  return {
+    ...(omit(chargeCategory, 'id')),
+    chargeElements: chargeCategory.chargeElements.map(element => omit(element, 'id'))
+  };
+};
+
 const prepareChargeInformation = (licenceId, chargeData) => ({
   licenceId,
   chargeVersion: {
     ...chargeData,
-    chargeCategories: [{ id: '26e710e2-fc42-41c1-97db-1979c6459746', chargeElements: chargeData.chargeElements.map(element => omit(element, 'id')) }],
+    chargeCategories: chargeData.chargeCategories ? chargeData.chargeCategories.map(category => mapChargeCategories(category)) : [],
     chargeElements: chargeData.chargeElements.map(element => omit(element, 'id')),
     status: 'draft'
   }

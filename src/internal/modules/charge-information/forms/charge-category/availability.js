@@ -2,16 +2,8 @@
 
 const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
-const { capitalize } = require('lodash');
 const { CHARGE_CATEGORY_STEPS, WATER_AVAILABILITY } = require('../../lib/charge-categories/constants');
 const { getChargeCategoryData, getChargeCategoryActionUrl } = require('../../lib/form-helpers');
-
-const options = () => {
-  return WATER_AVAILABILITY.map(element => {
-    const option = { value: element, label: capitalize(element) };
-    return option;
-  });
-};
 
 /**
  * Form to request the waterAvailability category
@@ -33,7 +25,8 @@ const form = request => {
         message: 'Select the water availability'
       }
     },
-    choices: options(data.availability || {})
+    choices: Object.values(WATER_AVAILABILITY)
+      .map(availability => { return { value: availability, label: availability }; })
   }, data.availability || ''));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
@@ -43,9 +36,8 @@ const form = request => {
 
 const schema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
-  availability: Joi.string().valid(...WATER_AVAILABILITY).required()
+  availability: Joi.string().valid(...Object.values(WATER_AVAILABILITY)).required()
 });
 
 exports.schema = schema;
-
 exports.form = form;

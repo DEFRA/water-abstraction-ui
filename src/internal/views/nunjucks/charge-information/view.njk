@@ -67,14 +67,6 @@ formErrorSummary %}
   }) }}
 {% endmacro %}
 
-{% macro addChargeReferenceButton() %}
-  {{ govukButton({
-  text: 'Assign a charge reference',
-  name: 'buttonAction',
-  value: 'addChargeCategory'
-  }) }}
-{% endmacro %}
-
 {% macro removeElementButton(chargeElement) %}
   {{ govukButton({
     text: 'Remove element',
@@ -149,8 +141,8 @@ formErrorSummary %}
   <form method="post"  action="{{action}}" novalidate="novalidate">
     <input type="hidden" name="csrf_token" value="{{ csrfToken }}"/>
     {% if chargeVersion.chargeElements.length > 0 %}
-        {{ chargeElementTable(chargeVersion.chargeElements, isEditable, licenceId) }}
-    {% else %}
+        {{ chargeElementTable(chargeVersion.chargeElements, isEditable, licenceId, isSrocChargeInfoEnabled) }}
+    {% elif isSrocChargeInfoEnabled %}
       {% for chargeCategory in chargeVersion.chargeCategories %}
         {{ chargeCategoryTable(chargeCategory, isEditable, licenceId)}}
       {% endfor %}   

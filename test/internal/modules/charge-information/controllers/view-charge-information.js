@@ -423,6 +423,7 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
                 chargeVersion: {
                   id: workflowId,
                   dateRange: { startDate: '2019-04-01' },
+                  chargeCategories: [],
                   chargeElements: [omit(request.pre.draftChargeInformation.chargeElements[0], 'id')],
                   invoiceAccount: {
                     invoiceAccountAddress: 'test-invoice-account-address-2',

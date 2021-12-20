@@ -14,7 +14,7 @@ const getErrors = key => {
       message: 'Enter a volume'
     },
     'string.empty': {
-      message: 'Enter a qauntity'
+      message: 'Enter a volume'
     }
   };
 

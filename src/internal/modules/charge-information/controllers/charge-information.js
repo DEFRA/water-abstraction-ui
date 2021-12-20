@@ -24,6 +24,7 @@ const { reducer } = require('../lib/reducer');
 const { reviewForm } = require('../forms/review');
 const { chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope;
 const { hasScope } = require('internal/lib/permissions');
+const { srocChargeInformation: isSrocChargeInfoEnabled } = require('../../../config').featureToggles;
 
 /**
  * Select the reason for the creation of a new charge version
@@ -216,7 +217,8 @@ const getCheckData = async (request, h) => {
     isXlHeading: true,
     editChargeVersionWarning,
     isApprover,
-    reviewForm: reviewForm(request)
+    reviewForm: reviewForm(request),
+    isSrocChargeInfoEnabled
   };
 
   return h.view('nunjucks/charge-information/view.njk', view);

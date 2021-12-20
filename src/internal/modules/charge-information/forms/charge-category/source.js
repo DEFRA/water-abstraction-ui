@@ -1,7 +1,6 @@
 'use strict';
 
 const Joi = require('joi');
-const { capitalize } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms/');
 const { SOURCES, CHARGE_CATEGORY_STEPS } = require('../../lib/charge-categories/constants');
 const { getChargeCategoryData, getChargeCategoryActionUrl } = require('../../lib/form-helpers');
@@ -25,7 +24,7 @@ const form = request => {
         message: 'Select a source'
       }
     },
-    choices: Object.values(SOURCES).map(source => { return { value: source, label: capitalize(source) }; })
+    choices: Object.values(SOURCES).map(source => { return { value: source, label: source }; })
   }, data.source));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));

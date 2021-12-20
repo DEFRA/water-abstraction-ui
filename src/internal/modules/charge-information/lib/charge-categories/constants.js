@@ -44,14 +44,54 @@ const YES_NO = {
  * -- nextStep  = the next page to load
  */
 const ROUTING_CONFIG = {
-  description: { pageTitle: 'Enter a description for the charge reference', nextStep: CHARGE_CATEGORY_STEPS.source },
-  source: { pageTitle: 'Select the source', nextStep: CHARGE_CATEGORY_STEPS.loss, back: CHARGE_CATEGORY_STEPS.description, options: SOURCES, errorMessage: 'Select a source' },
-  loss: { pageTitle: 'Select the loss', nextStep: CHARGE_CATEGORY_STEPS.volume, back: CHARGE_CATEGORY_STEPS.source, options: LOSS_CATEGORIES, errorMessage: 'Select a loss category' },
-  volume: { pageTitle: 'Enter a volume', nextStep: CHARGE_CATEGORY_STEPS.availability, back: CHARGE_CATEGORY_STEPS.loss },
-  availability: { pageTitle: 'Select the water availability', nextStep: CHARGE_CATEGORY_STEPS.model, back: CHARGE_CATEGORY_STEPS.volume, options: WATER_AVAILABILITY, errorMessage: 'Select the water availability' },
-  model: { pageTitle: 'Select the water model', nextStep: CHARGE_CATEGORY_STEPS.charges, back: CHARGE_CATEGORY_STEPS.availability, options: WATER_MODEL, errorMessage: 'Select the watet model' },
-  charges: { pageTitle: 'Do additional charges apply?', nextStep: CHARGE_CATEGORY_STEPS.adjustments, back: CHARGE_CATEGORY_STEPS.model, options: YES_NO, errorMessage: 'Select yes if additional charges apply.' },
-  adjustments: { pageTitle: 'Do adjustments apply?', back: CHARGE_CATEGORY_STEPS.charges, options: YES_NO, errorMessage: 'Select yes if adjustments apply' }
+  description: {
+    pageTitle: 'Enter a description for the charge reference',
+    nextStep: CHARGE_CATEGORY_STEPS.source
+  },
+  source: {
+    pageTitle: 'Select the source',
+    nextStep: CHARGE_CATEGORY_STEPS.loss,
+    back: CHARGE_CATEGORY_STEPS.description,
+    options: SOURCES,
+    errorMessage: 'Select a source'
+  },
+  loss: {
+    pageTitle: 'Select the loss',
+    nextStep: CHARGE_CATEGORY_STEPS.volume,
+    back: CHARGE_CATEGORY_STEPS.source,
+    options: LOSS_CATEGORIES,
+    errorMessage: 'Select a loss category' },
+  volume: {
+    pageTitle: 'Enter a volume',
+    nextStep: CHARGE_CATEGORY_STEPS.availability,
+    back: CHARGE_CATEGORY_STEPS.loss
+  },
+  availability: {
+    pageTitle: 'Select the water availability',
+    nextStep: CHARGE_CATEGORY_STEPS.model,
+    back: CHARGE_CATEGORY_STEPS.volume,
+    options: WATER_AVAILABILITY,
+    errorMessage: 'Select the water availability'
+  },
+  model: {
+    pageTitle: 'Select the water model',
+    nextStep: CHARGE_CATEGORY_STEPS.charges,
+    back: CHARGE_CATEGORY_STEPS.availability,
+    options: WATER_MODEL,
+    errorMessage: 'Select the watet model'
+  },
+  charges: {
+    pageTitle: 'Do additional charges apply?',
+    nextStep: CHARGE_CATEGORY_STEPS.adjustments,
+    back: CHARGE_CATEGORY_STEPS.model,
+    options: YES_NO,
+    errorMessage: 'Select yes if additional charges apply.' },
+  adjustments: {
+    pageTitle: 'Do adjustments apply?',
+    back: CHARGE_CATEGORY_STEPS.charges,
+    options: YES_NO,
+    errorMessage: 'Select yes if adjustments apply'
+  }
 };
 
 exports.WATER_MODEL = WATER_MODEL;

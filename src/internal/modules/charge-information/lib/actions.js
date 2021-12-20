@@ -3,7 +3,6 @@ const moment = require('moment');
 const uuid = require('uuid/v4');
 const DATE_FORMAT = 'YYYY-MM-DD';
 const mappers = require('./charge-elements/mappers');
-// const config = require('../../../config');
 const ACTION_TYPES = {
   clearData: 'clearData',
   setBillingAccount: 'set.invoiceAccount',

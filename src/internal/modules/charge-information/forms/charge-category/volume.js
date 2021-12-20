@@ -5,22 +5,6 @@ const { formFactory, fields } = require('shared/lib/forms/');
 const { CHARGE_CATEGORY_STEPS } = require('../../lib/charge-categories/constants');
 const { getChargeCategoryData, getChargeCategoryActionUrl } = require('../../lib/form-helpers');
 
-const getErrors = key => {
-  const errors = {
-    'string.pattern.base': {
-      message: 'Enter a number for the volume using 6 decimal places or fewer, the number must be more than 0'
-    },
-    'any.required': {
-      message: 'Enter a volume'
-    },
-    'string.empty': {
-      message: 'Enter a volume'
-    }
-  };
-
-  return errors;
-};
-
 /**
  * Form to request the abstraction quantities
  *
@@ -36,7 +20,17 @@ const form = request => {
   f.fields.push(fields.text('volume', {
     controlClass: 'govuk-input govuk-input--width-10',
     suffix: 'ML',
-    errors: getErrors()
+    errors: {
+      'string.pattern.base': {
+        message: 'Enter a number for the volume using 6 decimal places or fewer, the number must be more than 0'
+      },
+      'any.required': {
+        message: 'Enter a volume'
+      },
+      'string.empty': {
+        message: 'Enter a volume'
+      }
+    }
   }, data.volume || ''));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));

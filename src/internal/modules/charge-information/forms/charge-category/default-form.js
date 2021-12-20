@@ -36,7 +36,7 @@ const form = request => {
   return f;
 };
 
-const schema = (request) => {
+const schema = request => {
   const { step } = request.params;
   return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),

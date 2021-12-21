@@ -20,4 +20,49 @@ const mapMessage = message => ({
   badge: messageStatusBadgeMapper(message.displayStatus)
 });
 
+const checkBoxItems = (filter, notificationCategories) => {
+  if (!filter) {
+    filter = [];
+  }
+  if (typeof filter === 'string') {
+    filter = [filter];
+  }
+  const returnsData = [];
+  if (notificationCategories) {
+    notificationCategories.forEach(category => {
+      returnsData.push({ value: category.value, text: category.label });
+    });
+  }
+
+  return returnsData.map(row => {
+    return {
+      ...row,
+      checked: filter.includes(row.value)
+    };
+  });
+};
+
+const mapResponseToView = (response, request, notificationCategories, sentBy = '') => {
+  let { filter } = request.query;
+  let filterString = '&';
+  if (filter) {
+    // Only one item selected
+    if (typeof filter === 'string') {
+      filter = [filter];
+    }
+    filter.forEach(param => {
+      filterString += `filter=${param}&`;
+    });
+  }
+  filterString += `sentBy=${sentBy}`;
+  filterString = filterString.replace('undefined', '');
+  return {
+    ...response,
+    filter,
+    sentBy,
+    checkBoxItems: checkBoxItems(filter, notificationCategories),
+    filterString
+  };
+};
+exports.mapResponseToView = mapResponseToView;
 exports.mapMessage = mapMessage;

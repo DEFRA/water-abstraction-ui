@@ -290,21 +290,21 @@ const redirectToStartOfCategoryFlow = (request, h) => {
   const { chargeVersionWorkflowId } = request.query;
   const { licenceId } = request.params;
   const { draftChargeInformation: currentState } = request.pre;
-  currentState.chargeCategories = currentState.chargeCategories || [];
 
   // Create new element to edit in the session state
-  const chargeCategoryId = uuid();
-  // TODO assigns all the charge elements in the draft charge info object to the new charge category
-  // this will need to change to select which elements should be used.
-  const action = actions.createChargeCategory(chargeCategoryId, currentState.chargeElements);
-  // reset the charge elements in the draft charge info object because they
-  // have all been assigned to the charge category
-  currentState.chargeElements = [];
+  const id = uuid();
+  const data = currentState.chargeElements.reduce((acc, element) => {
+    element.chargingScheme === 'presroc'
+      ? acc.chargePurposes.push(element)
+      : acc.chargeElements.push(element);
+    return acc;
+  }, { chargeElements: [], chargePurposes: [] });
+  const action = actions.createChargeCategory(id, data.chargeElements, data.chargePurposes);
   const nextState = reducer(currentState, action);
   request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, nextState);
 
   // Enter charge element setup flow
-  return h.redirect(routing.getChargeCategoryStep(licenceId, chargeCategoryId, CHARGE_CATEGORY_FIRST_STEP, request.query));
+  return h.redirect(routing.getChargeCategoryStep(licenceId, id, CHARGE_CATEGORY_FIRST_STEP, request.query));
 };
 
 const removeElement = async (request, h) => {

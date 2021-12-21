@@ -37,8 +37,18 @@ const validate = chargeElement =>
 
 const addValidation = chargeInformation => {
   const chargeElementsWithValidationWarnings = chargeInformation.chargeElements.map(element => ({
-    ...element,
-    validationWarnings: validate(element)
+    ...(element.chargePurposes
+      ? {
+        ...element,
+        chargePurposes: element.chargePurposes.map(purpose => ({
+          ...purpose,
+          validationWarnings: validate(purpose)
+        }))
+      }
+      : element),
+    validationWarnings: chargeInformation.chargingScheme === 'presroc'
+      ? validate(element)
+      : [] // a new validator for @SROC will have to be added here
   }));
   return {
     ...chargeInformation,

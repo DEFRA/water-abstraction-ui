@@ -31,7 +31,8 @@ module.exports = {
         query: Joi.object().keys({
           form: VALID_GUID.optional(),
           returnToCheckData: Joi.boolean().default(false),
-          chargeVersionWorkflowId: Joi.string().uuid().optional().default('')
+          chargeVersionWorkflowId: Joi.string().uuid().optional().default(''),
+          categoryId: Joi.string().uuid().optional().default('')
         })
       },
       pre: [
@@ -64,7 +65,8 @@ module.exports = {
         query: Joi.object().keys({
           form: VALID_GUID.optional(),
           returnToCheckData: Joi.boolean().default(false),
-          chargeVersionWorkflowId: Joi.string().uuid().optional().default('')
+          chargeVersionWorkflowId: Joi.string().uuid().optional().default(''),
+          categoryId: Joi.string().uuid().optional().default('')
         })
       },
       pre: [

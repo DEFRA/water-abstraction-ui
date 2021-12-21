@@ -5,6 +5,7 @@ const reducer = (state, action) => {
     case ACTION_TYPES.setReason:
       return {
         ...state,
+        chargingScheme: 'presroc',
         changeReason: action.payload
       };
 
@@ -40,18 +41,11 @@ const reducer = (state, action) => {
           }
         ]
       };
-    case ACTION_TYPES.setChargeCategoryData:
-      return {
-        ...state,
-        chargeCategories: action.payload
-      };
     case ACTION_TYPES.createChargeCategory:
       return {
         ...state,
-        chargeCategories: [
-          ...state.chargeCategories,
-          action.payload
-        ]
+        chargingScheme: 'sroc',
+        chargeElements: action.payload
       };
     case ACTION_TYPES.clearData:
       return {};

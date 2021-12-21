@@ -12,7 +12,7 @@ if (config.featureToggles.srocChargeInformation) {
   module.exports = {
     getChargeCategoryStep: {
       method: 'GET',
-      path: '/licences/{licenceId}/charge-information/charge-category/{categoryId}/{step}',
+      path: '/licences/{licenceId}/charge-information/charge-category/{elementId}/{step}',
       handler: controller.getChargeCategoryStep,
       options: {
         auth: {
@@ -28,7 +28,7 @@ if (config.featureToggles.srocChargeInformation) {
           params: Joi.object().keys({
             licenceId: VALID_GUID,
             step: Joi.string().valid(...chargeCategorySteps).required(),
-            categoryId: VALID_GUID
+            elementId: VALID_GUID
           }),
           query: Joi.object().keys({
             form: VALID_GUID.optional(),
@@ -45,7 +45,7 @@ if (config.featureToggles.srocChargeInformation) {
     },
     postChargeCategoryStep: {
       method: 'POST',
-      path: '/licences/{licenceId}/charge-information/charge-category/{categoryId}/{step}',
+      path: '/licences/{licenceId}/charge-information/charge-category/{elementId}/{step}',
       handler: controller.postChargeCategoryStep,
       options: {
         auth: {
@@ -61,7 +61,7 @@ if (config.featureToggles.srocChargeInformation) {
           params: Joi.object().keys({
             licenceId: VALID_GUID,
             step: Joi.string().valid(...chargeCategorySteps).required(),
-            categoryId: VALID_GUID
+            elementId: VALID_GUID
           }),
           query: Joi.object().keys({
             form: VALID_GUID.optional(),

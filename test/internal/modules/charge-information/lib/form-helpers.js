@@ -14,7 +14,7 @@ const createRequest = (options = {}) => ({
     elementId: 'test-element-id',
     licenceId: 'test-licence-id'
   },
-  query: options.query || {},
+  query: options.query || { categoryId: ''},
   pre: {
     draftChargeInformation: {
       chargeElements: options.chargeElements || []

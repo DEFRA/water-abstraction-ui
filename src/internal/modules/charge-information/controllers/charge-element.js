@@ -16,7 +16,7 @@ const actions = require('../lib/actions');
 const getBackLink = request => {
   const { step, licenceId, elementId } = request.params;
   const { chargeVersionWorkflowId } = request.query;
-  if (request.query.returnToCheckData === 1) {
+  if (request.query.returnToCheckData) {
     return routing.getCheckData(licenceId);
   }
   return step === CHARGE_ELEMENT_FIRST_STEP
@@ -53,11 +53,15 @@ const getChargeElementStep = async (request, h) => {
 
 const postChargeElementStep = async (request, h) => {
   const { step, licenceId, elementId } = request.params;
+  const { categoryId } = request.query;
 
   const form = getPostedForm(request, forms[step]);
 
   if (form.isValid) {
-    await applyFormResponse(request, form, actions.setChargeElementData);
+    const action = categoryId === ''
+      ? actions.setChargeElementData
+      : actions.setChargePurposeData;
+    await applyFormResponse(request, form, action);
     return h.redirect(getRedirectPath(request));
   }
 

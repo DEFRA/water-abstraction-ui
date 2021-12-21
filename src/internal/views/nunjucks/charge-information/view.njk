@@ -140,12 +140,19 @@ formErrorSummary %}
 
   <form method="post"  action="{{action}}" novalidate="novalidate">
     <input type="hidden" name="csrf_token" value="{{ csrfToken }}"/>
-    {% if chargeVersion.chargeElements.length > 0 %}
-        {{ chargeElementTable(chargeVersion.chargeElements, isEditable, licenceId, isSrocChargeInfoEnabled) }}
-    {% elif isSrocChargeInfoEnabled %}
-      {% for chargeCategory in chargeVersion.chargeCategories %}
-        {{ chargeCategoryTable(chargeCategory, isEditable, licenceId)}}
-      {% endfor %}   
+    {% if chargeVersion.chargingScheme == 'sroc' and isSrocChargeInfoEnabled  %}
+        {% for chargeElement in chargeVersion.chargeElements %}
+        {% if chargeElement.chargingScheme == 'sroc' %}
+          {{ chargeCategoryTable(chargeElement, isEditable, licenceId)}}
+        {% endif %}
+      {% endfor %}
+      {% for chargeElement in chargeVersion.chargeElements %}
+        {% if chargeElement.chargingScheme == 'presroc' %}
+          {{ chargeElementTable(chargeElement, isEditable, licenceId)}}
+        {% endif %}
+      {% endfor %} 
+    {% else %}
+      {{ chargeElementTable(chargeVersion.chargeElements, isEditable, licenceId, isSrocChargeInfoEnabled) }}
     {% endif %}
 </form>
 
@@ -207,7 +214,7 @@ formErrorSummary %}
                 value: 'update',
                 classes: 'govuk-!-margin-right-6'
               }) }}
-          {% elif chargeVersion.status != 'review' %}
+          {% elif chargeVersion.status != 'review' and chargeVersion.chargingScheme == 'presroc' %}
             {{ govukButton({
                   text: 'Confirm',
                   name: 'buttonAction',

@@ -5,20 +5,18 @@ const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').scri
 const { SOURCES } = require('../../../../../../src/internal/modules/charge-information/lib/charge-categories/constants');
 const { form, schema } = require('../../../../../../src/internal/modules/charge-information/forms/charge-category/default-radio-options-form');
 const { findField, findButton } = require('../../../../../lib/form-test');
-const createRequest = chargeCategoryData => ({
+const createRequest = chargeElements => ({
   view: {
     csrfToken: 'token'
   },
   query: {},
   pre: {
     draftChargeInformation: {
-      chargeCategories: [
-        ...chargeCategoryData
-      ]
+      chargeElements
     }
   },
   params: {
-    categoryId: 'test-category-id',
+    elementId: 'test-category-id',
     step: 'source'
   }
 });

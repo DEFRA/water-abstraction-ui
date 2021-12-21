@@ -15,7 +15,9 @@ const createRequest = chargeElementData => ({
   view: {
     csrfToken: 'token'
   },
-  query: {},
+  query: {
+    categoryId: ''
+  },
   params: {
     licenceId: 'test-licence-id',
     elementId: 'test-element-id'

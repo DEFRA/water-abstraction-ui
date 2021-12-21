@@ -12,7 +12,7 @@ const ACTION_TYPES = {
   setChargeCategoryData: 'set.chargeCategoryData',
   createChargeElement: 'create.chargeElement',
   createChargeCategory: 'create.chargeCategory',
-  saveChargeCategory: 'save.chargeCategory'
+  setChargePurposeData: 'set.chargePurposeData'
 };
 
 const setChangeReason = (request, formValues) => {
@@ -50,6 +50,7 @@ const setBillingAccount = id => ({
 const generateIds = chargeElements =>
   chargeElements.map(element => ({
     ...element,
+    chargingScheme: 'presroc',
     id: uuid()
   }));
 
@@ -110,33 +111,45 @@ const clearData = () => {
 const createChargeElement = id => ({
   type: ACTION_TYPES.createChargeElement,
   payload: {
+    charingScheme: 'presroc',
     id
   }
 });
 
-const setChargeCategoryData = (request, formValues) => {
+const createChargeCategory = (id, chargeElements, chargePurposes) => ({
+  type: ACTION_TYPES.createChargeCategory,
+  payload: [
+    ...chargeElements,
+    {
+      id,
+      chargingScheme: 'sroc',
+      chargePurposes
+    }]
+});
+
+const setChargePurposeData = (request, formValues) => {
   const { draftChargeInformation } = request.pre;
-  const { categoryId } = request.params;
+  const { categoryId } = request.query;
+  const { elementId } = request.params;
   const data = omit(formValues, 'csrf_token');
 
-  const chargeCategoryToUpdate = draftChargeInformation.chargeCategories.find(category => category.id === categoryId);
-  chargeCategoryToUpdate
-    ? Object.assign(chargeCategoryToUpdate, data)
-    : draftChargeInformation.chargeCategories.push({ ...data, id: categoryId });
-
+  const chargeElements = draftChargeInformation.chargeElements
+    .map(element => {
+      if (element.id === categoryId) {
+        element.chargePurposes.map(purpose => {
+          if (purpose.id === elementId) {
+            return Object.assign(purpose, data);
+          }
+          return purpose;
+        });
+      }
+      return element;
+    });
   return {
-    type: ACTION_TYPES.setChargeCategoryData,
-    payload: draftChargeInformation.chargeCategories
+    type: ACTION_TYPES.setChargeElementData,
+    payload: chargeElements
   };
 };
-
-const createChargeCategory = (id, chargeElements) => ({
-  type: ACTION_TYPES.createChargeCategory,
-  payload: {
-    id,
-    chargeElements
-  }
-});
 
 exports.ACTION_TYPES = ACTION_TYPES;
 
@@ -148,5 +161,5 @@ exports.setStartDate = setStartDate;
 exports.setChargeElementData = setChargeElementData;
 exports.removeChargeElement = removeChargeElement;
 exports.createChargeElement = createChargeElement;
-exports.setChargeCategoryData = setChargeCategoryData;
 exports.createChargeCategory = createChargeCategory;
+exports.setChargePurposeData = setChargePurposeData;

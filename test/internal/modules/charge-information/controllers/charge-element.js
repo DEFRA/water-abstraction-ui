@@ -31,7 +31,9 @@ const createRequest = (step, payload) => ({
     csrf_token: uuid(),
     ...payload
   },
-  query: {},
+  query: {
+    categoryId: ''
+  },
   view: {
     foo: 'bar',
     csrfToken: uuid()

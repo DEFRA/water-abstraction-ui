@@ -35,6 +35,7 @@ experiment('internal/modules/charge-information/lib/charge-information-validator
     let chargeInfo, decoratedChargeInfo;
     beforeEach(() => {
       chargeInfo = {
+        chargingScheme: 'presroc',
         chargeElements: [
           createChargeElement({
             id: 'compliant-element'

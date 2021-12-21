@@ -51,7 +51,7 @@ experiment('internal/modules/charge-information/forms/charge-element/loss-catego
       expect(lossCategoryLabels).to.equal(Object.values(SOURCES));
     });
 
-    test('sets the value of the loss field, if provided', async () => {
+    test('sets the value of the source field, if provided', async () => {
       chargeCategoryForm = form(createRequest([{ id: 'test-category-id', source: 'Tidal' }]));
       const source = findField(chargeCategoryForm, 'source');
       expect(source.value).to.equal('Tidal');

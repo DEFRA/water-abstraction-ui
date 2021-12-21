@@ -38,7 +38,6 @@ if (config.featureToggles.srocChargeInformation) {
         },
         pre: [
           { method: preHandlers.loadLicence, assign: 'licence' },
-          { method: preHandlers.loadDefaultCharges, assign: 'defaultCharges' },
           { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' }
         ]
       }
@@ -71,7 +70,6 @@ if (config.featureToggles.srocChargeInformation) {
         },
         pre: [
           { method: preHandlers.loadLicence, assign: 'licence' },
-          { method: preHandlers.loadDefaultCharges, assign: 'defaultCharges' },
           { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' }
         ]
       }

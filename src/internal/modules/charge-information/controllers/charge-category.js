@@ -10,14 +10,14 @@ const { ROUTING_CONFIG,
 const actions = require('../lib/actions');
 
 const getBackLink = request => {
-  const { step, licenceId, categoryId } = request.params;
+  const { step, licenceId, elementId } = request.params;
   const { chargeVersionWorkflowId } = request.query;
-  if (request.query.returnToCheckData === 1) {
+  if (request.query.returnToCheckData === true) {
     return routing.getCheckData(licenceId);
   }
   return step === CHARGE_CATEGORY_FIRST_STEP
-    ? routing.getUseAbstractionData(licenceId, { chargeVersionWorkflowId })
-    : routing.getChargeCategoryStep(licenceId, categoryId, ROUTING_CONFIG[step].back, { chargeVersionWorkflowId });
+    ? routing.getCheckData(licenceId, { chargeVersionWorkflowId })
+    : routing.getChargeCategoryStep(licenceId, elementId, ROUTING_CONFIG[step].back, { chargeVersionWorkflowId });
 };
 
 const getRedirectPath = request => {
@@ -56,7 +56,6 @@ const postChargeCategoryStep = async (request, h) => {
   const { chargeVersionWorkflowId } = request.query;
 
   const form = getPostedForm(request, forms[step]);
-
   if (form.isValid) {
     if (step === CHARGE_CATEGORY_STEPS.adjustments && request.payload.adjustments === 'No') {
       const { draftChargeInformation } = request.pre;

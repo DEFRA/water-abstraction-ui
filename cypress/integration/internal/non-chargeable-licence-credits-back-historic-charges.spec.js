@@ -8,6 +8,7 @@ const {
   selectFirstBillRun,
   setTwoPartTariffBillingVolume,
   continueSupplementaryBillRun,
+  reviewTwoPartTariffBillingVolume,
   viewChargeInformation
 } = require('../../support/common');
 

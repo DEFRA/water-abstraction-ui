@@ -3,6 +3,7 @@ const {
   login,
   viewBillRuns,
   selectFirstBillRun,
+  selectSecondBillRun,
   createBillRun,
   confirmBillRun,
   setTwoPartTariffBillingVolume,
@@ -16,7 +17,7 @@ const {
 describe('recalculating charges with no change to charge versions', () => {
   before(() => {
     tearDown();
-    setUp('two-part-tariff-billing-data');
+    setUp('five-year-two-part-tariff-bill-runs');
   });
 
   after(() => {
@@ -63,9 +64,19 @@ describe('recalculating charges with no change to charge versions', () => {
       continueSupplementaryBillRun(type);
 
       confirmBillRun(type);
+    });
+
+    describe('user confirms the bill run has a zero invoice', () => {
       viewBillRuns();
       selectFirstBillRun();
-      viewChargeInformation(type);
+      cy.get('.govuk-heading-xl', { timeout: 20000 }).contains(`Test Region supplementary bill run`);
+      cy.get('h2').contains('£0.00');
+    });
+
+    describe('user recalculates the bills', () => {
+      viewBillRuns();
+      selectSecondBillRun();
+      viewChargeInformation('two-part tariff');
       recalculateBills();
       markLicenceForNextSupplementaryRun();
     });

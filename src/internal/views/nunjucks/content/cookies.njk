@@ -59,12 +59,12 @@
         <tr>
           <td class="govuk-table__cell">sid</td>
           <td class="govuk-table__cell">Used for authentication</td>
-          <td class="govuk-table__cell">2 hours rolling, deleted on sign out</td>
+          <td class="govuk-table__cell">2 hours rolling, deleted on sign out, only exists when signed in</td>
         </tr>
         <tr>
           <td class="govuk-table__cell">session</td>
           <td class="govuk-table__cell">Used to store session data</td>
-          <td class="govuk-table__cell">10 years, deleted on sign out</td>
+          <td class="govuk-table__cell">5 days, resets when browser is closed and when signing in or out</td>
         </tr>
       </tbody>
     </table>

@@ -216,11 +216,11 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
             categoryId: testCategoryId,
             returnToCheckData: true
           };
-          request.pre.draftChargeInformation.chargeElements = 
-           [{
-             id: testCategoryId,
-             chargePurposes: [{ id: 'test-element-id' }]
-            }];
+          request.pre.draftChargeInformation.chargeElements =
+          [{
+            id: testCategoryId,
+            chargePurposes: [{ id: 'test-element-id' }]
+          }];
           await controller.postChargeElementStep(request, h);
         });
 
@@ -230,7 +230,7 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
           expect(id).to.equal('test-licence-id');
           expect(data.chargeElements[0]).to.equal(
             {
-              chargePurposes: 
+              chargePurposes:
               [{
                 id: 'test-element-id',
                 season: 'summer'

@@ -66,7 +66,7 @@ const chargeCategory = {
   billingChargeCategoryId: 'test-reference-id',
   reference: '1.0',
   shortDescription: 'test-charge-category-description'
-}
+};
 
 experiment('internal/modules/charge-information/controllers/charge-category', () => {
   let request, h;
@@ -77,7 +77,7 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
       postRedirectGet: sandbox.stub(),
       redirect: sandbox.stub()
     };
-    sandbox.stub(services.water.chargeCategories, 'getChargeCategory').resolves(chargeCategory)
+    sandbox.stub(services.water.chargeCategories, 'getChargeCategory').resolves(chargeCategory);
   });
   afterEach(() => sandbox.restore());
 
@@ -188,7 +188,7 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
               description: chargeCategory.shortDescription
             });
         });
-        
+
         test('the draft charge information is updated with the charge reference', async () => {
           const args = request.setDraftChargeInformation.lastCall.args;
           expect(args[2].chargeElements[0].adjustments).to.equal(validPayload.adjustments.adjustments);

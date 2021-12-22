@@ -165,8 +165,9 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
         });
 
         test('the user is redirected to the expected page', async () => {
+          console.log(h.redirect.lastCall.args);
           expect(h.redirect.calledWith(
-            `/licences/test-licence-id/charge-information/charge-category/${elementId}/${CHARGE_CATEGORY_STEPS.season}`
+            `/licences/test-licence-id/charge-information/charge-category/${elementId}/${CHARGE_CATEGORY_STEPS.volume}`
           )).to.be.true();
         });
       });
@@ -196,7 +197,7 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
 
         test('the user is redirected to the chack your answers page', async () => {
           expect(h.redirect.calledWith(
-            `/licences/test-licence-id/charge-information/check}`
+            `/licences/test-licence-id/charge-information/check`
           )).to.be.true();
         });
       });

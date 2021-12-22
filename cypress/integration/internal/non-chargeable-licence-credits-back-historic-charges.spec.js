@@ -1,4 +1,4 @@
-const {tearDown, setUp} = require("../../support/setup");
+const { tearDown, setUp } = require('../../support/setup');
 const {
   getYearStart,
   login,
@@ -8,8 +8,9 @@ const {
   selectFirstBillRun,
   setTwoPartTariffBillingVolume,
   continueSupplementaryBillRun,
-  viewChargeInformation, reviewLicence
-} = require("../../support/common");
+  reviewTwoPartTariffBillingVolume,
+  viewChargeInformation
+} = require('../../support/common');
 
 describe('non-chargeable licence credits back historic charges', () => {
   before(() => {
@@ -40,7 +41,8 @@ describe('non-chargeable licence credits back historic charges', () => {
       viewBillRuns();
       cy.get('#main-content > a.govuk-button').contains('Create a bill run').click();
       createBillRun(type);
-      setTwoPartTariffBillingVolume(type);
+      reviewTwoPartTariffBillingVolume();
+      setTwoPartTariffBillingVolume();
       continueSupplementaryBillRun(type);
       confirmBillRun(type);
     });
@@ -52,7 +54,7 @@ describe('non-chargeable licence credits back historic charges', () => {
       cy.get('[type="radio"]#reason').check();
       cy.get('button.govuk-button').contains('Continue').click();
       cy.get('.govuk-heading-l', { timeout: 20000 }).contains('Enter effective date');
-      cy.get('[type="radio"]#startDate-2').check();
+      cy.get('.govuk-radios__label').contains('Another date').click();
       const yearStart = getYearStart();
       cy.get('#customDate-day').type(`${yearStart.date()}`);
       cy.get('#customDate-month').type(`${yearStart.month() + 1}`);

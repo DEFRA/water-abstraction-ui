@@ -54,10 +54,12 @@ const getChargeElementStep = async (request, h) => {
 const postChargeElementStep = async (request, h) => {
   const { step, licenceId, elementId } = request.params;
   const { categoryId } = request.query;
-
   const form = getPostedForm(request, forms[step]);
 
   if (form.isValid) {
+    // if the category id exists it means the charge element data posted
+    // has been converted to an sroc charge purpose of an sroc charge element
+    // i.e. { chargeVersion: {chargeElements: [chargePurposes: []] } }
     const action = categoryId === ''
       ? actions.setChargeElementData
       : actions.setChargePurposeData;

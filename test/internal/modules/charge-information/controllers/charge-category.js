@@ -13,7 +13,7 @@ const uuid = require('uuid/v4');
 const sandbox = sinon.createSandbox();
 
 const controller = require('../../../../../src/internal/modules/charge-information/controllers/charge-category');
-
+const services = require('../../../../../src/internal/lib/connectors/services');
 const { ROUTING_CONFIG, CHARGE_CATEGORY_STEPS } = require('../../../../../src/internal/modules/charge-information/lib/charge-categories/constants');
 
 const PURPOSE_USE_ID = uuid();
@@ -56,14 +56,17 @@ const createRequest = (step, payload) => ({
 });
 
 const validPayload = {
-  source: {
-    purpose: PURPOSE_USE_ID
-  },
-  description: {
-    description: 'test-description'
-  },
-  loss: { loss: 'High' }
+  source: { purpose: PURPOSE_USE_ID },
+  description: { description: 'test-description' },
+  loss: { loss: 'High' },
+  adjustments: { adjustments: 'No' }
 };
+
+const chargeCategory = {
+  billingChargeCategoryId: 'test-reference-id',
+  reference: '1.0',
+  shortDescription: 'test-charge-category-description'
+}
 
 experiment('internal/modules/charge-information/controllers/charge-category', () => {
   let request, h;
@@ -74,6 +77,7 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
       postRedirectGet: sandbox.stub(),
       redirect: sandbox.stub()
     };
+    sandbox.stub(services.water.chargeCategories, 'getChargeCategory').resolves(chargeCategory)
   });
   afterEach(() => sandbox.restore());
 
@@ -163,7 +167,37 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
         test('the user is redirected to the expected page', async () => {
           expect(h.redirect.calledWith(
             `/licences/test-licence-id/charge-information/charge-category/${elementId}/${CHARGE_CATEGORY_STEPS.season}`
-          ));
+          )).to.be.true();
+        });
+      });
+      experiment('when the last charge category step in the flow is reached', () => {
+        beforeEach(async () => {
+          request = createRequest(CHARGE_CATEGORY_STEPS.adjustments, validPayload.adjustments);
+          request.pre.draftChargeInformation.chargeElements = [{ id: 'test-element-id' }];
+          await controller.postChargeCategoryStep(request, h);
+        });
+
+        test('the draft charge information is updated with the charge reference', async () => {
+          const [id, cvWorkflowId, data] = request.setDraftChargeInformation.lastCall.args;
+          expect(cvWorkflowId).to.equal(undefined);
+          expect(id).to.equal('test-licence-id');
+          expect(data.chargeElements[0].chargeReference).to.equal(
+            {
+              id: chargeCategory.billingChargeCategoryId,
+              reference: chargeCategory.reference,
+              description: chargeCategory.shortDescription
+            });
+        });
+        
+        test('the draft charge information is updated with the charge reference', async () => {
+          const args = request.setDraftChargeInformation.lastCall.args;
+          expect(args[2].chargeElements[0].adjustments).to.equal(validPayload.adjustments.adjustments);
+        });
+
+        test('the user is redirected to the chack your answers page', async () => {
+          expect(h.redirect.calledWith(
+            `/licences/test-licence-id/charge-information/check}`
+          )).to.be.true();
         });
       });
     });

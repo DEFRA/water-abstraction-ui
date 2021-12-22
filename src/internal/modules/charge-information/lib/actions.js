@@ -122,8 +122,8 @@ const createChargeCategory = (id, chargeElements, chargePurposes) => ({
     ...chargeElements,
     {
       id,
-      chargingScheme: 'sroc',
-      chargePurposes
+      chargePurposes,
+      chargingScheme: 'sroc'
     }]
 });
 

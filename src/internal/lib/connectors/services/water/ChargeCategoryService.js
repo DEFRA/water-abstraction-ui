@@ -1,10 +1,10 @@
 const ServiceClient = require('shared/lib/connectors/services/ServiceClient');
 
 class ChangeReasonsService extends ServiceClient {
-  getChargeCategory (chargeCategoryProperties) {
+  getChargeCategory (filter) {
     const uri = this.joinUrl('charge-categories');
     const options = {
-      qs: chargeCategoryProperties
+      qs: filter
     };
     return this.serviceRequest.get(uri, options);
   }

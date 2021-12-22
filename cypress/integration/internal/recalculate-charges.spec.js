@@ -44,13 +44,13 @@ const recalculateChargesTest = ({ customVolume, expectedTotal }) => {
     const type = 'supplementary';
     createBillRun(type);
     reviewLicence();
-    setTwoPartTariffBillingVolume(customVolume)
+    setTwoPartTariffBillingVolume(customVolume);
     continueSupplementaryBillRun(type);
     confirmBillRun(type);
 
     cy.get('.govuk-grid-column-two-thirds h2', { timeout: 20000 }).contains(expectedTotal);
   });
-}
+};
 
 describe('recalculating charges', () => {
   beforeEach(() => {
@@ -65,15 +65,15 @@ describe('recalculating charges', () => {
   });
 
   it('with no change to charge versions', () => {
-    recalculateChargesTest({customVolume: '25', expectedTotal: '£0.00'})
+    recalculateChargesTest({ customVolume: '25', expectedTotal: '£0.00' });
   });
 
   it('with change to less volume in charge versions', () => {
-    recalculateChargesTest({customVolume: '15', expectedTotal: '-£220.08'})
+    recalculateChargesTest({ customVolume: '15', expectedTotal: '-£220.08' });
   });
 
   it('with change to greater volume in charge versions', () => {
     // Note authorised is 30 so custom volume will not be passed into the test
-    recalculateChargesTest({expectedTotal: '110.04'})
+    recalculateChargesTest({ expectedTotal: '110.04' });
   });
 });

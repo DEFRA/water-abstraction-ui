@@ -1,4 +1,4 @@
-const {tearDown, setUp} = require("../../support/setup");
+const { tearDown, setUp } = require('../../support/setup');
 const {
   getYearStart,
   login,
@@ -8,9 +8,9 @@ const {
   selectFirstBillRun,
   setTwoPartTariffBillingVolume,
   continueSupplementaryBillRun,
-  viewChargeInformation,
-  reviewTwoPartTariffBillingVolume
-} = require("../../support/common");
+  reviewTwoPartTariffBillingVolume,
+  viewChargeInformation
+} = require('../../support/common');
 
 describe('non-chargeable licence credits back historic charges', () => {
   before(() => {

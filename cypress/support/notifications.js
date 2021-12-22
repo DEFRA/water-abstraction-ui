@@ -20,7 +20,7 @@ Cypress.Commands.add('simulateNotifyCallback', async (notificationId) => {
       authorization: `Bearer ${Cypress.env('NOTIFY_CALLBACK_TOKEN')}`
     }
   });
-  return 'OK'
+  return 'OK';
 });
 
 Cypress.Commands.add('getLastNotifications', async (baseUrl, email) => {

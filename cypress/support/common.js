@@ -29,8 +29,8 @@ const login = (user, password) => {
 
 const viewBillRuns = () => {
   // user clicks on bill runs nav to review the licence
-  describe('user reviews the licence', () => {
-    cy.get('#navbar-bill-runs').contains('Bill runs').click();
+  describe('user reviews the bill runs', () => {
+    cy.get('.navbar__link').contains('Bill runs').click();
   });
 };
 
@@ -124,19 +124,26 @@ const markLicenceForNextSupplementaryRun = () => {
   });
 };
 
-const setTwoPartTariffBillingVolume = () => {
-  describe('user views returns data', () => {
+const reviewTwoPartTariffBillingVolume = () => {
+  describe('user reviews 2 Part billing volumes data', () => {
     cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Review data issues');
     cy.get('.govuk-link').contains('Review').click();
     cy.url().should('contain', '/billing/batch/');
     cy.get('.govuk-heading-xl').contains('Review data issues for L1');
-    cy.get('a[href*="billing-volume"]').click();
   });
+};
 
+const setTwoPartTariffBillingVolume = (customVolume) => {
   describe('user verify the review bill', () => {
-    cy.get('#quantity').click();
+    cy.get('a[href*="billing-volume"]', { timeout: 20000 }).click();
+    cy.get('#quantity', { timeout: 20000 }).click();
     cy.url().should('contain', '/billing/batch/');
-    cy.get('[type="radio"]').check('authorised');
+    if (customVolume) {
+      cy.get('[type="radio"]').check('custom');
+      cy.get('#customQuantity').type(customVolume).should('be.visible');
+    } else {
+      cy.get('[type="radio"]').check('authorised');
+    }
     cy.get('.govuk-button').contains('Confirm').click();
   });
 
@@ -192,6 +199,7 @@ exports.viewChargeInformation = viewChargeInformation;
 exports.recalculateBills = recalculateBills;
 exports.markLicenceForNextSupplementaryRun = markLicenceForNextSupplementaryRun;
 exports.createBillRun = createBillRun;
+exports.reviewTwoPartTariffBillingVolume = reviewTwoPartTariffBillingVolume;
 exports.setTwoPartTariffBillingVolume = setTwoPartTariffBillingVolume;
 exports.continueSupplementaryBillRun = continueSupplementaryBillRun;
 exports.confirmBillRun = confirmBillRun;

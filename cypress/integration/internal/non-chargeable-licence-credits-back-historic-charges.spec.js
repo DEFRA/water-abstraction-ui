@@ -40,7 +40,8 @@ describe('non-chargeable licence credits back historic charges', () => {
       viewBillRuns();
       cy.get('#main-content > a.govuk-button').contains('Create a bill run').click();
       createBillRun(type);
-      setTwoPartTariffBillingVolume(type);
+      reviewTwoPartTariffBillingVolume();
+      setTwoPartTariffBillingVolume();
       continueSupplementaryBillRun(type);
       confirmBillRun(type);
     });

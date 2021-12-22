@@ -124,8 +124,8 @@ const markLicenceForNextSupplementaryRun = () => {
   });
 };
 
-const reviewReturnsData = () => {
-  describe('user views returns data', () => {
+const reviewTwoPartTariffBillingVolume = () => {
+  describe('user reviews 2 Part billing volumes data', () => {
     cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Review data issues');
     cy.get('.govuk-link').contains('Review').click();
     cy.url().should('contain', '/billing/batch/');
@@ -199,7 +199,7 @@ exports.viewChargeInformation = viewChargeInformation;
 exports.recalculateBills = recalculateBills;
 exports.markLicenceForNextSupplementaryRun = markLicenceForNextSupplementaryRun;
 exports.createBillRun = createBillRun;
-exports.reviewReturnsData = reviewReturnsData;
+exports.reviewTwoPartTariffBillingVolume = reviewTwoPartTariffBillingVolume;
 exports.setTwoPartTariffBillingVolume = setTwoPartTariffBillingVolume;
 exports.continueSupplementaryBillRun = continueSupplementaryBillRun;
 exports.confirmBillRun = confirmBillRun;

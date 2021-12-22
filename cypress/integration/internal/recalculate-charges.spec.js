@@ -11,7 +11,7 @@ const {
   viewChargeInformation,
   recalculateBills,
   markLicenceForNextSupplementaryRun,
-  reviewReturnsData
+  reviewTwoPartTariffBillingVolume
 } = require('../../support/common');
 
 const recalculateChargesTest = ({ customVolume, expectedTotal }) => {
@@ -31,7 +31,7 @@ const recalculateChargesTest = ({ customVolume, expectedTotal }) => {
     viewBillRuns();
     cy.get('#main-content > a.govuk-button').contains('Create a bill run').click();
     createBillRun(type);
-    reviewReturnsData();
+    reviewTwoPartTariffBillingVolume();
     setTwoPartTariffBillingVolume(25);
     continueSupplementaryBillRun(type);
     confirmBillRun(type);

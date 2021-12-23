@@ -32,11 +32,11 @@ describe('Internal user update password', () => {
     cy.get('form').within(($form) => {
       cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
       cy.get('#confirm-password').type(Cypress.env('DEFAULT_PASSWORD'));
-      cy.root().submit()
-    })
+      cy.root().submit();
+    });
   });
 
-  it('password is not matching displays error message', () => {
+  it('non matching password displays error message', () => {
     cy.visit(Cypress.env('ADMIN_URI'));
     cy.fixture('users.json').then(users => {
       cy.get('input#email').type(users.psc);
@@ -58,13 +58,13 @@ describe('Internal user update password', () => {
     cy.get('form').within(($form) => {
       cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
       cy.get('#confirm-password').type('nonmatchingpassword1234*');
-      cy.root().submit()
+      cy.root().submit();
     });
     cy.get('#error-summary-title').contains('There is a problem').should('be.visible');
     cy.get('p.govuk-hint').contains('Your new password must have at least:').should('be.visible');
   });
 
-  it('password is not secure displays error message', () => {
+  it('unsecure password displays error message', () => {
     cy.visit(Cypress.env('ADMIN_URI'));
     cy.fixture('users.json').then(users => {
       cy.get('input#email').type(users.psc);
@@ -86,10 +86,9 @@ describe('Internal user update password', () => {
     cy.get('form').within(($form) => {
       cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
       cy.get('#confirm-password').type('passwo');
-      cy.root().submit()
+      cy.root().submit();
     });
     cy.get('#error-summary-title').contains('There is a problem').should('be.visible');
     cy.get('.govuk-error-summary__body').contains('Re-enter your new password').should('be.visible');
   });
-
 });

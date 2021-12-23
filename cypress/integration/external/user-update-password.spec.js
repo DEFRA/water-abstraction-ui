@@ -43,11 +43,11 @@ describe('User update password', () => {
     cy.get('form').within(($form) => {
       cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
       cy.get('#confirm-password').type(Cypress.env('DEFAULT_PASSWORD'));
-      cy.root().submit()
-    })
+      cy.root().submit();
+    });
   });
 
-  it('Password not matching displays error message', () => {
+  it('non matching password displays error message', () => {
     //  cy.visit to visit the URL
     cy.visit(Cypress.env('USER_URI'));
 
@@ -80,14 +80,14 @@ describe('User update password', () => {
     cy.get('form').within(($form) => {
       cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
       cy.get('#confirm-password').type('notthepassword');
-      cy.root().submit()
+      cy.root().submit();
     });
 
     cy.get('#error-summary-title').contains('There is a problem').should('be.visible');
     cy.get('p.govuk-hint').contains('Your new password must have at least:').should('be.visible');
   });
 
-  it('Password is not secure displays error message', () => {
+  it('unsecure password displays error message', () => {
     //  cy.visit to visit the URL
     cy.visit(Cypress.env('USER_URI'));
 
@@ -120,11 +120,10 @@ describe('User update password', () => {
     cy.get('form').within(($form) => {
       cy.get('#password').type('passwordisnotok');
       cy.get('#confirm-password').type('passwordisnotok');
-      cy.root().submit()
+      cy.root().submit();
     });
 
     cy.get('#error-summary-title').contains('There is a problem').should('be.visible');
     cy.get('.govuk-error-summary__body').contains('Your password must contain').should('be.visible');
   });
-
 });

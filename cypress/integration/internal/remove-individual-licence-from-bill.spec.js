@@ -15,7 +15,7 @@ describe('remove individual licence from bill', () => {
     cy.visit(Cypress.env('ADMIN_URI'));
     // Enter the user name and Password
     cy.fixture('users.json').then(users => {
-      cy.get('input#email').type(users.billingAndData)
+      cy.get('input#email').type(users.billingAndData);
     });
 
     cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
@@ -60,7 +60,7 @@ describe('remove individual licence from bill', () => {
       cy.url().should('contain', '/delete-licence/');
     });
 
-    describe('user confirms licence removal', () =>  {
+    describe('user confirms licence removal', () => {
       cy.get('.govuk-heading-l', { timeout: 20000 }).contains('You\'re about to remove this licence from the supplementary bill run');
       cy.get('#main-content .govuk-button').contains('Remove this licence').first().click();
       cy.url().should('contain', '/processing');
@@ -68,8 +68,8 @@ describe('remove individual licence from bill', () => {
 
     describe('user waits for licence to be removed', () => {
       cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Transactions for 1 licence');
-      cy.contains('Remove licence').should('not.exist')
+      cy.contains('Remove licence').should('not.exist');
       cy.url().should('contain', '/invoice/');
     });
-  })
-})
+  });
+});

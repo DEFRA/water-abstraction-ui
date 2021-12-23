@@ -5,16 +5,88 @@ const Boom = require('@hapi/boom');
 const services = require('../../lib/connectors/services');
 const { mapMessage } = require('./lib/message-mapper');
 
+const Joi = require('joi');
+const { formFactory, fields, setValues } = require('shared/lib/forms');
+const { mapResponseToView } = require('./lib/message-mapper');
+
+const { handleRequest, applyErrors } = require('shared/lib/forms');
+
 /**
- * View list of notifications sent
- * @param {String} request.query.page - the page of results to fetch
+ * Creates a form object for internal users to search by notification type and sent by email
+ * number etc.
+ * @param  {String} query - the search query entered by the user
+ * @return {Object}       form object
  */
+const searchForm = (request, data = {}) => {
+  const f = formFactory('/notifications', 'GET');
+
+  f.fields.push(fields.text('sentBy', {
+    widget: 'search',
+    hint: 'Filter by sent by email',
+    errors: {
+      'string.email': {
+        message: 'Enter a valid email'
+      }
+    }
+  }));
+
+  f.fields.push(fields.radio('filter', {
+    widget: 'search',
+    hint: 'Filter by Notification type',
+    errors: {
+      'string.empty': {
+        message: 'Enter a Sent by email or select Notification type'
+      }
+    }
+  }));
+
+  return setValues(f, data);
+};
+
+const searchFormSchema = () => Joi.object().keys({
+  page: Joi.number().integer().min(1).default(1),
+  filter: [ Joi.array().optional(), Joi.string().allow('') ],
+  sentBy: Joi.string().email().allow('')
+});
+
 async function getNotificationsList (request, h) {
-  const { page } = request.query;
-  const { pagination, data } = await services.water.notifications.getNotifications(page);
+  const { page, filter } = request.query;
+  const { sentBy } = request.query;
+  const { view } = request;
+  const form = handleRequest(searchForm(request, {}), request, searchFormSchema(), {
+    abortEarly: true
+  });
+  const { errors } = form;
+  let sentByQuery = sentBy;
+  let filterQuery = filter;
+  let thisFormWithCustomErrors = form;
+  if (!form.isValid) {
+    errors.some(error => {
+      if (error.name === 'sentBy') {
+        thisFormWithCustomErrors = applyErrors(form, [{ name: 'sentBy', summary: 'Invalid email entered' }]);
+        sentByQuery = ''; // do not search with invalid query
+      }
+      if (error.name === 'filter') {
+        thisFormWithCustomErrors = applyErrors(form, [{ name: 'filter', summary: 'Invalid filter selected' }]);
+        filterQuery = ''; // do not search with invalid query
+      }
+    });
+  }
+
+  const { pagination, data, notificationCategories } = await services.water.notifications.getNotifications(page, filterQuery, sentByQuery);
+  const next = parseInt(page) + 1;
+  pagination.next = next;
+  pagination.previous = parseInt(page) - 1;
+  Object.assign(view, mapResponseToView(data, request, notificationCategories, sentBy));
+  view.form = form;
+
+  if (!form.isValid) {
+    thisFormWithCustomErrors.isValid = false;
+    view.form = thisFormWithCustomErrors;
+  }
 
   return h.view('nunjucks/notifications-reports/list', {
-    ...request.view,
+    ...view,
     pagination,
     events: data
   });

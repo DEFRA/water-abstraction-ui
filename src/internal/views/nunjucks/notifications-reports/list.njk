@@ -1,21 +1,126 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "sort-icon.njk" import sortIcon %}
 {% from "badge.njk" import badge %}
-{% from "paginate.njk" import paginate %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% from "forms/index.njk" import formRender, formErrorSummary %}
+
+{% macro paginate(pagination, query) %}
+  {% set next %}/notifications/report?page={{ pagination.next | safe }}{{query}}{% endset %}
+  {% set previous %}/notifications/report?page={{ pagination.previous | safe }}{{query}}{% endset %}
+
+  {% if pagination.pageCount > 1 %}
+  <nav class="pagination">
+    <h3 class="govuk-visually-hidden">Pagination menu</h3>
+    <p class="pagination__current-page">Page {{ pagination.page }} of {{ pagination.pageCount }}</p>
+    <ul class="pagination__list">
+      {% if pagination.page > 1 %}
+      <li class="pagination__previous"><a class="pagination__link" href="{{ previous }}">&#8592; Previous page</a></li>
+      {% endif %}
+      {% if pagination.page < pagination.pageCount %}
+      <li class="pagination__next"><a class="pagination__link" href="{{ next }}">Next page &#8594;</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+{% endmacro %}
 
 {% block content %}
   {{ title(pageTitle) }}
 
+<table class="govuk-table">
+<caption class="govuk-table__caption govuk-table__caption--m govuk-!-margin-bottom-0">
+
+  <div class="govuk-!-margin-bottom-3"> View sent notices </div>
+
+  <p class="govuk-body">Select notice type for more details.</p>
+
+</caption>
+</table>
+
+{% if not filter %}
+  {% set filter = [] %}
+{% endif %}
+
+{% set filterHTML %}
+
+  <h2 class="govuk-heading-m govuk-!-margin-bottom-3">Filter By</h2>
+  {{ govukCheckboxes({
+    idPrefix: "filter",
+    name: "filter",
+    fieldset: {
+      legend: {
+        text: "Notification type",
+        isPageHeading: true,
+        classes: "govuk-fieldset__legend--s"
+      }
+    },
+    items: checkBoxItems
+  }) }}
+
+  {{ govukInput({
+    label: {
+      html: "<strong>Sent by</strong>"
+    },
+    classes: "govuk-!-width-one-third",
+    id: "sentBy",
+    name: "sentBy",
+    value: sentBy
+  }) }}
+
+  <div class="govuk-button-group">
+    {{ govukButton({
+      text: "Apply filters"
+    }) }}
+
+    {{ govukButton({
+      text: "Clear filters",
+      classes: "govuk-button--secondary",
+      href: '/notifications/report'
+    }) }}
+  </div>
+
+{% endset %}
+
+
+<form action novalidate>
+
+{{ govukDetails({
+  summaryText: "Filters",
+  html: filterHTML,
+  open: ((filter.length > 0) or (sentBy.length > 0))
+}) }}
+
+</form>
+
+{{ formErrorSummary(form) }}
+
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <table class="govuk-table">
+      {% if events.length == 0 %}
+      <table class="govuk-table" id="focus>
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell" scope="col">
+            No notifications found
+            </td>
+          </tr>
+        </thead>
+      </table>
+      {% else %}
+
+      <table class="govuk-table" id="focus>
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
             <th class="govuk-table__header" scope="col">
               Date
             </th>
             <th class="govuk-table__header" scope="col">
-              Notification type
+              Notification
             </th>
             <th class="govuk-table__header" scope="col">
               Sent by
@@ -52,8 +157,9 @@
           {% endfor %}
         </tbody>
       </table>
+      {% endif %}
 
-      {{ paginate(pagination, '/notifications/report') }}
+      {{ paginate(pagination, filterString | safe ) }}
     </div>
   </div>
 {% endblock %}

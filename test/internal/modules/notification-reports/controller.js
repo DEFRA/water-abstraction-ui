@@ -63,7 +63,7 @@ experiment('internal/modules/notification-reports/controller.js', () => {
         clear: sandbox.stub()
       },
       query: {
-        page: 3,
+        page: NaN,
         sentBy: 'not-email'
       },
       view: {}

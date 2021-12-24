@@ -89,8 +89,14 @@ async function getNotificationsList (request, h) {
     view.form = thisFormWithCustomErrors;
   }
 
+  let isOpen = false;
+  if (filter) {
+    isOpen = ((filter.length > 0) || (sentBy.length > 0));
+  }
+
   return h.view('nunjucks/notifications-reports/list', {
     ...view,
+    isOpen,
     pagination,
     customBackUrl: '/manage',
     events: data

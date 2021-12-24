@@ -89,11 +89,10 @@
 
 
 <form action novalidate>
-
 {{ govukDetails({
   summaryText: "Filters",
   html: filterHTML,
-  open: ((filter.length > 0) or (sentBy.length > 0))
+  open: isOpen
 }) }}
 
 </form>

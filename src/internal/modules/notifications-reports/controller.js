@@ -92,6 +92,7 @@ async function getNotificationsList (request, h) {
   return h.view('nunjucks/notifications-reports/list', {
     ...view,
     pagination,
+    customBackUrl: '/manage',
     events: data
   });
 }

@@ -29,6 +29,8 @@
 {% endmacro %}
 
 {% block content %}
+<a href={{ customBackUrl }} class="govuk-back-link" data-no-js> Back </a>
+
   {{ title(pageTitle) }}
 
 <table class="govuk-table">
@@ -102,7 +104,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       {% if events.length == 0 %}
-      <table class="govuk-table" id="focus>
+      <table class="govuk-table" id="focus">
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
             <td class="govuk-table__cell" scope="col">
@@ -113,7 +115,7 @@
       </table>
       {% else %}
 
-      <table class="govuk-table" id="focus>
+      <table class="govuk-table" id="focus">
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
             <th class="govuk-table__header" scope="col">

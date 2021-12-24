@@ -56,6 +56,7 @@ const mapResponseToView = (response, request, notificationCategories, sentBy = '
   }
   filterString += `sentBy=${sentBy}`;
   filterString = filterString.replace('undefined', '');
+  filterString += '#focus'; // Paging with result table focus
   return {
     ...response,
     filter,

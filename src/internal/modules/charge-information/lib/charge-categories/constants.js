@@ -12,30 +12,30 @@ const CHARGE_CATEGORY_STEPS = {
 const CHARGE_CATEGORY_FIRST_STEP = CHARGE_CATEGORY_STEPS.description;
 
 const SOURCES = {
-  tidal: 'Tidal',
-  nonTidal: 'Non-tidal'
+  tidal: 'tidal',
+  nonTidal: 'non-tidal'
 };
 
 const WATER_MODEL = {
-  noModel: 'No model',
-  tier1: 'Tier 1',
-  tier2: 'Tier 2'
+  noModel: 'no model',
+  tier1: 'tier 1',
+  tier2: 'tier 2'
 };
 
 const LOSS_CATEGORIES = {
-  high: 'High',
-  medium: 'Medium',
-  low: 'Low'
+  high: 'high',
+  medium: 'medium',
+  low: 'low'
 };
 
 const WATER_AVAILABILITY = {
-  available: 'Available',
-  restricted: 'Restricted availablity or no availability'
+  available: 'available',
+  restricted: 'restricted availablity or no availability'
 };
 
 const YES_NO = {
   // true: 'Yes',
-  false: 'No'
+  false: 'no'
 };
 
 /**

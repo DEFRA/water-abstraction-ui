@@ -5,6 +5,8 @@ const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').scri
 const { SOURCES } = require('../../../../../../src/internal/modules/charge-information/lib/charge-categories/constants');
 const { form, schema } = require('../../../../../../src/internal/modules/charge-information/forms/charge-category/default-radio-options-form');
 const { findField, findButton } = require('../../../../../lib/form-test');
+const { capitalize } = require('lodash');
+
 const createRequest = chargeElements => ({
   view: {
     csrfToken: 'token'
@@ -48,7 +50,7 @@ experiment('internal/modules/charge-information/forms/charge-element/loss-catego
       const lossCategoryValues = Object.values(radio.options.choices).map(choice => choice.value);
       const lossCategoryLabels = Object.values(radio.options.choices).map(choice => choice.label);
       expect(lossCategoryValues).to.equal(Object.values(SOURCES));
-      expect(lossCategoryLabels).to.equal(Object.values(SOURCES));
+      expect(lossCategoryLabels).to.equal(Object.values(SOURCES).map(choice => capitalize(choice)));
     });
 
     test('sets the value of the source field, if provided', async () => {

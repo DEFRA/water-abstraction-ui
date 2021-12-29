@@ -4,7 +4,7 @@ const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
 const { CHARGE_CATEGORY_STEPS, ROUTING_CONFIG } = require('../../lib/charge-categories/constants');
 const { getChargeCategoryData, getChargeCategoryActionUrl } = require('../../lib/form-helpers');
-
+const { capitalize } = require('lodash');
 /**
  * Form to request the loss category
  *
@@ -28,7 +28,7 @@ const form = request => {
       }
     },
     choices: Object.values(config.options)
-      .map(row => { return { value: row, label: row }; })
+      .map(row => { return { value: row, label: capitalize(row) }; })
   }, data[step] || ''));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));

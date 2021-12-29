@@ -57,11 +57,11 @@ const postChargeCategoryStep = async (request, h) => {
 
   const form = getPostedForm(request, forms[step]);
   if (form.isValid) {
-    if (step === CHARGE_CATEGORY_STEPS.adjustments && request.payload.adjustments === 'No') {
+    if (step === CHARGE_CATEGORY_STEPS.adjustments && request.payload.adjustments === 'no') {
       const { draftChargeInformation } = request.pre;
       const chargeElement = draftChargeInformation.chargeElements.find(element => element.id === elementId);
       chargeElement.chargeReference = await findChargeReference(chargeElement);
-      chargeElement.adjustments = 'No';
+      chargeElement.adjustments = 'no';
       request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation);
       return h.redirect(routing.getCheckData(licenceId, { chargeVersionWorkflowId }));
     }

@@ -58,8 +58,8 @@ const createRequest = (step, payload) => ({
 const validPayload = {
   source: { purpose: PURPOSE_USE_ID },
   description: { description: 'test-description' },
-  loss: { loss: 'High' },
-  adjustments: { adjustments: 'No' }
+  loss: { loss: 'high' },
+  adjustments: { adjustments: 'no' }
 };
 
 const chargeCategory = {

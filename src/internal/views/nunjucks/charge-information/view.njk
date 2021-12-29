@@ -214,7 +214,7 @@ formErrorSummary %}
                 value: 'update',
                 classes: 'govuk-!-margin-right-6'
               }) }}
-          {% elif chargeVersion.status != 'review' and chargeVersion.chargingScheme == 'presroc' %}
+          {% elif chargeVersion.status != 'review' %}
             {{ govukButton({
                   text: 'Confirm',
                   name: 'buttonAction',

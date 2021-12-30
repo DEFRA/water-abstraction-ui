@@ -6,11 +6,11 @@ const routing = require('../lib/routing');
 const services = require('../../../lib/connectors/services');
 const { getDefaultView, getPostedForm, applyFormResponse } = require('../lib/helpers');
 const { ROUTING_CONFIG,
-  CHARGE_CATEGORY_FIRST_STEP, CHARGE_CATEGORY_STEPS } = require('../lib/charge-categories/constants');
+  CHARGE_CATEGORY_FIRST_STEP, CHARGE_CATEGORY_STEPS, getStepKeyByValue } = require('../lib/charge-categories/constants');
 const actions = require('../lib/actions');
 
-const getBackLink = request => {
-  const { step, licenceId, elementId } = request.params;
+const getBackLink = (request, step) => {
+  const { licenceId, elementId } = request.params;
   const { chargeVersionWorkflowId } = request.query;
   if (request.query.returnToCheckData === true) {
     return routing.getCheckData(licenceId);
@@ -20,11 +20,11 @@ const getBackLink = request => {
     : routing.getChargeCategoryStep(licenceId, elementId, ROUTING_CONFIG[step].back, { chargeVersionWorkflowId });
 };
 
-const getRedirectPath = request => {
-  const { step, licenceId, elementId } = request.params;
+const getRedirectPath = (request, step) => {
+  const { licenceId, elementId } = request.params;
 
   const { chargeVersionWorkflowId, returnToCheckData } = request.query;
-  if (returnToCheckData || (step === CHARGE_CATEGORY_STEPS.adjustments && request.payload.adjustments === 'false')) {
+  if (returnToCheckData || (step === CHARGE_CATEGORY_STEPS.adjustmentsApply && request.payload.adjustmentsApply === 'false')) {
     if (request.pre.draftChargeInformation.status === 'review') {
       return routing.postReview(chargeVersionWorkflowId, licenceId);
     }
@@ -35,14 +35,15 @@ const getRedirectPath = request => {
 
 const getChargeCategoryStep = async (request, h) => {
   const { step } = request.params;
+  const stepKey = getStepKeyByValue(step);
   return h.view('nunjucks/form', {
-    ...getDefaultView(request, getBackLink(request), forms[step]),
-    pageTitle: ROUTING_CONFIG[step].pageTitle
+    ...getDefaultView(request, getBackLink(request, stepKey), forms[step]),
+    pageTitle: ROUTING_CONFIG[stepKey].pageTitle
   });
 };
 
 const findChargeReference = async chargeElement => {
-  const keys = ['source', 'loss', 'availability', 'model', 'volume'];
+  const keys = ['source', 'loss', 'waterAvailability', 'waterModel', 'volume'];
   const chargeReference = await services.water.chargeCategories.getChargeCategory(pick(chargeElement, keys));
   return {
     id: chargeReference.billingChargeCategoryId,
@@ -53,20 +54,20 @@ const findChargeReference = async chargeElement => {
 
 const postChargeCategoryStep = async (request, h) => {
   const { step, licenceId, elementId } = request.params;
+  const stepKey = getStepKeyByValue(step);
   const { chargeVersionWorkflowId } = request.query;
-
   const form = getPostedForm(request, forms[step]);
   if (form.isValid) {
-    if (step === CHARGE_CATEGORY_STEPS.adjustments && request.payload.adjustments === 'no') {
+    if (step === CHARGE_CATEGORY_STEPS.adjustmentsApply && request.payload.adjustmentsApply === 'no') {
       const { draftChargeInformation } = request.pre;
       const chargeElement = draftChargeInformation.chargeElements.find(element => element.id === elementId);
       chargeElement.chargeReference = await findChargeReference(chargeElement);
-      chargeElement.adjustments = 'no';
+      chargeElement.adjustmentsApply = 'no';
       request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation);
       return h.redirect(routing.getCheckData(licenceId, { chargeVersionWorkflowId }));
     }
     await applyFormResponse(request, form, actions.setChargeElementData);
-    return h.redirect(getRedirectPath(request));
+    return h.redirect(getRedirectPath(request, stepKey));
   }
 
   const queryParams = cleanObject(request.query);

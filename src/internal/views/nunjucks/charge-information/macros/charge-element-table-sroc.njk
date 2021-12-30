@@ -170,14 +170,14 @@ formErrorSummary %}
   <h2 class="govuk-heading-m govuk-!-margin-bottom-3">Charge reference details</h2>
   <dl class="govuk-summary-list">
     {{ summaryListRow('Description', chargeElement.description) }}
-    {{ summaryListRow('Source', chargeElement.source) }}
-    {{ summaryListRow('Loss', chargeElement.loss) }}
+    {{ summaryListRow('Source', chargeElement.source | title) }}
+    {{ summaryListRow('Loss', chargeElement.loss | title) }}
     {{ summaryListRow('Volume', chargeElement.volume + 'ML') }}
-    {{ summaryListRow('Water availability', chargeElement.availability) }}
-    {{ summaryListRow('Water model', chargeElement.model) }}
-    {{ summaryListRow('Additional charges apply', chargeElement.charges) }}
-    {{ summaryListRow('Adjustments apply', chargeElement.adjustments) }}
-    {{ summaryListRow('EUIC Region', 'Test region') }}
+    {{ summaryListRow('Water availability', chargeElement.waterAvailability | title) }}
+    {{ summaryListRow('Water model', chargeElement.waterModel | title) }}
+    {{ summaryListRow('Additional charges apply', chargeElement.additionalChargesApply | title) }}
+    {{ summaryListRow('Adjustments apply', chargeElement.adjustmentsApply | title) }}
+    {{ summaryListRow('EUIC Region', 'Test region' | title) }}
   </dl>
   {{ chargePurposeTable(chargeElement.chargePurposes, isEditable, licenceId, chargeElement.id) }}
 {% endmacro %}

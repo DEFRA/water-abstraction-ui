@@ -2,7 +2,7 @@
 
 const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
-const { CHARGE_CATEGORY_STEPS, ROUTING_CONFIG } = require('../../lib/charge-categories/constants');
+const { CHARGE_CATEGORY_STEPS, ROUTING_CONFIG, getStepKeyByValue } = require('../../lib/charge-categories/constants');
 const { getChargeCategoryData, getChargeCategoryActionUrl } = require('../../lib/form-helpers');
 const { capitalize } = require('lodash');
 /**
@@ -15,13 +15,14 @@ const form = request => {
   const { csrfToken } = request.view;
   const data = getChargeCategoryData(request);
   const { step } = request.params;
-  const config = ROUTING_CONFIG[step];
+  const stepKey = getStepKeyByValue(step);
+  const config = ROUTING_CONFIG[stepKey];
 
-  const action = getChargeCategoryActionUrl(request, CHARGE_CATEGORY_STEPS[step]);
+  const action = getChargeCategoryActionUrl(request, CHARGE_CATEGORY_STEPS[stepKey]);
 
   const f = formFactory(action, 'POST');
 
-  f.fields.push(fields.radio(step, {
+  f.fields.push(fields.radio(stepKey, {
     errors: {
       'any.required': {
         message: config.errorMessage
@@ -29,7 +30,7 @@ const form = request => {
     },
     choices: Object.values(config.options)
       .map(row => { return { value: row, label: capitalize(row) }; })
-  }, data[step] || ''));
+  }, data[stepKey] || ''));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 
@@ -38,9 +39,10 @@ const form = request => {
 
 const schema = request => {
   const { step } = request.params;
+  const stepKey = getStepKeyByValue(step);
   return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
-    [step]: Joi.string().valid(...Object.values(ROUTING_CONFIG[step].options)).required()
+    [stepKey]: Joi.string().valid(...Object.values(ROUTING_CONFIG[stepKey].options)).required()
   });
 };
 

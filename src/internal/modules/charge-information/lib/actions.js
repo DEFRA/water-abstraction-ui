@@ -50,7 +50,7 @@ const setBillingAccount = id => ({
 const generateIds = chargeElements =>
   chargeElements.map(element => ({
     ...element,
-    chargingScheme: 'presroc',
+    scheme: 'alcs',
     id: uuid()
   }));
 
@@ -111,7 +111,7 @@ const clearData = () => {
 const createChargeElement = id => ({
   type: ACTION_TYPES.createChargeElement,
   payload: {
-    charingScheme: 'presroc',
+    scheme: 'alcs',
     id
   }
 });
@@ -123,7 +123,7 @@ const createChargeCategory = (id, chargeElements, chargePurposes) => ({
     {
       id,
       chargePurposes,
-      chargingScheme: 'sroc'
+      scheme: 'sroc'
     }]
 });
 

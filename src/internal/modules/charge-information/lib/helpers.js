@@ -74,19 +74,15 @@ const getDefaultView = (request, backLink, formContainer) => {
   return view;
 };
 
-const mapChargeCategories = chargeCategory => {
-  return {
-    ...(omit(chargeCategory, 'id')),
-    chargeElements: chargeCategory.chargeElements.map(element => omit(element, 'id'))
-  };
-};
-
 const prepareChargeInformation = (licenceId, chargeData) => ({
   licenceId,
   chargeVersion: {
     ...chargeData,
-    chargeCategories: chargeData.chargeCategories ? chargeData.chargeCategories.map(category => mapChargeCategories(category)) : [],
-    chargeElements: chargeData.chargeElements.map(element => omit(element, 'id')),
+    chargeElements: chargeData.chargeElements.map(element => {
+      return chargeData.scheme === 'sroc'
+        ? { ...omit(element, 'id'), chargePurposes: element.chargePurposes.map(purpose => omit(purpose, 'id')) }
+        : omit(element, 'id');
+    }),
     status: 'draft'
   }
 });

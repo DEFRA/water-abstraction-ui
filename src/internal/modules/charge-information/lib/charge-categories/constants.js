@@ -3,11 +3,13 @@ const CHARGE_CATEGORY_STEPS = {
   source: 'source',
   loss: 'loss',
   volume: 'volume',
-  availability: 'availability',
-  model: 'model',
-  charges: 'charges',
-  adjustments: 'adjustments'
+  waterAvailability: 'water-availability',
+  waterModel: 'water-model',
+  additionalChargesApply: 'additional-charges-apply',
+  adjustmentsApply: 'adjustments-apply'
 };
+
+const getStepKeyByValue = value => Object.keys(CHARGE_CATEGORY_STEPS).find(key => CHARGE_CATEGORY_STEPS[key] === value);
 
 const CHARGE_CATEGORY_FIRST_STEP = CHARGE_CATEGORY_STEPS.description;
 
@@ -63,32 +65,32 @@ const ROUTING_CONFIG = {
     errorMessage: 'Select a loss category' },
   volume: {
     pageTitle: 'Enter a volume',
-    nextStep: CHARGE_CATEGORY_STEPS.availability,
+    nextStep: CHARGE_CATEGORY_STEPS.waterAvailability,
     back: CHARGE_CATEGORY_STEPS.loss
   },
-  availability: {
+  waterAvailability: {
     pageTitle: 'Select the water availability',
-    nextStep: CHARGE_CATEGORY_STEPS.model,
+    nextStep: CHARGE_CATEGORY_STEPS.waterModel,
     back: CHARGE_CATEGORY_STEPS.volume,
     options: WATER_AVAILABILITY,
     errorMessage: 'Select the water availability'
   },
-  model: {
+  waterModel: {
     pageTitle: 'Select the water model',
-    nextStep: CHARGE_CATEGORY_STEPS.charges,
-    back: CHARGE_CATEGORY_STEPS.availability,
+    nextStep: CHARGE_CATEGORY_STEPS.additionalChargesApply,
+    back: CHARGE_CATEGORY_STEPS.waterAvailability,
     options: WATER_MODEL,
     errorMessage: 'Select the watet model'
   },
-  charges: {
+  additionalChargesApply: {
     pageTitle: 'Do additional charges apply?',
-    nextStep: CHARGE_CATEGORY_STEPS.adjustments,
-    back: CHARGE_CATEGORY_STEPS.model,
+    nextStep: CHARGE_CATEGORY_STEPS.adjustmentsApply,
+    back: CHARGE_CATEGORY_STEPS.waterModel,
     options: YES_NO,
     errorMessage: 'Select yes if additional charges apply.' },
-  adjustments: {
+  adjustmentsApply: {
     pageTitle: 'Do adjustments apply?',
-    back: CHARGE_CATEGORY_STEPS.charges,
+    back: CHARGE_CATEGORY_STEPS.additionalChargesApply,
     options: YES_NO,
     errorMessage: 'Select yes if adjustments apply'
   }
@@ -101,3 +103,4 @@ exports.SOURCES = SOURCES;
 exports.ROUTING_CONFIG = ROUTING_CONFIG;
 exports.CHARGE_CATEGORY_STEPS = CHARGE_CATEGORY_STEPS;
 exports.CHARGE_CATEGORY_FIRST_STEP = CHARGE_CATEGORY_FIRST_STEP;
+exports.getStepKeyByValue = getStepKeyByValue;

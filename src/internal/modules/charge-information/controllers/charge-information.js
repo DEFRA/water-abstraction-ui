@@ -294,7 +294,7 @@ const redirectToStartOfCategoryFlow = (request, h) => {
   // Create new element to edit in the session state
   const id = uuid();
   const data = currentState.chargeElements.reduce((acc, element) => {
-    element.chargingScheme === 'presroc'
+    element.scheme === 'alcs'
       ? acc.chargePurposes.push(element)
       : acc.chargeElements.push(element);
     return acc;

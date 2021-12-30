@@ -140,14 +140,14 @@ formErrorSummary %}
 
   <form method="post"  action="{{action}}" novalidate="novalidate">
     <input type="hidden" name="csrf_token" value="{{ csrfToken }}"/>
-    {% if chargeVersion.chargingScheme == 'sroc' and isSrocChargeInfoEnabled  %}
+    {% if chargeVersion.scheme == 'sroc' and isSrocChargeInfoEnabled  %}
         {% for chargeElement in chargeVersion.chargeElements %}
-        {% if chargeElement.chargingScheme == 'sroc' %}
+        {% if chargeElement.scheme == 'sroc' %}
           {{ chargeCategoryTable(chargeElement, isEditable, licenceId)}}
         {% endif %}
       {% endfor %}
       {% for chargeElement in chargeVersion.chargeElements %}
-        {% if chargeElement.chargingScheme == 'presroc' %}
+        {% if chargeElement.scheme == 'alcs' %}
           {{ chargeElementTable(chargeElement, isEditable, licenceId)}}
         {% endif %}
       {% endfor %} 

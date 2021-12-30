@@ -59,7 +59,7 @@ const validPayload = {
   source: { purpose: PURPOSE_USE_ID },
   description: { description: 'test-description' },
   loss: { loss: 'high' },
-  adjustments: { adjustments: 'no' }
+  adjustmentsApply: { adjustmentsApply: 'no' }
 };
 
 const chargeCategory = {
@@ -172,7 +172,7 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
       });
       experiment('when the last charge category step in the flow is reached', () => {
         beforeEach(async () => {
-          request = createRequest(CHARGE_CATEGORY_STEPS.adjustments, validPayload.adjustments);
+          request = createRequest(CHARGE_CATEGORY_STEPS.adjustmentsApply, validPayload.adjustmentsApply);
           request.pre.draftChargeInformation.chargeElements = [{ id: 'test-element-id' }];
           await controller.postChargeCategoryStep(request, h);
         });
@@ -191,7 +191,7 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
 
         test('the draft charge information is updated with the charge reference', async () => {
           const args = request.setDraftChargeInformation.lastCall.args;
-          expect(args[2].chargeElements[0].adjustments).to.equal(validPayload.adjustments.adjustments);
+          expect(args[2].chargeElements[0].adjustmentsApply).to.equal(validPayload.adjustmentsApply.adjustmentsApply);
         });
 
         test('the user is redirected to the chack your answers page', async () => {

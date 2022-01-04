@@ -50,7 +50,7 @@ const searchFormSchema = () => Joi.object().keys({
 });
 
 async function getNotificationsList (request, h) {
-  const { page, filter } = request.query;
+  const { page = '1', filter } = request.query;
   const { sentBy } = request.query;
   const { view } = request;
   const form = handleRequest(searchForm(request, {}), request, searchFormSchema(), {
@@ -79,8 +79,8 @@ async function getNotificationsList (request, h) {
     data,
     notificationCategories
   } = await services.water.notifications.getNotifications(page, filterQuery, sentByQuery);
-  pagination.next = (parseInt(page) || 1) + 1;
-  pagination.previous = (parseInt(page) || 2) - 1;
+  pagination.next = parseInt(page) + 1;
+  pagination.previous = parseInt(page) - 1;
   Object.assign(view, mapResponseToView(data, request, notificationCategories, sentBy));
   view.form = form;
 

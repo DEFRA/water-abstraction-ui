@@ -1,4 +1,4 @@
-const {tearDown, setUp} = require("../../support/setup");
+const { tearDown, setUp } = require('../../support/setup');
 const {
   getYearStart,
   login,
@@ -8,8 +8,9 @@ const {
   selectFirstBillRun,
   setTwoPartTariffBillingVolume,
   continueSupplementaryBillRun,
-  viewChargeInformation, reviewLicence
-} = require("../../support/common");
+  reviewTwoPartTariffBillingVolume,
+  viewChargeInformation
+} = require('../../support/common');
 
 describe('non-chargeable licence credits back historic charges', () => {
   before(() => {
@@ -40,7 +41,8 @@ describe('non-chargeable licence credits back historic charges', () => {
       viewBillRuns();
       cy.get('#main-content > a.govuk-button').contains('Create a bill run').click();
       createBillRun(type);
-      setTwoPartTariffBillingVolume(type);
+      reviewTwoPartTariffBillingVolume();
+      setTwoPartTariffBillingVolume();
       continueSupplementaryBillRun(type);
       confirmBillRun(type);
     });

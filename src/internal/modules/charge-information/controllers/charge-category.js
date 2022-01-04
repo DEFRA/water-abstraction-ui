@@ -63,6 +63,7 @@ const postChargeCategoryStep = async (request, h) => {
       const chargeElement = draftChargeInformation.chargeElements.find(element => element.id === elementId);
       // find the charge reference and save it in the session cache
       chargeElement.chargeReference = await findChargeReference(chargeElement);
+      chargeElement.eiucRegion = request.pre.licence.region.name;
       request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation);
     }
     await applyFormResponse(request, form, actions.setChargeElementData);

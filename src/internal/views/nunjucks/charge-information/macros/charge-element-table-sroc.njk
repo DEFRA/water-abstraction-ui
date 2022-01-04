@@ -185,7 +185,7 @@ formErrorSummary %}
     {{ summaryListRow('Water model', chargeElement.waterModel | title) }}
     {{ summaryListRow('Additional charges apply', getBooleanText(chargeElement.isAdditionalCharges) | title) }}
     {{ summaryListRow('Adjustments apply', getBooleanText(chargeElement.isAdjustments) | title) }}
-    {{ summaryListRow('EUIC Region', 'Test region' | title) }}
+    {{ summaryListRow('EUIC Region', chargeElement.eiucRegion | title) }}
   </dl>
   {{ chargePurposeTable(chargeElement.chargePurposes, isEditable, licenceId, chargeElement.id) }}
 {% endmacro %}

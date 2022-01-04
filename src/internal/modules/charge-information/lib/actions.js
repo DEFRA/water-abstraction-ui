@@ -69,9 +69,9 @@ const setAbstractionData = (request, formValues) => {
 };
 
 const getNewChargeElementData = (request, formValues) => {
-  const { defaultCharges } = request.pre;
+  const { defaultCharges, draftChargeInformation } = request.pre;
   const { step } = request.params;
-  return mappers[step] ? mappers[step](formValues, defaultCharges) : omit(formValues, 'csrf_token');
+  return mappers[step] && draftChargeInformation.scheme !== 'sroc' ? mappers[step](formValues, defaultCharges) : omit(formValues, 'csrf_token');
 };
 
 const setChargeElementData = (request, formValues) => {

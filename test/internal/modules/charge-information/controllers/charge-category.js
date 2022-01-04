@@ -41,6 +41,7 @@ const createRequest = (step, payload) => ({
     licence: {
       id: 'test-licence-id',
       licenceNumber: '01/123',
+      region: { name: 'Test Region' },
       startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
     },
     draftChargeInformation: {

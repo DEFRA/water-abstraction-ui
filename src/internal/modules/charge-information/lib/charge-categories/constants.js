@@ -1,3 +1,5 @@
+'use-strict';
+
 const CHARGE_CATEGORY_STEPS = {
   description: 'description',
   source: 'source',
@@ -5,8 +7,8 @@ const CHARGE_CATEGORY_STEPS = {
   volume: 'volume',
   waterAvailability: 'water-availability',
   waterModel: 'water-model',
-  additionalChargesApply: 'additional-charges-apply',
-  adjustmentsApply: 'adjustments-apply'
+  isAdditionalCharges: 'additional-charges',
+  isAdjustments: 'adjustments'
 };
 
 const getStepKeyByValue = value => Object.keys(CHARGE_CATEGORY_STEPS).find(key => CHARGE_CATEGORY_STEPS[key] === value);
@@ -36,8 +38,8 @@ const WATER_AVAILABILITY = {
 };
 
 const YES_NO = {
-  // true: 'Yes',
-  false: 'no'
+  // true: true,
+  false: false
 };
 
 /**
@@ -77,22 +79,25 @@ const ROUTING_CONFIG = {
   },
   waterModel: {
     pageTitle: 'Select the water model',
-    nextStep: CHARGE_CATEGORY_STEPS.additionalChargesApply,
+    nextStep: CHARGE_CATEGORY_STEPS.isAdditionalCharges,
     back: CHARGE_CATEGORY_STEPS.waterAvailability,
     options: WATER_MODEL,
     errorMessage: 'Select the watet model'
   },
-  additionalChargesApply: {
+  isAdditionalCharges: {
     pageTitle: 'Do additional charges apply?',
-    nextStep: CHARGE_CATEGORY_STEPS.adjustmentsApply,
+    nextStep: CHARGE_CATEGORY_STEPS.isAdjustments,
     back: CHARGE_CATEGORY_STEPS.waterModel,
     options: YES_NO,
-    errorMessage: 'Select yes if additional charges apply.' },
-  adjustmentsApply: {
+    errorMessage: 'Select yes if additional charges apply.',
+    boolean: true
+  },
+  isAdjustments: {
     pageTitle: 'Do adjustments apply?',
-    back: CHARGE_CATEGORY_STEPS.additionalChargesApply,
+    back: CHARGE_CATEGORY_STEPS.isAdditionalCharges,
     options: YES_NO,
-    errorMessage: 'Select yes if adjustments apply'
+    errorMessage: 'Select yes if adjustments apply',
+    boolean: true
   }
 };
 

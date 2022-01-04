@@ -24,7 +24,7 @@ const getRedirectPath = (request, step) => {
   const { licenceId, elementId } = request.params;
 
   const { chargeVersionWorkflowId, returnToCheckData } = request.query;
-  if (returnToCheckData || (step === CHARGE_CATEGORY_STEPS.adjustmentsApply && request.payload.adjustmentsApply === 'false')) {
+  if (returnToCheckData || (step === 'isAdjustments')) {
     if (request.pre.draftChargeInformation.status === 'review') {
       return routing.postReview(chargeVersionWorkflowId, licenceId);
     }
@@ -58,13 +58,12 @@ const postChargeCategoryStep = async (request, h) => {
   const { chargeVersionWorkflowId } = request.query;
   const form = getPostedForm(request, forms[step]);
   if (form.isValid) {
-    if (step === CHARGE_CATEGORY_STEPS.adjustmentsApply && request.payload.adjustmentsApply === 'no') {
+    if (step === CHARGE_CATEGORY_STEPS.isAdjustments) {
       const { draftChargeInformation } = request.pre;
       const chargeElement = draftChargeInformation.chargeElements.find(element => element.id === elementId);
+      // find the charge reference and save it in the session cache
       chargeElement.chargeReference = await findChargeReference(chargeElement);
-      chargeElement.adjustmentsApply = 'no';
       request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation);
-      return h.redirect(routing.getCheckData(licenceId, { chargeVersionWorkflowId }));
     }
     await applyFormResponse(request, form, actions.setChargeElementData);
     return h.redirect(getRedirectPath(request, stepKey));

@@ -295,7 +295,8 @@ const redirectToStartOfCategoryFlow = (request, h) => {
   const id = uuid();
   const data = currentState.chargeElements.reduce((acc, element) => {
     element.scheme === 'alcs'
-      ? acc.chargePurposes.push(element)
+      // move all non sroc charge elements to charge purposes
+      ? acc.chargePurposes.push({ ...element, scheme: 'sroc' })
       : acc.chargeElements.push(element);
     return acc;
   }, { chargeElements: [], chargePurposes: [] });

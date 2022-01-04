@@ -58,6 +58,14 @@ formErrorSummary %}
 
 
 
+{% macro getBooleanText(boolean) %}
+  {% if boolean %}
+    Yes
+  {% else %}
+    No
+  {% endif %}
+{% endmacro %}
+
 {% macro agreementsApplyText(isEnabled) %}
   {% if isEnabled %}
     Yes, agreements should apply to this element
@@ -175,8 +183,8 @@ formErrorSummary %}
     {{ summaryListRow('Volume', chargeElement.volume + 'ML') }}
     {{ summaryListRow('Water availability', chargeElement.waterAvailability | title) }}
     {{ summaryListRow('Water model', chargeElement.waterModel | title) }}
-    {{ summaryListRow('Additional charges apply', chargeElement.additionalChargesApply | title) }}
-    {{ summaryListRow('Adjustments apply', chargeElement.adjustmentsApply | title) }}
+    {{ summaryListRow('Additional charges apply', getBooleanText(chargeElement.isAdditionalCharges) | title) }}
+    {{ summaryListRow('Adjustments apply', getBooleanText(chargeElement.isAdjustments) | title) }}
     {{ summaryListRow('EUIC Region', 'Test region' | title) }}
   </dl>
   {{ chargePurposeTable(chargeElement.chargePurposes, isEditable, licenceId, chargeElement.id) }}

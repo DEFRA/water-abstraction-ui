@@ -45,8 +45,8 @@ const searchForm = (request, data = {}) => {
 
 const searchFormSchema = () => Joi.object().keys({
   page: Joi.number().integer().min(1).default(1),
-  filter: [ Joi.array().optional(), Joi.string().allow('') ],
-  sentBy: Joi.string().email().allow('')
+  filter: [Joi.array().optional(), Joi.string().allow('')],
+  sentBy: Joi.string().trim().email().allow('')
 });
 
 async function getNotificationsList (request, h) {
@@ -57,7 +57,8 @@ async function getNotificationsList (request, h) {
     abortEarly: true
   });
   const { errors } = form;
-  let sentByQuery = sentBy;
+
+  let sentByQuery = sentBy.trim();
   let filterQuery = filter;
   let thisFormWithCustomErrors = form;
   if (!form.isValid) {
@@ -73,10 +74,13 @@ async function getNotificationsList (request, h) {
     });
   }
 
-  const { pagination, data, notificationCategories } = await services.water.notifications.getNotifications(page, filterQuery, sentByQuery);
-  const next = parseInt(page) + 1;
-  pagination.next = next;
-  pagination.previous = parseInt(page) - 1;
+  const {
+    pagination,
+    data,
+    notificationCategories
+  } = await services.water.notifications.getNotifications(page, filterQuery, sentByQuery);
+  pagination.next = (parseInt(page) || 1) + 1;
+  pagination.previous = (parseInt(page) || 2) - 1;
   Object.assign(view, mapResponseToView(data, request, notificationCategories, sentBy));
   view.form = form;
 
@@ -100,7 +104,7 @@ async function getNotification (request, h) {
   const { id } = request.params;
 
   try {
-    const [ event, { data: messages } ] = await Promise.all([
+    const [event, { data: messages }] = await Promise.all([
       await services.water.notifications.getNotification(id),
       await services.water.notifications.getNotificationMessages(id)
     ]);

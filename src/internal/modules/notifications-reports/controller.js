@@ -51,7 +51,7 @@ const searchFormSchema = () => Joi.object().keys({
 
 async function getNotificationsList (request, h) {
   const { page = '1', filter } = request.query;
-  const { sentBy } = request.query;
+  const { sentBy = '' } = request.query;
   const { view } = request;
   const form = handleRequest(searchForm(request, {}), request, searchFormSchema(), {
     abortEarly: true

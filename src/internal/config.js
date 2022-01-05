@@ -142,6 +142,7 @@ module.exports = {
     db: 1,
     lazyConnect: isTest
   },
+  isSrocLive,
   srocStartDate,
   featureToggles: {
     srocChargeInformation: isSrocLive,

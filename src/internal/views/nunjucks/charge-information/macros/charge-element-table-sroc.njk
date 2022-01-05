@@ -74,6 +74,14 @@ formErrorSummary %}
   {% endif %}
 {% endmacro %}
 
+{% macro restrictedSourceText(isRestricted) %}
+  {% if isRestricted %}
+    Restricted availablity or no availability
+  {% else %}
+    Available
+  {% endif %}
+{% endmacro %}
+
 {% macro changeLink(urlTail, chargeElementId, licenceId, categoryId) %}
   {% set changeLinkRoot = '/licences/' + licenceId + '/charge-information' %}
   {% if (chargeVersionWorkflowId | length) > 0 %}
@@ -181,7 +189,7 @@ formErrorSummary %}
     {{ summaryListRow('Source', chargeElement.source | title) }}
     {{ summaryListRow('Loss', chargeElement.loss | title) }}
     {{ summaryListRow('Volume', chargeElement.volume + 'ML') }}
-    {{ summaryListRow('Water availability', chargeElement.waterAvailability | title) }}
+    {{ summaryListRow('Water availability', restrictedSourceText(chargeElement.isRestrictedSource)) }}
     {{ summaryListRow('Water model', chargeElement.waterModel | title) }}
     {{ summaryListRow('Additional charges apply', getBooleanText(chargeElement.isAdditionalCharges) | title) }}
     {{ summaryListRow('Adjustments apply', getBooleanText(chargeElement.isAdjustments) | title) }}

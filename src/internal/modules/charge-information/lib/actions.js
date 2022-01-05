@@ -68,6 +68,8 @@ const setAbstractionData = (request, formValues) => {
   };
 };
 
+// gets the charge element data from the posted form and omits the csrf token to
+// avoid saving this in the draft charge info session cache
 const getNewChargeElementData = (request, formValues) => {
   const { defaultCharges, draftChargeInformation } = request.pre;
   const { step } = request.params;
@@ -131,6 +133,7 @@ const setChargePurposeData = (request, formValues) => {
   const { draftChargeInformation } = request.pre;
   const { categoryId } = request.query;
   const { elementId } = request.params;
+  // get rid of the csrf token to avoid saving this in the draft charge info session cache
   const data = omit(formValues, 'csrf_token');
 
   const chargeElements = draftChargeInformation.chargeElements

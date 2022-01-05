@@ -5,7 +5,7 @@ const CHARGE_CATEGORY_STEPS = {
   source: 'source',
   loss: 'loss',
   volume: 'volume',
-  waterAvailability: 'water-availability',
+  isRestrictedSource: 'restricted-source',
   waterModel: 'water-model',
   isAdditionalCharges: 'additional-charges',
   isAdjustments: 'adjustments'
@@ -32,15 +32,27 @@ const LOSS_CATEGORIES = {
   low: 'low'
 };
 
-const WATER_AVAILABILITY = {
-  available: 'available',
-  restricted: 'restricted availablity or no availability'
-};
+const IS_RESTRICTED_SOURCE = [
+  {
+    label: 'restricted availablity or no availability',
+    value: true
+  },
+  {
+    label: 'available',
+    value: false
+  }
+];
 
-const YES_NO = {
-  // true: true,
-  false: false
-};
+const YES_NO = [
+  {
+    label: 'yes',
+    value: true
+  },
+  {
+    label: 'no',
+    value: false
+  }
+];
 
 /**
  * flowConfig is used to define the
@@ -67,20 +79,21 @@ const ROUTING_CONFIG = {
     errorMessage: 'Select a loss category' },
   volume: {
     pageTitle: 'Enter a volume',
-    nextStep: CHARGE_CATEGORY_STEPS.waterAvailability,
+    nextStep: CHARGE_CATEGORY_STEPS.isRestrictedSource,
     back: CHARGE_CATEGORY_STEPS.loss
   },
-  waterAvailability: {
+  isRestrictedSource: {
     pageTitle: 'Select the water availability',
     nextStep: CHARGE_CATEGORY_STEPS.waterModel,
     back: CHARGE_CATEGORY_STEPS.volume,
-    options: WATER_AVAILABILITY,
-    errorMessage: 'Select the water availability'
+    options: IS_RESTRICTED_SOURCE,
+    errorMessage: 'Select the water availability',
+    boolean: true
   },
   waterModel: {
     pageTitle: 'Select the water model',
     nextStep: CHARGE_CATEGORY_STEPS.isAdditionalCharges,
-    back: CHARGE_CATEGORY_STEPS.waterAvailability,
+    back: CHARGE_CATEGORY_STEPS.isRestrictedSource,
     options: WATER_MODEL,
     errorMessage: 'Select the watet model'
   },
@@ -102,7 +115,7 @@ const ROUTING_CONFIG = {
 };
 
 exports.WATER_MODEL = WATER_MODEL;
-exports.WATER_AVAILABILITY = WATER_AVAILABILITY;
+exports.IS_RESTRICTED_SOURCE = IS_RESTRICTED_SOURCE;
 exports.LOSS_CATEGORIES = LOSS_CATEGORIES;
 exports.SOURCES = SOURCES;
 exports.ROUTING_CONFIG = ROUTING_CONFIG;

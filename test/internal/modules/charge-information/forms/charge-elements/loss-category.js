@@ -10,7 +10,9 @@ const createRequest = chargeElementData => ({
   view: {
     csrfToken: 'token'
   },
-  query: {},
+  query: {
+    categoryId: ''
+  },
   pre: {
     defaultCharges: [{ purposeUse: { id: 'test-purpose-use-id', loss: 'low' }, loss: 'low' }],
     draftChargeInformation: {

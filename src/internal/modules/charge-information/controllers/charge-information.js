@@ -3,7 +3,7 @@
 const uuid = require('uuid');
 const { get } = require('lodash');
 const moment = require('moment');
-const { isEmpty } = require('lodash');
+const { isEmpty, omit } = require('lodash');
 const forms = require('../forms');
 const actions = require('../lib/actions');
 const routing = require('../lib/routing');
@@ -17,12 +17,14 @@ const {
   getCurrentBillingAccountAddress
 } = require('../lib/helpers');
 const chargeInformationValidator = require('../lib/charge-information-validator');
-const { CHARGE_ELEMENT_FIRST_STEP, CHARGE_ELEMENT_STEPS } = require('../lib/charge-elements/constants');
+const { CHARGE_ELEMENT_STEPS, CHARGE_ELEMENT_FIRST_STEP } = require('../lib/charge-elements/constants');
+const { CHARGE_CATEGORY_FIRST_STEP } = require('../lib/charge-categories/constants');
 const services = require('../../../lib/connectors/services');
 const { reducer } = require('../lib/reducer');
 const { reviewForm } = require('../forms/review');
 const { chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope;
 const { hasScope } = require('internal/lib/permissions');
+const { srocChargeInformation: isSrocChargeInfoEnabled } = require('../../../config').featureToggles;
 
 /**
  * Select the reason for the creation of a new charge version
@@ -191,10 +193,6 @@ const postUseAbstractionData = createPostHandler(
 const getCheckData = async (request, h) => {
   const { draftChargeInformation, isChargeable, billingAccount, licence } = request.pre;
   const { licenceId } = request.params;
-  const back = isChargeable
-    ? routing.getUseAbstractionData(licenceId, request.query)
-    : routing.getEffectiveDate(licenceId, request.query);
-
   const isApprover = hasScope(request, chargeVersionWorkflowReviewer);
 
   const { data: documentRoles } = await services.crm.documentRoles.getDocumentRolesByDocumentRef(licence.licenceNumber);
@@ -205,7 +203,7 @@ const getCheckData = async (request, h) => {
   const action = routing.getCheckData(licenceId, request.query);
 
   const view = {
-    ...getDefaultView(request, back),
+    ...omit(getDefaultView(request), 'back'),
     action,
     pageTitle: 'Check charge information',
     chargeVersion: chargeInformationValidator.addValidation(draftChargeInformation),
@@ -219,7 +217,8 @@ const getCheckData = async (request, h) => {
     isXlHeading: true,
     editChargeVersionWarning,
     isApprover,
-    reviewForm: reviewForm(request)
+    reviewForm: reviewForm(request),
+    isSrocChargeInfoEnabled
   };
 
   return h.view('nunjucks/charge-information/view.njk', view);
@@ -271,6 +270,7 @@ const redirectToCancelPage = (request, h) => {
   const { chargeVersionWorkflowId } = request.query;
   return h.redirect(routing.getCancelData(request.params.licenceId, { chargeVersionWorkflowId }));
 };
+
 const redirectToStartOfElementFlow = (request, h) => {
   const { chargeVersionWorkflowId } = request.query;
   const { licenceId } = request.params;
@@ -286,6 +286,30 @@ const redirectToStartOfElementFlow = (request, h) => {
   return h.redirect(routing.getChargeElementStep(licenceId, chargeElementId, CHARGE_ELEMENT_FIRST_STEP, request.query));
 };
 
+const redirectToStartOfCategoryFlow = (request, h) => {
+  const { chargeVersionWorkflowId } = request.query;
+  const { licenceId } = request.params;
+  const { draftChargeInformation: currentState } = request.pre;
+
+  // Create new element to edit in the session state
+  const id = uuid();
+  const data = currentState.chargeElements.reduce((acc, element) => {
+    element.scheme === 'alcs'
+      // move all non sroc charge elements to charge purposes
+      // todo this will need to change to only push the charge elements
+      // selected in the UI to be charge purposes
+      ? acc.chargePurposes.push({ ...element, scheme: 'sroc' })
+      : acc.chargeElements.push(element);
+    return acc;
+  }, { chargeElements: [], chargePurposes: [] });
+  const action = actions.createChargeCategory(id, data.chargeElements, data.chargePurposes);
+  const nextState = reducer(currentState, action);
+  request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, nextState);
+
+  // Enter charge element setup flow
+  return h.redirect(routing.getChargeCategoryStep(licenceId, id, CHARGE_CATEGORY_FIRST_STEP, request.query));
+};
+
 const removeElement = async (request, h) => {
   await applyFormResponse(request, {}, actions.removeChargeElement);
   return h.redirect(routing.getCheckData(request.params.licenceId, request.query));
@@ -296,7 +320,8 @@ const checkDataButtonActions = {
   confirm: submitDraftChargeInformation,
   cancel: redirectToCancelPage,
   addElement: redirectToStartOfElementFlow,
-  removeElement: removeElement
+  removeElement: removeElement,
+  addChargeCategory: redirectToStartOfCategoryFlow
 };
 
 const postCheckData = async (request, h) => {

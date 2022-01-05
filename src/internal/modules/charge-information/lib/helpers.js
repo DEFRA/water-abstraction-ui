@@ -78,7 +78,11 @@ const prepareChargeInformation = (licenceId, chargeData) => ({
   licenceId,
   chargeVersion: {
     ...chargeData,
-    chargeElements: chargeData.chargeElements.map(element => omit(element, 'id')),
+    chargeElements: chargeData.chargeElements.map(element => {
+      return chargeData.scheme === 'sroc'
+        ? { ...omit(element, 'id'), chargePurposes: element.chargePurposes.map(purpose => omit(purpose, 'id')) }
+        : omit(element, 'id');
+    }),
     status: 'draft'
   }
 });

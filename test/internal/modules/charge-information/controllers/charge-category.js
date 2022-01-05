@@ -12,9 +12,9 @@ const moment = require('moment');
 const uuid = require('uuid/v4');
 const sandbox = sinon.createSandbox();
 
-const controller = require('../../../../../src/internal/modules/charge-information/controllers/charge-element');
-
-const { ROUTING_CONFIG, CHARGE_ELEMENT_STEPS } = require('../../../../../src/internal/modules/charge-information/lib/charge-elements/constants');
+const controller = require('../../../../../src/internal/modules/charge-information/controllers/charge-category');
+const services = require('../../../../../src/internal/lib/connectors/services');
+const { ROUTING_CONFIG, CHARGE_CATEGORY_STEPS } = require('../../../../../src/internal/modules/charge-information/lib/charge-categories/constants');
 
 const PURPOSE_USE_ID = uuid();
 
@@ -32,7 +32,6 @@ const createRequest = (step, payload) => ({
     ...payload
   },
   query: {
-    categoryId: ''
   },
   view: {
     foo: 'bar',
@@ -42,27 +41,13 @@ const createRequest = (step, payload) => ({
     licence: {
       id: 'test-licence-id',
       licenceNumber: '01/123',
+      regionalChargeArea: { name: 'Test Region' },
       startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
     },
     draftChargeInformation: {
       dateRange: { startDate: '2001-01-01' },
       chargeElements: []
-    },
-    defaultCharges: [
-      {
-        season: 'summer',
-        purposeUse: {
-          id: PURPOSE_USE_ID,
-          name: ''
-        },
-        purposePrimary: {
-          id: 'test-primary-purpose'
-        },
-        purposeSecondary: {
-          id: 'test-secondary-purpose'
-        }
-      }
-    ]
+    }
   },
   yar: {
     get: sandbox.stub()
@@ -72,40 +57,19 @@ const createRequest = (step, payload) => ({
 });
 
 const validPayload = {
-  purpose: {
-    purpose: PURPOSE_USE_ID
-  },
-  description: {
-    description: 'test-description'
-  },
-  abstraction: {
-    'startDate-day': '1',
-    'startDate-month': '4',
-    'endDate-day': '31',
-    'endDate-month': '10'
-  },
-  quantities: {
-    authorisedAnnualQuantity: '1234',
-    billableAnnualQuantity: ''
-  },
-  time: {
-    timeLimitedPeriod: 'no'
-  },
-  source: {
-    source: 'supported'
-  },
-  season: {
-    season: 'summer'
-  },
-  loss: {
-    loss: 'high'
-  },
-  agreements: {
-    isSection127AgreementEnabled: 'true'
-  }
+  source: { purpose: PURPOSE_USE_ID },
+  description: { description: 'test-description' },
+  loss: { loss: 'high' },
+  isAdjustments: { isAdjustments: 'false' }
 };
 
-experiment('internal/modules/charge-information/controllers/charge-element', () => {
+const chargeCategory = {
+  billingChargeCategoryId: 'test-reference-id',
+  reference: '1.0',
+  shortDescription: 'test-charge-category-description'
+};
+
+experiment('internal/modules/charge-information/controllers/charge-category', () => {
   let request, h;
 
   beforeEach(async () => {
@@ -114,14 +78,15 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
       postRedirectGet: sandbox.stub(),
       redirect: sandbox.stub()
     };
+    sandbox.stub(services.water.chargeCategories, 'getChargeCategory').resolves(chargeCategory);
   });
   afterEach(() => sandbox.restore());
 
-  experiment('.getChargeElementStep', () => {
-    experiment('for selecting a purpose use', () => {
+  experiment('.getChargeCategporyStep', () => {
+    experiment('enter a description', () => {
       beforeEach(async () => {
-        request = createRequest(CHARGE_ELEMENT_STEPS.purpose);
-        await controller.getChargeElementStep(request, h);
+        request = createRequest(CHARGE_CATEGORY_STEPS.description);
+        await controller.getChargeCategoryStep(request, h);
       });
 
       test('uses the correct template', async () => {
@@ -131,12 +96,12 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
 
       test('sets a back link to the previous page in the flow', async () => {
         const { back } = h.view.lastCall.args[1];
-        expect(back).to.equal(`/licences/${licenceId}/charge-information/use-abstraction-data`);
+        expect(back).to.equal(`/licences/${licenceId}/charge-information/check`);
       });
 
       test('has the page title', async () => {
         const { pageTitle } = h.view.lastCall.args[1];
-        expect(pageTitle).to.equal(ROUTING_CONFIG[CHARGE_ELEMENT_STEPS.purpose].pageTitle);
+        expect(pageTitle).to.equal(ROUTING_CONFIG[CHARGE_CATEGORY_STEPS.description].pageTitle);
       });
 
       test('has a caption', async () => {
@@ -153,15 +118,15 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
         const [, view] = h.view.lastCall.args;
         expect(view.form).to.be.an.object();
         expect(view.form.method).to.equal('POST');
-        expect(view.form.action).to.equal(`/licences/${licenceId}/charge-information/charge-element/${elementId}/purpose`);
+        expect(view.form.action).to.equal(`/licences/${licenceId}/charge-information/charge-category/${elementId}/description`);
       });
     });
 
     experiment('when the returnToCheckData query param is set', () => {
       beforeEach(async () => {
-        request = createRequest(CHARGE_ELEMENT_STEPS.purpose);
+        request = createRequest(CHARGE_CATEGORY_STEPS.description);
         request.query.returnToCheckData = true;
-        await controller.getChargeElementStep(request, h);
+        await controller.getChargeCategoryStep(request, h);
       });
 
       test('the back link is to the check answers page', async () => {
@@ -172,29 +137,28 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
 
     experiment('for a step mid-way through the flow', () => {
       beforeEach(async () => {
-        request = createRequest(CHARGE_ELEMENT_STEPS.loss);
-        await controller.getChargeElementStep(request, h);
+        request = createRequest(CHARGE_CATEGORY_STEPS.loss);
+        await controller.getChargeCategoryStep(request, h);
       });
 
       test('sets a back link to the previous step', async () => {
         const { back } = h.view.lastCall.args[1];
-        expect(back).to.equal(`/licences/${licenceId}/charge-information/charge-element/${elementId}/${CHARGE_ELEMENT_STEPS.season}`);
+        expect(back).to.equal(`/licences/${licenceId}/charge-information/charge-category/${elementId}/${CHARGE_CATEGORY_STEPS.source}`);
       });
     });
 
-    experiment('.postChargeElementStep', () => {
+    experiment('.postChargeCategoryStep', () => {
       experiment('when a valid payload is posted', () => {
         beforeEach(async () => {
-          request = createRequest(CHARGE_ELEMENT_STEPS.loss, validPayload.loss);
-          request.query.returnToCheckData = false;
-          await controller.postChargeElementStep(request, h);
+          request = createRequest(CHARGE_CATEGORY_STEPS.loss, validPayload.loss);
+          await controller.postChargeCategoryStep(request, h);
         });
 
         test('the draft charge information is updated with the step data', async () => {
           const [id, cvWorkflowId, data] = request.setDraftChargeInformation.lastCall.args;
           expect(cvWorkflowId).to.equal(undefined);
           expect(id).to.equal('test-licence-id');
-          expect(data.dateRange).to.equal(request.pre.draftChargeInformation.dateRange);
+          expect(data.loss).to.equal(request.pre.draftChargeInformation.loss);
 
           // Check element updated
           const chargeElement = data.chargeElements.find(row => row.id === elementId);
@@ -203,61 +167,40 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
 
         test('the user is redirected to the expected page', async () => {
           expect(h.redirect.calledWith(
-            `/licences/test-licence-id/charge-information/check`
+            `/licences/test-licence-id/charge-information/charge-category/${elementId}/${CHARGE_CATEGORY_STEPS.volume}`
           )).to.be.true();
         });
       });
-
-      experiment('when a new sroc charge purpose is posted', () => {
+      experiment('when the last charge category step in the flow is reached', () => {
         beforeEach(async () => {
-          request = createRequest(CHARGE_ELEMENT_STEPS.season, validPayload.season);
-          const testCategoryId = 'test-category-id';
-          request.query = {
-            categoryId: testCategoryId,
-            returnToCheckData: true
-          };
-          request.pre.draftChargeInformation.chargeElements =
-          [{
-            id: testCategoryId,
-            chargePurposes: [{ id: 'test-element-id' }]
-          }];
-          await controller.postChargeElementStep(request, h);
+          request = createRequest(CHARGE_CATEGORY_STEPS.isAdjustments, validPayload.isAdjustments);
+          request.pre.draftChargeInformation.chargeElements = [{ id: 'test-element-id' }];
+          await controller.postChargeCategoryStep(request, h);
         });
 
-        test('the draft charge information charge purpose is updated correctly', async () => {
+        test('the draft charge information is updated with the charge reference', async () => {
           const [id, cvWorkflowId, data] = request.setDraftChargeInformation.lastCall.args;
           expect(cvWorkflowId).to.equal(undefined);
           expect(id).to.equal('test-licence-id');
-          expect(data.chargeElements[0]).to.equal(
+          expect(data.chargeElements[0].chargeReference).to.equal(
             {
-              chargePurposes:
-              [{
-                id: 'test-element-id',
-                season: 'summer'
-              }],
-              id: 'test-category-id'
+              id: chargeCategory.billingChargeCategoryId,
+              reference: chargeCategory.reference,
+              description: chargeCategory.shortDescription
             });
         });
 
-        test('the user is redirected to the expected page', async () => {
+        test('the draft charge information is updated with the charge reference', async () => {
+          const args = request.setDraftChargeInformation.lastCall.args;
+          expect(args[2].chargeElements[0].isAdjustments).to.equal(false);
+        });
+
+        test('the user is redirected to the chack your answers page', async () => {
           expect(h.redirect.calledWith(
             `/licences/test-licence-id/charge-information/check`
           )).to.be.true();
         });
       });
-    });
-  });
-
-  experiment('when the charge is in review', () => {
-    beforeEach(async () => {
-      request = createRequest('loss', validPayload['loss']);
-      request.pre.draftChargeInformation.status = 'review';
-      request.query.chargeVersionWorkflowId = '1';
-      await controller.postChargeElementStep(request, h);
-    });
-
-    test('the user is redirected to the expected page', async () => {
-      expect(h.redirect.calledWith('/licences/test-licence-id/charge-information/1/review')).to.be.true();
     });
   });
 });

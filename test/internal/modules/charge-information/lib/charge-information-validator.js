@@ -35,6 +35,7 @@ experiment('internal/modules/charge-information/lib/charge-information-validator
     let chargeInfo, decoratedChargeInfo;
     beforeEach(() => {
       chargeInfo = {
+        scheme: 'alcs',
         chargeElements: [
           createChargeElement({
             id: 'compliant-element'

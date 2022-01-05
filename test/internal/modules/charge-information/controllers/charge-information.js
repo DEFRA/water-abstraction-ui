@@ -56,6 +56,7 @@ const createRequest = () => ({
     }],
     draftChargeInformation: {
       chargeElements: [],
+      chargeCategories: [],
       invoiceAccount: {
         invoiceAccountAddresses: []
       },
@@ -895,11 +896,6 @@ experiment('internal/modules/charge-information/controller', () => {
       expect(template).to.equal('nunjucks/charge-information/view.njk');
     });
 
-    test('sets a back link', async () => {
-      const { back } = h.view.lastCall.args[1];
-      expect(back).to.equal('/licences/test-licence-id/charge-information/use-abstraction-data');
-    });
-
     test('has the page title', async () => {
       const { pageTitle } = h.view.lastCall.args[1];
       expect(pageTitle).to.equal('Check charge information');
@@ -921,11 +917,6 @@ experiment('internal/modules/charge-information/controller', () => {
       request = createRequest();
       request.query = { chargeVersionWorkflowId: 'test-workflow-id' };
       await controller.getCheckData(request, h);
-    });
-
-    test('sets a back link', async () => {
-      const { back } = h.view.lastCall.args[1];
-      expect(back).to.equal('/licences/test-licence-id/charge-information/use-abstraction-data?chargeVersionWorkflowId=test-workflow-id');
     });
 
     test('adds the correct charge version workflow id to the view', async () => {

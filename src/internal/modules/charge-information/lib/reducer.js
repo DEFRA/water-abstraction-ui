@@ -5,6 +5,7 @@ const reducer = (state, action) => {
     case ACTION_TYPES.setReason:
       return {
         ...state,
+        scheme: 'alcs',
         changeReason: action.payload
       };
 
@@ -29,7 +30,6 @@ const reducer = (state, action) => {
         ...state,
         chargeElements: action.payload
       };
-
     case ACTION_TYPES.createChargeElement:
       return {
         ...state,
@@ -41,7 +41,12 @@ const reducer = (state, action) => {
           }
         ]
       };
-
+    case ACTION_TYPES.createChargeCategory:
+      return {
+        ...state,
+        scheme: 'sroc',
+        chargeElements: action.payload
+      };
     case ACTION_TYPES.clearData:
       return {};
   }

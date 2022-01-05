@@ -1,3 +1,5 @@
+'use-strict';
+
 const { getAbstractionPeriodSeason } = require('@envage/water-abstraction-helpers').returns.date;
 
 const isMatchingAbstractionPeriodAndSeason = chargeElement => {
@@ -37,8 +39,18 @@ const validate = chargeElement =>
 
 const addValidation = chargeInformation => {
   const chargeElementsWithValidationWarnings = chargeInformation.chargeElements.map(element => ({
-    ...element,
-    validationWarnings: validate(element)
+    ...(element.chargePurposes
+      ? {
+        ...element,
+        chargePurposes: element.chargePurposes.map(purpose => ({
+          ...purpose,
+          validationWarnings: validate(purpose)
+        }))
+      }
+      : element),
+    validationWarnings: chargeInformation.scheme === 'alcs'
+      ? validate(element)
+      : [] // todo a new validator for SROC will have to be added here
   }));
   return {
     ...chargeInformation,

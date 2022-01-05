@@ -41,8 +41,8 @@ describe('User update password', () => {
 
     // Enter and Confirm new password
     cy.get('form').within(($form) => {
-      cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
-      cy.get('#confirm-password').type(Cypress.env('DEFAULT_PASSWORD'));
+      cy.get('#password').type('This_is_Passwordtest1');
+      cy.get('#confirm-password').type('This_is_Passwordtest1');
       cy.root().submit();
     });
   });
@@ -58,7 +58,7 @@ describe('User update password', () => {
     cy.fixture('users.json').then(users => {
       cy.get('input#email').type(users.external);
     });
-    cy.get('input#password').type(Cypress.env('DEFAULT_PASSWORD'));
+    cy.get('input#password').type('This_is_Passwordtest1');
 
     //  Click Sign in Button
     cy.get('.govuk-button.govuk-button--start').click();
@@ -73,12 +73,12 @@ describe('User update password', () => {
     cy.get('a[href*="/account/update-password"]').click();
 
     // Enter account password and press continue
-    cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
+    cy.get('#password').type('This_is_Passwordtest1');
     cy.get('button').contains('Continue').should('have.class', 'govuk-button').click();
 
     // Enter and Confirm new password
     cy.get('form').within(($form) => {
-      cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
+      cy.get('#password').type('This_is_Passwordtest1');
       cy.get('#confirm-password').type('notthepassword');
       cy.root().submit();
     });
@@ -98,7 +98,7 @@ describe('User update password', () => {
     cy.fixture('users.json').then(users => {
       cy.get('input#email').type(users.external);
     });
-    cy.get('input#password').type(Cypress.env('DEFAULT_PASSWORD'));
+    cy.get('input#password').type('This_is_Passwordtest1');
 
     //  Click Sign in Button
     cy.get('.govuk-button.govuk-button--start').click();
@@ -113,7 +113,7 @@ describe('User update password', () => {
     cy.get('a[href*="/account/update-password"]').click();
 
     // Enter account password and press continue
-    cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
+    cy.get('#password').type('This_is_Passwordtest1');
     cy.get('button').contains('Continue').should('have.class', 'govuk-button').click();
 
     // Enter and Confirm new password
@@ -125,5 +125,27 @@ describe('User update password', () => {
 
     cy.get('#error-summary-title').contains('There is a problem').should('be.visible');
     cy.get('.govuk-error-summary__body').contains('Your password must contain').should('be.visible');
+  });
+
+  it('User logs in with the new Password', () => {
+    //  cy.visit to visit the URL
+    cy.visit(Cypress.env('USER_URI'));
+
+    // tap the sign in button on the welcome page
+    cy.get('a[href*="/signin"]').click();
+
+    //  Enter the user name and Password
+    cy.fixture('users.json').then(users => {
+      cy.get('input#email').type(users.external);
+    });
+    cy.get('input#password').type('This_is_Passwordtest1');
+
+    //  Click Sign in Button
+    cy.get('.govuk-button.govuk-button--start').click();
+
+    //  assert once the user is signed in
+    cy.contains('Add licences or give access');
+    // click Logout
+    cy.get('#signout').click();
   });
 });

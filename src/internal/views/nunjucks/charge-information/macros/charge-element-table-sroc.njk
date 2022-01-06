@@ -137,10 +137,10 @@ formErrorSummary %}
             <dd class="govuk-summary-list__value">
               <ul class="govuk-list">
                 <li>
-                  {{ chargePurpose.authorisedAnnualQuantity | number + 'ML authorised' }}
+                  {{ chargePurpose.authorisedAnnualQuantity + 'ML authorised' }}
                 </li>
                 <li>
-                  {{chargePurpose.billableAnnualQuantity | number + 'ML billable' if chargePurpose.billableAnnualQuantity else 'Billable not set' }}
+                  {{chargePurpose.billableAnnualQuantity + 'ML billable' if chargePurpose.billableAnnualQuantity else 'Billable not set' }}
                 </li>
               </ul>
             </dd>

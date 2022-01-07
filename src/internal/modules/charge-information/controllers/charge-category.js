@@ -42,13 +42,13 @@ const getChargeCategoryStep = async (request, h) => {
   });
 };
 
-const findChargeReference = async chargeElement => {
+const findChargeCategory = async chargeElement => {
   const keys = ['source', 'loss', 'isRestrictedSource', 'waterModel', 'volume'];
-  const chargeReference = await services.water.chargeCategories.getChargeCategory(pick(chargeElement, keys));
+  const chargeCategory = await services.water.chargeCategories.getChargeCategory(pick(chargeElement, keys));
   return {
-    id: chargeReference.billingChargeCategoryId,
-    reference: chargeReference.reference,
-    description: chargeReference.shortDescription
+    id: chargeCategory.billingChargeCategoryId,
+    reference: chargeCategory.reference,
+    description: chargeCategory.shortDescription
   };
 };
 
@@ -62,7 +62,7 @@ const postChargeCategoryStep = async (request, h) => {
       const { draftChargeInformation } = request.pre;
       const chargeElement = draftChargeInformation.chargeElements.find(element => element.id === elementId);
       // find the charge reference and save it in the session cache
-      chargeElement.chargeReference = await findChargeReference(chargeElement);
+      chargeElement.chargeCategory = await findChargeCategory(chargeElement);
       chargeElement.eiucRegion = request.pre.licence.regionalChargeArea.name;
       request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation);
     }

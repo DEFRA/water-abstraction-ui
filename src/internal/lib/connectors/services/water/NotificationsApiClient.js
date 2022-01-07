@@ -32,16 +32,11 @@ class NotificationsApiClient extends SharedNotificationsApiClient {
    * Gets a list of notifications
    * @param {Number} page
    */
-  getNotifications (page, filter, sentBy = '') {
-    if (filter) {
-      filter = filter.toString();
-    }
+  getNotifications (page = 1) {
     const url = urlJoin(this.config.serviceUrl, 'notifications');
     const options = {
       qs: {
-        page,
-        filter,
-        sentBy
+        page
       }
     };
     return serviceRequest.get(url, options);

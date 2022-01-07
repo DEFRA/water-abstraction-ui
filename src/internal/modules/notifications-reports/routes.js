@@ -4,7 +4,6 @@ const { VALID_GUID } = require('shared/lib/validators');
 
 const constants = require('../../lib/constants');
 const { allNotifications } = constants.scope;
-const notificationReportPageTitle = 'Notification report';
 
 module.exports = {
 
@@ -15,25 +14,14 @@ module.exports = {
     config: {
       auth: { scope: allNotifications },
       description: 'View list of notifications sent',
+      validate: {
+        query: Joi.object().keys({
+          page: Joi.number().integer().min(1).default(1)
+        })
+      },
       plugins: {
         viewContext: {
-          pageTitle: notificationReportPageTitle,
-          activeNavLink: 'notifications'
-        }
-      }
-    }
-  },
-
-  postNotificationsList: {
-    method: 'POST',
-    path: '/notifications/report',
-    handler: controller.getNotificationsList,
-    config: {
-      auth: { scope: allNotifications },
-      description: 'View list of notifications sent',
-      plugins: {
-        viewContext: {
-          pageTitle: notificationReportPageTitle,
+          pageTitle: 'Notification report',
           activeNavLink: 'notifications'
         }
       }
@@ -58,7 +46,7 @@ module.exports = {
       },
       plugins: {
         viewContext: {
-          pageTitle: notificationReportPageTitle,
+          pageTitle: 'Notification report',
           activeNavLink: 'notifications'
         }
       }

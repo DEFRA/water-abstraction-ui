@@ -8,8 +8,8 @@
 {% from "badge.njk" import badge %}
 {% from "forms/index.njk" import formRender,
 formErrorSummary %}
-{% from "nunjucks/charge-information/macros/charge-element-table.njk" import chargeElementTable %}
-{% from "nunjucks/charge-information/macros/charge-element-table-sroc.njk" import chargeCategoryTable %}
+{% from "nunjucks/charge-information/macros/charge-element-table-alcs.njk" import chargeElementTableAlcs %}
+{% from "nunjucks/charge-information/macros/charge-element-table-sroc.njk" import chargeElementTableSroc %}
 
 {% macro summaryListRow(key, value, changeLink) %}
   <div class="govuk-summary-list__row">
@@ -143,12 +143,12 @@ formErrorSummary %}
     {% if chargeVersion.scheme == 'sroc' and isSrocChargeInfoEnabled  %}
         {% for chargeElement in chargeVersion.chargeElements %}
         {% if chargeElement.scheme == 'sroc' %}
-          {{ chargeCategoryTable(chargeElement, isEditable, licenceId)}}
+          {{ chargeElementTableSroc(chargeElement, isEditable, licenceId)}}
         {% endif %}
       {% endfor %}
       {% for chargeElement in chargeVersion.chargeElements %}
         {% if chargeElement.scheme == 'alcs' %}
-          {{ chargeElementTable(chargeElement, isEditable, licenceId)}}
+          {{ chargeElementTableAlcs(chargeElement, isEditable, licenceId)}}
         {% endif %}
       {% endfor %} 
     {% else %}

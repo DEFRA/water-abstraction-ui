@@ -12,6 +12,7 @@ const { chargeVersionWorkflowReviewer, manageBillingAccounts } = require('intern
 const { reviewForm, reviewFormSchema } = require('../forms/review');
 const { hasScope } = require('internal/lib/permissions');
 const moment = require('moment');
+const { srocChargeInformation: isSrocChargeInfoEnabled } = require('../../../config').featureToggles;
 
 const formatDateForPageTitle = startDate =>
   moment(startDate).format('D MMMM YYYY');
@@ -72,7 +73,8 @@ const getReviewChargeInformation = async (request, h) => {
     isChargeable,
     chargeVersionWorkflowId,
     action: `/licences/${licence.id}/charge-information/check?chargeVersionWorkflowId=${chargeVersionWorkflowId}`,
-    reviewForm: reviewForm(request)
+    reviewForm: reviewForm(request),
+    isSrocChargeInfoEnabled
   });
 };
 

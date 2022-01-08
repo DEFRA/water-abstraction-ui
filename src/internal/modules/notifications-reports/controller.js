@@ -1,9 +1,11 @@
 'use strict';
 
 const Boom = require('@hapi/boom');
-
+const formHandler = require('shared/lib/form-handler');
+const notificationFilteringForm = require('./forms/notifications-filtering');
 const services = require('../../lib/connectors/services');
 const { mapMessage } = require('./lib/message-mapper');
+const session = require('./lib/session');
 
 /**
  * View list of notifications sent
@@ -11,14 +13,32 @@ const { mapMessage } = require('./lib/message-mapper');
  */
 async function getNotificationsList (request, h) {
   const { page } = request.query;
-  const { pagination, data } = await services.water.notifications.getNotifications(page);
+  const { categories, sender } = session.get(request);
+  const { pagination, data } = await services.water.notifications.getNotifications(page, categories, sender);
+  const form = formHandler.handleFormRequest(request, notificationFilteringForm);
 
   return h.view('nunjucks/notifications-reports/list', {
     ...request.view,
     pagination,
-    events: data
+    events: data,
+    form,
+    back: '/manage',
+    filtersSegmentOpen: (!!categories || !!sender || form.isValid === false)
   });
 }
+
+const postNotificationListSearch = (request, h) => {
+  const { categories, sender } = request.payload;
+
+  const form = formHandler.handleFormRequest(request, notificationFilteringForm);
+  session.merge(request, { categories, senderInputValue: sender });
+  if (!form.isValid) {
+    return h.postRedirectGet(form);
+  } else {
+    session.merge(request, { sender });
+    return h.redirect(request.path);
+  }
+};
 
 /**
  * View messages for a single event (batch of messages)
@@ -28,7 +48,7 @@ async function getNotification (request, h) {
   const { id } = request.params;
 
   try {
-    const [ event, { data: messages } ] = await Promise.all([
+    const [event, { data: messages }] = await Promise.all([
       await services.water.notifications.getNotification(id),
       await services.water.notifications.getNotificationMessages(id)
     ]);
@@ -48,4 +68,5 @@ async function getNotification (request, h) {
 }
 
 exports.getNotificationsList = getNotificationsList;
+exports.postNotificationListSearch = postNotificationListSearch;
 exports.getNotification = getNotification;

@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const controller = require('./controller');
+const preHandlers = require('./lib/pre-handlers');
 const { VALID_GUID } = require('shared/lib/validators');
-
 const constants = require('../../lib/constants');
 const { allNotifications } = constants.scope;
 
@@ -16,9 +16,32 @@ module.exports = {
       description: 'View list of notifications sent',
       validate: {
         query: Joi.object().keys({
-          page: Joi.number().integer().min(1).default(1)
+          page: Joi.number().integer().min(1).default(1),
+          form: Joi.string().guid().optional()
         })
       },
+      pre: [
+        { method: preHandlers.getScheduledNotificationCategories, assign: 'notificationCategories' }
+      ],
+      plugins: {
+        viewContext: {
+          pageTitle: 'Notification report',
+          activeNavLink: 'notifications'
+        }
+      }
+    }
+  },
+
+  postNotificationListSearch: {
+    method: 'POST',
+    path: '/notifications/report',
+    handler: controller.postNotificationListSearch,
+    config: {
+      auth: { scope: allNotifications },
+      description: 'Filters notifications',
+      pre: [
+        { method: preHandlers.getScheduledNotificationCategories, assign: 'notificationCategories' }
+      ],
       plugins: {
         viewContext: {
           pageTitle: 'Notification report',

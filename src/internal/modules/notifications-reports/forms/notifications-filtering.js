@@ -1,36 +1,43 @@
 const Joi = require('joi');
-const { formFactory, fields, setValues } = require('shared/lib/forms');
+const { formFactory, fields } = require('shared/lib/forms');
+const session = require('../lib/session');
 
-const form = (request, data = {}) => {
-  const f = formFactory('/notifications', 'GET');
+const form = (request, data) => {
+  const f = formFactory(request.path);
+  const { notificationCategories } = request.pre;
 
-  f.fields.push(fields.text('sentBy', {
-    widget: 'search',
-    hint: 'Filter by sent by email',
+  const { categories, senderInputValue } = session.get(request);
+
+  f.fields.push(fields.checkbox('categories', {
+    label: 'Notification type',
+    controlClass: 'govuk-input govuk-input--width-10',
+    choices: notificationCategories.map(category => ({
+      value: category.categoryValue,
+      label: category.categoryLabel
+    }))
+  }, categories));
+
+  f.fields.push(fields.text('sender', {
+    label: 'Sent by',
+    controlClass: 'govuk-input govuk-input--width-10',
     errors: {
       'string.email': {
         message: 'Enter a valid email'
       }
     }
-  }));
+  }, senderInputValue));
 
-  f.fields.push(fields.checkbox('filter', {
-    widget: 'search',
-    hint: 'Filter by Notification type',
-    errors: {
-      'string.empty': {
-        message: 'Enter a Sent by email or select Notification type'
-      }
-    }
-  }));
+  f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));
 
-  return setValues(f, data);
+  f.fields.push(fields.button(null, { label: 'Apply filters' }));
+
+  return f;
 };
 
 const schema = () => Joi.object().keys({
-  page: Joi.number().integer().min(1).default(1),
-  filter: Joi.array().optional(),
-  sentBy: Joi.string().trim().email().allow('')
+  csrf_token: Joi.string().uuid().required(),
+  categories: Joi.array().optional(),
+  sender: Joi.string().allow('').email()
 });
 
 exports.form = form;

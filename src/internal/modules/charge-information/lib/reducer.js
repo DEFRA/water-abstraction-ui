@@ -5,16 +5,12 @@ const reducer = (state, action) => {
     case ACTION_TYPES.setReason:
       return {
         ...state,
-        scheme: 'alcs',
         changeReason: action.payload
       };
 
     case ACTION_TYPES.setStartDate:
       return {
-        ...state,
-        dateRange: {
-          startDate: action.payload
-        }
+        ...action.payload
       };
 
     case ACTION_TYPES.setBillingAccount:

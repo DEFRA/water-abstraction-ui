@@ -22,13 +22,13 @@ const form = request => {
     suffix: 'ML',
     errors: {
       'string.pattern.base': {
-        message: 'Enter a number for the volume using 6 decimal places or fewer, the number must be more than 0'
+        message: 'Enter a number with no more than 6 decimal places. For example, 20.123456'
       },
       'any.required': {
-        message: 'Enter a volume'
+        message: 'Enter the volume in ML (megalitres).'
       },
       'string.empty': {
-        message: 'Enter a volume'
+        message: 'Enter the volume in ML (megalitres).'
       }
     }
   }, data.volume || ''));

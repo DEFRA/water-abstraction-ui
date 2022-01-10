@@ -25,6 +25,9 @@ const form = request => {
       },
       'any.required': {
         message: 'Enter a description for the charge reference'
+      },
+      'string.pattern.base': {
+        message: 'Description for the charge reference must only include letters a-z, hyphens, numbers and not more than 180 characters long.'
       }
     }
   }, data.description || ''));
@@ -34,10 +37,13 @@ const form = request => {
   return f;
 };
 
-const schema = () => Joi.object().keys({
-  csrf_token: Joi.string().uuid().required(),
-  description: Joi.string().trim().required()
-});
+const schema = () => {
+  const descriptionRegex = new RegExp(/^[a-z A-Z 0-9 - ' . ,]{1,180}$/);
+  return Joi.object().keys({
+    csrf_token: Joi.string().uuid().required(),
+    description: Joi.string().pattern(descriptionRegex).required()
+  });
+};
 
 exports.schema = schema;
 

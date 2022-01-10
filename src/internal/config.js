@@ -6,10 +6,10 @@ const testMode = parseInt(process.env.TEST_MODE) === 1;
 const isLocal = process.env.NODE_ENV === 'local';
 const isTest = process.env.NODE_ENV === 'test';
 const crmUri = process.env.CRM_URI || 'http://127.0.0.1:8002/crm/1.0';
-const srocStartDate = '2021-04-01';
+const srocStartDate = new Date('2021-04-01');
 
 const { internal } = require('./lib/constants').scope;
-const isSrocLive = new Date() > new Date(srocStartDate) &&
+const isSrocLive = new Date() >= srocStartDate &&
   ['local', 'dev', 'development', 'test'].includes(process.env.NODE_ENV);
 
 module.exports = {

@@ -69,14 +69,14 @@ const ROUTING_CONFIG = {
     nextStep: CHARGE_CATEGORY_STEPS.loss,
     back: CHARGE_CATEGORY_STEPS.description,
     options: SOURCES,
-    errorMessage: 'Select a source'
+    errorMessage: 'Select if the source is tidal or non-tidal.'
   },
   loss: {
     pageTitle: 'Select the loss',
     nextStep: CHARGE_CATEGORY_STEPS.volume,
     back: CHARGE_CATEGORY_STEPS.source,
     options: LOSS_CATEGORIES,
-    errorMessage: 'Select a loss category' },
+    errorMessage: 'Select if the loss is high, medium or low.' },
   volume: {
     pageTitle: 'Enter a volume',
     nextStep: CHARGE_CATEGORY_STEPS.isRestrictedSource,
@@ -109,7 +109,7 @@ const ROUTING_CONFIG = {
     pageTitle: 'Do adjustments apply?',
     back: CHARGE_CATEGORY_STEPS.isAdditionalCharges,
     options: YES_NO,
-    errorMessage: 'Select yes if adjustments apply',
+    errorMessage: 'Select yes if adjustments apply.',
     boolean: true
   }
 };

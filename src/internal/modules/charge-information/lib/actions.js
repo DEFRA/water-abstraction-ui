@@ -42,8 +42,8 @@ const setStartDate = (request, formValues) => {
     payload = {
       restartFlow: true,
       chargeElements: [],
-      scheme,
-      dateRange: { startDate: dates[formValues.startDate] }
+      dateRange: { startDate: dates[formValues.startDate] },
+      scheme
     };
   } else {
     payload = {

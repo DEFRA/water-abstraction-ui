@@ -27,7 +27,7 @@ const form = request => {
         message: 'Enter a description for the charge reference'
       },
       'string.pattern.base': {
-        message: 'Description for the charge reference must only include letters a-z, hyphens, numbers and not more than 180 characters long.'
+        message: 'The description must only include letters a-z, hyphens, numbers and be 180 characters or fewer.'
       }
     }
   }, data.description || ''));

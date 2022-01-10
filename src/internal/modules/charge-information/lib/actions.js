@@ -35,13 +35,16 @@ const setStartDate = (request, formValues) => {
     licenceStartDate: request.pre.licence.startDate,
     customDate: formValues.customDate
   };
+  console.log(request.pre.draftChargeInformation.scheme);
   const scheme = new Date(dates[formValues.startDate]) >= srocStartDate ? 'sroc' : 'alcs';
+  console.log(scheme);
   // if the charing scheme switches then the restartFlow flag
   // is used to clear the draft charge information and restart the flow from this step onwards
   if (scheme !== request.pre.draftChargeInformation.scheme) {
     payload = {
       restartFlow: true,
       chargeElements: [],
+      changeReason: request.pre.draftChargeInformation.changeReason,
       dateRange: { startDate: dates[formValues.startDate] },
       scheme
     };

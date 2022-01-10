@@ -64,7 +64,10 @@ experiment('internal/modules/charge-information/lib/actions', () => {
           licence: {
             startDate: '2000-01-01'
           },
-          draftChargeInformation: { scheme: 'alcs' }
+          draftChargeInformation: {
+            scheme: 'alcs',
+            changeReason: 'test-reason'
+          }
         }
       };
     });
@@ -77,6 +80,7 @@ experiment('internal/modules/charge-information/lib/actions', () => {
         payload: {
           restartFlow: true,
           chargeElements: [],
+          changeReason: 'test-reason',
           scheme: 'sroc',
           dateRange: { startDate: moment().format('YYYY-MM-DD') }
         }
@@ -92,6 +96,7 @@ experiment('internal/modules/charge-information/lib/actions', () => {
           dateRange: {
             startDate: request.pre.licence.startDate
           },
+          changeReason: 'test-reason',
           scheme: 'alcs'
         }
       });
@@ -111,6 +116,7 @@ experiment('internal/modules/charge-information/lib/actions', () => {
           dateRange: {
             startDate: formValues.customDate
           },
+          changeReason: 'test-reason',
           scheme: 'alcs'
         }
       });

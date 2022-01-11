@@ -596,7 +596,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
             expect(subField.options.label).to.equal('Billable quantity');
             expect(subField.options.type).to.equal('number');
             expect(subField.options.controlClass).to.equal('govuk-!-width-one-third');
-            expect(subField.value).to.be.undefined();
+            expect(subField.value).to.be.equal(2.5);
           });
         });
 

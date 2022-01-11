@@ -17,6 +17,7 @@
         <div class="govuk-details__text">
             {{ formErrorSummary(form) }}
             {{ formRender(form)}}
+            <a class="govuk-button govuk-button--secondary" href='/notifications/report?clear=1'>Clear filters</a>
         </div>
       </details>
     </caption>
@@ -43,6 +44,7 @@
           </tr>
         </thead>
         <tbody class="govuk-table__body">
+        {% if events.length > 0 %}
           {% for event in events %}
             <tr class="govuk-table__row">
               <td class="govuk-table__cell">{{ event.created | date}}</td>
@@ -64,6 +66,13 @@
               </td>
             </tr>
           {% endfor %}
+          {% else %}
+          <tr class="govuk-table__row">
+              <td class="govuk-table__cell" colspan=5>
+                  <p style="text-align: center; font-weight: bold;">No notifications found</p>
+              </td>
+          </tr>
+          {% endif %}
         </tbody>
       </table>
 

@@ -17,7 +17,8 @@ module.exports = {
       validate: {
         query: Joi.object().keys({
           page: Joi.number().integer().min(1).default(1),
-          form: Joi.string().guid().optional()
+          form: Joi.string().guid().optional(),
+          clear: Joi.number().optional()
         })
       },
       pre: [

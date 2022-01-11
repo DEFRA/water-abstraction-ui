@@ -12,7 +12,10 @@ const session = require('./lib/session');
  * @param {String} request.query.page - the page of results to fetch
  */
 async function getNotificationsList (request, h) {
-  const { page } = request.query;
+  const { page, clear } = request.query;
+  if (clear) {
+    session.clear(request);
+  }
   const { categories, sender } = session.get(request);
   const { pagination, data } = await services.water.notifications.getNotifications(page, categories, sender);
   const form = formHandler.handleFormRequest(request, notificationFilteringForm);

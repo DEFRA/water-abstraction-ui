@@ -45,8 +45,12 @@ const createRequest = (step, payload) => ({
       startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
     },
     draftChargeInformation: {
-      dateRange: { startDate: '2001-01-01' },
-      chargeElements: []
+      dateRange: { startDate: '2022-04-01' },
+      chargeElements: [{
+        id: elementId,
+        scheme: 'sroc'
+      }],
+      scheme: 'sroc'
     }
   },
   yar: {

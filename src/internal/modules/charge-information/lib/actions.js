@@ -35,9 +35,8 @@ const setStartDate = (request, formValues) => {
     licenceStartDate: request.pre.licence.startDate,
     customDate: formValues.customDate
   };
-  console.log(request.pre.draftChargeInformation.scheme);
   const scheme = new Date(dates[formValues.startDate]) >= srocStartDate ? 'sroc' : 'alcs';
-  console.log(scheme);
+ 
   // if the charing scheme switches then the restartFlow flag
   // is used to clear the draft charge information and restart the flow from this step onwards
   if (scheme !== request.pre.draftChargeInformation.scheme) {
@@ -91,13 +90,13 @@ const setAbstractionData = (request, formValues) => {
 
 // gets the charge element data from the posted form and omits the csrf token to
 // avoid saving this in the draft charge info session cache
-const getNewChargeElementData = (request, formValues, isChargePpurpose = false) => {
+const getNewChargeElementData = (request, formValues, scheme) => {
   const { defaultCharges, draftChargeInformation } = request.pre;
   const { step } = request.params;
-  if (isChargePpurpose) {
+  if (scheme == 'alcs') {
     return mappers[step] ? mappers[step](formValues, defaultCharges) : omit(formValues, 'csrf_token');
   }
-  return mappers[step] && draftChargeInformation.scheme !== 'sroc' ? mappers[step](formValues, defaultCharges) : omit(formValues, 'csrf_token');
+  return omit(formValues, 'csrf_token');
 };
 
 // gets the charge purpose data from the posted form for SROC and omits
@@ -111,9 +110,10 @@ const getNewChargePurposeData = (request, formValues) => {
 const setChargeElementData = (request, formValues) => {
   const { draftChargeInformation } = request.pre;
   const { elementId } = request.params;
-
-  const data = getNewChargeElementData(request, formValues);
+  
   const chargeElementToUpdate = draftChargeInformation.chargeElements.find(element => element.id === elementId);
+  const data = getNewChargeElementData(request, formValues, chargeElementToUpdate.scheme);
+  
   chargeElementToUpdate
     ? Object.assign(chargeElementToUpdate, data)
     : draftChargeInformation.chargeElements.push({ ...data, id: elementId });

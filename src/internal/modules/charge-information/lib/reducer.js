@@ -33,7 +33,8 @@ const reducer = (state, action) => {
           ...state.chargeElements,
           {
             id: action.payload.id,
-            isSection127AgreementEnabled: true
+            isSection127AgreementEnabled: true,
+            scheme: action.payload.scheme
           }
         ]
       };

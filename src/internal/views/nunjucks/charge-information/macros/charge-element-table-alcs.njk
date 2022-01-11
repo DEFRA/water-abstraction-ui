@@ -30,20 +30,12 @@ formErrorSummary %}
   {% endif %}
 {% endmacro %}
 
-{% macro addChargeCategoryButton() %}
-  {{ govukButton({
-  text: 'Asign a charge reference',
-  name: 'buttonAction',
-  value: 'addChargeCategory'
-  }) }}
-{% endmacro %}
-
 {% macro addElementButton() %}
   {{ govukButton({
   text: 'Add another element',
   name: 'buttonAction',
   value: 'addElement',
-  classes: 'govuk-button--secondary'
+  classes: 'govuk-button--secondary govuk-!-margin-right-6'
   }) }}
 {% endmacro %}
 
@@ -60,7 +52,7 @@ formErrorSummary %}
     text: 'Remove element',
     name: 'buttonAction',
     value: 'removeElement:' + chargeElement.id,
-    classes: 'govuk-button--secondary'
+    classes: 'govuk-button--secondary govuk-!-margin-right-6'
   }) }}
 {% endmacro %}
 
@@ -89,7 +81,7 @@ formErrorSummary %}
   {% endif %}
 {% endmacro %}
 
-{% macro chargeElementTableAlcs(chargeElements, isEditable, licenceId, isSrocChargeInfoEnabled) %}
+{% macro chargeElementTableAlcs(chargeElements, isEditable, licenceId, scheme) %}
     {% if chargeElements.length > 0 %}
       {% for chargeElement in chargeElements %}
 
@@ -154,18 +146,18 @@ formErrorSummary %}
           {% if isEditable %}
             <div class="govuk-grid-row">
               <div class="govuk-grid-column-full">
-
+                <span class=" govuk-body  govuk-!-font-size-19">
+                  {% if chargeElements.length > 1 %}
+                  {{ removeElementButton(chargeElement) }}
+                {% endif %}
                 {% if loop.last %}
                   {{ addElementButton() }}
-                  {% if isSrocChargeInfoEnabled %}
+                  {% if scheme === 'sroc' %}
                     <hr class="govuk-section-break  govuk-!-margin-bottom-6">
                     {{ addChargeReferenceButton() }}
                   {% endif %}
                 {% endif %}
-                {% if chargeElements.length > 1 %}
-                  {{ removeElementButton(chargeElement) }}
-                {% endif %}
-
+                </span>
               </div>
             </div>
           {% endif %}

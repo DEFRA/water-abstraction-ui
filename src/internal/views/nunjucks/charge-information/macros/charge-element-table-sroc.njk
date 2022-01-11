@@ -39,14 +39,6 @@ formErrorSummary %}
   }) }}
 {% endmacro %}
 
-{% macro addChargeReferenceButton() %}
-  {{ govukButton({
-  text: 'Assign a charge reference',
-  name: 'buttonAction',
-  value: 'addChargeCategory'
-  }) }}
-{% endmacro %}
-
 {% macro removeElementButton(chargeElement) %}
   {{ govukButton({
     text: 'Remove element',

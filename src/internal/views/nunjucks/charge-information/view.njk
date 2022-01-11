@@ -25,12 +25,6 @@ formErrorSummary %}
   </div>
 {% endmacro %}
 
-{% macro timeLimitedPeriod(period) %}
-  {{ period.startDate | date }}
-  to
-  {{ period.endDate | date }}
-{% endmacro %}
-
 {% macro changeLink(urlTail, chargeElementId) %}
   {% set changeLinkRoot = '/licences/' + licenceId + '/charge-information' %}
   {% if (chargeVersionWorkflowId | length) > 0 %}
@@ -47,40 +41,6 @@ formErrorSummary %}
     {{ changeLinkRoot + '/charge-element/' + chargeElementId + urlTail + '?' + queryTail }}
   {% else %}
     {{ changeLinkRoot + urlTail + '?' + queryTail }}
-  {% endif %}
-{% endmacro %}
-
-{% macro addChargeCategoryButton() %}
-  {{ govukButton({
-  text: 'Asign a charge reference',
-  name: 'buttonAction',
-  value: 'addChargeCategory'
-  }) }}
-{% endmacro %}
-
-{% macro addElementButton() %}
-  {{ govukButton({
-  text: 'Add another element',
-  name: 'buttonAction',
-  value: 'addElement',
-  classes: 'govuk-button--secondary'
-  }) }}
-{% endmacro %}
-
-{% macro removeElementButton(chargeElement) %}
-  {{ govukButton({
-    text: 'Remove element',
-    name: 'buttonAction',
-    value: 'removeElement:' + chargeElement.id,
-    classes: 'govuk-button--secondary'
-  }) }}
-{% endmacro %}
-
-{% macro agreementsApplyText(isEnabled) %}
-  {% if isEnabled %}
-    Yes, agreements should apply to this element
-  {% else %}
-    No, exclude this element from two-part tariff agreements
   {% endif %}
 {% endmacro %}
 
@@ -142,9 +102,9 @@ formErrorSummary %}
     <input type="hidden" name="csrf_token" value="{{ csrfToken }}"/>
     {% if chargeVersion.scheme == 'sroc' and isSrocChargeInfoEnabled  %}
         {{ chargeElementTableSroc(chargeVersion.chargeElements | arrayFilter('scheme', 'sroc'), isEditable, licenceId)}}
-        {{ chargeElementTableAlcs(chargeVersion.chargeElements | arrayFilter('scheme','alcs'), isEditable, licenceId, isSrocChargeInfoEnabled)}}
+        {{ chargeElementTableAlcs(chargeVersion.chargeElements | arrayFilter('scheme','alcs'), isEditable, licenceId, chargeVersion.scheme)}}
     {% else %}
-      {{ chargeElementTableAlcs(chargeVersion.chargeElements, isEditable, licenceId, isSrocChargeInfoEnabled) }}
+      {{ chargeElementTableAlcs(chargeVersion.chargeElements, isEditable, licenceId, chargeVersion.scheme) }}
     {% endif %}
 </form>
 

@@ -46,7 +46,12 @@ const createRequest = (step, payload) => ({
     },
     draftChargeInformation: {
       dateRange: { startDate: '2001-01-01' },
-      chargeElements: []
+      chargeElements: [{
+        id: elementId,
+        scheme: 'alcs'
+      }],
+      scheme: 'alcs'
+
     },
     defaultCharges: [
       {

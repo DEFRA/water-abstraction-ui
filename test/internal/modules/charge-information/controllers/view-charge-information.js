@@ -267,6 +267,14 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
         expect(isEditable).to.be.true();
       });
     });
+    experiment('adds isSrocChargeInfoEnabled to the view data', () => {
+      test('to false if the charge information draft is in current', async () => {
+        request.pre.draftChargeInformation['status'] = 'current';
+        await controller.getReviewChargeInformation(request, h);
+        const args = h.view.lastCall.args[1];
+        expect(Object.keys(args).includes('isSrocChargeInfoEnabled')).to.be.true();
+      });
+    });
   });
 
   experiment('.postReviewChargeInformation', () => {

@@ -36,7 +36,7 @@ const setStartDate = (request, formValues) => {
     customDate: formValues.customDate
   };
   const scheme = new Date(dates[formValues.startDate]) >= srocStartDate ? 'sroc' : 'alcs';
- 
+
   // if the charing scheme switches then the restartFlow flag
   // is used to clear the draft charge information and restart the flow from this step onwards
   if (scheme !== request.pre.draftChargeInformation.scheme) {
@@ -91,9 +91,9 @@ const setAbstractionData = (request, formValues) => {
 // gets the charge element data from the posted form and omits the csrf token to
 // avoid saving this in the draft charge info session cache
 const getNewChargeElementData = (request, formValues, scheme) => {
-  const { defaultCharges, draftChargeInformation } = request.pre;
+  const { defaultCharges } = request.pre;
   const { step } = request.params;
-  if (scheme == 'alcs') {
+  if (scheme === 'alcs') {
     return mappers[step] ? mappers[step](formValues, defaultCharges) : omit(formValues, 'csrf_token');
   }
   return omit(formValues, 'csrf_token');
@@ -110,10 +110,10 @@ const getNewChargePurposeData = (request, formValues) => {
 const setChargeElementData = (request, formValues) => {
   const { draftChargeInformation } = request.pre;
   const { elementId } = request.params;
-  
+
   const chargeElementToUpdate = draftChargeInformation.chargeElements.find(element => element.id === elementId);
   const data = getNewChargeElementData(request, formValues, chargeElementToUpdate.scheme);
-  
+
   chargeElementToUpdate
     ? Object.assign(chargeElementToUpdate, data)
     : draftChargeInformation.chargeElements.push({ ...data, id: elementId });

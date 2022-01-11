@@ -63,6 +63,10 @@ experiment('internal/modules/charge-information/lib/actions', () => {
         pre: {
           licence: {
             startDate: '2000-01-01'
+          },
+          draftChargeInformation: {
+            scheme: 'alcs',
+            changeReason: 'test-reason'
           }
         }
       };
@@ -73,8 +77,13 @@ experiment('internal/modules/charge-information/lib/actions', () => {
       const action = actions.setStartDate(request, formValues);
       expect(action).to.equal({
         type: actions.ACTION_TYPES.setStartDate,
-        payload:
-          moment().format('YYYY-MM-DD')
+        payload: {
+          restartFlow: true,
+          chargeElements: [],
+          changeReason: 'test-reason',
+          scheme: 'sroc',
+          dateRange: { startDate: moment().format('YYYY-MM-DD') }
+        }
       });
     });
 
@@ -83,7 +92,13 @@ experiment('internal/modules/charge-information/lib/actions', () => {
       const action = actions.setStartDate(request, formValues);
       expect(action).to.equal({
         type: actions.ACTION_TYPES.setStartDate,
-        payload: request.pre.licence.startDate
+        payload: {
+          dateRange: {
+            startDate: request.pre.licence.startDate
+          },
+          changeReason: 'test-reason',
+          scheme: 'alcs'
+        }
       });
     });
 
@@ -97,7 +112,13 @@ experiment('internal/modules/charge-information/lib/actions', () => {
 
       expect(action).to.equal({
         type: actions.ACTION_TYPES.setStartDate,
-        payload: formValues.customDate
+        payload: {
+          dateRange: {
+            startDate: formValues.customDate
+          },
+          changeReason: 'test-reason',
+          scheme: 'alcs'
+        }
       });
     });
   });
@@ -193,8 +214,10 @@ experiment('internal/modules/charge-information/lib/actions', () => {
           draftChargeInformation: {
             chargeElements: [{
               id: 'test-element-id',
-              source: 'supported'
-            }]
+              source: 'supported',
+              scheme: 'alcs'
+            }],
+            scheme: 'alcs'
           },
           defaultCharges: {}
         }
@@ -210,24 +233,8 @@ experiment('internal/modules/charge-information/lib/actions', () => {
           payload: [{
             id: 'test-element-id',
             source: 'supported',
-            season: 'winter'
-          }]
-        });
-      });
-    });
-
-    experiment('when the charge element does not exist', () => {
-      beforeEach(() => {
-        request.pre.draftChargeInformation.chargeElements = [];
-      });
-      test('adds a new charge element with form value data and an id', () => {
-        const formValues = { season: 'winter' };
-        const action = actions.setChargeElementData(request, formValues);
-        expect(action).to.equal({
-          type: actions.ACTION_TYPES.setChargeElementData,
-          payload: [{
-            id: 'test-element-id',
-            season: 'winter'
+            season: 'winter',
+            scheme: 'alcs'
           }]
         });
       });

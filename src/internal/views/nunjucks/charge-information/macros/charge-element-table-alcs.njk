@@ -1,0 +1,172 @@
+{% from "title.njk" import title %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{% from "crm/address.njk" import address %}
+{% from "crm/company.njk" import company %}
+{% from "crm/contact.njk" import contact %}
+{% from "badge.njk" import badge %}
+{% from "forms/index.njk" import formRender,
+formErrorSummary %}
+
+{% macro summaryListRow(key, value, changeLink, isEditable) %}
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">{{ key }}</dt>
+    <dd class="govuk-summary-list__value">{{ value }}</dd>
+    {% if isEditable %}
+      <dd class="govuk-summary-list__actions">
+        {% if changeLink %}
+          <a class="govuk-link" href="{{ changeLink }}">Change</a>
+        {% endif %}
+      </dd>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{% macro agreementsApplyText(isEnabled) %}
+  {% if isEnabled %}
+    Yes, agreements should apply to this element
+  {% else %}
+    No, exclude this element from two-part tariff agreements
+  {% endif %}
+{% endmacro %}
+
+{% macro addElementButton() %}
+  {{ govukButton({
+  text: 'Add another element',
+  name: 'buttonAction',
+  value: 'addElement',
+  classes: 'govuk-button--secondary govuk-!-margin-right-6'
+  }) }}
+{% endmacro %}
+
+{% macro addChargeReferenceButton() %}
+  {{ govukButton({
+  text: 'Assign a charge reference',
+  name: 'buttonAction',
+  value: 'addChargeCategory'
+  }) }}
+{% endmacro %}
+
+{% macro removeElementButton(chargeElement) %}
+  {{ govukButton({
+    text: 'Remove element',
+    name: 'buttonAction',
+    value: 'removeElement:' + chargeElement.id,
+    classes: 'govuk-button--secondary govuk-!-margin-right-6'
+  }) }}
+{% endmacro %}
+
+{% macro timeLimitedPeriod(period) %}
+  {{ period.startDate | date }}
+  to
+  {{ period.endDate | date }}
+{% endmacro %}
+
+{% macro changeLink(urlTail, chargeElementId, licenceId) %}
+  {% set changeLinkRoot = '/licences/' + licenceId + '/charge-information' %}
+  {% if (chargeVersionWorkflowId | length) > 0 %}
+    {% set queryTail = {
+        returnToCheckData: true,
+        chargeVersionWorkflowId: chargeVersionWorkflowId
+      } | queryString %}
+  {% else %}
+    {% set queryTail = {
+      returnToCheckData: true
+    } | queryString %}
+  {% endif %}
+  {% if chargeElementId %}
+    {{ changeLinkRoot + '/charge-element/' + chargeElementId + urlTail + '?' + queryTail }}
+  {% else %}
+    {{ changeLinkRoot + urlTail + '?' + queryTail }}
+  {% endif %}
+{% endmacro %}
+
+{% macro chargeElementTableAlcs(chargeElements, isEditable, licenceId, scheme) %}
+    {% if chargeElements.length > 0 %}
+      {% for chargeElement in chargeElements %}
+
+        <section class="govuk-!-margin-bottom-7">
+          <h2 class="govuk-heading-m govuk-!-margin-bottom-1">Element
+            {{loop.index}}</h2>
+          {% for validationWarning in chargeElement.validationWarnings %}
+            {{
+            govukWarningText({
+              text: validationWarning,
+              iconFallbackText: "Warning",
+              classes: "govuk-!-margin-bottom-1"
+            })
+          }}
+          {% endfor %}
+          <dl class="govuk-summary-list">
+            {{ summaryListRow('Purpose', chargeElement.purposeUse.name, changeLink('/purpose', chargeElement.id, licenceId), isEditable) }}
+            {{ summaryListRow('Description', chargeElement.description, changeLink('/description', chargeElement.id, licenceId), isEditable) }}
+            {{ summaryListRow('Abstraction period', chargeElement.abstractionPeriod | abstractionPeriod, changeLink('/abstraction', chargeElement.id, licenceId), isEditable) }}
+
+            {# Quantities have been combined to a single list row to avoid adjacent identical Change links going to the same page #}
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Annual quantities</dt>
+              <dd class="govuk-summary-list__value">
+                <ul class="govuk-list">
+                  <li>
+                    {{ chargeElement.authorisedAnnualQuantity + 'ML authorised' }}
+                  </li>
+                  <li>
+                    {{chargeElement.billableAnnualQuantity + 'ML billable' if chargeElement.billableAnnualQuantity else 'Billable not set' }}
+                  </li>
+                </ul>
+              </dd>
+              {% if isEditable %}
+                <dd class="govuk-summary-list__actions">
+                  <a href="{{ changeLink('/quantities', chargeElement.id, licenceId) }}">Change</a>
+                </dd>
+              {% endif %}
+            </div>
+
+            {% set timeLimited = 'No' %}
+            {% if chargeElement.timeLimitedPeriod %}
+              {% set timeLimited %}
+              {{ timeLimitedPeriod(chargeElement.timeLimitedPeriod) }}
+              {% endset %}
+            {% endif %}
+            {{ summaryListRow('Time limit', timeLimited, changeLink('/time', chargeElement.id, licenceId), isEditable) }}
+            {{ summaryListRow('Source', chargeElement.source | title, changeLink('/source', chargeElement.id, licenceId), isEditable) }}
+            {{ summaryListRow('Season', chargeElement.season | title, changeLink('/season', chargeElement.id, licenceId), isEditable) }}
+            {{ summaryListRow('Loss', chargeElement.loss | title, changeLink('/loss', chargeElement.id, licenceId), isEditable) }}
+            {{ summaryListRow('Environmental Improvement Unit Charge', chargeElement.eiucSource | title,'',isEditable) }}
+
+            {% if chargeElement.purposeUse.isTwoPartTariff %}
+              {{ summaryListRow(
+                'Agreements apply',
+                agreementsApplyText(chargeElement.isSection127AgreementEnabled),
+                changeLink('/agreements', chargeElement.id, licenceId),
+                isEditable
+              )}}
+            {% endif %}
+          </dl>
+          {% if isEditable %}
+            <div class="govuk-grid-row">
+              <div class="govuk-grid-column-full">
+                <span class=" govuk-body  govuk-!-font-size-19">
+                  {% if chargeElements.length > 1 %}
+                  {{ removeElementButton(chargeElement) }}
+                {% endif %}
+                {% if loop.last %}
+                  {{ addElementButton() }}
+                  {% if scheme === 'sroc' %}
+                    <hr class="govuk-section-break  govuk-!-margin-bottom-6">
+                    {{ addChargeReferenceButton() }}
+                  {% endif %}
+                {% endif %}
+                </span>
+              </div>
+            </div>
+          {% endif %}
+        </section>
+      {% endfor %}
+    {% endif %}
+
+    {% if isEditable and chargeElements.length === 0 %}
+      {{ addElementButton() }}
+    {% endif %}
+  
+{% endmacro %}

@@ -45,8 +45,12 @@ const createRequest = (step, payload) => ({
       startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
     },
     draftChargeInformation: {
-      dateRange: { startDate: '2001-01-01' },
-      chargeElements: []
+      dateRange: { startDate: '2022-04-01' },
+      chargeElements: [{
+        id: elementId,
+        scheme: 'sroc'
+      }],
+      scheme: 'sroc'
     }
   },
   yar: {
@@ -182,7 +186,7 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
           const [id, cvWorkflowId, data] = request.setDraftChargeInformation.lastCall.args;
           expect(cvWorkflowId).to.equal(undefined);
           expect(id).to.equal('test-licence-id');
-          expect(data.chargeElements[0].chargeReference).to.equal(
+          expect(data.chargeElements[0].chargeCategory).to.equal(
             {
               id: chargeCategory.billingChargeCategoryId,
               reference: chargeCategory.reference,

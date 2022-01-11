@@ -69,14 +69,14 @@ const ROUTING_CONFIG = {
     nextStep: CHARGE_CATEGORY_STEPS.loss,
     back: CHARGE_CATEGORY_STEPS.description,
     options: SOURCES,
-    errorMessage: 'Select a source'
+    errorMessage: 'Select if the source is tidal or non-tidal.'
   },
   loss: {
     pageTitle: 'Select the loss',
     nextStep: CHARGE_CATEGORY_STEPS.volume,
     back: CHARGE_CATEGORY_STEPS.source,
     options: LOSS_CATEGORIES,
-    errorMessage: 'Select a loss category' },
+    errorMessage: 'Select if the loss is high, medium or low.' },
   volume: {
     pageTitle: 'Enter a volume',
     nextStep: CHARGE_CATEGORY_STEPS.isRestrictedSource,
@@ -87,7 +87,7 @@ const ROUTING_CONFIG = {
     nextStep: CHARGE_CATEGORY_STEPS.waterModel,
     back: CHARGE_CATEGORY_STEPS.volume,
     options: IS_RESTRICTED_SOURCE,
-    errorMessage: 'Select the water availability',
+    errorMessage: 'Select the water availability.',
     boolean: true
   },
   waterModel: {
@@ -95,21 +95,21 @@ const ROUTING_CONFIG = {
     nextStep: CHARGE_CATEGORY_STEPS.isAdditionalCharges,
     back: CHARGE_CATEGORY_STEPS.isRestrictedSource,
     options: WATER_MODEL,
-    errorMessage: 'Select the watet model'
+    errorMessage: 'Select the water model.'
   },
   isAdditionalCharges: {
     pageTitle: 'Do additional charges apply?',
     nextStep: CHARGE_CATEGORY_STEPS.isAdjustments,
     back: CHARGE_CATEGORY_STEPS.waterModel,
     options: YES_NO,
-    errorMessage: 'Select yes if additional charges apply.',
+    errorMessage: `Select 'yes' if additional charges apply.`,
     boolean: true
   },
   isAdjustments: {
     pageTitle: 'Do adjustments apply?',
     back: CHARGE_CATEGORY_STEPS.isAdditionalCharges,
     options: YES_NO,
-    errorMessage: 'Select yes if adjustments apply',
+    errorMessage: `Select 'yes' if adjustments apply.`,
     boolean: true
   }
 };

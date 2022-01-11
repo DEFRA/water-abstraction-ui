@@ -39,14 +39,6 @@ formErrorSummary %}
   }) }}
 {% endmacro %}
 
-{% macro addChargeReferenceButton() %}
-  {{ govukButton({
-  text: 'Assign a charge reference',
-  name: 'buttonAction',
-  value: 'addChargeCategory'
-  }) }}
-{% endmacro %}
-
 {% macro removeElementButton(chargeElement) %}
   {{ govukButton({
     text: 'Remove element',
@@ -80,6 +72,12 @@ formErrorSummary %}
   {% else %}
     Available
   {% endif %}
+{% endmacro %}
+
+{% macro timeLimitedPeriod(period) %}
+  {{ period.startDate | date }}
+  to
+  {{ period.endDate | date }}
 {% endmacro %}
 
 {% macro changeLink(urlTail, chargeElementId, licenceId, categoryId) %}
@@ -178,22 +176,26 @@ formErrorSummary %}
   
 {% endmacro %}
 
-{% macro chargeCategoryTable(chargeElement, isEditable, licenceId) %}
-  <h2 class="govuk-heading-l govuk-!-margin-bottom-4">
-  <span class="govuk-caption-l">Charge reference {{ chargeElement.chargeReference.reference }}</span>
-  {{ chargeElement.chargeReference.description }} </h2>
-  <hr class="govuk-section-break  govuk-!-margin-bottom-2 govuk-section-break--visible">
-  <h2 class="govuk-heading-m govuk-!-margin-bottom-3">Charge reference details</h2>
-  <dl class="govuk-summary-list">
-    {{ summaryListRow('Description', chargeElement.description) }}
-    {{ summaryListRow('Source', chargeElement.source | title) }}
-    {{ summaryListRow('Loss', chargeElement.loss | title) }}
-    {{ summaryListRow('Volume', chargeElement.volume + 'ML') }}
-    {{ summaryListRow('Water availability', restrictedSourceText(chargeElement.isRestrictedSource)) }}
-    {{ summaryListRow('Water model', chargeElement.waterModel | title) }}
-    {{ summaryListRow('Additional charges apply', getBooleanText(chargeElement.isAdditionalCharges) | title) }}
-    {{ summaryListRow('Adjustments apply', getBooleanText(chargeElement.isAdjustments) | title) }}
-    {{ summaryListRow('EUIC Region', chargeElement.eiucRegion | title) }}
-  </dl>
-  {{ chargePurposeTable(chargeElement.chargePurposes, isEditable, licenceId, chargeElement.id) }}
+{% macro chargeElementTableSroc(chargeElements, isEditable, licenceId) %}
+  {% if chargeElements.length > 0 %}
+    {% for chargeElement in chargeElements %}
+      <h2 class="govuk-heading-l govuk-!-margin-bottom-4">
+      <span class="govuk-caption-l">Charge reference {{ chargeElement.chargeCategory.reference }}</span>
+      {{ chargeElement.chargeCategory.description }} </h2>
+      <hr class="govuk-section-break  govuk-!-margin-bottom-2 govuk-section-break--visible">
+      <h2 class="govuk-heading-m govuk-!-margin-bottom-3">Charge reference details</h2>
+      <dl class="govuk-summary-list">
+        {{ summaryListRow('Description', chargeElement.description) }}
+        {{ summaryListRow('Source', chargeElement.source | title) }}
+        {{ summaryListRow('Loss', chargeElement.loss | title) }}
+        {{ summaryListRow('Volume', chargeElement.volume + 'ML') }}
+        {{ summaryListRow('Water availability', restrictedSourceText(chargeElement.isRestrictedSource)) }}
+        {{ summaryListRow('Water model', chargeElement.waterModel | title) }}
+        {{ summaryListRow('Additional charges apply', getBooleanText(chargeElement.isAdditionalCharges) | title) }}
+        {{ summaryListRow('Adjustments apply', getBooleanText(chargeElement.isAdjustments) | title) }}
+        {{ summaryListRow('EUIC Region', chargeElement.eiucRegion | title) }}
+      </dl>
+      {{ chargePurposeTable(chargeElement.chargePurposes, isEditable, licenceId, chargeElement.id) }}
+    {% endfor %}
+  {% endif %}
 {% endmacro %}

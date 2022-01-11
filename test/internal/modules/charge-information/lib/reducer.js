@@ -54,7 +54,9 @@ experiment('internal/modules/charge-information/lib/reducer', () => {
     beforeEach(async () => {
       action = {
         type: ACTION_TYPES.setStartDate,
-        payload: 'updated-start-date'
+        payload: {
+          dateRange: { startDate: 'updated-start-date' }
+        }
       };
 
       state = reducer(initialState, action);
@@ -62,12 +64,6 @@ experiment('internal/modules/charge-information/lib/reducer', () => {
 
     test('the startDate is updated', async () => {
       expect(state.dateRange.startDate).to.equal('updated-start-date');
-    });
-
-    test('the other data is untouched', async () => {
-      expect(state.changeReason).to.equal(initialState.changeReason);
-      expect(state.billingAccount).to.equal(initialState.billingAccount);
-      expect(state.abstractionData).to.equal(initialState.abstractionData);
     });
   });
 

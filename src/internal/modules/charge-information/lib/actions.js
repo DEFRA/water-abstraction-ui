@@ -3,6 +3,7 @@ const moment = require('moment');
 const uuid = require('uuid/v4');
 const DATE_FORMAT = 'YYYY-MM-DD';
 const mappers = require('./charge-elements/mappers');
+const { srocStartDate } = require('../../../config');
 const ACTION_TYPES = {
   clearData: 'clearData',
   setBillingAccount: 'set.invoiceAccount',
@@ -28,15 +29,34 @@ const setChangeReason = (request, formValues) => {
 };
 
 const setStartDate = (request, formValues) => {
+  let payload = {};
   const dates = {
     today: moment().format(DATE_FORMAT),
     licenceStartDate: request.pre.licence.startDate,
     customDate: formValues.customDate
   };
+  const scheme = new Date(dates[formValues.startDate]) >= srocStartDate ? 'sroc' : 'alcs';
+
+  // if the charing scheme switches then the restartFlow flag
+  // is used to clear the draft charge information and restart the flow from this step onwards
+  if (scheme !== request.pre.draftChargeInformation.scheme) {
+    payload = {
+      restartFlow: true,
+      chargeElements: [],
+      changeReason: request.pre.draftChargeInformation.changeReason,
+      dateRange: { startDate: dates[formValues.startDate] },
+      scheme
+    };
+  } else {
+    payload = {
+      ...request.pre.draftChargeInformation,
+      dateRange: { startDate: dates[formValues.startDate] }
+    };
+  }
 
   return {
     type: ACTION_TYPES.setStartDate,
-    payload: dates[formValues.startDate]
+    payload
   };
 };
 
@@ -70,18 +90,30 @@ const setAbstractionData = (request, formValues) => {
 
 // gets the charge element data from the posted form and omits the csrf token to
 // avoid saving this in the draft charge info session cache
-const getNewChargeElementData = (request, formValues) => {
-  const { defaultCharges, draftChargeInformation } = request.pre;
+const getNewChargeElementData = (request, formValues, scheme) => {
+  const { defaultCharges } = request.pre;
   const { step } = request.params;
-  return mappers[step] && draftChargeInformation.scheme !== 'sroc' ? mappers[step](formValues, defaultCharges) : omit(formValues, 'csrf_token');
+  if (scheme === 'alcs') {
+    return mappers[step] ? mappers[step](formValues, defaultCharges) : omit(formValues, 'csrf_token');
+  }
+  return omit(formValues, 'csrf_token');
+};
+
+// gets the charge purpose data from the posted form for SROC and omits
+// the csrf token to avoid saving this in the draft charge info session cache
+const getNewChargePurposeData = (request, formValues) => {
+  const { defaultCharges } = request.pre;
+  const { step } = request.params;
+  return mappers[step] ? mappers[step](formValues, defaultCharges) : omit(formValues, 'csrf_token');
 };
 
 const setChargeElementData = (request, formValues) => {
   const { draftChargeInformation } = request.pre;
   const { elementId } = request.params;
 
-  const data = getNewChargeElementData(request, formValues);
   const chargeElementToUpdate = draftChargeInformation.chargeElements.find(element => element.id === elementId);
+  const data = getNewChargeElementData(request, formValues, chargeElementToUpdate.scheme);
+
   chargeElementToUpdate
     ? Object.assign(chargeElementToUpdate, data)
     : draftChargeInformation.chargeElements.push({ ...data, id: elementId });
@@ -134,7 +166,7 @@ const setChargePurposeData = (request, formValues) => {
   const { categoryId } = request.query;
   const { elementId } = request.params;
   // get rid of the csrf token to avoid saving this in the draft charge info session cache
-  const data = omit(formValues, 'csrf_token');
+  const data = getNewChargePurposeData(request, formValues);
 
   const chargeElements = draftChargeInformation.chargeElements
     .map(element => {

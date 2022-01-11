@@ -24,8 +24,8 @@ const { reducer } = require('../lib/reducer');
 const { reviewForm } = require('../forms/review');
 const { chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope;
 const { hasScope } = require('internal/lib/permissions');
-const { srocChargeInformation: isSrocChargeInfoEnabled } = require('../../../config').featureToggles;
-
+const { featureToggles, isSrocLive } = require('../../../config');
+const isSrocChargeInfoEnabled = featureToggles.srocChargeInformation && isSrocLive;
 /**
  * Select the reason for the creation of a new charge version
  */

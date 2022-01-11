@@ -14,14 +14,24 @@ const getPostedForm = (request, formContainer) => {
   return handleRequest(formContainer.form(request), request, schema);
 };
 
-const applyFormResponse = (request, form, actionCreator) => {
+const applyFormResponse = async (request, form, actionCreator) => {
   const { licenceId } = request.params;
   const { chargeVersionWorkflowId } = request.query;
   const action = actionCreator(request, getValues(form));
   const nextState = reducer(request.pre.draftChargeInformation, action);
-  return isEmpty(nextState)
-    ? request.clearDraftChargeInformation(licenceId, chargeVersionWorkflowId)
-    : request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, nextState);
+  const restartFlow = nextState.restartFlow;
+  // if the restartFlow property exist the charge info has to be recreated because i.e. change in chargin scheme
+  if (restartFlow) {
+    request.clearDraftChargeInformation(licenceId, chargeVersionWorkflowId);
+    nextState.restartFlow = false;
+    await request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, nextState);
+    return true;
+  } else {
+    await isEmpty(nextState)
+      ? request.clearDraftChargeInformation(licenceId, chargeVersionWorkflowId)
+      : request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, nextState);
+    return false;
+  }
 };
 
 /**
@@ -51,10 +61,10 @@ const createPostHandler = (formContainer, actionCreator, redirectPathFunc) => as
   const form = getPostedForm(request, formContainer);
 
   if (form.isValid) {
-    await applyFormResponse(request, form, actionCreator);
+    const restartFlow = await applyFormResponse(request, form, actionCreator);
     const defaultPath = await redirectPathFunc(request, getValues(form));
     const redirectPath = await getRedirectPath(request, defaultPath);
-    return h.redirect(redirectPath);
+    return restartFlow ? h.redirect(defaultPath) : h.redirect(redirectPath);
   }
   return h.postRedirectGet(form);
 };

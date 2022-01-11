@@ -68,7 +68,7 @@ experiment('internal/modules/billing/forms/two-part-tariff-quantity', () => {
           const experiment1 = tptSchema.validate({
             csrf_token: uuid(),
             quantity: 'custom',
-            customQuantity: 2
+            customQuantity: '2'
           });
           expect(experiment1.error).to.be.undefined();
 
@@ -76,7 +76,7 @@ experiment('internal/modules/billing/forms/two-part-tariff-quantity', () => {
             csrf_token: uuid(),
             quantity: 'custom'
           });
-          expect(experiment2.error).to.exist();
+          expect(experiment2.error.details[0].type).to.equal('any.required');
         });
       });
 
@@ -85,7 +85,7 @@ experiment('internal/modules/billing/forms/two-part-tariff-quantity', () => {
           csrf_token: uuid(),
           quantity: 'Cypress Hill'
         });
-        expect(result.error).to.exist();
+        expect(result.error.details[0].type).to.equal('any.only');
       });
 
       test('is required', async () => {
@@ -93,7 +93,7 @@ experiment('internal/modules/billing/forms/two-part-tariff-quantity', () => {
           csrf_token: uuid(),
           quantity: null
         });
-        expect(result.error).to.exist();
+        expect(result.error.details[0].type).to.equal('any.only');
       });
     });
 
@@ -106,27 +106,39 @@ experiment('internal/modules/billing/forms/two-part-tariff-quantity', () => {
 
       experiment('when the quantity is of type "custom', () => {
         test('the customQuantity cannot be less than 0', async () => {
-          const data = getData({ customQuantity: -1 });
+          const data = getData({ customQuantity: '-1' });
           const result = tptSchema.validate(data);
-          expect(result.error).to.exist();
+          expect(result.error.details[0].type).to.equal('number.min');
         });
 
         test('the customQuantity cannot be greater than the maxAnnualQuantity', async () => {
-          const data = getData({ customQuantity: 4 });
+          const data = getData({ customQuantity: '4' });
           const result = tptSchema.validate(data);
-          expect(result.error).to.exist();
+          expect(result.error.details[0].type).to.equal('number.max');
         });
 
         test('the customQuantity can equal the maxAnnualQuantity', async () => {
-          const data = getData({ customQuantity: 3 });
+          const data = getData({ customQuantity: '3' });
           const result = tptSchema.validate(data);
           expect(result.error).to.be.undefined();
         });
 
         test('the customQuantity can be greater than zero and less that the maxAnnualQuantity', async () => {
-          const data = getData({ customQuantity: 2 });
+          const data = getData({ customQuantity: '2' });
           const result = tptSchema.validate(data);
           expect(result.error).to.be.undefined();
+        });
+
+        test('the customQuantity can have up to 6 decimal places', async () => {
+          const data = getData({ customQuantity: '2.123456' });
+          const result = tptSchema.validate(data);
+          expect(result.error).to.be.undefined();
+        });
+
+        test('the customQuantity cannot have more than 6 decimal places', async () => {
+          const data = getData({ customQuantity: '2.1234567' });
+          const result = tptSchema.validate(data);
+          expect(result.error.details[0].type).to.equal('number.custom');
         });
       });
     });

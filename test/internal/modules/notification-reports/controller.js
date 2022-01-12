@@ -3,6 +3,7 @@ const { expect } = require('@hapi/code');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
+const form = require('internal/modules/notifications-reports/forms/notifications-filtering');
 const formHandler = require('../../../../src/shared/lib/form-handler');
 
 const controller = require('internal/modules/notifications-reports/controller');
@@ -111,12 +112,18 @@ experiment('internal/modules/notification-reports/controller.js', () => {
       const [, { pagination }] = h.view.lastCall.args;
       expect(pagination).to.equal(data.pagination);
     });
+
+    experiment('given a qs of clear=1', () => {
+      beforeEach(async () => {
+        await controller.getNotificationsList({ ...request, query: { clear: 1 } }, h);
+      });
+      test('clears the session', () => {
+        expect(session.clear.called).to.be.true();
+      });
+    });
   });
 
   experiment('.postNotificationListSearch', () => {
-    let form = sandbox.spy();
-    form.path = 'some-path';
-
     const modifiedRequestObject = {
       ...request,
       payload: {
@@ -125,40 +132,41 @@ experiment('internal/modules/notification-reports/controller.js', () => {
       }
     };
 
-    beforeEach(async () => {
-      await controller.postNotificationListSearch(modifiedRequestObject, h);
-    });
-
-    test('calls the form handler to parse the form', () => {
-      expect(formHandler.handleFormRequest.calledWith(modifiedRequestObject, form));
-    });
-
-    test('calls session.merge to store the entered values', () => {
-      expect(session.merge.calledWith(modifiedRequestObject, { categories, senderInputValue: sender }));
-    });
-
     experiment('given that the form is valid', () => {
       beforeEach(async () => {
-        formHandler.handleFormRequest.resolves({
+        await formHandler.handleFormRequest.returns({
           isValid: true
         });
+        await controller.postNotificationListSearch(modifiedRequestObject, h);
       });
+      test('calls the form handler to parse the form', () => { // todo
+        expect(formHandler.handleFormRequest.calledWith(modifiedRequestObject, form)).to.be.true();
+      });
+
       test('calls session.merge to store the entered values', () => {
-        expect(session.merge.calledWith(modifiedRequestObject, { sender }));
+        expect(session.merge.calledWith(modifiedRequestObject, { categories, senderInputValue: sender })).to.be.true();
       });
       test('it redirects the user back to the view', () => {
-        expect(h.redirect.calledWith(form.path));
+        expect(h.redirect.called).to.be.true();
       });
     });
 
     experiment('given that the form is invalid', () => {
       beforeEach(async () => {
-        formHandler.handleFormRequest.resolves({
+        await formHandler.handleFormRequest.returns({
           isValid: false
         });
+        await controller.postNotificationListSearch(modifiedRequestObject, h);
+      });
+      test('calls the form handler to parse the form', () => {
+        expect(formHandler.handleFormRequest.calledWith(modifiedRequestObject, form)).to.be.true();
+      });
+
+      test('calls session.merge to store the entered values', () => {
+        expect(session.merge.calledWith(modifiedRequestObject, { categories, senderInputValue: sender })).to.be.true();
       });
       test('it redirects the user back to the view', () => {
-        expect(h.postRedirectGet.calledWith(form));
+        expect(h.postRedirectGet.called).to.be.true();
       });
     });
   });

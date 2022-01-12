@@ -34,16 +34,16 @@ class NotificationsApiClient extends SharedNotificationsApiClient {
    * @param categories Either an array, or a single string (optional)
    * @param sender An email address (optional)
    */
-  getNotifications (page = 1, categories, sender) {
+  getNotifications (page, categories, sender) {
     const url = urlJoin(this.config.serviceUrl, 'notifications');
 
     const parsedCategoriesString = Array.isArray(categories) ? categories.join(',') : categories;
 
     const options = {
       qs: {
-        page,
-        categories: parsedCategoriesString,
-        sender
+        sender,
+        page: page || 1,
+        categories: parsedCategoriesString
       }
     };
     return serviceRequest.get(url, options);

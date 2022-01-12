@@ -1,18 +1,10 @@
 'use strict';
 
-const getSessionKey = request => {
-  return `notificationsSearch`;
-};
+const sessionKey = 'notificationsSearch';
 
-const get = request => {
-  const key = getSessionKey(request);
-  return request.yar.get(key) || {};
-};
+const get = request => request.yar.get(sessionKey) || {};
 
-const set = (request, data) => {
-  const key = getSessionKey(request);
-  return request.yar.set(key, data);
-};
+const set = (request, data) => request.yar.set(sessionKey, data);
 
 const merge = (request, data) => {
   const existingData = get(request);

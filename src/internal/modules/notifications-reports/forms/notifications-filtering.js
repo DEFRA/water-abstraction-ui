@@ -2,7 +2,7 @@ const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms');
 const session = require('../lib/session');
 
-const form = (request, data) => {
+const form = request => {
   const f = formFactory(request.path);
   const { notificationCategories } = request.pre;
 

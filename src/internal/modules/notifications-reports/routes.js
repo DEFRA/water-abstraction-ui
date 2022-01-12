@@ -5,6 +5,8 @@ const { VALID_GUID } = require('shared/lib/validators');
 const constants = require('../../lib/constants');
 const { allNotifications } = constants.scope;
 
+const pageTitle = 'Notification report';
+
 module.exports = {
 
   getNotificationsList: {
@@ -26,7 +28,7 @@ module.exports = {
       ],
       plugins: {
         viewContext: {
-          pageTitle: 'Notification report',
+          pageTitle,
           activeNavLink: 'notifications'
         }
       }
@@ -45,7 +47,7 @@ module.exports = {
       ],
       plugins: {
         viewContext: {
-          pageTitle: 'Notification report',
+          pageTitle,
           activeNavLink: 'notifications'
         }
       }
@@ -70,7 +72,7 @@ module.exports = {
       },
       plugins: {
         viewContext: {
-          pageTitle: 'Notification report',
+          pageTitle,
           activeNavLink: 'notifications'
         }
       }

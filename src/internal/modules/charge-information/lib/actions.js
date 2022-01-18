@@ -41,7 +41,7 @@ const setStartDate = (request, formValues) => {
 
   // if the charing scheme switches then the restartFlow flag
   // is used to clear the draft charge information and restart the flow from this step onwards
-  if (scheme !== request.pre.draftChargeInformation.scheme) {
+  if (scheme !== request.pre.draftChargeInformation.scheme || request.pre.draftChargeInformation.chargeElements.length === 0) {
     payload = {
       restartFlow: true,
       chargeElements: [],

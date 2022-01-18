@@ -27,7 +27,8 @@ const createChargeElement = (options = {}) => ({
   },
   loss: options.loss || 'low',
   authorisedAnnualQuantity: 1234,
-  billableAnnualQuantity: options.billableQuantity || 1111
+  billableAnnualQuantity: options.billableQuantity || 1111,
+  scheme: 'alcs'
 });
 
 experiment('internal/modules/charge-information/lib/charge-information-validator', () => {

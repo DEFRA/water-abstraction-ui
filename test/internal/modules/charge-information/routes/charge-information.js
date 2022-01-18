@@ -251,7 +251,7 @@ experiment('internal/modules/charge-information/routes', () => {
     test('has the expected pre handlers', async () => {
       expect(routes.getCheckData.options.pre[0].method).to.equal(preHandlers.loadBillingAccount);
       expect(routes.getCheckData.options.pre[0].assign).to.equal('billingAccount');
-      expect(routes.getCheckData.options.pre[1].method).to.equal(preHandlers.loadDraftChargeInformation);
+      expect(routes.getCheckData.options.pre[1].method).to.equal(preHandlers.loadValidatedDraftChargeInformation);
       expect(routes.getCheckData.options.pre[1].assign).to.equal('draftChargeInformation');
       expect(routes.getCheckData.options.pre[2].method).to.equal(preHandlers.loadLicence);
       expect(routes.getCheckData.options.pre[2].assign).to.equal('licence');

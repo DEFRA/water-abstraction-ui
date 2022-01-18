@@ -14,7 +14,8 @@ experiment('internal/modules/charge-information/lib/charge-elements/mappers', ()
       },
       { purposeUse: { id: 'test-purpose-use-2-id', description: 'test description 2' },
         purposePrimary: { id: 'test-purpose-primary-2-id' },
-        purposeSecondary: { id: 'test-purpose-secondary-2-id' }
+        purposeSecondary: { id: 'test-purpose-secondary-2-id' },
+        scheme: 'alcs'
       }
     ];
     const result = purpose({ purpose: 'test-purpose-use-2-id' }, defaultCharges);

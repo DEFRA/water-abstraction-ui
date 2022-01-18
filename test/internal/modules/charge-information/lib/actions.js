@@ -66,7 +66,8 @@ experiment('internal/modules/charge-information/lib/actions', () => {
           },
           draftChargeInformation: {
             scheme: 'alcs',
-            changeReason: 'test-reason'
+            changeReason: 'test-reason',
+            chargeElements: []
           }
         }
       };
@@ -81,7 +82,7 @@ experiment('internal/modules/charge-information/lib/actions', () => {
           restartFlow: true,
           chargeElements: [],
           changeReason: 'test-reason',
-          scheme: 'sroc',
+          scheme: 'alcs',
           dateRange: { startDate: moment().format('YYYY-MM-DD') }
         }
       });
@@ -93,6 +94,8 @@ experiment('internal/modules/charge-information/lib/actions', () => {
       expect(action).to.equal({
         type: actions.ACTION_TYPES.setStartDate,
         payload: {
+          restartFlow: true,
+          chargeElements: [],
           dateRange: {
             startDate: request.pre.licence.startDate
           },
@@ -113,6 +116,8 @@ experiment('internal/modules/charge-information/lib/actions', () => {
       expect(action).to.equal({
         type: actions.ACTION_TYPES.setStartDate,
         payload: {
+          restartFlow: true,
+          chargeElements: [],
           dateRange: {
             startDate: formValues.customDate
           },
@@ -209,6 +214,9 @@ experiment('internal/modules/charge-information/lib/actions', () => {
         params: {
           elementId: 'test-element-id',
           step: 'season'
+        },
+        query: {
+          returnToCheckData: false
         },
         pre: {
           draftChargeInformation: {

@@ -99,7 +99,9 @@ module.exports = {
       pre: [
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' },
-        { method: preHandlers.loadIsChargeable, assign: 'isChargeable' }
+        { method: preHandlers.loadIsChargeable, assign: 'isChargeable' },
+        { method: preHandlers.loadLicenceVersions, assign: 'licenceVersions' },
+        { method: preHandlers.loadLicenceDocumentsRoles, assign: 'licenceDocumentsRoles' }
       ]
     }
   },
@@ -130,7 +132,9 @@ module.exports = {
       pre: [
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' },
-        { method: preHandlers.loadIsChargeable, assign: 'isChargeable' }
+        { method: preHandlers.loadIsChargeable, assign: 'isChargeable' },
+        { method: preHandlers.loadLicenceVersions, assign: 'licenceVersions' },
+        { method: preHandlers.loadLicenceDocumentsRoles, assign: 'licenceDocumentsRoles' }
       ]
     }
   },
@@ -240,7 +244,8 @@ module.exports = {
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' },
         { method: preHandlers.loadDefaultCharges, assign: 'defaultCharges' },
-        { method: preHandlers.loadChargeVersions, assign: 'chargeVersions' }
+        { method: preHandlers.loadChargeVersions, assign: 'chargeVersions' },
+        { method: preHandlers.loadLicenceHolderRole, assign: 'licenceHolderRole' }
       ]
     }
   },

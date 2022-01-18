@@ -254,6 +254,31 @@ const loadBillingAccountByChargeVersion = async request => {
   return getBillingAccount(invoiceAccountId);
 };
 
+const loadLicenceVersions = async request => {
+  const { licenceId } = request.params;
+
+  const versions = await services.water.licences.getLicenceVersions(licenceId);
+  const versionsFiltered = versions.filter(v => {
+    return v.status === 'current';
+  });
+
+  const version = sortBy(versionsFiltered, getSortableVersionNumber).pop();
+  return version;
+};
+
+const loadLicenceDocumentsRoles = async request => {
+  const { licenceId } = request.params;
+  const licence = await services.water.licences.getLicenceById(licenceId);
+  const licenceContacts = await services.crm.documentRoles.getFullHistoryOfDocumentRolesByDocumentRef(licence.licenceNumber);
+  const licenceContactsFiltered = licenceContacts.data.filter(v => {
+    return v.roleName === 'licenceHolder';
+  }).reduce(function (pre, cur) {
+    return Date.parse(pre) > Date.parse(cur) ? cur : pre;
+  });
+
+  return licenceContactsFiltered;
+};
+
 exports.loadChargeableChangeReasons = loadChargeableChangeReasons;
 exports.loadChargeVersion = loadChargeVersion;
 exports.loadChargeVersions = loadChargeVersions;
@@ -271,3 +296,5 @@ exports.loadLicenceHolderRole = loadLicenceHolderRole;
 exports.loadBillingAccount = loadBillingAccount;
 exports.loadBillingAccountByChargeVersion = loadBillingAccountByChargeVersion;
 exports.loadValidatedDraftChargeInformation = loadValidatedDraftChargeInformation;
+exports.loadLicenceVersions = loadLicenceVersions;
+exports.loadLicenceDocumentsRoles = loadLicenceDocumentsRoles;

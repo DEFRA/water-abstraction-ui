@@ -44,8 +44,20 @@ const getDates = licence => {
   };
 };
 
+const getDatesWithDocumentRoles = (licence, licenceDocumentsRoles) => {
+  const startDate = moment(licenceDocumentsRoles.startDate);
+  const minDate = startDate;
+  const isLicenceStart = startDate.isAfter(minDate);
+  return {
+    licenceStartDate: startDate,
+    minDate: isLicenceStart ? licenceDocumentsRoles.startDate : minDate.format(ISO_FORMAT),
+    minType: MIN_LICENCE_START,
+    maxDate: licence.endDate || '3000-01-01'
+  };
+};
+
 const minErrors = {
-  [MIN_LICENCE_START]: 'You must enter a date after the licence start date'
+  [MIN_LICENCE_START]: `You must enter a date after the licence start date`
 };
 
 const getCommomCustomDateErrors = dates => ({
@@ -138,7 +150,7 @@ const getChoices = (dates, values, refDate, isChargeable) => {
  */
 const selectStartDateForm = (request, refDate) => {
   const { csrfToken } = request.view;
-  const { licence, isChargeable } = request.pre;
+  const { licence, isChargeable, licenceVersions } = request.pre;
   const { chargeVersionWorkflowId, returnToCheckData } = request.query;
 
   const action = isChargeable
@@ -150,7 +162,7 @@ const selectStartDateForm = (request, refDate) => {
     : 'Select effective date';
 
   const values = getValues(request, licence, refDate);
-  const dates = getDates(licence);
+  const dates = getDates(licenceVersions);
 
   const f = formFactory(action, 'POST');
 
@@ -169,8 +181,8 @@ const selectStartDateForm = (request, refDate) => {
 };
 
 const selectStartDateSchema = (request) => {
-  const { licence } = request.pre;
-  const dates = getDates(licence);
+  const { licence, licenceDocumentsRoles } = request.pre;
+  const dates = getDatesWithDocumentRoles(licence, licenceDocumentsRoles);
 
   return Joi.object({
     csrf_token: Joi.string().uuid().required(),

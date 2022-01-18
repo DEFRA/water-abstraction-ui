@@ -8,7 +8,10 @@ const { getChargeElementData, getChargeElementActionUrl } = require('../../lib/f
 
 const getErrors = key => {
   const errors = {
-    'string.pattern.base': {
+    'number.unsafe': {
+      message: `Enter a number for the ${key} quantity using 6 decimal places or fewer, the number must be more than 0`
+    },
+    'number.custom': {
       message: `Enter a number for the ${key} quantity using 6 decimal places or fewer, the number must be more than 0`
     }
   };
@@ -16,8 +19,7 @@ const getErrors = key => {
     const requiredAuthorisedQuantityError = {
       message: `Enter an authorised quantity`
     };
-    errors['any.required'] = requiredAuthorisedQuantityError;
-    errors['string.empty'] = requiredAuthorisedQuantityError;
+    errors['number.base'] = requiredAuthorisedQuantityError;
   }
 
   return errors;
@@ -60,11 +62,30 @@ const form = request => {
 };
 
 const schema = () => {
-  const nonZeroNumberWithWSixDpRegex = new RegExp(/^\s*(?=.*[1-9])\d*(?:\.\d{1,6})?\s*$/);
   return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
-    authorisedAnnualQuantity: Joi.string().pattern(nonZeroNumberWithWSixDpRegex).required(),
-    billableAnnualQuantity: Joi.string().pattern(nonZeroNumberWithWSixDpRegex).allow('', null)
+    authorisedAnnualQuantity:
+      Joi
+        .number().positive().required()
+        .custom((value, helper) => {
+          const { error, original } = helper;
+          const [, decimals = ''] = original.split('.');
+          if (decimals.length <= 6) {
+            return value;
+          }
+          return error('number.custom');
+        }),
+    billableAnnualQuantity:
+      Joi
+        .number().positive().allow('', null)
+        .custom((value, helper) => {
+          const { error, original } = helper;
+          const [, decimals = ''] = original.split('.');
+          if (decimals.length <= 6) {
+            return value;
+          }
+          return error('number.custom');
+        })
   });
 };
 exports.schema = schema;

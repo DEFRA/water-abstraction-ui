@@ -269,7 +269,7 @@ module.exports = {
       pre: [
 
         { method: preHandlers.loadBillingAccount, assign: 'billingAccount' },
-        { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
+        { method: preHandlers.loadValidatedDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' },
         { method: preHandlers.loadIsChargeable, assign: 'isChargeable' }
       ]

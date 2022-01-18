@@ -4,7 +4,7 @@ const Boom = require('@hapi/boom');
 const services = require('../../lib/connectors/services');
 const { loadLicence } = require('shared/lib/pre-handlers/licences');
 const moment = require('moment');
-const { get, sortBy } = require('lodash');
+const { get, sortBy, isEmpty } = require('lodash');
 const uuid = require('uuid');
 const errorHandler = (err, message) => {
   if (err.statusCode === 404) {
@@ -30,6 +30,22 @@ const getFilteredChangeReasons = async type => {
   } catch (err) {
     return errorHandler(err, `Change reasons not found`);
   }
+};
+
+/**
+ * Removes incomplete charge elements to avoid breaking the UI
+ * and resets the session draftCharge info
+ * @param {*} request
+ */
+const loadValidatedDraftChargeInformation = async request => {
+  const { licenceId } = request.params;
+  const chargeVersionWorkFlowId = getChargeVersionWorkflowId(request);
+  const draftChargeInformation = await loadDraftChargeInformation(request);
+  // filter out incomplete charge elements when they have used the back button
+  draftChargeInformation.chargeElements = draftChargeInformation.chargeElements.filter(element => isEmpty(element.status));
+  request.clearDraftChargeInformation(licenceId, chargeVersionWorkFlowId);
+  request.setDraftChargeInformation(licenceId, chargeVersionWorkFlowId, draftChargeInformation);
+  return draftChargeInformation;
 };
 
 /**
@@ -108,6 +124,14 @@ const decorateChargeVersion = chargeVersionWorkflow => {
   modifiedChargeVersion.chargeElements.map(element => {
     if (!element.id) {
       element['id'] = uuid();
+      if (element.chargePurposes) {
+        element.chargePurposes = element.chargePurposes.map(purpose => {
+          if (!purpose.id) {
+            purpose['id'] = uuid();
+          }
+          return purpose;
+        });
+      }
     }
   });
 
@@ -248,3 +272,4 @@ exports.loadNonChargeableChangeReasons = loadNonChargeableChangeReasons;
 exports.loadLicenceHolderRole = loadLicenceHolderRole;
 exports.loadBillingAccount = loadBillingAccount;
 exports.loadBillingAccountByChargeVersion = loadBillingAccountByChargeVersion;
+exports.loadValidatedDraftChargeInformation = loadValidatedDraftChargeInformation;

@@ -54,6 +54,9 @@ const getCommomCustomDateErrors = dates => ({
   },
   'date.max': {
     message: 'You must enter a date before the licence end date'
+  },
+  'date.custom': {
+    message: 'Enter a real date'
   }
 });
 
@@ -175,6 +178,13 @@ const selectStartDateSchema = (request) => {
     customDate: Joi.when('startDate', {
       is: 'customDate',
       then: Joi.date().min(dates.minDate).max(dates.maxDate).required()
+        .custom((value, helper) => {
+          const { error, original } = helper;
+          if (moment(original).isValid()) {
+            return value;
+          }
+          return error('date.custom');
+        })
     })
   });
 };

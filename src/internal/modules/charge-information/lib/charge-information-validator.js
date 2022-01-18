@@ -48,7 +48,7 @@ const addValidation = chargeInformation => {
         }))
       }
       : element),
-    validationWarnings: chargeInformation.scheme === 'alcs'
+    validationWarnings: element.scheme === 'alcs'
       ? validate(element)
       : [] // todo a new validator for SROC will have to be added here
   }));

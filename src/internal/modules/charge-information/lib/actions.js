@@ -3,6 +3,8 @@ const moment = require('moment');
 const uuid = require('uuid/v4');
 const DATE_FORMAT = 'YYYY-MM-DD';
 const mappers = require('./charge-elements/mappers');
+const { CHARGE_ELEMENT_STEPS } = require('./charge-elements/constants');
+const { CHARGE_CATEGORY_STEPS } = require('./charge-categories/constants');
 const { srocStartDate } = require('../../../config');
 const ACTION_TYPES = {
   clearData: 'clearData',
@@ -109,11 +111,21 @@ const getNewChargePurposeData = (request, formValues) => {
 
 const setChargeElementData = (request, formValues) => {
   const { draftChargeInformation } = request.pre;
-  const { elementId } = request.params;
+  const { elementId, step } = request.params;
+  const { returnToCheckData } = request.query;
 
   const chargeElementToUpdate = draftChargeInformation.chargeElements.find(element => element.id === elementId);
-  const data = getNewChargeElementData(request, formValues, chargeElementToUpdate.scheme);
+  const data = chargeElementToUpdate
+    ? getNewChargeElementData(request, formValues, chargeElementToUpdate.scheme)
+    // if the charge element has not been added to the draft charge data then it is an ALCS charge element and we add the scheme
+    : getNewChargeElementData(request, formValues, 'alcs');
 
+  if (step === CHARGE_ELEMENT_STEPS.purpose && !returnToCheckData) {
+    data.status = 'draft';
+  }
+  if ((step === CHARGE_ELEMENT_STEPS.loss || step === CHARGE_CATEGORY_STEPS.isAdjustments) && chargeElementToUpdate) {
+    delete chargeElementToUpdate.status;
+  }
   chargeElementToUpdate
     ? Object.assign(chargeElementToUpdate, data)
     : draftChargeInformation.chargeElements.push({ ...data, id: elementId });
@@ -146,7 +158,8 @@ const createChargeElement = id => ({
   type: ACTION_TYPES.createChargeElement,
   payload: {
     scheme: 'alcs',
-    id
+    id,
+    status: 'draft'
   }
 });
 
@@ -157,7 +170,8 @@ const createChargeCategory = (id, chargeElements, chargePurposes) => ({
     {
       id,
       chargePurposes,
-      scheme: 'sroc'
+      scheme: 'sroc',
+      status: 'draft'
     }]
 });
 

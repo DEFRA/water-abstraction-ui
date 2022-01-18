@@ -62,7 +62,7 @@ formErrorSummary %}
   {{ period.endDate | date }}
 {% endmacro %}
 
-{% macro changeLink(urlTail, chargeElementId, licenceId) %}
+{% macro changeLink(urlTail, chargeElementId, licenceId, chargeVersionWorkflowId) %}
   {% set changeLinkRoot = '/licences/' + licenceId + '/charge-information' %}
   {% if (chargeVersionWorkflowId | length) > 0 %}
     {% set queryTail = {
@@ -81,7 +81,7 @@ formErrorSummary %}
   {% endif %}
 {% endmacro %}
 
-{% macro chargeElementTableAlcs(chargeElements, isEditable, licenceId, scheme) %}
+{% macro chargeElementTableAlcs(chargeElements, isEditable, licenceId, scheme, chargeVersionWorkflowId) %}
     {% if chargeElements.length > 0 %}
       {% for chargeElement in chargeElements %}
 
@@ -98,9 +98,9 @@ formErrorSummary %}
           }}
           {% endfor %}
           <dl class="govuk-summary-list">
-            {{ summaryListRow('Purpose', chargeElement.purposeUse.name, changeLink('/purpose', chargeElement.id, licenceId), isEditable) }}
-            {{ summaryListRow('Description', chargeElement.description, changeLink('/description', chargeElement.id, licenceId), isEditable) }}
-            {{ summaryListRow('Abstraction period', chargeElement.abstractionPeriod | abstractionPeriod, changeLink('/abstraction', chargeElement.id, licenceId), isEditable) }}
+            {{ summaryListRow('Purpose', chargeElement.purposeUse.name, changeLink('/purpose', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
+            {{ summaryListRow('Description', chargeElement.description, changeLink('/description', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
+            {{ summaryListRow('Abstraction period', chargeElement.abstractionPeriod | abstractionPeriod, changeLink('/abstraction', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
 
             {# Quantities have been combined to a single list row to avoid adjacent identical Change links going to the same page #}
             <div class="govuk-summary-list__row">
@@ -117,7 +117,7 @@ formErrorSummary %}
               </dd>
               {% if isEditable %}
                 <dd class="govuk-summary-list__actions">
-                  <a href="{{ changeLink('/quantities', chargeElement.id, licenceId) }}">Change</a>
+                  <a href="{{ changeLink('/quantities', chargeElement.id, licenceId, chargeVersionWorkflowId) }}">Change</a>
                 </dd>
               {% endif %}
             </div>
@@ -128,17 +128,17 @@ formErrorSummary %}
               {{ timeLimitedPeriod(chargeElement.timeLimitedPeriod) }}
               {% endset %}
             {% endif %}
-            {{ summaryListRow('Time limit', timeLimited, changeLink('/time', chargeElement.id, licenceId), isEditable) }}
-            {{ summaryListRow('Source', chargeElement.source | title, changeLink('/source', chargeElement.id, licenceId), isEditable) }}
-            {{ summaryListRow('Season', chargeElement.season | title, changeLink('/season', chargeElement.id, licenceId), isEditable) }}
-            {{ summaryListRow('Loss', chargeElement.loss | title, changeLink('/loss', chargeElement.id, licenceId), isEditable) }}
+            {{ summaryListRow('Time limit', timeLimited, changeLink('/time', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
+            {{ summaryListRow('Source', chargeElement.source | title, changeLink('/source', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
+            {{ summaryListRow('Season', chargeElement.season | title, changeLink('/season', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
+            {{ summaryListRow('Loss', chargeElement.loss | title, changeLink('/loss', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
             {{ summaryListRow('Environmental Improvement Unit Charge', chargeElement.eiucSource | title,'',isEditable) }}
 
             {% if chargeElement.purposeUse.isTwoPartTariff %}
               {{ summaryListRow(
                 'Agreements apply',
                 agreementsApplyText(chargeElement.isSection127AgreementEnabled),
-                changeLink('/agreements', chargeElement.id, licenceId),
+                changeLink('/agreements', chargeElement.id, licenceId, chargeVersionWorkflowId),
                 isEditable
               )}}
             {% endif %}

@@ -4,7 +4,7 @@ const {
   getCurrentBillingAccountAddress,
   prepareChargeInformation
 } = require('../lib/helpers');
-const { get } = require('lodash');
+const { get, isEmpty } = require('lodash');
 const forms = require('shared/lib/forms');
 const services = require('../../../lib/connectors/services');
 const chargeInformationValidator = require('../lib/charge-information-validator');
@@ -53,10 +53,15 @@ const getViewChargeInformation = async (request, h) => {
 
 const getReviewChargeInformation = async (request, h) => {
   const { draftChargeInformation, licence, isChargeable, billingAccount } = request.pre;
-  const { chargeVersionWorkflowId } = request.params;
+  const { chargeVersionWorkflowId, licenceId } = request.params;
   const backLink = await getLicencePageUrl(licence, true);
   const isApprover = hasScope(request, chargeVersionWorkflowReviewer);
   const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount);
+  // filter out incomplete charge elements when they have used the back button
+  draftChargeInformation.chargeElements = draftChargeInformation.chargeElements.filter(element => isEmpty(element.status));
+  request.clearDraftChargeInformation(licenceId, chargeVersionWorkflowId);
+  request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation);
+
   const validatedDraftChargeVersion = chargeInformationValidator.addValidation(draftChargeInformation);
   const { data: documentRoles } = await services.crm.documentRoles.getDocumentRolesByDocumentRef(licence.licenceNumber);
   const licenceHolder = documentRoles.find(role => role.roleName === 'licenceHolder');

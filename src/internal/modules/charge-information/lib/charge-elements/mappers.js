@@ -30,7 +30,7 @@ const time = (formValues) => {
 
 const purpose = (formValues, defaultCharges) => {
   const { purposePrimary, purposeSecondary, purposeUse } = defaultCharges.find(item => item.purposeUse.id === formValues.purpose);
-  return { purposePrimary, purposeSecondary, purposeUse };
+  return { purposePrimary, purposeSecondary, purposeUse, scheme: 'alcs' };
 };
 
 const source = formValues => ({
@@ -40,10 +40,9 @@ const source = formValues => ({
 
 const quantities = formValues => {
   const { authorisedAnnualQuantity, billableAnnualQuantity } = formValues;
-
   return {
     authorisedAnnualQuantity: parseFloat(authorisedAnnualQuantity),
-    billableAnnualQuantity: isEmpty(billableAnnualQuantity) ? null : parseFloat(billableAnnualQuantity)
+    billableAnnualQuantity: parseFloat(billableAnnualQuantity) || null
   };
 };
 

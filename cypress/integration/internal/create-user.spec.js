@@ -1,5 +1,5 @@
 const { setUp, tearDown } = require('../../support/setup');
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 
 describe('creating an internal user:', () => {
   before(() => {
@@ -35,7 +35,7 @@ describe('creating an internal user:', () => {
       cy.get('.govuk-button').should('contain.text', 'Continue');
     });
     describe('populates the email field and submits the form', () => {
-      let tempEmail = `regression.tests.${uuid()}@defra.gov.uk`;
+      const tempEmail = `regression.tests.${uuid()}@defra.gov.uk`;
       cy.get('input#email').type(tempEmail);
       cy.get('form > .govuk-button').click();
     });

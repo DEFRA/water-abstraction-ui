@@ -1,7 +1,7 @@
 'use strict';
 
 const { get } = require('lodash');
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const queryString = require('querystring');
 const cleanObject = require('../lib/clean-object');
 /**

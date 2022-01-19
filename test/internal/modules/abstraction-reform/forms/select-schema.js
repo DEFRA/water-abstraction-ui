@@ -45,7 +45,7 @@ lab.experiment('selectSchemaForm', () => {
     expect(field.options.choices).to.be.an.array();
     expect(field.options.widget).to.equal('radio');
 
-    for (let choice of field.options.choices) {
+    for (const choice of field.options.choices) {
       expect(Object.keys(choice)).to.equal(['value', 'label', 'hint']);
     }
   });

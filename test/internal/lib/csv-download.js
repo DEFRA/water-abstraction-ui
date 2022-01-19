@@ -24,13 +24,13 @@ experiment('csvDownload', () => {
 
   test('It should create a HAPI response to download data as CSV', async () => {
     await csvDownload(h, data, 'test.csv');
-    expect(h.response.firstCall.args).to.equal([ 'name,age\nJohn,25\nJane,36\n' ]);
-    expect(header.firstCall.args).to.equal([ 'Content-type', 'text/csv' ]);
-    expect(header.secondCall.args).to.equal([ 'Content-disposition', 'attachment; filename="test.csv"' ]);
+    expect(h.response.firstCall.args).to.equal(['name,age\nJohn,25\nJane,36\n']);
+    expect(header.firstCall.args).to.equal(['Content-type', 'text/csv']);
+    expect(header.secondCall.args).to.equal(['Content-disposition', 'attachment; filename="test.csv"']);
   });
 
   test('It should create a HAPI response with default filename of download.csv if none specified', async () => {
     await csvDownload(h, data);
-    expect(header.secondCall.args).to.equal([ 'Content-disposition', 'attachment; filename="download.csv"' ]);
+    expect(header.secondCall.args).to.equal(['Content-disposition', 'attachment; filename="download.csv"']);
   });
 });

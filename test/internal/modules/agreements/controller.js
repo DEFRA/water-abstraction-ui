@@ -8,7 +8,7 @@ const {
   afterEach
 } = exports.lab = require('@hapi/lab').script();
 const sandbox = require('sinon').createSandbox();
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const water = require('internal/lib/connectors/services').water;
 const helpers = require('internal/modules/agreements/lib/helpers');
 const { logger } = require('internal/logger');
@@ -181,7 +181,7 @@ experiment('internal/modules/agreements/controller', () => {
         request = createRequest();
         modifiedRequest = assign({}, request, {
           payload: {
-            'csrf_token': uuid(),
+            csrf_token: uuid(),
             'endDate-year': '2020',
             'endDate-month': '01',
             'endDate-day': '01'
@@ -199,7 +199,7 @@ experiment('internal/modules/agreements/controller', () => {
         request = createRequest();
         modifiedRequest = assign({}, request, {
           payload: {
-            'csrf_token': uuid(),
+            csrf_token: uuid(),
             'endDate-year': null,
             'endDate-month': null,
             'endDate-day': null
@@ -265,14 +265,14 @@ experiment('internal/modules/agreements/controller', () => {
   });
 
   experiment('.postConfirmEndAgreement', () => {
-    experiment(`when the service method is successful`, () => {
+    experiment('when the service method is successful', () => {
       beforeEach(() => {
         request = createRequest();
         controller.postConfirmEndAgreement(request, h);
         water.agreements.endAgreement.resolves();
       });
       test('redirects the client', () => {
-        expect(h.redirect.calledWith(`/licences/test-licence-id#charge`)).to.be.true();
+        expect(h.redirect.calledWith('/licences/test-licence-id#charge')).to.be.true();
       });
     });
   });
@@ -330,12 +330,12 @@ experiment('internal/modules/agreements/controller', () => {
 
       test('sets the caption in the view', async () => {
         const [, { caption }] = h.view.lastCall.args;
-        expect(caption).to.equal(`Licence 01/234/ABC`);
+        expect(caption).to.equal('Licence 01/234/ABC');
       });
 
       test('sets the page title in the view', async () => {
         const [, { pageTitle }] = h.view.lastCall.args;
-        expect(pageTitle).to.equal(`Select agreement`);
+        expect(pageTitle).to.equal('Select agreement');
       });
 
       test('sets the correct back link in the view', async () => {
@@ -384,12 +384,12 @@ experiment('internal/modules/agreements/controller', () => {
 
       test('sets the caption in the view', async () => {
         const [, { caption }] = h.view.lastCall.args;
-        expect(caption).to.equal(`Licence 01/234/ABC`);
+        expect(caption).to.equal('Licence 01/234/ABC');
       });
 
       test('sets the page title in the view', async () => {
         const [, { pageTitle }] = h.view.lastCall.args;
-        expect(pageTitle).to.equal(`Enter date agreement was signed`);
+        expect(pageTitle).to.equal('Enter date agreement was signed');
       });
 
       test('sets the correct back link in the view', async () => {
@@ -449,12 +449,12 @@ experiment('internal/modules/agreements/controller', () => {
 
         test('sets the caption in the view', async () => {
           const [, { caption }] = h.view.lastCall.args;
-          expect(caption).to.equal(`Licence 01/234/ABC`);
+          expect(caption).to.equal('Licence 01/234/ABC');
         });
 
         test('sets the page title in the view', async () => {
           const [, { pageTitle }] = h.view.lastCall.args;
-          expect(pageTitle).to.equal(`Check agreement start date`);
+          expect(pageTitle).to.equal('Check agreement start date');
         });
 
         test('sets the correct back link in the view', async () => {
@@ -551,12 +551,12 @@ experiment('internal/modules/agreements/controller', () => {
 
       test('sets the caption in the view', async () => {
         const [, { caption }] = h.view.lastCall.args;
-        expect(caption).to.equal(`Licence 01/234/ABC`);
+        expect(caption).to.equal('Licence 01/234/ABC');
       });
 
       test('sets the page title in the view', async () => {
         const [, { pageTitle }] = h.view.lastCall.args;
-        expect(pageTitle).to.equal(`Check agreement details`);
+        expect(pageTitle).to.equal('Check agreement details');
       });
 
       test('sets the correct back link in the view', async () => {

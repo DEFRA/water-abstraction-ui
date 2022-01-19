@@ -1,5 +1,5 @@
 const { get, set } = require('lodash');
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
 /**
@@ -49,7 +49,7 @@ class AuthConfig {
   async onSignIn (request, h, user) {
   };
 
-  signOut (request, h) {
+  signOut (request) {
     request.cookieAuth.clear();
     request.yar.reset();
   }

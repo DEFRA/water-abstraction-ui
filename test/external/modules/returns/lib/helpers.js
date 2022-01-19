@@ -90,7 +90,7 @@ experiment('isBulkUpload', () => {
       });
     });
 
-    test(`are for the users' licence numbers`, async () => {
+    test('are for the users\' licence numbers', async () => {
       expect(filter.licence_ref).to.equal({
         $in: ['01/123', '04/567']
       });
@@ -159,7 +159,7 @@ experiment('getNewTaggingLicenceNumbers', () => {
   test('does not expired licences for external users', async () => {
     const request = {};
     await helpers.getNewTaggingLicenceNumbers(request);
-    const [ filter ] = services.crm.documents.findAll.lastCall.args;
+    const [filter] = services.crm.documents.findAll.lastCall.args;
     expect(get(filter, 'includeExpired')).to.be.undefined();
   });
 });

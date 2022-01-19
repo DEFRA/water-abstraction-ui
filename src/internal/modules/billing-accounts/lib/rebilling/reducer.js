@@ -7,14 +7,15 @@ const getBillId = bill => bill.id;
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case actionTypes.setSelectedBills:
+    case actionTypes.setSelectedBills: {
       const { selectedBillIds } = action.payload;
       return {
         ...state,
         selectedBillIds
       };
+    }
 
-    case actionTypes.setFromDate:
+    case actionTypes.setFromDate: {
       const { fromDate, rebillableBills } = action.payload;
       const selectedBills = rebillableBills
         .filter(bill => moment(bill.dateCreated).isSameOrAfter(fromDate, 'day'));
@@ -23,6 +24,7 @@ const reducer = (state, action) => {
         fromDate,
         selectedBillIds: selectedBills.map(getBillId)
       };
+    }
 
     default:
       return state;

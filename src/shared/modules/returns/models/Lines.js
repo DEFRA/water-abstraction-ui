@@ -78,7 +78,7 @@ class Lines {
 
     // Check both arrays have same date keys
     if (xor(getDateKeys(this.lines), getDateKeys(lines)).length) {
-      throw new Error(`Return lines contained invalid keys`, lines);
+      throw new Error('Return lines contained invalid keys', lines);
     }
 
     this.lines = this.lines.map(line => {

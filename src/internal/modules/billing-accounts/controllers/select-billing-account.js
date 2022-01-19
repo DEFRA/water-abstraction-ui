@@ -273,7 +273,7 @@ const postCheckAnswers = async (request, h) => {
     const { redirectPath } = session.merge(request, key, { data });
     return h.redirect(redirectPath);
   } catch (err) {
-    logger.error(`Error saving billing account`, err);
+    logger.error('Error saving billing account', err);
     throw err;
   }
 };

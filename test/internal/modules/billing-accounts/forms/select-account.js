@@ -1,6 +1,6 @@
 'use strict';
 
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 
@@ -41,7 +41,7 @@ experiment('internal/billing-accounts/forms/select-account', () => {
   let company;
   let companies = [];
 
-  beforeEach(async => {
+  beforeEach(async () => {
     request = createRequest();
     company = createCompany();
     companies = [company];

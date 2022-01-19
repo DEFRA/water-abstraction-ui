@@ -114,13 +114,13 @@ experiment('internal/modules/notifications/lib/contact-details-storage.js', () =
       const [key, data] = request.yar.set.lastCall.args;
       expect(key).to.equal(SESSION_KEY);
       expect(data).to.equal({
-        'foo': 'bar',
-        'contactDetails': {
-          'name': 'Test Person',
-          'jobTitle': 'Permitting officer',
-          'tel': '01234 567890',
-          'email': 'test@example.com',
-          'address': '1 River Lane, Borehole Lane, Splashbury, SS1 1PB'
+        foo: 'bar',
+        contactDetails: {
+          name: 'Test Person',
+          jobTitle: 'Permitting officer',
+          tel: '01234 567890',
+          email: 'test@example.com',
+          address: '1 River Lane, Borehole Lane, Splashbury, SS1 1PB'
         }
       });
     });
@@ -141,14 +141,14 @@ experiment('internal/modules/notifications/lib/contact-details-storage.js', () =
       const [userId, data] = services.idm.users.updateOne.lastCall.args;
       expect(userId).to.equal(request.defra.userId);
       expect(data).to.equal({
-        'user_data': {
-          'foo': 'bar',
-          'contactDetails': {
-            'name': 'Test Person',
-            'jobTitle': 'Environment officer',
-            'tel': '01234 567890',
-            'email': 'updated@example.com',
-            'address': '1 River Lane, Borehole Lane, Splashbury, SS1 1PB'
+        user_data: {
+          foo: 'bar',
+          contactDetails: {
+            name: 'Test Person',
+            jobTitle: 'Environment officer',
+            tel: '01234 567890',
+            email: 'updated@example.com',
+            address: '1 River Lane, Borehole Lane, Splashbury, SS1 1PB'
           }
         }
       });

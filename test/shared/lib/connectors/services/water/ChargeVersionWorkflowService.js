@@ -8,7 +8,7 @@ const {
   test
 } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 
 const ChargeVersionWorkflowsService = require('shared/lib/connectors/services/water/ChargeVersionWorkflowsService');
 const { serviceRequest } = require('@envage/water-abstraction-helpers');
@@ -29,7 +29,7 @@ experiment('services/water/ChargeVersionsService', () => {
     test('passes the expected URL to the service request', async () => {
       const service = new ChargeVersionWorkflowsService('http://127.0.0.1:8001/water/1.0');
       await service.getLicencesWithoutChargeInformation();
-      const expectedUrl = `http://127.0.0.1:8001/water/1.0/licences/without-charge-versions`;
+      const expectedUrl = 'http://127.0.0.1:8001/water/1.0/licences/without-charge-versions';
       const [url] = serviceRequest.get.lastCall.args;
       expect(url).to.equal(expectedUrl);
     });
@@ -39,7 +39,7 @@ experiment('services/water/ChargeVersionsService', () => {
     test('passes the expected URL to the service request', async () => {
       const service = new ChargeVersionWorkflowsService('http://127.0.0.1:8001/water/1.0');
       await service.getChargeVersionWorkflows();
-      const expectedUrl = `http://127.0.0.1:8001/water/1.0/charge-version-workflows`;
+      const expectedUrl = 'http://127.0.0.1:8001/water/1.0/charge-version-workflows';
       const [url] = serviceRequest.get.lastCall.args;
       expect(url).to.equal(expectedUrl);
     });
@@ -49,7 +49,7 @@ experiment('services/water/ChargeVersionsService', () => {
     test('passes the expected URL to the service request', async () => {
       const service = new ChargeVersionWorkflowsService('http://127.0.0.1:8001/water/1.0');
       await service.getChargeVersionWorkflow('charge-version-workflow-id');
-      const expectedUrl = `http://127.0.0.1:8001/water/1.0/charge-version-workflows/charge-version-workflow-id`;
+      const expectedUrl = 'http://127.0.0.1:8001/water/1.0/charge-version-workflows/charge-version-workflow-id';
       const [url] = serviceRequest.get.lastCall.args;
       expect(url).to.equal(expectedUrl);
     });
@@ -59,7 +59,7 @@ experiment('services/water/ChargeVersionsService', () => {
     test('passes the expected URL to the service request', async () => {
       const service = new ChargeVersionWorkflowsService('http://127.0.0.1:8001/water/1.0');
       await service.getChargeVersionWorkflowsForLicence('test-licence-id');
-      const expectedUrl = `http://127.0.0.1:8001/water/1.0/charge-version-workflows`;
+      const expectedUrl = 'http://127.0.0.1:8001/water/1.0/charge-version-workflows';
       const [url] = serviceRequest.get.lastCall.args;
       expect(url).to.equal(expectedUrl);
     });
@@ -76,7 +76,7 @@ experiment('services/water/ChargeVersionsService', () => {
     test('passes the expected URL to the service request', async () => {
       const service = new ChargeVersionWorkflowsService('http://127.0.0.1:8001/water/1.0');
       await service.postChargeVersionWorkflow({ foo: 'bar' });
-      const expectedUrl = `http://127.0.0.1:8001/water/1.0/charge-version-workflows`;
+      const expectedUrl = 'http://127.0.0.1:8001/water/1.0/charge-version-workflows';
       const [url] = serviceRequest.post.lastCall.args;
       expect(url).to.equal(expectedUrl);
     });
@@ -120,7 +120,7 @@ experiment('services/water/ChargeVersionsService', () => {
       const service = new ChargeVersionWorkflowsService('http://127.0.0.1:8001/water/1.0');
       await service.deleteChargeVersionWorkflow('charge-version-workflow-id');
 
-      const expectedUrl = `http://127.0.0.1:8001/water/1.0/charge-version-workflows/charge-version-workflow-id`;
+      const expectedUrl = 'http://127.0.0.1:8001/water/1.0/charge-version-workflows/charge-version-workflow-id';
       const [url] = serviceRequest.delete.lastCall.args;
 
       expect(url).to.equal(expectedUrl);

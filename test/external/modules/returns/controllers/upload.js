@@ -209,7 +209,7 @@ experiment('external/modules/returns/controllers/upload', () => {
     });
 
     test('logs the journey data if there is an error', async () => {
-      uploadHelpers.createDirectory.rejects();
+      await uploadHelpers.createDirectory.rejects();
       try {
         await controller.postBulkUpload(request);
       } catch (err) {
@@ -244,7 +244,7 @@ experiment('external/modules/returns/controllers/upload', () => {
       await controller.getSpinnerPage(request, h);
 
       const [path] = h.view.lastCall.args;
-      expect(path).to.equal(`nunjucks/waiting/index`);
+      expect(path).to.equal('nunjucks/waiting/index');
     });
 
     test('throws a Boom 404 error if the event is not found', async () => {
@@ -259,7 +259,7 @@ experiment('external/modules/returns/controllers/upload', () => {
     });
 
     test('if status === "error", it should redirect to upload page with the key in the query string', async () => {
-      const response = createResponse('error', { 'error': { key: 'invalid-xml', message: 'Schema Check failed' } });
+      const response = createResponse('error', { error: { key: 'invalid-xml', message: 'Schema Check failed' } });
       services.water.events.findMany.resolves(response);
       await controller.getSpinnerPage(createSpinnerRequest(), h);
 

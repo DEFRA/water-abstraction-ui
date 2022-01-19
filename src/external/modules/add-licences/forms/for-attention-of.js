@@ -10,7 +10,7 @@ const faoForm = (request) => {
   const { csrfToken } = request.view;
   const { selectedAddressId } = request.yar.get('addLicenceFlow');
 
-  const action = `/add-addressee`;
+  const action = '/add-addressee';
 
   const f = formFactory(action);
 

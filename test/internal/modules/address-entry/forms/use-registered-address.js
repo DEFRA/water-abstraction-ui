@@ -7,7 +7,7 @@ const {
   beforeEach
 } = exports.lab = require('@hapi/lab').script();
 
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const useRegisteredAddress = require('internal/modules/address-entry/forms/use-registered-address');
 const { findField, findButton } = require('../../../../lib/form-test');
 const sandbox = require('sinon').createSandbox();

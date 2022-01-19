@@ -83,7 +83,7 @@ const flattenObject = (item) => {
  * @return {Object}     - shallow object with all properties at root level
  */
 const flattenData = (obj) => {
-  let result = {};
+  const result = {};
   mapValues(obj, (item, key) => {
     let data;
     if (!isObject(item) || isPicklistItemWithId(item)) {

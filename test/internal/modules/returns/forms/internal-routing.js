@@ -49,7 +49,7 @@ experiment('internalRoutingForm', () => {
     const form = internalRoutingForm(request, data);
     const radio = find(form.fields, { name: 'action' });
     const fieldValues = radio.options.choices.map(choice => choice.value);
-    expect(fieldValues).to.equal([ 'submit', 'set_under_query' ]);
+    expect(fieldValues).to.equal(['submit', 'set_under_query']);
   });
 
   test('it should display correct choices if return not received and is under query', async () => {
@@ -57,6 +57,6 @@ experiment('internalRoutingForm', () => {
     const form = internalRoutingForm(request, data);
     const radio = find(form.fields, { name: 'action' });
     const fieldValues = radio.options.choices.map(choice => choice.value);
-    expect(fieldValues).to.equal([ 'submit', 'clear_under_query' ]);
+    expect(fieldValues).to.equal(['submit', 'clear_under_query']);
   });
 });

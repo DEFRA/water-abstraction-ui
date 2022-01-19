@@ -9,7 +9,7 @@ const {
 } = exports.lab = require('@hapi/lab').script();
 
 const sandbox = require('sinon').createSandbox();
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 
 const controller = require('internal/modules/billing/controllers/invoice-licences');
 const formHelpers = require('../../../../lib/form-test');
@@ -89,7 +89,7 @@ experiment('internal/modules/billing/controllers/invoice-licences', () => {
 
       test('sets the correct page title in the view', async () => {
         const [, { pageTitle }] = h.view.lastCall.args;
-        expect(pageTitle).to.equal(`You're about to remove this licence from the two-part tariff bill run`);
+        expect(pageTitle).to.equal('You\'re about to remove this licence from the two-part tariff bill run');
       });
 
       test('sets the batch in the view', async () => {
@@ -132,7 +132,7 @@ experiment('internal/modules/billing/controllers/invoice-licences', () => {
         });
 
         test('calculates the total invoice licence transaction value (4 of 4) - defaults to zero', async () => {
-          request.pre.invoiceLicence.transactions = [ { value: 'cupcakes' } ];
+          request.pre.invoiceLicence.transactions = [{ value: 'cupcakes' }];
           await controller.getDeleteInvoiceLicence(request, h);
           const [, { invoiceLicenceTotal }] = h.view.lastCall.args;
           expect(invoiceLicenceTotal).to.equal(0);

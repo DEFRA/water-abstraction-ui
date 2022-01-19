@@ -1,6 +1,6 @@
 'use strict';
 
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
 const sandbox = require('sinon').createSandbox();
@@ -33,7 +33,7 @@ const createRequest = () => ({
 
 experiment('internal/modules/contact-entry/forms/select-contact', () => {
   let request;
-  beforeEach(async => {
+  beforeEach(async () => {
     request = createRequest();
 
     sandbox.stub(helpers, 'getContactFromSession').returns({

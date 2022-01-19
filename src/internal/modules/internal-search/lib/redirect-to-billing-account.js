@@ -13,7 +13,7 @@ const redirectToBillingAccount = (billingAccount, view, h) => {
   if (billingAccountId) {
     return h.redirect(`/billing-accounts/${billingAccountId}`);
   } else {
-    throw Boom.notFound(`Billing account not found`);
+    throw Boom.notFound('Billing account not found');
   }
 };
 

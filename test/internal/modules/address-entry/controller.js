@@ -8,7 +8,7 @@ const {
   afterEach
 } = exports.lab = require('@hapi/lab').script();
 const sandbox = require('sinon').createSandbox();
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 
 const controller = require('internal/modules/address-entry/controller');
 const session = require('internal/modules/address-entry/lib/session');
@@ -348,7 +348,7 @@ experiment('src/internal/modules/address-entry/controller.js', () => {
 
     test('the correct data is output to the view', async () => {
       const [, { pageTitle, caption, back, form }] = h.view.lastCall.args;
-      expect(pageTitle).to.equal(`Registered office address`);
+      expect(pageTitle).to.equal('Registered office address');
       expect(caption).to.equal(request.pre.sessionData.caption);
       expect(back).to.equal(request.pre.sessionData.back);
       expect(form).to.be.an.object();

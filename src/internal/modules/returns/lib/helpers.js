@@ -45,7 +45,8 @@ const getLicenceReturnsFilter = (licenceNumbers) => {
 
 /**
  * Get the returns for a list of licence numbers
- * @param {Array} list of licence numbers to get returns data for
+ * @param {Array} licenceNumbers of licence numbers to get returns data for
+ * @param {Number} page
  * @return {Promise} resolves with returns
  */
 const getLicenceReturns = async (licenceNumbers, page = 1) => {
@@ -61,10 +62,12 @@ const getLicenceReturns = async (licenceNumbers, page = 1) => {
     'status', 'received_date', 'due_date', 'return_requirement'
   ];
 
-  const requestPagination = isObject(page) ? page : {
-    page,
-    perPage: 50
-  };
+  const requestPagination = isObject(page)
+    ? page
+    : {
+        page,
+        perPage: 50
+      };
 
   const { data, error, pagination } = await services.returns.returns.findMany(filter, sort, requestPagination, columns);
   if (error) {
@@ -126,9 +129,9 @@ const getReturnTotal = (ret) => {
     return null;
   }
   const lines = ret.lines.filter(line => line.quantity !== null);
-  return lines.length === 0 ? null : lines.reduce((acc, line) => {
-    return acc + parseFloat(line.quantity);
-  }, 0);
+  return lines.length === 0
+    ? null
+    : lines.reduce((acc, line) => acc + parseFloat(line.quantity), 0);
 };
 
 /**
@@ -171,7 +174,7 @@ const getReturnsViewData = async (request) => {
 
 /**
  * Get common view data used by many controllers
- * @param {Object} HAPI request instance
+ * @param {Object} request - HAPI request instance
  * @param {Object} data - the return model
  * @return {Promise} resolves with view data
  */

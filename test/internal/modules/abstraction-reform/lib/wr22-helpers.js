@@ -255,7 +255,7 @@ lab.experiment('persistActions', () => {
   const arLicence = {
     licence_id: 123,
     licence_data_value: {
-      actions: [ { type: 'existing-action' } ]
+      actions: [{ type: 'existing-action' }]
     }
   };
 

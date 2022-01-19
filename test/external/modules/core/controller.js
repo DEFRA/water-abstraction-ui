@@ -42,7 +42,7 @@ experiment('external/modules/core/controller', () => {
     test('should respond with a 404 status code', async () => {
       const request = createRequest();
       await controller.getNotFoundError(request, h);
-      const [ statusCode ] = code.lastCall.args;
+      const [statusCode] = code.lastCall.args;
       expect(statusCode).to.equal(404);
     });
   });

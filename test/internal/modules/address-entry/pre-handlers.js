@@ -56,12 +56,12 @@ experiment('src/internal/modules/address-entry/pre-handlers .searchForAddressesB
 
   test('returns the data from the address search', async () => {
     const result = await addressSearch();
-    expect(result).to.equal([ ADDRESS, ADDRESS ]);
+    expect(result).to.equal([ADDRESS, ADDRESS]);
   });
 
   test('returns the data from the address search and omits invalid address', async () => {
     const result = await addressSearch([INVALID_ADDRESS]);
-    expect(result).to.equal([ ADDRESS, ADDRESS ]);
+    expect(result).to.equal([ADDRESS, ADDRESS]);
   });
 
   test('returns a Boom not found error if a 404 is returned', async () => {

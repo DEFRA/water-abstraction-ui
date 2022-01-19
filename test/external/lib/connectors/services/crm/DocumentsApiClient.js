@@ -81,7 +81,7 @@ experiment('DocumentsApiClient', () => {
       const [filter] = client.findMany.lastCall.args;
 
       expect(filter).to.equal({
-        'system_external_id': {
+        system_external_id: {
           $or: ['123']
         },
         company_entity_id: null,
@@ -111,7 +111,7 @@ experiment('DocumentsApiClient', () => {
       const [filter] = client.findMany.lastCall.args;
 
       expect(filter).to.equal({
-        'document_id': {
+        document_id: {
           $or: ['2828-2222-2222']
         },
         company_entity_id: null,

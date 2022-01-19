@@ -7,7 +7,7 @@ const {
 } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
 const Hapi = require('@hapi/hapi');
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const sandbox = require('sinon').createSandbox();
 
 const routes = require('external/modules/notify/routes');
@@ -24,10 +24,10 @@ experiment('external/modules/notify/routes', () => {
 
   experiment('.notifyCallback', () => {
     let server;
-    let request = {
+    const request = {
       method: 'POST',
       url: '/notify/callback',
-      headers: { authorization: `Bearer test` },
+      headers: { authorization: 'Bearer test' },
       payload: {}
     };
 

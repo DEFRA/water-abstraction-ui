@@ -62,7 +62,7 @@ const getDownloadReport = async (request, h) => {
   const { returnCycleId } = request.params;
 
   // Get return cycle and returns data
-  const [ returnCycle, { data } ] = await Promise.all([
+  const [returnCycle, { data }] = await Promise.all([
     services.water.returnCycles.getReturnCycleById(returnCycleId),
     services.water.returnCycles.getReturnCycleReturns(returnCycleId)
   ]);

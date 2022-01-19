@@ -62,7 +62,7 @@ class UsersApiClient extends APIClient {
    * @return {Promise}       resolves with user object from IDM
    */
   async findOneByEmail (email, application) {
-    const { error, data: [ user ] } = await this.findMany({
+    const { error, data: [user] } = await this.findMany({
       user_name: email,
       application
     });

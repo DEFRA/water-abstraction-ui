@@ -37,7 +37,7 @@ experiment('defaultMapper', () => {
 
 experiment('licenceNumbersMapper', () => {
   const payload = {
-    licenceNumbers: `01/123, 04/56/S/*/123; 192/1345/1442\n05/355/32`
+    licenceNumbers: '01/123, 04/56/S/*/123; 192/1345/1442\n05/355/32'
   };
   const arr = ['01/123', '04/56/S/*/123', '192/1345/1442', '05/355/32'];
   const str = '01/123, 04/56/S/*/123, 192/1345/1442, 05/355/32';

@@ -8,9 +8,11 @@ const { getChargeElementData } = require('../lib/form-helpers');
 const forms = require('../forms/charge-element/index');
 const routing = require('../lib/routing');
 const { getDefaultView, getPostedForm, applyFormResponse } = require('../lib/helpers');
-const { ROUTING_CONFIG,
+const {
+  ROUTING_CONFIG,
   CHARGE_ELEMENT_FIRST_STEP,
-  CHARGE_ELEMENT_STEPS } = require('../lib/charge-elements/constants');
+  CHARGE_ELEMENT_STEPS
+} = require('../lib/charge-elements/constants');
 const actions = require('../lib/actions');
 
 const getBackLink = request => {

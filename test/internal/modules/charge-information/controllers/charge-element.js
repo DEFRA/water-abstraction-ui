@@ -9,7 +9,7 @@ const {
 } = exports.lab = require('@hapi/lab').script();
 const sinon = require('sinon');
 const moment = require('moment');
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const sandbox = sinon.createSandbox();
 
 const controller = require('../../../../../src/internal/modules/charge-information/controllers/charge-element');
@@ -208,7 +208,7 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
 
         test('the user is redirected to the expected page', async () => {
           expect(h.redirect.calledWith(
-            `/licences/test-licence-id/charge-information/check`
+            '/licences/test-licence-id/charge-information/check'
           )).to.be.true();
         });
       });
@@ -246,7 +246,7 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
 
         test('the user is redirected to the expected page', async () => {
           expect(h.redirect.calledWith(
-            `/licences/test-licence-id/charge-information/check`
+            '/licences/test-licence-id/charge-information/check'
           )).to.be.true();
         });
       });
@@ -255,7 +255,7 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
 
   experiment('when the charge is in review', () => {
     beforeEach(async () => {
-      request = createRequest('loss', validPayload['loss']);
+      request = createRequest('loss', validPayload.loss);
       request.pre.draftChargeInformation.status = 'review';
       request.query.chargeVersionWorkflowId = '1';
       await controller.postChargeElementStep(request, h);

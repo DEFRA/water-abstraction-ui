@@ -5,9 +5,11 @@
  */
 const { omit } = require('lodash');
 const forms = require('shared/lib/forms');
-const { STEP_START, STEP_RETURNS, STEP_METHOD, STEP_METER_RESET, STEP_UNITS,
+const {
+  STEP_START, STEP_RETURNS, STEP_METHOD, STEP_METER_RESET, STEP_UNITS,
   STEP_QUANTITIES, STEP_METER_READINGS, STEP_METER_DETAILS, STEP_CONFIRM,
-  STEP_SUBMITTED } = require('shared/modules/returns/steps');
+  STEP_SUBMITTED
+} = require('shared/modules/returns/steps');
 const { STATUS_COMPLETED } = require('shared/modules/returns/models/WaterReturn');
 const { METHOD_VOLUMES, METHOD_ONE_METER } = require('shared/modules/returns/models/Reading');
 

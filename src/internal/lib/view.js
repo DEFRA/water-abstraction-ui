@@ -50,7 +50,7 @@ function viewContextDefaults (request) {
   viewContext.nonces = get(request, 'plugins.blankie.nonces', {});
 
   viewContext.customTitle = null;
-  viewContext.head = `<meta name="format-detection" content="telephone=no"><meta name="robots" content="noindex, nofollow">`;
+  viewContext.head = '<meta name="format-detection" content="telephone=no"><meta name="robots" content="noindex, nofollow">';
   viewContext.path = request.path;
 
   viewContext.csrfToken = request.yar.get('csrfToken');

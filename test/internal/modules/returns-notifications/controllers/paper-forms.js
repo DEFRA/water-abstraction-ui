@@ -9,7 +9,7 @@ const {
 } = exports.lab = require('@hapi/lab').script();
 
 const { cloneDeep } = require('lodash');
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
@@ -23,42 +23,42 @@ const DOCUMENT_ID = uuid();
 const LICENCE_NUMBER = '01/123/ABC';
 
 const apiResponse = [{
-  'licence': {
-    'id': '00000000-0000-0000-0000-000000000001',
-    'licenceNumber': LICENCE_NUMBER,
-    'isWaterUndertaker': false,
-    'startDate': '2020-01-01',
-    'expiredDate': null,
-    'lapsedDate': null,
-    'revokedDate': null,
-    'historicalArea': {
-      'type': 'EAAR',
-      'code': 'ARNA'
+  licence: {
+    id: '00000000-0000-0000-0000-000000000001',
+    licenceNumber: LICENCE_NUMBER,
+    isWaterUndertaker: false,
+    startDate: '2020-01-01',
+    expiredDate: null,
+    lapsedDate: null,
+    revokedDate: null,
+    historicalArea: {
+      type: 'EAAR',
+      code: 'ARNA'
     },
-    'regionalChargeArea': {
-      'type': 'regionalChargeArea',
-      'name': 'Anglian'
+    regionalChargeArea: {
+      type: 'regionalChargeArea',
+      name: 'Anglian'
     },
-    'region': {
-      'type': 'region',
-      'id': '00000000-0000-0000-0000-000000000002',
-      'name': 'Anglian',
-      'code': 'A',
-      'numericCode': 1,
-      'displayName': 'Anglian'
+    region: {
+      type: 'region',
+      id: '00000000-0000-0000-0000-000000000002',
+      name: 'Anglian',
+      code: 'A',
+      numericCode: 1,
+      displayName: 'Anglian'
     },
-    'endDate': null
+    endDate: null
   },
-  'documents': [
+  documents: [
     {
-      'document': {
+      document: {
         id: DOCUMENT_ID,
-        'roles': [
+        roles: [
           helpers.createRole()
         ]
       },
 
-      'returns': [
+      returns: [
         helpers.createReturn()
       ]
     }
@@ -340,7 +340,7 @@ experiment('internal/modules/returns-notifications/controllers/paper-forms', () 
       test('maps selected returns to the view', async () => {
         const [, { documents: [document] }] = h.view.lastCall.args;
         expect(document.returns[0].legacyId).to.equal(1234);
-        expect(document.returns[0].details).to.equal(`Due 28 April 2021`);
+        expect(document.returns[0].details).to.equal('Due 28 April 2021');
       });
 
       test('includes a confirm form object', async () => {

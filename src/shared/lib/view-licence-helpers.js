@@ -17,7 +17,7 @@ const getCommonBackLink = request => {
   const { documentId } = request.params;
   return {
     back: `/licences/${documentId}`,
-    backText: `Back`
+    backText: 'Back'
   };
 };
 

@@ -1,6 +1,5 @@
 const Boom = require('@hapi/boom');
 const Joi = require('joi');
-const bluebird = require('bluebird');
 const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
 const routeConfigSchema = Joi.object().keys({
@@ -37,12 +36,12 @@ const waterMethods = {
 const loadLicenceData = async (keys, request, documentId, h) => {
   const { getLicenceData } = h.realm.pluginOptions;
   const data = {};
-  await bluebird.map(keys, async key => {
+  await Promise.all(keys.map(async key => {
     const method = waterMethods[key];
     const { error, data: licenceData } = await getLicenceData(method, documentId, request);
     throwIfError(error);
     data[key] = licenceData;
-  });
+  }));
   return data;
 };
 
@@ -57,7 +56,7 @@ const getConfig = request => {
   if (!config) {
     return;
   }
-  Joi.assert(config, routeConfigSchema, `Invalid licenceData route configuration`);
+  Joi.assert(config, routeConfigSchema, 'Invalid licenceData route configuration');
 
   const { value } = routeConfigSchema.validate(config);
   return value;

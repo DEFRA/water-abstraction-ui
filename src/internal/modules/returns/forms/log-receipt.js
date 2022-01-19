@@ -29,7 +29,8 @@ const getDateField = dateReceived => {
       'date.min': {
         message: `Enter a date between ${minDate} and today`
       }
-    } }, dateReceived);
+    }
+  }, dateReceived);
 };
 
 const form = (request, data) => {

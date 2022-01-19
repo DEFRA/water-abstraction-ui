@@ -8,12 +8,15 @@ class DocumentsRolesApiClient extends ServiceClient {
     const uri = urlJoin(serviceUrl, 'document', encodeURIComponent(documentRef), 'document-roles');
     return this.serviceRequest.get(uri);
   }
+
   getFullHistoryOfDocumentRolesByDocumentRef (documentRef) {
     const serviceUrl = config.services.crm_v2;
     const uri = urlJoin(serviceUrl, 'document', encodeURIComponent(documentRef), 'document-roles');
-    return this.serviceRequest.get(uri, { qs: {
-      includeHistoricRoles: true
-    } });
+    return this.serviceRequest.get(uri, {
+      qs: {
+        includeHistoricRoles: true
+      }
+    });
   }
 }
 

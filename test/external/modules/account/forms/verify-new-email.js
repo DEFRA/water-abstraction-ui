@@ -40,7 +40,7 @@ experiment('verifyNewEmailForm', () => {
   experiment('errors', () => {
     test('returns an error if the verification code field is missing', async () => {
       const request = createRequest();
-      request.payload['verificationCode'] = '';
+      request.payload.verificationCode = '';
 
       const form = verifyNewEmailForm(request);
       const validated = handleRequest(form, request);

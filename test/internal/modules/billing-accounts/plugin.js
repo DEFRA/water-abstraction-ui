@@ -9,7 +9,7 @@ const {
 } = exports.lab = require('@hapi/lab').script();
 const sandbox = require('sinon').createSandbox();
 const { omit } = require('lodash');
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 
 const plugin = require('internal/modules/billing-accounts/plugin');
 const session = require('internal/modules/billing-accounts/lib/session');

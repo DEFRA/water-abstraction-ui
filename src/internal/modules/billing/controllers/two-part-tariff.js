@@ -32,7 +32,7 @@ const getTwoPartTariffReview = async (request, h) => {
     readyLink: `/billing/batch/${batch.id}/two-part-tariff-ready`,
     licences,
     totals,
-    back: `/billing/batch/list`
+    back: '/billing/batch/list'
   });
 };
 
@@ -165,7 +165,7 @@ const getRemoveLicence = async (request, h) => {
     ...request.view,
     ...request.pre,
     form,
-    pageTitle: `You're about to remove this licence from the bill run`,
+    pageTitle: 'You\'re about to remove this licence from the bill run',
     back: `/billing/batch/${batch.id}/two-part-tariff/licence/${licence.id}`
   });
 };
@@ -221,7 +221,7 @@ const getRemoveFinancialYearEnding = async (request, h) => {
     batch,
     licence,
     billingAccountNumbers,
-    pageTitle: `You're about to remove this year licence from the bill run`,
+    pageTitle: 'You\'re about to remove this year licence from the bill run',
     back: `/billing/batch/${batchId}/two-part-tariff/licence/${licenceId}`,
     form: deleteFinancialYearEndingForm.form(request, false)
   });

@@ -154,7 +154,7 @@ experiment('reset password controller', () => {
     });
 
     test('outputs the request.view object to the view', async () => {
-      const [ , view ] = h.view.lastCall.args;
+      const [, view] = h.view.lastCall.args;
       expect(view).to.equal(request.view);
     });
   });
@@ -170,12 +170,12 @@ experiment('reset password controller', () => {
         await controller.getChangePassword(request, h);
       });
       test('the correct template is displayed', async () => {
-        const [ template ] = h.view.lastCall.args;
+        const [template] = h.view.lastCall.args;
         expect(template).to.equal('nunjucks/form');
       });
 
       test('the request.view object is output to the view', async () => {
-        const [ , view ] = h.view.lastCall.args;
+        const [, view] = h.view.lastCall.args;
         const { action, method } = view.form;
         expect(action).to.equal('/reset_password_change_password');
         expect(method).to.equal('POST');

@@ -25,26 +25,28 @@ experiment('src/internal/modules/contact-entry/pre-handlers', () => {
         water: {
           companies: {
             getCompany: sandbox.stub().resolves({ foo: 'bar' }),
-            getContacts: sandbox.stub().resolves({ data: [{
-              contact: {
-                id: 'test-contact-id-1',
-                firstName: 'George',
-                lastName: 'Russel'
+            getContacts: sandbox.stub().resolves({
+              data: [{
+                contact: {
+                  id: 'test-contact-id-1',
+                  firstName: 'George',
+                  lastName: 'Russel'
+                }
+              }, {
+                contact: {
+                  id: 'test-contact-id-2',
+                  firstName: 'Lando',
+                  lastName: 'Norris'
+                }
+              }, {
+                contact: {
+                  id: 'test-contact-id-1',
+                  firstName: 'George',
+                  lastName: 'Russel'
+                }
               }
-            }, {
-              contact: {
-                id: 'test-contact-id-2',
-                firstName: 'Lando',
-                lastName: 'Norris'
-              }
-            }, {
-              contact: {
-                id: 'test-contact-id-1',
-                firstName: 'George',
-                lastName: 'Russel'
-              }
-            }
-            ] })
+              ]
+            })
           }
         }
       }

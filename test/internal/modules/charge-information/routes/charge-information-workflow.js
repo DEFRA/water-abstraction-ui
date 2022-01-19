@@ -12,7 +12,7 @@ const preHandlers = require('internal/modules/charge-information/pre-handlers');
 const routes = require('../../../../../src/internal/modules/charge-information/routes/charge-information-workflow');
 const testHelpers = require('../../../test-helpers');
 
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 
 experiment('internal/modules/charge-information/routes', () => {
   let server;
@@ -47,7 +47,7 @@ experiment('internal/modules/charge-information/routes', () => {
 
     test('does not allow a non uuid for the charge version workflow id', async () => {
       const request = {
-        url: `/charge-information-workflow/non-uuid-charge-version-workflow-id/remove`
+        url: '/charge-information-workflow/non-uuid-charge-version-workflow-id/remove'
       };
 
       const response = await server.inject(request);
@@ -78,7 +78,7 @@ experiment('internal/modules/charge-information/routes', () => {
     test('does not allow a non uuid for the charge version workflow id', async () => {
       const request = {
         method: 'post',
-        url: `/charge-information-workflow/non-uuid-charge-version-workflow-id/remove`
+        url: '/charge-information-workflow/non-uuid-charge-version-workflow-id/remove'
       };
 
       const response = await server.inject(request);

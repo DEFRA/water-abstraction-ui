@@ -551,8 +551,8 @@ experiment('internal/modules/billing/controller', () => {
       const [, context] = h.view.lastCall.args;
       expect(context).to.contain({ foo: 'bar' });
       expect(context.batch).to.equal(batchData);
-      expect(context.pageTitle).to.equal(`You're about to cancel this bill run`);
-      expect(context.secondTitle).to.equal(`Anglian supplementary bill run`);
+      expect(context.pageTitle).to.equal('You\'re about to cancel this bill run');
+      expect(context.secondTitle).to.equal('Anglian supplementary bill run');
       expect(context.form).to.be.an.object();
       expect(context.form.action).to.equal(`/billing/batch/${request.params.batchId}/cancel`);
       expect(context.back).to.equal('/billing/batch/test-batch-id/summary');
@@ -595,8 +595,8 @@ experiment('internal/modules/billing/controller', () => {
       const [, context] = h.view.lastCall.args;
       expect(context).to.contain({ foo: 'bar' });
       expect(context.batch).to.equal(batchData);
-      expect(context.pageTitle).to.equal(`You're about to send this bill run`);
-      expect(context.secondTitle).to.equal(`Anglian supplementary bill run`);
+      expect(context.pageTitle).to.equal('You\'re about to send this bill run');
+      expect(context.secondTitle).to.equal('Anglian supplementary bill run');
       expect(context.form).to.be.an.object();
       expect(context.form.action).to.equal(`/billing/batch/${request.params.batchId}/confirm`);
       expect(context.back).to.equal('/billing/batch/test-batch-id/summary');
@@ -648,7 +648,7 @@ experiment('internal/modules/billing/controller', () => {
     let invoices, chargeVersions, csvData;
 
     beforeEach(async () => {
-      invoices = [ { id: 'test-d', invoiceLicences: [], error: null } ];
+      invoices = [{ id: 'test-d', invoiceLicences: [], error: null }];
       chargeVersions = [{ id: 'charge-version-id' }];
       services.water.billingBatches.getBatchDownloadData.resolves({ invoices, chargeVersions });
 
@@ -932,8 +932,8 @@ experiment('internal/modules/billing/controller', () => {
       const [, context] = h.view.lastCall.args;
       expect(context).to.contain({ foo: 'bar' });
       expect(context.batch).to.equal(batchData);
-      expect(context.pageTitle).to.equal(`You're about to cancel this bill run`);
-      expect(context.secondTitle).to.equal(`Anglian supplementary bill run`);
+      expect(context.pageTitle).to.equal('You\'re about to cancel this bill run');
+      expect(context.secondTitle).to.equal('Anglian supplementary bill run');
       expect(context.form).to.be.an.object();
       expect(context.form.action).to.equal(`/billing/batch/${request.params.batchId}/cancel/processing-batch`);
       expect(context.back).to.equal('/billing/batch/test-batch-id/summary');

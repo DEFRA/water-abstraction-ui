@@ -55,14 +55,14 @@ experiment('loginHelpers', () => {
     test('returns h.redirect if request is authenticated', async () => {
       const request = getRequest(scope.internal);
       await loginHelpers.preRedirectIfAuthenticated(request, h);
-      const [ path ] = h.redirect.lastCall.args;
+      const [path] = h.redirect.lastCall.args;
       expect(path).to.equal('/licences');
     });
 
     test('logs a message if a redirect has taken place', async () => {
       const request = getRequest(scope.internal);
       await loginHelpers.preRedirectIfAuthenticated(request, h);
-      const [ message, params ] = logger.info.lastCall.args;
+      const [message, params] = logger.info.lastCall.args;
       expect(message).to.be.a.string();
       expect(params.from).to.equal(request.path);
       expect(params.path).to.equal('/licences');

@@ -209,9 +209,9 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       expect(transactionData['Source factor']).to.equal(transaction.calcSourceFactor);
       expect(transactionData['Adjusted source type']).to.equal(transaction.chargeElement.eiucSource);
       expect(transactionData['Adjusted source factor']).to.equal(transaction.calcEiucSourceFactor);
-      expect(transactionData['Season']).to.equal(transaction.chargeElement.season);
+      expect(transactionData.Season).to.equal(transaction.chargeElement.season);
       expect(transactionData['Season factor']).to.equal(transaction.calcSeasonFactor);
-      expect(transactionData['Loss']).to.equal(transaction.chargeElement.loss);
+      expect(transactionData.Loss).to.equal(transaction.chargeElement.loss);
       expect(transactionData['Loss factor']).to.equal(transaction.calcLossFactor);
       expect(transactionData['Purpose code']).to.equal(transaction.chargeElement.purposeUse.code);
       expect(transactionData['Purpose name']).to.equal(transaction.chargeElement.purposeUse.name);
@@ -238,7 +238,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
     });
 
     test('quantities to user friendly heading', () => {
-      expect(transactionData['Quantity']).to.equal(transaction.volume);
+      expect(transactionData.Quantity).to.equal(transaction.volume);
       expect(transactionData['Calculated quantity']).to.equal(transaction.billingVolume.calculatedVolume);
     });
 
@@ -277,7 +277,8 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         isNewLicence: true,
         chargePeriod: {
           startDate: '2019-04-01',
-          endDate: '2020-03-31' }
+          endDate: '2020-03-31'
+        }
       };
 
       const transactionData = transactionsCSV._getTransactionData(minChargeTransaction);
@@ -396,7 +397,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
     });
 
     test('region is mapped to user friendly heading', async () => {
-      expect(csvData[0]['Region']).to.equal('Anglian');
+      expect(csvData[0].Region).to.equal('Anglian');
     });
 
     test('de minimis is mapped to user friendly heading', async () => {
@@ -440,7 +441,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
 
   experiment('.getCSVFileName', () => {
     test('returns expected file name', () => {
-      const expectedFileName = `South West two-part tariff bill run 2345.csv`;
+      const expectedFileName = 'South West two-part tariff bill run 2345.csv';
       const fileName = transactionsCSV.getCSVFileName(batch);
       expect(fileName).to.equal(expectedFileName);
     });

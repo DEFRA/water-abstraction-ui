@@ -95,17 +95,17 @@ experiment('internal/modules/returns-reports/controller.js', () => {
     });
 
     test('uses the correct template', async () => {
-      const [ template ] = h.view.lastCall.args;
+      const [template] = h.view.lastCall.args;
       expect(template).to.equal('nunjucks/returns-reports/index');
     });
 
     test('outputs the most recent cycle to the view', async () => {
-      const [ , { currentCycle } ] = h.view.lastCall.args;
+      const [, { currentCycle }] = h.view.lastCall.args;
       expect(currentCycle.id).to.equal('test-id-1');
     });
 
     test('outputs the other cycles to the view sorted by date descending', async () => {
-      const [ , { cycles } ] = h.view.lastCall.args;
+      const [, { cycles }] = h.view.lastCall.args;
       expect(cycles).to.be.an.array().length(2);
       expect(cycles[0].id).to.equal('test-id-2');
       expect(cycles[1].id).to.equal('test-id-3');
@@ -132,22 +132,22 @@ experiment('internal/modules/returns-reports/controller.js', () => {
     });
 
     test('uses the correct template', async () => {
-      const [ template ] = h.view.lastCall.args;
+      const [template] = h.view.lastCall.args;
       expect(template).to.equal('nunjucks/returns-reports/confirm-download');
     });
 
     test('outputs a page title', async () => {
-      const [ , { pageTitle } ] = h.view.lastCall.args;
+      const [, { pageTitle }] = h.view.lastCall.args;
       expect(pageTitle).to.equal('Download returns report for 1 April 2020 to 31 March 2021');
     });
 
     test('outputs a back link', async () => {
-      const [ , { back } ] = h.view.lastCall.args;
+      const [, { back }] = h.view.lastCall.args;
       expect(back).to.equal('/returns-reports');
     });
 
     test('outputs a download link', async () => {
-      const [ , { link } ] = h.view.lastCall.args;
+      const [, { link }] = h.view.lastCall.args;
       expect(link).to.equal(`/returns-reports/download/${returnCycleId}`);
     });
   });

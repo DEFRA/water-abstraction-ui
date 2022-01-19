@@ -20,7 +20,8 @@ const getNameField = (name, value) =>
     errors: {
       'string.empty': {
         message: `Enter a ${name}`
-      } },
+      }
+    },
     label: `${capitalize(name)}`
   }, value);
 

@@ -10,9 +10,10 @@ const routing = require('../lib/routing');
 const getAddionalChoices = (chargeVersions) => {
   if (chargeVersions.length > 0) {
     const choices = [{ divider: 'or' }];
-    chargeVersions.map(cv => {
+    chargeVersions.forEach(cv => {
       choices.push(
-        { value: cv.id,
+        {
+          value: cv.id,
           label: `Use charge information valid from ${moment(cv.dateRange.startDate).format('D MMMM YYYY')}`
         });
     });

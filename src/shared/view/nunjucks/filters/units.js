@@ -1,9 +1,9 @@
 
 const map = {
   'm³': 'Cubic metres',
-  'gal': 'Gallons',
-  'l': 'Litres',
-  'Ml': 'Megalitres'
+  gal: 'Gallons',
+  l: 'Litres',
+  Ml: 'Megalitres'
 };
 
 const units = (key) => {

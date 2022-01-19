@@ -8,11 +8,13 @@ const { SOURCES, EIUC_SOURCE_OTHER } = require('../../../../../../src/internal/m
 experiment('internal/modules/charge-information/lib/charge-elements/mappers', () => {
   experiment('.purpose', () => {
     const defaultCharges = [
-      { purposeUse: { id: 'test-purpose-use-1-id', description: 'test description 1' },
+      {
+        purposeUse: { id: 'test-purpose-use-1-id', description: 'test description 1' },
         purposePrimary: { id: 'test-purpose-primary-1-id' },
         purposeSecondary: { id: 'test-purpose-secondary-1-id' }
       },
-      { purposeUse: { id: 'test-purpose-use-2-id', description: 'test description 2' },
+      {
+        purposeUse: { id: 'test-purpose-use-2-id', description: 'test description 2' },
         purposePrimary: { id: 'test-purpose-primary-2-id' },
         purposeSecondary: { id: 'test-purpose-secondary-2-id' },
         scheme: 'alcs'

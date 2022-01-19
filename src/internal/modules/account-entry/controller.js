@@ -97,11 +97,13 @@ const postSelectAccountType = (request, h) => {
 
   // For a person account, we have finished, redirect to parent flow
   if (isPerson) {
-    const { redirectPath } = session.merge(request, key, { data: {
-      type: accountTypes.person,
-      organisationType: organisationTypes.individual,
-      name: personName
-    } });
+    const { redirectPath } = session.merge(request, key, {
+      data: {
+        type: accountTypes.person,
+        organisationType: organisationTypes.individual,
+        name: personName
+      }
+    });
     return h.redirect(redirectPath);
   }
 
@@ -153,10 +155,12 @@ const postCompanySearch = (request, h) => {
     .find(row => row.companyNumber === selectedCompaniesHouseNumber);
 
   // Store in session and redirect
-  const { redirectPath } = session.merge(request, key, { data: {
-    ...company,
-    type: accountTypes.organisation
-  } });
+  const { redirectPath } = session.merge(request, key, {
+    data: {
+      ...company,
+      type: accountTypes.organisation
+    }
+  });
   return h.redirect(redirectPath);
 };
 

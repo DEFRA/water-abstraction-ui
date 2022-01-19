@@ -6,7 +6,7 @@ const {
   beforeEach
 } = exports.lab = require('@hapi/lab').script();
 
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const { expect } = require('@hapi/code');
 
 const preHandlers = require('internal/modules/charge-information/pre-handlers');
@@ -34,7 +34,7 @@ experiment('internal/modules/charge-information/routes', () => {
 
     test('does not allow a non uuid for the licence id', async () => {
       const request = {
-        url: `/licences/test-non-uuid-licence-id/charge-information/create`
+        url: '/licences/test-non-uuid-licence-id/charge-information/create'
       };
 
       const response = await server.inject(request);
@@ -69,7 +69,7 @@ experiment('internal/modules/charge-information/routes', () => {
 
     test('does not allow a non uuid for the licence id', async () => {
       const request = {
-        url: `/licences/test-non-uuid-licence-id/charge-information/create`,
+        url: '/licences/test-non-uuid-licence-id/charge-information/create',
         method: 'POST'
       };
 
@@ -104,7 +104,7 @@ experiment('internal/modules/charge-information/routes', () => {
 
     test('does not allow a non uuid for the licence id', async () => {
       const request = {
-        url: `/licences/test-non-uuid-licence-id/charge-information/start-date`
+        url: '/licences/test-non-uuid-licence-id/charge-information/start-date'
       };
 
       const response = await server.inject(request);
@@ -137,7 +137,7 @@ experiment('internal/modules/charge-information/routes', () => {
 
     test('does not allow a non uuid for the licence id', async () => {
       const request = {
-        url: `/licences/test-non-uuid-licence-id/charge-information/start-date`,
+        url: '/licences/test-non-uuid-licence-id/charge-information/start-date',
         method: 'POST'
       };
 
@@ -169,7 +169,7 @@ experiment('internal/modules/charge-information/routes', () => {
 
     test('does not allow a non uuid for the licence id', async () => {
       const request = {
-        url: `/licences/test-non-uuid-licence-id/charge-information/use-abstraction-data`
+        url: '/licences/test-non-uuid-licence-id/charge-information/use-abstraction-data'
       };
 
       const response = await server.inject(request);
@@ -204,7 +204,7 @@ experiment('internal/modules/charge-information/routes', () => {
 
     test('does not allow a non uuid for the licence id', async () => {
       const request = {
-        url: `/licences/test-non-uuid-licence-id/charge-information/use-abstraction-data`,
+        url: '/licences/test-non-uuid-licence-id/charge-information/use-abstraction-data',
         method: 'POST'
       };
 
@@ -241,7 +241,7 @@ experiment('internal/modules/charge-information/routes', () => {
 
     test('does not allow a non uuid for the licence id', async () => {
       const request = {
-        url: `/licences/test-non-uuid-licence-id/charge-information/check`
+        url: '/licences/test-non-uuid-licence-id/charge-information/check'
       };
 
       const response = await server.inject(request);
@@ -278,7 +278,7 @@ experiment('internal/modules/charge-information/routes', () => {
 
     test('does not allow a non uuid for the licence id', async () => {
       const request = {
-        url: `/licences/test-non-uuid-licence-id/charge-information/check`,
+        url: '/licences/test-non-uuid-licence-id/charge-information/check',
         method: 'POST'
       };
 

@@ -23,7 +23,7 @@ experiment('shared/plugins/view-licence/routes', () => {
   });
 
   experiment('reset password change password page', () => {
-    const routePath = `/reset_password_change_password`;
+    const routePath = '/reset_password_change_password';
 
     const generateRequest = async (query = {}) => {
       const queryString = Object.entries(query).map(([key, value]) => `${key}=${value}`).join('&');

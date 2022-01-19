@@ -37,7 +37,8 @@ const selectReasonForm = (request) => {
     : routing.getNonChargeableReason(licence.id, { chargeVersionWorkflowId, returnToCheckData });
 
   const errorMessage = isChargeable
-    ? 'Select a reason for new charge information' : 'Select a reason';
+    ? 'Select a reason for new charge information'
+    : 'Select a reason';
 
   const changeReasonId = get(draftChargeInformation, 'changeReason.id');
 

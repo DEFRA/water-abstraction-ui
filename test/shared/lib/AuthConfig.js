@@ -229,7 +229,8 @@ experiment('AuthConfig base class', () => {
       });
 
       test('rejects if the user is not enabled', async () => {
-        connectors.idm.users.findOne.resolves({ error: null,
+        connectors.idm.users.findOne.resolves({
+          error: null,
           data: {
             ...user,
             enabled: false

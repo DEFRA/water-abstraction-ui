@@ -9,7 +9,7 @@ const {
 } = exports.lab = require('@hapi/lab').script();
 const sinon = require('sinon');
 const moment = require('moment');
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const sandbox = sinon.createSandbox();
 
 const controller = require('../../../../../src/internal/modules/charge-information/controllers/charge-category');
@@ -201,7 +201,7 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
 
         test('the user is redirected to the chack your answers page', async () => {
           expect(h.redirect.calledWith(
-            `/licences/test-licence-id/charge-information/check`
+            '/licences/test-licence-id/charge-information/check'
           )).to.be.true();
         });
       });

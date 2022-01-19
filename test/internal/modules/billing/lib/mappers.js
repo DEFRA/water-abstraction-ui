@@ -1,7 +1,7 @@
 'use strict';
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const { expect } = require('@hapi/code');
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const { pick } = require('lodash');
 
 const mappers = require('internal/modules/billing/lib/mappers');
@@ -9,29 +9,29 @@ const mappers = require('internal/modules/billing/lib/mappers');
 const batchId = uuid();
 
 const batch = {
-  'invoices': [],
-  'id': batchId,
-  'type': 'two_part_tariff',
-  'season': 'all year',
-  'status': 'ready',
-  'dateCreated': '2020-02-25T16:44:22.827Z',
-  'dateUpdated': '2020-02-25T16:45:01.328Z',
-  'startYear': {
-    'yearEnding': 2020
+  invoices: [],
+  id: batchId,
+  type: 'two_part_tariff',
+  season: 'all year',
+  status: 'ready',
+  dateCreated: '2020-02-25T16:44:22.827Z',
+  dateUpdated: '2020-02-25T16:45:01.328Z',
+  startYear: {
+    yearEnding: 2020
   },
-  'endYear': {
-    'yearEnding': 2020
+  endYear: {
+    yearEnding: 2020
   },
-  'region': {
-    'type': 'region',
-    'id': '35f681b5-2781-4726-b8d1-cd75b96e7747',
-    'name': 'Anglian',
-    'code': 'A',
-    'numericCode': 1
+  region: {
+    type: 'region',
+    id: '35f681b5-2781-4726-b8d1-cd75b96e7747',
+    name: 'Anglian',
+    code: 'A',
+    numericCode: 1
   },
-  'creditNoteCount': 2,
-  'invoiceCount': 4,
-  'netTotal': '2003'
+  creditNoteCount: 2,
+  invoiceCount: 4,
+  netTotal: '2003'
 };
 
 const licenceNumbers = [
@@ -257,7 +257,7 @@ experiment('modules/billing/lib/mappers', () => {
 
   experiment('.mapInvoiceLicence', () => {
     experiment('for the first invoice licence', () => {
-      const [ invoiceLicence ] = invoice.invoiceLicences;
+      const [invoiceLicence] = invoice.invoiceLicences;
 
       beforeEach(async () => {
         result = mappers.mapInvoiceLicence(batch, invoice, invoiceLicence);
@@ -318,7 +318,7 @@ experiment('modules/billing/lib/mappers', () => {
     });
 
     experiment('when the invoice is a rebilling invoice', () => {
-      const [ invoiceLicence ] = invoice.invoiceLicences;
+      const [invoiceLicence] = invoice.invoiceLicences;
 
       beforeEach(async () => {
         result = mappers.mapInvoiceLicence(batch, {
@@ -333,7 +333,7 @@ experiment('modules/billing/lib/mappers', () => {
     });
 
     experiment('when the batch is not ready', () => {
-      const [ invoiceLicence ] = invoice.invoiceLicences;
+      const [invoiceLicence] = invoice.invoiceLicences;
 
       beforeEach(async () => {
         result = mappers.mapInvoiceLicence({
@@ -348,7 +348,7 @@ experiment('modules/billing/lib/mappers', () => {
     });
 
     experiment('when the invoice has only 1 licence', () => {
-      const [ invoiceLicence ] = invoice.invoiceLicences;
+      const [invoiceLicence] = invoice.invoiceLicences;
 
       beforeEach(async () => {
         const invoiceWithSingleLicence = {

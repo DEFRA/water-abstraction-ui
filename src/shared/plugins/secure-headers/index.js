@@ -30,11 +30,11 @@ const postHandler = (request, reply) => {
     // Blankie plugin which is added in the index.js entry fie.
     if (isStaticAsset(request)) {
       request.response.headers['cache-control'] = 'public, max-age=3600';
-      request.response.headers['Expires'] = 3600;
+      request.response.headers.Expires = 3600;
     } else {
       request.response.headers['cache-control'] = 'no-cache, no-store, must-revalidate';
-      request.response.headers['Expires'] = 0;
-      request.response.headers['Pragma'] = 'no-cache';
+      request.response.headers.Expires = 0;
+      request.response.headers.Pragma = 'no-cache';
     }
   }
   return reply.continue;

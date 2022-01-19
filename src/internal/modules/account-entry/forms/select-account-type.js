@@ -24,7 +24,7 @@ const form = request => {
         fields: [fields.text('personName', {
           errors: {
             'string.empty': {
-              message: `Enter the full name`
+              message: 'Enter the full name'
             }
           },
           label: 'Full name'

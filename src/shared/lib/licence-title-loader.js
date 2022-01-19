@@ -1,6 +1,6 @@
-const Promise = require('bluebird');
 const files = require('./files');
-const csvParse = Promise.promisify(require('csv-parse'));
+const util = require('util');
+const csvParse = util.promisify(require('csv-parse'));
 
 /**
  * Loads and transforms licence condition title data from

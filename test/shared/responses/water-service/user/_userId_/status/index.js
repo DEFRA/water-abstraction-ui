@@ -79,7 +79,8 @@ const internalUser = () => ({
     },
     companies: []
   },
-  error: null });
+  error: null
+});
 
 module.exports = {
   externalUserWithLicences,

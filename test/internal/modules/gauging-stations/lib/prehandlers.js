@@ -45,55 +45,61 @@ experiment('.gaugingstations pre-handlers with testdata', () => {
       services: {
         water: {
           gaugingStations: {
-            getGaugingStationbyId: { data: [
-              {
-                gaugingStationId: '0dd992c3-86e6-4410-963c-cc61d51bef40',
-                label: 'SHIPTON BELLINGER RL',
-                lat: '51.2085',
-                long: '-1.67022',
-                easting: null,
-                northing: null,
-                gridReference: 'SU2313445529',
-                catchmentName: '',
-                riverName: '',
-                wiskiId: '432404',
-                stationReference: '',
-                status: null,
-                metadata: null,
-                dateCreated: '2021-05-28T18:00:03.000Z',
-                dateUpdated: '2021-06-02T12:00:03.000Z',
-                hydrologyStationId: '7170e3a3-9e13-43a8-99f1-115fa6350b13'
-              }
-            ] },
-            getGaugingStationsByLicenceId: { data: [
-              {
-                label: 'Currymoor Drove Tilting Weir',
-                gaugingStationId: 'e3e95a10-a989-42ae-9692-feac91f06ffb'
-              }
-            ] },
-            getGaugingStationLicences: { data: [
-              {
-                abstractionPeriodStartDay: 1,
-                abstractionPeriodStartMonth: 6,
-                abstractionPeriodEndDay: 30,
-                abstractionPeriodEndMonth: 11,
-                restrictionType: 'flow',
-                thresholdValue: '175',
-                thresholdUnit: 'Ml/d',
-                comstatus: 'reduce',
-                dateStatusUpdated: '2021-06-14T09:09:31.000Z',
-                licenceRef: '11/42/18.6.2/262',
-                startDate: '1965-11-26',
-                label: 'Currymoor Drove Tilting Weir',
-                gridReference: 'ST3160027132',
-                catchmentName: '',
-                riverName: '',
-                wiskiId: '530514',
-                stationReference: '',
-                easting: null,
-                northing: null
-              }
-            ] }
+            getGaugingStationbyId: {
+              data: [
+                {
+                  gaugingStationId: '0dd992c3-86e6-4410-963c-cc61d51bef40',
+                  label: 'SHIPTON BELLINGER RL',
+                  lat: '51.2085',
+                  long: '-1.67022',
+                  easting: null,
+                  northing: null,
+                  gridReference: 'SU2313445529',
+                  catchmentName: '',
+                  riverName: '',
+                  wiskiId: '432404',
+                  stationReference: '',
+                  status: null,
+                  metadata: null,
+                  dateCreated: '2021-05-28T18:00:03.000Z',
+                  dateUpdated: '2021-06-02T12:00:03.000Z',
+                  hydrologyStationId: '7170e3a3-9e13-43a8-99f1-115fa6350b13'
+                }
+              ]
+            },
+            getGaugingStationsByLicenceId: {
+              data: [
+                {
+                  label: 'Currymoor Drove Tilting Weir',
+                  gaugingStationId: 'e3e95a10-a989-42ae-9692-feac91f06ffb'
+                }
+              ]
+            },
+            getGaugingStationLicences: {
+              data: [
+                {
+                  abstractionPeriodStartDay: 1,
+                  abstractionPeriodStartMonth: 6,
+                  abstractionPeriodEndDay: 30,
+                  abstractionPeriodEndMonth: 11,
+                  restrictionType: 'flow',
+                  thresholdValue: '175',
+                  thresholdUnit: 'Ml/d',
+                  comstatus: 'reduce',
+                  dateStatusUpdated: '2021-06-14T09:09:31.000Z',
+                  licenceRef: '11/42/18.6.2/262',
+                  startDate: '1965-11-26',
+                  label: 'Currymoor Drove Tilting Weir',
+                  gridReference: 'ST3160027132',
+                  catchmentName: '',
+                  riverName: '',
+                  wiskiId: '530514',
+                  stationReference: '',
+                  easting: null,
+                  northing: null
+                }
+              ]
+            }
           }
         }
       }

@@ -4,7 +4,7 @@ const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').scri
 const { redirectToReturn } = require('internal/modules/internal-search/lib/redirect-to-return');
 
 experiment('redirectToReturn', () => {
-  const returnId = `v1:1:01/123:12345678:2017-11-01:2018-10-31`;
+  const returnId = 'v1:1:01/123:12345678:2017-11-01:2018-10-31';
   const h = {};
 
   beforeEach(async () => {

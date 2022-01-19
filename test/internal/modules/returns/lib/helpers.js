@@ -58,7 +58,7 @@ experiment('getNewTaggingLicenceNumbers', () => {
       }
     };
     await helpers.getNewTaggingLicenceNumbers(request);
-    const [ filter ] = services.crm.documents.findAll.lastCall.args;
+    const [filter] = services.crm.documents.findAll.lastCall.args;
     expect(get(filter, 'includeExpired')).to.equal(true);
   });
 });

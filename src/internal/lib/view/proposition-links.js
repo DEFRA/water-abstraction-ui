@@ -25,7 +25,7 @@ const getPropositionLinks = (request) => {
     return [];
   }
 
-  let links = [];
+  const links = [];
 
   if (isHofOrRenewalNotifications(request)) {
     links.push(contactLink);

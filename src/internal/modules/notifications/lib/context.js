@@ -35,7 +35,7 @@ async function getUser (userId) {
  * @return {Promise} resolves with context data for Nunjucks templates
  */
 async function getContext (userId) {
-  let context = {};
+  const context = {};
 
   // Load context data for default parameter values
   const user = await getUser(userId);

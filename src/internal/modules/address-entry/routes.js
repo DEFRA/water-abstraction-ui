@@ -92,7 +92,7 @@ module.exports = {
     }
   }),
 
-  ...createRoutePair(controller, `useRegisteredAddress`, {
+  ...createRoutePair(controller, 'useRegisteredAddress', {
     path: '/address-entry/{key}/use-registered-address',
     options: {
       auth: {

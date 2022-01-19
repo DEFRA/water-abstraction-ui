@@ -14,7 +14,7 @@ const getErrors = key => {
   };
   if (key === 'authorised') {
     const requiredAuthorisedQuantityError = {
-      message: `Enter an authorised quantity`
+      message: 'Enter an authorised quantity'
     };
     errors['number.base'] = requiredAuthorisedQuantityError;
   }

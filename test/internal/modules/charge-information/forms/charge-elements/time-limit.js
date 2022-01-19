@@ -70,10 +70,12 @@ experiment('internal/modules/charge-information/forms/charge-element/time-limite
     });
 
     test('sets the value of the timeLimitedPeriod, if provided', async () => {
-      timeLimitForm = form(createRequest({ chargeElements: [{
-        id: 'test-element-id',
-        timeLimitedPeriod: false
-      }] }));
+      timeLimitForm = form(createRequest({
+        chargeElements: [{
+          id: 'test-element-id',
+          timeLimitedPeriod: false
+        }]
+      }));
       const radio = findField(timeLimitForm, 'timeLimitedPeriod');
       expect(radio.value).to.equal('no');
     });

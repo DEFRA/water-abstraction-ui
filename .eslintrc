@@ -7,6 +7,10 @@
     "semi":[
       2,
       "always"
+    ],
+    "array-bracket-spacing": [
+      "error",
+      "never"
     ]
   },
   "plugins":[

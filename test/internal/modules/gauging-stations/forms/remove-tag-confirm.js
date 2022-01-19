@@ -83,7 +83,8 @@ experiment('internal/modules/gauging-stations/forms/remove-tag-confirm.js', () =
         easting: null,
         northing: null
       }
-    ] };
+    ]
+  };
 
   experiment('.form', () => {
     beforeEach(async () => {

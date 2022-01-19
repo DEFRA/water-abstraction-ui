@@ -54,7 +54,7 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
     });
 
     sandbox.stub(services.water.chargeVersionWorkflows, 'getChargeVersionWorkflows').resolves(
-      { status: 'review', data: [ { licence: { startDate: '2002-05-03' } }, { licence: { startDate: '2000-09-30' } } ] }
+      { status: 'review', data: [{ licence: { startDate: '2002-05-03' } }, { licence: { startDate: '2000-09-30' } }] }
     );
     sandbox.stub(services.water.chargeVersionWorkflows, 'getLicencesWithoutChargeInformation').resolves({
       data: []
@@ -367,7 +367,8 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
               id: 'test-invoice-account-address-id'
             }]
           }
-        } });
+        }
+      });
     });
   });
 

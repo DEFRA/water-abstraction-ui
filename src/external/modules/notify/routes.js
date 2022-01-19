@@ -4,7 +4,7 @@ const controller = require('./controller');
 module.exports = {
   notifyCallback: {
     method: 'POST',
-    path: `/notify/callback`,
+    path: '/notify/callback',
     handler: controller.callback,
     config: {
       auth: false,

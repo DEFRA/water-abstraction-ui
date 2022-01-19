@@ -60,11 +60,11 @@ experiment('secure-headers', () => {
     });
 
     test('adds expires header', async () => {
-      expect(request.response.headers['Expires']).to.equal(0);
+      expect(request.response.headers.Expires).to.equal(0);
     });
 
     test('adds pragma header', async () => {
-      expect(request.response.headers['Pragma']).to.equal('no-cache');
+      expect(request.response.headers.Pragma).to.equal('no-cache');
     });
   });
 
@@ -122,11 +122,11 @@ experiment('secure-headers', () => {
     });
 
     test('adds expires header for 1 hour', async () => {
-      expect(request.response.headers['Expires']).to.equal(3600);
+      expect(request.response.headers.Expires).to.equal(3600);
     });
 
     test('does not add pragma header', async () => {
-      expect(request.response.headers['Pragma']).to.be.undefined();
+      expect(request.response.headers.Pragma).to.be.undefined();
     });
   });
 });

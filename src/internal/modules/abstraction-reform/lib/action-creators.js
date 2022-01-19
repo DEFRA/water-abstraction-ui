@@ -1,4 +1,4 @@
-const uuidv4 = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const { statuses, actionTypes } = require('@envage/water-abstraction-helpers').digitise;
 const {
   EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT, EDIT_CONDITION, SET_STATUS,
@@ -92,7 +92,7 @@ const createEditCondition = (data, defra, id) => {
  * @param {Object} user - the current user of the application
  * @return {Object} action to edit condition
  */
-const createSetStatus = (status, notes, defra) => {
+const createSetStatus = (status, notes, user) => {
   if (!Object.values(statuses).includes(status)) {
     throw new Error(`Invalid AR status ${status}`);
   }
@@ -102,7 +102,7 @@ const createSetStatus = (status, notes, defra) => {
     payload: {
       status,
       notes: notes.trim() || null,
-      user: formatUser(defra),
+      user: formatUser(user),
       timestamp: Date.now()
     }
   };
@@ -111,18 +111,19 @@ const createSetStatus = (status, notes, defra) => {
 /**
  * Edits a licence version
  * @param {Object} data - key/value pairs of purpose data to edit
- * @param {Object} defra - the current user of the application
- * @param {Number} id - the condition ID
+ * @param {Object} user - the current user of the application
+ * @param {String|Number} issueNumber - the NALD licence issue number
+ * @param {String|Number} incrementNumber schema - the NALD licence increment number
  * @return {Object} action to edit condition
  */
-const createEditVersion = (data, defra, issueNumber, incrementNumber) => {
+const createEditVersion = (data, user, issueNumber, incrementNumber) => {
   return {
     type: EDIT_VERSION,
     payload: {
       issueNumber: parseInt(issueNumber),
       incrementNumber: parseInt(incrementNumber),
       data,
-      user: formatUser(defra),
+      user: formatUser(user),
       timestamp: Date.now()
     }
   };
@@ -172,15 +173,14 @@ const createEditAddress = (data, defra, id) => {
  * @param {Object} user - the current user of the application
  * @param {String|Number} issueNumber - the NALD licence issue number
  * @param {String|Number} incrementNumber schema - the NALD licence increment number
- * @param
  */
-const createAddData = (schema, defra, issueNumber, incrementNumber) => {
+const createAddData = (schema, user, issueNumber, incrementNumber) => {
   return {
     type: ADD_DATA,
     payload: {
-      id: uuidv4(),
+      id: uuid(),
       schema,
-      user: formatUser(defra),
+      user: formatUser(user),
       timestamp: Date.now(),
       issueNumber: parseInt(issueNumber),
       incrementNumber: parseInt(incrementNumber)
@@ -193,14 +193,13 @@ const createAddData = (schema, defra, issueNumber, incrementNumber) => {
  * @param {Object} data - object of data to store
  * @param {Object} user - the current application user
  * @param {String} id - GUID of data point
- * @param
  */
-const createEditData = (data, defra, id) => {
+const createEditData = (data, user, id) => {
   return {
     type: EDIT_DATA,
     payload: {
       id,
-      user: formatUser(defra),
+      user: formatUser(user),
       data,
       timestamp: Date.now()
     }
@@ -211,14 +210,13 @@ const createEditData = (data, defra, id) => {
  * Deletes a data object in the AR data items list
  * @param {Object} user - the current application user
  * @param {String} id - GUID of data point to delete
- * @param
  */
-const createDeleteData = (defra, id) => {
+const createDeleteData = (user, id) => {
   return {
     type: DELETE_DATA,
     payload: {
       id,
-      user: formatUser(defra),
+      user: formatUser(user),
       timestamp: Date.now()
     }
   };

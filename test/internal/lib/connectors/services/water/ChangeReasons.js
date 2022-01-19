@@ -28,7 +28,7 @@ experiment('services/water/ChangeReasons', () => {
     test('passes the expected URL to the service request', async () => {
       await service.getChangeReasons();
       const [url] = serviceRequest.get.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/change-reasons`);
+      expect(url).to.equal('https://example.com/water/1.0/change-reasons');
     });
   });
 });

@@ -25,7 +25,7 @@ experiment('services/water/ServiceStatusService', () => {
     test('passes the expected URL to the service request', async () => {
       const service = new ServiceStatusService('http://127.0.0.1:8001/water/1.0');
       await service.getServiceStatus();
-      const expectedUrl = `http://127.0.0.1:8001/water/1.0/service-status`;
+      const expectedUrl = 'http://127.0.0.1:8001/water/1.0/service-status';
       const [url] = serviceRequest.get.lastCall.args;
       expect(url).to.equal(expectedUrl);
     });

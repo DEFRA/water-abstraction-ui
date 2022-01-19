@@ -45,12 +45,12 @@ experiment('plugins/cookie-message/controller', () => {
     });
 
     test('uses the correct template', async () => {
-      const [ template ] = h.view.lastCall.args;
+      const [template] = h.view.lastCall.args;
       expect(template).to.equal('nunjucks/content/cookies');
     });
 
     test('hides the notification banner', async () => {
-      const [ , { isNotificationBannerVisible } ] = h.view.lastCall.args;
+      const [, { isNotificationBannerVisible }] = h.view.lastCall.args;
       expect(isNotificationBannerVisible).to.be.false();
     });
 

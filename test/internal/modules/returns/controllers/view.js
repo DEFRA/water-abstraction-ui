@@ -41,7 +41,8 @@ const testData = isCurrent => {
     meters: [{}],
     metadata: {
       isCurrent
-    } };
+    }
+  };
 };
 
 experiment('internal view controller', () => {

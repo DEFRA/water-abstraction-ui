@@ -49,7 +49,7 @@ const getChangeEmail = async (request, h) => {
       throw err;
     }
   }
-  return h.redirect(`/account/change-email/enter-new-email`);
+  return h.redirect('/account/change-email/enter-new-email');
 };
 
 /**

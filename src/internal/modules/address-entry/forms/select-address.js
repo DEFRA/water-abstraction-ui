@@ -2,7 +2,7 @@
 
 const { formFactory, fields } = require('shared/lib/forms');
 const { compact, get } = require('lodash');
-const titleCase = require('title-case');
+const { titleCase } = require('shared/lib/string-formatter');
 const Joi = require('joi');
 const queryString = require('querystring');
 const routing = require('../lib/routing');

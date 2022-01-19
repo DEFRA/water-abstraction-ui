@@ -46,7 +46,7 @@ experiment('WaterReturn', () => {
     'startDate', 'endDate', 'frequency', 'user', 'versions'];
 
   experiment('constructor', () => {
-    for (let key in keys) {
+    for (const key in keys) {
       test(`Sets ${key} from supplied object data`, async () => {
         const data = createReturn();
         const waterReturn = new WaterReturn(data);
@@ -219,7 +219,7 @@ experiment('WaterReturn', () => {
     });
 
     test('sets line data using the default abstraction period', async () => {
-      const [ period, lines ] = waterReturn.lines.setLines.lastCall.args;
+      const [period, lines] = waterReturn.lines.setLines.lastCall.args;
       expect(period.periodStartDay).to.equal(ret.metadata.nald.periodStartDay);
       expect(period.periodStartMonth).to.equal(ret.metadata.nald.periodStartMonth);
       expect(period.periodEndDay).to.equal(ret.metadata.nald.periodEndDay);
@@ -276,10 +276,12 @@ experiment('WaterReturn', () => {
 
       const [absPeriod, total] = waterReturn.lines.setSingleTotal.lastCall.args;
 
-      expect(absPeriod).to.equal({ periodEndDay: 31,
+      expect(absPeriod).to.equal({
+        periodEndDay: 31,
         periodEndMonth: 10,
         periodStartDay: 1,
-        periodStartMonth: 4 });
+        periodStartMonth: 4
+      });
       expect(total).to.equal(500);
       expect(result).to.equal(waterReturn);
     });

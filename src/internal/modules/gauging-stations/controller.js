@@ -166,7 +166,7 @@ const postNewTaggingCondition = async (request, h) => {
 
   const conditionIsValid = condition.value !== helpers.blankGuid;
 
-  return helpers.redirectTo(request, h, conditionIsValid ? `/check` : '/abstraction-period');
+  return helpers.redirectTo(request, h, conditionIsValid ? '/check' : '/abstraction-period');
 };
 
 const getNewTaggingManuallyDefinedAbstractionPeriod = async (request, h) => {
@@ -209,12 +209,14 @@ const getNewTaggingCheckYourAnswers = async (request, h) => {
 
   const selectedConditionText = helpers.getSelectedConditionText(request);
 
-  const abstractionPeriodData = selectedConditionText && sessionData.startDate ? {
-    startDay: sessionData.startDate.value.split('-').reverse()[0],
-    startMonth: sessionData.startDate.value.split('-').reverse()[1],
-    endDay: sessionData.endDate.value.split('-').reverse()[0],
-    endMonth: sessionData.endDate.value.split('-').reverse()[1]
-  } : {};
+  const abstractionPeriodData = selectedConditionText && sessionData.startDate
+    ? {
+        startDay: sessionData.startDate.value.split('-').reverse()[0],
+        startMonth: sessionData.startDate.value.split('-').reverse()[1],
+        endDay: sessionData.endDate.value.split('-').reverse()[0],
+        endMonth: sessionData.endDate.value.split('-').reverse()[1]
+      }
+    : {};
 
   return h.view('nunjucks/gauging-stations/new-tag-check', {
     ...request.view,
@@ -245,7 +247,7 @@ const getNewTaggingFlowComplete = (request, h) => {
   const { licenceNumber } = session.get(request);
   session.clear(request);
   return h.view('nunjucks/gauging-stations/new-tag-complete', {
-    pageTitle: `Licence added to monitoring station`,
+    pageTitle: 'Licence added to monitoring station',
     back: null,
     licenceRef: licenceNumber.value,
     gaugingStationId: request.params.gaugingStationId

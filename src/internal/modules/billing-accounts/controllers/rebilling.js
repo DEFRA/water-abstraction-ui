@@ -1,6 +1,6 @@
 'use strict';
 
-const titleCase = require('title-case');
+const { titleCase } = require('shared/lib/string-formatter');
 const pluralize = require('pluralize');
 const { getValues } = require('shared/lib/forms');
 const { handleFormRequest } = require('shared/lib/form-handler');
@@ -47,7 +47,7 @@ const postRebillingStartDate = async (request, h) => {
 const getCheckAnswersPageTitle = request => {
   const { billingAccount, rebillingState: { selectedBillIds } } = request.pre;
   const pageTitlePrefix = selectedBillIds.length === 1
-    ? `There is 1 bill`
+    ? 'There is 1 bill'
     : `There are ${selectedBillIds.length} bills`;
 
   return `${pageTitlePrefix} available for reissue to ${titleCase(billingAccount.company.name)}`;
@@ -109,7 +109,7 @@ const postCheckAnswers = async (request, h) => {
     pageTitle: `You’ve marked ${billCount} ${pluralize('bill', billCount)} for reissue`,
     links: {
       billingAccount: `/billing-accounts/${billingAccountId}`,
-      createBillRun: `/billing/batch/type`
+      createBillRun: '/billing/batch/type'
     }
   });
 };

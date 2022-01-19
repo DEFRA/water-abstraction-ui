@@ -8,7 +8,7 @@ const {
   afterEach
 } = exports.lab = require('@hapi/lab').script();
 const sinon = require('sinon');
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const sandbox = sinon.createSandbox();
 const { omit } = require('lodash');
 const services = require('../../../../../src/internal/lib/connectors/services');
@@ -164,9 +164,11 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
   experiment('.getReviewChargeInformation', () => {
     beforeEach(async () => {
       request = createRequest();
-      request.auth = { credentials: {
-        scope: chargeVersionWorkflowReviewer
-      } };
+      request.auth = {
+        credentials: {
+          scope: chargeVersionWorkflowReviewer
+        }
+      };
       await controller.getReviewChargeInformation(request, h);
     });
 
@@ -253,21 +255,21 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
 
     experiment('sets isEditable flag', () => {
       test('to false if the charge information draft is in current', async () => {
-        request.pre.draftChargeInformation['status'] = 'current';
+        request.pre.draftChargeInformation.status = 'current';
         await controller.getReviewChargeInformation(request, h);
         const { isEditable } = h.view.lastCall.args[1];
         expect(isEditable).to.be.false();
       });
 
       test('to true if the charge information draft is in review', async () => {
-        request.pre.draftChargeInformation['status'] = 'review';
+        request.pre.draftChargeInformation.status = 'review';
         await controller.getReviewChargeInformation(request, h);
         const { isEditable } = h.view.lastCall.args[1];
         expect(isEditable).to.be.true();
       });
 
       test('to true if the charge information draft has changes_requested status', async () => {
-        request.pre.draftChargeInformation['status'] = 'changes_requested';
+        request.pre.draftChargeInformation.status = 'changes_requested';
         await controller.getReviewChargeInformation(request, h);
         const { isEditable } = h.view.lastCall.args[1];
         expect(isEditable).to.be.true();
@@ -275,7 +277,7 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
     });
     experiment('adds isSrocChargeInfoEnabled to the view data', () => {
       test('to false if the charge information draft is in current', async () => {
-        request.pre.draftChargeInformation['status'] = 'current';
+        request.pre.draftChargeInformation.status = 'current';
         await controller.getReviewChargeInformation(request, h);
         const args = h.view.lastCall.args[1];
         expect(Object.keys(args).includes('isSrocChargeInfoEnabled')).to.be.true();
@@ -292,9 +294,11 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
           reviewOutcome: 'spatula',
           reviewerComments: null
         };
-        request.auth = { credentials: {
-          scope: chargeVersionWorkflowReviewer
-        } };
+        request.auth = {
+          credentials: {
+            scope: chargeVersionWorkflowReviewer
+          }
+        };
         await controller.postReviewChargeInformation(request, h);
       });
 
@@ -335,21 +339,21 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
 
       experiment('sets isEditable flag', () => {
         test('to false if the charge information draft is in current', async () => {
-          request.pre.draftChargeInformation['status'] = 'current';
+          request.pre.draftChargeInformation.status = 'current';
           await controller.getReviewChargeInformation(request, h);
           const { isEditable } = h.view.lastCall.args[1];
           expect(isEditable).to.be.false();
         });
 
         test('to false if the charge information draft is in review', async () => {
-          request.pre.draftChargeInformation['status'] = 'review';
+          request.pre.draftChargeInformation.status = 'review';
           await controller.getReviewChargeInformation(request, h);
           const { isEditable } = h.view.lastCall.args[1];
           expect(isEditable).to.be.true();
         });
 
         test('to true if the charge information draft has changes_requested status', async () => {
-          request.pre.draftChargeInformation['status'] = 'changes_requested';
+          request.pre.draftChargeInformation.status = 'changes_requested';
           await controller.getReviewChargeInformation(request, h);
           const { isEditable } = h.view.lastCall.args[1];
           expect(isEditable).to.be.true();
@@ -368,9 +372,11 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
             reviewOutcome: 'approve',
             reviewerComments: null
           };
-          request.auth = { credentials: {
-            scope: chargeVersionWorkflowReviewer
-          } };
+          request.auth = {
+            credentials: {
+              scope: chargeVersionWorkflowReviewer
+            }
+          };
           request.params = {
             licenceId: licenceId,
             chargeVersionWorkflowId: workflowId
@@ -405,9 +411,11 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
             reviewerComments: 'Terrible job',
             createdBy: { id: 19, email: 'test@test.test' }
           };
-          request.auth = { credentials: {
-            scope: chargeVersionWorkflowReviewer
-          } };
+          request.auth = {
+            credentials: {
+              scope: chargeVersionWorkflowReviewer
+            }
+          };
           request.params = {
             licenceId: licenceId,
             chargeVersionWorkflowId: workflowId

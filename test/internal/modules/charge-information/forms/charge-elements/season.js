@@ -30,7 +30,8 @@ const createRequest = chargeElementData => ({
           startDay: 1,
           startMonth: 4,
           endDay: 31,
-          endMonth: 6 },
+          endMonth: 6
+        },
         ...chargeElementData
       }]
     }

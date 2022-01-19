@@ -25,7 +25,8 @@ exports.form = (request, data) => ({
         { value: 'oneMeter,measured', label: 'Readings from a single meter' },
         { value: 'abstractionVolumes,measured', label: 'Volumes from one or more meters' },
         { value: 'abstractionVolumes,estimated', label: 'Estimates without a meter' }
-      ] }, getValue(data)),
+      ]
+    }, getValue(data)),
     getContinueField()
   ]
 });

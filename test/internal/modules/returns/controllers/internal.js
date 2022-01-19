@@ -8,7 +8,7 @@ const {
 
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 
 const services = require('internal/lib/connectors/services');
 const helpers = require('internal/modules/returns/lib/helpers');
@@ -92,13 +92,13 @@ experiment('internal returns controller', () => {
 
       test('should get the return with the ID specified in the query', async () => {
         await controller.getLogReceipt(request, h);
-        const [ returnId ] = services.water.returns.getReturn.lastCall.args;
+        const [returnId] = services.water.returns.getReturn.lastCall.args;
         expect(returnId).to.equal(request.query.returnId);
       });
 
       test('should get view data with the request and return data', async () => {
         await controller.getLogReceipt(request, h);
-        const [ req, data ] = helpers.getViewData.lastCall.args;
+        const [req, data] = helpers.getViewData.lastCall.args;
         expect(req).to.equal(request);
         expect(data).to.be.an.object();
         expect(data.returnId).to.equal(returnId);
@@ -106,13 +106,13 @@ experiment('internal returns controller', () => {
 
       test('should render the correct template', async () => {
         await controller.getLogReceipt(request, h);
-        const [ template ] = h.view.lastCall.args;
+        const [template] = h.view.lastCall.args;
         expect(template).to.equal('nunjucks/returns/form');
       });
 
       test('should pass correct data to the view', async () => {
         await controller.getLogReceipt(request, h);
-        const [ , view ] = h.view.lastCall.args;
+        const [, view] = h.view.lastCall.args;
         expect(view.return).to.be.an.object();
         expect(view.foo).to.equal('bar');
         expect(view.back).to.be.a.string();
@@ -127,7 +127,7 @@ experiment('internal returns controller', () => {
 
       test('should get the return with the ID specified in the query', async () => {
         await controller.postLogReceipt(request, h);
-        const [ returnId ] = services.water.returns.getReturn.lastCall.args;
+        const [returnId] = services.water.returns.getReturn.lastCall.args;
         expect(returnId).to.equal(request.query.returnId);
       });
 
@@ -140,7 +140,7 @@ experiment('internal returns controller', () => {
 
       test('should patch the return with the correct details when not under query', async () => {
         await controller.postLogReceipt(request, h);
-        const [ data ] = services.water.returns.patchReturn.lastCall.args;
+        const [data] = services.water.returns.patchReturn.lastCall.args;
 
         expect(data.receivedDate).to.equal(receivedDate.format('YYYY-MM-DD'));
         expect(data.isUnderQuery).to.equal(false);
@@ -150,7 +150,7 @@ experiment('internal returns controller', () => {
       test('should patch the return with the correct details when under query', async () => {
         request = createPostLogReceiptRequest(true);
         await controller.postLogReceipt(request, h);
-        const [ data ] = services.water.returns.patchReturn.lastCall.args;
+        const [data] = services.water.returns.patchReturn.lastCall.args;
         expect(data.receivedDate).to.equal(receivedDate.format('YYYY-MM-DD'));
         expect(data.isUnderQuery).to.equal(true);
         expect(data.status).to.equal('received');

@@ -69,7 +69,8 @@ experiment('handler', () => {
       redirect: sinon.stub().returns({
         takeover: () => 'takeover'
       }),
-      continue: 'CONTINUE' };
+      continue: 'CONTINUE'
+    };
   });
 
   afterEach(async () => {

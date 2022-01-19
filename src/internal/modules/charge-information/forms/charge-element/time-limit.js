@@ -61,7 +61,7 @@ const options = (data) => {
     {
       value: 'yes',
       label: 'Yes',
-      fields: [ getDateField('start', data), getDateField('end', data) ]
+      fields: [getDateField('start', data), getDateField('end', data)]
     },
     { value: 'no', label: 'No' }
   ];

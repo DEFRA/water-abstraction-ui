@@ -1,6 +1,6 @@
 'use strict';
 
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 
@@ -29,7 +29,7 @@ const createRequest = () => ({
 experiment('internal/billing-accounts/forms/select-fao-required', () => {
   let request;
 
-  beforeEach(async => {
+  beforeEach(async () => {
     request = createRequest();
   });
 

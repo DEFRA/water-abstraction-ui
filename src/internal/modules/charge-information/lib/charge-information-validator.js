@@ -19,14 +19,16 @@ const isBillableVolumeLessThanAuthorisedVolume = chargeElement =>
 const validations = {
   abstractionPeriod: {
     validatorFunc: isMatchingAbstractionPeriodAndSeason,
-    warningMessage: 'The abstraction period does not match the season selected' },
+    warningMessage: 'The abstraction period does not match the season selected'
+  },
   lossFactor: {
     validatorFunc: isDefaultLossFactor,
     warningMessage: 'The loss factor does not match the purpose selected'
   },
   billableVolume: {
     validatorFunc: isBillableVolumeLessThanAuthorisedVolume,
-    warningMessage: 'The billable quantity is more than the authorised quantity' }
+    warningMessage: 'The billable quantity is more than the authorised quantity'
+  }
 };
 
 const validate = chargeElement =>
@@ -41,12 +43,12 @@ const addValidation = chargeInformation => {
   const chargeElementsWithValidationWarnings = chargeInformation.chargeElements.map(element => ({
     ...(element.chargePurposes
       ? {
-        ...element,
-        chargePurposes: element.chargePurposes.map(purpose => ({
-          ...purpose,
-          validationWarnings: validate(purpose)
-        }))
-      }
+          ...element,
+          chargePurposes: element.chargePurposes.map(purpose => ({
+            ...purpose,
+            validationWarnings: validate(purpose)
+          }))
+        }
       : element),
     validationWarnings: element.scheme === 'alcs'
       ? validate(element)

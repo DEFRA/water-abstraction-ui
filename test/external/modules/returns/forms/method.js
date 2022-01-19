@@ -29,12 +29,18 @@ experiment('external method form', () => {
   test('radio field has correct choices', async () => {
     const radio = findField(form, 'method');
     expect(radio.options.choices).to.equal(
-      [ { value: 'oneMeter,measured',
-        label: 'Readings from a single meter' },
-      { value: 'abstractionVolumes,measured',
-        label: 'Volumes from one or more meters' },
-      { value: 'abstractionVolumes,estimated',
-        label: 'Estimates without a meter' } ]
+      [{
+        value: 'oneMeter,measured',
+        label: 'Readings from a single meter'
+      },
+      {
+        value: 'abstractionVolumes,measured',
+        label: 'Volumes from one or more meters'
+      },
+      {
+        value: 'abstractionVolumes,estimated',
+        label: 'Estimates without a meter'
+      }]
     );
   });
 

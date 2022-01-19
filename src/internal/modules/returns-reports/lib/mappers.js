@@ -10,11 +10,11 @@ const mapReturn = row => ({
   'Return ID': row.id,
   'Licence number': row.licenceRef,
   'Return reference': row.returnRequirement,
-  'Frequency': row.returnsFrequency,
+  Frequency: row.returnsFrequency,
   'Start date': row.dateRange.startDate,
   'End date': row.dateRange.startDate,
   'Due date': row.dueDate,
-  'Status': row.status,
+  Status: row.status,
   'Date received': row.receivedDate,
   'Submitted by': row.user && row.user.email,
   'User type': row.userType

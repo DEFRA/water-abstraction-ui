@@ -34,7 +34,7 @@ const postCreateAccount = async (request, h) => {
 
   if (form.isValid) {
     request.yar.set('newInternalUserAccountEmail', payload.email);
-    return h.redirect(`/account/create-user/set-permissions`);
+    return h.redirect('/account/create-user/set-permissions');
   }
   return getCreateAccount(request, h, form);
 };
@@ -124,7 +124,8 @@ const postDeleteUserAccount = async (request, h) => {
       return getDeleteUserAccount(request, h, applyErrors(form, [{
         name: 'confirmDelete',
         message,
-        summary: message }]));
+        summary: message
+      }]));
     }
     throw (err);
   }

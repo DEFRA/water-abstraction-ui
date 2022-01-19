@@ -65,7 +65,7 @@ const getReviewChargeInformation = async (request, h) => {
 
   return h.view('nunjucks/charge-information/view', {
     ...getDefaultView(request, backLink),
-    pageTitle: `Check charge information`,
+    pageTitle: 'Check charge information',
     chargeVersion: validatedDraftChargeVersion,
     billingAccount,
     billingAccountAddress,
@@ -98,7 +98,7 @@ const postReviewChargeInformation = async (request, h) => {
 
     return h.view('nunjucks/charge-information/view', {
       ...getDefaultView(request, backLink),
-      pageTitle: `Check charge information`,
+      pageTitle: 'Check charge information',
       chargeVersion: chargeInformationValidator.addValidation(draftChargeInformation),
       invoiceAccountAddress,
       licenceHolder,

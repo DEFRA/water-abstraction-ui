@@ -11,7 +11,7 @@ const sinon = require('sinon');
 const moment = require('moment');
 const { find } = require('lodash');
 
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 
 const sandbox = sinon.createSandbox();
 
@@ -260,7 +260,7 @@ experiment('internal/modules/charge-information/controller', () => {
     });
 
     test('an error is displayed', async () => {
-      const [ form ] = h.postRedirectGet.lastCall.args;
+      const [form] = h.postRedirectGet.lastCall.args;
       const field = find(form.fields, { name: 'startDate' }).options.choices[3].fields[0];
       expect(field.errors[0].message).to.equal('Enter a real date for the effective date');
     });
@@ -284,7 +284,7 @@ experiment('internal/modules/charge-information/controller', () => {
     });
 
     test('an error is displayed', async () => {
-      const [ form ] = h.postRedirectGet.lastCall.args;
+      const [form] = h.postRedirectGet.lastCall.args;
       const field = find(form.fields, { name: 'startDate' }).options.choices[3].fields[0];
       expect(field.errors[0].message).to.equal('You must enter a date after the licence start date');
     });
@@ -311,7 +311,7 @@ experiment('internal/modules/charge-information/controller', () => {
     });
 
     test('an error is displayed', async () => {
-      const [ form ] = h.postRedirectGet.lastCall.args;
+      const [form] = h.postRedirectGet.lastCall.args;
       const field = find(form.fields, { name: 'startDate' }).options.choices[2].fields[0];
       expect(field.errors[0].message).to.equal('You must enter a date before the licence end date');
     });

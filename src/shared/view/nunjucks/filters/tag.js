@@ -16,10 +16,12 @@ const sizeMap = {
  * Maps original badge implementation to new gov-uk tag
  */
 const mapBadgeToTag = (param, status) => {
-  const options = isObject(param) ? param : {
-    text: param,
-    status
-  };
+  const options = isObject(param)
+    ? param
+    : {
+        text: param,
+        status
+      };
 
   const cssClasses = [
     colourMap[options.status] || 'govuk-tag--blue',

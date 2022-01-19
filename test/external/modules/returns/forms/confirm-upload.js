@@ -29,13 +29,13 @@ experiment('confirmUploadForm', () => {
   test('it should have singular button text for 1 return', async () => {
     const form = confirmForm(createRequest(), 1);
     const button = find(form.fields, findButton);
-    expect(button.options.label).to.equal(`Submit 1 return`);
+    expect(button.options.label).to.equal('Submit 1 return');
   });
 
   test('it should have plural button text for multiple returns', async () => {
     const form = confirmForm(createRequest(), 5);
     const button = find(form.fields, findButton);
-    expect(button.options.label).to.equal(`Submit 5 returns`);
+    expect(button.options.label).to.equal('Submit 5 returns');
   });
 
   test('it should include the CSRF token', async () => {

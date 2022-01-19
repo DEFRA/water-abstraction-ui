@@ -159,7 +159,6 @@ const getUploadEvent = async (eventId, userName) => {
  * page refreshes every 5 seconds and checks the status of the event
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - HAPI HTTP reply
- * @param {String} status - the status the event should resolve to for redirect
  */
 const getSpinnerPage = async (request, h) => {
   // Get data from request
@@ -182,7 +181,7 @@ const getSpinnerPage = async (request, h) => {
 
     return h.view('nunjucks/waiting/index', request.view);
   } else {
-    const error = Boom.notFound(`Upload event not found`, { eventId });
+    const error = Boom.notFound('Upload event not found', { eventId });
     logger.errorWithJourney('No event found with selected event_id and issuer', error, request, { eventId });
     throw error;
   }
@@ -227,7 +226,7 @@ const getSummary = async (request, h) => {
     return h.view('nunjucks/returns/upload-summary', view);
   } catch (err) {
     const params = { eventId, options };
-    logger.errorWithJourney(`Return upload error`, err, request, params);
+    logger.errorWithJourney('Return upload error', err, request, params);
     throw err;
   }
 };
@@ -257,7 +256,7 @@ const getSummaryReturn = async (request, h) => {
     return h.view('nunjucks/returns/upload-return', view);
   } catch (err) {
     const params = { eventId, returnId, options };
-    logger.errorWithJourney(`Return upload error`, err, request, params);
+    logger.errorWithJourney('Return upload error', err, request, params);
     throw err;
   }
 };
@@ -279,7 +278,7 @@ const postSubmit = async (request, h) => {
     return h.redirect(`/returns/processing-upload/submitting/${eventId}`);
   } catch (err) {
     const params = { eventId, options };
-    logger.errorWithJourney(`Return upload error`, err, request, params);
+    logger.errorWithJourney('Return upload error', err, request, params);
     throw err;
   }
 };
@@ -290,10 +289,10 @@ const postSubmit = async (request, h) => {
 const getSubmitted = async (request, h) => {
   const { bulkUpload } = await helpers.getReturnsViewData(request);
   const { eventId } = request.params;
-  logger.info(`Return upload submitted`, { eventId });
+  logger.info('Return upload submitted', { eventId });
   const view = {
     ...request.view,
-    pageTitle: `Returns submitted`,
+    pageTitle: 'Returns submitted',
     bulkUpload
   };
   return h.view('nunjucks/returns/upload-submitted', view);
@@ -311,7 +310,7 @@ const getCSVTemplates = async (request, h) => {
   const returns = await services.water.companies.getCurrentDueReturns(companyId);
 
   if (returns.length === 0) {
-    throw Boom.notFound(`CSV templates error - no current due returns`, { companyId });
+    throw Boom.notFound('CSV templates error - no current due returns', { companyId });
   }
 
   const endDate = returns[0].endDate;

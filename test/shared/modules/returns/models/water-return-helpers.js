@@ -18,12 +18,16 @@ experiment('water returns helpers:', () => {
         lines: []
       });
       expect(lines).to.equal([
-        { startDate: '2019-04-01',
+        {
+          startDate: '2019-04-01',
           endDate: '2019-04-30',
-          timePeriod: 'month' },
-        { startDate: '2019-05-01',
+          timePeriod: 'month'
+        },
+        {
+          startDate: '2019-05-01',
           endDate: '2019-05-31',
-          timePeriod: 'month' }
+          timePeriod: 'month'
+        }
       ]);
     });
 
@@ -65,44 +69,56 @@ experiment('water returns helpers:', () => {
     test('should create a volumes array from meter readings', async () => {
       const result = mapMeterLinesToVolumes(startReading, readings, lines);
       expect(result).to.equal([
-        { startDate: '2019-04-01',
+        {
+          startDate: '2019-04-01',
           endDate: '2019-04-30',
           timePeriod: 'month',
-          quantity: 2.5 },
-        { startDate: '2019-05-01',
+          quantity: 2.5
+        },
+        {
+          startDate: '2019-05-01',
           endDate: '2019-05-31',
           timePeriod: 'month',
-          quantity: 7.32 }
+          quantity: 7.32
+        }
       ]);
     });
 
     test('should multiply volumes if multiplier specified', async () => {
       const result = mapMeterLinesToVolumes(startReading, readings, lines, 10);
       expect(result).to.equal([
-        { startDate: '2019-04-01',
+        {
+          startDate: '2019-04-01',
           endDate: '2019-04-30',
           timePeriod: 'month',
-          quantity: 25 },
-        { startDate: '2019-05-01',
+          quantity: 25
+        },
+        {
+          startDate: '2019-05-01',
           endDate: '2019-05-31',
           timePeriod: 'month',
-          quantity: 73.2 }
+          quantity: 73.2
+        }
       ]);
     });
 
     test('should include readings if flag set', async () => {
       const result = mapMeterLinesToVolumes(startReading, readings, lines, 10, true);
       expect(result).to.equal([
-        { startDate: '2019-04-01',
+        {
+          startDate: '2019-04-01',
           endDate: '2019-04-30',
           timePeriod: 'month',
           endReading: 12.5,
-          quantity: 25 },
-        { startDate: '2019-05-01',
+          quantity: 25
+        },
+        {
+          startDate: '2019-05-01',
           endDate: '2019-05-31',
           timePeriod: 'month',
           endReading: 19.82,
-          quantity: 73.2 }
+          quantity: 73.2
+        }
       ]);
     });
   });

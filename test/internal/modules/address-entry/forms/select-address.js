@@ -8,7 +8,7 @@ const {
   beforeEach
 } = exports.lab = require('@hapi/lab').script();
 const sandbox = require('sinon').createSandbox();
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const { omit } = require('lodash');
 
 const selectAddress = require('internal/modules/address-entry/forms/select-address');

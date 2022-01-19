@@ -55,14 +55,14 @@ experiment('internal/NotificationsApiClient', () => {
       await client.sendNotification(taskConfigId, licenceNumbers, params);
       const [url] = serviceRequest.post.lastCall.args;
 
-      expect(url).to.equal(`https://example.com/water/notification/preview`);
+      expect(url).to.equal('https://example.com/water/notification/preview');
     });
 
     test('uses the send url when a sender is passed', async () => {
       await client.sendNotification(taskConfigId, licenceNumbers, params, sender);
       const [url] = serviceRequest.post.lastCall.args;
 
-      expect(url).to.equal(`https://example.com/water/notification/send`);
+      expect(url).to.equal('https://example.com/water/notification/send');
     });
 
     test('passes the expected body', async () => {

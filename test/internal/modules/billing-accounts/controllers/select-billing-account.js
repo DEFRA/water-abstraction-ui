@@ -8,7 +8,7 @@ const {
   afterEach
 } = exports.lab = require('@hapi/lab').script();
 const sandbox = require('sinon').createSandbox();
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const { get } = require('lodash');
 
 const controller = require('internal/modules/billing-accounts/controllers/select-billing-account');
@@ -811,7 +811,7 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
         const func = () => controller.postCheckAnswers(request, h);
         await expect(func()).to.reject();
         expect(logger.error.calledWith(
-          `Error saving billing account`, ERROR
+          'Error saving billing account', ERROR
         )).to.be.true();
       });
     });

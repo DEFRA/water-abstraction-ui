@@ -3,7 +3,7 @@
 const moment = require('moment');
 const { get } = require('lodash');
 const Joi = require('joi');
-const sentenceCase = require('sentence-case');
+const { sentenceCase } = require('shared/lib/string-formatter');
 
 const { isoToReadable } = require('@envage/water-abstraction-helpers').nald.dates;
 

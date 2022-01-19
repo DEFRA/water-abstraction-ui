@@ -86,7 +86,8 @@ experiment('internal/modules/gauging-stations/forms/remove-tags-conditions.js', 
         easting: null,
         northing: null
       }
-    ] };
+    ]
+  };
 
   experiment('.form', () => {
     beforeEach(async () => {

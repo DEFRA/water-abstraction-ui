@@ -75,12 +75,12 @@ experiment('batch notifications controller', () => {
     });
 
     test('renders the correct template', async () => {
-      const [ template ] = h.view.lastCall.args;
+      const [template] = h.view.lastCall.args;
       expect(template).to.equal('nunjucks/batch-notifications/review');
     });
 
     test('outputs correct data to view', async () => {
-      const [ , data ] = h.view.lastCall.args;
+      const [, data] = h.view.lastCall.args;
       expect(data.pageTitle).to.equal('Send returns reminders');
       expect(data.form).to.be.an.object();
       expect(data.ev).to.equal(ev);
@@ -110,13 +110,13 @@ experiment('batch notifications controller', () => {
       expect(csv.csvDownload.callCount).to.equal(1);
       const [, data, filename] = csv.csvDownload.lastCall.args;
       expect(filename).to.equal('Returns reminder - ABC.csv');
-      expect(data).to.equal([ {
+      expect(data).to.equal([{
         foo: 'bar',
         message_type: 'letter',
         message_ref: 'template_1',
         licences: 'licence_1,licence_2',
         recipient: 'n/a'
-      } ]);
+      }]);
     });
   });
 
@@ -133,7 +133,7 @@ experiment('batch notifications controller', () => {
 
     test('redirects to confirmation page', async () => {
       expect(h.redirect.callCount).to.equal(1);
-      const [ path ] = h.redirect.lastCall.args;
+      const [path] = h.redirect.lastCall.args;
       expect(path).to.equal('/batch-notifications/confirmation/event_1');
     });
   });
@@ -150,16 +150,16 @@ experiment('batch notifications controller', () => {
     });
 
     test('renders the correct template', async () => {
-      const [ template ] = h.view.lastCall.args;
+      const [template] = h.view.lastCall.args;
       expect(template).to.equal('nunjucks/batch-notifications/confirmation');
     });
 
     test('outputs correct data to view', async () => {
-      const [ , data ] = h.view.lastCall.args;
+      const [, data] = h.view.lastCall.args;
       expect(data.event).to.equal(ev);
     });
     test('uses correct confirmation heading', async () => {
-      const [ , data ] = h.view.lastCall.args;
+      const [, data] = h.view.lastCall.args;
       expect(data.pageTitle).to.equal('Return reminders sent');
     });
   });

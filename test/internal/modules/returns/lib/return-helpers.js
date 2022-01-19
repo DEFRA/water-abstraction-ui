@@ -57,23 +57,31 @@ experiment('getLinesWithReadings', () => {
       meters: [meter],
       lines
     };
-    expect(getLinesWithReadings(data)).to.equal([ { startDate: '2017-10-01',
+    expect(getLinesWithReadings(data)).to.equal([{
+      startDate: '2017-10-01',
       endDate: '2017-10-31',
       quantity: 5,
       startReading: 5,
-      endReading: 10 },
-    { startDate: '2017-11-01',
+      endReading: 10
+    },
+    {
+      startDate: '2017-11-01',
       endDate: '2017-11-30',
       quantity: 5,
       startReading: 10,
-      endReading: 15 },
-    { startDate: '2017-12-01',
+      endReading: 15
+    },
+    {
+      startDate: '2017-12-01',
       endDate: '2017-12-31',
-      quantity: null },
-    { startDate: '2018-01-01',
+      quantity: null
+    },
+    {
+      startDate: '2018-01-01',
       endDate: '2018-01-31',
       quantity: 2,
       startReading: 15,
-      endReading: 17 } ]);
+      endReading: 17
+    }]);
   });
 });

@@ -35,17 +35,17 @@ const getLicenceReturnsFilter = (licenceNumbers, showFutureReturns = false) => {
   return filter;
 };
 
-const getPagination = page => {
-  return isObject(page) ? page : {
-    page,
-    perPage: 50
-  };
-};
+const getPagination = page => isObject(page)
+  ? page
+  : {
+      page,
+      perPage: 50
+    };
 
 class ReturnsApiClient extends SharedReturnsApiClient {
   /**
    * Get the returns for a list of licence numbers
-   * @param {Array} list of licence numbers to get returns data for
+   * @param {Array} licenceNumbers list of licence numbers to get returns data for
    * @param {Number|Object} page number, or pagination object
    * @return {Promise} resolves with returns
    */

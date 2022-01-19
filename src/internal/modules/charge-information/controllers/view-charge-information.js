@@ -47,7 +47,8 @@ const getViewChargeInformation = async (request, h) => {
     // @TODO: use request.pre.isChargeable to determine this
     // after the chargeVersion import ticket has been completed
     // In the meantime, it will use chargeVersion.changeReason.type === 'new_non_chargeable_charge_version'
-    isChargeable: get(chargeVersion, 'changeReason.type') !== 'new_non_chargeable_charge_version'
+    isChargeable: get(chargeVersion, 'changeReason.type') !== 'new_non_chargeable_charge_version',
+    isSrocChargeInfoEnabled
   });
 };
 

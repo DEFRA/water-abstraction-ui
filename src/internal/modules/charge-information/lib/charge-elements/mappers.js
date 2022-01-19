@@ -1,6 +1,5 @@
 'use-strict';
 
-const { isEmpty } = require('lodash');
 const { SOURCES, EIUC_SOURCE_OTHER } = require('./constants');
 
 const abstraction = (formValues) => {

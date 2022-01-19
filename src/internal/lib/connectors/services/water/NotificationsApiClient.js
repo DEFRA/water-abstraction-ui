@@ -31,17 +31,19 @@ class NotificationsApiClient extends SharedNotificationsApiClient {
   /**
    * Gets a list of notifications
    * @param {Number} page
+   * @param categories Either an array, or a single string (optional)
+   * @param sender An email address (optional)
    */
-  getNotifications (page, filter, sentBy = '') {
-    if (filter) {
-      filter = filter.toString();
-    }
+  getNotifications (page, categories, sender) {
     const url = urlJoin(this.config.serviceUrl, 'notifications');
+
+    const parsedCategoriesString = Array.isArray(categories) ? categories.join(',') : categories;
+
     const options = {
       qs: {
-        page,
-        filter,
-        sentBy
+        sender,
+        page: page || 1,
+        categories: parsedCategoriesString
       }
     };
     return serviceRequest.get(url, options);
@@ -71,6 +73,11 @@ class NotificationsApiClient extends SharedNotificationsApiClient {
    */
   getNotificationMessage (id) {
     const url = urlJoin(this.config.serviceUrl, 'notifications', id, 'message');
+    return serviceRequest.get(url);
+  }
+
+  getNotificationCategories () {
+    const url = urlJoin(this.config.serviceUrl, 'notifications/categories');
     return serviceRequest.get(url);
   }
 };

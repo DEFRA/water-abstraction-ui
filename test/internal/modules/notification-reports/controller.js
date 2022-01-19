@@ -3,7 +3,11 @@ const { expect } = require('@hapi/code');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
+const form = require('internal/modules/notifications-reports/forms/notifications-filtering');
+const formHandler = require('../../../../src/shared/lib/form-handler');
+
 const controller = require('internal/modules/notifications-reports/controller');
+const session = require('internal/modules/notifications-reports/lib/session');
 const services = require('internal/lib/connectors/services');
 
 const eventId = 'test-event-id';
@@ -27,50 +31,49 @@ const data = {
   }]
 };
 
+const categories = [
+  {
+    value: 'some-category',
+    label: 'Some category'
+  }
+];
+
+const sender = 'some@email.com';
+
 experiment('internal/modules/notification-reports/controller.js', () => {
-  let request, requestFail;
+  let request;
   let h;
-  const notificationCategories = [{ value: 'Water Abstraction Alert Reduce Warning', label: 'water_abstraction_alert_reduce_warning' }, { value: 'testvalue', label: 'testlabel' }];
 
   beforeEach(async () => {
     sandbox.stub(services.water.notifications, 'getNotifications');
     sandbox.stub(services.water.notifications, 'getNotification');
     sandbox.stub(services.water.notifications, 'getNotificationMessages');
 
+    sandbox.stub(formHandler, 'handleFormRequest').resolves({});
+
+    sandbox.stub(session, 'get').returns({ categories, sender });
+    sandbox.stub(session, 'merge');
+    sandbox.stub(session, 'clear');
+
     request = {
       params: {
         id: eventId
       },
-      yar: {
-        get: sandbox.stub(),
-        set: sandbox.stub(),
-        clear: sandbox.stub()
-      },
       query: {
-        page: 3,
-        sentBy: ''
+        page: 3
+      },
+      method: 'post',
+      payload: {},
+      pre: {
+        notificationCategories: []
       },
       view: {}
     };
-
-    requestFail = {
-      params: {
-        id: eventId
-      },
-      yar: {
-        get: sandbox.stub(),
-        set: sandbox.stub(),
-        clear: sandbox.stub()
-      },
-      query: {
-        page: 3,
-        sentBy: 'not-email'
-      },
-      view: {}
+    h = {
+      view: sandbox.spy(),
+      redirect: sandbox.spy(),
+      postRedirectGet: sandbox.spy()
     };
-
-    h = sandbox.spy();
-    h.view = sandbox.spy();
   });
 
   afterEach(async () => {
@@ -81,8 +84,7 @@ experiment('internal/modules/notification-reports/controller.js', () => {
     beforeEach(async () => {
       services.water.notifications.getNotifications.resolves({
         data: data.events,
-        pagination: data.pagination,
-        notificationCategories
+        pagination: data.pagination
       });
 
       await controller.getNotificationsList(request, h);
@@ -91,8 +93,8 @@ experiment('internal/modules/notification-reports/controller.js', () => {
     test('calls the water service notifications API', async () => {
       expect(services.water.notifications.getNotifications.calledWith(
         request.query.page,
-        request.query.filter,
-        request.query.sentBy
+        categories,
+        sender
       )).to.be.true();
     });
 
@@ -111,59 +113,61 @@ experiment('internal/modules/notification-reports/controller.js', () => {
       expect(pagination).to.equal(data.pagination);
     });
 
-    test('uses the expected view template', async () => {
-      const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/notifications-reports/list');
-    });
-
-    test('empty errors array in the view context', async () => {
-      const [, viewContext] = h.view.lastCall.args;
-      expect(viewContext.form.errors.length).to.equal(0);
+    experiment('given a qs of clear=1', () => {
+      beforeEach(async () => {
+        await controller.getNotificationsList({ ...request, query: { clear: 1 } }, h);
+      });
+      test('clears the session', () => {
+        expect(session.clear.called).to.be.true();
+      });
     });
   });
 
-  experiment('getNotification with invalid email', () => {
-    beforeEach(async () => {
-      services.water.notifications.getNotifications.resolves({
-        data: data.events,
-        pagination: data.pagination,
-        notificationCategories
+  experiment('.postNotificationListSearch', () => {
+    const modifiedRequestObject = {
+      ...request,
+      payload: {
+        categories,
+        sender
+      }
+    };
+
+    experiment('given that the form is valid', () => {
+      beforeEach(async () => {
+        await formHandler.handleFormRequest.returns({
+          isValid: true
+        });
+        await controller.postNotificationListSearch(modifiedRequestObject, h);
+      });
+      test('calls the form handler to parse the form', () => { // todo
+        expect(formHandler.handleFormRequest.calledWith(modifiedRequestObject, form)).to.be.true();
       });
 
-      await controller.getNotificationsList(requestFail, h);
+      test('calls session.merge to store the entered values', () => {
+        expect(session.merge.calledWith(modifiedRequestObject, { categories, senderInputValue: sender })).to.be.true();
+      });
+      test('it redirects the user back to the view', () => {
+        expect(h.redirect.called).to.be.true();
+      });
     });
 
-    test('Does not call the water service notifications API', async () => {
-      expect(services.water.notifications.getNotifications.calledWith(
-        requestFail.query.page,
-        requestFail.query.filter,
-        requestFail.query.sentBy
-      )).to.be.false();
-    });
+    experiment('given that the form is invalid', () => {
+      beforeEach(async () => {
+        await formHandler.handleFormRequest.returns({
+          isValid: false
+        });
+        await controller.postNotificationListSearch(modifiedRequestObject, h);
+      });
+      test('calls the form handler to parse the form', () => {
+        expect(formHandler.handleFormRequest.calledWith(modifiedRequestObject, form)).to.be.true();
+      });
 
-    test('uses the expected view template', async () => {
-      const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/notifications-reports/list');
-    });
-
-    test('outputs the events to the view', async () => {
-      const [, { events }] = h.view.lastCall.args;
-      expect(events).to.equal(data.events);
-    });
-
-    test('outputs the pagination to the view', async () => {
-      const [, { pagination }] = h.view.lastCall.args;
-      expect(pagination).to.equal(data.pagination);
-    });
-
-    test('uses the expected view template', async () => {
-      const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/notifications-reports/list');
-    });
-
-    test('non-empty errors array to the view context', async () => {
-      const [, viewContext] = h.view.lastCall.args;
-      expect(viewContext.form.errors.length).to.equal(1);
+      test('calls session.merge to store the entered values', () => {
+        expect(session.merge.calledWith(modifiedRequestObject, { categories, senderInputValue: sender })).to.be.true();
+      });
+      test('it redirects the user back to the view', () => {
+        expect(h.postRedirectGet.called).to.be.true();
+      });
     });
   });
 

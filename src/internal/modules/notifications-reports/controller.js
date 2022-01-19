@@ -1,100 +1,47 @@
 'use strict';
 
 const Boom = require('@hapi/boom');
-
+const formHandler = require('shared/lib/form-handler');
+const notificationFilteringForm = require('./forms/notifications-filtering');
 const services = require('../../lib/connectors/services');
 const { mapMessage } = require('./lib/message-mapper');
-
-const Joi = require('joi');
-const { formFactory, fields, setValues } = require('shared/lib/forms');
-const { mapResponseToView } = require('./lib/message-mapper');
-
-const { handleRequest, applyErrors } = require('shared/lib/forms');
+const session = require('./lib/session');
 
 /**
- * Creates a form object for internal users to search by notification type and sent by email
- * number etc.
- * @param  {String} query - the search query entered by the user
- * @return {Object}       form object
+ * View list of notifications sent
+ * @param {String} request.query.page - the page of results to fetch
  */
-const searchForm = (request, data = {}) => {
-  const f = formFactory('/notifications', 'GET');
-
-  f.fields.push(fields.text('sentBy', {
-    widget: 'search',
-    hint: 'Filter by sent by email',
-    errors: {
-      'string.email': {
-        message: 'Enter a valid email'
-      }
-    }
-  }));
-
-  f.fields.push(fields.radio('filter', {
-    widget: 'search',
-    hint: 'Filter by Notification type',
-    errors: {
-      'string.empty': {
-        message: 'Enter a Sent by email or select Notification type'
-      }
-    }
-  }));
-
-  return setValues(f, data);
-};
-
-const searchFormSchema = () => Joi.object().keys({
-  page: Joi.number().integer().min(1).default(1),
-  filter: [Joi.array().optional(), Joi.string().allow('')],
-  sentBy: Joi.string().trim().email().allow('')
-});
-
 async function getNotificationsList (request, h) {
-  const { page = '1', filter } = request.query;
-  const { sentBy = '' } = request.query;
-  const { view } = request;
-  const form = handleRequest(searchForm(request, {}), request, searchFormSchema(), {
-    abortEarly: true
-  });
-  const { errors } = form;
-
-  let sentByQuery = sentBy.trim();
-  let filterQuery = filter;
-  let thisFormWithCustomErrors = form;
-  if (!form.isValid) {
-    errors.some(error => {
-      if (error.name === 'sentBy') {
-        thisFormWithCustomErrors = applyErrors(form, [{ name: 'sentBy', summary: 'Invalid email entered' }]);
-        sentByQuery = ''; // do not search with invalid query
-      }
-      if (error.name === 'filter') {
-        thisFormWithCustomErrors = applyErrors(form, [{ name: 'filter', summary: 'Invalid filter selected' }]);
-        filterQuery = ''; // do not search with invalid query
-      }
-    });
+  const { page, clear } = request.query;
+  if (clear) {
+    session.clear(request);
   }
-
-  const {
-    pagination,
-    data,
-    notificationCategories
-  } = await services.water.notifications.getNotifications(page, filterQuery, sentByQuery);
-  pagination.next = parseInt(page) + 1;
-  pagination.previous = parseInt(page) - 1;
-  Object.assign(view, mapResponseToView(data, request, notificationCategories, sentBy));
-  view.form = form;
-
-  if (!form.isValid) {
-    thisFormWithCustomErrors.isValid = false;
-    view.form = thisFormWithCustomErrors;
-  }
+  const { categories, sender } = session.get(request);
+  const { pagination, data } = await services.water.notifications.getNotifications(page, categories, sender);
+  const form = formHandler.handleFormRequest(request, notificationFilteringForm);
 
   return h.view('nunjucks/notifications-reports/list', {
-    ...view,
+    ...request.view,
     pagination,
-    events: data
+    events: data,
+    form,
+    back: '/manage',
+    filtersSegmentOpen: (!!categories || !!sender || form.isValid === false)
   });
 }
+
+const postNotificationListSearch = (request, h) => {
+  const { categories, sender } = request.payload;
+
+  const form = formHandler.handleFormRequest(request, notificationFilteringForm);
+  session.merge(request, { categories, senderInputValue: sender });
+  if (!form.isValid) {
+    return h.postRedirectGet(form);
+  } else {
+    session.merge(request, { sender });
+    return h.redirect(request.path);
+  }
+};
 
 /**
  * View messages for a single event (batch of messages)
@@ -124,4 +71,5 @@ async function getNotification (request, h) {
 }
 
 exports.getNotificationsList = getNotificationsList;
+exports.postNotificationListSearch = postNotificationListSearch;
 exports.getNotification = getNotification;

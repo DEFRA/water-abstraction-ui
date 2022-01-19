@@ -252,7 +252,7 @@ const groupLicenceConditions = request => {
 
 const getBatchAlertData = async request => {
   const { selectedGroupedLicences, sendingAlertType } = session.get(request);
-  console.log(selectedGroupedLicences);
+
   return {
     sendingAlertType: sendingAlertType.value,
     linkages: selectedGroupedLicences.map(n => n.map(m => ({

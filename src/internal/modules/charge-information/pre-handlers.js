@@ -4,7 +4,7 @@ const Boom = require('@hapi/boom');
 const services = require('../../lib/connectors/services');
 const { loadLicence } = require('shared/lib/pre-handlers/licences');
 const moment = require('moment');
-const { get, sortBy, isEmpty } = require('lodash');
+const { get, sortBy } = require('lodash');
 const uuid = require('uuid');
 const errorHandler = (err, message) => {
   if (err.statusCode === 404) {
@@ -42,7 +42,7 @@ const loadValidatedDraftChargeInformation = async request => {
   const chargeVersionWorkFlowId = getChargeVersionWorkflowId(request);
   const draftChargeInformation = await loadDraftChargeInformation(request);
   // filter out incomplete charge elements when they have used the back button
-  draftChargeInformation.chargeElements = draftChargeInformation.chargeElements.filter(element => isEmpty(element.status));
+  draftChargeInformation.chargeElements = draftChargeInformation.chargeElements.filter(element => !element.status);
   request.clearDraftChargeInformation(licenceId, chargeVersionWorkFlowId);
   request.setDraftChargeInformation(licenceId, chargeVersionWorkFlowId, draftChargeInformation);
   return draftChargeInformation;

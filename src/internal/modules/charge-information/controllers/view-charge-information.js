@@ -54,14 +54,10 @@ const getViewChargeInformation = async (request, h) => {
 
 const getReviewChargeInformation = async (request, h) => {
   const { draftChargeInformation, licence, isChargeable, billingAccount } = request.pre;
-  const { chargeVersionWorkflowId, licenceId } = request.params;
+  const { chargeVersionWorkflowId } = request.params;
   const backLink = await getLicencePageUrl(licence, true);
   const isApprover = hasScope(request, chargeVersionWorkflowReviewer);
   const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount);
-  // filter out incomplete charge elements when they have used the back button
-  draftChargeInformation.chargeElements = draftChargeInformation.chargeElements.filter(element => isEmpty(element.status));
-  request.clearDraftChargeInformation(licenceId, chargeVersionWorkflowId);
-  request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation);
 
   const validatedDraftChargeVersion = chargeInformationValidator.addValidation(draftChargeInformation);
   const { data: documentRoles } = await services.crm.documentRoles.getDocumentRolesByDocumentRef(licence.licenceNumber);

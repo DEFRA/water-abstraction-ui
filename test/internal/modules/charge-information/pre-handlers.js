@@ -26,7 +26,7 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
       query: { },
       setDraftChargeInformation: sandbox.stub(),
       clearDraftChargeInformation: sandbox.stub(),
-      getDraftChargeInformation: sandbox.stub().returns({ dateRange: { startDate: START_DATE } }),
+      getDraftChargeInformation: sandbox.stub().returns({ dateRange: { startDate: START_DATE }, chargeElements: [] }),
       server: {
         methods: {
           cachedServiceRequest: sandbox.stub()

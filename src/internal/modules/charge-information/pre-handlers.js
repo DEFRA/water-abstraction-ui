@@ -214,7 +214,7 @@ const loadChargeVersionWorkflow = async request => {
 const loadChargeInformation = async request => {
   const { licenceId } = request.params;
   const chargeVersionWorkflowId = getChargeVersionWorkflowId(request);
-  let draftChargeInfo = await loadDraftChargeInformation(request);
+  let draftChargeInfo = await loadValidatedDraftChargeInformation(request);
   try {
     if (!draftChargeInfo.changeReason) {
       const chargeVersionWorkflow = await getChargeVersionWorkflow(chargeVersionWorkflowId);

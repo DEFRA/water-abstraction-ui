@@ -157,8 +157,8 @@ const clearData = () => {
 const createChargeElement = id => ({
   type: ACTION_TYPES.createChargeElement,
   payload: {
-    scheme: 'alcs',
     id,
+    scheme: 'alcs',
     status: 'draft'
   }
 });

@@ -62,30 +62,24 @@ const form = request => {
 };
 
 const schema = () => {
+  const customValidator = (value, helper) => {
+    const { error, original } = helper;
+    const [, decimals = ''] = original.split('.');
+    if (decimals.length <= 6) {
+      return value;
+    }
+    return error('number.custom');
+  };
   return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
     authorisedAnnualQuantity:
       Joi
         .number().positive().required()
-        .custom((value, helper) => {
-          const { error, original } = helper;
-          const [, decimals = ''] = original.split('.');
-          if (decimals.length <= 6) {
-            return value;
-          }
-          return error('number.custom');
-        }),
+        .custom((value, helper) => customValidator(value, helper)),
     billableAnnualQuantity:
       Joi
         .number().positive().allow('', null)
-        .custom((value, helper) => {
-          const { error, original } = helper;
-          const [, decimals = ''] = original.split('.');
-          if (decimals.length <= 6) {
-            return value;
-          }
-          return error('number.custom');
-        })
+        .custom((value, helper) => customValidator(value, helper))
   });
 };
 exports.schema = schema;

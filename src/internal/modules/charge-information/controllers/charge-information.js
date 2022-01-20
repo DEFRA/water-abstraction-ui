@@ -337,7 +337,8 @@ const getCancelData = (request, h) => h.view('nunjucks/charge-information/cancel
 });
 
 const postCancelData = async (request, h) => {
-  const { licence, draftChargeInformation: { chargeVersionWorkflowId } } = request.pre;
+  const { licence } = request.pre;
+  const { chargeVersionWorkflowId } = request.query;
   if (chargeVersionWorkflowId) {
     await services.water.chargeVersionWorkflows.deleteChargeVersionWorkflow(chargeVersionWorkflowId);
   }

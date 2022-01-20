@@ -548,7 +548,31 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
     });
 
     experiment('when data is found', () => {
+      const draftChargeInfo = {
+        id: 'test-charge-version-workflow-id',
+        status: 'review',
+        chargeVersion: {
+          chargeElements: [
+            {
+              scheme: 'sroc',
+              chargePurposes: [
+                {
+                  loss: 'high',
+                  source: 'tidal'
+                }
+              ]
+            }
+          ],
+          id: 'test-charge-version-id',
+          invoiceAccount: {
+            invoiceAccountAddresses: [{
+              id: 'test-invoice-account-address-id'
+            }]
+          }
+        }
+      };
       beforeEach(async () => {
+        services.water.chargeVersionWorkflows.getChargeVersionWorkflow.returns(draftChargeInfo);
         result = await preHandlers.loadChargeInformation(request);
       });
 
@@ -568,6 +592,8 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
         const [,, chargeVersion] = request.setDraftChargeInformation.lastCall.args;
         expect(chargeVersion.status).to.equal('review');
         expect(chargeVersion.invoiceAccount.invoiceAccountAddress).to.equal('test-invoice-account-address-id');
+        expect(chargeVersion.chargeElements[0].id.length === 36).to.be.true();
+        expect(chargeVersion.chargeElements[0].chargePurposes[0].id.length === 36).to.be.true();
       });
     });
 

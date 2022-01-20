@@ -7,13 +7,10 @@ const { CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants');
 const { getChargeElementData, getChargeElementActionUrl } = require('../../lib/form-helpers');
 
 const getErrors = key => {
+  const message = `Enter a number for the ${key} quantity using 6 decimal places or fewer, the number must be more than 0`;
   const errors = {
-    'number.unsafe': {
-      message: `Enter a number for the ${key} quantity using 6 decimal places or fewer, the number must be more than 0`
-    },
-    'number.custom': {
-      message: `Enter a number for the ${key} quantity using 6 decimal places or fewer, the number must be more than 0`
-    }
+    'number.unsafe': { message },
+    'number.custom': { message }
   };
   if (key === 'authorised') {
     const requiredAuthorisedQuantityError = {

@@ -1,6 +1,7 @@
 'use strict';
 
 const { expect } = require('@hapi/code');
+const Joi = require('joi');
 const {
   experiment,
   test,
@@ -592,8 +593,8 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
         const [,, chargeVersion] = request.setDraftChargeInformation.lastCall.args;
         expect(chargeVersion.status).to.equal('review');
         expect(chargeVersion.invoiceAccount.invoiceAccountAddress).to.equal('test-invoice-account-address-id');
-        expect(chargeVersion.chargeElements[0].id.length === 36).to.be.true();
-        expect(chargeVersion.chargeElements[0].chargePurposes[0].id.length === 36).to.be.true();
+        expect(Joi.string().uuid().validate(chargeVersion.chargeElements[0].id).error).to.equal(undefined);
+        expect(Joi.string().uuid().validate(chargeVersion.chargeElements[0].chargePurposes[0].id).error).to.equal(undefined);
       });
     });
 

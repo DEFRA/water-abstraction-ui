@@ -267,7 +267,7 @@ experiment('internal/modules/charge-information/lib/actions', () => {
           }]
         });
       });
-      test('when the charge element step is purpose then set the satus to draft', () => {
+      test('when the charge element step is purpose then set the status to draft', () => {
         request.params.step = 'purpose';
         const formValues = { purpose: 'test-purpose-id' };
         const action = actions.setChargeElementData(request, formValues);
@@ -284,7 +284,7 @@ experiment('internal/modules/charge-information/lib/actions', () => {
           }]
         });
       });
-      test('when the charge element step is loss then set the satus is removed', () => {
+      test('when the charge element step is loss then set the status is removed', () => {
         request.params.step = 'loss';
         const formValues = { loss: 'high' };
         const action = actions.setChargeElementData(request, formValues);

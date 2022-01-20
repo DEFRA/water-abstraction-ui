@@ -4,7 +4,7 @@ const {
   getCurrentBillingAccountAddress,
   prepareChargeInformation
 } = require('../lib/helpers');
-const { get, isEmpty } = require('lodash');
+const { get } = require('lodash');
 const forms = require('shared/lib/forms');
 const services = require('../../../lib/connectors/services');
 const chargeInformationValidator = require('../lib/charge-information-validator');

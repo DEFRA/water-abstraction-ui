@@ -96,7 +96,13 @@ const createRequest = () => ({
       changeReason: {},
       status: 'current'
     }
-  }
+  },
+  yar: {
+    get: sandbox.stub()
+  },
+  setDraftChargeInformation: sandbox.stub(),
+  getDraftChargeInformation: sandbox.stub().returns({ dateRange: { startDate: '2019-01-01' } }),
+  clearDraftChargeInformation: sandbox.stub()
 });
 
 const licencePageUrl = '/licences/test-licence-id#charge';

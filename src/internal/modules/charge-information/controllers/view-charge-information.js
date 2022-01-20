@@ -47,7 +47,8 @@ const getViewChargeInformation = async (request, h) => {
     // @TODO: use request.pre.isChargeable to determine this
     // after the chargeVersion import ticket has been completed
     // In the meantime, it will use chargeVersion.changeReason.type === 'new_non_chargeable_charge_version'
-    isChargeable: get(chargeVersion, 'changeReason.type') !== 'new_non_chargeable_charge_version'
+    isChargeable: get(chargeVersion, 'changeReason.type') !== 'new_non_chargeable_charge_version',
+    isSrocChargeInfoEnabled
   });
 };
 
@@ -57,6 +58,7 @@ const getReviewChargeInformation = async (request, h) => {
   const backLink = await getLicencePageUrl(licence, true);
   const isApprover = hasScope(request, chargeVersionWorkflowReviewer);
   const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount);
+
   const validatedDraftChargeVersion = chargeInformationValidator.addValidation(draftChargeInformation);
   const { data: documentRoles } = await services.crm.documentRoles.getDocumentRolesByDocumentRef(licence.licenceNumber);
   const licenceHolder = documentRoles.find(role => role.roleName === 'licenceHolder');

@@ -1,6 +1,7 @@
 'use strict';
 
 const { expect } = require('@hapi/code');
+const Joi = require('joi');
 const {
   experiment,
   test,
@@ -25,7 +26,8 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
       },
       query: { },
       setDraftChargeInformation: sandbox.stub(),
-      getDraftChargeInformation: sandbox.stub().returns({ dateRange: { startDate: START_DATE } }),
+      clearDraftChargeInformation: sandbox.stub(),
+      getDraftChargeInformation: sandbox.stub().returns({ dateRange: { startDate: START_DATE }, chargeElements: [] }),
       server: {
         methods: {
           cachedServiceRequest: sandbox.stub()
@@ -136,6 +138,42 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
 
     test('returns the retrieved data', async () => {
       expect(result).to.equal({ startDate: '2020-01-01' });
+    });
+  });
+
+  experiment('.loadValidatedDraftChargeInformation', () => {
+    beforeEach(async () => {
+      request.getDraftChargeInformation.returns({
+        startDate: '2020-01-01',
+        chargeElements: [
+          {
+            id: 'test-id-1',
+            status: 'draft'
+          },
+          {
+            id: 'test-id-2'
+          }
+        ]
+      });
+
+      result = await preHandlers.loadValidatedDraftChargeInformation(request);
+    });
+
+    test('the server method is called with the licence ID', async () => {
+      expect(request.getDraftChargeInformation.calledWith(
+        'test-licence-id'
+      )).to.be.true();
+    });
+
+    test('returns the retrieved data with only the valid charge elements', async () => {
+      expect(result).to.equal({
+        chargeElements: [
+          {
+            id: 'test-id-2'
+          }
+        ],
+        startDate: '2020-01-01'
+      });
     });
   });
 
@@ -511,7 +549,31 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
     });
 
     experiment('when data is found', () => {
+      const draftChargeInfo = {
+        id: 'test-charge-version-workflow-id',
+        status: 'review',
+        chargeVersion: {
+          chargeElements: [
+            {
+              scheme: 'sroc',
+              chargePurposes: [
+                {
+                  loss: 'high',
+                  source: 'tidal'
+                }
+              ]
+            }
+          ],
+          id: 'test-charge-version-id',
+          invoiceAccount: {
+            invoiceAccountAddresses: [{
+              id: 'test-invoice-account-address-id'
+            }]
+          }
+        }
+      };
       beforeEach(async () => {
+        services.water.chargeVersionWorkflows.getChargeVersionWorkflow.returns(draftChargeInfo);
         result = await preHandlers.loadChargeInformation(request);
       });
 
@@ -531,6 +593,8 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
         const [,, chargeVersion] = request.setDraftChargeInformation.lastCall.args;
         expect(chargeVersion.status).to.equal('review');
         expect(chargeVersion.invoiceAccount.invoiceAccountAddress).to.equal('test-invoice-account-address-id');
+        expect(Joi.string().uuid().validate(chargeVersion.chargeElements[0].id).error).to.equal(undefined);
+        expect(Joi.string().uuid().validate(chargeVersion.chargeElements[0].chargePurposes[0].id).error).to.equal(undefined);
       });
     });
 

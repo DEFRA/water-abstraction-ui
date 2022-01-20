@@ -111,7 +111,7 @@ experiment('internal/modules/charge-information/forms/charge-category/volume', (
       test('must not have more than 6 decimal places', async () => {
         const result = schema(createRequest()).validate({
           csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
-          volume: '132.1234567'
+          volume: 132.1234567
         }, { allowUnknown: true });
         expect(result.error).to.exist();
       });
@@ -119,7 +119,7 @@ experiment('internal/modules/charge-information/forms/charge-category/volume', (
       test('must not be zero', async () => {
         const result = schema(createRequest()).validate({
           csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
-          volume: '0'
+          volume: 0
         }, { allowUnknown: true });
         expect(result.error).to.exist();
       });

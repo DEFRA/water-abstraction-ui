@@ -190,7 +190,7 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
             {
               id: chargeCategory.billingChargeCategoryId,
               reference: chargeCategory.reference,
-              description: chargeCategory.shortDescription
+              shortDescription: chargeCategory.shortDescription
             });
         });
 

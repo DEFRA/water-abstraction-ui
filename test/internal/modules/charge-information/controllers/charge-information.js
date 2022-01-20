@@ -1115,11 +1115,11 @@ experiment('internal/modules/charge-information/controller', () => {
 
     experiment('when a charge version workflow exists', () => {
       beforeEach(async () => {
-        request.pre.draftChargeInformation.chargeVersionWorkflowId = 'test-workflow-id';
+        request.query.chargeVersionWorkflowId = 'test-workflow-id';
         await controller.postCancelData(request, h);
       });
 
-      test('does not delete the charge version workflow', () => {
+      test('deletes the charge version workflow', () => {
         const [id] = services.water.chargeVersionWorkflows.deleteChargeVersionWorkflow.lastCall.args;
         expect(id).to.equal('test-workflow-id');
       });

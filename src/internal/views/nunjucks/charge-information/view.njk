@@ -101,10 +101,10 @@ formErrorSummary %}
   <form method="post"  action="{{action}}" novalidate="novalidate">
     <input type="hidden" name="csrf_token" value="{{ csrfToken }}"/>
     {% if chargeVersion.scheme == 'sroc' and isSrocChargeInfoEnabled  %}
-        {{ chargeElementTableSroc(chargeVersion.chargeElements | arrayFilter('scheme', 'sroc'), isEditable, licenceId)}}
-        {{ chargeElementTableAlcs(chargeVersion.chargeElements | arrayFilter('scheme','alcs'), isEditable, licenceId, chargeVersion.scheme)}}
+        {{ chargeElementTableSroc(chargeVersion.chargeElements | arrayFilter('scheme', 'sroc'), isEditable, licenceId, chargeVersionWorkflowId)}}
+        {{ chargeElementTableAlcs(chargeVersion.chargeElements | arrayFilter('scheme','alcs'), isEditable, licenceId, 'sroc', chargeVersionWorkflowId)}}
     {% else %}
-      {{ chargeElementTableAlcs(chargeVersion.chargeElements, isEditable, licenceId, chargeVersion.scheme) }}
+      {{ chargeElementTableAlcs(chargeVersion.chargeElements, isEditable, licenceId, 'alcs', chargeVersionWorkflowId) }}
     {% endif %}
 </form>
 
@@ -167,12 +167,14 @@ formErrorSummary %}
                 classes: 'govuk-!-margin-right-6'
               }) }}
           {% elif chargeVersion.status != 'review' %}
-            {{ govukButton({
+            {% if (isSrocChargeInfoEnabled and (chargeVersion.chargeElements | arrayFilter('scheme' ,'alcs')).length == 0) or (chargeVersion.scheme == 'alcs') %}
+              {{ govukButton({
                   text: 'Confirm',
                   name: 'buttonAction',
                   value: 'confirm',
                   classes: 'govuk-!-margin-right-6'
                 }) }}
+            {% endif %}
           {% endif %}
           {{ govukButton({
             text: 'Cancel charge information',

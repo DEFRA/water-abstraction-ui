@@ -33,6 +33,22 @@ const getFilteredChangeReasons = async type => {
 };
 
 /**
+ * Removes incomplete charge elements to avoid breaking the UI
+ * and resets the session draftCharge info
+ * @param {*} request
+ */
+const loadValidatedDraftChargeInformation = async request => {
+  const { licenceId } = request.params;
+  const chargeVersionWorkFlowId = getChargeVersionWorkflowId(request);
+  const draftChargeInformation = await loadDraftChargeInformation(request);
+  // filter out incomplete charge elements when they have used the back button
+  draftChargeInformation.chargeElements = draftChargeInformation.chargeElements.filter(element => !element.status);
+  request.clearDraftChargeInformation(licenceId, chargeVersionWorkFlowId);
+  request.setDraftChargeInformation(licenceId, chargeVersionWorkFlowId, draftChargeInformation);
+  return draftChargeInformation;
+};
+
+/**
  * Loads list of chargeable change reasons or a Boom 404 error if not found
  *
  * @param {Promise<Object>}
@@ -108,6 +124,14 @@ const decorateChargeVersion = chargeVersionWorkflow => {
   modifiedChargeVersion.chargeElements.map(element => {
     if (!element.id) {
       element['id'] = uuid();
+      if (element.chargePurposes) {
+        element.chargePurposes = element.chargePurposes.map(purpose => {
+          if (!purpose.id) {
+            purpose['id'] = uuid();
+          }
+          return purpose;
+        });
+      }
     }
   });
 
@@ -190,7 +214,7 @@ const loadChargeVersionWorkflow = async request => {
 const loadChargeInformation = async request => {
   const { licenceId } = request.params;
   const chargeVersionWorkflowId = getChargeVersionWorkflowId(request);
-  let draftChargeInfo = await loadDraftChargeInformation(request);
+  let draftChargeInfo = await loadValidatedDraftChargeInformation(request);
   try {
     if (!draftChargeInfo.changeReason) {
       const chargeVersionWorkflow = await getChargeVersionWorkflow(chargeVersionWorkflowId);
@@ -248,3 +272,4 @@ exports.loadNonChargeableChangeReasons = loadNonChargeableChangeReasons;
 exports.loadLicenceHolderRole = loadLicenceHolderRole;
 exports.loadBillingAccount = loadBillingAccount;
 exports.loadBillingAccountByChargeVersion = loadBillingAccountByChargeVersion;
+exports.loadValidatedDraftChargeInformation = loadValidatedDraftChargeInformation;

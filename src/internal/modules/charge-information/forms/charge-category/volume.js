@@ -29,7 +29,11 @@ const form = request => {
       },
       'string.empty': {
         message: 'Enter the volume in ML (megalitres).'
+      },
+      'number.unsafe': {
+        message: 'Enter a number that is less than 1,000,000,000,000,000 or fewer than 17 digits long'
       }
+
     }
   }, data.volume || ''));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
@@ -39,10 +43,21 @@ const form = request => {
 };
 
 const schema = () => {
-  const nonZeroNumberWithWSixDpRegex = new RegExp(/^\s*(?=.*[1-9])\d*(?:\.\d{1,6})?\s*$/);
   return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
-    volume: Joi.string().pattern(nonZeroNumberWithWSixDpRegex).required()
+    volume: Joi
+      .number().positive().required().min(1).max(1000000000000000)
+      .custom((value, helper) => {
+        const { error, original } = helper;
+        const [, decimals = ''] = original.split('.');
+        if (decimals.length <= 6) {
+          return value;
+        }
+        if (original.length < 17) {
+          return value;
+        }
+        return error('number.custom');
+      })
   });
 };
 exports.schema = schema;

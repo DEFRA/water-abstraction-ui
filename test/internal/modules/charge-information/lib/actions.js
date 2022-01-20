@@ -66,10 +66,26 @@ experiment('internal/modules/charge-information/lib/actions', () => {
           },
           draftChargeInformation: {
             scheme: 'alcs',
-            changeReason: 'test-reason'
+            changeReason: 'test-reason',
+            chargeElements: []
           }
         }
       };
+    });
+
+    test('does not restart the flow because there are charge elements', () => {
+      const formValues = { startDate: 'today' };
+      request.pre.draftChargeInformation.chargeElements = [{ scheme: 'alcs' }];
+      const action = actions.setStartDate(request, formValues);
+      expect(action).to.equal({
+        type: actions.ACTION_TYPES.setStartDate,
+        payload: {
+          chargeElements: [{ scheme: 'alcs' }],
+          changeReason: 'test-reason',
+          scheme: 'alcs',
+          dateRange: { startDate: moment().format('YYYY-MM-DD') }
+        }
+      });
     });
 
     test('sets the expected date for "today"', () => {
@@ -81,7 +97,7 @@ experiment('internal/modules/charge-information/lib/actions', () => {
           restartFlow: true,
           chargeElements: [],
           changeReason: 'test-reason',
-          scheme: 'sroc',
+          scheme: 'alcs',
           dateRange: { startDate: moment().format('YYYY-MM-DD') }
         }
       });
@@ -93,6 +109,8 @@ experiment('internal/modules/charge-information/lib/actions', () => {
       expect(action).to.equal({
         type: actions.ACTION_TYPES.setStartDate,
         payload: {
+          restartFlow: true,
+          chargeElements: [],
           dateRange: {
             startDate: request.pre.licence.startDate
           },
@@ -113,6 +131,8 @@ experiment('internal/modules/charge-information/lib/actions', () => {
       expect(action).to.equal({
         type: actions.ACTION_TYPES.setStartDate,
         payload: {
+          restartFlow: true,
+          chargeElements: [],
           dateRange: {
             startDate: formValues.customDate
           },
@@ -210,6 +230,9 @@ experiment('internal/modules/charge-information/lib/actions', () => {
           elementId: 'test-element-id',
           step: 'season'
         },
+        query: {
+          returnToCheckData: false
+        },
         pre: {
           draftChargeInformation: {
             chargeElements: [{
@@ -219,7 +242,13 @@ experiment('internal/modules/charge-information/lib/actions', () => {
             }],
             scheme: 'alcs'
           },
-          defaultCharges: {}
+          defaultCharges: [{
+            purposePrimary: {},
+            purposeSecondary: {},
+            purposeUse: {
+              id: 'test-purpose-id'
+            }
+          }]
         }
       };
     });
@@ -234,6 +263,37 @@ experiment('internal/modules/charge-information/lib/actions', () => {
             id: 'test-element-id',
             source: 'supported',
             season: 'winter',
+            scheme: 'alcs'
+          }]
+        });
+      });
+      test('when the charge element step is purpose then set the status to draft', () => {
+        request.params.step = 'purpose';
+        const formValues = { purpose: 'test-purpose-id' };
+        const action = actions.setChargeElementData(request, formValues);
+        expect(action).to.equal({
+          type: actions.ACTION_TYPES.setChargeElementData,
+          payload: [{
+            id: 'test-element-id',
+            source: 'supported',
+            scheme: 'alcs',
+            purposePrimary: {},
+            purposeSecondary: {},
+            purposeUse: { id: 'test-purpose-id' },
+            status: 'draft'
+          }]
+        });
+      });
+      test('when the charge element step is loss then set the status is removed', () => {
+        request.params.step = 'loss';
+        const formValues = { loss: 'high' };
+        const action = actions.setChargeElementData(request, formValues);
+        expect(action).to.equal({
+          type: actions.ACTION_TYPES.setChargeElementData,
+          payload: [{
+            id: 'test-element-id',
+            loss: 'high',
+            source: 'supported',
             scheme: 'alcs'
           }]
         });

@@ -1,4 +1,4 @@
-const { marked } = require('marked');
+const marked = require('marked');
 
 /**
  * Notify's flavour of markdown uses caret for blcokquote so

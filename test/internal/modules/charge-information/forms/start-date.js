@@ -155,6 +155,7 @@ experiment('internal/modules/charge-information/forms/start-date', () => {
           expect(errors['date.base'].message).to.equal('Enter a real date for the effective date');
           expect(errors['date.min'].message).to.equal('You must enter a date after the licence start date');
           expect(errors['date.max'].message).to.equal('You must enter a date before the licence end date');
+          expect(errors['date.custom'].message).to.equal('Enter a real date');
         });
 
         experiment('when the licence start date is in the future', () => {

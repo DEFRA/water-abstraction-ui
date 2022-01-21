@@ -80,6 +80,12 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
       }]
     });
 
+    sandbox.stub(services.water.chargeCategories, 'getChargeCategory').resolves({
+      billingChargeCategoryId: 'test-billing-charge-category-id',
+      reference: 'test-charge-category-reference',
+      shortDescription: 'test charge category short description'
+    });
+
     sandbox.stub(services.water.chargeVersions, 'getDefaultChargesForLicenceVersion').resolves({
       data: [
         { source: 'unsupported' }
@@ -152,6 +158,10 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
           },
           {
             id: 'test-id-2'
+          },
+          {
+            id: 'test-id-3',
+            scheme: 'sroc'
           }
         ]
       });
@@ -170,6 +180,14 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
         chargeElements: [
           {
             id: 'test-id-2'
+          }, {
+            chargeCategory: {
+              id: 'test-billing-charge-category-id',
+              reference: 'test-charge-category-reference',
+              shortDescription: 'test charge category short description'
+            },
+            id: 'test-id-3',
+            scheme: 'sroc'
           }
         ],
         startDate: '2020-01-01'

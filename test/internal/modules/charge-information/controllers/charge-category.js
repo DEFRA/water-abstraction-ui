@@ -183,15 +183,9 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
         });
 
         test('the draft charge information is updated with the charge reference', async () => {
-          const [id, cvWorkflowId, data] = request.setDraftChargeInformation.lastCall.args;
+          const [id, cvWorkflowId] = request.setDraftChargeInformation.lastCall.args;
           expect(cvWorkflowId).to.equal(undefined);
           expect(id).to.equal('test-licence-id');
-          expect(data.chargeElements[0].chargeCategory).to.equal(
-            {
-              id: chargeCategory.billingChargeCategoryId,
-              reference: chargeCategory.reference,
-              shortDescription: chargeCategory.shortDescription
-            });
         });
 
         test('the draft charge information is updated with the charge reference', async () => {

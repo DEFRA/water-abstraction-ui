@@ -4,7 +4,7 @@ const Boom = require('@hapi/boom');
 const services = require('../../lib/connectors/services');
 const { loadLicence } = require('shared/lib/pre-handlers/licences');
 const moment = require('moment');
-const { get, sortBy } = require('lodash');
+const { get, sortBy, pick } = require('lodash');
 const { v4: uuid } = require('uuid');
 const errorHandler = (err, message) => {
   if (err.statusCode === 404) {
@@ -32,6 +32,16 @@ const getFilteredChangeReasons = async type => {
   }
 };
 
+const findChargeCategory = async chargeElement => {
+  const keys = ['source', 'loss', 'isRestrictedSource', 'waterModel', 'volume'];
+  const chargeCategory = await services.water.chargeCategories.getChargeCategory(pick(chargeElement, keys));
+  return {
+    id: chargeCategory.billingChargeCategoryId,
+    reference: chargeCategory.reference,
+    shortDescription: chargeCategory.shortDescription
+  };
+};
+
 /**
  * Removes incomplete charge elements to avoid breaking the UI
  * and resets the session draftCharge info
@@ -42,7 +52,14 @@ const loadValidatedDraftChargeInformation = async request => {
   const chargeVersionWorkFlowId = getChargeVersionWorkflowId(request);
   const draftChargeInformation = await loadDraftChargeInformation(request);
   // filter out incomplete charge elements when they have used the back button
-  draftChargeInformation.chargeElements = draftChargeInformation.chargeElements.filter(element => !element.status);
+  draftChargeInformation.chargeElements = await Promise.all(draftChargeInformation.chargeElements
+    .filter(element => !element.status)
+    .map(async element => {
+      if (element.scheme === 'sroc') {
+        element.chargeCategory = await findChargeCategory(element);
+      }
+      return element;
+    }));
   request.clearDraftChargeInformation(licenceId, chargeVersionWorkFlowId);
   request.setDraftChargeInformation(licenceId, chargeVersionWorkFlowId, draftChargeInformation);
   return draftChargeInformation;
@@ -84,10 +101,7 @@ const loadDefaultCharges = async request => {
 
     const version = sortBy(versionsFiltered, getSortableVersionNumber).pop();
 
-    if (version) {
-      return await services.water.chargeVersions.getDefaultChargesForLicenceVersion(version.id);
-    }
-    return [];
+    return version ? await services.water.chargeVersions.getDefaultChargesForLicenceVersion(version.id) : [];
   } catch (err) {
     return errorHandler(err, `Default charges not found for licence ${licenceId}`);
   }

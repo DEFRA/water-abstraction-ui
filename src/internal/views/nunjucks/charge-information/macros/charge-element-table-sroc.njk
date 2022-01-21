@@ -101,6 +101,25 @@ formErrorSummary %}
   {% endif %}
 {% endmacro %}
 
+{% macro changeLinkSroc(urlTail, chargeCategoryId, licenceId, chargeVersionWorkflowId) %}
+  {% set changeLinkRoot = '/licences/' + licenceId + '/charge-information' %}
+  {% if (chargeVersionWorkflowId | length) > 0 %}
+    {% set queryTail = {
+      returnToCheckData: true,
+      chargeVersionWorkflowId: chargeVersionWorkflowId
+    } | queryString %}
+  {% else %}
+    {% set queryTail = {
+      returnToCheckData: true
+    } | queryString %}
+  {% endif %}
+  {% if chargeCategoryId %}
+    {{ changeLinkRoot + '/charge-category/' + chargeCategoryId + urlTail + '?' + queryTail }}
+  {% else %}
+    {{ changeLinkRoot + urlTail + '?' + queryTail }}
+  {% endif %}
+{% endmacro %}
+
 {% macro chargePurposeTable(chargePurposes, isEditable, licenceId, chargeElementId, chargeVersionWorkflowId) %}
     {% for chargePurpose in chargePurposes %}
       <section class="govuk-!-margin-bottom-7">
@@ -185,14 +204,14 @@ formErrorSummary %}
       <hr class="govuk-section-break  govuk-!-margin-bottom-2 govuk-section-break--visible">
       <h2 class="govuk-heading-m govuk-!-margin-bottom-3">Charge reference details</h2>
       <dl class="govuk-summary-list">
-        {{ summaryListRow('Description', chargeElement.description) }}
-        {{ summaryListRow('Source', chargeElement.source | title) }}
-        {{ summaryListRow('Loss', chargeElement.loss | title) }}
-        {{ summaryListRow('Volume', chargeElement.volume + 'ML') }}
-        {{ summaryListRow('Water availability', restrictedSourceText(chargeElement.isRestrictedSource)) }}
-        {{ summaryListRow('Water model', chargeElement.waterModel | title) }}
-        {{ summaryListRow('Additional charges apply', getBooleanText(chargeElement.isAdditionalCharges) | title) }}
-        {{ summaryListRow('Adjustments apply', getBooleanText(chargeElement.isAdjustments) | title) }}
+        {{ summaryListRow('Description', chargeElement.description, changeLinkSroc('/description', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
+        {{ summaryListRow('Source', chargeElement.source | title, changeLinkSroc('/source', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
+        {{ summaryListRow('Loss', chargeElement.loss | title, changeLinkSroc('/loss', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
+        {{ summaryListRow('Volume', chargeElement.volume + 'ML', changeLinkSroc('/volume', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
+        {{ summaryListRow('Water availability', restrictedSourceText(chargeElement.isRestrictedSource), changeLinkSroc('/restricted-source', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
+        {{ summaryListRow('Water model', chargeElement.waterModel | title, changeLinkSroc('/water-model', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
+        {{ summaryListRow('Additional charges apply', getBooleanText(chargeElement.isAdditionalCharges) | title, changeLinkSroc('/additional-charges', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
+        {{ summaryListRow('Adjustments apply', getBooleanText(chargeElement.isAdjustments) | title, changeLinkSroc('/adjustments', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
         {{ summaryListRow('EUIC Region', chargeElement.eiucRegion | title) }}
       </dl>
       {{ chargePurposeTable(chargeElement.chargePurposes, isEditable, licenceId, chargeElement.id, chargeVersionWorkflowId) }}

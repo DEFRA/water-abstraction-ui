@@ -1,9 +1,7 @@
 'use-strict';
 const cleanObject = require('../../../../shared/lib/clean-object');
-const { pick } = require('lodash');
 const forms = require('../forms/charge-category/index');
 const routing = require('../lib/routing');
-const services = require('../../../lib/connectors/services');
 const { getDefaultView, getPostedForm, applyFormResponse } = require('../lib/helpers');
 const {
   ROUTING_CONFIG,
@@ -44,16 +42,6 @@ const getChargeCategoryStep = async (request, h) => {
   });
 };
 
-const findChargeCategory = async chargeElement => {
-  const keys = ['source', 'loss', 'isRestrictedSource', 'waterModel', 'volume'];
-  const chargeCategory = await services.water.chargeCategories.getChargeCategory(pick(chargeElement, keys));
-  return {
-    id: chargeCategory.billingChargeCategoryId,
-    reference: chargeCategory.reference,
-    shortDescription: chargeCategory.shortDescription
-  };
-};
-
 const postChargeCategoryStep = async (request, h) => {
   const { step, licenceId, elementId } = request.params;
   const stepKey = getStepKeyByValue(step);
@@ -63,8 +51,6 @@ const postChargeCategoryStep = async (request, h) => {
     if (step === CHARGE_CATEGORY_STEPS.isAdjustments) {
       const { draftChargeInformation } = request.pre;
       const chargeElement = draftChargeInformation.chargeElements.find(element => element.id === elementId);
-      // find the charge reference and save it in the session cache
-      chargeElement.chargeCategory = await findChargeCategory(chargeElement);
       chargeElement.eiucRegion = request.pre.licence.regionalChargeArea.name;
       request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation);
     }

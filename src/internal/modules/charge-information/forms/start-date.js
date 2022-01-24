@@ -45,7 +45,7 @@ const getDates = licence => {
 };
 
 const getDatesWithDocumentRoles = (licence, licenceDocumentsRoles) => {
-  console.log(licenceDocumentsRoles);
+  //console.log(licenceDocumentsRoles);
   const startDate = moment(licenceDocumentsRoles.startDate);
   const minDate = startDate;
   const isLicenceStart = startDate.isAfter(minDate);

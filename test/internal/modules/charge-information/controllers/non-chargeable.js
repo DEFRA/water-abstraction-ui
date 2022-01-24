@@ -28,6 +28,19 @@ const createRequest = () => ({
     csrfToken: uuid()
   },
   pre: {
+    licenceDocumentsRoles: {
+      roleId: '00f761ba-e6f5-4a4b-8444-0543fd5b130867',
+      roleName: 'licenceHolder',
+      roleLabel: 'Licence Holder',
+      startDate: moment().subtract(2, 'years').format('YYYY-MM-DD'),
+      endDate: moment().add(1, 'years').format('YYYY-MM-DD')
+    },
+    licenceVersion: {
+      id: 'test-version-id',
+      licenceNumber: '01/123',
+      startDate: moment().subtract(2, 'years').format('YYYY-MM-DD'),
+      region: { id: 'test-region-id' }
+    },
     licence: {
       id: 'test-licence-id',
       licenceNumber: '01/123',
@@ -46,7 +59,8 @@ const createRequest = () => ({
       invoiceAccount: {
         invoiceAccountAddresses: []
       },
-      dateRange: {}
+      dateRange: {},
+      scheme: 'alcs'
     },
     defaultCharges: [
       { season: 'summer' }
@@ -292,16 +306,14 @@ experiment('internal/modules/charge-information/controller', () => {
 
   experiment('when a custom date after the licence end date is posted', () => {
     beforeEach(async () => {
-      const tomorrow = moment().add(1, 'day');
-
       request = createRequest();
-      request.pre.licence.endDate = getISODate();
+      request.pre.licence.endDate = getISODate('2022-01-24');
       request.payload = {
         csrf_token: request.view.csrfToken,
         startDate: 'customDate',
-        'customDate-day': tomorrow.format('DD'),
-        'customDate-month': tomorrow.format('MM'),
-        'customDate-year': tomorrow.format('YYYY')
+        'customDate-day': '25',
+        'customDate-month': '01',
+        'customDate-year': '2022'
       };
       await controller.postEffectiveDate(request, h);
     });
@@ -312,7 +324,7 @@ experiment('internal/modules/charge-information/controller', () => {
 
     test('an error is displayed', async () => {
       const [form] = h.postRedirectGet.lastCall.args;
-      const field = find(form.fields, { name: 'startDate' }).options.choices[2].fields[0];
+      const field = find(form.fields, { name: 'startDate' }).options.choices[3].fields[0];
       expect(field.errors[0].message).to.equal('You must enter a date before the licence end date');
     });
   });

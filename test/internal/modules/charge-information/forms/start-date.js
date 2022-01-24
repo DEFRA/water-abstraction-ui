@@ -14,6 +14,20 @@ const createRequest = (startDate, isChargeable = true, licenceStart = '2017-04-0
   },
   query: {},
   pre: {
+    licenceDocumentsRoles: {
+      roleId: '00f761ba-e6f5-4a4b-8444-0543fd5b130867',
+      roleName: 'licenceHolder',
+      roleLabel: 'Licence Holder',
+      startDate: licenceStart,
+      endDate: licenceEnd
+    },
+    licenceVersion: {
+      id: 'test-version-id',
+      licenceNumber: '01/123',
+      startDate: licenceStart,
+      region: { id: 'test-region-id' },
+      endDate: licenceEnd
+    },
     licence: {
       id: 'test-licence-id',
       startDate: licenceStart,
@@ -22,7 +36,8 @@ const createRequest = (startDate, isChargeable = true, licenceStart = '2017-04-0
     draftChargeInformation: {
       dateRange: {
         startDate
-      }
+      },
+      scheme: 'alcs'
     },
     isChargeable
   }

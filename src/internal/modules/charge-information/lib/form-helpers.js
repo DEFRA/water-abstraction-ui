@@ -9,7 +9,7 @@ const getChargeElementData = request => {
   const chargeElement = categoryId === ''
     ? draftChargeInformation.chargeElements.find(element => element.id === elementId)
     : (draftChargeInformation.chargeElements.find(element => element.id === categoryId))
-        .chargePurposes.find(purpose => purpose.id === elementId);
+      .chargePurposes.find(purpose => purpose.id === elementId);
   return chargeElement || {};
 };
 

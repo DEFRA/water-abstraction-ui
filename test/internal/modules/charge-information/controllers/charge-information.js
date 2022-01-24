@@ -74,7 +74,8 @@ const createRequest = () => ({
         invoiceAccountAddresses: []
       },
       status: 'draft',
-      dateRange: {}
+      dateRange: {},
+      scheme: 'alcs'
     },
     defaultCharges: [
       { season: 'summer' }
@@ -557,17 +558,17 @@ experiment('internal/modules/charge-information/controller', () => {
       });
     });
 
-    experiment('when "licenceStartDate" is posted', () => {
+    experiment('when "licenceVersionStartDate" is posted', () => {
       beforeEach(async () => {
         request = createRequest();
         request.payload = {
           csrf_token: request.view.csrfToken,
-          startDate: moment().subtract(1, 'years').format('YYYY-MM-DD')
+          startDate: 'licenceStartDate'
         };
         await controller.postStartDate(request, h);
       });
 
-      test('the draft charge information is updated with the start date', async () => {
+      test('the draft charge information is updated with the licence version start date', async () => {
         const [id, cvWorkflowId, data] = request.setDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
         expect(cvWorkflowId).to.equal(undefined);

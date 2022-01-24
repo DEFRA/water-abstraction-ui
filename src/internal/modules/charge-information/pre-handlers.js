@@ -232,7 +232,7 @@ const loadBillingAccountByChargeVersion = async request => {
   return getBillingAccount(invoiceAccountId);
 };
 
-const loadLicenceVersions = async request => {
+const loadLicenceVersion = async request => {
   const { licenceId } = request.params;
 
   const versions = await services.water.licences.getLicenceVersions(licenceId);
@@ -273,5 +273,5 @@ exports.loadNonChargeableChangeReasons = loadNonChargeableChangeReasons;
 exports.loadLicenceHolderRole = loadLicenceHolderRole;
 exports.loadBillingAccount = loadBillingAccount;
 exports.loadBillingAccountByChargeVersion = loadBillingAccountByChargeVersion;
-exports.loadLicenceVersions = loadLicenceVersions;
+exports.loadLicenceVersion = loadLicenceVersion;
 exports.loadLicenceDocumentsRoles = loadLicenceDocumentsRoles;

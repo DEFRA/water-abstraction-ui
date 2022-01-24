@@ -38,6 +38,19 @@ const createRequest = () => ({
   },
   query: {},
   pre: {
+    licenceDocumentsRoles: {
+      roleId: '00f761ba-e6f5-4a4b-8444-0543fd5b130867',
+      roleName: 'licenceHolder',
+      roleLabel: 'Licence Holder',
+      startDate: moment().subtract(2, 'years').format('YYYY-MM-DD'),
+      endDate: moment().add(1, 'years').format('YYYY-MM-DD')
+    },
+    licenceVersion: {
+      id: 'test-version-id',
+      licenceNumber: '01/123',
+      startDate: moment().subtract(2, 'years').format('YYYY-MM-DD'),
+      region: { id: 'test-region-id' }
+    },
     licence: {
       id: 'test-licence-id',
       licenceNumber: '01/123',
@@ -545,7 +558,7 @@ experiment('internal/modules/charge-information/controller', () => {
         request = createRequest();
         request.payload = {
           csrf_token: request.view.csrfToken,
-          startDate: 'licenceStartDate'
+          startDate: moment().subtract(1, 'years').format('YYYY-MM-DD')
         };
         await controller.postStartDate(request, h);
       });
@@ -554,7 +567,7 @@ experiment('internal/modules/charge-information/controller', () => {
         const [id, cvWorkflowId, data] = request.setDraftChargeInformation.lastCall.args;
         expect(id).to.equal('test-licence-id');
         expect(cvWorkflowId).to.equal(undefined);
-        expect(data.dateRange.startDate).to.equal(request.pre.licence.startDate);
+        expect(data.dateRange.startDate).to.equal(request.pre.licenceVersion.startDate);
       });
 
       test('the user is redirected to the billing account page', async () => {
@@ -643,28 +656,32 @@ experiment('internal/modules/charge-information/controller', () => {
 
     experiment('when a custom date after the licence end date is posted', () => {
       beforeEach(async () => {
-        const tomorrow = moment().add(1, 'day');
+        const yesterday = moment().subtract(1, 'day');
 
         request = createRequest();
-        request.pre.licence.endDate = getISODate();
+        request.pre.licenceDocumentsRoles.endDate = getISODate();
+        request.pre.licenceDocumentsRoles.startDate = getISODate();
         request.payload = {
           csrf_token: request.view.csrfToken,
           startDate: 'customDate',
-          'customDate-day': tomorrow.format('DD'),
-          'customDate-month': tomorrow.format('MM'),
-          'customDate-year': tomorrow.format('YYYY')
+          'customDate-day': yesterday.format('DD'),
+          'customDate-month': yesterday.format('MM'),
+          'customDate-year': yesterday.format('YYYY')
         };
         await controller.postStartDate(request, h);
       });
 
       test('the draft charge information is not updated', async () => {
+        console.log(request.setDraftChargeInformation.called);
         expect(request.setDraftChargeInformation.called).to.be.false();
       });
 
       test('an error is displayed', async () => {
         const [ form ] = h.postRedirectGet.lastCall.args;
-        const field = find(form.fields, { name: 'startDate' }).options.choices[2].fields[0];
-        expect(field.errors[0].message).to.equal('You must enter a date before the licence end date');
+        console.log(form);
+        const field = find(form.errors, { name: 'customDate' });
+        console.log(field);
+        expect(field.message).to.equal('You must enter a date after the licence start date'); 
       });
     });
   });

@@ -44,7 +44,7 @@ const groupReturns = (returns, eventId) => {
 
 const groupLines = (ret) => {
   if (ret.frequency !== 'day') {
-    return [ { lines: ret.lines } ];
+    return [{ lines: ret.lines }];
   }
   // Group returns by month
   const obj = groupBy(ret.lines, line => moment(line.startDate).format('MMMM YYYY'));

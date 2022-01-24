@@ -33,7 +33,7 @@ experiment('services/water/UsersService', () => {
     });
 
     test('passes the expected URL to the service request', async () => {
-      const expectedUrl = `http://127.0.0.1:8001/water/1.0/user/user-id/status`;
+      const expectedUrl = 'http://127.0.0.1:8001/water/1.0/user/user-id/status';
       const [url] = serviceRequest.get.lastCall.args;
       expect(url).to.equal(expectedUrl);
     });
@@ -48,7 +48,7 @@ experiment('services/water/UsersService', () => {
     });
 
     test('passes the expected URL to the service request', async () => {
-      const expectedUrl = `http://127.0.0.1:8001/water/1.0/user/internal`;
+      const expectedUrl = 'http://127.0.0.1:8001/water/1.0/user/internal';
       const [url] = serviceRequest.post.lastCall.args;
       expect(url).to.equal(expectedUrl);
     });
@@ -76,7 +76,7 @@ experiment('services/water/UsersService', () => {
     });
 
     test('passes the expected URL to the service request', async () => {
-      const expectedUrl = `http://127.0.0.1:8001/water/1.0/user/internal/user-id`;
+      const expectedUrl = 'http://127.0.0.1:8001/water/1.0/user/internal/user-id';
       const [url] = serviceRequest.patch.lastCall.args;
       expect(url).to.equal(expectedUrl);
     });
@@ -103,7 +103,7 @@ experiment('services/water/UsersService', () => {
     });
 
     test('passes the expected URL to the service request', async () => {
-      const expectedUrl = `http://127.0.0.1:8001/water/1.0/user/internal/user-id`;
+      const expectedUrl = 'http://127.0.0.1:8001/water/1.0/user/internal/user-id';
       const [url] = serviceRequest.delete.lastCall.args;
       expect(url).to.equal(expectedUrl);
     });

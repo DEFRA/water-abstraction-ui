@@ -201,7 +201,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
         expect(services.water.gaugingStations.getGaugingStationbyId.calledWith(request.params.gaugingStationId)).to.be.true();
       });
       test('returns the expected string', () => {
-        expect(result).to.equal(`some station`);
+        expect(result).to.equal('some station');
       });
     });
   });
@@ -284,7 +284,8 @@ experiment('internal/modules/gauging-stations/controller', () => {
           easting: null,
           northing: null
         }
-      ] };
+      ]
+    };
     const request = {
       path: 'http://example.com/monitoring-stations/123/untagging-licence/remove-tag',
       view: {
@@ -307,7 +308,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
       let removeRes;
       beforeEach(async () => {
         session.get.returns({
-          selected: [ { linkages: [ { licenceGaugingStationId: '6e21a77b-1525-459d-acb8-3615e5d53f06' } ] } ],
+          selected: [{ linkages: [{ licenceGaugingStationId: '6e21a77b-1525-459d-acb8-3615e5d53f06' }] }],
           licenceGaugingStations: data.data
         });
 
@@ -318,7 +319,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
       afterEach(async () => sandbox.restore());
 
       test('return a result', () => {
-        expect(removeRes).to.equal([ true ]);
+        expect(removeRes).to.equal([true]);
       });
     });
 
@@ -326,7 +327,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
       let removeResSingle;
       beforeEach(async () => {
         session.get.returns({
-          selected: [ { licenceGaugingStationId: '9177f85d-916c-4d51-8db7-74246d228b7b' } ],
+          selected: [{ licenceGaugingStationId: '9177f85d-916c-4d51-8db7-74246d228b7b' }],
           licenceGaugingStations: data.data
         });
 
@@ -337,7 +338,7 @@ experiment('internal/modules/gauging-stations/controller', () => {
       afterEach(async () => sandbox.restore());
 
       test('return a result', () => {
-        expect(removeResSingle).to.equal([ true ]);
+        expect(removeResSingle).to.equal([true]);
       });
     });
 

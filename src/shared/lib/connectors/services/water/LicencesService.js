@@ -19,7 +19,7 @@ const queryString = require('querystring');
  * @return {Promise}              resolves with HTTP response body
  */
 const getRequest = (serviceRequest, url, options = {}) => {
-  Joi.assert(options, schema, `Invalid LicencesApiClient options`);
+  Joi.assert(options, schema, 'Invalid LicencesApiClient options');
 
   // Build query params
   const qs = pick(options, ['includeExpired', 'companyId']);
@@ -109,9 +109,11 @@ class LicencesService extends ServiceClient {
 
   getInvoicesByLicenceId (licenceId, page, perPage) {
     const url = this.joinUrl('licences', licenceId, 'invoices');
-    const options = { qs: {
-      page, perPage
-    } };
+    const options = {
+      qs: {
+        page, perPage
+      }
+    };
     return this.serviceRequest.get(url, options);
   }
 

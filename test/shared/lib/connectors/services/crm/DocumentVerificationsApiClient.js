@@ -52,7 +52,7 @@ experiment('DocumentVerificationsApiClient', () => {
 
   experiment('.getDocumentVerifications', () => {
     test('passes the expected URL to the request', async () => {
-      const expectedUrl = `https://example.com/crm/document_verifications`;
+      const expectedUrl = 'https://example.com/crm/document_verifications';
       await client.getDocumentVerifications('test-id');
 
       const [url] = serviceRequest.get.lastCall.args;
@@ -74,7 +74,7 @@ experiment('DocumentVerificationsApiClient', () => {
 
   experiment('.getUniqueDocumentVerifications', () => {
     test('passes the expected URL to the request', async () => {
-      const expectedUrl = `https://example.com/crm/document_verifications`;
+      const expectedUrl = 'https://example.com/crm/document_verifications';
       await client.getDocumentVerifications('test-id');
 
       const [url] = serviceRequest.get.lastCall.args;

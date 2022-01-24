@@ -7,7 +7,7 @@ const { expect } = require('@hapi/code');
 const serverFactory = require('../../../lib/server-factory');
 const routes = require('shared/plugins/view-licence/routes');
 
-const routePath = `/licences/6e2118b7-fdce-49db-87f1-b2bade7bd8d0/contact`;
+const routePath = '/licences/6e2118b7-fdce-49db-87f1-b2bade7bd8d0/contact';
 
 const testScopes = 'test-scope';
 

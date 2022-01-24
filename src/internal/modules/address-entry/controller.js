@@ -150,7 +150,7 @@ const postSelectCompanyAddress = (request, h) => {
  */
 const getUseRegisteredAddress = (request, h) => h.view('nunjucks/address-entry/use-registered-address', {
   ...getDefaultView(request),
-  pageTitle: `Registered office address`,
+  pageTitle: 'Registered office address',
   form: handleFormRequest(request, addressForms.useRegisteredAddress),
   address: request.pre.company.address
 });

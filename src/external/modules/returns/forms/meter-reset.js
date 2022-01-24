@@ -18,7 +18,8 @@ exports.form = (request, data) => ({
       choices: [
         { value: true, label: 'Yes', hint: 'You will need to provide abstraction volumes instead of meter readings' },
         { value: false, label: 'No' }
-      ] }),
+      ]
+    }),
     getCsrfTokenField(request),
     getContinueField()
   ]

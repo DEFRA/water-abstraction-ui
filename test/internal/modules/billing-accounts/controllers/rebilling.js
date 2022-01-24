@@ -8,7 +8,7 @@ const {
   afterEach
 } = exports.lab = require('@hapi/lab').script();
 const sandbox = require('sinon').createSandbox();
-const uuid = require('uuid').v4;
+const { v4: uuid } = require('uuid');
 
 const controller = require('internal/modules/billing-accounts/controllers/rebilling');
 const services = require('internal/lib/connectors/services');
@@ -73,7 +73,7 @@ const createRequest = () => ({
     }],
     rebillingState: {
       fromDate: '2019-01-01',
-      selectedBillIds: [ 'test-bill-id-1' ]
+      selectedBillIds: ['test-bill-id-1']
     }
   },
   yar: {
@@ -128,7 +128,7 @@ experiment('internal/modules/billing-accounts/controllers/rebilling', () => {
       const field = findField(form, 'fromDate');
       expect(field.options.label).to.equal('What date do you need to reissue a bill from?');
       expect(field.options.caption).to.equal(`Billing account ${accountNumber}`);
-      expect(field.options.hint).to.equal(`We'll show all the bills created in the service on or after this date. This will not include zero value and de minimus bills.`);
+      expect(field.options.hint).to.equal('We\'ll show all the bills created in the service on or after this date. This will not include zero value and de minimus bills.');
       expect(field.options.heading).to.be.true();
       expect(field.options.size).to.equal('l');
       expect(field.options.type).to.equal('date');
@@ -248,7 +248,7 @@ experiment('internal/modules/billing-accounts/controllers/rebilling', () => {
         expect(key).to.equal(`rebilling.${billingAccountId}`);
         expect(state).to.equal({
           fromDate: '2019-01-01',
-          selectedBillIds: [ 'test-bill-id-1' ]
+          selectedBillIds: ['test-bill-id-1']
         });
       });
 
@@ -325,7 +325,7 @@ experiment('internal/modules/billing-accounts/controllers/rebilling', () => {
     experiment('when there are 2 or more bills selected', () => {
       beforeEach(async () => {
         request = createRequest();
-        request.pre.rebillingState.selectedBillIds = [ 'test-bill-id-1', 'test-bill-id-1' ];
+        request.pre.rebillingState.selectedBillIds = ['test-bill-id-1', 'test-bill-id-1'];
         await controller.getCheckAnswers(request, h);
       });
 
@@ -407,7 +407,7 @@ experiment('internal/modules/billing-accounts/controllers/rebilling', () => {
       const field = findField(form, 'selectedBillIds');
       expect(field.options.label).to.equal('Select the bills you need to reissue');
       expect(field.options.caption).to.equal(`Billing account ${accountNumber}`);
-      expect(field.options.hint).to.equal(`Bills created on or after 1 January 2019`);
+      expect(field.options.hint).to.equal('Bills created on or after 1 January 2019');
       expect(field.options.heading).to.be.true();
       expect(field.options.size).to.equal('l');
       expect(field.options.mapper).to.equal('arrayMapper');
@@ -480,7 +480,7 @@ experiment('internal/modules/billing-accounts/controllers/rebilling', () => {
         expect(key).to.equal(`rebilling.${billingAccountId}`);
         expect(state).to.equal({
           fromDate: '2019-01-01',
-          selectedBillIds: [ 'test-bill-id-1' ]
+          selectedBillIds: ['test-bill-id-1']
         });
       });
 

@@ -8,7 +8,7 @@ const {
   beforeEach
 } = exports.lab = require('@hapi/lab').script();
 const sandbox = require('sinon').createSandbox();
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const { omit } = require('lodash');
 
 const notificationsFiltering = require('internal/modules/notifications-reports/forms/notifications-filtering');
@@ -139,7 +139,7 @@ experiment('internal/modules/notifications-reports/forms/notifications-filtering
           categories: null
         });
         expect(error).to.not.be.undefined();
-        expect(error.message).to.equal(`"categories" must be an array`);
+        expect(error.message).to.equal('"categories" must be an array');
       });
 
       test('passes if a valid array', async () => {
@@ -163,7 +163,7 @@ experiment('internal/modules/notifications-reports/forms/notifications-filtering
           sender: null
         });
         expect(error).to.not.be.undefined();
-        expect(error.message).to.equal(`"sender" must be a string`);
+        expect(error.message).to.equal('"sender" must be a string');
       });
 
       test('passes if an empty string', async () => {
@@ -180,7 +180,7 @@ experiment('internal/modules/notifications-reports/forms/notifications-filtering
           sender: 'invalid email address'
         });
         expect(error).to.not.be.undefined();
-        expect(error.message).to.equal(`"sender" must be a valid email`);
+        expect(error.message).to.equal('"sender" must be a valid email');
       });
 
       test('passes if a valid email address', async () => {

@@ -6,7 +6,8 @@ const controller = require('external/modules/returns/controllers/edit');
 const forms = require('shared/lib/forms');
 const services = require('external/lib/connectors/services');
 
-const { STEP_START, STEP_RETURNS, STEP_METHOD, STEP_METER_RESET, STEP_UNITS,
+const {
+  STEP_START, STEP_RETURNS, STEP_METHOD, STEP_METER_RESET, STEP_UNITS,
   STEP_QUANTITIES, STEP_METER_READINGS, STEP_METER_DETAILS, STEP_CONFIRM,
   STEP_SUBMITTED
 } = require('shared/modules/returns/steps');
@@ -24,7 +25,7 @@ const lines = [
 ];
 
 const createModel = () => {
-  let reading = {
+  const reading = {
     isOneMeter: sandbox.stub(),
     setMethod: sandbox.stub(),
     setReadingType: sandbox.stub(),
@@ -34,7 +35,7 @@ const createModel = () => {
   };
   reading.setMethod.returns(reading);
 
-  let model = {
+  const model = {
     setNilReturn: sandbox.stub(),
     isNilReturn: sandbox.stub(),
     reading,

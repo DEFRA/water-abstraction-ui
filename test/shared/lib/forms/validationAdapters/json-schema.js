@@ -12,7 +12,7 @@ experiment('validate', () => {
         type: 'string'
       }
     },
-    required: [ 'colour' ]
+    required: ['colour']
   };
 
   test('for a schema and valid data, error is false', async () => {
@@ -42,21 +42,25 @@ experiment('validate', () => {
 
 experiment('formatErrors', () => {
   const error = {
-    errors: [ { keyword: 'required',
+    errors: [{
+      keyword: 'required',
       dataPath: '',
       schemaPath: '#/required',
       params: { missingProperty: 'manufacturer' },
-      message: 'should have required property \'manufacturer\'' },
-    { keyword: 'type',
+      message: 'should have required property \'manufacturer\''
+    },
+    {
+      keyword: 'type',
       dataPath: '.gears',
       schemaPath: '#/properties/gears/type',
       params: { type: 'number' },
-      message: 'should be number' } ]
+      message: 'should be number'
+    }]
   };
 
   const customErrors = {
     manufacturer: {
-      'required': { message: 'Manufacturer is required', summary: 'There is a problem' }
+      required: { message: 'Manufacturer is required', summary: 'There is a problem' }
     }
   };
 

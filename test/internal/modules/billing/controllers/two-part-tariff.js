@@ -9,7 +9,7 @@ const {
 } = exports.lab = require('@hapi/lab').script();
 
 const sandbox = require('sinon').createSandbox();
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 
 const services = require('internal/lib/connectors/services');
 const controller = require('internal/modules/billing/controllers/two-part-tariff');
@@ -135,27 +135,27 @@ const getBillingVolumeReviewRequest = payload => (
 );
 
 experiment('internal/modules/billing/controller/two-part-tariff', () => {
-  let h, request;
-  h = {
+  const h = {
     view: sandbox.stub(),
     response: sandbox.stub().returns({ header }),
     redirect: sandbox.stub()
   };
 
-  request = {
+  const request = {
     pre: { batch: batchData },
-    params: {
-      batchId: 'test-batch-id' }
+    params: { batchId: 'test-batch-id' }
   };
 
   beforeEach(async () => {
     sandbox.stub(services.water.billingBatches, 'getBatchLicences');
-    sandbox.stub(services.water.billingBatches, 'approveBatchReview').resolves({ data: {
-      batch: {
-        id: 'test-batch-id',
-        status: 'processing'
+    sandbox.stub(services.water.billingBatches, 'approveBatchReview').resolves({
+      data: {
+        batch: {
+          id: 'test-batch-id',
+          status: 'processing'
+        }
       }
-    } });
+    });
     sandbox.stub(services.crm.documents, 'getWaterLicence');
     sandbox.stub(services.water.licences, 'getSummaryByDocumentId');
     sandbox.stub(services.water.licences, 'getDocumentByLicenceId').resolves({ metadata: { IsCurrent: true } });
@@ -379,7 +379,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
     });
 
     experiment('for an expired licence the returns summary link is availble the data visible', () => {
-      beforeEach(async => {
+      beforeEach(async () => {
         services.water.licences.getDocumentByLicenceId.resolves({ metadata: { IsCurrent: false } });
       });
       test('the page title is set', async () => {
@@ -445,70 +445,71 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
         });
         services.water.licences.getSummaryByDocumentId.resolves({
           data: {
-            'conditions': [
+            conditions: [
               {
-                'code': 'AGG',
-                'subCode': 'LLL',
-                'displayTitle': 'Aggregate condition link between licences',
-                'parameter1Label': 'Linked licence number',
-                'parameter2Label': 'Aggregate quantity',
-                'points': [
+                code: 'AGG',
+                subCode: 'LLL',
+                displayTitle: 'Aggregate condition link between licences',
+                parameter1Label: 'Linked licence number',
+                parameter2Label: 'Aggregate quantity',
+                points: [
                   {
-                    'points': [
+                    points: [
                       {
-                        'ngr1': 'AB 111 111',
-                        'ngr2': 'AB 222 222',
-                        'ngr3': null,
-                        'ngr4': null,
-                        'name': 'Test point'
+                        ngr1: 'AB 111 111',
+                        ngr2: 'AB 222 222',
+                        ngr3: null,
+                        ngr4: null,
+                        name: 'Test point'
                       }
                     ],
-                    'conditions': [
+                    conditions: [
                       {
-                        'parameter1': '01/123/ABC',
-                        'parameter2': '20,000M3/YEAR',
-                        'text': 'AGGREGATE QTY SHALL NOT EXCEED 20,000M3/YEAR'
+                        parameter1: '01/123/ABC',
+                        parameter2: '20,000M3/YEAR',
+                        text: 'AGGREGATE QTY SHALL NOT EXCEED 20,000M3/YEAR'
                       },
                       {
-                        'parameter1': '02/345/ABC',
-                        'parameter2': '800M3/DAY',
-                        'text': 'AGGREGATE QTY SHALL NOT EXCEED 800M3/DAY'
+                        parameter1: '02/345/ABC',
+                        parameter2: '800M3/DAY',
+                        text: 'AGGREGATE QTY SHALL NOT EXCEED 800M3/DAY'
                       }
                     ]
                   }
                 ],
-                'purpose': 'Spray Irrigation - Direct'
+                purpose: 'Spray Irrigation - Direct'
               },
               {
-                'code': 'EEL',
-                'subCode': 'REGS',
-                'displayTitle': 'Fish pass/screen - eel regs',
-                'parameter1Label': 'Type of pass or screen',
-                'parameter2Label': 'Location of pass or screen',
-                'points': [
+                code: 'EEL',
+                subCode: 'REGS',
+                displayTitle: 'Fish pass/screen - eel regs',
+                parameter1Label: 'Type of pass or screen',
+                parameter2Label: 'Location of pass or screen',
+                points: [
                   {
-                    'points': [
+                    points: [
                       {
-                        'ngr1': 'AB 111 111',
-                        'ngr2': 'AB 123 456',
-                        'ngr3': null,
-                        'ngr4': null,
-                        'name': 'Test point'
+                        ngr1: 'AB 111 111',
+                        ngr2: 'AB 123 456',
+                        ngr3: null,
+                        ngr4: null,
+                        name: 'Test point'
                       }
                     ],
-                    'conditions': [
+                    conditions: [
                       {
-                        'parameter1': null,
-                        'parameter2': '2MM',
-                        'text': 'SCREEN APERATURE NO LESS THAN 2MM'
+                        parameter1: null,
+                        parameter2: '2MM',
+                        text: 'SCREEN APERATURE NO LESS THAN 2MM'
                       }
                     ]
                   }
                 ],
-                'purpose': 'Spray Irrigation - Direct'
+                purpose: 'Spray Irrigation - Direct'
               }
             ]
-          } });
+          }
+        });
         await controller.getBillingVolumeReview(request, h);
       });
 
@@ -790,7 +791,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     test('sets the back link correctly', async () => {
       const [, { back }] = h.view.lastCall.args;
-      expect(back).to.equal(`/billing/batch/test-batch-id/two-part-tariff/licence/test-licence-id`);
+      expect(back).to.equal('/billing/batch/test-batch-id/two-part-tariff/licence/test-licence-id');
     });
   });
 
@@ -815,7 +816,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     test('redirects back to the two-part tariff review page', async () => {
       expect(h.redirect.calledWith(
-        `/billing/batch/test-batch-id/two-part-tariff-review`
+        '/billing/batch/test-batch-id/two-part-tariff-review'
       )).to.be.true();
     });
   });

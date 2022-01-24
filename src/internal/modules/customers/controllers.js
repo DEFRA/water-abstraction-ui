@@ -83,7 +83,7 @@ const getUpdateCustomerContactName = async (request, h) => {
     contactFromDatabase: companyContact.contact
   });
 
-  const pageTitle = `Enter a name`;
+  const pageTitle = 'Enter a name';
   const { path } = request;
 
   return h.view('nunjucks/form', {
@@ -127,7 +127,7 @@ const getUpdateCustomerContactDepartment = async (request, h) => {
     departmentFromDatabase: companyContact.contact.department
   });
 
-  const pageTitle = `Enter a department`;
+  const pageTitle = 'Enter a department';
   const { path } = request;
 
   return h.view('nunjucks/form', {

@@ -37,7 +37,7 @@ experiment('services/water/ReturnsService', () => {
       const service = new ReturnsService('http://127.0.0.1:8001/water/1.0');
       await service.getReturn('return-1');
 
-      const expectedUrl = `http://127.0.0.1:8001/water/1.0/returns`;
+      const expectedUrl = 'http://127.0.0.1:8001/water/1.0/returns';
       const expectedQuery = {
         qs: { returnId: 'return-1' }
       };
@@ -72,7 +72,7 @@ experiment('services/water/ReturnsService', () => {
     });
 
     test('passes the expected URL to the service request', async () => {
-      const expectedUrl = `http://127.0.0.1:8001/water/1.0/returns`;
+      const expectedUrl = 'http://127.0.0.1:8001/water/1.0/returns';
       const [url] = serviceRequest.post.lastCall.args;
       expect(url).to.equal(expectedUrl);
     });
@@ -94,7 +94,7 @@ experiment('services/water/ReturnsService', () => {
     });
 
     test('passes the expected URL to the service request', async () => {
-      const expectedUrl = `http://127.0.0.1:8001/water/1.0/returns/upload/csv`;
+      const expectedUrl = 'http://127.0.0.1:8001/water/1.0/returns/upload/csv';
       const [url] = serviceRequest.post.lastCall.args;
       expect(url).to.equal(expectedUrl);
     });
@@ -103,7 +103,7 @@ experiment('services/water/ReturnsService', () => {
       const service = new ReturnsService('http://127.0.0.1:8001/water/1.0');
       await service.postUpload('file-data', 'user-name', 'company_1', 'CSV');
 
-      const expectedUrl = `http://127.0.0.1:8001/water/1.0/returns/upload/csv`;
+      const expectedUrl = 'http://127.0.0.1:8001/water/1.0/returns/upload/csv';
       const [url] = serviceRequest.post.lastCall.args;
       expect(url).to.equal(expectedUrl);
     });
@@ -138,7 +138,7 @@ experiment('services/water/ReturnsService', () => {
     });
 
     test('passes the expected URL to the service request', async () => {
-      const expectedUrl = `http://127.0.0.1:8001/water/1.0/returns/upload-submit/event-id`;
+      const expectedUrl = 'http://127.0.0.1:8001/water/1.0/returns/upload-submit/event-id';
       const [url] = serviceRequest.post.lastCall.args;
       expect(url).to.equal(expectedUrl);
     });

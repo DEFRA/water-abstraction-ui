@@ -25,39 +25,39 @@ lab.experiment('mapARComparisonTable', () => {
 
   lab.test('It should generate an object to pass to the GOV.UK table nunjucks component', async () => {
     expect(result).to.equal({
-      'head': [
+      head: [
         {
-          'text': 'NALD field'
+          text: 'NALD field'
         },
         {
-          'text': 'NALD data'
+          text: 'NALD data'
         },
         {
-          'text': 'New value'
+          text: 'New value'
         }
       ],
-      'rows': [
+      rows: [
         [
           {
-            'text': 'ID'
+            text: 'ID'
           },
           {
-            'text': data.base.ID
+            text: data.base.ID
           },
           {
-            'text': null
+            text: null
           }
         ],
 
         [
           {
-            'text': 'DESCR'
+            text: 'DESCR'
           },
           {
-            'text': data.base.DESCR
+            text: data.base.DESCR
           },
           {
-            'text': data.reform.DESCR
+            text: data.reform.DESCR
           }
         ]
       ]

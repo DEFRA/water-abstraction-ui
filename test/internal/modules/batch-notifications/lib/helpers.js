@@ -45,10 +45,12 @@ experiment('batch notification helpers', () => {
     });
 
     test('rejects with Boom bad request if event is not a notification', async () => {
-      services.water.events.findOne.resolves({ data: {
-        issuer: 'mail@example.com',
-        type: 'notANotification'
-      } });
+      services.water.events.findOne.resolves({
+        data: {
+          issuer: 'mail@example.com',
+          type: 'notANotification'
+        }
+      });
       try {
         await helpers.loadEvent(request);
         fail();
@@ -59,11 +61,13 @@ experiment('batch notification helpers', () => {
     });
 
     test('resolves with event data if notification and issuer matches current user', async () => {
-      services.water.events.findOne.resolves({ data: {
-        eventId,
-        issuer: 'mail@example.com',
-        type: 'notification'
-      } });
+      services.water.events.findOne.resolves({
+        data: {
+          eventId,
+          issuer: 'mail@example.com',
+          type: 'notification'
+        }
+      });
 
       const result = await helpers.loadEvent(request);
       expect(result.eventId).to.equal(eventId);
@@ -85,7 +89,7 @@ experiment('batch notification helpers', () => {
 
     test('resolves with data from API call', async () => {
       const result = await helpers.loadMessages({ event_id: eventId });
-      expect(result).to.equal([ { id: 'message_1' } ]);
+      expect(result).to.equal([{ id: 'message_1' }]);
     });
   });
 });

@@ -77,7 +77,7 @@ const loadAbstractionReformLicences = async (crmLicences) => {
 };
 
 const search = async (q, page) => {
-  let filter = {};
+  const filter = {};
   if (q.match('@')) {
     filter.email = q.trim();
   } else {

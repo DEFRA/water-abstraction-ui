@@ -11,7 +11,7 @@ const sinon = require('sinon');
 const { find } = require('lodash');
 const moment = require('moment');
 
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 
 const sandbox = sinon.createSandbox();
 
@@ -135,9 +135,11 @@ experiment('internal/modules/charge-information/controller', () => {
     sandbox.stub(services.water.chargeVersionWorkflows, 'deleteChargeVersionWorkflow').resolves();
     sandbox.stub(services.water.chargeVersionWorkflows, 'patchChargeVersionWorkflow').resolves();
     sandbox.stub(services.crm.documentRoles, 'getDocumentRolesByDocumentRef').resolves({ data: [] });
-    sandbox.stub(services.crm.documentRoles, 'getFullHistoryOfDocumentRolesByDocumentRef').resolves({ data: [{
-      companyId: 'some-company-id'
-    }] });
+    sandbox.stub(services.crm.documentRoles, 'getFullHistoryOfDocumentRolesByDocumentRef').resolves({
+      data: [{
+        companyId: 'some-company-id'
+      }]
+    });
     sandbox.stub(services.water.chargeVersions, 'getChargeVersionsByLicenceId').resolves({ data: [] });
     sandbox.stub(services.water.licences, 'getValidDocumentByLicenceIdAndDate').resolves({
       roles: [
@@ -152,7 +154,8 @@ experiment('internal/modules/charge-information/controller', () => {
             name: 'Test UK Ltd',
             type: 'person',
             id: 'test-company-id'
-          } }
+          }
+        }
       ]
     });
   });
@@ -612,7 +615,7 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('an error is displayed', async () => {
-        const [ form ] = h.postRedirectGet.lastCall.args;
+        const [form] = h.postRedirectGet.lastCall.args;
         const field = find(form.fields, { name: 'startDate' }).options.choices[3].fields[0];
         expect(field.errors[0].message).to.equal('Enter a real date for the charge information start date');
       });
@@ -636,7 +639,7 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('an error is displayed', async () => {
-        const [ form ] = h.postRedirectGet.lastCall.args;
+        const [form] = h.postRedirectGet.lastCall.args;
         const field = find(form.fields, { name: 'startDate' }).options.choices[3].fields[0];
         expect(field.errors[0].message).to.equal('You must enter a date after the licence start date');
       });
@@ -663,7 +666,7 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('an error is displayed', async () => {
-        const [ form ] = h.postRedirectGet.lastCall.args;
+        const [form] = h.postRedirectGet.lastCall.args;
         const field = find(form.fields, { name: 'startDate' }).options.choices[2].fields[0];
         expect(field.errors[0].message).to.equal('You must enter a date before the licence end date');
       });
@@ -672,10 +675,12 @@ experiment('internal/modules/charge-information/controller', () => {
 
   experiment('.getBillingAccount', () => {
     beforeEach(async () => {
-      services.crm.documentRoles.getFullHistoryOfDocumentRolesByDocumentRef.resolves({ data: [{
-        companyId: 'some-company-id',
-        roleName: 'licenceHolder'
-      }] });
+      services.crm.documentRoles.getFullHistoryOfDocumentRolesByDocumentRef.resolves({
+        data: [{
+          companyId: 'some-company-id',
+          roleName: 'licenceHolder'
+        }]
+      });
       request = createRequest();
       request.query = { chargeVersionWorkflowId: 'test-cv-workflow-id' };
       await controller.getBillingAccount(request, h);

@@ -6,5 +6,5 @@ module.exports = {
   'restricted-source': require('./default-radio-options-form'),
   'water-model': require('./default-radio-options-form'),
   'additional-charges': require('./default-radio-options-form'),
-  'adjustments': require('./default-radio-options-form')
+  adjustments: require('./default-radio-options-form')
 };

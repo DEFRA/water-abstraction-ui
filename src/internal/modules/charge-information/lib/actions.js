@@ -1,6 +1,6 @@
 const { find, omit } = require('lodash');
 const moment = require('moment');
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const DATE_FORMAT = 'YYYY-MM-DD';
 const mappers = require('./charge-elements/mappers');
 const { CHARGE_ELEMENT_STEPS } = require('./charge-elements/constants');
@@ -31,7 +31,7 @@ const setChangeReason = (request, formValues) => {
 };
 
 const setStartDate = (request, formValues) => {
-  let payload = {};
+  let payload;
   const dates = {
     today: moment().format(DATE_FORMAT),
     licenceStartDate: request.pre.licence.startDate,

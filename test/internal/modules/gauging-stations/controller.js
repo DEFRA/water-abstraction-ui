@@ -15,7 +15,7 @@ const session = require('../../../../src/internal/modules/gauging-stations/lib/s
 const formHandler = require('../../../../src/shared/lib/form-handler');
 const formHelpers = require('../../../../src/shared/lib/forms');
 const services = require('internal/lib/connectors/services');
-const uuid = require('uuid').v4;
+const { v4: uuid } = require('uuid');
 
 experiment('internal/modules/gauging-stations/controller - tagging', () => {
   beforeEach(async () => {
@@ -647,7 +647,7 @@ experiment('internal/modules/gauging-stations/controller - tagging', () => {
       });
 
       test('.postRemoveTagOrMultiple without data', () => {
-        let newRequest = cloneDeep(request);
+        const newRequest = cloneDeep(request);
         newRequest.pre.licenceGaugingStations = undefined;
         controller.postRemoveTagOrMultiple(newRequest, h);
         const [template] = h.view.lastCall.args;
@@ -801,7 +801,7 @@ experiment('internal/modules/gauging-stations/controller - tagging', () => {
       experiment('when the licence number is not real', () => {
         beforeEach(() => {
           sandbox.stub(formHelpers, 'applyErrors').resolves();
-          request['pre'] = {
+          request.pre = {
             isLicenceNumberValid: false
           };
           controller.postNewTaggingLicenceNumber(request, h);
@@ -1493,7 +1493,7 @@ experiment('internal/modules/gauging-stations/controller - sending', () => {
       beforeEach(async () => {
         request.yar.get.returns({
           selectedGroupedLicences: {
-            'someLicenceId': []
+            someLicenceId: []
           }
         });
         sandbox.stub(helpers, 'getCaption').resolves('a caption is output');
@@ -1510,7 +1510,7 @@ experiment('internal/modules/gauging-stations/controller - sending', () => {
       beforeEach(async () => {
         request.yar.get.returns({
           selectedGroupedLicences: {
-            'someLicenceId': [
+            someLicenceId: [
               {
                 dateStatusUpdated: new Date()
               }
@@ -1561,7 +1561,7 @@ experiment('internal/modules/gauging-stations/controller - sending', () => {
         request.params.licenceId = 'id-456';
         request.yar.get.resolves({
           selectedGroupedLicences: {
-            'someLicenceId': [
+            someLicenceId: [
               {
                 licenceId: 'id-123'
               }
@@ -1582,7 +1582,7 @@ experiment('internal/modules/gauging-stations/controller - sending', () => {
         request.params.licenceId = 'id-123';
         request.yar.get.resolves({
           selectedGroupedLicences: {
-            'someLicenceId': [
+            someLicenceId: [
               {
                 licenceId: 'id-123'
               }

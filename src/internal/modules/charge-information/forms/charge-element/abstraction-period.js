@@ -38,7 +38,8 @@ const getFormField = (key, date) => {
 
 const getSessionDates = (key, data) => {
   return has(data, `abstractionPeriod.${key}Day`)
-    ? data.abstractionPeriod[`${key}Month`] + '-' + data.abstractionPeriod[`${key}Day`] : '';
+    ? data.abstractionPeriod[`${key}Month`] + '-' + data.abstractionPeriod[`${key}Day`]
+    : '';
 };
 
 /**

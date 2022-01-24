@@ -7,7 +7,8 @@ const forms = require('shared/lib/forms');
 const services = require('internal/lib/connectors/services');
 const { URL } = require('url');
 
-const { STEP_START, STEP_METHOD, STEP_UNITS,
+const {
+  STEP_START, STEP_METHOD, STEP_UNITS,
   STEP_QUANTITIES, STEP_METER_READINGS, STEP_METER_DETAILS, STEP_CONFIRM,
   STEP_SUBMITTED, STEP_INTERNAL_ROUTING, STEP_DATE_RECEIVED,
   STEP_METER_DETAILS_PROVIDED, STEP_METER_USED, STEP_SINGLE_TOTAL,
@@ -29,7 +30,7 @@ const lines = [
 ];
 
 const createModel = () => {
-  let reading = {
+  const reading = {
     isOneMeter: sandbox.stub(),
     setMethod: sandbox.stub(),
     setReadingType: sandbox.stub(),
@@ -42,7 +43,7 @@ const createModel = () => {
   };
   reading.setMethod.returns(reading);
 
-  let model = {
+  const model = {
     setNilReturn: sandbox.stub(),
     isNilReturn: sandbox.stub(),
     reading,

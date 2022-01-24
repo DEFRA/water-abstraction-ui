@@ -112,7 +112,7 @@ const getMarkLicenceForSupplementaryBilling = (request, h) => {
 
   return h.view('nunjucks/billing/mark-licence-for-supplementary-billing', {
     ...request.view,
-    pageTitle: `You're about to mark this licence for the next supplementary bill run`,
+    pageTitle: 'You\'re about to mark this licence for the next supplementary bill run',
     caption: `Licence ${licenceRef}`,
     form: formHandler.handleFormRequest(request, forms.markForSupplementaryBilling),
     back: `/licences/${licenceId}#charge`
@@ -129,7 +129,7 @@ const postMarkLicenceForSupplementaryBilling = async (request, h) => {
 
   return h.view('nunjucks/billing/marked-licence-for-supplementary-billing', {
     ...request.view,
-    pageTitle: `You've marked this licence for the next supplementary bill run`,
+    pageTitle: 'You\'ve marked this licence for the next supplementary bill run',
     panelText: `Licence number: ${licenceRef}`,
     licenceId
   });

@@ -12,7 +12,7 @@ class AuthConfig extends AuthConfigBase {
   };
 
   onSignOut (request, h) {
-    return h.metaRedirect(`/signed-out?u=i`);
+    return h.metaRedirect('/signed-out?u=i');
   }
 
   onUnauthorized (request, h) {

@@ -3,7 +3,7 @@
 const { expect } = require('@hapi/code');
 const { experiment, test, afterEach, beforeEach } = exports.lab = require('@hapi/lab').script();
 const { scope } = require('internal/lib/constants');
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 
 const sandbox = require('sinon').createSandbox();
 
@@ -31,7 +31,7 @@ experiment('src/internal/lib/licence-data-config', () => {
     });
   });
 
-  afterEach(async (request) => {
+  afterEach(async () => {
     sandbox.restore();
   });
 

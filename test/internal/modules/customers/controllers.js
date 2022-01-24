@@ -12,7 +12,7 @@ const controllers = require('../../../../src/internal/modules/customers/controll
 const session = require('../../../../src/internal/modules/customers/session.js');
 const formHandler = require('../../../../src/shared/lib/form-handler');
 const services = require('../../../../src/internal/lib/connectors/services');
-const uuid = require('uuid').v4;
+const { v4: uuid } = require('uuid');
 
 const CONTACT_ID = uuid();
 const CONTACT_OBJECT = {
@@ -58,11 +58,13 @@ const COMPANY_OBJECT = {
   name: 'ACME'
 };
 
-const EXPECTED_GET_COMPANY_LICENCES_RESPONSE = { data: [
-  {
-    documentRef: '101010'
-  }
-] };
+const EXPECTED_GET_COMPANY_LICENCES_RESPONSE = {
+  data: [
+    {
+      documentRef: '101010'
+    }
+  ]
+};
 
 experiment('internal/modules/customers/controllers', () => {
   beforeEach(async () => {
@@ -192,7 +194,7 @@ experiment('internal/modules/customers/controllers', () => {
       defra: {
         userId: '1000'
       },
-      path: `http://defra.wrls/customers/123/contacts/456/name`
+      path: 'http://defra.wrls/customers/123/contacts/456/name'
     };
 
     const h = {
@@ -223,7 +225,7 @@ experiment('internal/modules/customers/controllers', () => {
     const department = null;
 
     const request = {
-      path: `http://defra.wrls/customers/123/contacts/456/name`,
+      path: 'http://defra.wrls/customers/123/contacts/456/name',
       method: 'post',
       view: {
         csrfToken: 'some-token'
@@ -300,7 +302,7 @@ experiment('internal/modules/customers/controllers', () => {
       defra: {
         userId: '1000'
       },
-      path: `http://defra.wrls/customers/123/contacts/456/email`
+      path: 'http://defra.wrls/customers/123/contacts/456/email'
     };
 
     const h = {
@@ -332,7 +334,7 @@ experiment('internal/modules/customers/controllers', () => {
     const isNew = undefined;
 
     const request = {
-      path: `http://defra.wrls/customers/123/contacts/456/email`,
+      path: 'http://defra.wrls/customers/123/contacts/456/email',
       method: 'post',
       view: {
         csrfToken: 'some-token'
@@ -407,7 +409,7 @@ experiment('internal/modules/customers/controllers', () => {
       defra: {
         userId: '1000'
       },
-      path: `http://defra.wrls/customers/123/contacts/456/department`
+      path: 'http://defra.wrls/customers/123/contacts/456/department'
     };
 
     const h = {
@@ -435,7 +437,7 @@ experiment('internal/modules/customers/controllers', () => {
     const department = 'Cheese';
 
     const request = {
-      path: `http://defra.wrls/customers/123/contacts/456/department`,
+      path: 'http://defra.wrls/customers/123/contacts/456/department',
       method: 'post',
       view: {
         csrfToken: 'some-token'
@@ -504,7 +506,7 @@ experiment('internal/modules/customers/controllers', () => {
       defra: {
         userId: '1000'
       },
-      path: `http://defra.wrls/customers/123/contacts/456/water-abstraction-alerts-preferences`
+      path: 'http://defra.wrls/customers/123/contacts/456/water-abstraction-alerts-preferences'
     };
 
     const h = {
@@ -532,7 +534,7 @@ experiment('internal/modules/customers/controllers', () => {
     const waterAbstractionAlertsEnabled = true;
 
     const request = {
-      path: `http://defra.wrls/customers/123/contacts/456/water-abstraction-alerts-preferences`,
+      path: 'http://defra.wrls/customers/123/contacts/456/water-abstraction-alerts-preferences',
       method: 'post',
       view: {
         csrfToken: 'some-token'
@@ -602,7 +604,7 @@ experiment('internal/modules/customers/controllers', () => {
       defra: {
         userId: '1000'
       },
-      path: `http://defra.wrls/customers/123/contacts/remove`
+      path: 'http://defra.wrls/customers/123/contacts/remove'
     };
 
     const h = {
@@ -644,7 +646,7 @@ experiment('internal/modules/customers/controllers', () => {
       defra: {
         userId: '1000'
       },
-      path: `http://defra.wrls/customers/123/contacts/remove/check`
+      path: 'http://defra.wrls/customers/123/contacts/remove/check'
     };
 
     const h = {

@@ -12,13 +12,13 @@ const checkAccess = (request, documentHeader) => {
   const companyId = get(request, 'defra.companyId');
 
   if (!documentHeader.company_entity_id) {
-    throw Boom.unauthorized(`Access denied to edit return - document not registered`);
+    throw Boom.unauthorized('Access denied to edit return - document not registered');
   }
   if (!companyId) {
-    throw Boom.unauthorized(`Access denied to edit return - no company selected`);
+    throw Boom.unauthorized('Access denied to edit return - no company selected');
   }
   if (documentHeader.company_entity_id !== companyId) {
-    throw Boom.unauthorized(`Access denied to edit return`);
+    throw Boom.unauthorized('Access denied to edit return');
   }
 };
 

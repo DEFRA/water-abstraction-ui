@@ -25,7 +25,7 @@ experiment('services/water/KpiReportingService', () => {
     test('passes the expected URL to the service request', async () => {
       const service = new KpiReportingService('http://127.0.0.1:8001/water/1.0');
       await service.getKpiData();
-      const expectedUrl = `http://127.0.0.1:8001/water/1.0/kpi-reporting`;
+      const expectedUrl = 'http://127.0.0.1:8001/water/1.0/kpi-reporting';
       const [url] = serviceRequest.get.lastCall.args;
       expect(url).to.equal(expectedUrl);
     });

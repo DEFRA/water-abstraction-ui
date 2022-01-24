@@ -7,7 +7,7 @@ const {
 } = exports.lab = require('@hapi/lab').script();
 
 const testHelpers = require('../../../test-helpers');
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 
 const { scope } = require('internal/lib/constants');
 const preHandlers = require('internal/modules/billing-accounts/pre-handlers');
@@ -35,7 +35,7 @@ experiment('internal/modules/billing-accounts/routes', () => {
 
     test('does not allow a non uuid for the licence id', async () => {
       const request = {
-        url: `/billing-accounts/test-non-uuid-licence-id`
+        url: '/billing-accounts/test-non-uuid-licence-id'
       };
 
       const response = await server.inject(request);
@@ -93,7 +93,7 @@ experiment('internal/modules/billing-accounts/routes', () => {
 
     test('does not allow a non uuid for the licence id', async () => {
       const request = {
-        url: `/billing-accounts/test-non-uuid-licence-id/bills`
+        url: '/billing-accounts/test-non-uuid-licence-id/bills'
       };
 
       const response = await server.inject(request);

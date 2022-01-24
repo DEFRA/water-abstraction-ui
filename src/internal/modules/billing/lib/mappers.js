@@ -2,7 +2,7 @@
 
 const Decimal = require('decimal.js-light');
 const { sortBy, groupBy, pick, mapValues, isNull, get } = require('lodash');
-const sentenceCase = require('sentence-case');
+const { sentenceCase } = require('shared/lib/string-formatter');
 const routing = require('./routing');
 const { transactionStatuses } = require('shared/lib/constants');
 const agreementsMapper = require('shared/lib/mappers/agreements');
@@ -98,7 +98,7 @@ const mapCondition = (conditionType, condition) => ({
 /**
  * Maps an array of conditions retrieved from licence summary water service call
  * to the shape necessary for display on the two part tariff transaction review screen
- * @param {Array} nested conditions
+ * @param {Array} conditions - nested conditions
  * @return {Array} flat list ready for view
  */
 const mapConditions = conditions => conditions.reduce((acc, conditionType) => {

@@ -27,9 +27,11 @@ experiment('modules/account/controller', () => {
 
     beforeEach(async () => {
       h = { view: sandbox.spy() };
-      sandbox.stub(services.water.kpiReporting, 'getKpiData').resolves({ data: {
-        returnCycles
-      } });
+      sandbox.stub(services.water.kpiReporting, 'getKpiData').resolves({
+        data: {
+          returnCycles
+        }
+      });
 
       const request = {
         defra: { userName: 'test-user' }

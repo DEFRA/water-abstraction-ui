@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const { VALID_RETURN_ID, OPTIONAL_GUID } = require('shared/lib/validators');
 
 const optionsSchema = Joi.object().keys({

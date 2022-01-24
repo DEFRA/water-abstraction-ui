@@ -30,7 +30,7 @@ experiment('Shared EntitiesApiClient', () => {
 
     sandbox.stub(client, 'findMany').resolves({
       error: null,
-      data: [ entity ]
+      data: [entity]
     });
 
     sandbox.stub(client, 'create').resolves({

@@ -14,7 +14,7 @@ const getRemindersStartView = request => {
   return {
     ...request.view,
     form: sendRemindersForm(request),
-    back: `/notifications`
+    back: '/notifications'
   };
 };
 

@@ -1,5 +1,5 @@
 const SharedUsersApiClient = require('shared/lib/connectors/services/idm/UsersApiClient');
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 
 class UsersApiClient extends SharedUsersApiClient {
   /**

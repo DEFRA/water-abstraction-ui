@@ -1,6 +1,6 @@
 'use strict';
 
-const titleCase = require('title-case');
+const { titleCase } = require('shared/lib/string-formatter');
 const { pluralize } = require('shared/lib/pluralize');
 const moment = require('moment');
 const Boom = require('@hapi/boom');
@@ -55,7 +55,7 @@ const getOriginalInvoice = invoice => invoice.linkedInvoices.find(linkedInvoice 
 const getBillingBatchInvoice = async (request, h) => {
   const { batchId, invoiceId } = request.params;
 
-  const [ batch, invoice ] = await Promise.all([
+  const [batch, invoice] = await Promise.all([
     services.water.billingBatches.getBatch(batchId),
     services.water.billingBatches.getBatchInvoice(batchId, invoiceId)
   ]);
@@ -238,7 +238,7 @@ const getBillingBatchProcessing = async (request, h) => {
     ...request.view,
     caption: moment(batch.createdAt).format('D MMMM YYYY'),
     pageTitle: `${batch.region.displayName} ${mappers.mapBatchType(batch.type).toLowerCase()} bill run`,
-    back: back && `/billing/batch/list`
+    back: back && BATCH_LIST_ROUTE
   });
 };
 
@@ -253,7 +253,7 @@ const getBillingBatchEmpty = async (request, h) => {
     ...request.view,
     pageTitle: getBillRunPageTitle(batch),
     batch,
-    back: `/billing/batch/list`
+    back: BATCH_LIST_ROUTE
   });
 };
 

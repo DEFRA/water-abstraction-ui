@@ -6,7 +6,7 @@ const filters = require('./filters');
  * @return {Object} env - nunjucks environment
  */
 const addFilters = (env) => {
-  for (let key in filters) {
+  for (const key in filters) {
     env.addFilter(key, filters[key]);
   }
 

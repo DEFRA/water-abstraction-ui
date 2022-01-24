@@ -58,7 +58,8 @@ experiment('internal/modules/charge-information/lib/charge-information-validator
             season: 'summer',
             loss: 'medium'
           })
-        ] };
+        ]
+      };
       decoratedChargeInfo = chargeInformationValidator.addValidation(chargeInfo);
     });
     test('validation warnings are blank for compliant elements', () => {

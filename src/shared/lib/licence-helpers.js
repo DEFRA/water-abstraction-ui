@@ -126,7 +126,8 @@ async function licenceConditions (licenceData) {
         purpose: {
           id: purpose.id,
           description: purpose.description
-        } };
+        }
+      };
 
       // Avoid duplicates
       const found = find(conditionContainer.conditions, (item) => {

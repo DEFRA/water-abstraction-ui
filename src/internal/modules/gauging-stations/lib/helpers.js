@@ -61,7 +61,7 @@ const getSelectedConditionText = request => {
 };
 
 const deduceRestrictionTypeFromUnit = unit => {
-  const flowUnits = [ 'Ml/d', 'm3/s', 'm3/d', 'l/s' ];
+  const flowUnits = ['Ml/d', 'm3/s', 'm3/d', 'l/s'];
   if (flowUnits.includes(unit)) {
     return 'flow';
   }
@@ -74,15 +74,17 @@ const createTitle = station =>
 const mapAbstractionPeriods = input => input.map(licence => ({
   licenceRef: licence.licenceRef,
   licenceId: licence.licenceId,
-  linkages: licence.linkages.length > 0 ? licence.linkages.map(eachLink => {
-    const abstractionPeriod = {
-      startDay: eachLink.abstractionPeriodStartDay,
-      startMonth: eachLink.abstractionPeriodStartMonth,
-      endDay: eachLink.abstractionPeriodEndDay,
-      endMonth: eachLink.abstractionPeriodEndMonth
-    };
-    return { ...eachLink, abstractionPeriod };
-  }) : []
+  linkages: licence.linkages.length > 0
+    ? licence.linkages.map(eachLink => {
+      const abstractionPeriod = {
+        startDay: eachLink.abstractionPeriodStartDay,
+        startMonth: eachLink.abstractionPeriodStartMonth,
+        endDay: eachLink.abstractionPeriodEndDay,
+        endMonth: eachLink.abstractionPeriodEndMonth
+      };
+      return { ...eachLink, abstractionPeriod };
+    })
+    : []
 }));
 
 const groupByLicence = inputArray => {

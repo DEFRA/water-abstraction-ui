@@ -1,7 +1,7 @@
 const { URL } = require('url');
 const RefParser = require('json-schema-ref-parser');
 const { isObject, each, get, cloneDeep } = require('lodash');
-const sentenceCase = require('sentence-case');
+const { sentenceCase } = require('shared/lib/string-formatter');
 const { formFactory, fields } = require('shared/lib/forms');
 const services = require('../../../lib/connectors/services');
 
@@ -56,11 +56,11 @@ const resolveTypes = async ref => {
     const gaugingStationsFromDb = await services.water.gaugingStations.getAllGaugingStations();
     const GS = gaugingStationsFromDb.map(station => ({ id: station.gaugingStationId, value: station.label }));
     return {
-      'type': 'object',
-      'defaultEmpty': true,
-      'errors': {
-        'required': {
-          'message': 'Enter a gauging station'
+      type: 'object',
+      defaultEmpty: true,
+      errors: {
+        required: {
+          message: 'Enter a gauging station'
         }
       },
       enum: GS
@@ -91,30 +91,30 @@ const waterResolverFactory = context => ({
     const ref = pathname.replace('/', '').replace('.json', '');
 
     const resolver = hostLevelResolvers[host];
-    const resolved = await resolver(ref, context);
-    return resolved;
+    return resolver(ref, context);
   }
 });
 
 /**
  * Converts references in the schema to their literals
  * @param {Object} schema - JSON schema with refs
+ * @param {Object} context
  * @return {Promise} resolves with JSON schema with references converted to literals
  */
 const dereference = async (schema, context) => {
   const refParser = new RefParser();
-  const populated = await refParser.dereference(schema, {
+  return refParser.dereference(schema, {
     resolve: {
       waterResolver: waterResolverFactory(context)
     }
   });
-  return populated;
 };
 
 /**
  * Guess label given a field name
  * Converts underscore to space and converts to sentence case
  * @param {String} str - field name, snake case
+ * @param item
  * @return {String} label
  */
 const guessLabel = (str, item) => {
@@ -284,6 +284,7 @@ const getFields = (schema) => {
  * Given a JSON schema for WR22 condition, generates a form object
  * for rendering in the UI
  * @param {String} action - form action
+ * @param {Object} request
  * @param {Object} schema - JSON schema object
  */
 const schemaToForm = (action, request, schema) => {

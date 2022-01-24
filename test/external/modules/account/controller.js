@@ -331,7 +331,7 @@ experiment('modules/account/controller', () => {
           view: { csrfToken: 'token' },
           payload: {
             csrf_token: '7c83d7ec-4c09-47cb-b570-f0b00a8c11e9',
-            'verificationCode': '123456'
+            verificationCode: '123456'
           },
           defra: {
             userId: 'user-1'
@@ -353,7 +353,7 @@ experiment('modules/account/controller', () => {
           view: { csrfToken: 'token' },
           payload: {
             csrf_token: '7c83d7ec-4c09-47cb-b570-f0b00a8c11e9',
-            'verificationCode': '123456'
+            verificationCode: '123456'
           },
           defra: {
             userId: 'user-1'
@@ -377,7 +377,7 @@ experiment('modules/account/controller', () => {
           view: { csrfToken: 'token' },
           payload: {
             csrf_token: '7c83d7ec-4c09-47cb-b570-f0b00a8c11e9',
-            'verificationCode': '123456'
+            verificationCode: '123456'
           },
           defra: {
             userId: 'user-1'
@@ -403,7 +403,7 @@ experiment('modules/account/controller', () => {
           view: { csrfToken: 'token' },
           payload: {
             csrf_token: '7c83d7ec-4c09-47cb-b570-f0b00a8c11e9',
-            'verificationCode': '123456'
+            verificationCode: '123456'
           },
           defra: {
             userId: 'user-1'

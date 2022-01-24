@@ -7,10 +7,10 @@ const services = require('external/lib/connectors/services');
 const controller = require('external/modules/notify/controller');
 
 experiment('callback', () => {
-  let request = {
+  const request = {
     method: 'POST',
     url: '/notify/callback',
-    headers: { authorization: `Bearer test` },
+    headers: { authorization: 'Bearer test' },
     payload: {}
   };
 
@@ -44,7 +44,7 @@ experiment('callback', () => {
   experiment('when it has an invalid token', () => {
     before(async () => {
       request.headers = {
-        authorization: `Bearer an-invalid-token`
+        authorization: 'Bearer an-invalid-token'
       };
       await controller.callback(request, h);
     });

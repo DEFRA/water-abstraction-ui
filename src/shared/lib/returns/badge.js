@@ -1,11 +1,11 @@
 'use strict';
 
-const titleCase = require('title-case');
+const { titleCase } = require('shared/lib/string-formatter');
 
 /**
  * Gets badge object to render for return row
  * @param  {String}  status    - return status
- * @param  {Boolean} isPastDue - whether return is past due
+ * @param  {Boolean} isPastDueDate - whether return is past due
  * @return {Object}            - badge text and style
  */
 const getBadge = (status, isPastDueDate) => {

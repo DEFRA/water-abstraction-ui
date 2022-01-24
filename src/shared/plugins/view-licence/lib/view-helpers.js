@@ -11,11 +11,11 @@ const helpers = require('shared/lib/view-licence-helpers');
  */
 function getLicencePageTitle (view, licenceNumber, customName) {
   const titles = {
-    purposes: `Abstraction details`,
-    points: `Abstraction points`,
-    conditions: `Conditions held`,
-    contact: `Contact details`,
-    'gauging-station': `Gauging station`
+    purposes: 'Abstraction details',
+    points: 'Abstraction points',
+    conditions: 'Conditions held',
+    contact: 'Contact details',
+    'gauging-station': 'Gauging station'
   };
 
   const key = view.split('/').pop();

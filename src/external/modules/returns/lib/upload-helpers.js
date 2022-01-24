@@ -3,9 +3,7 @@ const fileCheck = require('shared/lib/file-check');
 const { applyErrors } = require('shared/lib/forms');
 const fs = require('fs');
 const path = require('path');
-const uuidv4 = require('uuid/v4');
-const util = require('util');
-const mkdirp = util.promisify(require('mkdirp'));
+const { v4: uuid } = require('uuid');
 const { logger } = require('../../../logger');
 const config = require('../../../config');
 
@@ -14,7 +12,7 @@ const config = require('../../../config');
  * @return {string} - path to temp file
  */
 const getFile = () => {
-  return path.join(process.cwd(), `/temp/${uuidv4()}`);
+  return path.join(process.cwd(), `/temp/${uuid()}`);
 };
 
 const getErrorMessage = key => {
@@ -65,7 +63,7 @@ const uploadFile = (readStream, file) => {
   });
 };
 
-const createDirectory = file => mkdirp(path.dirname(file));
+const createDirectory = async file => new Promise((resolve) => fs.mkdir(path.dirname(file), { recursive: true }, resolve));
 
 const fileStatuses = {
   OK: 'ok',

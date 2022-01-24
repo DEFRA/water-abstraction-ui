@@ -8,26 +8,32 @@ class UsersService extends ServiceClient {
 
   postCreateInternalUser (callingUserId, newUserEmail, permissionsKey) {
     const url = this.joinUrl('user/internal');
-    return this.serviceRequest.post(url, { body: {
-      callingUserId,
-      newUserEmail,
-      permissionsKey
-    } });
+    return this.serviceRequest.post(url, {
+      body: {
+        callingUserId,
+        newUserEmail,
+        permissionsKey
+      }
+    });
   };
 
   updateInternalUserPermissions (callingUserId, userId, permissionsKey) {
     const url = this.joinUrl(`user/internal/${userId}`);
-    return this.serviceRequest.patch(url, { body: {
-      callingUserId,
-      permissionsKey
-    } });
+    return this.serviceRequest.patch(url, {
+      body: {
+        callingUserId,
+        permissionsKey
+      }
+    });
   };
 
   disableInternalUser (callingUserId, userId) {
     const url = this.joinUrl(`user/internal/${userId}`);
-    return this.serviceRequest.delete(url, { body: {
-      callingUserId
-    } });
+    return this.serviceRequest.delete(url, {
+      body: {
+        callingUserId
+      }
+    });
   };
 }
 

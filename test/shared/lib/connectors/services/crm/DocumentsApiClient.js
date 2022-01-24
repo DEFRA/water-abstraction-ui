@@ -9,7 +9,7 @@ const {
 const { expect } = require('@hapi/code');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 
 experiment('DocumentsApiClient', () => {
   let logger;
@@ -107,7 +107,7 @@ experiment('DocumentsApiClient', () => {
     });
 
     test('call to .find uses correct filter', async () => {
-      const [ filter ] = client.findMany.lastCall.args;
+      const [filter] = client.findMany.lastCall.args;
       expect(filter).to.equal({
         system_external_id: {
           $in: [LICENCE_A, LICENCE_B]
@@ -116,12 +116,12 @@ experiment('DocumentsApiClient', () => {
     });
 
     test('call to .find does not define a sort order', async () => {
-      const [ , sort ] = client.findMany.lastCall.args;
+      const [, sort] = client.findMany.lastCall.args;
       expect(sort).to.be.null();
     });
 
     test('call to .find gets all available records', async () => {
-      const [ , , pagination ] = client.findMany.lastCall.args;
+      const [, , pagination] = client.findMany.lastCall.args;
       expect(pagination).to.equal({
         page: 1,
         perPage: 9007199254740991
@@ -129,7 +129,7 @@ experiment('DocumentsApiClient', () => {
     });
 
     test('call to .find only requests the columns needed', async () => {
-      const [ , , , columns ] = client.findMany.lastCall.args;
+      const [, , , columns] = client.findMany.lastCall.args;
       expect(columns).to.only.include(['system_external_id', 'document_id']);
     });
 

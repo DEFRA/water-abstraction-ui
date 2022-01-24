@@ -9,7 +9,7 @@ const {
 } = exports.lab = require('@hapi/lab').script();
 
 const sandbox = require('sinon').createSandbox();
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 
 const { logger } = require('internal/logger');
 const forms = require('shared/lib/forms');
@@ -360,7 +360,7 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
       });
     });
 
-    experiment(`for annual and supplementary batches`, () => {
+    experiment('for annual and supplementary batches', () => {
       const billRunCombinations = [
         { billRunType: billRunTypes.ANNUAL },
         { billRunType: billRunTypes.SUPPLEMENTARY }
@@ -394,8 +394,8 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
       });
     });
 
-    experiment(`for a winter two part tariff bill run`, () => {
-      test(`the financial year is the previous year`, async () => {
+    experiment('for a winter two part tariff bill run', () => {
+      test('the financial year is the previous year', async () => {
         forms.getValues.returns({
           selectedBillingType: billRunTypes.TWO_PART_TARIFF,
           selectedTwoPartTariffSeason: seasons.WINTER_AND_ALL_YEAR

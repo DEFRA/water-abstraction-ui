@@ -21,7 +21,8 @@ const createPlugins = (config, logger, connectors) => ([
   },
   {
     plugin: require('@hapi/good'),
-    options: { ...config.good,
+    options: {
+      ...config.good,
       reporters: {
         winston: [new GoodWinston({ winston: logger })]
       }

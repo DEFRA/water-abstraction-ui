@@ -1,6 +1,6 @@
 'use strict';
 
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
 const sandbox = require('sinon').createSandbox();
@@ -92,7 +92,8 @@ experiment('internal/modules/customers/forms/contact-removal/select-contact-for-
       test('fails if the csrf token is not a uuid', async () => {
         const result = selectContactForRemoval.schema(request).validate({
           companyContactId: uuid(),
-          csrf_token: 'noodles' });
+          csrf_token: 'noodles'
+        });
         expect(result.error.message).to.equal('"csrf_token" must be a valid GUID');
       });
     });

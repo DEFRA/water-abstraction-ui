@@ -22,23 +22,27 @@ const generateBillingAccountMetadata = billingAccount => {
         </dd>
       </div>`;
 
-  metadataHtml += billingAccount.lastTransactionFileReference ? `<div class="govuk-summary-list__row-with-minimal-spacing">
+  metadataHtml += billingAccount.lastTransactionFileReference
+    ? `<div class="govuk-summary-list__row-with-minimal-spacing">
     <dt class="govuk-summary-list__value">
       Customer file
     </dt>
     <dd class="govuk-summary-list__value meta-data__value">
       ${billingAccount.lastTransactionFileReference}
     </dd>
-  </div>` : '';
+  </div>`
+    : '';
 
-  metadataHtml += moment(billingAccount.dateLastTransactionFileReferenceUpdated).isValid() ? `<div class="govuk-summary-list__row-with-minimal-spacing">
+  metadataHtml += moment(billingAccount.dateLastTransactionFileReferenceUpdated).isValid()
+    ? `<div class="govuk-summary-list__row-with-minimal-spacing">
     <dt class="govuk-summary-list__value">
       Last updated
     </dt>
     <dd class="govuk-summary-list__value meta-data__value">
         ${moment(billingAccount.dateLastTransactionFileReferenceUpdated).format('D MMMM YYYY')}
     </dd>
-  </div>` : '';
+  </div>`
+    : '';
 
   return metadataHtml;
 };

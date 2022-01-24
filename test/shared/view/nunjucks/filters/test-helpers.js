@@ -50,7 +50,7 @@ const dropdownField = fields.dropdown('dropdown_field', {
   }]
 }, 'option-b');
 
-let f = formFactory('/action');
+const f = formFactory('/action');
 f.fields.push(textField);
 f.fields.push(radioField);
 f.fields.push(checkboxField);

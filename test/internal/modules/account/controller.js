@@ -110,7 +110,7 @@ experiment('modules/account/controller', () => {
 
       test('redirects to the expected url', async () => {
         const [url] = h.redirect.lastCall.args;
-        expect(url).to.equal(`/account/create-user/set-permissions`);
+        expect(url).to.equal('/account/create-user/set-permissions');
       });
     });
   });

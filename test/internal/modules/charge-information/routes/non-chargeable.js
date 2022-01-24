@@ -4,7 +4,7 @@ const {
   test,
   beforeEach
 } = exports.lab = require('@hapi/lab').script();
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const { expect } = require('@hapi/code');
 const preHandlers = require('internal/modules/charge-information/pre-handlers');
 const routes = require('internal/modules/charge-information/routes/non-chargeable');
@@ -31,7 +31,7 @@ experiment('internal/modules/charge-information/routes/non-chargeable', () => {
 
     test('does not allow a non uuid for the licence id', async () => {
       const request = {
-        url: `/licences/test-non-uuid-licence-id/charge-information/non-chargeable-reason`
+        url: '/licences/test-non-uuid-licence-id/charge-information/non-chargeable-reason'
       };
 
       const response = await server.inject(request);
@@ -76,7 +76,7 @@ experiment('internal/modules/charge-information/routes/non-chargeable', () => {
 
     test('does not allow a non uuid for the licence id', async () => {
       const request = {
-        url: `/licences/test-non-uuid-licence-id/charge-information/non-chargeable-reason`,
+        url: '/licences/test-non-uuid-licence-id/charge-information/non-chargeable-reason',
         method: 'POST'
       };
 
@@ -148,7 +148,7 @@ experiment('internal/modules/charge-information/routes/non-chargeable', () => {
 
     test('does not allow a non uuid for the licence id', async () => {
       const request = {
-        url: `/licences/test-non-uuid-licence-id/charge-information/effective-date`,
+        url: '/licences/test-non-uuid-licence-id/charge-information/effective-date',
         method: 'POST'
       };
 

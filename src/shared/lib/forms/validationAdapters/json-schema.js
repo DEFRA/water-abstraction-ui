@@ -12,7 +12,7 @@ const { get, set } = require('lodash');
  * @return {Object}           returns the map
  */
 const getPathMap = (schema, map = {}, path = '') => {
-  for (let key in schema.properties) {
+  for (const key in schema.properties) {
     if (schema.properties[key].properties) {
       getPathMap(schema.properties[key], map, key + '.');
     } else {
@@ -46,7 +46,7 @@ const mapValue = (value) => {
 const mapRequestData = (data, schema) => {
   const map = getPathMap(schema);
   const obj = {};
-  for (let key in data) {
+  for (const key in data) {
     if (key in map) {
       set(obj, map[key], mapValue(data[key]));
     }

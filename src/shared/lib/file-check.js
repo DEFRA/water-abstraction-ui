@@ -23,7 +23,7 @@ const isInfectedFile = (err) => {
 };
 
 const createLoggerError = (err) => {
-  const error = new Error(`Virus checker found infected file`);
+  const error = new Error('Virus checker found infected file');
   error.params = pick(err, ['code', 'cmd', 'stdout']);
   return error;
 };

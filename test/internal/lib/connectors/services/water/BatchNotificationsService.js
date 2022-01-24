@@ -31,7 +31,7 @@ experiment('services/water/BatchNotificationsService', () => {
 
     test('passes the expected URL to the request', async () => {
       const [url] = serviceRequest.post.lastCall.args;
-      expect(url).to.equal(`https/example.com/water/batch-notifications/prepare/returnReminder`);
+      expect(url).to.equal('https/example.com/water/batch-notifications/prepare/returnReminder');
     });
 
     test('adds the issuer to the request body', async () => {

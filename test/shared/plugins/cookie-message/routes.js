@@ -41,7 +41,7 @@ experiment('internal/shared/plugins/cookie-message/routes', () => {
     });
   };
 
-  experiment(`get /cookies`, () => {
+  experiment('get /cookies', () => {
     beforeEach(async () => {
       request = {
         method: 'get',
@@ -56,7 +56,7 @@ experiment('internal/shared/plugins/cookie-message/routes', () => {
     testPaths();
   });
 
-  experiment(`post /cookies`, () => {
+  experiment('post /cookies', () => {
     beforeEach(async () => {
       request = {
         method: 'post',
@@ -71,7 +71,7 @@ experiment('internal/shared/plugins/cookie-message/routes', () => {
     testPaths();
   });
 
-  experiment(`get /set-cookie-preferences`, () => {
+  experiment('get /set-cookie-preferences', () => {
     beforeEach(async () => {
       request = {
         method: 'get',

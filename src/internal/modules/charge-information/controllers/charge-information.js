@@ -1,6 +1,6 @@
 'use strict';
 
-const uuid = require('uuid');
+const { v4: uuid } = require('uuid');
 const { get } = require('lodash');
 const moment = require('moment');
 const { isEmpty, omit } = require('lodash');
@@ -79,6 +79,9 @@ const getBillingAccountRedirectKey = (licenceId, chargeVersionWorkflowId) =>
  * billing account plugin flow
  * @param {Object} licence
  * @param {Object} document
+ * @param {Object} currentState
+ * @param {String} chargeVersionWorkflowId
+ * @param {Boolean} isCheckAnswers
  * @return {Object} data for billing account plugin handover
  */
 const mapBillingAccountHandoverData = async (licence, document, currentState, chargeVersionWorkflowId, isCheckAnswers = false) => {

@@ -67,7 +67,7 @@ experiment('Meter', () => {
 
     const keys = ['meterDetailsProvided', 'manufacturer', 'serialNumber',
       'startReading', 'multiplier', 'readings'];
-    for (let key of keys) {
+    for (const key of keys) {
       test(`sets ${key} from supplied object data`, async () => {
         expect(meter[key]).to.equal(data[key]);
       });
@@ -250,38 +250,50 @@ experiment('Meter', () => {
     test('returns an array of volumes based on the meter readings and start reading', async () => {
       const volumes = meter.getVolumes(false);
       expect(volumes).to.equal([
-        { startDate: '2019-09-01',
+        {
+          startDate: '2019-09-01',
           endDate: '2019-09-30',
           timePeriod: 'month',
-          quantity: 35.3 },
-        { startDate: '2019-10-01',
+          quantity: 35.3
+        },
+        {
+          startDate: '2019-10-01',
           endDate: '2019-10-31',
           timePeriod: 'month',
-          quantity: 24.7 },
-        { startDate: '2019-11-01',
+          quantity: 24.7
+        },
+        {
+          startDate: '2019-11-01',
           endDate: '2019-11-30',
           timePeriod: 'month',
-          quantity: null } ]);
+          quantity: null
+        }]);
     });
 
     test('includes the meter readings if passed true', async () => {
       const volumes = meter.getVolumes(true);
       expect(volumes).to.equal([
-        { startDate: '2019-09-01',
+        {
+          startDate: '2019-09-01',
           endDate: '2019-09-30',
           timePeriod: 'month',
           quantity: 35.3,
-          endReading: 45.3 },
-        { startDate: '2019-10-01',
+          endReading: 45.3
+        },
+        {
+          startDate: '2019-10-01',
           endDate: '2019-10-31',
           timePeriod: 'month',
           quantity: 24.7,
-          endReading: 70 },
-        { startDate: '2019-11-01',
+          endReading: 70
+        },
+        {
+          startDate: '2019-11-01',
           endDate: '2019-11-30',
           timePeriod: 'month',
           quantity: null,
-          endReading: null } ]);
+          endReading: null
+        }]);
     });
   });
 

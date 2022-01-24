@@ -40,20 +40,26 @@ experiment('getManageTabConfig', () => {
       const request = createRequest(scope.bulkReturnNotifications);
       const config = getManageTabConfig(request);
       expect(getAllLinks(config)).to.equal([
-        { group: 'reports',
+        {
+          group: 'reports',
           name: 'Notices',
-          path: '/notifications/report' },
+          path: '/notifications/report'
+        },
         {
           group: 'reports',
           name: 'Key performance indicators',
           path: '/reporting/kpi-reporting'
         },
-        { group: 'returnNotifications',
+        {
+          group: 'returnNotifications',
           name: 'Invitations',
-          path: '/returns-notifications/invitations' },
-        { group: 'returnNotifications',
+          path: '/returns-notifications/invitations'
+        },
+        {
+          group: 'returnNotifications',
           name: 'Reminders',
-          path: '/returns-notifications/reminders' }
+          path: '/returns-notifications/reminders'
+        }
       ]);
     });
   });
@@ -74,15 +80,21 @@ experiment('getManageTabConfig', () => {
       const request = createRequest(scope.renewalNotifications);
       const config = getManageTabConfig(request);
       expect(getAllLinks(config)).to.equal([
-        { group: 'reports',
+        {
+          group: 'reports',
           name: 'Notices',
-          path: '/notifications/report' },
-        { group: 'reports',
+          path: '/notifications/report'
+        },
+        {
+          group: 'reports',
           name: 'Key performance indicators',
-          path: '/reporting/kpi-reporting' },
-        { group: 'licenceNotifications',
+          path: '/reporting/kpi-reporting'
+        },
+        {
+          group: 'licenceNotifications',
           name: 'Renewal',
-          path: 'notifications/2?start=1' }
+          path: 'notifications/2?start=1'
+        }
       ]);
     });
   });
@@ -92,18 +104,23 @@ experiment('getManageTabConfig', () => {
       const request = createRequest(scope.returns);
       const config = getManageTabConfig(request);
       expect(getAllLinks(config)).to.equal([
-        { group: 'reports',
+        {
+          group: 'reports',
           name: 'Notices',
-          path: '/notifications/report' },
-        { group: 'reports',
+          path: '/notifications/report'
+        },
+        {
+          group: 'reports',
           name: 'Returns cycles',
-          path: '/returns-reports' },
+          path: '/returns-reports'
+        },
         {
           group: 'reports',
           name: 'Key performance indicators',
           path: '/reporting/kpi-reporting'
         },
-        { group: 'returnNotifications',
+        {
+          group: 'returnNotifications',
           name: 'Paper forms',
           path: '/returns-notifications/forms'
         }]);
@@ -114,23 +131,31 @@ experiment('getManageTabConfig', () => {
     test('they can view notifications reports and all HoF notifications', async () => {
       const request = createRequest(scope.hofNotifications);
       const config = getManageTabConfig(request);
-      expect(getAllLinks(config)).to.equal([ { group: 'reports',
+      expect(getAllLinks(config)).to.equal([{
+        group: 'reports',
         name: 'Notices',
-        path: '/notifications/report' },
+        path: '/notifications/report'
+      },
       {
         group: 'reports',
         name: 'Key performance indicators',
         path: '/reporting/kpi-reporting'
       },
-      { group: 'hofNotifications',
+      {
+        group: 'hofNotifications',
         name: 'Restriction',
-        path: 'notifications/1?start=1' },
-      { group: 'hofNotifications',
+        path: 'notifications/1?start=1'
+      },
+      {
+        group: 'hofNotifications',
         name: 'Hands-off flow',
-        path: 'notifications/3?start=1' },
-      { group: 'hofNotifications',
+        path: 'notifications/3?start=1'
+      },
+      {
+        group: 'hofNotifications',
         name: 'Resume',
-        path: 'notifications/4?start=1' } ]);
+        path: 'notifications/4?start=1'
+      }]);
     });
   });
 

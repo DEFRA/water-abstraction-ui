@@ -34,7 +34,7 @@ const reviewForm = (request, reviewOutcome, reviewComments) => {
           required: true,
           errors: {
             'string.empty': {
-              message: `Enter details into the box about what needs to change.`
+              message: 'Enter details into the box about what needs to change.'
             }
           },
           label: 'Which parts of the charge information are incorrect?',

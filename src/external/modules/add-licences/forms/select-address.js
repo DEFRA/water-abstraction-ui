@@ -12,7 +12,8 @@ const getLines = licences => {
       licence.metadata.Postcode
     ].filter(label => label !== ''); ;
 
-    return { value: licence.document_id,
+    return {
+      value: licence.document_id,
       label: `${labelItems.join(', ')}`
     };
   });

@@ -8,7 +8,7 @@ const {
   afterEach
 } = exports.lab = require('@hapi/lab').script();
 const sandbox = require('sinon').createSandbox();
-const uuid = require('uuid').v4;
+const { v4: uuid } = require('uuid');
 
 const controller = require('internal/modules/billing-accounts/controllers/billing-accounts');
 
@@ -96,7 +96,7 @@ experiment('internal/modules/billing-accounts/controllers/billing-accounts', () 
 
     test('has the correct page title', () => {
       const [, view] = h.view.lastCall.args;
-      expect(view.pageTitle).to.equal(`Billing account for Test Company`);
+      expect(view.pageTitle).to.equal('Billing account for Test Company');
     });
 
     test('has the correct caption', () => {
@@ -170,7 +170,7 @@ experiment('internal/modules/billing-accounts/controllers/billing-accounts', () 
 
     test('has the correct page title', () => {
       const [, view] = h.view.lastCall.args;
-      expect(view.pageTitle).to.equal(`Sent bills for Test Company`);
+      expect(view.pageTitle).to.equal('Sent bills for Test Company');
     });
 
     test('has the correct caption', () => {

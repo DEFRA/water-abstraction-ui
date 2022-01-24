@@ -1,6 +1,6 @@
 'use strict';
 
-const titleCase = require('title-case');
+const { titleCase } = require('shared/lib/string-formatter');
 const { compact } = require('lodash');
 
 const getAddressText = address => {

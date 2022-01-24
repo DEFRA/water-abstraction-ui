@@ -76,7 +76,8 @@ const ROUTING_CONFIG = {
     nextStep: CHARGE_CATEGORY_STEPS.volume,
     back: CHARGE_CATEGORY_STEPS.source,
     options: LOSS_CATEGORIES,
-    errorMessage: 'Select if the loss is high, medium or low.' },
+    errorMessage: 'Select if the loss is high, medium or low.'
+  },
   volume: {
     pageTitle: 'Enter a volume',
     nextStep: CHARGE_CATEGORY_STEPS.isRestrictedSource,
@@ -102,14 +103,14 @@ const ROUTING_CONFIG = {
     nextStep: CHARGE_CATEGORY_STEPS.isAdjustments,
     back: CHARGE_CATEGORY_STEPS.waterModel,
     options: YES_NO,
-    errorMessage: `Select 'yes' if additional charges apply.`,
+    errorMessage: 'Select \'yes\' if additional charges apply.',
     boolean: true
   },
   isAdjustments: {
     pageTitle: 'Do adjustments apply?',
     back: CHARGE_CATEGORY_STEPS.isAdditionalCharges,
     options: YES_NO,
-    errorMessage: `Select 'yes' if adjustments apply.`,
+    errorMessage: 'Select \'yes\' if adjustments apply.',
     boolean: true
   }
 };

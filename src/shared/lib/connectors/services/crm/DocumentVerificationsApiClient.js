@@ -35,6 +35,7 @@ class DocumentVerificationsApiClient extends APIClient {
 
     return serviceRequest.get(url, { qs });
   }
+
   /**
    * Gets a list of verification codes and entity_nm values relating to documents
    * @param {String} document_id - the document header ID

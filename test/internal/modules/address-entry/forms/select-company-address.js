@@ -1,7 +1,7 @@
 'use strict';
 
 const { omit } = require('lodash');
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const { expect } = require('@hapi/code');
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
 const sandbox = require('sinon').createSandbox();
@@ -45,7 +45,7 @@ const createRequest = () => ({
 experiment('internal/modules/address-entry/select-company-address form', () => {
   let request;
 
-  beforeEach(async => {
+  beforeEach(async () => {
     request = createRequest();
   });
   test('sets the form method to POST', async () => {
@@ -74,7 +74,7 @@ experiment('internal/modules/address-entry/select-company-address form', () => {
 experiment('invoice-accounts/forms/select-address schema', () => {
   let request, data;
 
-  beforeEach(async => {
+  beforeEach(async () => {
     request = createRequest();
     data = {
       csrf_token: uuid(),

@@ -38,7 +38,7 @@ const form = request => {
 };
 
 const schema = () => {
-  const descriptionRegex = new RegExp(/^[a-zA-Z/s 0-9-'.,]{1,180}$/);
+  const descriptionRegex = /^[a-zA-Z/s 0-9-'.,]{1,180}$/;
   return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
     description: Joi.string().pattern(descriptionRegex).required()

@@ -46,10 +46,10 @@ experiment('meta redirect plugin', () => {
       set(context, 'request.plugins.blankie.nonces.script', 'nonce-value');
       metaRedirectPlugin._metaRedirect.apply(context, ['/some/path']);
 
-      const [ html ] = context.response.lastCall.args;
+      const [html] = context.response.lastCall.args;
 
       expect(html).to.contain('<meta http-equiv="refresh" content="0; url="/some/path" />');
-      expect(html).to.contain(`<script nonce=nonce-value>location.href='/some/path';</script>`);
+      expect(html).to.contain('<script nonce=nonce-value>location.href=\'/some/path\';</script>');
     });
   });
 });

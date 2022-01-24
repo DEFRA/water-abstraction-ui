@@ -32,7 +32,7 @@ const form = request => {
   f.fields.push(fields.date('fromDate', {
     label: 'What date do you need to reissue a bill from?',
     caption: `Billing account ${request.pre.billingAccount.accountNumber}`,
-    hint: `We'll show all the bills created in the service on or after this date. This will not include zero value and de minimus bills.`,
+    hint: 'We\'ll show all the bills created in the service on or after this date. This will not include zero value and de minimus bills.',
     heading: true,
     size: 'l',
     type: 'date',

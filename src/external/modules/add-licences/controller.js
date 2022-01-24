@@ -246,14 +246,10 @@ function getLicenceSelectError (request, h) {
 }
 
 const getUniqueAddresses = async selectedIds => {
-  try {
   // Find licences in CRM for selected documents
-    const { data } = await services.crm.documents.findMany({ document_id: { $or: selectedIds } });
+  const { data } = await services.crm.documents.findMany({ document_id: { $or: selectedIds } });
 
-    return uniqueAddresses(data);
-  } catch (err) {
-    throw (err);
-  }
+  return uniqueAddresses(data);
 };
 
 /**

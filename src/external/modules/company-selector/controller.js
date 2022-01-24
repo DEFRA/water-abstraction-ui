@@ -64,7 +64,7 @@ const postSelectCompany = async (request, h) => {
     const company = get(data, `companies.${index}`);
 
     if (!company) {
-      throw Boom.badRequest(`Company not found`, { index });
+      throw Boom.badRequest('Company not found', { index });
     }
 
     // Set company ID in session cookie

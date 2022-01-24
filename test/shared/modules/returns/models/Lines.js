@@ -14,42 +14,66 @@ const createOptions = frequency => ({
   isFinal: true
 });
 
-const createLines = () => ([ { startDate: '2018-11-01',
+const createLines = () => ([{
+  startDate: '2018-11-01',
   endDate: '2018-11-30',
-  quantity: null },
-{ startDate: '2018-12-01',
+  quantity: null
+},
+{
+  startDate: '2018-12-01',
   endDate: '2018-12-31',
-  quantity: null },
-{ startDate: '2019-01-01',
+  quantity: null
+},
+{
+  startDate: '2019-01-01',
   endDate: '2019-01-31',
-  quantity: null },
-{ startDate: '2019-02-01',
+  quantity: null
+},
+{
+  startDate: '2019-02-01',
   endDate: '2019-02-28',
-  quantity: null },
-{ startDate: '2019-03-01',
+  quantity: null
+},
+{
+  startDate: '2019-03-01',
   endDate: '2019-03-31',
-  quantity: null },
-{ startDate: '2019-04-01',
+  quantity: null
+},
+{
+  startDate: '2019-04-01',
   endDate: '2019-04-30',
-  quantity: null },
-{ startDate: '2019-05-01',
+  quantity: null
+},
+{
+  startDate: '2019-05-01',
   endDate: '2019-05-31',
-  quantity: null },
-{ startDate: '2019-06-01',
+  quantity: null
+},
+{
+  startDate: '2019-06-01',
   endDate: '2019-06-30',
-  quantity: null },
-{ startDate: '2019-07-01',
+  quantity: null
+},
+{
+  startDate: '2019-07-01',
   endDate: '2019-07-31',
-  quantity: null },
-{ startDate: '2019-08-01',
+  quantity: null
+},
+{
+  startDate: '2019-08-01',
   endDate: '2019-08-31',
-  quantity: null },
-{ startDate: '2019-09-01',
+  quantity: null
+},
+{
+  startDate: '2019-09-01',
   endDate: '2019-09-30',
-  quantity: null },
-{ startDate: '2019-10-01',
+  quantity: null
+},
+{
+  startDate: '2019-10-01',
   endDate: '2019-10-31',
-  quantity: null } ]);
+  quantity: null
+}]);
 
 const createZeroLines = () => createLines().map(line => ({
   ...line,
@@ -136,7 +160,7 @@ experiment('Lines model', () => {
         .setLines(abstractionPeriod, createLines())
         .toArray();
       const quantities = arr.map(row => row.quantity);
-      expect(quantities).to.equal([ 0, 0, null, null, null, null, null, null, null, 0, 0, 0 ]);
+      expect(quantities).to.equal([0, 0, null, null, null, null, null, null, null, 0, 0, 0]);
     });
 
     test('sets submitted zeros to null outside abstraction period', async () => {
@@ -144,7 +168,7 @@ experiment('Lines model', () => {
         .setLines(abstractionPeriod, createZeroLines())
         .toArray();
       const quantities = arr.map(row => row.quantity);
-      expect(quantities).to.equal([ 0, 0, null, null, null, null, null, null, null, 0, 0, 0 ]);
+      expect(quantities).to.equal([0, 0, null, null, null, null, null, null, null, 0, 0, 0]);
     });
 
     test('sets values', async () => {
@@ -152,7 +176,7 @@ experiment('Lines model', () => {
         .setLines(abstractionPeriod, createAscendingLines())
         .toArray();
       const quantities = arr.map(row => row.quantity);
-      expect(quantities).to.equal([ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ]);
+      expect(quantities).to.equal([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
     });
 
     test('throws error if lines do not match schema', async () => {
@@ -215,54 +239,78 @@ experiment('Lines model', () => {
         }, 400)
           .toArray();
 
-      expect(arr).to.equal([ { startDate: '2018-11-01',
+      expect(arr).to.equal([{
+        startDate: '2018-11-01',
         endDate: '2018-11-30',
         timePeriod: 'month',
-        quantity: null },
-      { startDate: '2018-12-01',
+        quantity: null
+      },
+      {
+        startDate: '2018-12-01',
         endDate: '2018-12-31',
         timePeriod: 'month',
-        quantity: null },
-      { startDate: '2019-01-01',
+        quantity: null
+      },
+      {
+        startDate: '2019-01-01',
         endDate: '2019-01-31',
         timePeriod: 'month',
-        quantity: 100 },
-      { startDate: '2019-02-01',
+        quantity: 100
+      },
+      {
+        startDate: '2019-02-01',
         endDate: '2019-02-28',
         timePeriod: 'month',
-        quantity: 100 },
-      { startDate: '2019-03-01',
+        quantity: 100
+      },
+      {
+        startDate: '2019-03-01',
         endDate: '2019-03-31',
         timePeriod: 'month',
-        quantity: 100 },
-      { startDate: '2019-04-01',
+        quantity: 100
+      },
+      {
+        startDate: '2019-04-01',
         endDate: '2019-04-30',
         timePeriod: 'month',
-        quantity: 100 },
-      { startDate: '2019-05-01',
+        quantity: 100
+      },
+      {
+        startDate: '2019-05-01',
         endDate: '2019-05-31',
         timePeriod: 'month',
-        quantity: null },
-      { startDate: '2019-06-01',
+        quantity: null
+      },
+      {
+        startDate: '2019-06-01',
         endDate: '2019-06-30',
         timePeriod: 'month',
-        quantity: null },
-      { startDate: '2019-07-01',
+        quantity: null
+      },
+      {
+        startDate: '2019-07-01',
         endDate: '2019-07-31',
         timePeriod: 'month',
-        quantity: null },
-      { startDate: '2019-08-01',
+        quantity: null
+      },
+      {
+        startDate: '2019-08-01',
         endDate: '2019-08-31',
         timePeriod: 'month',
-        quantity: null },
-      { startDate: '2019-09-01',
+        quantity: null
+      },
+      {
+        startDate: '2019-09-01',
         endDate: '2019-09-30',
         timePeriod: 'month',
-        quantity: null },
-      { startDate: '2019-10-01',
+        quantity: null
+      },
+      {
+        startDate: '2019-10-01',
         endDate: '2019-10-31',
         timePeriod: 'month',
-        quantity: null } ]);
+        quantity: null
+      }]);
     });
   });
 });

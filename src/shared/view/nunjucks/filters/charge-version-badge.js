@@ -1,6 +1,6 @@
 'use strict';
 
-const titleCase = require('title-case');
+const { titleCase } = require('shared/lib/string-formatter');
 
 const styles = {
   draft: 'void',
@@ -32,7 +32,7 @@ const displayedTextTransformer = {
  */
 const chargeVersionBadge = (chargeVersion, isLarge = false) => {
   const { status } = chargeVersion;
-  let displayedLabel = displayedTextTransformer[status.toLowerCase()];
+  const displayedLabel = displayedTextTransformer[status.toLowerCase()];
   return {
     text: titleCase(displayedLabel),
     status: styles[displayedLabel],

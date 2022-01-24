@@ -55,22 +55,22 @@ experiment('modules/company-selector/controller', () => {
     });
 
     test('loads user details using the user ID', async () => {
-      const [ id ] = loginHelpers.loadUserData.lastCall.args;
+      const [id] = loginHelpers.loadUserData.lastCall.args;
       expect(id).to.equal(userId);
     });
 
     test('uses the correct nunjucks template', async () => {
-      const [ template ] = h.view.lastCall.args;
+      const [template] = h.view.lastCall.args;
       expect(template).to.equal('nunjucks/auth/select-company');
     });
 
     test('sets the page title in the view', async () => {
-      const [ , { pageTitle } ] = h.view.lastCall.args;
+      const [, { pageTitle }] = h.view.lastCall.args;
       expect(pageTitle).to.equal('Choose a licence holder');
     });
 
     test('does not show the back link if there is no company selected', async () => {
-      const [ , { back } ] = h.view.lastCall.args;
+      const [, { back }] = h.view.lastCall.args;
       expect(back).to.be.false();
     });
 
@@ -78,12 +78,12 @@ experiment('modules/company-selector/controller', () => {
       const request = createRequest();
       request.defra.companyId = 'test-company-id';
       await controller.getSelectCompany(request, h);
-      const [ , { back } ] = h.view.lastCall.args;
+      const [, { back }] = h.view.lastCall.args;
       expect(back).to.equal('/licences');
     });
 
     test('sets a form object in the view', async () => {
-      const [ , { form } ] = h.view.lastCall.args;
+      const [, { form }] = h.view.lastCall.args;
       expect(form).to.be.an.object();
       expect(form.action).to.equal('/select-company');
     });
@@ -95,18 +95,18 @@ experiment('modules/company-selector/controller', () => {
     });
 
     test('loads user details using the user ID', async () => {
-      const [ id ] = loginHelpers.loadUserData.lastCall.args;
+      const [id] = loginHelpers.loadUserData.lastCall.args;
       expect(id).to.equal(userId);
     });
 
     experiment('when form payload is invalid', () => {
       test('the form is displayed again', async () => {
-        const [ template ] = h.view.lastCall.args;
+        const [template] = h.view.lastCall.args;
         expect(template).to.equal('nunjucks/auth/select-company');
       });
 
       test('the form has errors', async () => {
-        const [ , { form: { errors } } ] = h.view.lastCall.args;
+        const [, { form: { errors } }] = h.view.lastCall.args;
         expect(errors.length).to.equal(1);
         expect(errors[0].name).to.equal('company');
       });
@@ -125,7 +125,7 @@ experiment('modules/company-selector/controller', () => {
       });
 
       test('redirects user', async () => {
-        const [ path ] = h.redirect.lastCall.args;
+        const [path] = h.redirect.lastCall.args;
         expect(path).to.equal('/licences');
       });
     });

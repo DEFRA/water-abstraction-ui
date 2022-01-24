@@ -84,10 +84,12 @@ experiment('account/forms/create-user schema', () => {
 
     test('lower cases the input email', async () => {
       const input = { csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', email: 'SHOUTY@DEFRA.GOV.UK' };
-      const expectedOutput = { value: {
-        csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
-        email: 'shouty@defra.gov.uk'
-      } };
+      const expectedOutput = {
+        value: {
+          csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
+          email: 'shouty@defra.gov.uk'
+        }
+      };
       const result = createUserSchema.validate(input, { allowUnknown: true });
       expect(result).to.equal(expectedOutput);
     });

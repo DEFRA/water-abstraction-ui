@@ -42,7 +42,7 @@ async function postResetPassword (request, h) {
     // account exists
     request.log('debug', 'Reset password error', { error });
   }
-  return h.redirect(`/reset_password_check_email`);
+  return h.redirect('/reset_password_check_email');
 }
 
 async function getResetSuccess (request, h) {
@@ -58,7 +58,7 @@ async function getChangePassword (request, h, form) {
     }
     const thisForm = form || changePasswordForm(request, h);
 
-    let thisFormWithCustomErrors = thisForm;
+    const thisFormWithCustomErrors = thisForm;
 
     const view = {
       ...request.view,

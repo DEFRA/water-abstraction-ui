@@ -81,22 +81,22 @@ experiment('internal/modules/returns-notifications/lib/controller', () => {
     });
 
     test('the form template is used', async () => {
-      const [ template ] = h.view.lastCall.args;
+      const [template] = h.view.lastCall.args;
       expect(template).to.equal('nunjucks/form');
     });
 
     test('the caption includes the licence number', async () => {
-      const [ , { caption } ] = h.view.lastCall.args;
+      const [, { caption }] = h.view.lastCall.args;
       expect(caption).to.equal('Licence 01/234/ABC');
     });
 
     test('the back link is the "check answers" page', async () => {
-      const [ , { back } ] = h.view.lastCall.args;
+      const [, { back }] = h.view.lastCall.args;
       expect(back).to.equal('/returns-notifications/check-answers');
     });
 
     test('includes the form object', async () => {
-      const [ , { form } ] = h.view.lastCall.args;
+      const [, { form }] = h.view.lastCall.args;
       expect(form).to.be.an.object();
       expect(form.fields[0].name).to.equal('foo');
     });

@@ -15,7 +15,8 @@ const getHeadingField = (text, element = 'h3') => {
   return fields.paragraph(null, {
     text,
     element,
-    controlClass: 'govuk-heading-m' });
+    controlClass: 'govuk-heading-m'
+  });
 };
 
 const getParagraphField = (text) => {

@@ -8,7 +8,7 @@ const crmConnector = require('external/lib/connectors/crm');
 const services = require('external/lib/connectors/services');
 const controller = require('external/modules/add-licences/controller');
 const forms = require('shared/lib/forms');
-const uuid = require('uuid');
+const { v4: uuid } = require('uuid');
 
 experiment('postAddressSelect', () => {
   let request;
@@ -292,7 +292,7 @@ experiment('.postSecurityCode', () => {
     view: sandbox.stub()
   };
 
-  beforeEach(aysnc => {
+  beforeEach(async () => {
     sandbox.stub(crmConnector, 'verify').resolves();
     sandbox.stub(crmConnector, 'getOutstandingLicenceRequests').resolves();
   });

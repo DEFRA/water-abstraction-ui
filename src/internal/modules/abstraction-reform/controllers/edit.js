@@ -222,7 +222,7 @@ const postEditObject = async (request, h) => {
     await update(arLicence.licence_id, { actions, status, lastEdit }, licenceNumber);
   }
 
-  let path = `/digitise/licence/${documentId}#${type}${id ? `-${id}` : ''}`;
+  const path = `/digitise/licence/${documentId}#${type}${id ? `-${id}` : ''}`;
   return h.redirect(path);
 };
 
@@ -258,7 +258,7 @@ const postSetStatus = async (request, h) => {
     // Save action list to permit repo
     await update(arLicence.licence_id, { actions, status, lastEdit }, licenceNumber);
 
-    return h.redirect(`/digitise`);
+    return h.redirect('/digitise');
   } else {
     // Re-render licence page
     request.form = form;

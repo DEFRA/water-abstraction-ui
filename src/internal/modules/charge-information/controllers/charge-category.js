@@ -5,8 +5,10 @@ const forms = require('../forms/charge-category/index');
 const routing = require('../lib/routing');
 const services = require('../../../lib/connectors/services');
 const { getDefaultView, getPostedForm, applyFormResponse } = require('../lib/helpers');
-const { ROUTING_CONFIG,
-  CHARGE_CATEGORY_FIRST_STEP, CHARGE_CATEGORY_STEPS, getStepKeyByValue } = require('../lib/charge-categories/constants');
+const {
+  ROUTING_CONFIG,
+  CHARGE_CATEGORY_FIRST_STEP, CHARGE_CATEGORY_STEPS, getStepKeyByValue
+} = require('../lib/charge-categories/constants');
 const actions = require('../lib/actions');
 
 const getBackLink = (request, step) => {

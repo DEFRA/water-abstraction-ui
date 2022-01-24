@@ -13,7 +13,7 @@ const {
 
 const services = require('external/lib/connectors/services');
 const controller = require('external/modules/manage-licences/controller');
-const uuid = require('uuid');
+const { v4: uuid } = require('uuid');
 
 const editableRolesResponse = [
   {
@@ -26,7 +26,8 @@ const editableRolesResponse = [
     created_at: 'created_1',
     created_by: '111'
   },
-  { entity_role_id: 'erid:2',
+  {
+    entity_role_id: 'erid:2',
     individual_entity_id: 'user_with_returns',
     entity_nm: '1@example.com',
     role: 'user',
@@ -161,7 +162,7 @@ experiment('postChangeAccess', () => {
 });
 
 experiment('postAddAccess', () => {
-  beforeEach(async => {
+  beforeEach(async () => {
     sandbox.stub(services.idm.users, 'createUserWithoutPassword').resolves({ error: '' });
     sandbox.stub(services.idm.users, 'resetPassword').resolves({ error: '' });
     sandbox.stub(services.crm.entities, 'getOrCreateIndividual').resolves({ entity_id: 1 });
@@ -170,7 +171,7 @@ experiment('postAddAccess', () => {
     sandbox.stub(services.idm.users, 'updateExternalId').resolves();
   });
 
-  afterEach(async => {
+  afterEach(async () => {
     sandbox.restore();
   });
 

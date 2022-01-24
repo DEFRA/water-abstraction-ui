@@ -1,7 +1,7 @@
 'use strict';
 
 const Joi = require('joi');
-const titleCase = require('title-case');
+const { titleCase } = require('shared/lib/string-formatter');
 const { get, isObject, isNull } = require('lodash');
 
 const { formFactory, fields } = require('shared/lib/forms/');
@@ -51,8 +51,6 @@ const getChoices = request => {
  * returns the selected company id along with the region and company id
  *
  * @param {Object} request The Hapi request object
- * @param {Object} company The main company for the licence
- * @param {Object} companySelected The selected company which could be different from the main company
   */
 const selectCompanyForm = request => {
   const { csrfToken } = request.view;

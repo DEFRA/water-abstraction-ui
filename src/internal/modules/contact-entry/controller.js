@@ -43,9 +43,9 @@ const postSelectContact = async (request, h) => {
   // Data is department or existing selected contact
   const data = selectedContact === CONTACT_TYPES.department
     ? {
-      type: CONTACT_TYPES.department,
-      department
-    }
+        type: CONTACT_TYPES.department,
+        department
+      }
     : request.pre.companyContacts.find(row => row.id === selectedContact);
 
   const { redirectPath } = session.merge(request, key, { data });
@@ -78,8 +78,7 @@ const postCreateContact = async (request, h) => {
   }
 
   // Retrieve contact data but remember that the back end knows the title as salutation
-  const { title, ...formValues
-  } = {
+  const { title, ...formValues } = {
     ...omit(omitBy(forms.getValues(form), isEmpty), 'csrf_token')
   };
 

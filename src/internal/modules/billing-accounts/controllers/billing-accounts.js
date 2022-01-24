@@ -1,7 +1,7 @@
 'use strict';
 
 const { pick } = require('lodash');
-const titleCase = require('title-case');
+const { titleCase } = require('shared/lib/string-formatter');
 const { getCurrentAddress, generateBillingAccountMetadata } = require('../lib/helpers');
 
 const getBillingAccountCaption = billingAccount =>

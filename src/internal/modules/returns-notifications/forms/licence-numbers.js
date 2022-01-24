@@ -6,7 +6,7 @@ const { formFactory, fields } = require('shared/lib/forms');
 const licenceNumbersForm = (request) => {
   const { csrfToken } = request.view;
 
-  const action = `/returns-notifications/forms`;
+  const action = '/returns-notifications/forms';
 
   const f = formFactory(action);
 

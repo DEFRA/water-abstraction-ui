@@ -30,12 +30,12 @@ experiment('mapErrors', () => {
 
   test('It should return an error if supplied a single licence number', async () => {
     const errors = mapErrors(['01/234']);
-    expect(errors).to.equal([ { message: 'Licence number 01/234 could not be found' } ]);
+    expect(errors).to.equal([{ message: 'Licence number 01/234 could not be found' }]);
   });
 
   test('It should return a plural error if supplied multiple licence numbers', async () => {
     const errors = mapErrors(['01/234', '56/789']);
-    expect(errors).to.equal([ { message: 'Licence numbers 01/234, 56/789 could not be found' } ]);
+    expect(errors).to.equal([{ message: 'Licence numbers 01/234, 56/789 could not be found' }]);
   });
 });
 

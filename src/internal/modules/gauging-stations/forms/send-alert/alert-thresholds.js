@@ -22,7 +22,7 @@ const sendAlertThresholdsForm = request => {
     thresholdValue: n.thresholdValue
   }));
 
-  uniqBy(validOptions, 'thresholdUnit').forEach(eachUnit => f.fields.push(fields.checkbox(`alertThresholds`, {
+  uniqBy(validOptions, 'thresholdUnit').forEach(eachUnit => f.fields.push(fields.checkbox('alertThresholds', {
     label: `${capitalize(helpers.deduceRestrictionTypeFromUnit(eachUnit.thresholdUnit))} thresholds for this station (${eachUnit.thresholdUnit})`,
     errors: {
       'any.required': {

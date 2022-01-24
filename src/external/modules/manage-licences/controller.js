@@ -36,7 +36,7 @@ const createAccessListViewModel = licenceAccess => {
     return {
       createdAt: ur.created_at,
       hasReturns: !!returnsRole,
-      returnsEntityRoleID: returnsRole ? returnsRole.entity_role_id : void 0,
+      returnsEntityRoleID: returnsRole ? returnsRole.entity_role_id : undefined,
       name: ur.entity_nm,
       id: ur.entity_role_id,
       colleagueEntityID: ur.individual_entity_id
@@ -53,7 +53,7 @@ const getLicenceAccessListViewModel = async userEntityID => {
 /**
  * Renders list of emails with access to your licences
  * @param {Object} request - the HAPI HTTP request
- * @param {Object} reply - the HAPI HTTP response
+ * @param {Object} h - the HAPI HTTP response
  * @param {Object} [context] - additional view context data
  */
 
@@ -80,9 +80,9 @@ function getAddAccess (request, h, context = {}) {
 /**
  * share their licence
  * @param {Object} request - the HAPI HTTP request
- * @param {Object} reply - the HAPI HTTP response toolkit
- * @param {string} email - the email of account to share with
- * @param {Object} [context] - additional view context data
+ * @param {Object} h - the HAPI HTTP response toolkit
+ * @member {string} email - the email of account to share with
+ * @member {Object} [context] - additional view context data
  */
 async function postAddAccess (request, h) {
   const { entityId } = request.defra;
@@ -224,7 +224,7 @@ const removeColleague = async (regimeId, companyId, entityId, colleagueId) => {
     throw Boom.badImplementation(`CRM error getting roles on company ${companyId} for entity ${colleagueId}`, roleError);
   }
 
-  for (let role of roles) {
+  for (const role of roles) {
     services.crm.entityRoles.deleteColleagueRole(entityId, role.entity_role_id);
   }
 };
@@ -247,7 +247,7 @@ async function postRemoveAccess (request, h) {
   const { data: colleague, error } = await services.crm.entities.findOne(colleagueEntityID);
 
   if (error) {
-    throw Boom.badImplementation(`CRM error`, error);
+    throw Boom.badImplementation('CRM error', error);
   }
   const view = {
     ...request.view,

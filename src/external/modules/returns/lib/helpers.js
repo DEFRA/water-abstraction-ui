@@ -93,10 +93,12 @@ const getLicenceReturns = async (licenceNumbers, page = 1) => {
     'status', 'received_date', 'due_date', 'return_requirement'
   ];
 
-  const requestPagination = isObject(page) ? page : {
-    page,
-    perPage: 50
-  };
+  const requestPagination = isObject(page)
+    ? page
+    : {
+        page,
+        perPage: 50
+      };
 
   const { data, error, pagination } = await services.returns.returns.findMany(filter, sort, requestPagination, columns);
   if (error) {
@@ -125,7 +127,7 @@ const isBulkUpload = async (licenceNumbers, refDate) => {
       $gte: '2018-10-31',
       $lte: cycle.endDate
     },
-    licence_ref: { '$in': licenceNumbers }
+    licence_ref: { $in: licenceNumbers }
   };
 
   const requestPagination = { page: 1, perPage: 1 };

@@ -29,7 +29,7 @@ experiment('services/water/ChargeCategoryService', () => {
       const filter = { food: 'pizza', restaurant: 'Flazzo' };
       await service.getChargeCategory(filter);
       const [url, options] = serviceRequest.get.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/charge-categories`);
+      expect(url).to.equal('https://example.com/water/1.0/charge-categories');
       expect(options).to.equal({ qs: filter });
     });
   });

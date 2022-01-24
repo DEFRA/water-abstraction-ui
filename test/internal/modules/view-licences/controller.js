@@ -9,7 +9,7 @@ const {
 
 const moment = require('moment');
 const sandbox = require('sinon').createSandbox();
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 
 const controller = require('internal/modules/view-licences/controller');
 const services = require('internal/lib/connectors/services');

@@ -8,7 +8,7 @@ const {
   afterEach
 } = exports.lab = require('@hapi/lab').script();
 const sandbox = require('sinon').createSandbox();
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const services = require('internal/lib/connectors/services');
 const preHandlers = require('internal/modules/billing-accounts/pre-handlers');
 const session = require('internal/modules/billing-accounts/lib/session');

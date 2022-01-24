@@ -217,13 +217,13 @@ exports.getConfirmEndAgreement = getConfirmEndAgreement;
 exports.postConfirmEndAgreement = postConfirmEndAgreement;
 
 exports.getSelectAgreementType = getSelectAgreementType;
-exports.postSelectAgreementType = partialRight(createAddAgreementPostHandler, selectAgreementType, actions.setAgreementType, `/date-signed`);
+exports.postSelectAgreementType = partialRight(createAddAgreementPostHandler, selectAgreementType, actions.setAgreementType, '/date-signed');
 
 exports.getDateSigned = getDateSigned;
-exports.postDateSigned = partialRight(createAddAgreementPostHandler, dateSigned, actions.setDateSigned, `/check-start-date`);
+exports.postDateSigned = partialRight(createAddAgreementPostHandler, dateSigned, actions.setDateSigned, '/check-start-date');
 
 exports.getCheckStartDate = getCheckStartDate;
-exports.postCheckStartDate = partialRight(createAddAgreementPostHandler, checkStartDate, actions.setStartDate, `/check-answers`);
+exports.postCheckStartDate = partialRight(createAddAgreementPostHandler, checkStartDate, actions.setStartDate, '/check-answers');
 
 exports.getCheckAnswers = getCheckAnswers;
 exports.postCheckAnswers = postCheckAnswers;

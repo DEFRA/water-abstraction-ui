@@ -5,7 +5,7 @@ const services = require('../../lib/connectors/services');
 const { loadLicence } = require('shared/lib/pre-handlers/licences');
 const moment = require('moment');
 const { get, sortBy } = require('lodash');
-const uuid = require('uuid');
+const { v4: uuid } = require('uuid');
 const errorHandler = (err, message) => {
   if (err.statusCode === 404) {
     return Boom.notFound(message);
@@ -17,8 +17,8 @@ const getChargeVersionWorkflowId = request => request.query.chargeVersionWorkflo
 
 /**
  * Loads draft charge information for the specified licence from the cache
- * @param {String} request.params.licenceId - licence ID from water.licences.licence_id
- * @param {Promise<Object>}
+ * @param {String} request - licence ID from water.licences.licence_id
+ * @returns {Promise<Object>}
  */
 const loadDraftChargeInformation = async request =>
   request.getDraftChargeInformation(request.params.licenceId, getChargeVersionWorkflowId(request));
@@ -28,7 +28,7 @@ const getFilteredChangeReasons = async type => {
     const { data: changeReasons } = await services.water.changeReasons.getChangeReasons();
     return changeReasons.filter(reason => reason.type === type);
   } catch (err) {
-    return errorHandler(err, `Change reasons not found`);
+    return errorHandler(err, 'Change reasons not found');
   }
 };
 
@@ -51,14 +51,14 @@ const loadValidatedDraftChargeInformation = async request => {
 /**
  * Loads list of chargeable change reasons or a Boom 404 error if not found
  *
- * @param {Promise<Object>}
+ * @returns {Promise<Object>}
  */
 const loadChargeableChangeReasons = () => getFilteredChangeReasons('new_chargeable_charge_version');
 
 /**
  * Loads list of non chargeable change reasons or a Boom 404 error if not found
  *
- * @param {Promise<Object>}
+ * @returns {Promise<Object>}
  */
 const loadNonChargeableChangeReasons = () => getFilteredChangeReasons('new_non_chargeable_charge_version');
 
@@ -85,8 +85,7 @@ const loadDefaultCharges = async request => {
     const version = sortBy(versionsFiltered, getSortableVersionNumber).pop();
 
     if (version) {
-      const defaultCharges = await services.water.chargeVersions.getDefaultChargesForLicenceVersion(version.id);
-      return defaultCharges;
+      return await services.water.chargeVersions.getDefaultChargesForLicenceVersion(version.id);
     }
     return [];
   } catch (err) {
@@ -101,14 +100,13 @@ const loadChargeVersions = async request => {
     return sortBy(chargeVersions, ['dateRange.startDate', 'versionNumber']);
   } catch (err) {
     return errorHandler(err, `Cannot load charge versions for licence ${licenceId}`);
-  };
+  }
 };
 
 const loadChargeVersion = async request => {
   const { chargeVersionId } = request.params;
   try {
-    const chargeVersion = await services.water.chargeVersions.getChargeVersion(chargeVersionId);
-    return chargeVersion;
+    return await services.water.chargeVersions.getChargeVersion(chargeVersionId);
   } catch (err) {
     return errorHandler(err, `Cannot load charge version ${chargeVersionId}`);
   }
@@ -121,13 +119,13 @@ const decorateChargeVersion = chargeVersionWorkflow => {
 
   const modifiedChargeVersion = chargeVersion;
   // Give each charge element a GUID if it doesn't have one
-  modifiedChargeVersion.chargeElements.map(element => {
+  modifiedChargeVersion.chargeElements.forEach(element => {
     if (!element.id) {
-      element['id'] = uuid();
+      element.id = uuid();
       if (element.chargePurposes) {
         element.chargePurposes = element.chargePurposes.map(purpose => {
           if (!purpose.id) {
-            purpose['id'] = uuid();
+            purpose.id = uuid();
           }
           return purpose;
         });
@@ -162,7 +160,7 @@ const loadChargeVersionWorkflows = async request => {
       }
     };
   } catch (err) {
-    return errorHandler(err, `Could not retrieve charge version workflows tab setup.`);
+    return errorHandler(err, 'Could not retrieve charge version workflows tab setup.');
   }
 };
 
@@ -180,7 +178,7 @@ const loadChargeVersionWorkflowsReview = async request => {
       }
     };
   } catch (err) {
-    return errorHandler(err, `Could not retrieve charge version workflows tab review.`);
+    return errorHandler(err, 'Could not retrieve charge version workflows tab review.');
   }
 };
 
@@ -198,7 +196,7 @@ const loadChargeVersionWorkflowsChangeRequest = async request => {
       }
     };
   } catch (err) {
-    return errorHandler(err, `Could not retrieve charge version workflows tab changes requested.`);
+    return errorHandler(err, 'Could not retrieve charge version workflows tab changes requested.');
   }
 };
 

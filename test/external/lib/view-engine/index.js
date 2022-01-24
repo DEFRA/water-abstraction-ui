@@ -17,7 +17,7 @@ lab.experiment('viewEngine', () => {
   });
 
   lab.test('Options should be set on the view engine', async () => {
-    const keys = [ 'engines',
+    const keys = ['engines',
       'path',
       'context',
       'isCached'

@@ -1,4 +1,4 @@
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 
@@ -17,10 +17,10 @@ experiment('services/water/BillingBatchService', () => {
   let service;
 
   const batch = {
-    'userEmail': 'userEmail@testmail.com',
-    'regionId': 'selectedBillingRegion',
-    'batchType': 'annual',
-    'financialYear': new Date().getFullYear(),
+    userEmail: 'userEmail@testmail.com',
+    regionId: 'selectedBillingRegion',
+    batchType: 'annual',
+    financialYear: new Date().getFullYear(),
     isSummer: true
   };
 
@@ -125,7 +125,7 @@ experiment('services/water/BillingBatchService', () => {
 
     test('passes the expected URL to the service request', async () => {
       const [url] = serviceRequest.get.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/billing/batches`);
+      expect(url).to.equal('https://example.com/water/1.0/billing/batches');
     });
 
     test('passes the pagination params on the query string', async () => {
@@ -144,7 +144,7 @@ experiment('services/water/BillingBatchService', () => {
 
     test('passes the expected body to the service request', async () => {
       await service.createBillingBatch(batch);
-      const [ , { body } ] = serviceRequest.post.lastCall.args;
+      const [, { body }] = serviceRequest.post.lastCall.args;
       expect(body).to.equal(batch);
     });
   });
@@ -232,7 +232,7 @@ experiment('services/water/BillingBatchService', () => {
     test('passes the expected URL to the service request', async () => {
       await service.deleteAllBillingData();
       const [url] = serviceRequest.delete.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/billing/batches`);
+      expect(url).to.equal('https://example.com/water/1.0/billing/batches');
     });
   });
 

@@ -33,7 +33,7 @@ experiment('.mapConditionText', () => {
       subCode: 'FLOW'
     };
     const text = mapConditionText(condition);
-    expect(text).to.equal(`123456: Flow cessation condition`);
+    expect(text).to.equal('123456: Flow cessation condition');
   });
 
   test('logs an error if the condition title is not found', async () => {

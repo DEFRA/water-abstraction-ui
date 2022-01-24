@@ -50,7 +50,7 @@ class Meter {
     });
     const { value, error } = schema.validate(meter);
     if (error) {
-      throw new Error(`Invalid meter details`, meter);
+      throw new Error('Invalid meter details', meter);
     }
     Object.assign(this, value);
     return this;

@@ -36,7 +36,7 @@ experiment('services/water/ReturnsService', () => {
     });
 
     test('passes the expected URL to the service request', async () => {
-      const expectedUrl = `http://127.0.0.1:8001/water/1.0/returns/header`;
+      const expectedUrl = 'http://127.0.0.1:8001/water/1.0/returns/header';
       const [url] = serviceRequest.patch.lastCall.args;
       expect(url).to.equal(expectedUrl);
     });

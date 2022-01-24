@@ -4,7 +4,7 @@ const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').scri
 const routes = require('../../../../src/internal/modules/account-entry/routes');
 const controller = require('../../../../src/internal/modules/account-entry/controller');
 const testHelpers = require('../../test-helpers');
-const uuid = require('uuid');
+const { v4: uuid } = require('uuid');
 
 experiment('internal/modules/account-entry/routes', () => {
   experiment('.getSelectExistingAccount', () => {

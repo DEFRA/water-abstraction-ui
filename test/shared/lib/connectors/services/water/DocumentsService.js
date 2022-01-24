@@ -27,7 +27,7 @@ experiment('services/water/CompaniesService', () => {
 
   experiment('.setLicenceName', () => {
     test('passes the expected URL to the service request', async () => {
-      const expectedUrl = `http://127.0.0.1:8001/water/1.0/documents/test-doc-id/rename`;
+      const expectedUrl = 'http://127.0.0.1:8001/water/1.0/documents/test-doc-id/rename';
       const [url] = serviceRequest.post.lastCall.args;
       expect(url).to.equal(expectedUrl);
     });

@@ -100,7 +100,7 @@ module.exports = {
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' },
         { method: preHandlers.loadIsChargeable, assign: 'isChargeable' },
-        { method: preHandlers.loadLicenceVersions, assign: 'licenceVersions' },
+        { method: preHandlers.loadLicenceVersion, assign: 'licenceVersion' },
         { method: preHandlers.loadLicenceDocumentsRoles, assign: 'licenceDocumentsRoles' }
       ]
     }
@@ -133,7 +133,7 @@ module.exports = {
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' },
         { method: preHandlers.loadIsChargeable, assign: 'isChargeable' },
-        { method: preHandlers.loadLicenceVersions, assign: 'licenceVersions' },
+        { method: preHandlers.loadLicenceVersion, assign: 'licenceVersion' },
         { method: preHandlers.loadLicenceDocumentsRoles, assign: 'licenceDocumentsRoles' }
       ]
     }

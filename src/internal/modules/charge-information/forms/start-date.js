@@ -45,6 +45,7 @@ const getDates = licence => {
 };
 
 const getDatesWithDocumentRoles = (licence, licenceDocumentsRoles) => {
+  console.log(licenceDocumentsRoles);
   const startDate = moment(licenceDocumentsRoles.startDate);
   const minDate = startDate;
   const isLicenceStart = startDate.isAfter(minDate);
@@ -150,7 +151,7 @@ const getChoices = (dates, values, refDate, isChargeable) => {
  */
 const selectStartDateForm = (request, refDate) => {
   const { csrfToken } = request.view;
-  const { licence, isChargeable, licenceVersions } = request.pre;
+  const { licence, isChargeable, licenceVersion } = request.pre;
   const { chargeVersionWorkflowId, returnToCheckData } = request.query;
 
   const action = isChargeable
@@ -162,7 +163,7 @@ const selectStartDateForm = (request, refDate) => {
     : 'Select effective date';
 
   const values = getValues(request, licence, refDate);
-  const dates = getDates(licenceVersions);
+  const dates = getDates(licenceVersion);
 
   const f = formFactory(action, 'POST');
 

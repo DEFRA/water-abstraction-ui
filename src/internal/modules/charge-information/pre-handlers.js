@@ -272,9 +272,7 @@ const loadLicenceVersion = async request => {
   const { licenceId } = request.params;
 
   const versions = await services.water.licences.getLicenceVersions(licenceId);
-  const versionsFiltered = versions.filter(v => {
-    return v.status === 'current';
-  });
+  const versionsFiltered = versions.filter(v => v.status === 'current');
   return sortBy(versionsFiltered, getSortableVersionNumber).pop();
 };
 

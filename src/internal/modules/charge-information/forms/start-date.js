@@ -58,7 +58,7 @@ const getDatesWithDocumentRoles = (licence, licenceDocumentsRoles) => {
 
 const getCommomCustomDateErrors = dates => ({
   'date.min': {
-    message: `You must enter a date after this date ${moment(dates.licenceStartDate).format(ISO_FORMAT)}`
+    message: `You must enter a date after this date ${moment(dates.licenceStartDate).format('DD MMM YYYY')}`
   },
   'date.max': {
     message: 'You must enter a date before the licence end date'

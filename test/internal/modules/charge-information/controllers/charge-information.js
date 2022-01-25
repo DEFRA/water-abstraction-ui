@@ -677,15 +677,13 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the draft charge information is not updated', async () => {
-        console.log(request.setDraftChargeInformation.called);
         expect(request.setDraftChargeInformation.called).to.be.false();
       });
 
       test('an error is displayed', async () => {
         const [form] = h.postRedirectGet.lastCall.args;
         const field = find(form.errors, { name: 'customDate' });
-        console.log(field);
-        expect(field.message).to.equal('You must enter a date after the licence start date'); 
+        expect(field.message).to.equal('You must enter a date after the licence start date');
       });
     });
   });

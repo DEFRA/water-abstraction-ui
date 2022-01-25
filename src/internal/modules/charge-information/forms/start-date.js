@@ -45,7 +45,6 @@ const getDates = licence => {
 };
 
 const getDatesWithDocumentRoles = (licence, licenceDocumentsRoles) => {
-  //console.log(licenceDocumentsRoles);
   const startDate = moment(licenceDocumentsRoles.startDate);
   const minDate = startDate;
   const isLicenceStart = startDate.isAfter(minDate);
@@ -58,7 +57,7 @@ const getDatesWithDocumentRoles = (licence, licenceDocumentsRoles) => {
 };
 
 const minErrors = {
-  [MIN_LICENCE_START]: `You must enter a date after the licence start date`
+  [MIN_LICENCE_START]: 'You must enter a date after the licence start date'
 };
 
 const getCommomCustomDateErrors = dates => ({

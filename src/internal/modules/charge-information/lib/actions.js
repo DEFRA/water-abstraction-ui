@@ -5,7 +5,7 @@ const DATE_FORMAT = 'YYYY-MM-DD';
 const mappers = require('./charge-elements/mappers');
 const { CHARGE_ELEMENT_STEPS } = require('./charge-elements/constants');
 const { CHARGE_CATEGORY_STEPS } = require('./charge-categories/constants');
-const { srocStartDate, isSrocLive } = require('../../../config');
+const { srocStartDate } = require('../../../config');
 const ACTION_TYPES = {
   clearData: 'clearData',
   setBillingAccount: 'set.invoiceAccount',
@@ -37,7 +37,7 @@ const setStartDate = (request, formValues) => {
     licenceStartDate: request.pre.licence.startDate,
     customDate: formValues.customDate
   };
-  const scheme = new Date(dates[formValues.startDate]) >= srocStartDate && isSrocLive ? 'sroc' : 'alcs';
+  const scheme = new Date(dates[formValues.startDate]) >= srocStartDate ? 'sroc' : 'alcs';
 
   // if the charing scheme switches then the restartFlow flag
   // is used to clear the draft charge information and restart the flow from this step onwards

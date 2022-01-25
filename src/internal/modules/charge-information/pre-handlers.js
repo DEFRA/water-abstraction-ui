@@ -282,7 +282,7 @@ const loadLicenceDocumentsRoles = async request => {
   const { licenceId } = request.params;
   const licence = await services.water.licences.getLicenceById(licenceId);
   const licenceContacts = await services.crm.documentRoles.getFullHistoryOfDocumentRolesByDocumentRef(licence.licenceNumber);
-  return licenceContacts.data.filter(v => v.roleName === 'licenceHolder').reduce((pre, cur) => Date.parse(pre) > Date.parse(cur) ? cur : pre);
+  return licenceContacts.data.filter(v => v.roleName === 'licenceHolder').reduce((pre, cur) => Date.parse(pre.startDate) > Date.parse(cur.startDate) ? cur : pre);
 };
 
 exports.loadChargeableChangeReasons = loadChargeableChangeReasons;

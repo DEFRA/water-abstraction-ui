@@ -80,6 +80,30 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
       }]
     });
 
+    sandbox.stub(services.crm.documentRoles, 'getFullHistoryOfDocumentRolesByDocumentRef').resolves({
+      data: [
+        {
+          roleId: 'role-id-1',
+          roleName: 'licenceHolder',
+          roleLabel: 'Licence Holder',
+          startDate: '1999-01-01',
+          endDate: '2003-12-17'
+        },
+        {
+          roleId: 'role-id-2',
+          roleName: 'licenceHolder',
+          roleLabel: 'Returns',
+          startDate: '2003-12-17',
+          endDate: '2007-12-17'
+        }
+      ]
+    });
+
+    sandbox.stub(services.water.licences, 'getLicenceById').resolves([
+      { id: 'test-licence-account-1', licenceNumber: 'test-licence-number-1' },
+      { id: 'test-licence-account-2', licenceNumber: 'test-licence-number-2' }
+    ]);
+
     sandbox.stub(services.water.chargeCategories, 'getChargeCategory').resolves({
       billingChargeCategoryId: 'test-billing-charge-category-id',
       reference: 'test-charge-category-reference',
@@ -689,6 +713,28 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
         const err = await expect(func()).to.reject();
         expect(err.message).to.equal('Oh no!');
       });
+    });
+  });
+
+  experiment('.loadLicenceVersion', () => {
+    beforeEach(async () => {
+      result = await preHandlers.loadLicenceVersion(request);
+    });
+
+    test('the licenceVersion is retrieved by the licence id', async () => {
+      const [id] = services.water.licences.getLicenceVersions.lastCall.args;
+      expect(id).to.equal(request.params.licenceId);
+    });
+  });
+
+  experiment('.loadLicenceDocumentsRoles', () => {
+    beforeEach(async () => {
+      result = await preHandlers.loadLicenceDocumentsRoles(request);
+    });
+
+    test('the licence is retrieved by the licence id', async () => {
+      const [id] = services.water.licences.getLicenceById.lastCall.args;
+      expect(id).to.equal(request.params.licenceId);
     });
   });
 });

@@ -51,10 +51,9 @@ const mapFormField = (field) => {
 };
 
 /**
- * Given an ISO 8601 date string, e.g. 2018-11-01, returns an array of
- * items expected by the GOV.UK front end Nunjucks date component
- * @param  {String|null} value - the date value.
- * @return {Array} - array of items, one for day, month and year
+ * @param  {String|null} values
+ * @param {Array} items
+ * @return {Array}
  */
 const getFormDateItems = (values, items = ['day', 'month', 'year']) => {
   const formValues = (values || '').toString().split(/[- T]/g);
@@ -124,12 +123,10 @@ const mapFormErrorSummary = (form) => {
     return field;
   });
 
-  const options = {
+  return {
     titleText: 'There is a problem',
     errorList
   };
-
-  return options;
 };
 
 /**
@@ -150,6 +147,7 @@ const radioIsChecked = (field, choice) => {
  * Maps the choices from a service form object to a format expected
  * by the GOV.UK radio form component
  * @param  {Object} field - radio form field
+ * @param  {String} prop
  * @return {Array}          array of radio button items
  */
 const mapChoices = (field, prop = 'checked') => {
@@ -215,6 +213,7 @@ const mapFormRadioField = (field) => {
   const items = mapChoices(field);
 
   const options = {
+    items,
     idPrefix: field.name,
     name: field.name,
     attributes: {
@@ -226,7 +225,7 @@ const mapFormRadioField = (field) => {
     fieldset: {
       legend: mapLegendOptions(field)
     },
-    items
+    classes: field.options.classes
   };
 
   return applyErrors(options, field.errors);

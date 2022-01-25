@@ -580,7 +580,14 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
                   loss: 'high',
                   source: 'tidal'
                 }
-              ]
+              ],
+              additionalCharges: {
+                supportedSource: {
+                  id: 'test-supported-source-id',
+                  name: 'test-supported-source-name'
+                },
+                isSupplyPublicWater: true
+              }
             }
           ],
           id: 'test-charge-version-id',
@@ -612,8 +619,14 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
         const [,, chargeVersion] = request.setDraftChargeInformation.lastCall.args;
         expect(chargeVersion.status).to.equal('review');
         expect(chargeVersion.invoiceAccount.invoiceAccountAddress).to.equal('test-invoice-account-address-id');
-        expect(Joi.string().uuid().validate(chargeVersion.chargeElements[0].id).error).to.equal(undefined);
-        expect(Joi.string().uuid().validate(chargeVersion.chargeElements[0].chargePurposes[0].id).error).to.equal(undefined);
+        const chargeElement = chargeVersion.chargeElements[0];
+        expect(chargeElement.isAdditionalCharges).to.equal(true);
+        expect(chargeElement.isSupportedSource).to.equal(true);
+        expect(chargeElement.supportedSourceId).to.equal('test-supported-source-id');
+        expect(chargeElement.supportedSourceName).to.equal('test-supported-source-name');
+        expect(chargeElement.isSupplyPublicWater).to.equal(true);
+        expect(Joi.string().uuid().validate(chargeElement.id).error).to.equal(undefined);
+        expect(Joi.string().uuid().validate(chargeElement.chargePurposes[0].id).error).to.equal(undefined);
       });
     });
 

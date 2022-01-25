@@ -38,6 +38,7 @@ if (config.featureToggles.srocChargeInformation) {
         },
         pre: [
           { method: preHandlers.loadLicence, assign: 'licence' },
+          { method: preHandlers.loadSupportedSources, assign: 'supportedSources' },
           { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' }
         ]
       }
@@ -70,6 +71,7 @@ if (config.featureToggles.srocChargeInformation) {
         },
         pre: [
           { method: preHandlers.loadLicence, assign: 'licence' },
+          { method: preHandlers.loadSupportedSources, assign: 'supportedSources' },
           { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' }
         ]
       }

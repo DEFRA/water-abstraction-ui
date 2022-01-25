@@ -22,7 +22,8 @@ const BillingBatchService = require('./BillingBatchService');
 const BillingInvoiceService = require('./BillingInvoiceService');
 const BillingInvoiceLicenceService = require('./BillingInvoiceLicenceService');
 const BillingVolumesService = require('./BillingVolumeService');
-const ServiceStatusService = require('internal/lib/connectors/services/water/ServiceStatusService');
+const ServiceStatusService = require('./ServiceStatusService');
+const SupportedSourcesService = require('./SupportedSourcesService');
 const RegionsService = require('./RegionsService');
 const AgreementsService = require('./AgreementsService');
 const KpiReportingService = require('./KpiReportingService');
@@ -66,6 +67,7 @@ module.exports = config => ({
   returns: new ReturnsService(config.services.water, logger),
   returnCycles: new ReturnCyclesService(config.services.water, logger),
   serviceStatus: new ServiceStatusService(config.services.water, logger),
+  supportedSources: new SupportedSourcesService(config.services.water, logger),
   returnsNotifications: new ReturnsNotificationsService(config.services.water, logger),
   kpiReporting: new KpiReportingService(config.services.water, logger),
   reporting: new ReportingService(config.services.water, logger),

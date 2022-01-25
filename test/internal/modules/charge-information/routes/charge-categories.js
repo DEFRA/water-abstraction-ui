@@ -81,8 +81,10 @@ experiment('internal/modules/charge-information/routes', () => {
     test('has the expected pre handlers', async () => {
       expect(routes.getChargeCategoryStep.options.pre[0].method).to.equal(preHandlers.loadLicence);
       expect(routes.getChargeCategoryStep.options.pre[0].assign).to.equal('licence');
-      expect(routes.getChargeCategoryStep.options.pre[1].method).to.equal(preHandlers.loadDraftChargeInformation);
-      expect(routes.getChargeCategoryStep.options.pre[1].assign).to.equal('draftChargeInformation');
+      expect(routes.getChargeCategoryStep.options.pre[1].method).to.equal(preHandlers.loadSupportedSources);
+      expect(routes.getChargeCategoryStep.options.pre[1].assign).to.equal('supportedSources');
+      expect(routes.getChargeCategoryStep.options.pre[2].method).to.equal(preHandlers.loadDraftChargeInformation);
+      expect(routes.getChargeCategoryStep.options.pre[2].assign).to.equal('draftChargeInformation');
     });
   });
 
@@ -143,8 +145,10 @@ experiment('internal/modules/charge-information/routes', () => {
     test('has the expected pre handlers', async () => {
       expect(routes.postChargeCategoryStep.options.pre[0].method).to.equal(preHandlers.loadLicence);
       expect(routes.postChargeCategoryStep.options.pre[0].assign).to.equal('licence');
-      expect(routes.postChargeCategoryStep.options.pre[1].method).to.equal(preHandlers.loadDraftChargeInformation);
-      expect(routes.postChargeCategoryStep.options.pre[1].assign).to.equal('draftChargeInformation');
+      expect(routes.getChargeCategoryStep.options.pre[1].method).to.equal(preHandlers.loadSupportedSources);
+      expect(routes.getChargeCategoryStep.options.pre[1].assign).to.equal('supportedSources');
+      expect(routes.getChargeCategoryStep.options.pre[2].method).to.equal(preHandlers.loadDraftChargeInformation);
+      expect(routes.getChargeCategoryStep.options.pre[2].assign).to.equal('draftChargeInformation');
     });
   });
 });

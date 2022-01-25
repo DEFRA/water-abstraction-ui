@@ -126,14 +126,31 @@ const loadChargeVersion = async request => {
   }
 };
 
+const flattenAdditionalChargesProperties = ({ additionalCharges, ...element }) => {
+  if (additionalCharges) {
+    const { supportedSource, isSupplyPublicWater } = additionalCharges;
+    element.isAdditionalCharges = true;
+    element.isSupportedSource = !!supportedSource;
+    element.isSupplyPublicWater = isSupplyPublicWater;
+    const { id, name } = supportedSource;
+    if (id) {
+      element.supportedSourceId = id;
+    }
+    if (name) {
+      element.supportedSourceName = name;
+    }
+  }
+  return element;
+};
+
 const decorateChargeVersion = chargeVersionWorkflow => {
   const { chargeVersion, status, approverComments } = chargeVersionWorkflow;
   // set id of saved address to display
   const invoiceAccountAddress = get(chargeVersion, 'invoiceAccount.invoiceAccountAddresses[0].id', null);
 
-  const modifiedChargeVersion = chargeVersion;
   // Give each charge element a GUID if it doesn't have one
-  modifiedChargeVersion.chargeElements.forEach(element => {
+  const { chargeElements } = chargeVersion;
+  chargeVersion.chargeElements = chargeElements.map(element => {
     if (!element.id) {
       element.id = uuid();
       if (element.chargePurposes) {
@@ -145,10 +162,11 @@ const decorateChargeVersion = chargeVersionWorkflow => {
         });
       }
     }
+    return flattenAdditionalChargesProperties(element);
   });
 
   return {
-    ...modifiedChargeVersion,
+    ...chargeVersion,
     status,
     approverComments,
     invoiceAccount: { ...chargeVersion.invoiceAccount, invoiceAccountAddress }
@@ -254,6 +272,15 @@ const loadLicenceHolderRole = async request => {
   }
 };
 
+const loadSupportedSources = async () => {
+  try {
+    const { data: supportedSources } = await services.water.supportedSources.getSupportedSources();
+    return sortBy(supportedSources, ['order']);
+  } catch (err) {
+    return errorHandler(err, 'Cannot load supported sources');
+  }
+};
+
 const getBillingAccount = invoiceAccountId => invoiceAccountId
   ? services.water.invoiceAccounts.getInvoiceAccount(invoiceAccountId)
   : null;
@@ -285,6 +312,7 @@ exports.loadLicence = loadLicence;
 exports.loadIsChargeable = loadIsChargeable;
 exports.loadNonChargeableChangeReasons = loadNonChargeableChangeReasons;
 exports.loadLicenceHolderRole = loadLicenceHolderRole;
+exports.loadSupportedSources = loadSupportedSources;
 exports.loadBillingAccount = loadBillingAccount;
 exports.loadBillingAccountByChargeVersion = loadBillingAccountByChargeVersion;
 exports.loadValidatedDraftChargeInformation = loadValidatedDraftChargeInformation;

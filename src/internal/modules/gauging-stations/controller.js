@@ -211,11 +211,11 @@ const getNewTaggingCheckYourAnswers = async (request, h) => {
 
   const abstractionPeriodData = selectedConditionText && sessionData.startDate
     ? {
-        startDay: sessionData.startDate.value.split('-').reverse()[0],
-        startMonth: sessionData.startDate.value.split('-').reverse()[1],
-        endDay: sessionData.endDate.value.split('-').reverse()[0],
-        endMonth: sessionData.endDate.value.split('-').reverse()[1]
-      }
+      startDay: sessionData.startDate.value.split('-').reverse()[0],
+      startMonth: sessionData.startDate.value.split('-').reverse()[1],
+      endDay: sessionData.endDate.value.split('-').reverse()[0],
+      endMonth: sessionData.endDate.value.split('-').reverse()[1]
+    }
     : {};
 
   return h.view('nunjucks/gauging-stations/new-tag-check', {

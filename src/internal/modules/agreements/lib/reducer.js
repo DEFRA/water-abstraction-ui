@@ -28,9 +28,9 @@ const reducer = (state, action) => {
       const { isCustomStartDate, startDate } = action.payload;
       return isCustomStartDate
         ? {
-            ...state,
-            ...isCustomStartDate && { startDate }
-          }
+          ...state,
+          ...isCustomStartDate && { startDate }
+        }
         : state;
     }
   }

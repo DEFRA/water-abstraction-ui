@@ -24,9 +24,9 @@ const getPagination = page => {
   return isObject(page)
     ? page
     : {
-        page,
-        perPage: 50
-      };
+      page,
+      perPage: 50
+    };
 };
 
 class ReturnsApiClient extends SharedReturnsApiClient {

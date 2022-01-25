@@ -109,9 +109,9 @@ const setStatusSchema = (request) => {
   const isApprover = isARApprover(request);
   const validStatus = isApprover
     ? [STATUS_IN_PROGRESS,
-        STATUS_APPROVED,
-        STATUS_NALD_UPDATE,
-        STATUS_LICENCE_REVIEW]
+      STATUS_APPROVED,
+      STATUS_NALD_UPDATE,
+      STATUS_LICENCE_REVIEW]
     : [STATUS_IN_REVIEW, STATUS_NALD_UPDATE];
   return Joi.object().keys({
     csrf_token: Joi.string().guid().required(),

@@ -22,33 +22,33 @@ const mapCompanyToWaterApi = company =>
   company === null
     ? null
     : {
-        ...pick(company, [
-          'id',
-          'type',
-          'name',
-          'companyNumber',
-          'organisationType'
-        ])
-      };
+      ...pick(company, [
+        'id',
+        'type',
+        'name',
+        'companyNumber',
+        'organisationType'
+      ])
+    };
 
 const mapContactToWaterApi = contact =>
   contact === null
     ? null
     : {
-        ...pick(contact, [
-          'id',
-          'type',
-          'salutation',
-          'firstName',
-          'initials',
-          'middleInitials',
-          'lastName',
-          'suffix',
-          'department',
-          'source',
-          'isTest'
-        ])
-      };
+      ...pick(contact, [
+        'id',
+        'type',
+        'salutation',
+        'firstName',
+        'initials',
+        'middleInitials',
+        'lastName',
+        'suffix',
+        'department',
+        'source',
+        'isTest'
+      ])
+    };
 
 const mapSessionDataToCreateInvoiceAccount = state => pick(state, ['regionId', 'startDate']);
 

@@ -120,7 +120,7 @@ experiment('internal/modules/charge-information/routes/non-chargeable', () => {
     });
 
     test('has the expected pre handlers', async () => {
-      expect(routes.getEffectiveDate.options.pre.length).to.equal(3);
+      expect(routes.getEffectiveDate.options.pre.length).to.equal(5);
       expect(routes.getEffectiveDate.options.pre[0].method).to.equal(preHandlers.loadDraftChargeInformation);
       expect(routes.getEffectiveDate.options.pre[0].assign).to.equal('draftChargeInformation');
       expect(routes.getEffectiveDate.options.pre[1].method).to.equal(preHandlers.loadLicence);
@@ -157,7 +157,7 @@ experiment('internal/modules/charge-information/routes/non-chargeable', () => {
     });
 
     test('has the expected pre handlers', async () => {
-      expect(routes.postEffectiveDate.options.pre.length).to.equal(2);
+      expect(routes.postEffectiveDate.options.pre.length).to.equal(4);
       expect(routes.postEffectiveDate.options.pre[0].method).to.equal(preHandlers.loadDraftChargeInformation);
       expect(routes.postEffectiveDate.options.pre[0].assign).to.equal('draftChargeInformation');
       expect(routes.postEffectiveDate.options.pre[1].method).to.equal(preHandlers.loadLicence);

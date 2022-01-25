@@ -8,6 +8,7 @@ const DATE_FORMAT = 'D MMMM YYYY';
 const ISO_FORMAT = 'YYYY-MM-DD';
 
 const MIN_LICENCE_START = 'licence_start';
+const MIN_5_YEARS = '5_years';
 
 const createValues = (startDate, customDate) => ({ startDate, customDate });
 
@@ -34,18 +35,19 @@ const getValues = (request, licence, refDate) => {
 
 const getDates = licence => {
   const startDate = moment(licence.startDate);
-  const minDate = startDate;
+  const minDate = moment().subtract(5, 'years');
   const isLicenceStart = startDate.isAfter(minDate);
   return {
     licenceStartDate: licence.startDate,
     minDate: isLicenceStart ? licence.startDate : minDate.format(ISO_FORMAT),
-    minType: MIN_LICENCE_START,
+    minType: isLicenceStart ? MIN_LICENCE_START : MIN_5_YEARS,
     maxDate: licence.endDate || '3000-01-01'
   };
 };
 
 const minErrors = {
-  [MIN_LICENCE_START]: 'You must enter a date after the licence start date'
+  [MIN_LICENCE_START]: 'You must enter a date after the licence start date',
+  [MIN_5_YEARS]: "Date must be today or up to five years' in the past"
 };
 
 const getCommomCustomDateErrors = dates => ({

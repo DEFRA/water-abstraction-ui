@@ -446,8 +446,8 @@ experiment('internal/modules/charge-information/controller', () => {
         expect(field.options.choices[0].hint).to.equal(getReadableDate());
 
         // Custom date
-        expect(field.options.choices[3].label).to.equal('Another date');
-        expect(field.options.choices[3].value).to.equal('customDate');
+        expect(field.options.choices[1].label).to.equal('Another date');
+        expect(field.options.choices[1].value).to.equal('customDate');
 
         expect(field.value).to.be.undefined();
       });
@@ -669,6 +669,31 @@ experiment('internal/modules/charge-information/controller', () => {
         const [form] = h.postRedirectGet.lastCall.args;
         const field = find(form.fields, { name: 'startDate' }).options.choices[2].fields[0];
         expect(field.errors[0].message).to.equal('You must enter a date before the licence end date');
+      });
+    });
+
+    experiment('when a custom date more than 6 years ago is posted', () => {
+      beforeEach(async () => {
+        request = createRequest();
+        request.pre.licence.startDate = '1990-01-01';
+        request.payload = {
+          csrf_token: request.view.csrfToken,
+          startDate: 'customDate',
+          'customDate-day': '02',
+          'customDate-month': '01',
+          'customDate-year': '1990'
+        };
+        await controller.postStartDate(request, h);
+      });
+
+      test('the draft charge information is not updated', async () => {
+        expect(request.setDraftChargeInformation.called).to.be.false();
+      });
+
+      test('an error is displayed', async () => {
+        const [ form ] = h.postRedirectGet.lastCall.args;
+        const field = find(form.fields, { name: 'startDate' }).options.choices[1].fields[0];
+        expect(field.errors[0].message).to.equal("Date must be today or up to five years' in the past");
       });
     });
   });

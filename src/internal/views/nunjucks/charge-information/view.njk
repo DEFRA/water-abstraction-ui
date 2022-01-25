@@ -167,7 +167,7 @@ formErrorSummary %}
                 classes: 'govuk-!-margin-right-6'
               }) }}
           {% elif chargeVersion.status != 'review' %}
-            {% if (isSrocChargeInfoEnabled and (chargeVersion.chargeElements | arrayFilter('scheme' ,'alcs')).length == 0) or (chargeVersion.scheme == 'alcs') %}
+            {% if ((isSrocChargeInfoEnabled and (chargeVersion.chargeElements | arrayFilter('scheme' ,'alcs')).length == 0) or (chargeVersion.scheme == 'alcs')) %}
               {{ govukButton({
                   text: 'Confirm',
                   name: 'buttonAction',

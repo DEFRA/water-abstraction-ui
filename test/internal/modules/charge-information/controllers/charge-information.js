@@ -412,7 +412,7 @@ experiment('internal/modules/charge-information/controller', () => {
         expect(field.options.choices[0].hint).to.equal(getReadableDate());
 
         // Licence start date
-        expect(field.options.choices[1].label).to.equal('Licence start date');
+        expect(field.options.choices[1].label).to.equal('Licence version start date');
         expect(field.options.choices[1].value).to.equal('licenceStartDate');
         expect(field.options.choices[1].hint).to.equal(getReadableDate(request.pre.licence.startDate));
 
@@ -655,7 +655,7 @@ experiment('internal/modules/charge-information/controller', () => {
       test('an error is displayed', async () => {
         const [form] = h.postRedirectGet.lastCall.args;
         const field = find(form.fields, { name: 'startDate' }).options.choices[3].fields[0];
-        expect(field.errors[0].message).to.equal('You must enter a date after the licence start date');
+        expect(field.errors[0].message).to.contain('You must enter a date after this date');
       });
     });
 
@@ -683,7 +683,7 @@ experiment('internal/modules/charge-information/controller', () => {
       test('an error is displayed', async () => {
         const [form] = h.postRedirectGet.lastCall.args;
         const field = find(form.errors, { name: 'customDate' });
-        expect(field.message).to.equal('You must enter a date after the licence start date');
+        expect(field.message).to.contain('You must enter a date after this date');
       });
     });
   });

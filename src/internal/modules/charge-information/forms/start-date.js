@@ -56,13 +56,9 @@ const getDatesWithDocumentRoles = (licence, licenceDocumentsRoles) => {
   };
 };
 
-const minErrors = {
-  [MIN_LICENCE_START]: 'You must enter a date after the licence start date'
-};
-
 const getCommomCustomDateErrors = dates => ({
   'date.min': {
-    message: minErrors[dates.minType]
+    message: `You must enter a date after this date ${moment(dates.licenceStartDate).format(ISO_FORMAT)}`
   },
   'date.max': {
     message: 'You must enter a date before the licence end date'
@@ -102,14 +98,14 @@ const getCustomEffectiveDateField = (dates, value) => fields.date('customDate', 
   errors: getEffectiveDateCustomDataErrors(dates)
 }, value);
 
-const getChoices = (dates, values, refDate, isChargeable) => {
+const getChoices = (dates, values, refDate, isChargeable, customErrorDates) => {
   const allChoices = [{
     value: 'today',
     label: 'Today',
     hint: moment(refDate).format(DATE_FORMAT)
   }, {
     value: 'licenceStartDate',
-    label: 'Licence start date',
+    label: 'Licence version start date',
     hint: moment(dates.licenceStartDate).format(DATE_FORMAT)
   },
   {
@@ -120,7 +116,7 @@ const getChoices = (dates, values, refDate, isChargeable) => {
     label: 'Another date',
     fields: [
       isChargeable
-        ? getCustomStartDateField(dates, values.customDate)
+        ? getCustomStartDateField(customErrorDates, values.customDate)
         : getCustomEffectiveDateField(dates, values.customDate)
     ]
   }];
@@ -150,8 +146,9 @@ const getChoices = (dates, values, refDate, isChargeable) => {
  */
 const selectStartDateForm = (request, refDate) => {
   const { csrfToken } = request.view;
-  const { licence, isChargeable, licenceVersion } = request.pre;
+  const { licence, isChargeable, licenceVersion, licenceDocumentsRoles } = request.pre;
   const { chargeVersionWorkflowId, returnToCheckData } = request.query;
+  const customErrorDates = getDatesWithDocumentRoles(licence, licenceDocumentsRoles);
 
   const action = isChargeable
     ? routing.getStartDate(licence.id, { chargeVersionWorkflowId, returnToCheckData })
@@ -172,7 +169,7 @@ const selectStartDateForm = (request, refDate) => {
         message: errorMessage
       }
     },
-    choices: getChoices(dates, values, refDate, isChargeable)
+    choices: getChoices(dates, values, refDate, isChargeable, customErrorDates)
   }, values.startDate));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));

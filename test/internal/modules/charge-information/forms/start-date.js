@@ -79,7 +79,7 @@ experiment('internal/modules/charge-information/forms/start-date', () => {
 
       test('has a "licence start date" option with expected hint text', async () => {
         const licenceStartDateOption = startDateRadio.options.choices[1];
-        expect(licenceStartDateOption.label).to.equal('Licence start date');
+        expect(licenceStartDateOption.label).to.equal('Licence version start date');
         expect(licenceStartDateOption.value).to.equal('licenceStartDate');
         expect(licenceStartDateOption.hint).to.equal('1 April 2017');
       });
@@ -153,7 +153,7 @@ experiment('internal/modules/charge-information/forms/start-date', () => {
 
         test('has option for licence start date', async () => {
           const radio = findField(dateForm, 'startDate');
-          expect(radio.options.choices[1].label).to.equal('Licence start date');
+          expect(radio.options.choices[1].label).to.equal('Licence version start date');
           expect(radio.options.choices[1].hint).to.equal('1 April 2017');
         });
 
@@ -168,7 +168,7 @@ experiment('internal/modules/charge-information/forms/start-date', () => {
 
           expect(errors['any.required'].message).to.equal('Enter the effective date');
           expect(errors['date.base'].message).to.equal('Enter a real date for the effective date');
-          expect(errors['date.min'].message).to.equal('You must enter a date after the licence start date');
+          expect(errors['date.min'].message).to.contain('You must enter a date after this date');
           expect(errors['date.max'].message).to.equal('You must enter a date before the licence end date');
           expect(errors['date.custom'].message).to.equal('Enter a real date');
         });

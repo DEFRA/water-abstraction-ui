@@ -300,7 +300,7 @@ experiment('internal/modules/charge-information/controller', () => {
     test('an error is displayed', async () => {
       const [form] = h.postRedirectGet.lastCall.args;
       const field = find(form.fields, { name: 'startDate' }).options.choices[3].fields[0];
-      expect(field.errors[0].message).to.equal('You must enter a date after the licence start date');
+      expect(field.errors[0].message).to.contain('You must enter a date after this date');
     });
   });
 

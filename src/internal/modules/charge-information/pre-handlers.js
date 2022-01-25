@@ -275,22 +275,14 @@ const loadLicenceVersion = async request => {
   const versionsFiltered = versions.filter(v => {
     return v.status === 'current';
   });
-
-  const version = sortBy(versionsFiltered, getSortableVersionNumber).pop();
-  return version;
+  return sortBy(versionsFiltered, getSortableVersionNumber).pop();
 };
 
 const loadLicenceDocumentsRoles = async request => {
   const { licenceId } = request.params;
   const licence = await services.water.licences.getLicenceById(licenceId);
   const licenceContacts = await services.crm.documentRoles.getFullHistoryOfDocumentRolesByDocumentRef(licence.licenceNumber);
-  const licenceContactsFiltered = licenceContacts.data.filter(v => {
-    return v.roleName === 'licenceHolder';
-  }).reduce(function (pre, cur) {
-    return Date.parse(pre) > Date.parse(cur) ? cur : pre;
-  });
-
-  return licenceContactsFiltered;
+  return licenceContacts.data.filter(v => v.roleName === 'licenceHolder').reduce((pre, cur) => Date.parse(pre) > Date.parse(cur) ? cur : pre);
 };
 
 exports.loadChargeableChangeReasons = loadChargeableChangeReasons;

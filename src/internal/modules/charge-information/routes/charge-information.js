@@ -5,12 +5,6 @@ const Joi = require('joi');
 const { chargeVersionWorkflowEditor, chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope;
 const allowedScopes = [chargeVersionWorkflowEditor, chargeVersionWorkflowReviewer];
 
-const preHandlersRepeated = [
-  { method: preHandlers.loadIsChargeable, assign: 'isChargeable' },
-  { method: preHandlers.loadLicenceVersion, assign: 'licenceVersion' },
-  { method: preHandlers.loadLicenceDocumentsRoles, assign: 'licenceDocumentsRoles' }
-];
-
 module.exports = {
   getReason: {
     method: 'GET',
@@ -105,7 +99,9 @@ module.exports = {
       pre: [
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' },
-        preHandlersRepeated
+        { method: preHandlers.loadIsChargeable, assign: 'isChargeable' },
+        { method: preHandlers.loadLicenceVersion, assign: 'licenceVersion' },
+        { method: preHandlers.loadLicenceDocumentsRoles, assign: 'licenceDocumentsRoles' }
       ]
     }
   },
@@ -136,7 +132,9 @@ module.exports = {
       pre: [
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' },
-        preHandlersRepeated
+        { method: preHandlers.loadIsChargeable, assign: 'isChargeable' },
+        { method: preHandlers.loadLicenceVersion, assign: 'licenceVersion' },
+        { method: preHandlers.loadLicenceDocumentsRoles, assign: 'licenceDocumentsRoles' }
       ]
     }
   },

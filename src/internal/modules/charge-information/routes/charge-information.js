@@ -1,5 +1,6 @@
 const controller = require('../controllers/charge-information');
 const preHandlers = require('../pre-handlers');
+const sharedPreHandlers = require('shared/lib/pre-handlers/licences');
 const { VALID_GUID } = require('shared/lib/validators');
 const Joi = require('joi');
 const { chargeVersionWorkflowEditor, chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope;
@@ -99,6 +100,7 @@ module.exports = {
       pre: [
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' },
+        { method: sharedPreHandlers.loadLicenceVersions, assign: 'licenceVersions' },
         { method: preHandlers.loadIsChargeable, assign: 'isChargeable' }
       ]
     }
@@ -130,6 +132,7 @@ module.exports = {
       pre: [
         { method: preHandlers.loadDraftChargeInformation, assign: 'draftChargeInformation' },
         { method: preHandlers.loadLicence, assign: 'licence' },
+        { method: sharedPreHandlers.loadLicenceVersions, assign: 'licenceVersions' },
         { method: preHandlers.loadIsChargeable, assign: 'isChargeable' }
       ]
     }

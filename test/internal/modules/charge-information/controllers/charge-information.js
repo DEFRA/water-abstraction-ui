@@ -100,8 +100,18 @@ const createRequest = () => ({
       }]
     },
     chargeVersions: [
-      { id: 'test-cv-id-1', dateRange: { startDate: '2010-04-20' }, status: 'superseded', chargeElements: [{ source: 'unsupported' }] },
-      { id: 'test-cv-id-2', dateRange: { startDate: '2015-04-20' }, status: 'current', chargeElements: [{ source: 'tidal' }] }
+      {
+        id: 'test-cv-id-1',
+        dateRange: { startDate: '2010-04-20' },
+        status: 'superseded',
+        chargeElements: [{ source: 'unsupported' }]
+      },
+      {
+        id: 'test-cv-id-2',
+        dateRange: { startDate: '2015-04-20' },
+        status: 'current',
+        chargeElements: [{ source: 'tidal' }]
+      }
     ]
   },
   yar: {
@@ -337,10 +347,11 @@ experiment('internal/modules/charge-information/controller', () => {
   });
 
   experiment('.getStartDate', () => {
-    experiment('when the licence start date is in the past 6 years', () => {
+    experiment('when the licence has a known start date', () => {
       beforeEach(async () => {
         request = createRequest();
         request.pre.licence.startDate = moment().subtract(2, 'years').format('YYYY-MM-DD');
+        request.pre.licenceVersions = [{ startDate: moment().subtract(2, 'years').format('YYYY-MM-DD') }];
         await controller.getStartDate(request, h);
       });
 
@@ -427,36 +438,11 @@ experiment('internal/modules/charge-information/controller', () => {
       });
     });
 
-    experiment('when the licence start date is > 6 years in the past', () => {
-      beforeEach(async () => {
-        request = createRequest();
-        request.pre.licence.startDate = '1990-01-01';
-        await controller.getStartDate(request, h);
-      });
-
-      test('the form has a radio fields for today, and custom date', async () => {
-        const { form } = h.view.lastCall.args[1];
-        const field = find(form.fields, { name: 'startDate' });
-        expect(field.options.widget).to.equal('radio');
-        expect(field.options.choices).to.be.an.array();
-
-        // Today
-        expect(field.options.choices[0].label).to.equal('Today');
-        expect(field.options.choices[0].value).to.equal('today');
-        expect(field.options.choices[0].hint).to.equal(getReadableDate());
-
-        // Custom date
-        expect(field.options.choices[3].label).to.equal('Another date');
-        expect(field.options.choices[3].value).to.equal('customDate');
-
-        expect(field.value).to.be.undefined();
-      });
-    });
-
-    experiment("when the a start date has already been set to today's date", () => {
+    experiment('when the a start date has already been set to today\'s date', () => {
       beforeEach(async () => {
         request = createRequest();
         request.pre.draftChargeInformation.dateRange.startDate = getISODate();
+        request.pre.licenceVersions = [{ startDate: moment().subtract(2, 'years').format('YYYY-MM-DD') }];
         await controller.getStartDate(request, h);
       });
 
@@ -471,6 +457,7 @@ experiment('internal/modules/charge-information/controller', () => {
       beforeEach(async () => {
         request = createRequest();
         request.pre.draftChargeInformation.dateRange.startDate = request.pre.licence.startDate;
+        request.pre.licenceVersions = [{ startDate: moment().subtract(2, 'years').format('YYYY-MM-DD') }];
         await controller.getStartDate(request, h);
       });
 
@@ -485,6 +472,7 @@ experiment('internal/modules/charge-information/controller', () => {
       beforeEach(async () => {
         request = createRequest();
         request.pre.draftChargeInformation.dateRange.startDate = moment().subtract(1, 'years').format('YYYY-MM-DD');
+        request.pre.licenceVersions = [{ startDate: moment().subtract(2, 'years').format('YYYY-MM-DD') }];
         await controller.getStartDate(request, h);
       });
 
@@ -510,6 +498,7 @@ experiment('internal/modules/charge-information/controller', () => {
           csrf_token: request.view.csrfToken,
           startDate: 'today'
         };
+        request.pre.licenceVersions = [{ startDate: moment().subtract(2, 'years').format('YYYY-MM-DD') }];
         await controller.postStartDate(request, h);
       });
 
@@ -534,6 +523,7 @@ experiment('internal/modules/charge-information/controller', () => {
           csrf_token: request.view.csrfToken,
           startDate: 'today'
         };
+        request.pre.licenceVersions = [{ startDate: moment().subtract(2, 'years').format('YYYY-MM-DD') }];
         request.query = { chargeVersionWorkflowId: uuid() };
         await controller.postStartDate(request, h);
       });
@@ -551,6 +541,7 @@ experiment('internal/modules/charge-information/controller', () => {
           csrf_token: request.view.csrfToken,
           startDate: 'licenceStartDate'
         };
+        request.pre.licenceVersions = [{ startDate: moment().subtract(2, 'years').format('YYYY-MM-DD') }];
         await controller.postStartDate(request, h);
       });
 
@@ -580,6 +571,7 @@ experiment('internal/modules/charge-information/controller', () => {
           'customDate-month': customDate.format('MM'),
           'customDate-year': customDate.format('YYYY')
         };
+        request.pre.licenceVersions = [{ startDate: moment().subtract(2, 'years').format('YYYY-MM-DD') }];
         await controller.postStartDate(request, h);
       });
 
@@ -607,6 +599,7 @@ experiment('internal/modules/charge-information/controller', () => {
           'customDate-month': 'Tuesday',
           'customDate-year': 'Or Wednesday'
         };
+        request.pre.licenceVersions = [{ startDate: moment().subtract(2, 'years').format('YYYY-MM-DD') }];
         await controller.postStartDate(request, h);
       });
 
@@ -631,6 +624,7 @@ experiment('internal/modules/charge-information/controller', () => {
           'customDate-month': '5',
           'customDate-year': '1966'
         };
+        request.pre.licenceVersions = [{ startDate: moment().subtract(2, 'years').format('YYYY-MM-DD') }];
         await controller.postStartDate(request, h);
       });
 
@@ -641,7 +635,7 @@ experiment('internal/modules/charge-information/controller', () => {
       test('an error is displayed', async () => {
         const [form] = h.postRedirectGet.lastCall.args;
         const field = find(form.fields, { name: 'startDate' }).options.choices[3].fields[0];
-        expect(field.errors[0].message).to.equal('You must enter a date after the licence start date');
+        expect(field.errors[0].message).to.equal('You must enter a date on or after the licence start date');
       });
     });
 
@@ -658,6 +652,7 @@ experiment('internal/modules/charge-information/controller', () => {
           'customDate-month': tomorrow.format('MM'),
           'customDate-year': tomorrow.format('YYYY')
         };
+        request.pre.licenceVersions = [{ startDate: moment().subtract(2, 'years').format('YYYY-MM-DD') }];
         await controller.postStartDate(request, h);
       });
 
@@ -941,7 +936,10 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the data is submitted in the expected format', async () => {
-        const [{ licenceId, chargeVersion }] = services.water.chargeVersionWorkflows.postChargeVersionWorkflow.lastCall.args;
+        const [{
+          licenceId,
+          chargeVersion
+        }] = services.water.chargeVersionWorkflows.postChargeVersionWorkflow.lastCall.args;
         expect(licenceId).to.equal(request.params.licenceId);
         expect(chargeVersion).to.equal(request.pre.draftChargeInformation);
       });
@@ -1041,7 +1039,7 @@ experiment('internal/modules/charge-information/controller', () => {
       });
 
       test('the session data is saved excluding charge element to remove', async () => {
-        const [,, data] = request.setDraftChargeInformation.lastCall.args;
+        const [, , data] = request.setDraftChargeInformation.lastCall.args;
         expect(data.chargeElements).to.equal([{
           id: 'test-element-2-id'
         }]);

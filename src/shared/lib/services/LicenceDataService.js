@@ -42,9 +42,10 @@ class LicenceDataService {
     return this.licencesApiConnector.getDocumentByLicenceId(licenceId);
   }
 
-  async loadLicenceVersionsByLicenceId (licenceId){
+  async loadLicenceVersionsByLicenceId (licenceId) {
     return this.licencesApiConnector.getLicenceVersions(licenceId);
   }
+
   /**
    * Gets default licence version given a licence ID
    * The default is either "current", or the last version
@@ -59,6 +60,7 @@ class LicenceDataService {
     const currentVersion = licenceVersions.find(isCurrentVersion);
     // Otherwise use the version with the greatest issue/increment
     const licenceVersion = currentVersion || licenceVersions.sort(compareFunction).pop();
+
     return {
       ...licenceVersion,
       licenceVersions

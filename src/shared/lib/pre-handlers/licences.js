@@ -45,7 +45,7 @@ const loadLicenceDocument = partialRight(createPreHandler, 'getDocumentByLicence
 /**
  * Fetches all licence versions
  */
-const loadLicenceVersions = partialRight(createPreHandler, 'loadLicenceVersionsByLicenceId', 'Get all licence versions for a given licence')
+const loadLicenceVersions = partialRight(createPreHandler, 'loadLicenceVersionsByLicenceId', 'Get all licence versions for a given licence');
 
 /**
  * Load default licence version for given licence ID

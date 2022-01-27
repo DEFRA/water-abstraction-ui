@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { get, pullAt } = require('lodash');
+const { get } = require('lodash');
 const moment = require('moment');
 const { formFactory, fields } = require('shared/lib/forms/');
 const routing = require('../lib/routing');
@@ -98,15 +98,7 @@ const getCustomEffectiveDateField = (dates, value) => fields.date('customDate', 
 }, value);
 
 const getChoices = (dates, values, refDate, isChargeable) => {
-  const allChoices = [{
-    value: 'today',
-    label: 'Today',
-    hint: moment(refDate).format(DATE_FORMAT)
-  }, {
-    value: 'licenceStartDate',
-    label: 'Licence start date',
-    hint: moment(dates.licenceStartDate).format(DATE_FORMAT)
-  },
+  const responseArray = [
     {
       divider: 'or'
     },
@@ -124,14 +116,27 @@ const getChoices = (dates, values, refDate, isChargeable) => {
   // 1. The licence start date is in the past
   // 2. The licence end date is undefined or is set in the future
   // 3. The licence start date is greater than the earliest known licence version date (This is because some licences existed before licence versions were a thing)
-  if (moment(dates.licenceStartDate).isAfter(moment()) ||
-    moment(dates.maxDate).isBefore(moment()) ||
-    moment(dates.minDate).isAfter(moment(dates.licenceStartDate))
+  if (moment(dates.licenceStartDate).isBefore(moment()) ||
+    moment(dates.maxDate).isAfter(moment()) ||
+    moment(dates.minDate).isBefore(moment(dates.licenceStartDate))
   ) {
-    return allChoices.filter(choice => choice.value !== 'licenceStartDate');
+    responseArray.unshift({
+      value: 'licenceStartDate',
+      label: 'Licence start date',
+      hint: moment(dates.licenceStartDate).format(DATE_FORMAT)
+    });
   }
 
-  return allChoices;
+  // Add the 'Today' option, if the licence start date is in the past and the end date is in the future
+  if (moment(dates.licenceStartDate).isBefore(moment()) && moment(dates.maxDate).isAfter(moment())) {
+    responseArray.unshift({
+      value: 'today',
+      label: 'Today',
+      hint: moment(refDate).format(DATE_FORMAT)
+    });
+  }
+
+  return responseArray[0].divider ? [responseArray[1]] : responseArray;
 };
 
 /**

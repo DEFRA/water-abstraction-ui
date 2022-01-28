@@ -7,6 +7,7 @@ const {
 const { v4: uuid } = require('uuid');
 const { expect } = require('@hapi/code');
 const preHandlers = require('internal/modules/charge-information/pre-handlers');
+const sharedPreHandlers = require('shared/lib/pre-handlers/licences');
 const routes = require('internal/modules/charge-information/routes/non-chargeable');
 const testHelpers = require('../../../test-helpers');
 
@@ -120,13 +121,15 @@ experiment('internal/modules/charge-information/routes/non-chargeable', () => {
     });
 
     test('has the expected pre handlers', async () => {
-      expect(routes.getEffectiveDate.options.pre.length).to.equal(3);
+      expect(routes.getEffectiveDate.options.pre.length).to.equal(4);
       expect(routes.getEffectiveDate.options.pre[0].method).to.equal(preHandlers.loadDraftChargeInformation);
       expect(routes.getEffectiveDate.options.pre[0].assign).to.equal('draftChargeInformation');
       expect(routes.getEffectiveDate.options.pre[1].method).to.equal(preHandlers.loadLicence);
       expect(routes.getEffectiveDate.options.pre[1].assign).to.equal('licence');
       expect(routes.getEffectiveDate.options.pre[2].method).to.equal(preHandlers.loadIsChargeable);
       expect(routes.getEffectiveDate.options.pre[2].assign).to.equal('isChargeable');
+      expect(routes.getEffectiveDate.options.pre[3].method).to.equal(sharedPreHandlers.loadLicenceVersions);
+      expect(routes.getEffectiveDate.options.pre[3].assign).to.equal('licenceVersions');
     });
   });
 
@@ -157,11 +160,15 @@ experiment('internal/modules/charge-information/routes/non-chargeable', () => {
     });
 
     test('has the expected pre handlers', async () => {
-      expect(routes.postEffectiveDate.options.pre.length).to.equal(2);
+      expect(routes.postEffectiveDate.options.pre.length).to.equal(3);
       expect(routes.postEffectiveDate.options.pre[0].method).to.equal(preHandlers.loadDraftChargeInformation);
       expect(routes.postEffectiveDate.options.pre[0].assign).to.equal('draftChargeInformation');
       expect(routes.postEffectiveDate.options.pre[1].method).to.equal(preHandlers.loadLicence);
       expect(routes.postEffectiveDate.options.pre[1].assign).to.equal('licence');
+      expect(routes.getEffectiveDate.options.pre[2].method).to.equal(preHandlers.loadIsChargeable);
+      expect(routes.getEffectiveDate.options.pre[2].assign).to.equal('isChargeable');
+      expect(routes.getEffectiveDate.options.pre[3].method).to.equal(sharedPreHandlers.loadLicenceVersions);
+      expect(routes.getEffectiveDate.options.pre[3].assign).to.equal('licenceVersions');
     });
   });
 });

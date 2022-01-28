@@ -231,7 +231,10 @@ const loadChargeInformation = async request => {
     if (!draftChargeInfo.changeReason) {
       const chargeVersionWorkflow = await getChargeVersionWorkflow(chargeVersionWorkflowId);
       draftChargeInfo = decorateChargeVersion(chargeVersionWorkflow);
-      request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, { ...draftChargeInfo, chargeVersionWorkflowId });
+      request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, {
+        ...draftChargeInfo,
+        chargeVersionWorkflowId
+      });
     }
     return draftChargeInfo;
   } catch (err) {

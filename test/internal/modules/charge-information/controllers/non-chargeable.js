@@ -28,6 +28,9 @@ const createRequest = () => ({
     csrfToken: uuid()
   },
   pre: {
+    licenceVersions: [{
+      startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
+    }],
     licence: {
       id: 'test-licence-id',
       licenceNumber: '01/123',
@@ -286,7 +289,7 @@ experiment('internal/modules/charge-information/controller', () => {
     test('an error is displayed', async () => {
       const [form] = h.postRedirectGet.lastCall.args;
       const field = find(form.fields, { name: 'startDate' }).options.choices[3].fields[0];
-      expect(field.errors[0].message).to.equal('You must enter a date after the licence start date');
+      expect(field.errors[0].message).to.equal('You must enter a date on or after the licence start date');
     });
   });
 

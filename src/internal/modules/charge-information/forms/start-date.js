@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { get, pullAt } = require('lodash');
+const { get } = require('lodash');
 const moment = require('moment');
 const { formFactory, fields } = require('shared/lib/forms/');
 const routing = require('../lib/routing');
@@ -8,6 +8,8 @@ const DATE_FORMAT = 'D MMMM YYYY';
 const ISO_FORMAT = 'YYYY-MM-DD';
 
 const MIN_LICENCE_START = 'licence_start';
+const MIN_EARLIEST_LICENCE_VERSION = 'earliest_licence_version';
+const MIN_5_YEARS = '5_years';
 
 const createValues = (startDate, customDate) => ({ startDate, customDate });
 
@@ -32,20 +34,25 @@ const getValues = (request, licence, refDate) => {
   return createValues('customDate', startDate);
 };
 
-const getDates = licence => {
-  const startDate = moment(licence.startDate);
-  const minDate = startDate;
-  const isLicenceStart = startDate.isAfter(minDate);
+const getDates = (licence, licenceVersions, referenceDate) => {
+  const licenceStartDate = moment(licence.startDate);
+
+  const earliestLicenceVersionStartDate = moment.min(licenceVersions.map(x => moment(x.startDate)));
+
+  const minDateAllowed = moment.max([licenceStartDate, earliestLicenceVersionStartDate]);
+
   return {
     licenceStartDate: licence.startDate,
-    minDate: isLicenceStart ? licence.startDate : minDate.format(ISO_FORMAT),
-    minType: MIN_LICENCE_START,
+    minDate: minDateAllowed.toDate(),
+    minType: referenceDate && moment(referenceDate).isBefore(minDateAllowed) ? `${MIN_EARLIEST_LICENCE_VERSION}` : MIN_LICENCE_START,
     maxDate: licence.endDate || '3000-01-01'
   };
 };
 
 const minErrors = {
-  [MIN_LICENCE_START]: 'You must enter a date after the licence start date'
+  [MIN_LICENCE_START]: 'You must enter a date on or after the licence start date',
+  [MIN_5_YEARS]: 'Date must be today or up to five years\' in the past',
+  [MIN_EARLIEST_LICENCE_VERSION]: 'Date must be after the start date of the earliest known licence version'
 };
 
 const getCommomCustomDateErrors = dates => ({
@@ -91,44 +98,45 @@ const getCustomEffectiveDateField = (dates, value) => fields.date('customDate', 
 }, value);
 
 const getChoices = (dates, values, refDate, isChargeable) => {
-  const allChoices = [{
-    value: 'today',
-    label: 'Today',
-    hint: moment(refDate).format(DATE_FORMAT)
-  }, {
-    value: 'licenceStartDate',
-    label: 'Licence start date',
-    hint: moment(dates.licenceStartDate).format(DATE_FORMAT)
-  },
-  {
-    divider: 'or'
-  },
-  {
-    value: 'customDate',
-    label: 'Another date',
-    fields: [
-      isChargeable
-        ? getCustomStartDateField(dates, values.customDate)
-        : getCustomEffectiveDateField(dates, values.customDate)
-    ]
-  }];
-  // if it is a future dated licence or the licence is expired remove the today option
-  if (moment(dates.licenceStartDate).isAfter(moment()) || moment(dates.maxDate).isBefore(moment())) {
-    allChoices.shift();
+  const responseArray = [
+    {
+      divider: 'or'
+    },
+    {
+      value: 'customDate',
+      label: 'Another date',
+      fields: [
+        isChargeable
+          ? getCustomStartDateField(dates, values.customDate)
+          : getCustomEffectiveDateField(dates, values.customDate)
+      ]
+    }];
+
+  // We only return the licenceStartDate option if the following conditions are met:
+  // 1. The licence start date is in the past
+  // 2. The licence end date is undefined or is set in the future
+  // 3. The licence start date is greater than the earliest known licence version date (This is because some licences existed before licence versions were a thing)
+  if (moment(dates.licenceStartDate).isBefore(moment()) ||
+    moment(dates.maxDate).isAfter(moment()) ||
+    moment(dates.minDate).isBefore(moment(dates.licenceStartDate))
+  ) {
+    responseArray.unshift({
+      value: 'licenceStartDate',
+      label: 'Licence start date',
+      hint: moment(dates.licenceStartDate).format(DATE_FORMAT)
+    });
   }
 
-  if (dates.minType === MIN_LICENCE_START) {
-    return allChoices;
-  } else {
-    if (allChoices[0].value === 'licenceStartDate') {
-      // rename label and only display Custom date
-      allChoices[2].label = 'Custom date';
-      return [allChoices[2]];
-    } else {
-      // if today's date is included as an option then pick 'today' and 'custom date' as radio options
-      return pullAt(allChoices, [0, 3]);
-    }
+  // Add the 'Today' option, if the licence start date is in the past and the end date is in the future
+  if (moment(dates.licenceStartDate).isBefore(moment()) && moment(dates.maxDate).isAfter(moment())) {
+    responseArray.unshift({
+      value: 'today',
+      label: 'Today',
+      hint: moment(refDate).format(DATE_FORMAT)
+    });
   }
+
+  return responseArray[0].divider ? [responseArray[1]] : responseArray;
 };
 
 /**
@@ -138,9 +146,20 @@ const getChoices = (dates, values, refDate, isChargeable) => {
  */
 const selectStartDateForm = (request, refDate) => {
   const { csrfToken } = request.view;
-  const { licence, isChargeable } = request.pre;
+  const { licence, licenceVersions, isChargeable } = request.pre;
   const { chargeVersionWorkflowId, returnToCheckData } = request.query;
 
+  const values = getValues(request, licence, refDate);
+
+  let enteredDate;
+
+  if (values.startDate === 'today') {
+    enteredDate = new Date();
+  } else if (values.startDate === 'licenceStartDate') {
+    enteredDate = licence.startDate;
+  } else {
+    enteredDate = new Date(values.customDate);
+  }
   const action = isChargeable
     ? routing.getStartDate(licence.id, { chargeVersionWorkflowId, returnToCheckData })
     : routing.getEffectiveDate(licence.id, { chargeVersionWorkflowId, returnToCheckData });
@@ -149,8 +168,7 @@ const selectStartDateForm = (request, refDate) => {
     ? 'Select charge information start date'
     : 'Select effective date';
 
-  const values = getValues(request, licence, refDate);
-  const dates = getDates(licence);
+  const dates = getDates(licence, licenceVersions, enteredDate);
 
   const f = formFactory(action, 'POST');
 
@@ -169,8 +187,8 @@ const selectStartDateForm = (request, refDate) => {
 };
 
 const selectStartDateSchema = (request) => {
-  const { licence } = request.pre;
-  const dates = getDates(licence);
+  const { licence, licenceVersions } = request.pre;
+  const dates = getDates(licence, licenceVersions);
 
   return Joi.object({
     csrf_token: Joi.string().uuid().required(),

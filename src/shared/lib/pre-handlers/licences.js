@@ -43,6 +43,11 @@ const loadLicence = partialRight(createPreHandler, 'getLicenceById', 'Licence');
 const loadLicenceDocument = partialRight(createPreHandler, 'getDocumentByLicenceId', 'CRM document for licence');
 
 /**
+ * Fetches all licence versions
+ */
+const loadLicenceVersions = partialRight(createPreHandler, 'loadLicenceVersionsByLicenceId', 'Get all licence versions for a given licence');
+
+/**
  * Load default licence version for given licence ID
  */
 const loadDefaultLicenceVersion = partialRight(createPreHandler, 'getDefaultLicenceVersionByLicenceId', 'Default licence version for licence');
@@ -154,6 +159,7 @@ const getLicenceByReturnId = async request => {
 
 exports.loadLicence = loadLicence;
 exports.loadLicenceDocument = loadLicenceDocument;
+exports.loadLicenceVersions = loadLicenceVersions;
 exports.loadDefaultLicenceVersion = loadDefaultLicenceVersion;
 exports.loadChargeVersions = loadChargeVersions;
 exports.loadChargeVersionWorkflows = loadChargeVersionWorkflows;

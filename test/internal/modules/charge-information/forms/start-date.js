@@ -19,6 +19,9 @@ const createRequest = (startDate, isChargeable = true, licenceStart = '2017-04-0
       startDate: licenceStart,
       endDate: licenceEnd
     },
+    licenceVersions: [
+      { startDate: licenceStart }
+    ],
     draftChargeInformation: {
       dateRange: {
         startDate
@@ -93,6 +96,7 @@ experiment('internal/modules/charge-information/forms/start-date', () => {
       test('the today start option is removed', () => {
         const dateForm = form(createRequest(moment(), true, moment().subtract(8, 'years').format('YYYY-MM-DD'), moment().subtract(1, 'months').format('YYYY-MM-DD')));
         const radio = findField(dateForm, 'startDate');
+        console.log(radio.options.choices);
         expect(radio.options.choices[0].label === 'Today').to.be.false();
       });
     });
@@ -153,7 +157,7 @@ experiment('internal/modules/charge-information/forms/start-date', () => {
 
           expect(errors['any.required'].message).to.equal('Enter the effective date');
           expect(errors['date.base'].message).to.equal('Enter a real date for the effective date');
-          expect(errors['date.min'].message).to.equal('You must enter a date after the licence start date');
+          expect(errors['date.min'].message).to.equal('You must enter a date on or after the licence start date');
           expect(errors['date.max'].message).to.equal('You must enter a date before the licence end date');
           expect(errors['date.custom'].message).to.equal('Enter a real date');
         });

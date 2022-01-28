@@ -3,6 +3,7 @@
 const { v4: uuid } = require('uuid');
 const { get } = require('lodash');
 const moment = require('moment');
+const nearestDate = require('nearest-date');
 const { isEmpty, omit } = require('lodash');
 const forms = require('../forms');
 const actions = require('../lib/actions');
@@ -90,10 +91,22 @@ const mapBillingAccountHandoverData = async (licence, document, currentState, ch
   // Get company ID from document r
   const { data: documentRoles } = await services.crm.documentRoles.getFullHistoryOfDocumentRolesByDocumentRef(document.licenceNumber);
 
-  const { companyId } = documentRoles.find(x => x.roleName === 'licenceHolder' &&
+  const theRelevantCompany = documentRoles.find(x => x.roleName === 'licenceHolder' &&
     moment(x.startDate).isSameOrBefore(currentState.dateRange.startDate, 'd') &&
     (!x.endDate || moment(x.endDate).isAfter(currentState.dateRange.startDate, 'd'))
   );
+
+  let companyId;
+
+  if (theRelevantCompany) {
+    companyId = theRelevantCompany.companyId;
+  } else {
+    // If we were unable to find the company responsible for the licence at a given date, we grab the 'nearest' responsible licence holder.
+    // This has been added to address an edge case described in this comment:
+    // https://eaflood.atlassian.net/browse/WATER-3393?focusedCommentId=364335 (Comment section #1)
+    const index = nearestDate(documentRoles.map(x => new Date(x.startDate)), new Date(currentState.dateRange.startDate));
+    companyId = documentRoles[index].companyId;
+  }
 
   // Get currently selected billing account ID
   const billingAccountId = get(currentState, 'invoiceAccount.id');

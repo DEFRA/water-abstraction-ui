@@ -52,7 +52,7 @@ const getDates = (licence, licenceVersions, referenceDate) => {
 const minErrors = {
   [MIN_LICENCE_START]: 'You must enter a date on or after the licence start date',
   [MIN_5_YEARS]: 'Date must be today or up to five years\' in the past',
-  [MIN_EARLIEST_LICENCE_VERSION]: 'Date must be after the start date of the earliest licence known version'
+  [MIN_EARLIEST_LICENCE_VERSION]: 'Date must be after the start date of the earliest known licence version'
 };
 
 const getCommomCustomDateErrors = dates => ({

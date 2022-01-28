@@ -96,7 +96,6 @@ experiment('internal/modules/charge-information/forms/start-date', () => {
       test('the today start option is removed', () => {
         const dateForm = form(createRequest(moment(), true, moment().subtract(8, 'years').format('YYYY-MM-DD'), moment().subtract(1, 'months').format('YYYY-MM-DD')));
         const radio = findField(dateForm, 'startDate');
-        console.log(radio.options.choices);
         expect(radio.options.choices[0].label === 'Today').to.be.false();
       });
     });

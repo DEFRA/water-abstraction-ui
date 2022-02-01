@@ -7,7 +7,7 @@ const { getChargeCategoryData, getChargeCategoryActionUrl } = require('../../lib
 const { capitalize } = require('lodash');
 
 const getChoices = config => {
-  const radioOtions = {
+  const radioOptions = {
     errors: {
       'any.required': {
         message: config.errorMessage
@@ -19,14 +19,14 @@ const getChoices = config => {
       : Object.values(config.options)
         .map(row => { return { value: row, label: capitalize(row) }; })
   };
-  return config.boolean ? { ...radioOtions, mapper: 'booleanMapper' } : radioOtions;
+  return config.boolean ? { ...radioOptions, mapper: 'booleanMapper' } : radioOptions;
 };
 
 /**
- * Form to request the loss category
+ * Form to request default options
  *
  * @param {Object} request The Hapi request object
- * @param {Boolean}  data object containing selected and default options for the form
+ * @returns {Object} object containing selected and default options for the form
  */
 const form = request => {
   const { csrfToken } = request.view;
@@ -39,7 +39,8 @@ const form = request => {
 
   const f = formFactory(action, 'POST');
 
-  f.fields.push(fields.radio(stepKey, getChoices(config), data[stepKey] || ''));
+  const value = data[stepKey];
+  f.fields.push(fields.radio(stepKey, getChoices(config), value === undefined ? '' : value));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 

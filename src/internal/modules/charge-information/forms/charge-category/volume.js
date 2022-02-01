@@ -9,7 +9,6 @@ const { getChargeCategoryData, getChargeCategoryActionUrl } = require('../../lib
  * Form to request the abstraction quantities
  *
  * @param {Object} request The Hapi request object
- * @param {Boolean}  data object containing selected and default options for the form
  */
 const form = request => {
   const { csrfToken } = request.view;
@@ -21,17 +20,23 @@ const form = request => {
     controlClass: 'govuk-input govuk-input--width-10',
     suffix: 'ML',
     errors: {
-      'string.pattern.base': {
-        message: 'Enter a number with no more than 6 decimal places. For example, 20.123456'
-      },
-      'any.required': {
+      'number.base': {
         message: 'Enter the volume in ML (megalitres).'
       },
-      'string.empty': {
-        message: 'Enter the volume in ML (megalitres).'
+      'number.positive': {
+        message: 'The volume must be equal to or greater than 1'
+      },
+      'number.min': {
+        message: 'The volume must be equal to or greater than 1'
+      },
+      'number.max': {
+        message: 'The volume must be equal to or less than 1,000,000,000,000,000'
       },
       'number.unsafe': {
         message: 'Enter a number that is less than 1,000,000,000,000,000 or fewer than 17 digits long'
+      },
+      'number.custom': {
+        message: 'Enter a number with no more than 6 decimal places. For example, 20.123456'
       }
 
     }
@@ -50,13 +55,13 @@ const schema = () => {
       .custom((value, helper) => {
         const { error, original } = helper;
         const [, decimals = ''] = original.split('.');
-        if (decimals.length <= 6) {
-          return value;
+        if (original.length > 16) {
+          return error('number.unsafe');
         }
-        if (original.length < 17) {
-          return value;
+        if (decimals.length > 6) {
+          return error('number.custom');
         }
-        return error('number.custom');
+        return value;
       })
   });
 };

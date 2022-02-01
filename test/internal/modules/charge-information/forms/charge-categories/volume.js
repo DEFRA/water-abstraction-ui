@@ -57,9 +57,8 @@ experiment('internal/modules/charge-information/forms/charge-category/volume', (
 
     test('the volume text field should have the correct error messages', async () => {
       const text = findField(volumeForm, 'volume');
-      expect(text.options.errors['string.pattern.base'].message).to.equal('Enter a number with no more than 6 decimal places. For example, 20.123456');
-      expect(text.options.errors['any.required'].message).to.equal('Enter the volume in ML (megalitres).');
-      expect(text.options.errors['string.empty'].message).to.equal('Enter the volume in ML (megalitres).');
+      expect(text.options.errors['number.base'].message).to.equal('Enter the volume in ML (megalitres).');
+      expect(text.options.errors['number.custom'].message).to.equal('Enter a number with no more than 6 decimal places. For example, 20.123456');
     });
 
     test('sets the value of the volume, if provided', async () => {
@@ -111,7 +110,7 @@ experiment('internal/modules/charge-information/forms/charge-category/volume', (
       test('must not have more than 6 decimal places', async () => {
         const result = schema(createRequest()).validate({
           csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
-          volume: 132.1234567
+          volume: '132.1234567'
         }, { allowUnknown: true });
         expect(result.error).to.exist();
       });
@@ -119,7 +118,7 @@ experiment('internal/modules/charge-information/forms/charge-category/volume', (
       test('must not be zero', async () => {
         const result = schema(createRequest()).validate({
           csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
-          volume: 0
+          volume: '0'
         }, { allowUnknown: true });
         expect(result.error).to.exist();
       });

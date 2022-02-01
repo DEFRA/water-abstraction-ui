@@ -8,6 +8,9 @@ const CHARGE_CATEGORY_STEPS = {
   isRestrictedSource: 'restricted-source',
   waterModel: 'water-model',
   isAdditionalCharges: 'additional-charges',
+  isSupportedSource: 'supported-source',
+  supportedSourceName: 'supported-source-name',
+  isSupplyPublicWater: 'supply-public-water',
   isAdjustments: 'adjustments'
 };
 
@@ -100,10 +103,38 @@ const ROUTING_CONFIG = {
   },
   isAdditionalCharges: {
     pageTitle: 'Do additional charges apply?',
+    caption: 'Select \'yes\' if the licence is for the supply of public water or abstraction from a supported source such as a reservoir.',
     nextStep: CHARGE_CATEGORY_STEPS.isAdjustments,
+    nextStepYes: CHARGE_CATEGORY_STEPS.isSupportedSource,
     back: CHARGE_CATEGORY_STEPS.waterModel,
     options: YES_NO,
     errorMessage: 'Select \'yes\' if additional charges apply.',
+    boolean: true
+  },
+  isSupportedSource: {
+    pageTitle: 'Is abstraction from a supported source?',
+    caption: 'These are water sources the EA pays an additional charge to access, for example Glen Groundwater.',
+    back: CHARGE_CATEGORY_STEPS.isAdditionalCharges,
+    nextStep: CHARGE_CATEGORY_STEPS.isSupplyPublicWater,
+    nextStepYes: CHARGE_CATEGORY_STEPS.supportedSourceName,
+    options: YES_NO,
+    errorMessage: 'Select \'yes\' if abstraction is from a supported source.',
+    boolean: true
+  },
+  supportedSourceName: {
+    pageTitle: 'Select the name of the supported source',
+    back: CHARGE_CATEGORY_STEPS.isSupportedSource,
+    nextStep: CHARGE_CATEGORY_STEPS.isSupplyPublicWater,
+    errorMessage: 'Select the name of the supported source.',
+    boolean: true
+  },
+  isSupplyPublicWater: {
+    pageTitle: 'Is abstraction for the supply of public water?',
+    caption: 'In the case of a permit authorising a water abstraction activity held by a water undertaker carrying out its statutory functions',
+    back: CHARGE_CATEGORY_STEPS.isSupportedSource,
+    nextStep: CHARGE_CATEGORY_STEPS.isAdjustments,
+    options: YES_NO,
+    errorMessage: 'Select \'yes\' if abstraction is for the supply of public water.',
     boolean: true
   },
   isAdjustments: {

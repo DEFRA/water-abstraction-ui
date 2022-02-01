@@ -39,6 +39,12 @@ const form = request => {
 
   const f = formFactory(action, 'POST');
 
+  if (config.caption) {
+    f.fields.push(fields.paragraph(null, {
+      text: config.caption,
+      controlClass: 'govuk-hint'
+    }));
+  }
   const value = data[stepKey];
   f.fields.push(fields.radio(stepKey, getChoices(config), value === undefined ? '' : value));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

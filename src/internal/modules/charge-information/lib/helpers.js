@@ -1,6 +1,6 @@
 'use strict';
 
-const { isFunction, isEmpty, omit, get } = require('lodash');
+const { isFunction, isEmpty, get } = require('lodash');
 const Joi = require('joi');
 const { handleRequest, getValues } = require('shared/lib/forms');
 const sessionForms = require('shared/lib/session-forms');
@@ -88,10 +88,34 @@ const prepareChargeInformation = (licenceId, chargeData) => ({
   licenceId,
   chargeVersion: {
     ...chargeData,
-    chargeElements: chargeData.chargeElements.map(element => {
-      return chargeData.scheme === 'sroc'
-        ? { ...omit(element, 'id'), chargePurposes: element.chargePurposes.map(purpose => omit(purpose, 'id')) }
-        : omit(element, 'id');
+    chargeElements: chargeData.chargeElements.map((
+      {
+        id,
+        isAdditionalCharges,
+        isSupportedSource,
+        supportedSourceName,
+        supportedSourceId,
+        isSupplyPublicWater,
+        chargePurposes,
+        ...element
+      }) => {
+      if (chargeData.scheme === 'sroc') {
+        const additionalCharges = isAdditionalCharges
+          ? {
+              supportedSource: isSupportedSource
+                ? { id: supportedSourceId, name: supportedSourceName }
+                : null,
+              isSupplyPublicWater
+            }
+          : null;
+        return {
+          ...element,
+          additionalCharges,
+          chargePurposes: chargePurposes.map(({ id: _unused, ...purpose }) => purpose)
+        };
+      } else {
+        return element;
+      }
     }),
     status: 'draft'
   }

@@ -73,6 +73,8 @@ const chargeCategory = {
   shortDescription: 'test-charge-category-description'
 };
 
+const prefixUrl = `/licences/${licenceId}/charge-information`;
+
 experiment('internal/modules/charge-information/controllers/charge-category', () => {
   let request, h;
 
@@ -100,7 +102,7 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
 
       test('sets a back link to the previous page in the flow', async () => {
         const { back } = h.view.lastCall.args[1];
-        expect(back).to.equal(`/licences/${licenceId}/charge-information/check`);
+        expect(back).to.equal(`${prefixUrl}/check`);
       });
 
       test('has the page title', async () => {
@@ -122,11 +124,11 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
         const [, view] = h.view.lastCall.args;
         expect(view.form).to.be.an.object();
         expect(view.form.method).to.equal('POST');
-        expect(view.form.action).to.equal(`/licences/${licenceId}/charge-information/charge-category/${elementId}/description`);
+        expect(view.form.action).to.equal(`${prefixUrl}/charge-category/${elementId}/description`);
       });
     });
 
-    experiment('when the returnToCheckData query param is set', () => {
+    experiment('when the step is description and the returnToCheckData query param is set', () => {
       beforeEach(async () => {
         request = createRequest(CHARGE_CATEGORY_STEPS.description);
         request.query.returnToCheckData = true;
@@ -135,7 +137,32 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
 
       test('the back link is to the check answers page', async () => {
         const { back } = h.view.lastCall.args[1];
-        expect(back).to.equal(`/licences/${licenceId}/charge-information/check`);
+        expect(back).to.equal(`${prefixUrl}/check`);
+      });
+    });
+
+    experiment('when the step is isSupplyPublicWater and the supportedSourceName has not been set', () => {
+      beforeEach(async () => {
+        request = createRequest(CHARGE_CATEGORY_STEPS.isSupplyPublicWater);
+        await controller.getChargeCategoryStep(request, h);
+      });
+
+      test('the back link is the supported source page', async () => {
+        const { back } = h.view.lastCall.args[1];
+        expect(back).to.equal(`${prefixUrl}/charge-category/${elementId}/${CHARGE_CATEGORY_STEPS.isSupportedSource}`);
+      });
+    });
+
+    experiment('when the step is isSupplyPublicWater and the supportedSourceName has been set', () => {
+      beforeEach(async () => {
+        request = createRequest(CHARGE_CATEGORY_STEPS.isSupplyPublicWater);
+        request.pre.draftChargeInformation.chargeElements[0].supportedSourceName = 'test-supported-source-name';
+        await controller.getChargeCategoryStep(request, h);
+      });
+
+      test('the back link is the supported source name page', async () => {
+        const { back } = h.view.lastCall.args[1];
+        expect(back).to.equal(`${prefixUrl}/charge-category/${elementId}/${CHARGE_CATEGORY_STEPS.supportedSourceName}`);
       });
     });
 
@@ -147,7 +174,7 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
 
       test('sets a back link to the previous step', async () => {
         const { back } = h.view.lastCall.args[1];
-        expect(back).to.equal(`/licences/${licenceId}/charge-information/charge-category/${elementId}/${CHARGE_CATEGORY_STEPS.source}`);
+        expect(back).to.equal(`${prefixUrl}/charge-category/${elementId}/${CHARGE_CATEGORY_STEPS.source}`);
       });
     });
 
@@ -171,10 +198,11 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
 
         test('the user is redirected to the expected page', async () => {
           expect(h.redirect.calledWith(
-            `/licences/test-licence-id/charge-information/charge-category/${elementId}/${CHARGE_CATEGORY_STEPS.volume}`
+            `${prefixUrl}/charge-category/${elementId}/${CHARGE_CATEGORY_STEPS.volume}`
           )).to.be.true();
         });
       });
+
       experiment('when the last charge category step in the flow is reached', () => {
         beforeEach(async () => {
           request = createRequest(CHARGE_CATEGORY_STEPS.isAdjustments, validPayload.isAdjustments);
@@ -193,10 +221,88 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
           expect(args[2].chargeElements[0].isAdjustments).to.equal(false);
         });
 
-        test('the user is redirected to the chack your answers page', async () => {
+        test('the user is redirected to the check your answers page', async () => {
           expect(h.redirect.calledWith(
-            '/licences/test-licence-id/charge-information/check'
+            `${prefixUrl}/check`
           )).to.be.true();
+        });
+      });
+
+      experiment('when the charge category step in the flow is supportedSourceName', () => {
+        const supportedSource = { id: uuid(), name: 'test-supported-source-name' };
+
+        beforeEach(async () => {
+          request = createRequest(CHARGE_CATEGORY_STEPS.supportedSourceName, { supportedSourceId: supportedSource.id });
+          request.pre.supportedSources = [supportedSource];
+          request.pre.draftChargeInformation.chargeElements = [{ id: 'test-element-id' }];
+          await controller.postChargeCategoryStep(request, h);
+        });
+
+        test('the draft charge information is updated with the charge reference', async () => {
+          const [id, cvWorkflowId] = request.setDraftChargeInformation.lastCall.args;
+          expect(cvWorkflowId).to.equal(undefined);
+          expect(id).to.equal('test-licence-id');
+        });
+
+        test('the draft charge information is updated with the charge reference', async () => {
+          const args = request.setDraftChargeInformation.lastCall.args;
+          expect(args[2].chargeElements[0].supportedSourceName).to.equal(supportedSource.name);
+        });
+
+        test('the user is redirected to the check your answers page', async () => {
+          expect(h.redirect.calledWith(
+            `${prefixUrl}/charge-category/${elementId}/${CHARGE_CATEGORY_STEPS.isSupplyPublicWater}`
+          )).to.be.true();
+        });
+      });
+    });
+
+    experiment('when the redirect path is called', () => {
+      let request, chargeElement, query;
+
+      beforeEach(async () => {
+        chargeElement = { id: elementId };
+        query = { returnToCheckData: true };
+        request = {
+          params: { licenceId, elementId },
+          pre: { draftChargeInformation: { chargeElements: [chargeElement] } },
+          query
+        };
+      });
+
+      experiment('and the step is isAdditionalChanges', () => {
+        test('and the isAdditionalCharges flag has not been set', () => {
+          const redirectPath = controller.getRedirectPath(request, 'isAdditionalCharges');
+          expect(redirectPath).to.equal(`${prefixUrl}/check`);
+        });
+        test('and the isAdditionalCharges flag been set', () => {
+          chargeElement.isAdditionalCharges = true;
+          const redirectPath = controller.getRedirectPath(request, 'isAdditionalCharges');
+          expect(redirectPath).to.equal(`${prefixUrl}/charge-category/${elementId}/supported-source?returnToCheckData=true`);
+        });
+      });
+
+      experiment('and the step is isSupportedSource', () => {
+        test('and the isSupportedSource flag has not been set', () => {
+          const redirectPath = controller.getRedirectPath(request, 'isSupportedSource');
+          expect(redirectPath).to.equal(`${prefixUrl}/check`);
+        });
+        test('and the isSupportedSource flag has been set', () => {
+          chargeElement.isSupportedSource = true;
+          const redirectPath = controller.getRedirectPath(request, 'isSupportedSource');
+          expect(redirectPath).to.equal(`${prefixUrl}/charge-category/${elementId}/supported-source-name?returnToCheckData=true`);
+        });
+      });
+
+      experiment('and the step is supportedSourceName', () => {
+        test('and the supportedSourceName has not been set', () => {
+          const redirectPath = controller.getRedirectPath(request, 'supportedSourceName');
+          expect(redirectPath).to.equal(`${prefixUrl}/check`);
+        });
+        test('and the supportedSourceName has been set', () => {
+          chargeElement.supportedSourceName = 'test-supported-source-name';
+          const redirectPath = controller.getRedirectPath(request, 'supportedSourceName');
+          expect(redirectPath).to.equal(`${prefixUrl}/charge-category/${elementId}/supply-public-water?returnToCheckData=true`);
         });
       });
     });

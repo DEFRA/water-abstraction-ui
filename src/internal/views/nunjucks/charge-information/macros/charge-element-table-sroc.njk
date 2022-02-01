@@ -12,13 +12,13 @@ formErrorSummary %}
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">{{ key }}</dt>
     <dd class="govuk-summary-list__value">{{ value }}</dd>
+    <dd class="govuk-summary-list__actions">
     {% if isEditable %}
-      <dd class="govuk-summary-list__actions">
         {% if changeLink %}
           <a class="govuk-link" href="{{ changeLink }}">Change</a>
         {% endif %}
-      </dd>
     {% endif %}
+    </dd>
   </div>
 {% endmacro %}
 
@@ -214,6 +214,7 @@ formErrorSummary %}
         {{ summaryListRow('Adjustments apply', getBooleanText(chargeElement.isAdjustments) | title, changeLinkSroc('/adjustments', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
         {{ summaryListRow('EUIC Region', chargeElement.eiucRegion | title) }}
       </dl>
+      <hr class="govuk-section-break  govuk-!-margin-bottom-6">
       {{ chargePurposeTable(chargeElement.chargePurposes, isEditable, licenceId, chargeElement.id, chargeVersionWorkflowId) }}
     {% endfor %}
   {% endif %}

@@ -33,6 +33,7 @@ if (config.featureToggles.srocChargeInformation) {
           query: Joi.object().keys({
             form: VALID_GUID.optional(),
             returnToCheckData: Joi.boolean().default(false),
+            additionalChargesAdded: Joi.boolean().optional().default(false),
             chargeVersionWorkflowId: Joi.string().uuid().optional().default('')
           })
         },
@@ -66,6 +67,7 @@ if (config.featureToggles.srocChargeInformation) {
           query: Joi.object().keys({
             form: VALID_GUID.optional(),
             returnToCheckData: Joi.boolean().default(false),
+            additionalChargesAdded: Joi.boolean().optional().default(false),
             chargeVersionWorkflowId: Joi.string().uuid().optional().default('')
           })
         },

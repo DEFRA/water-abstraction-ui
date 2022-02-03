@@ -1,6 +1,6 @@
 'use strict';
 
-const adjustments = (formValues) => {
+const adjustments = formValues => {
   return formValues.adjustments.length > 0
     ? {
         adjustments: {

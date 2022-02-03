@@ -306,7 +306,7 @@ const redirectToStartOfCategoryFlow = (request, h) => {
   const { chargeVersionWorkflowId } = request.query;
   const { licenceId } = request.params;
   const { draftChargeInformation: currentState } = request.pre;
-
+  const eiucRegion = request.pre.licence.regionalChargeArea.name;
   // Create new element to edit in the session state
   const id = uuid();
   const data = currentState.chargeElements.reduce((acc, element) => {
@@ -318,7 +318,8 @@ const redirectToStartOfCategoryFlow = (request, h) => {
       : acc.chargeElements.push(element);
     return acc;
   }, { chargeElements: [], chargePurposes: [] });
-  const action = actions.createChargeCategory(id, data.chargeElements, data.chargePurposes);
+
+  const action = actions.createChargeCategory(id, data.chargeElements, data.chargePurposes, eiucRegion);
   const nextState = reducer(currentState, action);
   request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, nextState);
 

@@ -11,7 +11,8 @@ const CHARGE_CATEGORY_STEPS = {
   isSupportedSource: 'supported-source',
   supportedSourceName: 'supported-source-name',
   isSupplyPublicWater: 'supply-public-water',
-  isAdjustments: 'adjustments'
+  isAdjustments: 'adjustments-apply',
+  adjustments: 'adjustments'
 };
 
 const getStepKeyByValue = value => Object.keys(CHARGE_CATEGORY_STEPS).find(key => CHARGE_CATEGORY_STEPS[key] === value);
@@ -55,6 +56,14 @@ const YES_NO = [
     label: 'no',
     value: false
   }
+];
+const ADJUSTMENTS = [
+  { title: 'Aggregate', value: 'aggregate', hasFactor: true },
+  { title: 'Charge adjustment', value: 'charge', hasFactor: true },
+  { title: 'Winter discount', value: 'winter', hasFactor: false },
+  { title: 'Two-part tariff agreement', value: 's127', hasFactor: false },
+  { title: 'Abatement agreement', value: 's126', hasFactor: true },
+  { title: 'Canal and River Trust agreement', value: 's130', hasFactor: false }
 ];
 
 /**
@@ -142,7 +151,13 @@ const ROUTING_CONFIG = {
     back: CHARGE_CATEGORY_STEPS.isAdditionalCharges,
     options: YES_NO,
     errorMessage: 'Select \'yes\' if adjustments apply.',
-    boolean: true
+    boolean: true,
+    nextStep: 'adjustments'
+  },
+  adjustments: {
+    pageTitle: 'Which adjustments apply?',
+    back: CHARGE_CATEGORY_STEPS.isAdjustments,
+    options: ADJUSTMENTS
   }
 };
 

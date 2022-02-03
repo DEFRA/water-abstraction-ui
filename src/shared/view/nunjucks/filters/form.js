@@ -158,14 +158,14 @@ const mapChoices = (field, prop = 'checked') => {
     choice.divider
       ? { divider: choice.divider }
       : {
-          value: choice[keyProperty],
-          text: choice[labelProperty],
-          html: choice.html,
-          hint: {
-            text: choice.hint
-          },
-          [prop]: radioIsChecked(field, choice)
-        }
+        value: choice[keyProperty],
+        text: choice[labelProperty],
+        html: choice.html,
+        hint: {
+          text: choice.hint
+        },
+        [prop]: radioIsChecked(field, choice)
+      }
   ));
 };
 
@@ -239,7 +239,7 @@ const mapFormRadioField = (field) => {
  * @param {String} html    - the HTML to add
  * @return {Object} updated GOV.UK radio nunjucks macro
  */
-const setConditionalRadioField = (options, i, html) => {
+const setConditionalField = (options, i, html) => {
   const path = `items.[${i}].conditional.html`;
   const value = get(options, path, '');
   const updated = cloneDeep(options);
@@ -317,7 +317,7 @@ exports.mapFormField = mapFormField;
 exports.mapFormErrorSummary = mapFormErrorSummary;
 exports.mapFormDateField = mapFormDateField;
 exports.mapFormRadioField = mapFormRadioField;
-exports.setConditionalRadioField = setConditionalRadioField;
+exports.setConditionalField = setConditionalField;
 exports.mapFormCheckbox = mapFormCheckbox;
 exports.mapFormDropdownField = mapFormDropdownField;
 exports.isFirstFieldHeading = isFirstFieldHeading;

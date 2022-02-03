@@ -8,7 +8,6 @@ const {
   CHARGE_CATEGORY_FIRST_STEP, CHARGE_CATEGORY_STEPS, getStepKeyByValue
 } = require('../lib/charge-categories/constants');
 const actions = require('../lib/actions');
-
 const getChargeElement = request => {
   const { elementId } = request.params;
   const { draftChargeInformation } = request.pre;
@@ -68,6 +67,9 @@ const getRedirectPath = (request, stepKey) => {
   const { chargeVersionWorkflowId } = request.query;
 
   const { nextStep, forceNextStep, returnToCheckData, additionalChargesAdded } = getNextStep(stepKey, chargeElement, request.query);
+  if (stepKey === CHARGE_CATEGORY_STEPS.adjustments) {
+    return routing.getCheckData(licenceId, { chargeVersionWorkflowId });
+  }
 
   if (returnToCheckData) {
     if (forceNextStep) {
@@ -94,16 +96,32 @@ const getChargeCategoryStep = async (request, h) => {
   });
 };
 
+const adjustementsHandler = async (request, draftChargeInformation, form) => {
+  const { licenceId, elementId } = request.params;
+  const { chargeVersionWorkflowId } = request.query;
+  const chargeElement = draftChargeInformation.chargeElements.find(element => element.id === elementId);
+  if (request.payload.isAdjustments === 'true') {
+    chargeElement.isAdjustments = true;
+    await applyFormResponse(request, form, actions.setChargeElementData);
+    return routing.getChargeCategoryStep(licenceId, elementId, ROUTING_CONFIG.isAdjustments.nextStep);
+  } else {
+    chargeElement.isAdjustments = false;
+    chargeElement.adjustments = {};
+    request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation);
+    return routing.getCheckData(licenceId);
+  }
+};
+
 const postChargeCategoryStep = async (request, h) => {
   const { step, licenceId, elementId } = request.params;
   const { chargeVersionWorkflowId } = request.query;
   const form = getPostedForm(request, forms[step]);
   if (form.isValid) {
     const { draftChargeInformation, supportedSources } = request.pre;
-    const chargeElement = getChargeElement(request);
+    const chargeElement = draftChargeInformation.chargeElements.find(element => element.id === elementId);
     if (step === CHARGE_CATEGORY_STEPS.isAdjustments) {
-      chargeElement.eiucRegion = request.pre.licence.regionalChargeArea.name;
-      request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation);
+      const some = await adjustementsHandler(request, draftChargeInformation, form);
+      return h.redirect(some);
     } else if (step === CHARGE_CATEGORY_STEPS.isSupportedSource) {
       if (request.payload.isSupportedSource === 'false') {
         delete chargeElement.supportedSourceName;

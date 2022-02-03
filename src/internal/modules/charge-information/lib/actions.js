@@ -2,7 +2,8 @@ const { find, omit } = require('lodash');
 const moment = require('moment');
 const { v4: uuid } = require('uuid');
 const DATE_FORMAT = 'YYYY-MM-DD';
-const mappers = require('./charge-elements/mappers');
+const chargeElementMappers = require('./charge-elements/mappers');
+const chargeCategoryMappers = require('./charge-categories/mappers');
 const { CHARGE_ELEMENT_STEPS } = require('./charge-elements/constants');
 const { CHARGE_CATEGORY_STEPS } = require('./charge-categories/constants');
 const { srocStartDate } = require('../../../config');
@@ -96,9 +97,9 @@ const getNewChargeElementData = (request, formValues, scheme) => {
   const { defaultCharges } = request.pre;
   const { step } = request.params;
   if (scheme === 'alcs') {
-    return mappers[step] ? mappers[step](formValues, defaultCharges) : omit(formValues, 'csrf_token');
+    return chargeElementMappers[step] ? chargeElementMappers[step](formValues, defaultCharges) : omit(formValues, 'csrf_token');
   }
-  return omit(formValues, 'csrf_token');
+  return chargeCategoryMappers[step] ? chargeCategoryMappers[step](formValues, defaultCharges) : omit(formValues, 'csrf_token');
 };
 
 // gets the charge purpose data from the posted form for SROC and omits
@@ -106,7 +107,7 @@ const getNewChargeElementData = (request, formValues, scheme) => {
 const getNewChargePurposeData = (request, formValues) => {
   const { defaultCharges } = request.pre;
   const { step } = request.params;
-  return mappers[step] ? mappers[step](formValues, defaultCharges) : omit(formValues, 'csrf_token');
+  return chargeElementMappers[step] ? chargeElementMappers[step](formValues, defaultCharges) : omit(formValues, 'csrf_token');
 };
 
 const setChargeElementData = (request, formValues) => {
@@ -163,12 +164,13 @@ const createChargeElement = id => ({
   }
 });
 
-const createChargeCategory = (id, chargeElements, chargePurposes) => ({
+const createChargeCategory = (id, chargeElements, chargePurposes, eiucRegion) => ({
   type: ACTION_TYPES.createChargeCategory,
   payload: [
     ...chargeElements,
     {
       id,
+      eiucRegion,
       chargePurposes,
       scheme: 'sroc',
       status: 'draft'

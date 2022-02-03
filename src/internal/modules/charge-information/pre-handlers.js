@@ -4,7 +4,7 @@ const Boom = require('@hapi/boom');
 const services = require('../../lib/connectors/services');
 const { loadLicence } = require('shared/lib/pre-handlers/licences');
 const moment = require('moment');
-const { get, sortBy, pick } = require('lodash');
+const { get, sortBy, pick, isEmpty } = require('lodash');
 const { v4: uuid } = require('uuid');
 const errorHandler = (err, message) => {
   if (err.statusCode === 404) {
@@ -120,7 +120,15 @@ const loadChargeVersions = async request => {
 const loadChargeVersion = async request => {
   const { chargeVersionId } = request.params;
   try {
-    return await services.water.chargeVersions.getChargeVersion(chargeVersionId);
+    const chargeVersion = await services.water.chargeVersions.getChargeVersion(chargeVersionId);
+    if (chargeVersion.scheme === 'sroc') {
+      chargeVersion.chargeElements = chargeVersion.chargeElements.map(element => {
+        element.isAdjustments = chargeVersion.adjustments !== {};
+        element.isAdditionalCharges = chargeVersion.additionalCharges !== {};
+        return element;
+      });
+    }
+    return chargeVersion;
   } catch (err) {
     return errorHandler(err, `Cannot load charge version ${chargeVersionId}`);
   }
@@ -161,6 +169,8 @@ const decorateChargeVersion = chargeVersionWorkflow => {
           return purpose;
         });
       }
+      element.isAdjustments = !isEmpty(element.adjustments);
+      element.adjustments = element.adjustments ? element.adjustments : {};
     }
     return flattenAdditionalChargesProperties(element);
   });

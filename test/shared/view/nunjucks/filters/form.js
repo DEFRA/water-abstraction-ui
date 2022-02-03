@@ -11,7 +11,7 @@ const {
   mapFormErrorSummary,
   mapFormDateField,
   mapFormRadioField,
-  setConditionalRadioField,
+  setConditionalField,
   mapFormCheckbox,
   mapFormDropdownField,
   isFirstFieldHeading
@@ -239,13 +239,13 @@ experiment('setConditionalRadioField', () => {
   const options = mapFormRadioField(radioField);
 
   test('It should set the conditional text property for a radio button', async () => {
-    const result = setConditionalRadioField(options, 0, 'Test HTML');
+    const result = setConditionalField(options, 0, 'Test HTML');
     expect(result.items[0].conditional.html).to.equal('Test HTML');
   });
 
   test('It should append multiple condition text for a radio button', async () => {
-    let result = setConditionalRadioField(options, 0, 'A');
-    result = setConditionalRadioField(result, 0, 'B');
+    let result = setConditionalField(options, 0, 'A');
+    result = setConditionalField(result, 0, 'B');
     expect(result.items[0].conditional.html).to.equal('AB');
   });
 });

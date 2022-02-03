@@ -45,17 +45,22 @@ const form = request => {
       return {
         label: item.title,
         value: item.value,
-        fields: item.hasFactor ? [fields.text(`${item.value}Factor`,
-          {
-            errors: {
-              'number.base': { message: `The '${item.title}' factor can not be empty` },
-              'number.greater': { message: `The '${item.title}' factor must be greater than 0` },
-              'number.less': { message: `The '${item.title}' factor must be less than 1` },
-              'number.custom': { message: `The '${item.title}' factor must have fewer than 15 decimal places` }
-            },
-            label: 'Factor',
-            controlClass: 'govuk-input--width-4'
-          }, data.adjustments[item.value])] : [] };
+        fields: item.hasFactor
+          ? [
+              fields.text(`${item.value}Factor`,
+                {
+                  errors: {
+                    'number.base': { message: `The '${item.title}' factor can not be empty` },
+                    'number.greater': { message: `The '${item.title}' factor must be greater than 0` },
+                    'number.less': { message: `The '${item.title}' factor must be less than 1` },
+                    'number.custom': { message: `The '${item.title}' factor must have fewer than 15 decimal places` }
+                  },
+                  label: 'Factor',
+                  controlClass: 'govuk-input--width-4'
+                }, data.adjustments[item.value])
+            ]
+          : []
+      };
     })
   }, sessionValues));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));

@@ -104,11 +104,11 @@ const prepareChargeInformation = (licenceId, chargeData) => ({
       if (chargeData.scheme === 'sroc') {
         const additionalCharges = isAdditionalCharges
           ? {
-            supportedSource: isSupportedSource
-              ? { id: supportedSourceId, name: supportedSourceName }
-              : null,
-            isSupplyPublicWater
-          }
+              supportedSource: isSupportedSource
+                ? { id: supportedSourceId, name: supportedSourceName }
+                : null,
+              isSupplyPublicWater
+            }
           : null;
         return {
           ...element,

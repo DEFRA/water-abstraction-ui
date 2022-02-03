@@ -7,7 +7,7 @@ const { getChargeCategoryData, getChargeCategoryActionUrl } = require('../../lib
 const { createSchema } = require('shared/lib/joi.helpers');
 
 /**
- * Form to request the abstraction quantities
+ * Form to request the charge adjustments
  *
  * @param {Object} request The Hapi request object
  */

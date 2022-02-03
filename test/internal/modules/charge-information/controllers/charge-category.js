@@ -295,14 +295,10 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
       });
 
       experiment('and the step is supportedSourceName', () => {
-        test('and the supportedSourceName has not been set', () => {
-          const redirectPath = controller.getRedirectPath(request, 'supportedSourceName');
-          expect(redirectPath).to.equal(`${prefixUrl}/check`);
-        });
         test('and the supportedSourceName has been set', () => {
           chargeElement.supportedSourceName = 'test-supported-source-name';
           const redirectPath = controller.getRedirectPath(request, 'supportedSourceName');
-          expect(redirectPath).to.equal(`${prefixUrl}/charge-category/${elementId}/supply-public-water?returnToCheckData=true`);
+          expect(redirectPath).to.equal(`${prefixUrl}/check`);
         });
       });
     });

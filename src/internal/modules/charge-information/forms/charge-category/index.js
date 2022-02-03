@@ -9,5 +9,6 @@ module.exports = {
   'supported-source': require('./default-radio-options-form'),
   'supported-source-name': require('./supported-source-name-form'),
   'supply-public-water': require('./default-radio-options-form'),
-  adjustments: require('./default-radio-options-form')
+  'adjustments-apply': require('./default-radio-options-form'),
+  adjustments: require('./adjustments')
 };

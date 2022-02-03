@@ -1,7 +1,34 @@
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "./text.njk" import formTextWidget %}
+{% from "./date.njk" import formDateWidget %}
+{% from "./radio.njk" import formRadioWidget %}
+{% from "./paragraph.njk" import formParagraphWidget %}
 
 {% macro formCheckboxWidget(field, form) %}
   {% set options = field | mapFormCheckbox %}
-  {{ govukCheckboxes(options) }}
+    {% for choice in field.options.choices %}
+    {% set outerLoop = loop %}
+    {% for item in choice.fields %}
+      {% set html %}
+
+        {% if item.options.widget=='text' %}
+          {{ formTextWidget(item, form) }}
+        {% endif %}
+
+        {% if item.options.widget=='date' %}
+          {{ formDateWidget(item, form) }}
+        {% endif %}
+
+        {% if item.options.widget=='paragraph' %}
+          {{ formParagraphWidget(item, form) }}
+        {% endif %}
+
+        {% if item.options.widget=='radio' %}
+          {{ formRadioWidget(item, form) }}
+        {% endif %}
+      {% endset %}
+      {% set options = options | setConditionalField(outerLoop.index0, html) %}
+    {% endfor %}
+  {% endfor %}
+  {{ govukCheckboxes(options) }}  
 {% endmacro %}

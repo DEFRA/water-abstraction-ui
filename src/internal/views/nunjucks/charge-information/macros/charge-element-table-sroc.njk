@@ -225,6 +225,38 @@ formErrorSummary %}
           {{ summaryListRow('Supply public water', getBooleanText(chargeElement.isSupplyPublicWater) | title, changeLinkSroc('/supply-public-water', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
         </dl>
       {% endif %}
+      {% if chargeElement.isAdjustments %}
+        {% set changeLink = changeLinkSroc('/adjustments', chargeElement.id, licenceId, chargeVersionWorkflowId) %}
+        <hr class="govuk-section-break  govuk-!-margin-bottom-6">
+        <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key govuk-heading-m govuk-!-margin-bottom-3">Additional Charges</dt>
+          <dd class="govuk-summary-list__value"></dd>
+          <dd class="govuk-summary-list__actions">
+            <a class="govuk-link" href="{{ changeLink }}">Change</a>
+          </dd>
+        </div>
+          
+          {% if chargeElement.adjustments.aggregate %}
+            {{ summaryListRow('Aggregate factor', chargeElement.adjustments.aggregate) }}
+          {% endif %}
+          {% if chargeElement.adjustments.charge %}
+            {{ summaryListRow('Adjustment factor', chargeElement.adjustments.charge) }}
+          {% endif %}
+          {% if chargeElement.adjustments.winter %}
+            {{ summaryListRow('Winter discount', getBooleanText(chargeElement.adjustments.winter) | title) }}
+          {% endif %}
+          {% if chargeElement.adjustments.s127 %}
+            {{ summaryListRow('Two-part tariff agreement', getBooleanText(chargeElement.adjustments.s127) | title) }}
+          {% endif %}
+          {% if chargeElement.adjustments.s126 %}
+            {{ summaryListRow('Abatement agreement factor', chargeElement.adjustments.s126) }}
+          {% endif %}
+          {% if chargeElement.adjustments.s130 %}
+            {{ summaryListRow('Canal and River Trust agreement', getBooleanText(chargeElement.adjustments.s130) | title) }}
+          {% endif %}
+        </dl>
+      {% endif %}
       <hr class="govuk-section-break  govuk-!-margin-bottom-6">
       {{ chargePurposeTable(chargeElement.chargePurposes, isEditable, licenceId, chargeElement.id, chargeVersionWorkflowId) }}
     {% endfor %}

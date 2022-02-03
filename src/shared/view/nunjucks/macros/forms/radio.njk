@@ -27,7 +27,7 @@
           {{ formRadioWidget(item, form) }}
         {% endif %}
       {% endset %}
-      {% set options = options | setConditionalRadioField(outerLoop.index0, html) %}
+      {% set options = options | setConditionalField(outerLoop.index0, html) %}
     {% endfor %}
   {% endfor %}
 

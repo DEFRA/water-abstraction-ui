@@ -211,7 +211,7 @@ formErrorSummary %}
         {{ summaryListRow('Water availability', restrictedSourceText(chargeElement.isRestrictedSource), changeLinkSroc('/restricted-source', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
         {{ summaryListRow('Water model', chargeElement.waterModel | title, changeLinkSroc('/water-model', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
         {{ summaryListRow('Additional charges apply', getBooleanText(chargeElement.isAdditionalCharges) | title, changeLinkSroc('/additional-charges', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
-        {{ summaryListRow('Adjustments apply', getBooleanText(chargeElement.isAdjustments) | title, changeLinkSroc('/adjustments', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
+        {{ summaryListRow('Adjustments apply', getBooleanText(chargeElement.isAdjustments) | title, changeLinkSroc('/adjustments-apply', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
         {{ summaryListRow('EUIC Region', chargeElement.eiucRegion | title) }}
       </dl>
       {% if chargeElement.isAdditionalCharges %}
@@ -233,7 +233,9 @@ formErrorSummary %}
           <dt class="govuk-summary-list__key govuk-heading-m govuk-!-margin-bottom-3">Additional Charges</dt>
           <dd class="govuk-summary-list__value"></dd>
           <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" href="{{ changeLink }}">Change</a>
+            {% if isEditable %}
+              <a class="govuk-link" href="{{ changeLink }}">Change</a>
+            {% endif %}
           </dd>
         </div>
           

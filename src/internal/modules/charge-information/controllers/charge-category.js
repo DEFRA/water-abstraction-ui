@@ -86,7 +86,7 @@ const adjustementsHandler = async (request, draftChargeInformation, form) => {
   if (request.payload.isAdjustments === 'true') {
     chargeElement.isAdjustments = true;
     await applyFormResponse(request, form, actions.setChargeElementData);
-    return routing.getChargeCategoryStep(licenceId, elementId, ROUTING_CONFIG.isAdjustments.nextStep);
+    return routing.getChargeCategoryStep(licenceId, elementId, ROUTING_CONFIG.isAdjustments.nextStep, { chargeVersionWorkflowId });
   } else {
     chargeElement.isAdjustments = false;
     chargeElement.adjustments = {};

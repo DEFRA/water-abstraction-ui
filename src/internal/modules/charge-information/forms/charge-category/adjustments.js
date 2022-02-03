@@ -14,7 +14,10 @@ const { createSchema } = require('shared/lib/joi.helpers');
 const form = request => {
   const { csrfToken } = request.view;
   const data = getChargeCategoryData(request);
-  const sessionValues = Object.keys(data.adjustments).filter(key => !!data.adjustments[key]);
+  if (!data.adjustments) {
+    data.adjustments = {};
+  }
+  const sessionValues = data.adjustments ? Object.keys(data.adjustments).filter(key => !!data.adjustments[key]) : [];
   const action = getChargeCategoryActionUrl(request, CHARGE_CATEGORY_STEPS.adjustments);
 
   const f = formFactory(action, 'POST');
@@ -54,7 +57,7 @@ const form = request => {
             controlClass: 'govuk-input--width-4'
           }, data.adjustments[item.value])] : [] };
     })
-  }, sessionValues || []));
+  }, sessionValues));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 

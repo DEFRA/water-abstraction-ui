@@ -43,8 +43,6 @@ const getNextStep = (stepKey, chargeElement) => {
   ) {
     nextStep = nextStepYes;
     forceNextStep = true;
-  } else if (step === CHARGE_CATEGORY_STEPS.supportedSourceName && chargeElement.supportedSourceName) {
-    forceNextStep = true;
   }
   return { nextStep, forceNextStep };
 };

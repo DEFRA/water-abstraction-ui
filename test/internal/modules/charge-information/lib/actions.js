@@ -64,6 +64,12 @@ experiment('internal/modules/charge-information/lib/actions', () => {
           licence: {
             startDate: '2000-01-01'
           },
+          licenceVersions: [
+            {
+              status: 'current',
+              startDate: '2000-01-01'
+            }
+          ],
           draftChargeInformation: {
             scheme: 'alcs',
             changeReason: 'test-reason',
@@ -103,8 +109,8 @@ experiment('internal/modules/charge-information/lib/actions', () => {
       });
     });
 
-    test('sets the expected date for "licenceStartDate"', () => {
-      const formValues = { startDate: 'licenceStartDate' };
+    test('sets the expected date for "licenceVersionEffectiveDate"', () => {
+      const formValues = { startDate: 'licenceVersionEffectiveDate' };
       const action = actions.setStartDate(request, formValues);
       expect(action).to.equal({
         type: actions.ACTION_TYPES.setStartDate,
@@ -112,7 +118,7 @@ experiment('internal/modules/charge-information/lib/actions', () => {
           restartFlow: true,
           chargeElements: [],
           dateRange: {
-            startDate: request.pre.licence.startDate
+            startDate: request.pre.licenceVersions[0].startDate
           },
           changeReason: 'test-reason',
           scheme: 'alcs'
@@ -153,8 +159,18 @@ experiment('internal/modules/charge-information/lib/actions', () => {
             { source: 'unsupported' }
           ],
           chargeVersions: [
-            { id: 'test-cv-id-1', dateRange: { startDate: '2010-04-20' }, status: 'superseded', chargeElements: [{ source: 'unsupported' }] },
-            { id: 'test-cv-id-2', dateRange: { startDate: '2015-04-20' }, status: 'current', chargeElements: [{ source: 'tidal' }] }
+            {
+              id: 'test-cv-id-1',
+              dateRange: { startDate: '2010-04-20' },
+              status: 'superseded',
+              chargeElements: [{ source: 'unsupported' }]
+            },
+            {
+              id: 'test-cv-id-2',
+              dateRange: { startDate: '2015-04-20' },
+              status: 'current',
+              chargeElements: [{ source: 'tidal' }]
+            }
           ]
         }
       };

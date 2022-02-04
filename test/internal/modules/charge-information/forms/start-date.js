@@ -20,7 +20,10 @@ const createRequest = (startDate, isChargeable = true, licenceStart = '2017-04-0
       endDate: licenceEnd
     },
     licenceVersions: [
-      { startDate: licenceStart }
+      {
+        status: 'current',
+        startDate: licenceStart
+      }
     ],
     draftChargeInformation: {
       dateRange: {
@@ -66,10 +69,10 @@ experiment('internal/modules/charge-information/forms/start-date', () => {
       });
 
       test('has a "licence start date" option with expected hint text', async () => {
-        const licenceStartDateOption = startDateRadio.options.choices[1];
-        expect(licenceStartDateOption.label).to.equal('Licence start date');
-        expect(licenceStartDateOption.value).to.equal('licenceStartDate');
-        expect(licenceStartDateOption.hint).to.equal('1 April 2017');
+        const licenceVersionStartDateOption = startDateRadio.options.choices[1];
+        expect(licenceVersionStartDateOption.label).to.equal('Licence version start date');
+        expect(licenceVersionStartDateOption.value).to.equal('licenceVersionEffectiveDate');
+        expect(licenceVersionStartDateOption.hint).to.equal('1 April 2017');
       });
 
       test('has an "or" divider', async () => {
@@ -139,9 +142,9 @@ experiment('internal/modules/charge-information/forms/start-date', () => {
           expect(radio.options.choices[0].label).to.equal('Today');
         });
 
-        test('has option for licence start date', async () => {
+        test('has option for licence version start date', async () => {
           const radio = findField(dateForm, 'startDate');
-          expect(radio.options.choices[1].label).to.equal('Licence start date');
+          expect(radio.options.choices[1].label).to.equal('Licence version start date');
           expect(radio.options.choices[1].hint).to.equal('1 April 2017');
         });
 
@@ -156,7 +159,7 @@ experiment('internal/modules/charge-information/forms/start-date', () => {
 
           expect(errors['any.required'].message).to.equal('Enter the effective date');
           expect(errors['date.base'].message).to.equal('Enter a real date for the effective date');
-          expect(errors['date.min'].message).to.equal('You must enter a date on or after the licence start date');
+          expect(errors['date.min'].message).to.startWith('Date must be after the start date of the earliest known licence version ');
           expect(errors['date.max'].message).to.equal('You must enter a date before the licence end date');
           expect(errors['date.custom'].message).to.equal('Enter a real date');
         });
@@ -185,10 +188,10 @@ experiment('internal/modules/charge-information/forms/start-date', () => {
         expect(startDateField.value).to.equal('today');
       });
 
-      test('licence start date', () => {
+      test('licence version start date', () => {
         startDateForm = form(createRequest('2017-04-01'), '2020-04-01');
         const startDateField = findField(startDateForm, 'startDate');
-        expect(startDateField.value).to.equal('licenceStartDate');
+        expect(startDateField.value).to.equal('licenceVersionEffectiveDate');
       });
 
       test('custom date', () => {
@@ -228,7 +231,7 @@ experiment('internal/modules/charge-information/forms/start-date', () => {
     });
 
     experiment('startDate', () => {
-      const validStartDateValues = ['today', 'licenceStartDate'];
+      const validStartDateValues = ['today', 'licenceVersionEffectiveDate'];
       validStartDateValues.forEach(value => {
         test(`can be ${value}`, async () => {
           const result = startDateSchema.validate({

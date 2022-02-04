@@ -1,4 +1,4 @@
-const { find, omit } = require('lodash');
+const { find, omit, get } = require('lodash');
 const moment = require('moment');
 const { v4: uuid } = require('uuid');
 const DATE_FORMAT = 'YYYY-MM-DD';
@@ -33,11 +33,16 @@ const setChangeReason = (request, formValues) => {
 
 const setStartDate = (request, formValues) => {
   let payload;
+  const earliestLicenceVersionStartDate = moment.min(request.pre.licenceVersions.map(x => moment(x.startDate)));
+  const licenceVersionEffectiveDate = get(request.pre.licenceVersions.find(x => x.status === 'current'), 'startDate');
+
   const dates = {
+    earliestLicenceVersionStartDate,
+    licenceVersionEffectiveDate,
     today: moment().format(DATE_FORMAT),
-    licenceStartDate: request.pre.licence.startDate,
     customDate: formValues.customDate
   };
+
   const scheme = new Date(dates[formValues.startDate]) >= srocStartDate ? 'sroc' : 'alcs';
 
   // if the charing scheme switches then the restartFlow flag

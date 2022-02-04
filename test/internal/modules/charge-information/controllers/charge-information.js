@@ -351,7 +351,10 @@ experiment('internal/modules/charge-information/controller', () => {
       beforeEach(async () => {
         request = createRequest();
         request.pre.licence.startDate = moment().subtract(2, 'years').format('YYYY-MM-DD');
-        request.pre.licenceVersions = [{ startDate: moment().subtract(2, 'years').format('YYYY-MM-DD') }];
+        request.pre.licenceVersions = [{
+          status: 'current',
+          startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
+        }];
         await controller.getStartDate(request, h);
       });
 
@@ -397,7 +400,7 @@ experiment('internal/modules/charge-information/controller', () => {
         expect(field.options.type).to.equal('hidden');
       });
 
-      test('the form has a radio fields for today, licence start date and custom date', async () => {
+      test('the form has a radio fields for today, licence version start date and custom date', async () => {
         const { form } = h.view.lastCall.args[1];
         const field = find(form.fields, { name: 'startDate' });
         expect(field.options.widget).to.equal('radio');
@@ -408,10 +411,10 @@ experiment('internal/modules/charge-information/controller', () => {
         expect(field.options.choices[0].value).to.equal('today');
         expect(field.options.choices[0].hint).to.equal(getReadableDate());
 
-        // Licence start date
-        expect(field.options.choices[1].label).to.equal('Licence start date');
-        expect(field.options.choices[1].value).to.equal('licenceStartDate');
-        expect(field.options.choices[1].hint).to.equal(getReadableDate(request.pre.licence.startDate));
+        // Licence version start date
+        expect(field.options.choices[1].label).to.equal('Licence version start date');
+        expect(field.options.choices[1].value).to.equal('licenceVersionEffectiveDate');
+        expect(field.options.choices[1].hint).to.equal(getReadableDate(moment().subtract(2, 'years').format('YYYY-MM-DD')));
 
         // Or divider
         expect(field.options.choices[2].divider).to.equal('or');
@@ -442,7 +445,10 @@ experiment('internal/modules/charge-information/controller', () => {
       beforeEach(async () => {
         request = createRequest();
         request.pre.draftChargeInformation.dateRange.startDate = getISODate();
-        request.pre.licenceVersions = [{ startDate: moment().subtract(2, 'years').format('YYYY-MM-DD') }];
+        request.pre.licenceVersions = [{
+          status: 'current',
+          startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
+        }];
         await controller.getStartDate(request, h);
       });
 
@@ -453,18 +459,21 @@ experiment('internal/modules/charge-information/controller', () => {
       });
     });
 
-    experiment('when the a start date has already been set to the licence start date', () => {
+    experiment('when the a start date has already been set to the licence version start date', () => {
       beforeEach(async () => {
         request = createRequest();
-        request.pre.draftChargeInformation.dateRange.startDate = request.pre.licence.startDate;
-        request.pre.licenceVersions = [{ startDate: moment().subtract(2, 'years').format('YYYY-MM-DD') }];
+        request.pre.licenceVersions = [{
+          status: 'current',
+          startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
+        }];
+        request.pre.draftChargeInformation.dateRange.startDate = moment().subtract(2, 'years').format('YYYY-MM-DD');
         await controller.getStartDate(request, h);
       });
 
-      test('the "today" radio option is selected"', async () => {
+      test('the "licenceVersionEffectiveDate" radio option is selected"', async () => {
         const { form } = h.view.lastCall.args[1];
         const field = find(form.fields, { name: 'startDate' });
-        expect(field.value).to.equal('licenceStartDate');
+        expect(field.value).to.equal('licenceVersionEffectiveDate');
       });
     });
 
@@ -472,7 +481,10 @@ experiment('internal/modules/charge-information/controller', () => {
       beforeEach(async () => {
         request = createRequest();
         request.pre.draftChargeInformation.dateRange.startDate = moment().subtract(1, 'years').format('YYYY-MM-DD');
-        request.pre.licenceVersions = [{ startDate: moment().subtract(2, 'years').format('YYYY-MM-DD') }];
+        request.pre.licenceVersions = [{
+          status: 'current',
+          startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
+        }];
         await controller.getStartDate(request, h);
       });
 
@@ -498,7 +510,10 @@ experiment('internal/modules/charge-information/controller', () => {
           csrf_token: request.view.csrfToken,
           startDate: 'today'
         };
-        request.pre.licenceVersions = [{ startDate: moment().subtract(2, 'years').format('YYYY-MM-DD') }];
+        request.pre.licenceVersions = [{
+          status: 'current',
+          startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
+        }];
         await controller.postStartDate(request, h);
       });
 
@@ -523,7 +538,10 @@ experiment('internal/modules/charge-information/controller', () => {
           csrf_token: request.view.csrfToken,
           startDate: 'today'
         };
-        request.pre.licenceVersions = [{ startDate: moment().subtract(2, 'years').format('YYYY-MM-DD') }];
+        request.pre.licenceVersions = [{
+          status: 'current',
+          startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
+        }];
         request.query = { chargeVersionWorkflowId: uuid() };
         await controller.postStartDate(request, h);
       });
@@ -534,14 +552,17 @@ experiment('internal/modules/charge-information/controller', () => {
       });
     });
 
-    experiment('when "licenceStartDate" is posted', () => {
+    experiment('when "licenceVersionEffectiveDate" is posted', () => {
       beforeEach(async () => {
         request = createRequest();
         request.payload = {
           csrf_token: request.view.csrfToken,
-          startDate: 'licenceStartDate'
+          startDate: 'licenceVersionEffectiveDate'
         };
-        request.pre.licenceVersions = [{ startDate: moment().subtract(2, 'years').format('YYYY-MM-DD') }];
+        request.pre.licenceVersions = [{
+          status: 'current',
+          startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
+        }];
         await controller.postStartDate(request, h);
       });
 
@@ -571,7 +592,10 @@ experiment('internal/modules/charge-information/controller', () => {
           'customDate-month': customDate.format('MM'),
           'customDate-year': customDate.format('YYYY')
         };
-        request.pre.licenceVersions = [{ startDate: moment().subtract(2, 'years').format('YYYY-MM-DD') }];
+        request.pre.licenceVersions = [{
+          status: 'current',
+          startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
+        }];
         await controller.postStartDate(request, h);
       });
 
@@ -599,7 +623,10 @@ experiment('internal/modules/charge-information/controller', () => {
           'customDate-month': 'Tuesday',
           'customDate-year': 'Or Wednesday'
         };
-        request.pre.licenceVersions = [{ startDate: moment().subtract(2, 'years').format('YYYY-MM-DD') }];
+        request.pre.licenceVersions = [{
+          status: 'current',
+          startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
+        }];
         await controller.postStartDate(request, h);
       });
 
@@ -614,7 +641,7 @@ experiment('internal/modules/charge-information/controller', () => {
       });
     });
 
-    experiment('when a custom date before the licence started is posted', () => {
+    experiment('when a custom date before the licence version start date is posted', () => {
       beforeEach(async () => {
         request = createRequest();
         request.payload = {
@@ -624,7 +651,10 @@ experiment('internal/modules/charge-information/controller', () => {
           'customDate-month': '5',
           'customDate-year': '1966'
         };
-        request.pre.licenceVersions = [{ startDate: moment().subtract(2, 'years').format('YYYY-MM-DD') }];
+        request.pre.licenceVersions = [{
+          status: 'current',
+          startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
+        }];
         await controller.postStartDate(request, h);
       });
 
@@ -635,7 +665,7 @@ experiment('internal/modules/charge-information/controller', () => {
       test('an error is displayed', async () => {
         const [form] = h.postRedirectGet.lastCall.args;
         const field = find(form.fields, { name: 'startDate' }).options.choices[3].fields[0];
-        expect(field.errors[0].message).to.equal('You must enter a date on or after the licence start date');
+        expect(field.errors[0].message).to.equal(`Date must be after the start date of the earliest known licence version (${moment().subtract(2, 'years').format('D MMMM YYYY')})`);
       });
     });
 
@@ -652,7 +682,10 @@ experiment('internal/modules/charge-information/controller', () => {
           'customDate-month': tomorrow.format('MM'),
           'customDate-year': tomorrow.format('YYYY')
         };
-        request.pre.licenceVersions = [{ startDate: moment().subtract(2, 'years').format('YYYY-MM-DD') }];
+        request.pre.licenceVersions = [{
+          status: 'current',
+          startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
+        }];
         await controller.postStartDate(request, h);
       });
 
@@ -662,8 +695,7 @@ experiment('internal/modules/charge-information/controller', () => {
 
       test('an error is displayed', async () => {
         const [form] = h.postRedirectGet.lastCall.args;
-        const field = find(form.fields, { name: 'startDate' }).options.choices[2].fields[0];
-        expect(field.errors[0].message).to.equal('You must enter a date before the licence end date');
+        expect(form.errors[0].message).to.equal('You must enter a date before the licence end date');
       });
     });
   });

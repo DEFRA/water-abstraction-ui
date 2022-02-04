@@ -41,42 +41,28 @@ const getRedirectPath = (request, stepKey, step) => {
     ? routing.postReview(chargeVersionWorkflowId, licenceId)
     : routing.getCheckData(licenceId, { chargeVersionWorkflowId });
 
-  let nextStep = ROUTING_CONFIG[stepKey].nextStep;
-  // Adjustments
-  if (stepKey === CHARGE_CATEGORY_STEPS.adjustments) {
+  // Adjustments Page or Is the water supply -- these two steps are both at the end of the flow or subflow
+  if ((stepKey === CHARGE_CATEGORY_STEPS.adjustments) || (step === CHARGE_CATEGORY_STEPS.isSupplyPublicWater && returnToCheckData)) {
     return checkAnswersRoute;
   }
+
   // Additional charges flow start
   if ((step === CHARGE_CATEGORY_STEPS.isAdditionalCharges)) {
-    nextStep = chargeElement.isAdditionalCharges ? ROUTING_CONFIG[stepKey].nextStepYes : ROUTING_CONFIG[stepKey].nextStep;
-    if (returnToCheckData && !chargeElement.isAdditionalCharges) {
-      return checkAnswersRoute;
-    }
-    return returnToCheckData
-      // go to the next step but maintain the query param to return
-      // to the check your answers page at the end of the additional charges flow
-      ? routing.getChargeCategoryStep(licenceId, elementId, nextStep, { ...queryParams, additionalChargesAdded: true })
-      // go to the next step as normal
-      : routing.getChargeCategoryStep(licenceId, elementId, nextStep, { chargeVersionWorkflowId });
+    return routing.getAditionalChargesRoute(request, chargeElement, stepKey, checkAnswersRoute);
   }
   // Is a supported source name required
   if (step === CHARGE_CATEGORY_STEPS.isSupportedSource) {
-    nextStep = chargeElement.isSupportedSource ? ROUTING_CONFIG[stepKey].nextStepYes : ROUTING_CONFIG[stepKey].nextStep;
-    if (returnToCheckData && !chargeElement.isSupportedSource && !additionalChargesAdded) {
-      return checkAnswersRoute;
-    }
-    return routing.getChargeCategoryStep(licenceId, elementId, nextStep, { ...queryParams, additionalChargesAdded });
+    routing.getSupportedSourcesRoute(request, chargeElement, stepKey, checkAnswersRoute);
   }
+
   // supportedSourceName
   if (step === CHARGE_CATEGORY_STEPS.supportedSourceName && returnToCheckData) {
     return additionalChargesAdded
-      ? routing.getChargeCategoryStep(licenceId, elementId, nextStep, queryParams)
+      ? routing.getChargeCategoryStep(licenceId, elementId, ROUTING_CONFIG[stepKey].nextStep, queryParams)
       : checkAnswersRoute;
   }
-  if (step === CHARGE_CATEGORY_STEPS.isSupplyPublicWater && returnToCheckData) {
-    return checkAnswersRoute;
-  }
-  return routing.getChargeCategoryStep(licenceId, elementId, nextStep, queryParams);
+
+  return routing.getChargeCategoryStep(licenceId, elementId, ROUTING_CONFIG[stepKey].nextStep, queryParams);
 };
 
 const getChargeCategoryStep = async (request, h) => {

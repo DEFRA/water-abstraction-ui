@@ -22,6 +22,7 @@ const reducer = (state, action) => {
       };
 
     case ACTION_TYPES.setChargeElementData:
+    case ACTION_TYPES.updateChargeCategory:
       return {
         ...state,
         chargeElements: action.payload

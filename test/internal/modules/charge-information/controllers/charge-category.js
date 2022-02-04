@@ -14,14 +14,14 @@ const sandbox = sinon.createSandbox();
 
 const controller = require('../../../../../src/internal/modules/charge-information/controllers/charge-category');
 const services = require('../../../../../src/internal/lib/connectors/services');
-const { ROUTING_CONFIG, CHARGE_CATEGORY_STEPS } = require('../../../../../src/internal/modules/charge-information/lib/charge-categories/constants');
+const { ROUTING_CONFIG } = require('../../../../../src/internal/modules/charge-information/lib/charge-categories/constants');
 
 const PURPOSE_USE_ID = uuid();
 
 const licenceId = 'test-licence-id';
 const elementId = 'test-element-id';
 
-const createRequest = (step, payload) => ({
+const createRequest = ({ step }, payload = undefined) => ({
   params: {
     licenceId,
     step,
@@ -66,7 +66,8 @@ const validPayload = {
   loss: { loss: 'high' },
   isAdjustments: { isAdjustments: 'false' },
   adjustments: { adjustments: ['aggregate'], aggregateFactor: '0.5' },
-  isSupportedSource: { isSupportedSource: 'true' }
+  isSupportedSource: { isSupportedSource: 'true' },
+  whichElement: { selectedElementIds: [uuid()] }
 };
 
 const chargeCategory = {
@@ -93,7 +94,7 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
   experiment('.getChargeCategporyStep', () => {
     experiment('enter a description', () => {
       beforeEach(async () => {
-        request = createRequest(CHARGE_CATEGORY_STEPS.description);
+        request = createRequest(ROUTING_CONFIG.description);
         await controller.getChargeCategoryStep(request, h);
       });
 
@@ -109,7 +110,7 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
 
       test('has the page title', async () => {
         const { pageTitle } = h.view.lastCall.args[1];
-        expect(pageTitle).to.equal(ROUTING_CONFIG[CHARGE_CATEGORY_STEPS.description].pageTitle);
+        expect(pageTitle).to.equal(ROUTING_CONFIG.description.pageTitle);
       });
 
       test('has a caption', async () => {
@@ -132,7 +133,7 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
 
     experiment('when the step is description and the returnToCheckData query param is set', () => {
       beforeEach(async () => {
-        request = createRequest(CHARGE_CATEGORY_STEPS.description);
+        request = createRequest(ROUTING_CONFIG.description);
         request.query.returnToCheckData = true;
         await controller.getChargeCategoryStep(request, h);
       });
@@ -145,45 +146,45 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
 
     experiment('when the step is isSupplyPublicWater and the supportedSourceName has not been set', () => {
       beforeEach(async () => {
-        request = createRequest(CHARGE_CATEGORY_STEPS.isSupplyPublicWater);
+        request = createRequest(ROUTING_CONFIG.isSupplyPublicWater);
         await controller.getChargeCategoryStep(request, h);
       });
 
       test('the back link is the supported source page', async () => {
         const { back } = h.view.lastCall.args[1];
-        expect(back).to.equal(`${prefixUrl}/charge-category/${elementId}/${CHARGE_CATEGORY_STEPS.isSupportedSource}`);
+        expect(back).to.equal(`${prefixUrl}/charge-category/${elementId}/${ROUTING_CONFIG.isSupportedSource.step}`);
       });
     });
 
     experiment('when the step is isSupplyPublicWater and the supportedSourceName has been set', () => {
       beforeEach(async () => {
-        request = createRequest(CHARGE_CATEGORY_STEPS.isSupplyPublicWater);
+        request = createRequest(ROUTING_CONFIG.isSupplyPublicWater);
         request.pre.draftChargeInformation.chargeElements[0].supportedSourceName = 'test-supported-source-name';
         await controller.getChargeCategoryStep(request, h);
       });
 
       test('the back link is the supported source name page', async () => {
         const { back } = h.view.lastCall.args[1];
-        expect(back).to.equal(`${prefixUrl}/charge-category/${elementId}/${CHARGE_CATEGORY_STEPS.supportedSourceName}`);
+        expect(back).to.equal(`${prefixUrl}/charge-category/${elementId}/${ROUTING_CONFIG.supportedSourceName.step}`);
       });
     });
 
     experiment('for a step mid-way through the flow', () => {
       beforeEach(async () => {
-        request = createRequest(CHARGE_CATEGORY_STEPS.loss);
+        request = createRequest(ROUTING_CONFIG.loss);
         await controller.getChargeCategoryStep(request, h);
       });
 
       test('sets a back link to the previous step', async () => {
         const { back } = h.view.lastCall.args[1];
-        expect(back).to.equal(`${prefixUrl}/charge-category/${elementId}/${CHARGE_CATEGORY_STEPS.source}`);
+        expect(back).to.equal(`${prefixUrl}/charge-category/${elementId}/${ROUTING_CONFIG.source.step}`);
       });
     });
 
     experiment('.postChargeCategoryStep', () => {
       experiment('when a valid payload is posted', () => {
         beforeEach(async () => {
-          request = createRequest(CHARGE_CATEGORY_STEPS.loss, validPayload.loss);
+          request = createRequest(ROUTING_CONFIG.loss, validPayload.loss);
           await controller.postChargeCategoryStep(request, h);
         });
 
@@ -200,14 +201,14 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
 
         test('the user is redirected to the expected page', async () => {
           expect(h.redirect.calledWith(
-            `${prefixUrl}/charge-category/${elementId}/${CHARGE_CATEGORY_STEPS.volume}`
+            `${prefixUrl}/charge-category/${elementId}/${ROUTING_CONFIG.volume.step}`
           )).to.be.true();
         });
       });
 
       experiment('when the last charge category step in the flow is reached', () => {
         beforeEach(async () => {
-          request = createRequest(CHARGE_CATEGORY_STEPS.adjustments, validPayload.adjustments);
+          request = createRequest(ROUTING_CONFIG.adjustments, validPayload.adjustments);
           request.pre.draftChargeInformation.chargeElements[0].isAdjustments = true;
           request.pre.draftChargeInformation.chargeElements = [{ id: 'test-element-id' }];
           await controller.postChargeCategoryStep(request, h);
@@ -242,19 +243,20 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
       experiment('when the step is isAdjustments', () => {
         beforeEach(async () => {
           validPayload.isAdjustments.isAdjustments = 'true';
-          request = createRequest(CHARGE_CATEGORY_STEPS.isAdjustments, validPayload.isAdjustments);
+          request = createRequest(ROUTING_CONFIG.isAdjustments, validPayload.isAdjustments);
           request.pre.draftChargeInformation.chargeElements = [{ id: 'test-element-id' }];
           await controller.postChargeCategoryStep(request, h);
         });
 
-        test('the user is redirected to the check your answers page if adjustments = true', async () => {
+        test('the user is redirected to adjustments page if adjustments = true', async () => {
           expect(h.redirect.calledWith(
             `${prefixUrl}/charge-category/test-element-id/adjustments`
           )).to.be.true();
         });
-        test('the user is redirected to the check your answers page if adjustments = true', async () => {
+
+        test('the user is redirected to the check your answers page if adjustments = false', async () => {
           validPayload.isAdjustments.isAdjustments = 'false';
-          request = createRequest(CHARGE_CATEGORY_STEPS.isAdjustments, validPayload.isAdjustments);
+          request = createRequest(ROUTING_CONFIG.isAdjustments, validPayload.isAdjustments);
           await controller.postChargeCategoryStep(request, h);
           expect(h.redirect.calledWith(
             `${prefixUrl}/check`
@@ -262,9 +264,40 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
         });
       });
 
+      experiment('when the step is whichElement', () => {
+        beforeEach(async () => {
+          const chargePurposes = validPayload.whichElement.selectedElementIds.map(id => ({ id }));
+          request = createRequest(ROUTING_CONFIG.whichElement, validPayload.whichElement);
+          request.pre.draftChargeInformation.chargeElements = [{ id: 'test-element-id', scheme: 'sroc', chargePurposes }];
+          await controller.postChargeCategoryStep(request, h);
+        });
+
+        test('the user is redirected to the description', async () => {
+          expect(h.redirect.calledWith(
+            `${prefixUrl}/charge-category/test-element-id/description`
+          )).to.be.true();
+        });
+      });
+
+      experiment('when the step is isAdditionalCharges', () => {
+        test('the additional charges session data is updated correctly when isAdditionalCharges is false', async () => {
+          request = createRequest(ROUTING_CONFIG.isAdditionalCharges, { isAdditionalCharges: 'false' });
+          await controller.postChargeCategoryStep(request, h);
+          const args = request.setDraftChargeInformation.lastCall.args;
+          expect(args[2].chargeElements[0].isAdditionalCharges).to.equal(false);
+        });
+
+        test('the additional charges session data is updated correctly when isAdditionalCharges is true', async () => {
+          request = createRequest(ROUTING_CONFIG.isAdditionalCharges, { isAdditionalCharges: 'true' });
+          await controller.postChargeCategoryStep(request, h);
+          const args = request.setDraftChargeInformation.lastCall.args;
+          expect(args[2].chargeElements[0].isAdditionalCharges).to.equal(true);
+        });
+      });
+
       experiment('when the step is isSupportedSource', () => {
         test('the supported source session data is updated correctly is isSupportedSource is false', async () => {
-          request = createRequest(CHARGE_CATEGORY_STEPS.isSupportedSource, { isSupportedSource: 'false' });
+          request = createRequest(ROUTING_CONFIG.isSupportedSource, { isSupportedSource: 'false' });
           request.pre.draftChargeInformation.chargeElements[0].supportedSourceName = 'test name';
           await controller.postChargeCategoryStep(request, h);
           const args = request.setDraftChargeInformation.lastCall.args;
@@ -273,7 +306,7 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
         });
 
         test('the supported source session data is updated correctly is isSupportedSource is true', async () => {
-          request = createRequest(CHARGE_CATEGORY_STEPS.isSupportedSource, { isSupportedSource: 'true' });
+          request = createRequest(ROUTING_CONFIG.isSupportedSource, { isSupportedSource: 'true' });
           request.pre.draftChargeInformation.chargeElements[0].supportedSourceName = 'test name';
           await controller.postChargeCategoryStep(request, h);
           const args = request.setDraftChargeInformation.lastCall.args;
@@ -284,10 +317,10 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
 
       experiment('when the step is isSupportedSource and the payload isSupportedSource is false', () => {
         test('the back link is the supported source page', async () => {
-          request = createRequest(CHARGE_CATEGORY_STEPS.isSupportedSource, { isSupportedSource: 'false' });
+          request = createRequest(ROUTING_CONFIG.isSupportedSource, { isSupportedSource: 'false' });
           await controller.postChargeCategoryStep(request, h);
           const args = h.redirect.lastCall.args;
-          expect(args[0]).to.equal(`${prefixUrl}/charge-category/${elementId}/${CHARGE_CATEGORY_STEPS.isSupplyPublicWater}`);
+          expect(args[0]).to.equal(`${prefixUrl}/charge-category/${elementId}/${ROUTING_CONFIG.isSupplyPublicWater.step}`);
         });
       });
 
@@ -295,7 +328,7 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
         const supportedSource = { id: uuid(), name: 'test-supported-source-name' };
 
         beforeEach(async () => {
-          request = createRequest(CHARGE_CATEGORY_STEPS.supportedSourceName, { supportedSourceId: supportedSource.id });
+          request = createRequest(ROUTING_CONFIG.supportedSourceName, { supportedSourceId: supportedSource.id });
           request.pre.supportedSources = [supportedSource];
           request.pre.draftChargeInformation.chargeElements = [{ id: 'test-element-id' }];
           await controller.postChargeCategoryStep(request, h);
@@ -314,7 +347,7 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
 
         test('the user is redirected to the check your answers page', async () => {
           expect(h.redirect.calledWith(
-            `${prefixUrl}/charge-category/${elementId}/${CHARGE_CATEGORY_STEPS.isSupplyPublicWater}`
+            `${prefixUrl}/charge-category/${elementId}/${ROUTING_CONFIG.isSupplyPublicWater.step}`
           )).to.be.true();
         });
       });
@@ -333,15 +366,29 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
         };
       });
 
+      experiment('and the step is isAdditionalCharges', () => {
+        test('and the isAdditionalCharges flag has not been set', () => {
+          const redirectPath = controller.getRedirectPath(request, 'isAdditionalCharges');
+          expect(redirectPath).to.equal(`${prefixUrl}/check`);
+        });
+
+        test('and the isAdditionalCharges flag has been set', () => {
+          chargeElement.isAdditionalCharges = true;
+          const redirectPath = controller.getRedirectPath(request, 'isAdditionalCharges');
+          expect(redirectPath).to.equal(`${prefixUrl}/charge-category/${elementId}/${ROUTING_CONFIG.isSupportedSource.step}?returnToCheckData=true&additionalChargesAdded=true`);
+        });
+      });
+
       experiment('and the step is isSupportedSource', () => {
         test('and the isSupportedSource flag has not been set', () => {
           const redirectPath = controller.getRedirectPath(request, 'isSupportedSource');
-          expect(redirectPath).to.equal(`${prefixUrl}/charge-category/test-element-id/supply-public-water?returnToCheckData=true`);
+          expect(redirectPath).to.equal(`${prefixUrl}/check`);
         });
+
         test('and the isSupportedSource flag has been set', () => {
           chargeElement.isSupportedSource = true;
           const redirectPath = controller.getRedirectPath(request, 'isSupportedSource');
-          expect(redirectPath).to.equal(`${prefixUrl}/charge-category/${elementId}/supply-public-water?returnToCheckData=true`);
+          expect(redirectPath).to.equal(`${prefixUrl}/charge-category/${elementId}/${ROUTING_CONFIG.supportedSourceName.step}?returnToCheckData=true`);
         });
       });
 
@@ -351,9 +398,25 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
         });
 
         test('the returnToCheckData param is passed on to supply-of-public-water route step', () => {
+          request.query.additionalChargesAdded = true;
           const redirectPath = controller.getRedirectPath(request, 'supportedSourceName');
-          expect(redirectPath).to.equal(`${prefixUrl}/charge-category/test-element-id/supply-public-water?returnToCheckData=true`);
+          expect(redirectPath).to.equal(`${prefixUrl}/charge-category/${elementId}/${ROUTING_CONFIG.isSupplyPublicWater.step}?returnToCheckData=true`);
         });
+
+        test('the redirect is back to check your answers', () => {
+          const redirectPath = controller.getRedirectPath(request, 'supportedSourceName');
+          expect(redirectPath).to.equal(`${prefixUrl}/check`);
+        });
+      });
+
+      test('and the step is isSupplyPublicWater', () => {
+        const redirectPath = controller.getRedirectPath(request, 'isSupplyPublicWater');
+        expect(redirectPath).to.equal(`${prefixUrl}/check`);
+      });
+
+      test('and the step is volume and the returnToCheckData is set', () => {
+        const redirectPath = controller.getRedirectPath(request, 'volume');
+        expect(redirectPath).to.equal(`${prefixUrl}/check`);
       });
     });
   });

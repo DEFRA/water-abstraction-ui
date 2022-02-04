@@ -8,6 +8,8 @@ const services = require('../../../lib/connectors/services');
 
 const { reducer } = require('./reducer');
 const routing = require('../lib/routing');
+const { ROUTING_CONFIG } = require('../lib/charge-categories/constants');
+const actions = require('../lib/actions');
 
 const getPostedForm = (request, formContainer) => {
   const schema = Joi.isSchema(formContainer.schema) ? formContainer.schema : formContainer.schema(request);
@@ -130,6 +132,19 @@ const isCurrentAddress = invoiceAccountAddress => invoiceAccountAddress.dateRang
 
 const getCurrentBillingAccountAddress = billingAccount => get(billingAccount, 'invoiceAccountAddresses', []).find(isCurrentAddress);
 
+const getChargeCategoryFirstStep = request => {
+  if (getAlcsCount(request) > 1) {
+    return ROUTING_CONFIG.whichElement.step;
+  } else {
+    return ROUTING_CONFIG.description.step;
+  }
+};
+
+const getAlcsCount = request => {
+  const { draftChargeInformation } = request.pre;
+  return draftChargeInformation.chargeElements.filter(element => element.scheme === 'alcs').length;
+};
+
 /**
  * Checks if the new draft charge version has the same start date as an existing charge version
  * @param {*} request hapi request object
@@ -140,11 +155,45 @@ const isOverridingChargeVersion = async (request, draftChargeVersionStartDate) =
   return !!chargeVersions.find(version => version.dateRange.startDate === draftChargeVersionStartDate);
 };
 
+const processElements = (request, id, selectedElementIds) => {
+  const { chargeVersionWorkflowId } = request.query;
+  const { licenceId, elementId = id } = request.params;
+  const { draftChargeInformation: currentState } = request.pre;
+
+  // Move all newly selected to charge purposes
+  const data = currentState.chargeElements.reduce((acc, element) => {
+    if (element.scheme === 'alcs' && (!selectedElementIds || selectedElementIds.includes(element.id))) {
+      acc.chargePurposes.push({ ...element, scheme: 'sroc' });
+    } else if (element.scheme === 'sroc' && element.id === elementId) {
+      const { chargePurposes, ...chargeElement } = element;
+      acc.chargeElements.push(chargeElement);
+      chargePurposes.forEach(purpose => {
+        if (selectedElementIds && !selectedElementIds.includes(purpose.id)) {
+          acc.chargeElements.push({ ...purpose, scheme: 'alcs' });
+        } else {
+          acc.chargePurposes.push(purpose);
+        }
+      });
+    } else {
+      acc.chargeElements.push(element);
+    }
+    return acc;
+  }, { chargeElements: [], chargePurposes: [] });
+
+  // Move all the newly unselected to charge elements
+  const action = actions.updateChargeCategory(elementId, data.chargeElements, data.chargePurposes);
+  const nextState = reducer(currentState, action);
+  request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, nextState);
+};
+
 exports.isOverridingChargeVersion = isOverridingChargeVersion;
 exports.getLicencePageUrl = getLicencePageUrl;
 exports.getPostedForm = getPostedForm;
 exports.applyFormResponse = applyFormResponse;
 exports.createPostHandler = createPostHandler;
+exports.processElements = processElements;
 exports.getDefaultView = getDefaultView;
 exports.prepareChargeInformation = prepareChargeInformation;
+exports.getChargeCategoryFirstStep = getChargeCategoryFirstStep;
+exports.getAlcsCount = getAlcsCount;
 exports.getCurrentBillingAccountAddress = getCurrentBillingAccountAddress;

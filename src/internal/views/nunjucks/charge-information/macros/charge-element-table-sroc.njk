@@ -204,6 +204,7 @@ formErrorSummary %}
       <hr class="govuk-section-break  govuk-!-margin-bottom-2 govuk-section-break--visible">
       <h2 class="govuk-heading-m govuk-!-margin-bottom-3">Charge reference details</h2>
       <dl class="govuk-summary-list">
+        {{ summaryListRow('Applies to', chargeElement.chargePurposes | chargePurposesDescriptions | escape | nl2br, changeLinkSroc('/which-element', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
         {{ summaryListRow('Description', chargeElement.description, changeLinkSroc('/description', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
         {{ summaryListRow('Source', chargeElement.source | title, changeLinkSroc('/source', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
         {{ summaryListRow('Loss', chargeElement.loss | title, changeLinkSroc('/loss', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
@@ -212,7 +213,7 @@ formErrorSummary %}
         {{ summaryListRow('Water model', chargeElement.waterModel | title, changeLinkSroc('/water-model', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
         {{ summaryListRow('Additional charges apply', getBooleanText(chargeElement.isAdditionalCharges) | title, changeLinkSroc('/additional-charges', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
         {{ summaryListRow('Adjustments apply', getBooleanText(chargeElement.isAdjustments) | title, changeLinkSroc('/adjustments-apply', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
-        {{ summaryListRow('EUIC Region', chargeElement.eiucRegion | title) }}
+        {{ summaryListRow('EIC Region', chargeElement.eiucRegion | title) }}
       </dl>
       {% if chargeElement.isAdditionalCharges %}
         <hr class="govuk-section-break  govuk-!-margin-bottom-6">
@@ -220,7 +221,7 @@ formErrorSummary %}
         <dl class="govuk-summary-list">
           {{ summaryListRow('Supported source', getBooleanText(chargeElement.isSupportedSource) | title, changeLinkSroc('/supported-source', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
           {% if chargeElement.supportedSourceName %}
-            {{ summaryListRow('Supported source name', chargeElement.supportedSourceName | title, changeLinkSroc('/supported-source-name', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
+            {{ summaryListRow('Supported source name', chargeElement.supportedSourceName, changeLinkSroc('/supported-source-name', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
           {% endif %}
           {{ summaryListRow('Supply public water', getBooleanText(chargeElement.isSupplyPublicWater) | title, changeLinkSroc('/supply-public-water', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
         </dl>

@@ -2,19 +2,19 @@
 
 const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
-const { CHARGE_CATEGORY_STEPS } = require('../../lib/charge-categories/constants');
+const { ROUTING_CONFIG } = require('../../lib/charge-categories/constants');
 const { getChargeCategoryData, getChargeCategoryActionUrl } = require('../../lib/form-helpers');
 
 /**
  * Form to request the charge category description
  *
  * @param {Object} request The Hapi request object
- * @param {Boolean}  data object containing selected and default options for the form
+ * @member {Object} data object containing selected and default options for the form
   */
 const form = request => {
   const { csrfToken } = request.view;
   const data = getChargeCategoryData(request);
-  const action = getChargeCategoryActionUrl(request, CHARGE_CATEGORY_STEPS.description);
+  const action = getChargeCategoryActionUrl(request, ROUTING_CONFIG.description.step);
 
   const f = formFactory(action, 'POST');
   f.fields.push(fields.text('description', {

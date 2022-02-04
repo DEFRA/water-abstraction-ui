@@ -4,7 +4,7 @@ const Boom = require('@hapi/boom');
 const services = require('../../lib/connectors/services');
 const { loadLicence } = require('shared/lib/pre-handlers/licences');
 const moment = require('moment');
-const { get, sortBy, pick, isEmpty } = require('lodash');
+const { get, sortBy, isEmpty, pick } = require('lodash');
 const { v4: uuid } = require('uuid');
 const errorHandler = (err, message) => {
   if (err.statusCode === 404) {
@@ -42,6 +42,31 @@ const findChargeCategory = async chargeElement => {
   };
 };
 
+const restoreChargeElements = async chargeElements => {
+  // filter out incomplete charge elements when they have used the back button
+  const completeChargeElements = await Promise.all(chargeElements
+    .filter(element => !element.status)
+    .map(async element => {
+      if (element.scheme === 'sroc') {
+        element.chargeCategory = await findChargeCategory(element);
+      }
+      return element;
+    }));
+
+  // retrieve charge elements converted to charge purposes when they have used the back button
+  const restoredChargeElements = chargeElements
+    .filter(element => element.status === 'draft')
+    .flatMap(element => {
+      const { chargePurposes } = element;
+      return chargePurposes && chargePurposes.length ? chargePurposes.map(purpose => ({ ...purpose, scheme: 'alcs' })) : [];
+    });
+
+  return [
+    ...completeChargeElements,
+    ...restoredChargeElements
+  ];
+};
+
 /**
  * Removes incomplete charge elements to avoid breaking the UI
  * and resets the session draftCharge info
@@ -51,15 +76,9 @@ const loadValidatedDraftChargeInformation = async request => {
   const { licenceId } = request.params;
   const chargeVersionWorkFlowId = getChargeVersionWorkflowId(request);
   const draftChargeInformation = await loadDraftChargeInformation(request);
-  // filter out incomplete charge elements when they have used the back button
-  draftChargeInformation.chargeElements = await Promise.all(draftChargeInformation.chargeElements
-    .filter(element => !element.status)
-    .map(async element => {
-      if (element.scheme === 'sroc') {
-        element.chargeCategory = await findChargeCategory(element);
-      }
-      return element;
-    }));
+
+  draftChargeInformation.chargeElements = await restoreChargeElements(draftChargeInformation.chargeElements);
+
   request.clearDraftChargeInformation(licenceId, chargeVersionWorkFlowId);
   request.setDraftChargeInformation(licenceId, chargeVersionWorkFlowId, draftChargeInformation);
   return draftChargeInformation;
@@ -139,7 +158,7 @@ const flattenAdditionalChargesProperties = ({ additionalCharges, ...element }) =
     element.isAdditionalCharges = true;
     element.isSupportedSource = !!supportedSource;
     element.isSupplyPublicWater = isSupplyPublicWater;
-    const { id, name } = supportedSource;
+    const { id, name } = supportedSource || {};
     if (id) {
       element.supportedSourceId = id;
     }

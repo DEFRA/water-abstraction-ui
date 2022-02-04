@@ -21,7 +21,7 @@ const form = request => {
   const action = getChargeCategoryActionUrl(request, CHARGE_CATEGORY_STEPS.adjustments);
 
   const f = formFactory(action, 'POST');
-  const requiredMessage = 'Select which adjustments that apply';
+  const requiredMessage = 'Select the adjustments that apply.';
   f.fields.push(fields.checkbox('adjustments', {
     errors: {
       'array.min': {
@@ -50,10 +50,11 @@ const form = request => {
               fields.text(`${item.value}Factor`,
                 {
                   errors: {
-                    'number.base': { message: `The '${item.title}' factor can not be empty` },
-                    'number.greater': { message: `The '${item.title}' factor must be greater than 0` },
-                    'number.less': { message: `The '${item.title}' factor must be less than 1` },
-                    'number.custom': { message: `The '${item.title}' factor must have fewer than 15 decimal places` }
+                    'number.base': { message: `The '${item.title}' factor must not have more than 15 decimal places.` },
+                    'number.greater': { message: `The '${item.title}' factor must be between 0 and 1` },
+                    'number.less': { message: `The '${item.title}' factor must be between 0 and 1` },
+                    'number.custom': { message: `The '${item.title}' factor must not have more than 15 decimal places.` },
+                    'number.safe': { message: `The '${item.title}' factor must not have more than 15 decimal places.` }
                   },
                   label: 'Factor',
                   controlClass: 'govuk-input--width-4'
@@ -78,6 +79,9 @@ const schema = () => {
       if (decimals.length > 15) {
         return error('number.custom');
       }
+      if (original.length > 16) {
+        return error('number.custom');
+      }
       return value;
     });
 
@@ -86,7 +90,7 @@ const schema = () => {
     aggregateFactor: Joi.when('adjustments',
       {
         is: Joi.array().items(Joi.string().valid('aggregate').required(), Joi.string()),
-        then: factorSchema
+        then: Joi.number()
       }),
     chargeFactor: Joi.when('adjustments',
       {

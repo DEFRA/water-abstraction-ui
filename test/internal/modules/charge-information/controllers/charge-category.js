@@ -221,7 +221,7 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
 
         test('the draft charge information is updated with the adjustments data', async () => {
           const mappedAdjustments = {
-            aggregate: 0.5,
+            aggregate: '0.5',
             charge: null,
             s126: null,
             s127: false,

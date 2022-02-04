@@ -26,10 +26,10 @@ experiment('internal/modules/charge-information/lib/charge-elements/mappers', ()
     });
 
     test('when the adjustments array includes the aggregate factor', () => {
-      const result = adjustments({ adjustments: ['winter', 'aggregate'], aggregateFactor: 0.5 });
+      const result = adjustments({ adjustments: ['winter', 'aggregate'] }, { aggregateFactor: '0.5' });
       expect(result).to.be.equal({
         adjustments: {
-          aggregate: 0.5,
+          aggregate: '0.5',
           charge: null,
           s126: null,
           s127: false,
@@ -39,11 +39,11 @@ experiment('internal/modules/charge-information/lib/charge-elements/mappers', ()
       });
     });
     test('when the adjustments array includes the charge adjustment factor', () => {
-      const result = adjustments({ adjustments: ['winter', 'charge'], chargeFactor: 0.5 });
+      const result = adjustments({ adjustments: ['winter', 'charge'] }, { chargeFactor: '0.5' });
       expect(result).to.be.equal({
         adjustments: {
           aggregate: null,
-          charge: 0.5,
+          charge: '0.5',
           s126: null,
           s127: false,
           s130: false,
@@ -52,12 +52,12 @@ experiment('internal/modules/charge-information/lib/charge-elements/mappers', ()
       });
     });
     test('when the adjustments array includes the s126 factor', () => {
-      const result = adjustments({ adjustments: ['winter', 's126'], s126Factor: 0.5 });
+      const result = adjustments({ adjustments: ['winter', 's126'], s126Factor: 0.5 }, { s126Factor: '0.5' });
       expect(result).to.be.equal({
         adjustments: {
           aggregate: null,
           charge: null,
-          s126: 0.5,
+          s126: '0.5',
           s127: false,
           s130: false,
           winter: true
@@ -65,11 +65,11 @@ experiment('internal/modules/charge-information/lib/charge-elements/mappers', ()
       });
     });
     test('when the adjustments array includes the s127 adjustment', () => {
-      const result = adjustments({ adjustments: ['winter', 'charge', 's127'], chargeFactor: 0.5 });
+      const result = adjustments({ adjustments: ['winter', 'charge', 's127'] }, { chargeFactor: '0.5' });
       expect(result).to.be.equal({
         adjustments: {
           aggregate: null,
-          charge: 0.5,
+          charge: '0.5',
           s126: null,
           s127: true,
           s130: false,
@@ -78,11 +78,11 @@ experiment('internal/modules/charge-information/lib/charge-elements/mappers', ()
       });
     });
     test('when the adjustments array includes the s130 adjustment', () => {
-      const result = adjustments({ adjustments: ['winter', 'charge', 's127', 's130'], chargeFactor: 0.5 });
+      const result = adjustments({ adjustments: ['winter', 'charge', 's127', 's130'] }, { chargeFactor: '0.5' });
       expect(result).to.be.equal({
         adjustments: {
           aggregate: null,
-          charge: 0.5,
+          charge: '0.5',
           s126: null,
           s127: true,
           s130: true,

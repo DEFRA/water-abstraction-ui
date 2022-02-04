@@ -99,7 +99,7 @@ const getNewChargeElementData = (request, formValues, scheme) => {
   if (scheme === 'alcs') {
     return chargeElementMappers[step] ? chargeElementMappers[step](formValues, defaultCharges) : omit(formValues, 'csrf_token');
   }
-  return chargeCategoryMappers[step] ? chargeCategoryMappers[step](formValues, defaultCharges) : omit(formValues, 'csrf_token');
+  return chargeCategoryMappers[step] ? chargeCategoryMappers[step](formValues, request.payload) : omit(formValues, 'csrf_token');
 };
 
 // gets the charge purpose data from the posted form for SROC and omits

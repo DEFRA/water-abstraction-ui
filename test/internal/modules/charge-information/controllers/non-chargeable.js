@@ -29,6 +29,7 @@ const createRequest = () => ({
   },
   pre: {
     licenceVersions: [{
+      status: 'current',
       startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
     }],
     licence: {
@@ -194,12 +195,12 @@ experiment('internal/modules/charge-information/controller', () => {
     });
   });
 
-  experiment('when "licenceStartDate" is posted', () => {
+  experiment('when "licenceVersionEffectiveDate" is posted', () => {
     beforeEach(async () => {
       request = createRequest();
       request.payload = {
         csrf_token: request.view.csrfToken,
-        startDate: 'licenceStartDate'
+        startDate: 'licenceVersionEffectiveDate'
       };
       await controller.postEffectiveDate(request, h);
     });
@@ -208,7 +209,7 @@ experiment('internal/modules/charge-information/controller', () => {
       const [id, cvWorkflowId, data] = request.setDraftChargeInformation.lastCall.args;
       expect(id).to.equal('test-licence-id');
       expect(cvWorkflowId).to.equal(undefined);
-      expect(data.dateRange.startDate).to.equal(request.pre.licence.startDate);
+      expect(data.dateRange.startDate).to.equal(request.pre.licenceVersions[0].startDate);
     });
 
     test('the user is redirected to the check data page', async () => {
@@ -289,7 +290,7 @@ experiment('internal/modules/charge-information/controller', () => {
     test('an error is displayed', async () => {
       const [form] = h.postRedirectGet.lastCall.args;
       const field = find(form.fields, { name: 'startDate' }).options.choices[3].fields[0];
-      expect(field.errors[0].message).to.equal('You must enter a date on or after the licence start date');
+      expect(field.errors[0].message).to.equal(`Date must be after the start date of the earliest known licence version (${moment(request.pre.licenceVersions[0].startDate).format('D MMMM YYYY')})`);
     });
   });
 
@@ -315,8 +316,7 @@ experiment('internal/modules/charge-information/controller', () => {
 
     test('an error is displayed', async () => {
       const [form] = h.postRedirectGet.lastCall.args;
-      const field = find(form.fields, { name: 'startDate' }).options.choices[2].fields[0];
-      expect(field.errors[0].message).to.equal('You must enter a date before the licence end date');
+      expect(form.errors[0].message).to.equal('You must enter a date before the licence end date');
     });
   });
 });

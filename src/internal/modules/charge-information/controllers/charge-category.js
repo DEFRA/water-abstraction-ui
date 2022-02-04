@@ -33,7 +33,8 @@ const getBackLink = (request, step) => {
     : routing.getChargeCategoryStep(licenceId, elementId, back, { chargeVersionWorkflowId });
 };
 
-const getNextStep = (stepKey, chargeElement) => {
+const getNextStep = (stepKey, chargeElement, query) => {
+  let { returnToCheckData, additionalChargesAdded } = query;
   const step = CHARGE_CATEGORY_STEPS[stepKey];
   let { nextStep, nextStepYes } = ROUTING_CONFIG[stepKey];
   let forceNextStep = false;
@@ -43,27 +44,38 @@ const getNextStep = (stepKey, chargeElement) => {
   ) {
     nextStep = nextStepYes;
     forceNextStep = true;
-  } else if (step === CHARGE_CATEGORY_STEPS.supportedSourceName && chargeElement.supportedSourceName) {
-    forceNextStep = true;
   }
-  return { nextStep, forceNextStep };
-};
 
-const getRedirectPath = (request, stepKey) => {
-  const step = CHARGE_CATEGORY_STEPS[stepKey];
-  const { licenceId, elementId } = request.params;
-  const chargeElement = getChargeElement(request);
-  let { chargeVersionWorkflowId, returnToCheckData } = request.query;
-
-  const { nextStep, forceNextStep } = getNextStep(stepKey, chargeElement);
+  if (returnToCheckData) {
+    if (step === CHARGE_CATEGORY_STEPS.isAdditionalCharges) {
+      additionalChargesAdded = true;
+    }
+    if (step === CHARGE_CATEGORY_STEPS.supportedSourceName && additionalChargesAdded) {
+      forceNextStep = true;
+    }
+  }
 
   if (step === CHARGE_CATEGORY_STEPS.isAdjustments) {
     returnToCheckData = true;
   }
 
+  return { nextStep, forceNextStep, returnToCheckData, additionalChargesAdded };
+};
+
+const getRedirectPath = (request, stepKey) => {
+  const { licenceId, elementId } = request.params;
+  const chargeElement = getChargeElement(request);
+  const { chargeVersionWorkflowId } = request.query;
+
+  const { nextStep, forceNextStep, returnToCheckData, additionalChargesAdded } = getNextStep(stepKey, chargeElement, request.query);
+
   if (returnToCheckData) {
     if (forceNextStep) {
-      return routing.getChargeCategoryStep(licenceId, elementId, nextStep, { returnToCheckData, chargeVersionWorkflowId });
+      const queryParams = { returnToCheckData, chargeVersionWorkflowId };
+      if (additionalChargesAdded) {
+        queryParams.additionalChargesAdded = additionalChargesAdded;
+      }
+      return routing.getChargeCategoryStep(licenceId, elementId, nextStep, queryParams);
     }
     if (request.pre.draftChargeInformation.status === 'review') {
       return routing.postReview(chargeVersionWorkflowId, licenceId);

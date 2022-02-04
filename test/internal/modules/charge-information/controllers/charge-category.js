@@ -260,7 +260,7 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
     experiment('when the redirect path is called', () => {
       let request, chargeElement, query;
 
-      beforeEach(async () => {
+      beforeEach(() => {
         chargeElement = { id: elementId };
         query = { returnToCheckData: true };
         request = {
@@ -278,7 +278,7 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
         test('and the isAdditionalCharges flag been set', () => {
           chargeElement.isAdditionalCharges = true;
           const redirectPath = controller.getRedirectPath(request, 'isAdditionalCharges');
-          expect(redirectPath).to.equal(`${prefixUrl}/charge-category/${elementId}/supported-source?returnToCheckData=true`);
+          expect(redirectPath).to.equal(`${prefixUrl}/charge-category/${elementId}/supported-source?returnToCheckData=true&additionalChargesAdded=true`);
         });
       });
 
@@ -295,14 +295,19 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
       });
 
       experiment('and the step is supportedSourceName', () => {
-        test('and the supportedSourceName has not been set', () => {
+        beforeEach(() => {
+          chargeElement.supportedSourceName = 'test-supported-source-name';
+        });
+
+        test('and the additionalChargesAdded flag has not been set', () => {
           const redirectPath = controller.getRedirectPath(request, 'supportedSourceName');
           expect(redirectPath).to.equal(`${prefixUrl}/check`);
         });
-        test('and the supportedSourceName has been set', () => {
-          chargeElement.supportedSourceName = 'test-supported-source-name';
+
+        test('and the additionalChargesAdded flag has been set', () => {
+          request.query.additionalChargesAdded = true;
           const redirectPath = controller.getRedirectPath(request, 'supportedSourceName');
-          expect(redirectPath).to.equal(`${prefixUrl}/charge-category/${elementId}/supply-public-water?returnToCheckData=true`);
+          expect(redirectPath).to.equal(`${prefixUrl}/charge-category/${elementId}/supply-public-water?returnToCheckData=true&additionalChargesAdded=true`);
         });
       });
     });

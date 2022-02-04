@@ -12,7 +12,7 @@ const adjustments = formValues => {
           winter: formValues.adjustments.includes('winter')
         }
       }
-    : { adjustments: [] };
+    : { adjustments: {} };
 };
 
 exports.adjustments = adjustments;

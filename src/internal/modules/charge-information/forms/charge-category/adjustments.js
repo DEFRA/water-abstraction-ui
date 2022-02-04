@@ -76,10 +76,10 @@ const schema = () => {
     .custom((value, helper) => {
       const { error, original } = helper;
       const [, decimals = ''] = original.split('.');
-      if (decimals.length > 15) {
+      if (decimals.length > 16) {
         return error('number.custom');
       }
-      if (original.length > 16) {
+      if (original.length > 17) {
         return error('number.custom');
       }
       return value;
@@ -90,7 +90,7 @@ const schema = () => {
     aggregateFactor: Joi.when('adjustments',
       {
         is: Joi.array().items(Joi.string().valid('aggregate').required(), Joi.string()),
-        then: Joi.number()
+        then: factorSchema
       }),
     chargeFactor: Joi.when('adjustments',
       {

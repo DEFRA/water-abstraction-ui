@@ -57,7 +57,7 @@ module.exports = {
       },
       plugins: {
         viewContext: {
-          pageTitle: 'Privacy: how we use your personal information',
+          pageTitle: 'Privacy notice',
           back: '/licences'
         },
         config: {

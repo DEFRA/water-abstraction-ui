@@ -52,7 +52,7 @@ const getRedirectPath = (request, stepKey, step) => {
   }
   // Is a supported source name required
   if (step === CHARGE_CATEGORY_STEPS.isSupportedSource) {
-    routing.getSupportedSourcesRoute(request, chargeElement, stepKey, checkAnswersRoute);
+    return routing.getSupportedSourcesRoute(request, chargeElement, stepKey, checkAnswersRoute);
   }
 
   // supportedSourceName

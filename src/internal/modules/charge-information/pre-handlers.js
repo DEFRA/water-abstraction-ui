@@ -124,8 +124,7 @@ const loadChargeVersion = async request => {
     if (chargeVersion.scheme === 'sroc') {
       chargeVersion.chargeElements = chargeVersion.chargeElements.map(element => {
         element.isAdjustments = chargeVersion.adjustments !== {};
-        element.isAdditionalCharges = chargeVersion.additionalCharges !== {};
-        return element;
+        return flattenAdditionalChargesProperties(element);
       });
     }
     return chargeVersion;

@@ -65,7 +65,8 @@ const validPayload = {
   description: { description: 'test-description' },
   loss: { loss: 'high' },
   isAdjustments: { isAdjustments: 'false' },
-  adjustments: { adjustments: ['aggregate'], aggregateFactor: '0.5' }
+  adjustments: { adjustments: ['aggregate'], aggregateFactor: '0.5' },
+  isSupportedSource: { isSupportedSource: 'true' }
 };
 
 const chargeCategory = {
@@ -263,6 +264,35 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
           expect(h.redirect.calledWith(
             `${prefixUrl}/check`
           )).to.be.true();
+        });
+      });
+
+      experiment('when the step is isSupportedSource', () => {
+        test('the supported source session data is updated correctly is isSupportedSource is false', async () => {
+          request = createRequest(CHARGE_CATEGORY_STEPS.isSupportedSource, { isSupportedSource: 'false' });
+          request.pre.draftChargeInformation.chargeElements[0].supportedSourceName = 'test name';
+          await controller.postChargeCategoryStep(request, h);
+          const args = request.setDraftChargeInformation.lastCall.args;
+          expect(args[2].chargeElements[0].isSupportedSource).to.equal(false);
+          expect(args[2].chargeElements[0].supportedSourceName).to.equal(undefined);
+        });
+
+        test('the supported source session data is updated correctly is isSupportedSource is true', async () => {
+          request = createRequest(CHARGE_CATEGORY_STEPS.isSupportedSource, { isSupportedSource: 'true' });
+          request.pre.draftChargeInformation.chargeElements[0].supportedSourceName = 'test name';
+          await controller.postChargeCategoryStep(request, h);
+          const args = request.setDraftChargeInformation.lastCall.args;
+          expect(args[2].chargeElements[0].isSupportedSource).to.equal(true);
+          expect(args[2].chargeElements[0].supportedSourceName).to.equal('test name');
+        });
+      });
+
+      experiment('when the step is isSupportedSource and the payload isSupportedSource is false', () => {
+        test('the back link is the supported source page', async () => {
+          request = createRequest(CHARGE_CATEGORY_STEPS.isSupportedSource, { isSupportedSource: 'false' });
+          await controller.postChargeCategoryStep(request, h);
+          const args = h.redirect.lastCall.args;
+          expect(args[0]).to.equal(`${prefixUrl}/charge-category/${elementId}/${CHARGE_CATEGORY_STEPS.isSupplyPublicWater}`);
         });
       });
 

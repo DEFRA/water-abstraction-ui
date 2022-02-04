@@ -270,27 +270,15 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
         };
       });
 
-      experiment('and the step is isAdditionalChanges', () => {
-        test('and the isAdditionalCharges flag has not been set', () => {
-          const redirectPath = controller.getRedirectPath(request, 'isAdditionalCharges');
-          expect(redirectPath).to.equal(`${prefixUrl}/check`);
-        });
-        test('and the isAdditionalCharges flag been set', () => {
-          chargeElement.isAdditionalCharges = true;
-          const redirectPath = controller.getRedirectPath(request, 'isAdditionalCharges');
-          expect(redirectPath).to.equal(`${prefixUrl}/charge-category/${elementId}/supported-source?returnToCheckData=true&additionalChargesAdded=true`);
-        });
-      });
-
       experiment('and the step is isSupportedSource', () => {
         test('and the isSupportedSource flag has not been set', () => {
           const redirectPath = controller.getRedirectPath(request, 'isSupportedSource');
-          expect(redirectPath).to.equal(`${prefixUrl}/check`);
+          expect(redirectPath).to.equal(`${prefixUrl}/charge-category/test-element-id/supply-public-water?returnToCheckData=true`);
         });
         test('and the isSupportedSource flag has been set', () => {
           chargeElement.isSupportedSource = true;
           const redirectPath = controller.getRedirectPath(request, 'isSupportedSource');
-          expect(redirectPath).to.equal(`${prefixUrl}/charge-category/${elementId}/supported-source-name?returnToCheckData=true`);
+          expect(redirectPath).to.equal(`${prefixUrl}/charge-category/${elementId}/supply-public-water?returnToCheckData=true`);
         });
       });
 
@@ -299,15 +287,9 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
           chargeElement.supportedSourceName = 'test-supported-source-name';
         });
 
-        test('and the additionalChargesAdded flag has not been set', () => {
+        test('the returnToCheckData param is passed on to supply-of-public-water route step', () => {
           const redirectPath = controller.getRedirectPath(request, 'supportedSourceName');
-          expect(redirectPath).to.equal(`${prefixUrl}/check`);
-        });
-
-        test('and the additionalChargesAdded flag has been set', () => {
-          request.query.additionalChargesAdded = true;
-          const redirectPath = controller.getRedirectPath(request, 'supportedSourceName');
-          expect(redirectPath).to.equal(`${prefixUrl}/charge-category/${elementId}/supply-public-water?returnToCheckData=true&additionalChargesAdded=true`);
+          expect(redirectPath).to.equal(`${prefixUrl}/charge-category/test-element-id/supply-public-water?returnToCheckData=true`);
         });
       });
     });

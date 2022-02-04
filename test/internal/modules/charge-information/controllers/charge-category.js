@@ -64,7 +64,8 @@ const validPayload = {
   source: { purpose: PURPOSE_USE_ID },
   description: { description: 'test-description' },
   loss: { loss: 'high' },
-  isAdjustments: { isAdjustments: 'false' }
+  isAdjustments: { isAdjustments: 'false' },
+  adjustments: { adjustments: ['aggregate'], aggregateFactor: '0.5' }
 };
 
 const chargeCategory = {
@@ -205,7 +206,8 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
 
       experiment('when the last charge category step in the flow is reached', () => {
         beforeEach(async () => {
-          request = createRequest(CHARGE_CATEGORY_STEPS.isAdjustments, validPayload.isAdjustments);
+          request = createRequest(CHARGE_CATEGORY_STEPS.adjustments, validPayload.adjustments);
+          request.pre.draftChargeInformation.chargeElements[0].isAdjustments = true;
           request.pre.draftChargeInformation.chargeElements = [{ id: 'test-element-id' }];
           await controller.postChargeCategoryStep(request, h);
         });
@@ -216,12 +218,48 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
           expect(id).to.equal('test-licence-id');
         });
 
-        test('the draft charge information is updated with the charge reference', async () => {
+        test('the draft charge information is updated with the adjustments data', async () => {
+          const mappedAdjustments = {
+            aggregate: 0.5,
+            charge: null,
+            s126: null,
+            s127: false,
+            s130: false,
+            winter: false
+          };
           const args = request.setDraftChargeInformation.lastCall.args;
-          expect(args[2].chargeElements[0].isAdjustments).to.equal(false);
+          expect(args[2].chargeElements[0].adjustments).to.equal(mappedAdjustments);
         });
 
         test('the user is redirected to the check your answers page', async () => {
+          expect(h.redirect.calledWith(
+            `${prefixUrl}/check`
+          )).to.be.true();
+        });
+      });
+
+      experiment('when the step is isAdjustments', () => {
+        beforeEach(async () => {
+          validPayload.isAdjustments.isAdjustments = 'true';
+          request = createRequest(CHARGE_CATEGORY_STEPS.isAdjustments, validPayload.isAdjustments);
+          request.pre.draftChargeInformation.chargeElements = [{ id: 'test-element-id' }];
+          await controller.postChargeCategoryStep(request, h);
+        });
+
+        test('the draft charge information is updated with the the correct data', async () => {
+          const args = request.setDraftChargeInformation.lastCall.args;
+          expect(args[2].chargeElements[0].isAdjustments).to.equal(true);
+        });
+
+        test('the user is redirected to the check your answers page if adjustments = true', async () => {
+          expect(h.redirect.calledWith(
+            `${prefixUrl}/charge-category/test-element-id/adjustments`
+          )).to.be.true();
+        });
+        test('the user is redirected to the check your answers page if adjustments = true', async () => {
+          validPayload.isAdjustments.isAdjustments = 'false';
+          request = createRequest(CHARGE_CATEGORY_STEPS.isAdjustments, validPayload.isAdjustments);
+          await controller.postChargeCategoryStep(request, h);
           expect(h.redirect.calledWith(
             `${prefixUrl}/check`
           )).to.be.true();

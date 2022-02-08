@@ -96,7 +96,7 @@ const postChargeCategoryStep = async (request, h) => {
     const { draftChargeInformation, supportedSources } = request.pre;
     const chargeElement = draftChargeInformation.chargeElements.find(element => element.id === elementId);
     if (step === CHARGE_CATEGORY_STEPS.isAdjustments) {
-      const route = await adjustementsHandler(request, draftChargeInformation, form);
+      const route = await adjustementsHandler(request, draftChargeInformation);
       return h.redirect(route);
     } else if (step === CHARGE_CATEGORY_STEPS.isSupportedSource) {
       if (request.payload.isSupportedSource === 'false') {

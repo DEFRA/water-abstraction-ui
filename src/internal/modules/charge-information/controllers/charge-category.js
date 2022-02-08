@@ -62,10 +62,6 @@ const getRedirectPath = (request, stepKey, step) => {
       : checkAnswersRoute;
   }
 
-  if (returnToCheckData) {
-    return checkAnswersRoute;
-  }
-
   return routing.getChargeCategoryStep(licenceId, elementId, ROUTING_CONFIG[stepKey].nextStep, queryParams);
 };
 

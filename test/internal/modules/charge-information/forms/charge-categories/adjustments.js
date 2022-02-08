@@ -96,7 +96,7 @@ experiment('internal/modules/charge-information/forms/charge-category/adjustment
         const result = schema(createRequest()).validate({
           csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
           adjustments: ['winter', 's127', 'aggregate'],
-          aggregateFactor: '0.5'
+          aggregateFactor: 0.5
         }, { allowUnknown: true });
         expect(result.error).to.be.undefined();
       });

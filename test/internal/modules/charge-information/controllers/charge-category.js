@@ -247,11 +247,6 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
           await controller.postChargeCategoryStep(request, h);
         });
 
-        test('the draft charge information is updated with the the correct data', async () => {
-          const args = request.setDraftChargeInformation.lastCall.args;
-          expect(args[2].chargeElements[0].isAdjustments).to.equal(true);
-        });
-
         test('the user is redirected to the check your answers page if adjustments = true', async () => {
           expect(h.redirect.calledWith(
             `${prefixUrl}/charge-category/test-element-id/adjustments`

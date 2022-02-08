@@ -3,6 +3,7 @@
 const adjustments = (formValues, requestPayload = {}) => {
   return formValues.adjustments.length > 0
     ? {
+        isAdjustments: true,
         adjustments: {
           aggregate: formValues.adjustments.includes('aggregate') ? requestPayload.aggregateFactor : null,
           charge: formValues.adjustments.includes('charge') ? requestPayload.chargeFactor : null,
@@ -12,7 +13,7 @@ const adjustments = (formValues, requestPayload = {}) => {
           winter: formValues.adjustments.includes('winter')
         }
       }
-    : { adjustments: {} };
+    : { isAdjustments: false, adjustments: {} };
 };
 
 exports.adjustments = adjustments;

@@ -53,9 +53,10 @@ const form = request => {
                     'number.base': { message: `The '${item.title}' factor must not have more than 15 decimal places.` },
                     'number.greater': { message: `The '${item.title}' factor must be between 0 and 1` },
                     'number.less': { message: `The '${item.title}' factor must be between 0 and 1` },
-                    'number.custom': { message: `The '${item.title}' factor must not have more than 15 decimal places.` },
-                    'number.safe': { message: `The '${item.title}' factor must not have more than 15 decimal places.` }
+                    'number.precision': { message: `The '${item.title}' factor must not have more than 15 decimal places.` },
+                    'number.unsafe': { message: `The '${item.title}' factor must not have more than 15 decimal places.` }
                   },
+                  mapper: 'numberMapper',
                   label: 'Factor',
                   controlClass: 'govuk-input--width-4'
                 }, data.adjustments[item.value])
@@ -72,18 +73,7 @@ const form = request => {
 
 const schema = () => {
   const factorSchema =
-  Joi.number().greater(0).less(1).required()
-    .custom((value, helper) => {
-      const { error, original } = helper;
-      const [, decimals = ''] = original.split('.');
-      if (decimals.length > 16) {
-        return error('number.custom');
-      }
-      if (original.length > 17) {
-        return error('number.custom');
-      }
-      return value;
-    });
+  Joi.number().precision(15).greater(0).less(1).required().options({ convert: false });
 
   return createSchema({
     adjustments: Joi.array().min(1).required(),

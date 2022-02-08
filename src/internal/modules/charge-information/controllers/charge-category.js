@@ -74,13 +74,11 @@ const getChargeCategoryStep = async (request, h) => {
   });
 };
 
-const adjustementsHandler = async (request, draftChargeInformation, form) => {
+const adjustementsHandler = async (request, draftChargeInformation) => {
   const { licenceId, elementId } = request.params;
   const { chargeVersionWorkflowId } = request.query;
   const chargeElement = draftChargeInformation.chargeElements.find(element => element.id === elementId);
   if (request.payload.isAdjustments === 'true') {
-    chargeElement.isAdjustments = true;
-    await applyFormResponse(request, form, actions.setChargeElementData);
     return routing.getChargeCategoryStep(licenceId, elementId, ROUTING_CONFIG.isAdjustments.nextStep, { chargeVersionWorkflowId });
   } else {
     chargeElement.isAdjustments = false;
@@ -98,7 +96,7 @@ const postChargeCategoryStep = async (request, h) => {
     const { draftChargeInformation, supportedSources } = request.pre;
     const chargeElement = draftChargeInformation.chargeElements.find(element => element.id === elementId);
     if (step === CHARGE_CATEGORY_STEPS.isAdjustments) {
-      const route = await adjustementsHandler(request, draftChargeInformation, form);
+      const route = await adjustementsHandler(request, draftChargeInformation);
       return h.redirect(route);
     } else if (step === CHARGE_CATEGORY_STEPS.isSupportedSource) {
       if (request.payload.isSupportedSource === 'false') {

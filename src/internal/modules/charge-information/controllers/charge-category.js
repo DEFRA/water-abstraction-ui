@@ -74,7 +74,7 @@ const getChargeCategoryStep = async (request, h) => {
   });
 };
 
-const adjustementsHandler = async (request, draftChargeInformation, form) => {
+const adjustementsHandler = async (request, draftChargeInformation) => {
   const { licenceId, elementId } = request.params;
   const { chargeVersionWorkflowId } = request.query;
   const chargeElement = draftChargeInformation.chargeElements.find(element => element.id === elementId);

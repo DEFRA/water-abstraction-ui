@@ -98,4 +98,76 @@ experiment('internal/modules/charge-information/lib/routing', () => {
       expect(url).to.equal('/licences/test-licence-id/charge-information/test-workflow-id/review');
     });
   });
+
+  experiment('.getSupportedSourcesRoute', () => {
+    let request, chargeElement, stepKey, checkYourAnswersRoute;
+    beforeEach(() => {
+      request = {
+        params: { licenceId: 'test-licence-id', elementId: 'test-element-id' },
+        query: { chargeVersionWorkflowId: 'test-workflow-id', returnToCheckData: true, additionalChargesAdded: true }
+      };
+      chargeElement = { id: 'test-element-id' };
+      stepKey = 'isSupportedSource';
+      checkYourAnswersRoute = routing.getCheckData('test-licence-id');
+    });
+    test('when the charge element does NOT have a supported source it returns the correct url', async () => {
+      chargeElement.isSupportedSource = false;
+      const url = routing.getSupportedSourcesRoute(request, chargeElement, stepKey, checkYourAnswersRoute);
+      expect(url).to
+        .equal('/licences/test-licence-id/charge-information/charge-category/test-element-id/supply-public-water?returnToCheckData=true&chargeVersionWorkflowId=test-workflow-id&additionalChargesAdded=true');
+    });
+    test('when the charge element does have a supported source it returns the correct url', async () => {
+      chargeElement.isSupportedSource = true;
+      const url = routing.getSupportedSourcesRoute(request, chargeElement, stepKey, checkYourAnswersRoute);
+      expect(url).to
+        .equal('/licences/test-licence-id/charge-information/charge-category/test-element-id/supported-source-name?returnToCheckData=true&chargeVersionWorkflowId=test-workflow-id&additionalChargesAdded=true');
+    });
+    test(`when the returnToCheckData is true but there is no supported source 
+        and the isAdditionalCharges did not previously change from false to true it returns the correct url`, async () => {
+      chargeElement.isSupportedSource = false;
+      request.query.additionalChargesAdded = false;
+      const url = routing.getSupportedSourcesRoute(request, chargeElement, stepKey, checkYourAnswersRoute);
+      expect(url).to
+        .equal('/licences/test-licence-id/charge-information/check');
+    });
+  });
+  experiment('.getAditionalChargesRoute', () => {
+    let request, chargeElement, stepKey, checkYourAnswersRoute;
+    beforeEach(() => {
+      request = {
+        params: { licenceId: 'test-licence-id', elementId: 'test-element-id' },
+        query: { chargeVersionWorkflowId: 'test-workflow-id', returnToCheckData: true }
+      };
+      chargeElement = { id: 'test-element-id', isAdditionalCharges: false };
+      stepKey = 'isAdditionalCharges';
+      checkYourAnswersRoute = routing.getCheckData('test-licence-id');
+    });
+
+    test('when the charge element does NOT have any additional charges and returnToCheckData is true it returns the correct url', async () => {
+      const url = routing.getAditionalChargesRoute(request, chargeElement, stepKey, checkYourAnswersRoute);
+      expect(url).to
+        .equal('/licences/test-licence-id/charge-information/check');
+    });
+    test('when the charge element does have a additional charge and returnToCheckData is true it returns the correct url', async () => {
+      chargeElement.isAdditionalCharges = true;
+      const url = routing.getAditionalChargesRoute(request, chargeElement, stepKey, checkYourAnswersRoute);
+      expect(url).to
+        .equal('/licences/test-licence-id/charge-information/charge-category/test-element-id/supported-source?returnToCheckData=true&chargeVersionWorkflowId=test-workflow-id&additionalChargesAdded=true');
+    });
+    test('when the charge element does have a additional charge and returnToCheckData is false it returns the correct url', async () => {
+      chargeElement.isAdditionalCharges = true;
+      request.query = {};
+      const url = routing.getAditionalChargesRoute(request, chargeElement, stepKey, checkYourAnswersRoute);
+      expect(url).to
+        .equal('/licences/test-licence-id/charge-information/charge-category/test-element-id/supported-source');
+    });
+    test(`when the returnToCheckData is true but there is no supported source 
+        and the isAdditionalCharges did not previously change from false to true it returns the correct url`, async () => {
+      chargeElement.isSupportedSource = false;
+      request.query.additionalChargesAdded = false;
+      const url = routing.getAditionalChargesRoute(request, chargeElement, stepKey, checkYourAnswersRoute);
+      expect(url).to
+        .equal('/licences/test-licence-id/charge-information/check');
+    });
+  });
 });

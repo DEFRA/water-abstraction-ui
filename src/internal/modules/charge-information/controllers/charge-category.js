@@ -8,7 +8,6 @@ const {
   CHARGE_CATEGORY_FIRST_STEP, CHARGE_CATEGORY_STEPS, getStepKeyByValue
 } = require('../lib/charge-categories/constants');
 const actions = require('../lib/actions');
-
 const getChargeElement = request => {
   const { elementId } = request.params;
   const { draftChargeInformation } = request.pre;
@@ -33,56 +32,37 @@ const getBackLink = (request, step) => {
     : routing.getChargeCategoryStep(licenceId, elementId, back, { chargeVersionWorkflowId });
 };
 
-const getNextStep = (stepKey, chargeElement, query) => {
-  let { returnToCheckData, additionalChargesAdded } = query;
-  const step = CHARGE_CATEGORY_STEPS[stepKey];
-  let { nextStep, nextStepYes } = ROUTING_CONFIG[stepKey];
-  let forceNextStep = false;
-  if (
-    (step === CHARGE_CATEGORY_STEPS.isAdditionalCharges && chargeElement.isAdditionalCharges) ||
-    (step === CHARGE_CATEGORY_STEPS.isSupportedSource && chargeElement.isSupportedSource)
-  ) {
-    nextStep = nextStepYes;
-    forceNextStep = true;
-  }
-
-  if (returnToCheckData) {
-    if (step === CHARGE_CATEGORY_STEPS.isAdditionalCharges) {
-      additionalChargesAdded = true;
-    }
-    if (step === CHARGE_CATEGORY_STEPS.supportedSourceName && additionalChargesAdded) {
-      forceNextStep = true;
-    }
-  }
-
-  if (step === CHARGE_CATEGORY_STEPS.isAdjustments) {
-    returnToCheckData = true;
-  }
-
-  return { nextStep, forceNextStep, returnToCheckData, additionalChargesAdded };
-};
-
-const getRedirectPath = (request, stepKey) => {
+const getRedirectPath = (request, stepKey, step) => {
   const { licenceId, elementId } = request.params;
   const chargeElement = getChargeElement(request);
-  const { chargeVersionWorkflowId } = request.query;
+  const { chargeVersionWorkflowId, returnToCheckData, additionalChargesAdded } = request.query;
+  const queryParams = { returnToCheckData, chargeVersionWorkflowId };
+  const checkAnswersRoute = request.pre.draftChargeInformation.status === 'review'
+    ? routing.postReview(chargeVersionWorkflowId, licenceId)
+    : routing.getCheckData(licenceId, { chargeVersionWorkflowId });
 
-  const { nextStep, forceNextStep, returnToCheckData, additionalChargesAdded } = getNextStep(stepKey, chargeElement, request.query);
-
-  if (returnToCheckData) {
-    if (forceNextStep) {
-      const queryParams = { returnToCheckData, chargeVersionWorkflowId };
-      if (additionalChargesAdded) {
-        queryParams.additionalChargesAdded = additionalChargesAdded;
-      }
-      return routing.getChargeCategoryStep(licenceId, elementId, nextStep, queryParams);
-    }
-    if (request.pre.draftChargeInformation.status === 'review') {
-      return routing.postReview(chargeVersionWorkflowId, licenceId);
-    }
-    return routing.getCheckData(licenceId, { chargeVersionWorkflowId });
+  // Adjustments Page or Is the water supply -- these two steps are both at the end of the flow or subflow
+  if ((stepKey === CHARGE_CATEGORY_STEPS.adjustments) || (step === CHARGE_CATEGORY_STEPS.isSupplyPublicWater && returnToCheckData)) {
+    return checkAnswersRoute;
   }
-  return routing.getChargeCategoryStep(licenceId, elementId, nextStep, { chargeVersionWorkflowId });
+
+  // Additional charges flow start
+  if ((step === CHARGE_CATEGORY_STEPS.isAdditionalCharges)) {
+    return routing.getAditionalChargesRoute(request, chargeElement, stepKey, checkAnswersRoute);
+  }
+  // Is a supported source name required
+  if (step === CHARGE_CATEGORY_STEPS.isSupportedSource) {
+    return routing.getSupportedSourcesRoute(request, chargeElement, stepKey, checkAnswersRoute);
+  }
+
+  // supportedSourceName
+  if (step === CHARGE_CATEGORY_STEPS.supportedSourceName && returnToCheckData) {
+    return additionalChargesAdded
+      ? routing.getChargeCategoryStep(licenceId, elementId, ROUTING_CONFIG[stepKey].nextStep, queryParams)
+      : checkAnswersRoute;
+  }
+
+  return routing.getChargeCategoryStep(licenceId, elementId, ROUTING_CONFIG[stepKey].nextStep, queryParams);
 };
 
 const getChargeCategoryStep = async (request, h) => {
@@ -94,16 +74,32 @@ const getChargeCategoryStep = async (request, h) => {
   });
 };
 
+const adjustementsHandler = async (request, draftChargeInformation, form) => {
+  const { licenceId, elementId } = request.params;
+  const { chargeVersionWorkflowId } = request.query;
+  const chargeElement = draftChargeInformation.chargeElements.find(element => element.id === elementId);
+  if (request.payload.isAdjustments === 'true') {
+    chargeElement.isAdjustments = true;
+    await applyFormResponse(request, form, actions.setChargeElementData);
+    return routing.getChargeCategoryStep(licenceId, elementId, ROUTING_CONFIG.isAdjustments.nextStep, { chargeVersionWorkflowId });
+  } else {
+    chargeElement.isAdjustments = false;
+    chargeElement.adjustments = {};
+    request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation);
+    return routing.getCheckData(licenceId);
+  }
+};
+
 const postChargeCategoryStep = async (request, h) => {
   const { step, licenceId, elementId } = request.params;
   const { chargeVersionWorkflowId } = request.query;
   const form = getPostedForm(request, forms[step]);
   if (form.isValid) {
     const { draftChargeInformation, supportedSources } = request.pre;
-    const chargeElement = getChargeElement(request);
+    const chargeElement = draftChargeInformation.chargeElements.find(element => element.id === elementId);
     if (step === CHARGE_CATEGORY_STEPS.isAdjustments) {
-      chargeElement.eiucRegion = request.pre.licence.regionalChargeArea.name;
-      request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation);
+      const route = await adjustementsHandler(request, draftChargeInformation, form);
+      return h.redirect(route);
     } else if (step === CHARGE_CATEGORY_STEPS.isSupportedSource) {
       if (request.payload.isSupportedSource === 'false') {
         delete chargeElement.supportedSourceName;
@@ -117,7 +113,7 @@ const postChargeCategoryStep = async (request, h) => {
     }
     await applyFormResponse(request, form, actions.setChargeElementData);
     const stepKey = getStepKeyByValue(step);
-    return h.redirect(getRedirectPath(request, stepKey));
+    return h.redirect(getRedirectPath(request, stepKey, step));
   }
 
   const queryParams = cleanObject(request.query);

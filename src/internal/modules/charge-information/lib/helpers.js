@@ -91,6 +91,8 @@ const prepareChargeInformation = (licenceId, chargeData) => ({
     chargeElements: chargeData.chargeElements.map((
       {
         id,
+        adjustments,
+        isAdjustments,
         isAdditionalCharges,
         isSupportedSource,
         supportedSourceName,
@@ -111,6 +113,7 @@ const prepareChargeInformation = (licenceId, chargeData) => ({
         return {
           ...element,
           additionalCharges,
+          adjustments: isAdjustments ? adjustments : {},
           chargePurposes: chargePurposes.map(({ id: _unused, ...purpose }) => purpose)
         };
       } else {

@@ -84,7 +84,7 @@ const adjustementsHandler = async (request, draftChargeInformation) => {
     chargeElement.isAdjustments = false;
     chargeElement.adjustments = {};
     request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation);
-    return routing.getCheckData(licenceId);
+    return getRedirectPath(request, 'adjustments');
   }
 };
 

@@ -1,4 +1,3 @@
-@@ -0,0 +1,44 @@
 const { setUp, tearDown } = require('../../support/setup');
 const LICENCE_NUMBER = 'AT/CURR/DAILY/01';
 

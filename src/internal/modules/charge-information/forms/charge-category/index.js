@@ -1,4 +1,5 @@
 module.exports = {
+  'which-element': require('./which-element'),
   description: require('./description'),
   source: require('./default-radio-options-form'),
   loss: require('./default-radio-options-form'),

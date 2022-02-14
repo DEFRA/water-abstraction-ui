@@ -2,7 +2,7 @@
 
 const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
-const { CHARGE_CATEGORY_STEPS, ROUTING_CONFIG } = require('../../lib/charge-categories/constants');
+const { ROUTING_CONFIG } = require('../../lib/charge-categories/constants');
 const { getChargeCategoryData, getChargeCategoryActionUrl } = require('../../lib/form-helpers');
 const { createSchema } = require('shared/lib/joi.helpers');
 
@@ -18,7 +18,7 @@ const form = request => {
     data.adjustments = {};
   }
   const sessionValues = data.adjustments ? Object.keys(data.adjustments).filter(key => !!data.adjustments[key]) : [];
-  const action = getChargeCategoryActionUrl(request, CHARGE_CATEGORY_STEPS.adjustments);
+  const action = getChargeCategoryActionUrl(request, ROUTING_CONFIG.adjustments.step);
 
   const f = formFactory(action, 'POST');
   const requiredMessage = 'Select the adjustments that apply.';

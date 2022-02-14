@@ -1,24 +1,5 @@
 'use-strict';
 
-const CHARGE_CATEGORY_STEPS = {
-  description: 'description',
-  source: 'source',
-  loss: 'loss',
-  volume: 'volume',
-  isRestrictedSource: 'restricted-source',
-  waterModel: 'water-model',
-  isAdditionalCharges: 'additional-charges',
-  isSupportedSource: 'supported-source',
-  supportedSourceName: 'supported-source-name',
-  isSupplyPublicWater: 'supply-public-water',
-  isAdjustments: 'adjustments-apply',
-  adjustments: 'adjustments'
-};
-
-const getStepKeyByValue = value => Object.keys(CHARGE_CATEGORY_STEPS).find(key => CHARGE_CATEGORY_STEPS[key] === value);
-
-const CHARGE_CATEGORY_FIRST_STEP = CHARGE_CATEGORY_STEPS.description;
-
 const SOURCES = {
   tidal: 'tidal',
   nonTidal: 'non-tidal'
@@ -72,100 +53,129 @@ const ADJUSTMENTS = [
  * -- nextStep  = the next page to load
  */
 const ROUTING_CONFIG = {
+  whichElement: {
+    step: 'which-element',
+    pageTitle: 'Assign charge reference to',
+    caption: 'Select all that apply',
+    nextStep: 'description',
+    errorMessage: 'Select all that apply'
+  },
   description: {
+    step: 'description',
     pageTitle: 'Enter a description for the charge reference',
-    nextStep: CHARGE_CATEGORY_STEPS.source
+    nextStep: 'source',
+    back: 'whichElement'
   },
   source: {
+    step: 'source',
     pageTitle: 'Select the source',
-    nextStep: CHARGE_CATEGORY_STEPS.loss,
-    back: CHARGE_CATEGORY_STEPS.description,
+    nextStep: 'loss',
+    back: 'description',
     options: SOURCES,
     errorMessage: 'Select if the source is tidal or non-tidal.'
   },
   loss: {
+    step: 'loss',
     pageTitle: 'Select the loss',
-    nextStep: CHARGE_CATEGORY_STEPS.volume,
-    back: CHARGE_CATEGORY_STEPS.source,
+    nextStep: 'volume',
+    back: 'source',
     options: LOSS_CATEGORIES,
     errorMessage: 'Select if the loss is high, medium or low.'
   },
   volume: {
+    step: 'volume',
     pageTitle: 'Enter a volume',
-    nextStep: CHARGE_CATEGORY_STEPS.isRestrictedSource,
-    back: CHARGE_CATEGORY_STEPS.loss
+    nextStep: 'isRestrictedSource',
+    back: 'loss'
   },
   isRestrictedSource: {
+    step: 'restricted-source',
     pageTitle: 'Select the water availability',
-    nextStep: CHARGE_CATEGORY_STEPS.waterModel,
-    back: CHARGE_CATEGORY_STEPS.volume,
+    nextStep: 'waterModel',
+    back: 'volume',
     options: IS_RESTRICTED_SOURCE,
     errorMessage: 'Select the water availability.',
     boolean: true
   },
   waterModel: {
+    step: 'water-model',
     pageTitle: 'Select the water model',
-    nextStep: CHARGE_CATEGORY_STEPS.isAdditionalCharges,
-    back: CHARGE_CATEGORY_STEPS.isRestrictedSource,
+    nextStep: 'isAdditionalCharges',
+    back: 'isRestrictedSource',
     options: WATER_MODEL,
     errorMessage: 'Select the water model.'
   },
   isAdditionalCharges: {
+    step: 'additional-charges',
     pageTitle: 'Do additional charges apply?',
     caption: 'Select \'yes\' if the licence is for the supply of public water or abstraction from a supported source such as a reservoir.',
-    nextStep: CHARGE_CATEGORY_STEPS.isAdjustments,
-    nextStepYes: CHARGE_CATEGORY_STEPS.isSupportedSource,
-    back: CHARGE_CATEGORY_STEPS.waterModel,
+    nextStep: 'isAdjustments',
+    nextStepYes: 'isSupportedSource',
+    back: 'waterModel',
     options: YES_NO,
     errorMessage: 'Select \'yes\' if additional charges apply.',
     boolean: true
   },
   isSupportedSource: {
+    step: 'supported-source',
     pageTitle: 'Is abstraction from a supported source?',
     caption: 'These are water sources the EA pays an additional charge to access, for example Glen Groundwater.',
-    back: CHARGE_CATEGORY_STEPS.isAdditionalCharges,
-    nextStep: CHARGE_CATEGORY_STEPS.isSupplyPublicWater,
-    nextStepYes: CHARGE_CATEGORY_STEPS.supportedSourceName,
+    back: 'isAdditionalCharges',
+    nextStep: 'isSupplyPublicWater',
+    nextStepYes: 'supportedSourceName',
     options: YES_NO,
     errorMessage: 'Select \'yes\' if abstraction is from a supported source.',
     boolean: true
   },
   supportedSourceName: {
+    step: 'supported-source-name',
     pageTitle: 'Select the name of the supported source',
-    back: CHARGE_CATEGORY_STEPS.isSupportedSource,
-    nextStep: CHARGE_CATEGORY_STEPS.isSupplyPublicWater,
+    back: 'isSupportedSource',
+    nextStep: 'isSupplyPublicWater',
     errorMessage: 'Select the name of the supported source.',
     boolean: true
   },
   isSupplyPublicWater: {
+    step: 'supply-public-water',
     pageTitle: 'Is abstraction for the supply of public water?',
     caption: 'In the case of a permit authorising a water abstraction activity held by a water undertaker carrying out its statutory functions',
-    back: CHARGE_CATEGORY_STEPS.isSupportedSource,
-    nextStep: CHARGE_CATEGORY_STEPS.isAdjustments,
+    back: 'isSupportedSource',
+    nextStep: 'isAdjustments',
     options: YES_NO,
     errorMessage: 'Select \'yes\' if abstraction is for the supply of public water.',
     boolean: true
   },
   isAdjustments: {
+    step: 'adjustments-apply',
     pageTitle: 'Do adjustments apply?',
-    back: CHARGE_CATEGORY_STEPS.isAdditionalCharges,
+    back: 'isAdditionalCharges',
     options: YES_NO,
     errorMessage: 'Select \'yes\' if adjustments apply.',
     boolean: true,
     nextStep: 'adjustments'
   },
   adjustments: {
+    step: 'adjustments',
     pageTitle: 'Which adjustments apply?',
-    back: CHARGE_CATEGORY_STEPS.isAdjustments,
+    back: 'isAdjustments',
     options: ADJUSTMENTS
   }
 };
+
+// Replace the routing config strings with the step value for the matching config
+Object.values(ROUTING_CONFIG).forEach(config => {
+  ['nextStep', 'nextStepYes', 'back'].forEach(prop => {
+    if (config[prop]) {
+      config[prop] = ROUTING_CONFIG[config[prop]].step;
+    }
+  });
+});
+
+const getStepKeyByValue = value => Object.keys(ROUTING_CONFIG).find(key => ROUTING_CONFIG[key].step === value);
 
 exports.WATER_MODEL = WATER_MODEL;
 exports.IS_RESTRICTED_SOURCE = IS_RESTRICTED_SOURCE;
 exports.LOSS_CATEGORIES = LOSS_CATEGORIES;
 exports.SOURCES = SOURCES;
 exports.ROUTING_CONFIG = ROUTING_CONFIG;
-exports.CHARGE_CATEGORY_STEPS = CHARGE_CATEGORY_STEPS;
-exports.CHARGE_CATEGORY_FIRST_STEP = CHARGE_CATEGORY_FIRST_STEP;
 exports.getStepKeyByValue = getStepKeyByValue;

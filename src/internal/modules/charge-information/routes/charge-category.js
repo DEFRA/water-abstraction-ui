@@ -4,8 +4,8 @@ const { VALID_GUID } = require('shared/lib/validators');
 const Joi = require('joi');
 const { chargeVersionWorkflowEditor, chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope;
 const allowedScopes = [chargeVersionWorkflowEditor, chargeVersionWorkflowReviewer];
-const { CHARGE_CATEGORY_STEPS } = require('../lib/charge-categories/constants');
-const chargeCategorySteps = Object.values(CHARGE_CATEGORY_STEPS);
+const { ROUTING_CONFIG } = require('../lib/charge-categories/constants');
+const chargeCategorySteps = Object.values(ROUTING_CONFIG).map(routeConfig => routeConfig.step);
 const config = require('../../../config');
 
 if (config.featureToggles.srocChargeInformation) {
@@ -32,7 +32,7 @@ if (config.featureToggles.srocChargeInformation) {
           }),
           query: Joi.object().keys({
             form: VALID_GUID.optional(),
-            returnToCheckData: Joi.boolean().default(false),
+            returnToCheckData: Joi.boolean().optional().default(false),
             additionalChargesAdded: Joi.boolean().optional().default(false),
             chargeVersionWorkflowId: Joi.string().uuid().optional().default('')
           })
@@ -66,7 +66,7 @@ if (config.featureToggles.srocChargeInformation) {
           }),
           query: Joi.object().keys({
             form: VALID_GUID.optional(),
-            returnToCheckData: Joi.boolean().default(false),
+            returnToCheckData: Joi.boolean().optional().default(false),
             additionalChargesAdded: Joi.boolean().optional().default(false),
             chargeVersionWorkflowId: Joi.string().uuid().optional().default('')
           })

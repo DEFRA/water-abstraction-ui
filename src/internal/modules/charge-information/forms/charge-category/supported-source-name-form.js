@@ -1,12 +1,11 @@
 const { getChargeCategoryData, getChargeCategoryActionUrl } = require('../../lib/form-helpers');
-const { ROUTING_CONFIG, CHARGE_CATEGORY_STEPS } = require('../../lib/charge-categories/constants');
+const { ROUTING_CONFIG } = require('../../lib/charge-categories/constants');
 const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
-const { capitalize } = require('lodash');
 
 const getChoices = (config, supportedSources) => {
   const choices = supportedSources.reduce((reducedChoices, source, index) => {
-    const choice = { value: source.id, label: capitalize(source.name) };
+    const choice = { value: source.id, label: source.name };
     const lastSource = index ? supportedSources[index - 1] : {};
     if (source.region !== lastSource.region) {
       return [...reducedChoices, { divider: source.region }, choice];
@@ -37,7 +36,7 @@ const form = request => {
   const data = getChargeCategoryData(request);
   const { supportedSources } = request.pre;
 
-  const action = getChargeCategoryActionUrl(request, CHARGE_CATEGORY_STEPS.supportedSourceName);
+  const action = getChargeCategoryActionUrl(request, ROUTING_CONFIG.supportedSourceName.step);
 
   const f = formFactory(action, 'POST');
 

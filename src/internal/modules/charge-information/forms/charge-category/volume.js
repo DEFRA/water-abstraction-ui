@@ -2,7 +2,7 @@
 
 const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
-const { CHARGE_CATEGORY_STEPS } = require('../../lib/charge-categories/constants');
+const { ROUTING_CONFIG } = require('../../lib/charge-categories/constants');
 const { getChargeCategoryData, getChargeCategoryActionUrl } = require('../../lib/form-helpers');
 
 /**
@@ -13,7 +13,7 @@ const { getChargeCategoryData, getChargeCategoryActionUrl } = require('../../lib
 const form = request => {
   const { csrfToken } = request.view;
   const data = getChargeCategoryData(request);
-  const action = getChargeCategoryActionUrl(request, CHARGE_CATEGORY_STEPS.volume);
+  const action = getChargeCategoryActionUrl(request, ROUTING_CONFIG.volume.step);
 
   const f = formFactory(action, 'POST');
   f.fields.push(fields.text('volume', {

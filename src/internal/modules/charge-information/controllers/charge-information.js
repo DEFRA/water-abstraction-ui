@@ -19,13 +19,13 @@ const {
 } = require('../lib/helpers');
 const chargeInformationValidator = require('../lib/charge-information-validator');
 const { CHARGE_ELEMENT_STEPS, CHARGE_ELEMENT_FIRST_STEP } = require('../lib/charge-elements/constants');
-const { CHARGE_CATEGORY_FIRST_STEP } = require('../lib/charge-categories/constants');
 const services = require('../../../lib/connectors/services');
 const { reducer } = require('../lib/reducer');
 const { reviewForm } = require('../forms/review');
 const { chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope;
 const { hasScope } = require('internal/lib/permissions');
 const { featureToggles, isSrocLive } = require('../../../config');
+const { getChargeCategoryFirstStep, getAlcsCount, processElements } = require('internal/modules/charge-information/lib/helpers');
 const isSrocChargeInfoEnabled = featureToggles.srocChargeInformation && isSrocLive;
 /**
  * Select the reason for the creation of a new charge version
@@ -303,28 +303,22 @@ const redirectToStartOfElementFlow = (request, h) => {
 };
 
 const redirectToStartOfCategoryFlow = (request, h) => {
-  const { chargeVersionWorkflowId } = request.query;
   const { licenceId } = request.params;
-  const { draftChargeInformation: currentState } = request.pre;
-  const eiucRegion = request.pre.licence.regionalChargeArea.name;
+  const { chargeVersionWorkflowId } = request.query;
+  const { draftChargeInformation: currentState, licence } = request.pre;
+  const eiucRegion = licence.regionalChargeArea.name;
   // Create new element to edit in the session state
   const id = uuid();
-  const data = currentState.chargeElements.reduce((acc, element) => {
-    element.scheme === 'alcs'
-      // move all non sroc charge elements to charge purposes
-      // todo this will need to change to only push the charge elements
-      // selected in the UI to be charge purposes
-      ? acc.chargePurposes.push({ ...element, scheme: 'sroc' })
-      : acc.chargeElements.push(element);
-    return acc;
-  }, { chargeElements: [], chargePurposes: [] });
-
-  const action = actions.createChargeCategory(id, data.chargeElements, data.chargePurposes, eiucRegion);
+  const action = actions.createChargeCategory(id, currentState.chargeElements, [], eiucRegion);
   const nextState = reducer(currentState, action);
   request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, nextState);
 
+  if (getAlcsCount(request) <= 1) {
+    processElements(request, id);
+  }
+
   // Enter charge element setup flow
-  return h.redirect(routing.getChargeCategoryStep(licenceId, id, CHARGE_CATEGORY_FIRST_STEP, request.query));
+  return h.redirect(routing.getChargeCategoryStep(licenceId, id, getChargeCategoryFirstStep(request), request.query));
 };
 
 const removeElement = async (request, h) => {

@@ -43,7 +43,7 @@ const ADJUSTMENTS = [
   { title: 'Charge adjustment', value: 'charge', hasFactor: true },
   { title: 'Winter discount', value: 'winter', hasFactor: false },
   { title: 'Two-part tariff agreement', value: 's127', hasFactor: false },
-  { title: 'Abatement agreement', value: 's126', hasFactor: true },
+  { title: 'Abatement agreement', value: 's126', hasFactor: true, hint: 'If a licence charge is reduced by 70% the abatement factor is 0.3' },
   { title: 'Canal and River Trust agreement', value: 's130', hasFactor: false }
 ];
 

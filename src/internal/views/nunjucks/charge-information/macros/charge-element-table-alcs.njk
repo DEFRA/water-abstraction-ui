@@ -81,7 +81,7 @@ formErrorSummary %}
   {% endif %}
 {% endmacro %}
 
-{% macro chargeElementTableAlcs(chargeElements, isEditable, licenceId, scheme, chargeVersionWorkflowId) %}
+{% macro chargeElementTableAlcs(chargeElements, isEditable, licenceId, scheme, chargeVersionWorkflowId, chargeElementCount) %}
     {% if chargeElements.length > 0 %}
       {% for chargeElement in chargeElements %}
 
@@ -147,7 +147,7 @@ formErrorSummary %}
             <div class="govuk-grid-row">
               <div class="govuk-grid-column-full">
                 <span class=" govuk-body  govuk-!-font-size-19">
-                  {% if chargeElements.length > 1 %}
+                  {% if chargeElementCount > 1 %}
                   {{ removeElementButton(chargeElement) }}
                 {% endif %}
                 {% if loop.last %}

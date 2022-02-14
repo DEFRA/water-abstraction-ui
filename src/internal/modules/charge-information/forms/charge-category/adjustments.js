@@ -56,6 +56,7 @@ const form = request => {
                     'number.precision': { message: `The '${item.title}' factor must not have more than 15 decimal places.` },
                     'number.unsafe': { message: `The '${item.title}' factor must not have more than 15 decimal places.` }
                   },
+                  hint: item.hint || '',
                   mapper: 'numberMapper',
                   label: 'Factor',
                   controlClass: 'govuk-input--width-4'
@@ -73,7 +74,7 @@ const form = request => {
 
 const schema = () => {
   const factorSchema =
-  Joi.number().precision(15).greater(0).less(1).required().options({ convert: false });
+  Joi.number().precision(15).greater(0).required().options({ convert: false });
 
   return createSchema({
     adjustments: Joi.array().min(1).required(),
@@ -90,7 +91,7 @@ const schema = () => {
     s126Factor: Joi.when('adjustments',
       {
         is: Joi.array().items(Joi.string().valid('s126').required(), Joi.string()),
-        then: factorSchema
+        then: Joi.number().precision(15).greater(0).less(1).required().options({ convert: false })
       }),
     csrf_token: Joi.string().uuid().required()
   });

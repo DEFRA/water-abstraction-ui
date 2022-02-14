@@ -210,7 +210,7 @@ formErrorSummary %}
         {{ summaryListRow('Loss', chargeElement.loss | title, changeLinkSroc('/loss', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
         {{ summaryListRow('Volume', chargeElement.volume + 'ML', changeLinkSroc('/volume', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
         {{ summaryListRow('Water availability', restrictedSourceText(chargeElement.isRestrictedSource), changeLinkSroc('/restricted-source', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
-        {{ summaryListRow('Water model', chargeElement.waterModel | title, changeLinkSroc('/water-model', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
+        {{ summaryListRow('Water model', chargeElement.waterModel | sentenceCase, changeLinkSroc('/water-model', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
         {{ summaryListRow('Additional charges apply', getBooleanText(chargeElement.isAdditionalCharges) | title, changeLinkSroc('/additional-charges', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
         {{ summaryListRow('Adjustments apply', getBooleanText(chargeElement.isAdjustments) | title, changeLinkSroc('/adjustments-apply', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
         {{ summaryListRow('EIC Region', chargeElement.eiucRegion | title) }}

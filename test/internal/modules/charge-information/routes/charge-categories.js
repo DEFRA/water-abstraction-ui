@@ -12,8 +12,8 @@ const { expect } = require('@hapi/code');
 const preHandlers = require('internal/modules/charge-information/pre-handlers');
 const routes = require('../../../../../src/internal/modules/charge-information/routes/charge-category');
 const testHelpers = require('../../../test-helpers');
-const { CHARGE_CATEGORY_STEPS } = require('../../../../../src/internal/modules/charge-information/lib/charge-categories/constants');
-const validChargeCategorySteps = Object.values(CHARGE_CATEGORY_STEPS);
+const { ROUTING_CONFIG } = require('../../../../../src/internal/modules/charge-information/lib/charge-categories/constants');
+const validChargeCategorySteps = Object.values(ROUTING_CONFIG).map(config => config.step);
 
 experiment('internal/modules/charge-information/routes', () => {
   let server;

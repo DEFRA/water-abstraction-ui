@@ -2,67 +2,76 @@
 const cleanObject = require('../../../../shared/lib/clean-object');
 const forms = require('../forms/charge-category/index');
 const routing = require('../lib/routing');
-const { getDefaultView, getPostedForm, applyFormResponse } = require('../lib/helpers');
+const { getDefaultView, getPostedForm, getChargeCategoryFirstStep, applyFormResponse } = require('../lib/helpers');
 const {
   ROUTING_CONFIG,
-  CHARGE_CATEGORY_FIRST_STEP, CHARGE_CATEGORY_STEPS, getStepKeyByValue
+  getStepKeyByValue
 } = require('../lib/charge-categories/constants');
 const actions = require('../lib/actions');
+const { processElements } = require('internal/modules/charge-information/lib/helpers');
 const getChargeElement = request => {
   const { elementId } = request.params;
   const { draftChargeInformation } = request.pre;
   return draftChargeInformation.chargeElements.find(element => element.id === elementId);
 };
 
-const getBackLink = (request, step) => {
+const getBackLink = (request, stepKey) => {
   const { licenceId, elementId } = request.params;
   const { chargeVersionWorkflowId } = request.query;
-  let { back } = ROUTING_CONFIG[step];
+  const routeConfig = ROUTING_CONFIG[stepKey];
+  let { back } = routeConfig;
   const chargeElement = getChargeElement(request);
 
-  if (step === 'isSupplyPublicWater' && chargeElement.supportedSourceName) {
-    back = CHARGE_CATEGORY_STEPS.supportedSourceName;
+  if (routeConfig === ROUTING_CONFIG.isSupplyPublicWater && chargeElement.supportedSourceName) {
+    back = ROUTING_CONFIG.supportedSourceName.step;
   }
 
   if (request.query.returnToCheckData === true) {
     return routing.getCheckData(licenceId);
   }
-  return step === CHARGE_CATEGORY_FIRST_STEP
+  return routeConfig.step === getChargeCategoryFirstStep(request)
     ? routing.getCheckData(licenceId, { chargeVersionWorkflowId })
     : routing.getChargeCategoryStep(licenceId, elementId, back, { chargeVersionWorkflowId });
 };
 
-const getRedirectPath = (request, stepKey, step) => {
+const getRedirectPath = (request, stepKey) => {
   const { licenceId, elementId } = request.params;
   const chargeElement = getChargeElement(request);
   const { chargeVersionWorkflowId, returnToCheckData, additionalChargesAdded } = request.query;
   const queryParams = { returnToCheckData, chargeVersionWorkflowId };
+  const routeConfig = ROUTING_CONFIG[stepKey];
+
   const checkAnswersRoute = request.pre.draftChargeInformation.status === 'review'
     ? routing.postReview(chargeVersionWorkflowId, licenceId)
     : routing.getCheckData(licenceId, { chargeVersionWorkflowId });
 
   // Adjustments Page or Is the water supply -- these two steps are both at the end of the flow or subflow
-  if ((stepKey === CHARGE_CATEGORY_STEPS.adjustments) || (step === CHARGE_CATEGORY_STEPS.isSupplyPublicWater && returnToCheckData)) {
+  if ((routeConfig === ROUTING_CONFIG.adjustments) || (routeConfig === ROUTING_CONFIG.isSupplyPublicWater && returnToCheckData)) {
     return checkAnswersRoute;
   }
 
   // Additional charges flow start
-  if ((step === CHARGE_CATEGORY_STEPS.isAdditionalCharges)) {
+  if ((routeConfig === ROUTING_CONFIG.isAdditionalCharges)) {
     return routing.getAditionalChargesRoute(request, chargeElement, stepKey, checkAnswersRoute);
   }
+
   // Is a supported source name required
-  if (step === CHARGE_CATEGORY_STEPS.isSupportedSource) {
+  if (routeConfig === ROUTING_CONFIG.isSupportedSource) {
     return routing.getSupportedSourcesRoute(request, chargeElement, stepKey, checkAnswersRoute);
   }
 
   // supportedSourceName
-  if (step === CHARGE_CATEGORY_STEPS.supportedSourceName && returnToCheckData) {
+  if (routeConfig === ROUTING_CONFIG.supportedSourceName && returnToCheckData) {
     return additionalChargesAdded
-      ? routing.getChargeCategoryStep(licenceId, elementId, ROUTING_CONFIG[stepKey].nextStep, queryParams)
+      ? routing.getChargeCategoryStep(licenceId, elementId, routeConfig.nextStep, queryParams)
       : checkAnswersRoute;
   }
 
-  return routing.getChargeCategoryStep(licenceId, elementId, ROUTING_CONFIG[stepKey].nextStep, queryParams);
+  if (returnToCheckData) {
+    return checkAnswersRoute;
+  }
+
+  return routing.getChargeCategoryStep(licenceId, elementId, routeConfig.nextStep, queryParams);
 };
 
 const getChargeCategoryStep = async (request, h) => {
@@ -93,25 +102,30 @@ const postChargeCategoryStep = async (request, h) => {
   const { chargeVersionWorkflowId } = request.query;
   const form = getPostedForm(request, forms[step]);
   if (form.isValid) {
+    const stepKey = getStepKeyByValue(step);
+    const routeConfig = ROUTING_CONFIG[stepKey];
     const { draftChargeInformation, supportedSources } = request.pre;
     const chargeElement = draftChargeInformation.chargeElements.find(element => element.id === elementId);
-    if (step === CHARGE_CATEGORY_STEPS.isAdjustments) {
+    if (routeConfig === ROUTING_CONFIG.isAdjustments) {
       const route = await adjustementsHandler(request, draftChargeInformation);
       return h.redirect(route);
-    } else if (step === CHARGE_CATEGORY_STEPS.isSupportedSource) {
+    } else if (routeConfig === ROUTING_CONFIG.whichElement) {
+      const selectedElementIds = form.fields.find(field => field.name === 'selectedElementIds').value;
+      processElements(request, elementId, selectedElementIds);
+      return h.redirect(getRedirectPath(request, stepKey));
+    } else if (routeConfig === ROUTING_CONFIG.isSupportedSource) {
       if (request.payload.isSupportedSource === 'false') {
         delete chargeElement.supportedSourceName;
         request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation);
       }
-    } else if (step === CHARGE_CATEGORY_STEPS.supportedSourceName) {
+    } else if (routeConfig === ROUTING_CONFIG.supportedSourceName) {
       const { supportedSourceId } = request.payload;
       const supportedSource = supportedSources.find(({ id }) => id === supportedSourceId);
       chargeElement.supportedSourceName = supportedSource.name;
       request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation);
     }
     await applyFormResponse(request, form, actions.setChargeElementData);
-    const stepKey = getStepKeyByValue(step);
-    return h.redirect(getRedirectPath(request, stepKey, step));
+    return h.redirect(getRedirectPath(request, stepKey));
   }
 
   const queryParams = cleanObject(request.query);

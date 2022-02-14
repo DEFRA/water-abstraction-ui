@@ -5,7 +5,7 @@ const DATE_FORMAT = 'YYYY-MM-DD';
 const chargeElementMappers = require('./charge-elements/mappers');
 const chargeCategoryMappers = require('./charge-categories/mappers');
 const { CHARGE_ELEMENT_STEPS } = require('./charge-elements/constants');
-const { CHARGE_CATEGORY_STEPS } = require('./charge-categories/constants');
+const { ROUTING_CONFIG } = require('./charge-categories/constants');
 const { srocStartDate } = require('../../../config');
 const ACTION_TYPES = {
   clearData: 'clearData',
@@ -16,6 +16,7 @@ const ACTION_TYPES = {
   setChargeCategoryData: 'set.chargeCategoryData',
   createChargeElement: 'create.chargeElement',
   createChargeCategory: 'create.chargeCategory',
+  updateChargeCategory: 'update.chargeCategory',
   setChargePurposeData: 'set.chargePurposeData'
 };
 
@@ -129,7 +130,7 @@ const setChargeElementData = (request, formValues) => {
   if (step === CHARGE_ELEMENT_STEPS.purpose && !returnToCheckData) {
     data.status = 'draft';
   }
-  if ((step === CHARGE_ELEMENT_STEPS.loss || step === CHARGE_CATEGORY_STEPS.isAdjustments) && chargeElementToUpdate) {
+  if ((step === CHARGE_ELEMENT_STEPS.loss || step === ROUTING_CONFIG.isAdjustments.step) && chargeElementToUpdate) {
     delete chargeElementToUpdate.status;
   }
   chargeElementToUpdate
@@ -182,6 +183,11 @@ const createChargeCategory = (id, chargeElements, chargePurposes, eiucRegion) =>
     }]
 });
 
+const updateChargeCategory = (id, chargeElements, chargePurposes) => ({
+  type: ACTION_TYPES.updateChargeCategory,
+  payload: chargeElements.map(element => element.id === id ? { ...element, chargePurposes } : element)
+});
+
 const setChargePurposeData = (request, formValues) => {
   const { draftChargeInformation } = request.pre;
   const { categoryId } = request.query;
@@ -218,4 +224,5 @@ exports.setChargeElementData = setChargeElementData;
 exports.removeChargeElement = removeChargeElement;
 exports.createChargeElement = createChargeElement;
 exports.createChargeCategory = createChargeCategory;
+exports.updateChargeCategory = updateChargeCategory;
 exports.setChargePurposeData = setChargePurposeData;

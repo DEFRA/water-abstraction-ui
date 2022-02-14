@@ -1,6 +1,8 @@
 module.exports = {
+  ...require('./alcs-exist'),
   ...require('./abstraction-reform'),
   ...require('./most-significant-entity-role'),
+  ...require('./charge-purposes-descriptions'),
   ...require('shared/view/nunjucks/filters/abstraction-period'),
   ...require('shared/view/nunjucks/filters/batch-badge'),
   ...require('shared/view/nunjucks/filters/charge-element-abstraction-period'),

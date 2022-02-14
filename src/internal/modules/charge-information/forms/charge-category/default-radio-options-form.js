@@ -2,7 +2,7 @@
 
 const Joi = require('joi');
 const { formFactory, fields } = require('shared/lib/forms/');
-const { CHARGE_CATEGORY_STEPS, ROUTING_CONFIG, getStepKeyByValue } = require('../../lib/charge-categories/constants');
+const { ROUTING_CONFIG, getStepKeyByValue } = require('../../lib/charge-categories/constants');
 const { getChargeCategoryData, getChargeCategoryActionUrl } = require('../../lib/form-helpers');
 const { capitalize } = require('lodash');
 
@@ -35,7 +35,7 @@ const form = request => {
   const stepKey = getStepKeyByValue(step);
   const config = ROUTING_CONFIG[stepKey];
 
-  const action = getChargeCategoryActionUrl(request, CHARGE_CATEGORY_STEPS[stepKey]);
+  const action = getChargeCategoryActionUrl(request, config.step);
 
   const f = formFactory(action, 'POST');
 

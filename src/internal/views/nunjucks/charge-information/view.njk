@@ -102,9 +102,9 @@ formErrorSummary %}
     <input type="hidden" name="csrf_token" value="{{ csrfToken }}"/>
     {% if chargeVersion.scheme == 'sroc' and isSrocChargeInfoEnabled  %}
         {{ chargeElementTableSroc(chargeVersion.chargeElements | arrayFilter('scheme', 'sroc'), isEditable, licenceId, chargeVersionWorkflowId)}}
-        {{ chargeElementTableAlcs(chargeVersion.chargeElements | arrayFilter('scheme','alcs'), isEditable, licenceId, 'sroc', chargeVersionWorkflowId)}}
+        {{ chargeElementTableAlcs(chargeVersion.chargeElements | arrayFilter('scheme','alcs'), isEditable, licenceId, 'sroc', chargeVersionWorkflowId, chargeVersion.chargeElements.length)}}
     {% else %}
-      {{ chargeElementTableAlcs(chargeVersion.chargeElements, isEditable, licenceId, 'alcs', chargeVersionWorkflowId) }}
+      {{ chargeElementTableAlcs(chargeVersion.chargeElements, isEditable, licenceId, 'alcs', chargeVersionWorkflowId, chargeVersion.chargeElements.length ) }}
     {% endif %}
 </form>
 

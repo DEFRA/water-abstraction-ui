@@ -51,8 +51,8 @@ const form = request => {
                 {
                   errors: {
                     'number.base': { message: `The '${item.title}' factor must not have more than 15 decimal places.` },
-                    'number.greater': { message: `The '${item.title}' factor must be between 0 and 1` },
-                    'number.less': { message: `The '${item.title}' factor must be between 0 and 1` },
+                    'number.greater': { message: `The '${item.title}' factor must be greater than 0` },
+                    'number.less': { message: `The '${item.title}' factor must be less than 1` },
                     'number.precision': { message: `The '${item.title}' factor must not have more than 15 decimal places.` },
                     'number.unsafe': { message: `The '${item.title}' factor must not have more than 15 decimal places.` }
                   },

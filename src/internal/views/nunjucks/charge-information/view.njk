@@ -159,21 +159,21 @@ formErrorSummary %}
       <div class="govuk-grid-column-full">
         <form method="post" action="{{action}}" novalidate="novalidate">
           <input type="hidden" name="csrf_token" value="{{ csrfToken }}"/>
-          {% if chargeVersion.status == 'changes_requested' %}
-            {{ govukButton({
+          {% if (isSrocChargeInfoEnabled and (chargeVersion.chargeElements | arrayFilter('scheme' ,'alcs')).length == 0) or (chargeVersion.scheme == 'alcs') %}
+            {% if chargeVersion.status == 'changes_requested' %}
+              {{ govukButton({
                 text: 'Update and send back for review',
                 name: 'buttonAction',
                 value: 'update',
                 classes: 'govuk-!-margin-right-6'
               }) }}
-          {% elif chargeVersion.status != 'review' %}
-            {% if (isSrocChargeInfoEnabled and (chargeVersion.chargeElements | arrayFilter('scheme' ,'alcs')).length == 0) or (chargeVersion.scheme == 'alcs') %}
+            {% elif chargeVersion.status != 'review' %}
               {{ govukButton({
-                  text: 'Confirm',
-                  name: 'buttonAction',
-                  value: 'confirm',
-                  classes: 'govuk-!-margin-right-6'
-                }) }}
+                text: 'Confirm',
+                name: 'buttonAction',
+                value: 'confirm',
+                classes: 'govuk-!-margin-right-6'
+              }) }}
             {% endif %}
           {% endif %}
           {{ govukButton({
@@ -187,14 +187,16 @@ formErrorSummary %}
     </div>
   {% endif %}
 
-  {% if isApprover and chargeVersion.status == 'review' and reviewForm %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
-        {{ formErrorSummary(reviewForm) }}
-        {{ title('Do you want to approve this charge information?') }}
-        {{ formRender(reviewForm) }}
+  {% if (isSrocChargeInfoEnabled and (chargeVersion.chargeElements | arrayFilter('scheme' ,'alcs')).length == 0) or (chargeVersion.scheme == 'alcs') %}
+    {% if isApprover and chargeVersion.status == 'review' and reviewForm %}
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          {{ formErrorSummary(reviewForm) }}
+          {{ title('Do you want to approve this charge information?') }}
+          {{ formRender(reviewForm) }}
+        </div>
       </div>
-    </div>
+    {% endif %}
   {% endif %}
 
 {% endblock %}

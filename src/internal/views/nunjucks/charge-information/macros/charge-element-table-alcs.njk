@@ -152,7 +152,7 @@ formErrorSummary %}
                 {% endif %}
                 {% if loop.last %}
                   {{ addElementButton() }}
-                  {% if chargeElements | alcsExist %}
+                  {% if scheme === 'sroc' and chargeElements | alcsExist %}
                     <hr class="govuk-section-break  govuk-!-margin-bottom-6">
                     {{ addChargeReferenceButton() }}
                   {% endif %}

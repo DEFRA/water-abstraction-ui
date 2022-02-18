@@ -11,14 +11,25 @@ formErrorSummary %}
 {% from "nunjucks/charge-information/macros/charge-element-table-alcs.njk" import chargeElementTableAlcs %}
 {% from "nunjucks/charge-information/macros/charge-element-table-sroc.njk" import chargeElementTableSroc %}
 
-{% macro summaryListRow(key, value, changeLink) %}
+{% macro summaryListRow(key, value, changeLink, deleteLink) %}
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">{{ key }}</dt>
     <dd class="govuk-summary-list__value">{{ value }}</dd>
     {% if isEditable %}
       <dd class="govuk-summary-list__actions">
-        {% if changeLink %}
+        {% if changeLink and deleteLink %}
+          <ul class="govuk-summary-list__actions-list">
+            <li class="govuk-summary-list__actions-list-item">
+              <a class="govuk-link" href="{{ changeLink }}">Change</a>
+            </li>
+            <li class="govuk-summary-list__actions-list-item">
+              <a class="govuk-link" href="{{ deleteLink }}">Delete</a>
+            </li>
+          </ul>
+        {% elseif changeLink %}
           <a class="govuk-link" href="{{ changeLink }}">Change</a>
+        {% elseif deleteLink %}
+          <a class="govuk-link" href="{{ deleteLink }}">Delete</a>
         {% endif %}
       </dd>
     {% endif %}
@@ -44,7 +55,7 @@ formErrorSummary %}
   {% endif %}
 {% endmacro %}
 
-{% macro chargeableData(drafChargeInformation, invoiceAccountAddress) %}
+{% macro chargeableData(draftChargeInformation, invoiceAccountAddress) %}
   <div class="govuk-grid-column-full">
     {% if chargeVersion.status == 'changes_requested' and chargeVersion.approverComments %}
       <section class="govuk-!-margin-bottom-7">
@@ -98,21 +109,36 @@ formErrorSummary %}
       </dl>
     </section>
 
-  <form method="post"  action="{{action}}" novalidate="novalidate">
-    <input type="hidden" name="csrf_token" value="{{ csrfToken }}"/>
-    {% if chargeVersion.scheme == 'sroc' and isSrocChargeInfoEnabled  %}
+    {% if isEditable or chargeVersion.note %}
+      <section class="govuk-!-margin-bottom-7">
+        <h2 class="govuk-heading-l govuk-!-margin-bottom-4">Notes</h2>
+        {% if chargeVersion.note %}
+          <dl class="govuk-summary-list">
+            {{ summaryListRow(chargeVersion.note.user.email, chargeVersion.note.text | escape | nl2br , changeLink('/note'), changeLink('/note/delete'))}}
+          </dl>
+        {% elseif isEditable %}
+          <p class="govuk-body">
+            <a class="govuk-link govuk-!-margin-right-3" href="{{ changeLink('/note') }}">Add a note</a>
+          </p>
+          <hr class="govuk-section-break  govuk-!-margin-bottom-2 govuk-section-break--visible">
+        {% endif %}
+      </section>
+    {% endif %}
+
+    <form method="post"  action="{{action}}" novalidate="novalidate">
+      <input type="hidden" name="csrf_token" value="{{ csrfToken }}"/>
+      {% if chargeVersion.scheme == 'sroc' and isSrocChargeInfoEnabled  %}
         {{ chargeElementTableSroc(chargeVersion.chargeElements | arrayFilter('scheme', 'sroc'), isEditable, licenceId, chargeVersionWorkflowId)}}
         {{ chargeElementTableAlcs(chargeVersion.chargeElements | arrayFilter('scheme','alcs'), isEditable, licenceId, 'sroc', chargeVersionWorkflowId, chargeVersion.chargeElements.length)}}
-    {% else %}
-      {{ chargeElementTableAlcs(chargeVersion.chargeElements, isEditable, licenceId, 'alcs', chargeVersionWorkflowId, chargeVersion.chargeElements.length ) }}
-    {% endif %}
-</form>
-
+      {% else %}
+        {{ chargeElementTableAlcs(chargeVersion.chargeElements, isEditable, licenceId, 'alcs', chargeVersionWorkflowId, chargeVersion.chargeElements.length ) }}
+      {% endif %}
+    </form>
 
   </div>
 {% endmacro %}
 
-{% macro nonChargeableData(drafChargeInformation, licence) %}
+{% macro nonChargeableData(draftChargeInformation, licence) %}
 <div class="govuk-grid-column-full">
   <section class="govuk-!-margin-bottom-7">
     <dl class="govuk-summary-list">

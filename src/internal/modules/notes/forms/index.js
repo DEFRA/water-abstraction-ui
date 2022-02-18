@@ -1,0 +1,1 @@
+exports.note = require('./note');

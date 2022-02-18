@@ -78,6 +78,10 @@ experiment('mapFormField', () => {
     test('It should set the auto complete property', async () => {
       expect(result.autocomplete).to.equal(textField.options.autoComplete);
     });
+
+    test('It should not set the maxlength property', async () => {
+      expect(result.maxlength).to.equal(undefined);
+    });
   });
 
   experiment('when the field "heading" property is true', () => {
@@ -101,6 +105,24 @@ experiment('mapFormField', () => {
 
     test('The label isPageHeading property is true', async () => {
       expect(result.label.isPageHeading).to.equal(true);
+    });
+  });
+
+  experiment('when the "maxlength" option is set', () => {
+    const maxlength = 50;
+
+    beforeEach(async () => {
+      result = mapFormField({
+        ...textField,
+        options: {
+          ...textField.options,
+          maxlength
+        }
+      });
+    });
+
+    test('It should set the maxlength property', async () => {
+      expect(result.maxlength).to.equal(maxlength);
     });
   });
 });

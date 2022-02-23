@@ -1,13 +1,5 @@
 'use-strict';
 
-const { getAbstractionPeriodSeason } = require('@envage/water-abstraction-helpers').returns.date;
-
-const isMatchingAbstractionPeriodAndSeason = chargeElement => {
-  const { abstractionPeriod, season } = chargeElement;
-  const absPeriodSeason = getAbstractionPeriodSeason(abstractionPeriod);
-  return absPeriodSeason === season;
-};
-
 const isDefaultLossFactor = chargeElement => {
   const { loss, purposeUse } = chargeElement;
   return loss === purposeUse.lossFactor;
@@ -17,10 +9,6 @@ const isBillableVolumeLessThanAuthorisedVolume = chargeElement =>
   chargeElement.billableAnnualQuantity <= chargeElement.authorisedAnnualQuantity;
 
 const validations = {
-  abstractionPeriod: {
-    validatorFunc: isMatchingAbstractionPeriodAndSeason,
-    warningMessage: 'The abstraction period does not match the season selected'
-  },
   lossFactor: {
     validatorFunc: isDefaultLossFactor,
     warningMessage: 'The loss factor does not match the purpose selected'

@@ -67,11 +67,6 @@ experiment('internal/modules/charge-information/lib/charge-information-validator
       expect(validationWarnings).to.equal([]);
     });
 
-    test('when the season and abs period don\'t match, the expected validation warning is present', () => {
-      const { validationWarnings } = getElement(decoratedChargeInfo, 'abstraction-period-warning');
-      expect(validationWarnings).to.equal(['The abstraction period does not match the season selected']);
-    });
-
     test('when the loss and purpose use loss factor don\'t match, the expected validation warning is present', () => {
       const { validationWarnings } = getElement(decoratedChargeInfo, 'loss-factor-warning');
       expect(validationWarnings).to.equal(['The loss factor does not match the purpose selected']);
@@ -85,7 +80,6 @@ experiment('internal/modules/charge-information/lib/charge-information-validator
     test('when there are multiple warnings, all warnings are present', () => {
       const { validationWarnings } = getElement(decoratedChargeInfo, 'multiple-warnings');
       expect(validationWarnings).to.equal([
-        'The abstraction period does not match the season selected',
         'The loss factor does not match the purpose selected'
       ]);
     });

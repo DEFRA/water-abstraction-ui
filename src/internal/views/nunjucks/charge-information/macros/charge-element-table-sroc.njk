@@ -156,9 +156,6 @@ formErrorSummary %}
                 <li>
                   {{ chargePurpose.authorisedAnnualQuantity + 'ML authorised' }}
                 </li>
-                <li>
-                  {{chargePurpose.billableAnnualQuantity + 'ML billable' if chargePurpose.billableAnnualQuantity }}
-                </li>
               </ul>
             </dd>
             {% if isEditable %}

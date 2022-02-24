@@ -513,6 +513,37 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
         expect(err.message).to.equal('Oh no!');
       });
     });
+
+    experiment('when data is found and the charge version has adjustments', () => {
+      beforeEach(async () => {
+        services.water.chargeVersions.getChargeVersion.returns({
+          id: 'test-charge-version-id',
+          status: 'current',
+          scheme: 'sroc',
+          chargeElements: [{ adjustments: { s127: true } }]
+        });
+        result = await preHandlers.loadChargeVersion(request);
+      });
+
+      test('the charge version is retrieved by its id', async () => {
+        expect(result.chargeElements[0].isAdjustments).to.be.true();
+      });
+    });
+    experiment('when data is found and the charge version does not have any adjustments', () => {
+      beforeEach(async () => {
+        services.water.chargeVersions.getChargeVersion.returns({
+          id: 'test-charge-version-id',
+          status: 'current',
+          scheme: 'sroc',
+          chargeElements: [{ adjustments: {} }]
+        });
+        result = await preHandlers.loadChargeVersion(request);
+      });
+
+      test('the charge version is retrieved by its id', async () => {
+        expect(result.chargeElements[0].isAdjustments).to.be.false();
+      });
+    });
   });
 
   experiment('.loadChargeVersions', () => {

@@ -142,7 +142,7 @@ const loadChargeVersion = async request => {
     const chargeVersion = await services.water.chargeVersions.getChargeVersion(chargeVersionId);
     if (chargeVersion.scheme === 'sroc') {
       chargeVersion.chargeElements = chargeVersion.chargeElements.map(element => {
-        element.isAdjustments = chargeVersion.adjustments !== {};
+        element.isAdjustments = !isEmpty(element.adjustments);
         return flattenAdditionalChargesProperties(element);
       });
     }

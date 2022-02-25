@@ -110,9 +110,11 @@ formErrorSummary %}
                   <li>
                     {{ chargeElement.authorisedAnnualQuantity + 'ML authorised' }}
                   </li>
-                  <li>
-                    {{chargeElement.billableAnnualQuantity + 'ML billable' if chargeElement.billableAnnualQuantity else 'Billable not set' }}
-                  </li>
+                  {% if scheme != 'sroc' %}
+                      <li>
+                        {{chargeElement.billableAnnualQuantity + 'ML billable' if (chargeElement.billableAnnualQuantity) else 'Billable not set' }}
+                      </li>
+                  {% endif %}
                 </ul>
               </dd>
               {% if isEditable %}
@@ -168,5 +170,5 @@ formErrorSummary %}
     {% if isEditable and chargeElements.length === 0 %}
       {{ addElementButton() }}
     {% endif %}
-  
+
 {% endmacro %}

@@ -1,5 +1,4 @@
 'use-strict';
-
 const { getAbstractionPeriodSeason } = require('@envage/water-abstraction-helpers').returns.date;
 
 const isMatchingAbstractionPeriodAndSeason = chargeElement => {
@@ -13,8 +12,10 @@ const isDefaultLossFactor = chargeElement => {
   return loss === purposeUse.lossFactor;
 };
 
-const isBillableVolumeLessThanAuthorisedVolume = chargeElement =>
-  chargeElement.billableAnnualQuantity <= chargeElement.authorisedAnnualQuantity;
+const isBillableVolumeLessThanAuthorisedVolume = chargeElement => {
+  const { billableAnnualQuantity, authorisedAnnualQuantity } = chargeElement;
+  return billableAnnualQuantity <= authorisedAnnualQuantity;
+};
 
 const validations = {
   abstractionPeriod: {
@@ -31,7 +32,7 @@ const validations = {
   }
 };
 
-const validate = chargeElement =>
+const validate = (chargeElement) =>
   Object.values(validations).reduce((validationWarnings, validation) => {
     if (!validation.validatorFunc(chargeElement)) {
       validationWarnings.push(validation.warningMessage);
@@ -46,13 +47,11 @@ const addValidation = chargeInformation => {
           ...element,
           chargePurposes: element.chargePurposes.map(purpose => ({
             ...purpose,
-            validationWarnings: validate(purpose)
+            validationWarnings: chargeInformation.scheme === 'alcs' && validate(purpose)
           }))
         }
       : element),
-    validationWarnings: element.scheme === 'alcs'
-      ? validate(element)
-      : [] // todo a new validator for SROC will have to be added here
+    validationWarnings: chargeInformation.scheme === 'alcs' && validate(element)
   }));
   return {
     ...chargeInformation,

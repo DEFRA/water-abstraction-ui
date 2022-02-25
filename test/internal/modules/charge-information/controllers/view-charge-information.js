@@ -43,6 +43,7 @@ const createRequest = () => ({
     },
     draftChargeInformation: {
       id: workflowId,
+      scheme: 'alcs',
       dateRange: { startDate: '2019-04-01' },
       chargeElements: [{
         id: 'test-element-id',
@@ -444,6 +445,7 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
                 approverComments: 'Terrible job',
                 chargeVersion: {
                   id: workflowId,
+                  scheme: 'alcs',
                   dateRange: { startDate: '2019-04-01' },
                   chargeElements: [omit(request.pre.draftChargeInformation.chargeElements[0], 'id')],
                   invoiceAccount: {

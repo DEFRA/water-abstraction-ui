@@ -15,7 +15,7 @@ const getChoices = config => {
     },
     choices: config.boolean
       ? config.options
-          .map(row => { return { value: row.value, label: capitalize(row.label) }; })
+        .map(row => { return { value: row.value, label: capitalize(row.label) }; })
       : Object.values(config.options)
         .map(row => { return { value: row, label: capitalize(row) }; })
   };

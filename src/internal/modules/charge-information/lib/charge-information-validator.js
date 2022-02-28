@@ -32,7 +32,7 @@ const validations = {
   }
 };
 
-const validate = (chargeElement) =>
+const validate = chargeElement =>
   Object.values(validations).reduce((validationWarnings, validation) => {
     if (!validation.validatorFunc(chargeElement)) {
       validationWarnings.push(validation.warningMessage);

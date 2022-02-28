@@ -131,11 +131,15 @@ formErrorSummary %}
               {% endset %}
             {% endif %}
             {{ summaryListRow('Time limit', timeLimited, changeLink('/time', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
-            {{ summaryListRow('Source', chargeElement.source | title, changeLink('/source', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
-            {{ summaryListRow('Season', chargeElement.season | title, changeLink('/season', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
+            {% if scheme != 'sroc' %}
+              {{ summaryListRow('Source', chargeElement.source | title, changeLink('/source', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
+              {{ summaryListRow('Season', chargeElement.season | title, changeLink('/season', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
+            {% endif %}
             {{ summaryListRow('Loss', chargeElement.loss | title, changeLink('/loss', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
-            {{ summaryListRow('Environmental Improvement Unit Charge', chargeElement.eiucSource | title,'',isEditable) }}
-
+            {% if scheme != 'sroc' %}
+              {{ summaryListRow('Environmental Improvement Unit Charge', chargeElement.eiucSource | title,'',isEditable) }}
+            {% endif %}
+            
             {% if chargeElement.purposeUse.isTwoPartTariff %}
               {{ summaryListRow(
                 'Agreements apply',

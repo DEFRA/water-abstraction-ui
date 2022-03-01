@@ -121,6 +121,10 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
         id: 'test-invoice-account-address-id'
       }]
     });
+
+    sandbox.stub(services.idm.users, 'findOneById').resolves({
+      user_name: 'test.user@test.defra.gov.uk'
+    });
   });
 
   afterEach(async () => {
@@ -514,6 +518,23 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
       });
     });
 
+    experiment('when data is found and the charge version has a note', () => {
+      beforeEach(async () => {
+        services.water.chargeVersions.getChargeVersion.returns({
+          id: 'test-charge-version-id',
+          status: 'current',
+          scheme: 'sroc',
+          note: { userId: '123456', text: 'abcd' },
+          chargeElements: []
+        });
+        result = await preHandlers.loadChargeVersion(request);
+      });
+
+      test('the charge version is retrieved by its id', async () => {
+        expect(result.note.user.email).to.equal('test.user@test.defra.gov.uk');
+      });
+    });
+
     experiment('when data is found and the charge version has adjustments', () => {
       beforeEach(async () => {
         services.water.chargeVersions.getChargeVersion.returns({
@@ -529,6 +550,7 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
         expect(result.chargeElements[0].isAdjustments).to.be.true();
       });
     });
+
     experiment('when data is found and the charge version does not have any adjustments', () => {
       beforeEach(async () => {
         services.water.chargeVersions.getChargeVersion.returns({

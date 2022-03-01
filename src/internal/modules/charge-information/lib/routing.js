@@ -54,3 +54,4 @@ exports.getUseAbstractionData = createUrl('use-abstraction-data');
 exports.getEffectiveDate = createUrl('effective-date');
 exports.getNonChargeableReason = createUrl('non-chargeable-reason');
 exports.getCancelData = createUrl('cancel');
+exports.getNote = createUrl('note');

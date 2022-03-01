@@ -47,6 +47,10 @@ const mapFormField = (field) => {
     autocomplete: field.options.autoComplete
   };
 
+  if (field.options.maxlength) {
+    options.maxlength = field.options.maxlength;
+  }
+
   return applyErrors(options, field.errors);
 };
 

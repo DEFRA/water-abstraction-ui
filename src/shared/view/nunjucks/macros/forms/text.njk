@@ -1,4 +1,5 @@
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 
 {% macro formTextWidget(field) %}
@@ -10,7 +11,11 @@
     {% set options = field | mapFormField %}
 
     {% if field.options.multiline %}
-      {{ govukTextarea(options) }}
+      {% if field.options.maxlength %}
+        {{ govukCharacterCount(options) }}
+      {% else %}
+        {{ govukTextarea(options) }}
+      {% endif %}
     {% else %}
       {{ govukInput(options) }}
     {% endif %}

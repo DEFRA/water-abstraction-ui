@@ -140,6 +140,10 @@ const loadChargeVersion = async request => {
   const { chargeVersionId } = request.params;
   try {
     const chargeVersion = await services.water.chargeVersions.getChargeVersion(chargeVersionId);
+    if (chargeVersion.note) {
+      const { user_name: email } = await services.idm.users.findOneById(chargeVersion.note.userId) || {};
+      chargeVersion.note.user = { email };
+    }
     if (chargeVersion.scheme === 'sroc') {
       chargeVersion.chargeElements = chargeVersion.chargeElements.map(element => {
         element.isAdjustments = !isEmpty(element.adjustments);

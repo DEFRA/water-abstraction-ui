@@ -14,6 +14,7 @@ const Joi = require('joi');
 const forms = require('../../../../../src/shared/lib/forms');
 const sessionForms = require('shared/lib/session-forms');
 const helpers = require('internal/modules/charge-information/lib/helpers');
+const noteSession = require('internal/modules/notes/lib/session');
 const services = require('internal/lib/connectors/services');
 
 experiment('internal/modules/charge-information/lib/helpers', () => {
@@ -222,6 +223,19 @@ experiment('internal/modules/charge-information/lib/helpers', () => {
         const result = await helpers.isOverridingChargeVersion(request, '2020-03-31');
         expect(result).to.be.false();
       });
+    });
+  });
+
+  experiment('.clearNoteSessionData', () => {
+    const NODE_ID = 'test-note-id';
+    beforeEach(async => {
+      sandbox.stub(noteSession, 'clear');
+    });
+    const request = { pre: { draftChargeInformation: { note: { id: NODE_ID } } } };
+    test('clears the note session', async () => {
+      helpers.clearNoteSessionData(request);
+      const { args } = noteSession.clear.lastCall;
+      expect(args).to.equal([request, NODE_ID]);
     });
   });
 });

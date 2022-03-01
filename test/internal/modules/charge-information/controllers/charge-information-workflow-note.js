@@ -75,6 +75,7 @@ experiment('internal/modules/charge-information/controllers/charge-information-w
     beforeEach(async () => {
       expectedOptions = {
         caption: CAPTION,
+        back: BACK_PATH,
         chargeVersionWorkflowId: CHARGE_VERSION_WORKFLOW_ID,
         hint: 'Provide a short explanation about the setup of this charge.',
         note: NOTE_TEXT,
@@ -91,6 +92,7 @@ experiment('internal/modules/charge-information/controllers/charge-information-w
     });
 
     test('when redirecting to the notes module', async () => {
+      routing.postReview = () => BACK_PATH;
       await controller.getNote(request, h);
       const { args } = session.set.lastCall;
       expect(args).to.equal([request, NOTE_ID, expectedOptions]);

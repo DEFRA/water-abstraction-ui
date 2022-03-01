@@ -39,8 +39,13 @@ const getNote = async (request, h) => {
     return h.redirect(checkAnswersRoute);
   } else {
     // Prior to redirecting to the note page, retrieve the note
+    const back = request.pre.draftChargeInformation.status === 'review'
+      ? routing.postReview(chargeVersionWorkflowId, licenceId)
+      : routing.getCheckData(licenceId, { chargeVersionWorkflowId });
+
     noteSession.set(request, noteId, {
       note,
+      back,
       chargeVersionWorkflowId,
       pageTitle: 'Add a note',
       caption: `Licence ${licence.licenceNumber}`,

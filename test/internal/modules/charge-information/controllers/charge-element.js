@@ -189,7 +189,7 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
           const { back } = h.view.lastCall.args[1];
           expect(back).to.equal(`/licences/${licenceId}/charge-information/charge-element/${elementId}/${CHARGE_ELEMENT_STEPS.season}`);
         });
-      })
+      });
       experiment('for an SROC draft', () => {
         beforeEach(async () => {
           request = createRequest(CHARGE_ELEMENT_STEPS.loss, {}, true);
@@ -200,7 +200,7 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
           const { back } = h.view.lastCall.args[1];
           expect(back).to.equal(`/licences/${licenceId}/charge-information/charge-element/${elementId}/${CHARGE_ELEMENT_STEPS.timeLimit}`);
         });
-      })
+      });
     });
 
     experiment('.postChargeElementStep', () => {

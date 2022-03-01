@@ -25,7 +25,7 @@ const { reviewForm } = require('../forms/review');
 const { chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope;
 const { hasScope } = require('internal/lib/permissions');
 const { featureToggles, isSrocLive } = require('../../../config');
-const { getChargeCategoryFirstStep, getAlcsCount, processElements } = require('internal/modules/charge-information/lib/helpers');
+const { getChargeCategoryFirstStep, getAlcsCount, processElements, clearNoteSessionData } = require('internal/modules/charge-information/lib/helpers');
 const isSrocChargeInfoEnabled = featureToggles.srocChargeInformation && isSrocLive;
 /**
  * Select the reason for the creation of a new charge version
@@ -255,6 +255,7 @@ const updateDraftChargeInformation = async (request, h) => {
   );
   request.clearDraftChargeInformation(id, preparedChargeInfo.chargeVersion.chargeVersionWorkflowId);
   const route = routing.getSubmitted(id, { chargeable: isChargeable });
+  clearNoteSessionData(request);
   return h.redirect(route);
 };
 
@@ -279,6 +280,7 @@ const submitDraftChargeInformation = async (request, h) => {
   }
   await applyFormResponse(request, {}, actions.clearData);
   const route = routing.getSubmitted(id, { chargeable: isChargeable });
+  clearNoteSessionData(request);
   return h.redirect(route);
 };
 
@@ -356,6 +358,7 @@ const postCancelData = async (request, h) => {
   await applyFormResponse(request, {}, actions.clearData);
 
   const url = await getLicencePageUrl(licence);
+  clearNoteSessionData(request);
   return h.redirect(url);
 };
 

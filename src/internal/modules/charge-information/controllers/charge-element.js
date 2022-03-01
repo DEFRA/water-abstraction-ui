@@ -14,16 +14,16 @@ const {
   CHARGE_ELEMENT_STEPS
 } = require('../lib/charge-elements/constants');
 const actions = require('../lib/actions');
-const config = require('../../../config')
+const config = require('../../../config');
 
 /*
 Given a chargeVersionWorkflowId,
 returns true if the workflow start date is after the SROC start date
  */
 const isSrocWorkflow = request => {
-  const startDate = get(request.pre, 'draftChargeInformation.dateRange.startDate', null)
-  const srocStartDate = config.srocStartDate
-  return new Date(startDate) >= srocStartDate
+  const startDate = get(request.pre, 'draftChargeInformation.dateRange.startDate', null);
+  const srocStartDate = config.srocStartDate;
+  return new Date(startDate) >= srocStartDate;
 };
 
 const getBackLink = request => {
@@ -35,7 +35,7 @@ const getBackLink = request => {
 
   const isSroc = isSrocWorkflow(request);
 
-  const goBack = isSroc ? ROUTING_CONFIG[step].backSroc || ROUTING_CONFIG[step].back : ROUTING_CONFIG[step].back
+  const goBack = isSroc ? ROUTING_CONFIG[step].backSroc || ROUTING_CONFIG[step].back : ROUTING_CONFIG[step].back;
 
   return step === CHARGE_ELEMENT_FIRST_STEP
     ? routing.getUseAbstractionData(licenceId, { chargeVersionWorkflowId })
@@ -61,7 +61,7 @@ const getRedirectPath = request => {
 
   const isSroc = isSrocWorkflow(request);
 
-  const goForward = isSroc ? ROUTING_CONFIG[step].nextSrocStep || ROUTING_CONFIG[step].nextStep : ROUTING_CONFIG[step].nextStep
+  const goForward = isSroc ? ROUTING_CONFIG[step].nextSrocStep || ROUTING_CONFIG[step].nextStep : ROUTING_CONFIG[step].nextStep;
 
   return routing.getChargeElementStep(licenceId, elementId, goForward, { chargeVersionWorkflowId });
 };

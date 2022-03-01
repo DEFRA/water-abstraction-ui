@@ -14,14 +14,17 @@ const sandbox = sinon.createSandbox();
 
 const controller = require('../../../../../src/internal/modules/charge-information/controllers/charge-element');
 
-const { ROUTING_CONFIG, CHARGE_ELEMENT_STEPS } = require('../../../../../src/internal/modules/charge-information/lib/charge-elements/constants');
+const {
+  ROUTING_CONFIG,
+  CHARGE_ELEMENT_STEPS
+} = require('../../../../../src/internal/modules/charge-information/lib/charge-elements/constants');
 
 const PURPOSE_USE_ID = uuid();
 
 const licenceId = 'test-licence-id';
 const elementId = 'test-element-id';
 
-const createRequest = (step, payload) => ({
+const createRequest = (step, payload, isSroc = false) => ({
   params: {
     licenceId,
     step,
@@ -45,12 +48,12 @@ const createRequest = (step, payload) => ({
       startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
     },
     draftChargeInformation: {
-      dateRange: { startDate: '2001-01-01' },
+      dateRange: { startDate: isSroc ? '2022-04-01' : '2001-01-01' },
       chargeElements: [{
         id: elementId,
-        scheme: 'alcs'
+        scheme: isSroc ? 'sroc' : 'alcs'
       }],
-      scheme: 'alcs'
+      scheme: isSroc ? 'sroc' : 'alcs'
 
     },
     defaultCharges: [
@@ -176,15 +179,28 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
     });
 
     experiment('for a step mid-way through the flow', () => {
-      beforeEach(async () => {
-        request = createRequest(CHARGE_ELEMENT_STEPS.loss);
-        await controller.getChargeElementStep(request, h);
-      });
+      experiment('for an ALCS draft', () => {
+        beforeEach(async () => {
+          request = createRequest(CHARGE_ELEMENT_STEPS.loss);
+          await controller.getChargeElementStep(request, h);
+        });
 
-      test('sets a back link to the previous step', async () => {
-        const { back } = h.view.lastCall.args[1];
-        expect(back).to.equal(`/licences/${licenceId}/charge-information/charge-element/${elementId}/${CHARGE_ELEMENT_STEPS.season}`);
-      });
+        test('sets a back link to the previous step', async () => {
+          const { back } = h.view.lastCall.args[1];
+          expect(back).to.equal(`/licences/${licenceId}/charge-information/charge-element/${elementId}/${CHARGE_ELEMENT_STEPS.season}`);
+        });
+      })
+      experiment('for an SROC draft', () => {
+        beforeEach(async () => {
+          request = createRequest(CHARGE_ELEMENT_STEPS.loss, {}, true);
+          await controller.getChargeElementStep(request, h);
+        });
+
+        test('sets a back link to the previous step', async () => {
+          const { back } = h.view.lastCall.args[1];
+          expect(back).to.equal(`/licences/${licenceId}/charge-information/charge-element/${elementId}/${CHARGE_ELEMENT_STEPS.timeLimit}`);
+        });
+      })
     });
 
     experiment('.postChargeElementStep', () => {
@@ -222,10 +238,10 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
             returnToCheckData: true
           };
           request.pre.draftChargeInformation.chargeElements =
-          [{
-            id: testCategoryId,
-            chargePurposes: [{ id: 'test-element-id' }]
-          }];
+            [{
+              id: testCategoryId,
+              chargePurposes: [{ id: 'test-element-id' }]
+            }];
           await controller.postChargeElementStep(request, h);
         });
 
@@ -236,10 +252,10 @@ experiment('internal/modules/charge-information/controllers/charge-element', () 
           expect(data.chargeElements[0]).to.equal(
             {
               chargePurposes:
-              [{
-                id: 'test-element-id',
-                season: 'summer'
-              }],
+                [{
+                  id: 'test-element-id',
+                  season: 'summer'
+                }],
               id: 'test-category-id'
             });
         });

@@ -47,11 +47,11 @@ const addValidation = chargeInformation => {
           ...element,
           chargePurposes: element.chargePurposes.map(purpose => ({
             ...purpose,
-            validationWarnings: chargeInformation.scheme === 'alcs' && validate(purpose)
+            validationWarnings: chargeInformation.scheme === 'alcs' ? validate(purpose) : []
           }))
         }
       : element),
-    validationWarnings: chargeInformation.scheme === 'alcs' && validate(element)
+    validationWarnings: chargeInformation.scheme === 'alcs' ? validate(element) : []
   }));
   return {
     ...chargeInformation,

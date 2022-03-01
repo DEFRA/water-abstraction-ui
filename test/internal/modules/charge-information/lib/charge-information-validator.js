@@ -32,7 +32,7 @@ const createChargeElement = (options = {}) => ({
 });
 
 experiment('internal/modules/charge-information/lib/charge-information-validator', () => {
-  experiment('.addValidation', () => {
+  experiment('.addValidation ALCS', () => {
     let chargeInfo, decoratedChargeInfo;
     beforeEach(() => {
       chargeInfo = {
@@ -88,6 +88,52 @@ experiment('internal/modules/charge-information/lib/charge-information-validator
         'The abstraction period does not match the season selected',
         'The loss factor does not match the purpose selected'
       ]);
+    });
+  });
+  experiment('.addValidation - SROC', () => {
+    let chargeInfo, decoratedChargeInfo;
+    beforeEach(() => {
+      chargeInfo = {
+        scheme: 'sroc',
+        chargeElements: [
+          createChargeElement({
+            id: 'compliant-element'
+          }),
+          createChargeElement({
+            id: 'abstraction-period-warning',
+            season: 'summer'
+          }),
+          createChargeElement({
+            id: 'loss-factor-warning',
+            loss: 'medium'
+          }),
+          createChargeElement({
+            id: 'multiple-warnings',
+            season: 'summer',
+            loss: 'medium'
+          })
+        ]
+      };
+      decoratedChargeInfo = chargeInformationValidator.addValidation(chargeInfo);
+    });
+    test('validation warnings are blank for compliant elements', () => {
+      const { validationWarnings } = getElement(decoratedChargeInfo, 'compliant-element');
+      expect(validationWarnings).to.equal([]);
+    });
+
+    test('when the season and abs period don\'t match, SROC scheme doth not present a warning', () => {
+      const { validationWarnings } = getElement(decoratedChargeInfo, 'abstraction-period-warning');
+      expect(validationWarnings).to.equal([]);
+    });
+
+    test('when the loss and purpose use loss factor don\'t match, SROC scheme doth not present a warning', () => {
+      const { validationWarnings } = getElement(decoratedChargeInfo, 'loss-factor-warning');
+      expect(validationWarnings).to.equal([]);
+    });
+
+    test('when there are multiple warnings, SROC scheme doth not present a warning', () => {
+      const { validationWarnings } = getElement(decoratedChargeInfo, 'multiple-warnings');
+      expect(validationWarnings).to.equal([]);
     });
   });
 });

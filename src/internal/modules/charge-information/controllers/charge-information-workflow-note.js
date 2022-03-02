@@ -34,13 +34,16 @@ const getNote = async (request, h) => {
       ? routing.postReview(chargeVersionWorkflowId, licenceId)
       : routing.getCheckData(licenceId, { chargeVersionWorkflowId });
 
-    noteSession.clear(request, noteId);
-
     return h.redirect(checkAnswersRoute);
   } else {
     // Prior to redirecting to the note page, retrieve the note
+    const back = request.pre.draftChargeInformation.status === 'review'
+      ? routing.postReview(chargeVersionWorkflowId, licenceId)
+      : routing.getCheckData(licenceId, { chargeVersionWorkflowId });
+
     noteSession.set(request, noteId, {
       note,
+      back,
       chargeVersionWorkflowId,
       pageTitle: 'Add a note',
       caption: `Licence ${licence.licenceNumber}`,
@@ -57,6 +60,7 @@ const deleteNote = async (request, h) => {
   const sessionData = noteSession.get(request, noteId) || {};
   const chargeVersionWorkflowId = getChargeVersionWorkflowId(request, sessionData);
   await request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, { note: undefined });
+  noteSession.clear(request, noteId);
   const checkAnswersRoute = request.pre.draftChargeInformation.status === 'review'
     ? routing.postReview(chargeVersionWorkflowId, licenceId)
     : routing.getCheckData(licenceId, { chargeVersionWorkflowId });

@@ -5,11 +5,12 @@ const session = require('./lib/session');
 
 const getNote = async (request, h) => {
   const { noteId } = request.params;
-  const { caption, pageTitle = 'Add a note' } = session.get(request, noteId) || {};
+  const { caption, pageTitle = 'Add a note', back } = session.get(request, noteId) || {};
   const view = {
     ...request.view,
     pageTitle,
     caption,
+    back,
     form: handleFormRequest(request, noteForms.note)
   };
   return h.view('nunjucks/form', view);

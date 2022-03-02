@@ -22,10 +22,10 @@ const ROUTING_CONFIG = {
   description: { pageTitle: 'Add element description', nextStep: CHARGE_ELEMENT_STEPS.abstractionPeriod, back: CHARGE_ELEMENT_STEPS.purpose },
   abstraction: { pageTitle: 'Set abstraction period', nextStep: CHARGE_ELEMENT_STEPS.quantities, back: CHARGE_ELEMENT_STEPS.description },
   quantities: { pageTitle: 'Add annual quantities', nextStep: CHARGE_ELEMENT_STEPS.timeLimit, back: CHARGE_ELEMENT_STEPS.abstractionPeriod },
-  time: { pageTitle: 'Set time limit?', nextStep: CHARGE_ELEMENT_STEPS.source, back: CHARGE_ELEMENT_STEPS.quantities },
+  time: { pageTitle: 'Set time limit?', nextStep: CHARGE_ELEMENT_STEPS.source, nextSrocStep: CHARGE_ELEMENT_STEPS.loss, back: CHARGE_ELEMENT_STEPS.quantities },
   source: { pageTitle: 'Select source', nextStep: CHARGE_ELEMENT_STEPS.season, back: CHARGE_ELEMENT_STEPS.timeLimit },
   season: { pageTitle: 'Select season', nextStep: CHARGE_ELEMENT_STEPS.loss, back: CHARGE_ELEMENT_STEPS.source },
-  loss: { pageTitle: 'Select loss category', nextStep: CHARGE_ELEMENT_STEPS.agreements, back: CHARGE_ELEMENT_STEPS.season },
+  loss: { pageTitle: 'Select loss category', nextStep: CHARGE_ELEMENT_STEPS.agreements, back: CHARGE_ELEMENT_STEPS.season, backSroc: CHARGE_ELEMENT_STEPS.timeLimit },
   agreements: { pageTitle: 'Should agreements apply to this element?', back: CHARGE_ELEMENT_STEPS.loss }
 };
 

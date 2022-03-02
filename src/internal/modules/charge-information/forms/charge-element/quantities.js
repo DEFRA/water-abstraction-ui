@@ -40,6 +40,8 @@ const getFormField = (key, data) => {
  */
 const form = request => {
   const { csrfToken } = request.view;
+  const { draftChargeInformation } = request.pre;
+  const { scheme } = draftChargeInformation;
   const data = getChargeElementData(request);
   const action = getChargeElementActionUrl(request, CHARGE_ELEMENT_STEPS.quantities);
 
@@ -51,7 +53,7 @@ const form = request => {
   }));
 
   f.fields.push(getFormField('authorised', data));
-  f.fields.push(getFormField('billable', data));
+  scheme === 'alcs' && f.fields.push(getFormField('billable', data));
   f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
   f.fields.push(fields.button(null, { label: 'Continue' }));
 

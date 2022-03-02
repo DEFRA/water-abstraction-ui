@@ -120,12 +120,12 @@ formErrorSummary %}
   {% endif %}
 {% endmacro %}
 
-{% macro chargePurposeTable(chargePurposes, isEditable, licenceId, chargeElementId, chargeVersionWorkflowId) %}
-    {% for chargePurpose in chargePurposes %}
+{% macro chargePurposeTable(chargeElement, isEditable, licenceId, chargeElementId, chargeVersionWorkflowId) %}
+    {% for chargePurpose in chargeElement.chargePurposes %}
       <section class="govuk-!-margin-bottom-7">
         <h2 class="govuk-heading-m">
           <span class="govuk-caption-m">Charge element {{loop.index}}</span>
-          
+
           {%if chargePurpose.description.length > 0 %}
           {{chargePurpose.purposeUse.name}}, {{chargePurpose.description}}
           {%else%}
@@ -156,9 +156,6 @@ formErrorSummary %}
                 <li>
                   {{ chargePurpose.authorisedAnnualQuantity + 'ML authorised' }}
                 </li>
-                <li>
-                  {{chargePurpose.billableAnnualQuantity + 'ML billable' if chargePurpose.billableAnnualQuantity else 'Billable not set' }}
-                </li>
               </ul>
             </dd>
             {% if isEditable %}
@@ -176,10 +173,7 @@ formErrorSummary %}
             {% endset %}
           {% endif %}
           {{ summaryListRow('Time limit', timeLimited, changeLink('/time', chargePurpose.id, licenceId, chargeElementId, chargeVersionWorkflowId), isEditable) }}
-          {{ summaryListRow('Source', chargePurpose.source | title, changeLink('/source', chargePurpose.id, licenceId, chargeElementId, chargeVersionWorkflowId), isEditable) }}
-          {{ summaryListRow('Season', chargePurpose.season | title, changeLink('/season', chargePurpose.id, licenceId, chargeElementId, chargeVersionWorkflowId), isEditable) }}
           {{ summaryListRow('Loss', chargePurpose.loss | title, changeLink('/loss', chargePurpose.id, licenceId, chargeElementId, chargeVersionWorkflowId), isEditable) }}
-          {{ summaryListRow('Environmental Improvement Unit Charge', chargePurpose.eiucSource | title, '', isEditable) }}
 
           {% if chargePurpose.purposeUse.isTwoPartTariff %}
             {{ summaryListRow(
@@ -192,7 +186,7 @@ formErrorSummary %}
         </dl>
       </section>
     {% endfor %}
-  
+
 {% endmacro %}
 
 {% macro chargeElementTableSroc(chargeElements, isEditable, licenceId, chargeVersionWorkflowId) %}
@@ -239,7 +233,7 @@ formErrorSummary %}
             {% endif %}
           </dd>
         </div>
-          
+
           {% if chargeElement.adjustments.aggregate %}
             {{ summaryListRow('Aggregate factor', chargeElement.adjustments.aggregate) }}
           {% endif %}
@@ -261,7 +255,7 @@ formErrorSummary %}
         </dl>
       {% endif %}
       <hr class="govuk-section-break  govuk-!-margin-bottom-6">
-      {{ chargePurposeTable(chargeElement.chargePurposes, isEditable, licenceId, chargeElement.id, chargeVersionWorkflowId) }}
+      {{ chargePurposeTable(chargeElement, isEditable, licenceId, chargeElement.id, chargeVersionWorkflowId) }}
     {% endfor %}
   {% endif %}
 {% endmacro %}

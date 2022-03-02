@@ -22,6 +22,7 @@ const createRequest = chargeElements => ({
   },
   pre: {
     draftChargeInformation: {
+      scheme: 'alcs',
       chargeElements: chargeElements || []
     }
   }

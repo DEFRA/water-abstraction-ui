@@ -1,5 +1,5 @@
 'use strict';
-const { experiment, test } = exports.lab = require('@hapi/lab').script();
+const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
 
 const { expect } = require('@hapi/code');
 
@@ -7,6 +7,8 @@ const { getManageTabConfig } = require('internal/modules/manage/lib/manage-nav')
 const { scope } = require('internal/lib/constants');
 
 const { flatMap } = require('lodash');
+const config = require('internal/config');
+const sinon = require('sinon');
 
 const mapLinkGroup = (links, group) => links.map(link => ({
   group,
@@ -26,7 +28,13 @@ const createRequest = (scopes = []) => {
   };
 };
 
+const sandbox = sinon.createSandbox();
+
 experiment('getManageTabConfig', () => {
+  afterEach(() => {
+    sandbox.restore();
+  });
+
   experiment('when a user has no scopes', () => {
     test('none of the links are visible', async () => {
       const request = createRequest();
@@ -173,6 +181,41 @@ experiment('getManageTabConfig', () => {
           name: 'Create an internal account',
           path: '/account/create-user'
         }
+      ]);
+    });
+  });
+
+  experiment('when user has manage accounts scope', () => {
+    let request;
+    beforeEach(() => {
+      request = createRequest(scope.chargeVersionWorkflowReviewer);
+    });
+
+    test('they can only view check licences link', async () => {
+      sandbox.stub(config.featureToggles, 'allowChargeVersionUploads').value(false);
+      expect(getAllLinks(getManageTabConfig(request))).to.equal([
+        {
+          group: 'chargeInformationWorkflow',
+          name: 'Check licences in workflow',
+          path: '/charge-information-workflow'
+        }
+
+      ]);
+    });
+
+    test('they can view upload a file link as well as check licences link', async () => {
+      sandbox.stub(config.featureToggles, 'allowChargeVersionUploads').value(true);
+      expect(getAllLinks(getManageTabConfig(request))).to.equal([
+        {
+          group: 'uploadChargeInformation',
+          name: 'Upload a file',
+          path: '/charge-information/upload'
+        }, {
+          group: 'chargeInformationWorkflow',
+          name: 'Check licences in workflow',
+          path: '/charge-information-workflow'
+        }
+
       ]);
     });
   });

@@ -46,6 +46,7 @@ experiment('manage - controller', () => {
         'returnNotifications',
         'licenceNotifications',
         'hofNotifications',
+        'uploadChargeInformation',
         'accounts',
         'chargeInformationWorkflow'
       ]);

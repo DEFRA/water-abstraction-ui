@@ -11,7 +11,8 @@ const services = require('external/lib/connectors/services');
 
 const controller = require('external/modules/returns/controllers/upload');
 const { logger } = require('external/logger');
-const uploadHelpers = require('external/modules/returns/lib/upload-helpers');
+
+const UploadHelpers = require('shared/lib/upload-helpers');
 const uploadSummaryHelpers = require('external/modules/returns/lib/upload-summary-helpers');
 const helpers = require('external/modules/returns/lib/helpers.js');
 const csvTemplates = require('external/modules/returns/lib/csv-templates');
@@ -109,10 +110,10 @@ experiment('external/modules/returns/controllers/upload', () => {
 
     sandbox.stub(services.water.events, 'findMany');
     sandbox.stub(forms, 'handleRequest');
-    sandbox.stub(uploadHelpers, 'getFile').returns('filepath');
-    sandbox.stub(uploadHelpers, 'uploadFile');
-    sandbox.stub(uploadHelpers, 'getUploadedFileStatus');
-    sandbox.stub(uploadHelpers, 'createDirectory');
+    sandbox.stub(UploadHelpers.prototype, 'getFile').returns('filepath');
+    sandbox.stub(UploadHelpers.prototype, 'uploadFile');
+    sandbox.stub(UploadHelpers.prototype, 'getUploadedFileStatus');
+    sandbox.stub(UploadHelpers.prototype, 'createDirectory');
     sandbox.stub(uploadSummaryHelpers, 'mapRequestOptions').returns({ userName, entityId, companyId });
     sandbox.stub(uploadSummaryHelpers, 'groupReturns');
     sandbox.stub(services.water.returns, 'postUpload').resolves({ data: { eventId } });
@@ -144,8 +145,11 @@ experiment('external/modules/returns/controllers/upload', () => {
   });
 
   experiment('.postBulkUpload', () => {
+    const { OK, VIRUS, INVALID_TYPE } = UploadHelpers.fileStatuses;
+    const uploadHelpers = new UploadHelpers('test-upload', ['csv', 'xml'], services, logger);
+
     test('redirects to spinner page if there are no errors', async () => {
-      uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.OK);
+      uploadHelpers.getUploadedFileStatus.resolves(OK);
       await controller.postBulkUpload(request, h);
 
       const [path] = h.redirect.lastCall.args;
@@ -153,14 +157,14 @@ experiment('external/modules/returns/controllers/upload', () => {
     });
 
     test('redirects to same page with virus error message if virus', async () => {
-      uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.VIRUS);
+      uploadHelpers.getUploadedFileStatus.resolves(VIRUS);
       await controller.postBulkUpload(request, h);
       const [path] = h.redirect.lastCall.args;
       expect(path).to.equal('/returns/upload?error=virus');
     });
 
     test('redirects to same page with file type message if unsupported file type', async () => {
-      uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.INVALID_TYPE);
+      uploadHelpers.getUploadedFileStatus.resolves(INVALID_TYPE);
       await controller.postBulkUpload(request, h);
       const [path] = h.redirect.lastCall.args;
       expect(path).to.equal('/returns/upload?error=invalid-type');
@@ -182,7 +186,7 @@ experiment('external/modules/returns/controllers/upload', () => {
     });
 
     test('does not redirect a no file page if the filename is set', async () => {
-      uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.INVALID_TYPE);
+      uploadHelpers.getUploadedFileStatus.resolves(INVALID_TYPE);
       await controller.postBulkUpload({
         ...request,
         payload: {
@@ -198,7 +202,7 @@ experiment('external/modules/returns/controllers/upload', () => {
     });
 
     test('calls the water returns upload API with the correct file type', async () => {
-      uploadHelpers.getUploadedFileStatus.resolves(uploadHelpers.fileStatuses.OK);
+      uploadHelpers.getUploadedFileStatus.resolves(OK);
       fileCheck.detectFileType.resolves('csv');
       await controller.postBulkUpload(request, h);
       const [data, user, compId, fileType] = services.water.returns.postUpload.lastCall.args;

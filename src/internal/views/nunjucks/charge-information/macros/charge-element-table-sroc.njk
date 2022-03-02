@@ -173,14 +173,7 @@ formErrorSummary %}
             {% endset %}
           {% endif %}
           {{ summaryListRow('Time limit', timeLimited, changeLink('/time', chargePurpose.id, licenceId, chargeElementId, chargeVersionWorkflowId), isEditable) }}
-          {% if not chargeElement.chargeCategory %}
-            {{ summaryListRow('Source', chargePurpose.source | title, changeLink('/source', chargePurpose.id, licenceId, chargeElementId, chargeVersionWorkflowId), isEditable) }}
-            {{ summaryListRow('Season', chargePurpose.season | title, changeLink('/season', chargePurpose.id, licenceId, chargeElementId, chargeVersionWorkflowId), isEditable) }}
-          {% endif %}
           {{ summaryListRow('Loss', chargePurpose.loss | title, changeLink('/loss', chargePurpose.id, licenceId, chargeElementId, chargeVersionWorkflowId), isEditable) }}
-          {% if not chargeElement.chargeCategory %}
-            {{ summaryListRow('Environmental Improvement Unit Charge', chargePurpose.eiucSource | title, '', isEditable) }}
-          {% endif %}
 
           {% if chargePurpose.purposeUse.isTwoPartTariff %}
             {{ summaryListRow(

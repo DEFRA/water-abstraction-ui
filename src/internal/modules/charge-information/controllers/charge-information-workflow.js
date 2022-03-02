@@ -4,6 +4,7 @@ const { hasScope } = require('internal/lib/permissions');
 const { deleteChargeInfo } = require('../forms');
 const services = require('../../../lib/connectors/services');
 const { sortBy } = require('lodash');
+const { clearNoteSessionData } = require('internal/modules/charge-information/lib/helpers');
 
 const getChargeInformationWorkflow = async (request, h) => {
   const toSetUp = request.pre.chargeInformationWorkflows;
@@ -47,6 +48,7 @@ const getRemoveChargeInformationWorkflow = (request, h) => {
 const postRemoveChargeInformationWorkflow = async (request, h) => {
   const { chargeVersionWorkflowId } = request.params;
   await services.water.chargeVersionWorkflows.deleteChargeVersionWorkflow(chargeVersionWorkflowId);
+  clearNoteSessionData(request);
   return h.redirect('/charge-information-workflow');
 };
 

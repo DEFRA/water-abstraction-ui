@@ -1905,6 +1905,41 @@ experiment('internal/modules/gauging-stations/controller - sending', () => {
   // getSendAlertCheck
   experiment('.getSendAlertPreview', () => {
     let h;
+    experiment('given a Resume notification', () => {
+      beforeEach(async () => {
+        h = {
+          view: sandbox.stub().returns({}),
+          redirect: sandbox.stub().returns({})
+        };
+        await sandbox.stub(services.water.notifications, 'getNotificationMessage').resolves({
+          data: {
+            messageRef: 'resume-message-ref',
+            personalisation: {
+              alertType: 'some alert type'
+            }
+          }
+        });
+        await sandbox.stub(services.water.gaugingStations, 'getGaugingStationbyId').resolves({
+          label: 'station name',
+          riverName: 'river paddle'
+        });
+        await controller.getSendAlertPreview({
+          params: {
+            notificationId: 'some-id',
+            gaugingStationId: 'some-other-id'
+          }
+        }, h);
+      });
+      afterEach(async () => sandbox.restore());
+      test('calls h.view with a letter preview path', async () => {
+        expect(h.view.called).to.be.true();
+        expect(h.view.lastCall.args[0]).to.equal('nunjucks/gauging-stations/letter-preview/resume-message-ref');
+      });
+      test('calls h.view with the correct pageTitle', async () => {
+        expect(h.view.called).to.be.true();
+        expect(h.view.lastCall.args[1].pageTitle).to.equal('Resume message preview');
+      });
+    });
     experiment('given a letter notification', () => {
       beforeEach(async () => {
         h = {

@@ -621,13 +621,13 @@ const getSendAlertPreview = async (request, h) => {
   const { notificationId } = request.params;
 
   const { data: scheduledNotification } = await services.water.notifications.getNotificationMessage(notificationId);
-  const { messageRef: template, personalisation, messageRef } = scheduledNotification;
+  const { messageRef: template, personalisation } = scheduledNotification;
 
   let prefix = '';
-  if (messageRef.indexOf('resume') > -1) {
+  if (template.indexOf('resume') > -1) {
     prefix = 'Resume ';
   } else {
-    prefix = `${personalisation.alertType.replace(/(^\w|\s\w)/g, m => m.toUpperCase()).split('_').join(' ')}${messageRef.indexOf('warning') > -1 ? ' warning ' : ' '}`;
+    prefix = `${personalisation.alertType.replace(/(^\w|\s\w)/g, m => m.toUpperCase()).split('_').join(' ')}${template.indexOf('warning') > -1 ? ' warning ' : ' '}`;
   }
   const pageTitle = `${prefix}message preview`;
   const caption = await helpers.getCaption(request);

@@ -1842,7 +1842,10 @@ experiment('internal/modules/gauging-stations/controller - sending', () => {
       }
     };
 
-    const h = { view: sandbox.stub().returns({}), redirect: sandbox.stub().returns({}) };
+    const h = {
+      view: sandbox.stub().returns({}),
+      redirect: sandbox.stub().returns({})
+    };
 
     const notificationEventId = uuid();
     beforeEach(async () => {
@@ -1900,6 +1903,37 @@ experiment('internal/modules/gauging-stations/controller - sending', () => {
     });
   });
   // getSendAlertCheck
-  // getSendAlertPreview
+  experiment('.getSendAlertPreview', () => {
+    let h;
+    beforeEach(async () => {
+      h = {
+        view: sandbox.stub().returns({}),
+        redirect: sandbox.stub().returns({})
+      };
+      await sandbox.stub(services.water.notifications, 'getNotificationMessage').resolves({
+        data: {
+          messageRef: 'some message ref',
+          personalisation: {
+            alertType: 'some alert type'
+          }
+        }
+      });
+      await sandbox.stub(services.water.gaugingStations, 'getGaugingStationbyId').resolves({
+        label: 'station name',
+        riverName: 'river paddle'
+      });
+      await controller.getSendAlertPreview({
+        params: {
+          notificationId: 'some-id',
+          gaugingStationId: 'some-other-id'
+        }
+      }, h);
+    });
+    afterEach(async () => sandbox.restore());
+    test('calls h.view with a letter preview path', async () => {
+      expect(h.view.called).to.be.true();
+      expect(h.view.lastCall.args[0]).to.startWith('nunjucks/gauging-stations/letter-preview/');
+    });
+  });
   // getSendAlertConfirm
 });

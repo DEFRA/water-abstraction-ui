@@ -633,8 +633,8 @@ const getSendAlertPreview = async (request, h) => {
   const caption = await helpers.getCaption(request);
 
   let path = `nunjucks/gauging-stations/letter-preview/${template}`;
-  if(endsWith(template, '_email')) {
-    path = `nunjucks/gauging-stations/letter-preview/${template.slice(0,-6).trim()}`
+  if (endsWith(template, '_email')) {
+    path = `nunjucks/gauging-stations/letter-preview/${template.slice(0, -6).trim()}`;
   }
 
   return h.view(path, {

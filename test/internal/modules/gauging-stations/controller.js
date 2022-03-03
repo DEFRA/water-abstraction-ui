@@ -1905,34 +1905,68 @@ experiment('internal/modules/gauging-stations/controller - sending', () => {
   // getSendAlertCheck
   experiment('.getSendAlertPreview', () => {
     let h;
-    beforeEach(async () => {
-      h = {
-        view: sandbox.stub().returns({}),
-        redirect: sandbox.stub().returns({})
-      };
-      await sandbox.stub(services.water.notifications, 'getNotificationMessage').resolves({
-        data: {
-          messageRef: 'some message ref',
-          personalisation: {
-            alertType: 'some alert type'
+    experiment('given a letter notification', () => {
+      beforeEach(async () => {
+        h = {
+          view: sandbox.stub().returns({}),
+          redirect: sandbox.stub().returns({})
+        };
+        await sandbox.stub(services.water.notifications, 'getNotificationMessage').resolves({
+          data: {
+            messageRef: 'message-ref',
+            personalisation: {
+              alertType: 'some alert type'
+            }
           }
-        }
+        });
+        await sandbox.stub(services.water.gaugingStations, 'getGaugingStationbyId').resolves({
+          label: 'station name',
+          riverName: 'river paddle'
+        });
+        await controller.getSendAlertPreview({
+          params: {
+            notificationId: 'some-id',
+            gaugingStationId: 'some-other-id'
+          }
+        }, h);
       });
-      await sandbox.stub(services.water.gaugingStations, 'getGaugingStationbyId').resolves({
-        label: 'station name',
-        riverName: 'river paddle'
+      afterEach(async () => sandbox.restore());
+      test('calls h.view with a letter preview path', async () => {
+        expect(h.view.called).to.be.true();
+        expect(h.view.lastCall.args[0]).to.equal('nunjucks/gauging-stations/letter-preview/message-ref');
       });
-      await controller.getSendAlertPreview({
-        params: {
-          notificationId: 'some-id',
-          gaugingStationId: 'some-other-id'
-        }
-      }, h);
     });
-    afterEach(async () => sandbox.restore());
-    test('calls h.view with a letter preview path', async () => {
-      expect(h.view.called).to.be.true();
-      expect(h.view.lastCall.args[0]).to.startWith('nunjucks/gauging-stations/letter-preview/');
+
+    experiment('given an email notification', () => {
+      beforeEach(async () => {
+        h = {
+          view: sandbox.stub().returns({}),
+          redirect: sandbox.stub().returns({})
+        };
+        await sandbox.stub(services.water.notifications, 'getNotificationMessage').resolves({
+          data: {
+            messageRef: 'message-ref_email',
+            personalisation: {
+              alertType: 'some alert type'
+            }
+          }
+        });
+        await sandbox.stub(services.water.gaugingStations, 'getGaugingStationbyId').resolves({
+          label: 'station name',
+          riverName: 'river paddle'
+        });
+        await controller.getSendAlertPreview({
+          params: {
+            notificationId: 'some-id',
+            gaugingStationId: 'some-other-id'
+          }
+        }, h);
+      });
+      afterEach(async () => sandbox.restore());
+      test('calls h.view with a letter preview path, sans _email', async () => {
+        expect(h.view.called).to.be.true();
+        expect(h.view.lastCall.args[0]).to.startWith('nunjucks/gauging-stations/letter-preview/message-ref');
+      });
     });
   });
   // getSendAlertConfirm

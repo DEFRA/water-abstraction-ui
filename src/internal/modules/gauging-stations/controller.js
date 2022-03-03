@@ -5,7 +5,7 @@ const formHandler = require('shared/lib/form-handler');
 const formHelpers = require('shared/lib/forms');
 const session = require('./lib/session');
 const helpers = require('./lib/helpers');
-const { groupBy } = require('lodash');
+const { groupBy, endsWith } = require('lodash');
 const services = require('../../lib/connectors/services');
 const { waterAbstractionAlerts: isWaterAbstractionAlertsEnabled } = require('../../config').featureToggles;
 const { hasScope } = require('../../lib/permissions');
@@ -632,7 +632,12 @@ const getSendAlertPreview = async (request, h) => {
   const pageTitle = `${prefix}message preview`;
   const caption = await helpers.getCaption(request);
 
-  return h.view(`nunjucks/gauging-stations/letter-preview/${template}`, {
+  let path = `nunjucks/gauging-stations/letter-preview/${template}`;
+  if(endsWith(template, '_email')) {
+    path = `nunjucks/gauging-stations/letter-preview/${template.slice(0,-6).trim()}`
+  }
+
+  return h.view(path, {
     ...request.view,
     caption,
     pageTitle,

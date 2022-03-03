@@ -154,12 +154,11 @@ formErrorSummary %}
             <dd class="govuk-summary-list__value">
               {{ chargePurpose.authorisedAnnualQuantity + 'ML authorised' }}
             </dd>
-            <dd class="govuk-summary-list__value"></dd>
-            {% if isEditable %}
-              <dd class="govuk-summary-list__actions">
+            <dd class="govuk-summary-list__actions">
+              {% if isEditable %}
                 <a href="{{ changeLink('/quantities', chargePurpose.id, licenceId, chargeElementId, chargeVersionWorkflowId) }}">Change</a>
-              </dd>
-            {% endif %}
+              {% endif %}
+            </dd>
           </div>
 
 

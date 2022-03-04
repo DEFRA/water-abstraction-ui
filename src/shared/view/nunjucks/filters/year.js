@@ -8,7 +8,7 @@ const moment = require('moment');
  * @param  {String|Number} value        - Timestamp / date (parsed by moment)
  * @return {String}              formatted date
  */
-const year = (value) => {
+const year = value => {
   if (isNil(value)) {
     return undefined;
   }

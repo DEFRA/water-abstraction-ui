@@ -15,9 +15,11 @@
 </div>
 
 <table class="govuk-table">
-  <caption class="govuk-table__caption "><p class="govuk-body govuk-!-font-weight-bold">You're sending this alert for {{licenceCount}} {{'licence' | pluralize(licenceCount) }}.</p>
-    <p class="govuk-body"> The alert will be sent by:</p>
-  </caption>
+  {% if notifications.length > 0 %}
+    <caption class="govuk-table__caption "><p class="govuk-body govuk-!-font-weight-bold">You're sending this alert for {{licenceCount}} {{'licence' | pluralize(licenceCount) }}.</p>
+      <p class="govuk-body"> The alert will be sent by:</p>
+    </caption>
+  {% endif %}
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
       <th scope="col" class="govuk-table__header">Send to</th>
@@ -57,11 +59,13 @@
   </tbody>
 </table>
 
-{{ govukButton({
+{% if notifications.length > 0 %}
+  {{ govukButton({
     text: "Confirm and send",
     href: confirmAndSendUrl,
     classes: "govuk-button--primary"
   }) }}
+{% endif %}
 
 <!--End content block-->
 {% endblock %}

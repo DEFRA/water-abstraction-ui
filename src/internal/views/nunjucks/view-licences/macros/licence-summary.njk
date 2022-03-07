@@ -1,5 +1,6 @@
 {% from "nunjucks/view-licences/macros/sources-of-supply.njk" import sourcesOfSupply %}
 {% from "nunjucks/view-licences/macros/amounts.njk" import amounts %}
+{% from "nunjucks/view-licences/macros/region.njk" import region %}
 {% from "nunjucks/view-licences/macros/conditions.njk" import conditions %}
 {% from "nunjucks/view-licences/macros/periods.njk" import periods %}
 {% from "nunjucks/view-licences/macros/points.njk" import points %}
@@ -101,6 +102,7 @@
   {% endif %}
   {{ conditions(summary.conditions, link) }}
   {{ amounts(summary.aggregateQuantity) }}
+  {{ region(summary.waterLicence) }}
 </dl>
 
 {% endmacro %}

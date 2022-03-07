@@ -1,0 +1,14 @@
+{% macro region(waterLicence) %}
+  {% if waterLicence.region %}
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Billing region
+    </dt>
+    <dd class="govuk-summary-list__value">
+      <ul class="govuk-list govuk-!-margin-0">
+        {{ waterLicence.region.name }}
+      </ul>
+    </dd>
+  </div>
+  {% endif %}
+{% endmacro %}

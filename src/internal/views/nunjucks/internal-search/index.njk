@@ -176,7 +176,18 @@
               <td class="govuk-table__cell">{{ doc.documentName }}</td>
               <td class="govuk-table__cell">{{ doc.licenceHolder }}</td>
               <td class="govuk-table__cell">
-                {{ doc.expires | date if doc.isCurrent else badge("Expired", "inactive") }}
+                {% if not doc.licence.isActive %}
+                  {% if doc.licence.endDateReason == "revokedDate" %}
+                      {{ badge("Revoked in " + doc.licence.endDate | year, "inactive") }}
+                  {% elseif doc.licence.endDateReason == "expiredDate" %}
+                      {{ badge("Expired in " + doc.licence.endDate | year, "inactive") }}
+                  {% elseif doc.licence.endDateReason == "lapsedDate" %}
+                      {{ badge("Lapsed in " + doc.licence.endDate | year, "inactive") }}
+                  {% else %}
+                  {% endif %}
+                {% else %}
+                  {{ doc.licence.endDate | date }}
+                {% endif %}
               </td>
             </tr>
             {% endfor %}

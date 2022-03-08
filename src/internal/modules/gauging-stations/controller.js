@@ -477,7 +477,7 @@ const getSendAlertCheckLicenceMatches = async (request, h) => {
       ...q,
       dateStatusUpdated: n.length > 1
         ? n.reduce((a, b) =>
-          (new Date(a.dateStatusUpdated) > new Date(b.dateStatusUpdated)
+          a && b && (new Date(a.dateStatusUpdated) > new Date(b.dateStatusUpdated)
             ? a.dateStatusUpdated
             : b.dateStatusUpdated))
         : n[0].dateStatusUpdated

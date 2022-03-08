@@ -602,6 +602,9 @@ const getSendAlertCheck = async (request, h) => {
   const caption = await helpers.getCaption(request);
 
   const { notificationEventId } = session.get(request);
+  if (!notificationEventId) {
+    return h.redirect(`/monitoring-stations/${request.params.gaugingStationId}`);
+  };
   const event = await services.water.events.findOne(notificationEventId);
   const { data: notifications } = await services.water.notifications.getNotificationMessages(notificationEventId);
 
@@ -651,6 +654,9 @@ const getSendAlertConfirm = async (request, h) => {
   const caption = await helpers.getCaption(request);
 
   const { notificationEventId } = await session.get(request);
+  if (!notificationEventId) {
+    return h.redirect(`/monitoring-stations/${request.params.gaugingStationId}`);
+  };
   const event = await services.water.events.findOne(notificationEventId);
 
   const issuer = await helpers.getIssuer(request);

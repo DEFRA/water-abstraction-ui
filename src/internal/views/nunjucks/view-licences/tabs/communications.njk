@@ -4,6 +4,7 @@
     <span class="govuk-visually-hidden"> sent {{ message.event.created | date }} via {{ message.messageType }}</span>
   {% else %}
     <a href="/licences/{{ documentId }}/communications/{{ message.id }}">
+      {{ message.event.metadata.options.sendingAlertType | sentenceCase + ' - ' if message.event.metadata.name == 'Water abstraction alert' else '' }}
       {{ message.event.metadata.name }}
       <span class="govuk-visually-hidden"> sent {{ message.event.created | date }} via {{ message.messageType }}</span>
     </a>

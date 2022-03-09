@@ -1,5 +1,6 @@
 'use strict';
 
+const { logger } = require('../../logger');
 const linkageForms = require('./forms');
 const formHandler = require('shared/lib/form-handler');
 const formHelpers = require('shared/lib/forms');
@@ -604,7 +605,6 @@ const getSendAlertCheck = async (request, h) => {
   const { notificationEventId } = session.get(request);
   if (!notificationEventId) {
     return h.redirect(`/monitoring-stations/${request.params.gaugingStationId}`);
-  };
   const event = await services.water.events.findOne(notificationEventId);
   const { data: notifications } = await services.water.notifications.getNotificationMessages(notificationEventId);
 
@@ -656,11 +656,16 @@ const getSendAlertConfirm = async (request, h) => {
   const { notificationEventId } = await session.get(request);
   if (!notificationEventId) {
     return h.redirect(`/monitoring-stations/${request.params.gaugingStationId}`);
-  };
+  }
+
   const event = await services.water.events.findOne(notificationEventId);
 
   const issuer = await helpers.getIssuer(request);
-  await services.water.batchNotifications.sendWaterAbstractionAlerts(notificationEventId, issuer);
+  try {
+    await services.water.batchNotifications.sendWaterAbstractionAlerts(notificationEventId, issuer);
+  } catch (e) {
+    logger.warn(e);
+  }
   session.clear(request);
   return h.view('nunjucks/gauging-stations/confirm-sending-successful', {
     ...request.view,

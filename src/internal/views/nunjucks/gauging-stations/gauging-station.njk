@@ -87,7 +87,7 @@
 </div>
 
 {% if isWaterAbstractionAlertsEnabled %}
-    {% if licenceGaugingStations.length %}
+    {% if licenceGaugingStations.length and hasPermissionToManageLinks %}
       <div class="govuk-grid-row govuk-!-margin-bottom-6">
         <div class="govuk-grid-column-full">
           {{ govukButton({

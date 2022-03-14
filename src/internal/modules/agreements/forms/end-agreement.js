@@ -14,7 +14,7 @@ const { getAgreementEndDateValidator } = require('./lib/date-picker');
 const endAgreementForm = (request, endDate) => {
   const { csrfToken } = request.view;
   const { licenceId, agreementId } = request.params;
-  const { licence, agreement } = request.pre;
+  
   const f = formFactory(`/licences/${licenceId}/agreements/${agreementId}/end`, 'POST');
   f.fields.push(fields.date('endDate', {
     type: 'date',

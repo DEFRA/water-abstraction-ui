@@ -49,9 +49,10 @@ const getCommonErrors = (licenceEndDate, refDate) => {
 
 const getFinancialYearsDateBetweenDates = (startDate, endDate, startOrEnd = 'start') => {
   const effectiveEndDate = endDate || moment(new Date()).add(10, 'years');
-  const effectiveStartDate = moment(startDate).isBefore(moment()) && startDate || moment(new Date());
+  const effectiveStartDate = (moment(startDate).isBefore(moment()) && startDate) || moment(new Date());
 
-  const now = moment(effectiveStartDate).clone(), dates = [];
+  const now = moment(effectiveStartDate).clone()
+  let dates = [];
 
   while (now.isSameOrBefore(effectiveEndDate)) {
     const iterationOfDate = now.format(`YYYY${startOrEnd === 'start' ? '-04-01' : '-03-31'}`);
@@ -63,9 +64,6 @@ const getFinancialYearsDateBetweenDates = (startDate, endDate, startOrEnd = 'sta
   }
   return dates;
 };
-
-const getViableAgreementStartDateAggregator = (licenceStartDate, licenceEndDate, chargeVersions = []) =>
-  [...getStartOfFinancialYearsBetweenDates(licenceStartDate, licenceEndDate), ...chargeVersions.map(cv => cv.dateRange.startDate)];
 
 const getAgreementStartDateValidator = (licence, chargeVersions) => {
   const { startDate, endDate } = licence;
@@ -105,4 +103,3 @@ exports.getCommonErrors = getCommonErrors;
 exports.getAgreementStartDateValidator = getAgreementStartDateValidator;
 exports.getAgreementEndDateValidator = getAgreementEndDateValidator;
 exports.getDateValidator = getDateValidator;
-exports.getViableAgreementStartDateAggregator = getViableAgreementStartDateAggregator;

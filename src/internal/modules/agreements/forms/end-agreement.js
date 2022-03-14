@@ -1,7 +1,7 @@
 const { formFactory, fields } = require('shared/lib/forms/');
 const JoiDate = require('@joi/date');
 const Joi = require('joi').extend(JoiDate);
-const moment = require('moment');
+const { getAgreementEndDateValidator } = require('./lib/date-picker');
 
 /**
  * Creates an object to represent the form for setting the
@@ -18,24 +18,13 @@ const endAgreementForm = (request, endDate) => {
   const f = formFactory(`/licences/${licenceId}/agreements/${agreementId}/end`, 'POST');
   f.fields.push(fields.date('endDate', {
     type: 'date',
+    caption: 'Enter a date that either matches the date some existing charge information ends or is 31 March.',
     errors: {
       'any.required': {
-        message: 'Enter the agreement end date'
+        message: 'Enter the agreement end date.'
       },
-      'date.format': {
-        message: 'Enter the agreement end date'
-      },
-      'string.empty': {
-        message: 'Enter the agreement end date'
-      },
-      'date.base': {
-        message: 'Enter the agreement end date'
-      },
-      'date.min': {
-        message: `Enter an end date on or after the agreement start date (${moment(agreement.dateRange.startDate).format('DD-MM-YYYY')})`
-      },
-      'date.max': {
-        message: `Enter an end date on or before the licence end date (${moment(licence.endDate).format('DD-MM-YYYY')})`
+      'any.only': {
+        message: `You must enter an end date that matches some existing charge information or is 31 March.`
       }
     }
   }, endDate));
@@ -45,15 +34,10 @@ const endAgreementForm = (request, endDate) => {
 };
 
 const endAgreementFormSchema = (request, h) => {
-  const { licence, agreement } = request.pre;
+  const { licence, chargeVersions, agreement } = request.pre;
   return Joi.object({
     csrf_token: Joi.string().uuid().required(),
-    endDate: Joi
-      .date()
-      .format('YYYY-MM-DD')
-      .min(new Date(agreement.dateRange.startDate || '1000-1-1'))
-      .max(new Date(licence.endDate || '3000-1-1'))
-      .required()
+    endDate: getAgreementEndDateValidator(licence, chargeVersions.data, agreement)
   });
 };
 

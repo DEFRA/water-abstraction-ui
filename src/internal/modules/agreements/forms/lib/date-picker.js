@@ -33,6 +33,9 @@ const getMaxDate = (licenceEndDate, refDate) => {
 const getCommonErrors = (licenceEndDate, refDate) => {
   const { isLicenceEndDate } = getMaxDate(licenceEndDate, refDate);
   return {
+    'any.required': {
+      message: 'Enter a real date'
+    },
     'date.format': {
       message: 'Enter a real date'
     },
@@ -40,11 +43,48 @@ const getCommonErrors = (licenceEndDate, refDate) => {
       message: isLicenceEndDate
         ? 'Enter a date no later than the licence end date'
         : 'The date you enter must be today’s date or earlier. It cannot be in the future'
-    },
-    'date.min': {
-      message: 'Enter a date that is no earlier than the licence start date'
     }
   };
+};
+
+const getFinancialYearsDateBetweenDates = (startDate, endDate, startOrEnd = 'start') => {
+  const effectiveEndDate = endDate || moment(new Date()).add(10, 'years');
+  const effectiveStartDate = moment(startDate).isBefore(moment()) && startDate || moment(new Date());
+
+  const now = moment(effectiveStartDate).clone(), dates = [];
+
+  while (now.isSameOrBefore(effectiveEndDate)) {
+    const iterationOfDate = now.format(`YYYY${startOrEnd === 'start' ? '-04-01' : '-03-31'}`);
+
+    if (moment(iterationOfDate).isBetween(effectiveStartDate, effectiveEndDate)) {
+      dates.push(iterationOfDate);
+    }
+    now.add(1, 'year');
+  }
+  return dates;
+};
+
+const getViableAgreementStartDateAggregator = (licenceStartDate, licenceEndDate, chargeVersions = []) =>
+  [...getStartOfFinancialYearsBetweenDates(licenceStartDate, licenceEndDate), ...chargeVersions.map(cv => cv.dateRange.startDate)];
+
+const getAgreementStartDateValidator = (licence, chargeVersions) => {
+  const { startDate, endDate } = licence;
+
+  const chargeVersionStartDates = chargeVersions.map(cv => cv.dateRange.startDate);
+
+  const allowedDates = [...chargeVersionStartDates, ...getFinancialYearsDateBetweenDates(startDate, endDate, 'start')];
+
+  return Joi.date().format('YYYY-MM-DD').options({ convert: false }).raw().valid(...allowedDates).required();
+};
+
+const getAgreementEndDateValidator = (licence, chargeVersions, agreement) => {
+  const { endDate } = licence;
+
+  const chargeVersionEndDates = chargeVersions.map(cv => cv.dateRange.endDate);
+
+  const allowedDates = [...chargeVersionEndDates, ...getFinancialYearsDateBetweenDates(agreement.dateRange.startDate, endDate, 'end')];
+
+  return Joi.date().format('YYYY-MM-DD').options({ convert: false }).raw().valid(...allowedDates).required();
 };
 
 /**
@@ -62,4 +102,7 @@ const getDateValidator = licence => {
 
 exports.getMaxDate = getMaxDate;
 exports.getCommonErrors = getCommonErrors;
+exports.getAgreementStartDateValidator = getAgreementStartDateValidator;
+exports.getAgreementEndDateValidator = getAgreementEndDateValidator;
 exports.getDateValidator = getDateValidator;
+exports.getViableAgreementStartDateAggregator = getViableAgreementStartDateAggregator;

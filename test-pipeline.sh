@@ -5,11 +5,6 @@ cd "$(dirname "$0")" || exit
 export $(grep -v '^#' ../water-abstraction-orchestration/secrets/.env | xargs)
 DISPLAY=$IP:0
 
-export WATER_URI="http://docker:8001/water/1.0"
-export ADMIN_URI='http://docker:8008/'
-export USER_URI='http://docker:8000/'
-export BASE_URL='http://docker:8008'
-
 #docker rm cypress:1
 DOCKER_BUILDKIT=0 docker build -f cypress.Dockerfile -t cypress:1 .
 

@@ -36,6 +36,15 @@ const createRequest = () => ({
         startDate: '2019-01-01'
       }
     },
+    chargeVersions: {
+      data: [
+        {
+          dateRange: {
+            startDate: '2019-01-01'
+          }
+        }
+      ]
+    },
     document: {
       document_id: 'test-document-id'
     },
@@ -348,16 +357,16 @@ experiment('internal/modules/agreements/controller', () => {
         expect(form).to.be.an.object();
       });
 
-      test('the form has 3 radio options for each supported agreement type', async () => {
+      test('the form has four radio options for each supported agreement type', async () => {
         const [, { form }] = h.view.lastCall.args;
         const field = form.fields.find(field => field.name === 'financialAgreementCode');
 
         expect(field.options.widget).to.equal('radio');
         expect(field.options.label).to.equal('Select agreement');
 
-        expect(field.options.choices.length).to.equal(3);
+        expect(field.options.choices.length).to.equal(4);
 
-        expect(field.options.choices[0].label).to.equal('Two-part tariff (S127)');
+        expect(field.options.choices[0].label).to.equal('Two-part tariff');
         expect(field.options.choices[0].value).to.equal('S127');
 
         expect(field.options.choices[1].label).to.equal('Canal and Rivers Trust, supported source (S130S)');
@@ -365,6 +374,9 @@ experiment('internal/modules/agreements/controller', () => {
 
         expect(field.options.choices[2].label).to.equal('Canal and Rivers Trust, unsupported source (S130U)');
         expect(field.options.choices[2].value).to.equal('S130U');
+
+        expect(field.options.choices[3].label).to.equal('Abatement');
+        expect(field.options.choices[3].value).to.equal('S126');
       });
     });
 
@@ -573,7 +585,7 @@ experiment('internal/modules/agreements/controller', () => {
         test('agreement is set correctly', async () => {
           const [, { answers }] = h.view.lastCall.args;
           expect(answers[0].label).to.equal('Agreement');
-          expect(answers[0].value).to.equal('Two-part tariff (S127)');
+          expect(answers[0].value).to.equal('Two-part tariff');
           expect(answers[0].link).to.equal(`/licences/${licenceId}/agreements/select-type?check=1`);
         });
 

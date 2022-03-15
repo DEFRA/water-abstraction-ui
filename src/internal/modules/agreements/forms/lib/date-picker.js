@@ -51,8 +51,8 @@ const getFinancialYearsDateBetweenDates = (startDate, endDate, startOrEnd = 'sta
   const effectiveEndDate = endDate || moment(new Date()).add(10, 'years');
   const effectiveStartDate = (moment(startDate).isBefore(moment()) && startDate) || moment(new Date());
 
-  const now = moment(effectiveStartDate).clone()
-  let dates = [];
+  const now = moment(effectiveStartDate).clone();
+  const dates = [];
 
   while (now.isSameOrBefore(effectiveEndDate)) {
     const iterationOfDate = now.format(`YYYY${startOrEnd === 'start' ? '-04-01' : '-03-31'}`);
@@ -67,20 +67,22 @@ const getFinancialYearsDateBetweenDates = (startDate, endDate, startOrEnd = 'sta
 
 const getAgreementStartDateValidator = (licence, chargeVersions) => {
   const { startDate, endDate } = licence;
+  const effectiveEndDate = endDate || moment(new Date()).add(10, 'years');
 
   const chargeVersionStartDates = chargeVersions.map(cv => cv.dateRange.startDate);
 
-  const allowedDates = [...chargeVersionStartDates, ...getFinancialYearsDateBetweenDates(startDate, endDate, 'start')];
+  const allowedDates = [...chargeVersionStartDates, ...getFinancialYearsDateBetweenDates(startDate, effectiveEndDate, 'start')].filter(x => x);
 
   return Joi.date().format('YYYY-MM-DD').options({ convert: false }).raw().valid(...allowedDates).required();
 };
 
 const getAgreementEndDateValidator = (licence, chargeVersions, agreement) => {
   const { endDate } = licence;
+  const effectiveEndDate = endDate || moment(new Date()).add(10, 'years');
 
   const chargeVersionEndDates = chargeVersions.map(cv => cv.dateRange.endDate);
 
-  const allowedDates = [...chargeVersionEndDates, ...getFinancialYearsDateBetweenDates(agreement.dateRange.startDate, endDate, 'end')];
+  const allowedDates = [...chargeVersionEndDates, ...getFinancialYearsDateBetweenDates(agreement.dateRange.startDate, effectiveEndDate, 'end')].filter(x => x);
 
   return Joi.date().format('YYYY-MM-DD').options({ convert: false }).raw().valid(...allowedDates).required();
 };

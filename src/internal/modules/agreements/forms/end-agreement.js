@@ -14,7 +14,6 @@ const { getAgreementEndDateValidator } = require('./lib/date-picker');
 const endAgreementForm = (request, endDate) => {
   const { csrfToken } = request.view;
   const { licenceId, agreementId } = request.params;
-  
   const f = formFactory(`/licences/${licenceId}/agreements/${agreementId}/end`, 'POST');
   f.fields.push(fields.date('endDate', {
     type: 'date',
@@ -24,7 +23,7 @@ const endAgreementForm = (request, endDate) => {
         message: 'Enter the agreement end date.'
       },
       'any.only': {
-        message: `You must enter an end date that matches some existing charge information or is 31 March.`
+        message: 'You must enter an end date that matches some existing charge information or is 31 March.'
       }
     }
   }, endDate));

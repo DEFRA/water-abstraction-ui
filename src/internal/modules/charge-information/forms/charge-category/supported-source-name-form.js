@@ -1,18 +1,18 @@
 const { getChargeCategoryData, getChargeCategoryActionUrl } = require('../../lib/form-helpers');
 const { ROUTING_CONFIG } = require('../../lib/charge-categories/constants');
 const Joi = require('joi');
+const { groupBy } = require('lodash');
 const { formFactory, fields } = require('shared/lib/forms/');
 
 const getChoices = (config, supportedSources) => {
-  const choices = supportedSources.reduce((reducedChoices, source, index) => {
-    const choice = { value: source.id, label: source.name };
-    const lastSource = index ? supportedSources[index - 1] : {};
-    if (source.region !== lastSource.region) {
-      return [...reducedChoices, { divider: source.region }, choice];
-    } else {
-      return [...reducedChoices, choice];
-    }
-  }, []);
+  const optionsByRegion = Object.fromEntries(Object.entries(groupBy(supportedSources, 'region')).sort());
+  const flattenedOptions = Object.values(optionsByRegion);
+
+  const choices = [];
+  flattenedOptions.forEach(region => {
+    choices.push({ divider: region[0].region });
+    region.forEach(source => choices.push({ value: source.id, label: source.name }));
+  });
 
   return {
     errors: {

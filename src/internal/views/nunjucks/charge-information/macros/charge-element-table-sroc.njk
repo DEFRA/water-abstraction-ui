@@ -173,7 +173,7 @@ formErrorSummary %}
 
           {% if chargePurpose.purposeUse.isTwoPartTariff %}
             {{ summaryListRow(
-              'Agreements apply',
+              'Two-part tariff agreements apply',
               agreementsApplyText(chargePurpose.isSection127AgreementEnabled),
               changeLink('/agreements', chargePurpose.id, licenceId, chargeElementId, chargeVersionWorkflowId),
               isEditable

@@ -85,7 +85,8 @@ const getAgreementEndDateValidator = (licence, chargeVersions, agreement) => {
 
   const chargeVersionEndDates = chargeVersions.map(cv => cv.dateRange.endDate);
 
-  const allowedDates = [...chargeVersionEndDates, ...getFinancialYearsDateBetweenDates(agreement.dateRange.startDate, effectiveEndDate, 'end')].filter(x => x);
+  const allowedDates = [...chargeVersionEndDates, ...getFinancialYearsDateBetweenDates(agreement.dateRange.startDate, effectiveEndDate, 'end')]
+    .filter(x => x && moment(x).isAfter(agreement.dateRange.startDate)); // Remove dates that are prior to the agreement start date
 
   return Joi.date().format(DATE_FORMAT).options({ convert: false }).raw().valid(...allowedDates).required();
 };

@@ -192,11 +192,14 @@ experiment('internal/modules/agreements/controller', () => {
           payload: {
             csrf_token: uuid(),
             'endDate-year': '2020',
-            'endDate-month': '01',
-            'endDate-day': '01'
+            'endDate-month': '03',
+            'endDate-day': '31'
           }
         });
         await controller.postEndAgreement(modifiedRequest, h);
+      });
+      test('calls endAgreementSessionManager', () => {
+        expect(helpers.endAgreementSessionManager.called).to.be.true();
       });
       test('redirects back to the confirmation page', async () => {
         expect(h.redirect.calledWith(`/licences/${modifiedRequest.pre.licence.id}/agreements/${modifiedRequest.params.agreementId}/end/confirm`));

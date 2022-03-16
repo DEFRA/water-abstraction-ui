@@ -76,7 +76,7 @@ const getAgreementStartDateValidator = (licence, chargeVersions) => {
 
   const allowedDates = [...chargeVersionStartDates, ...getFinancialYearsDateBetweenDates(startDate, effectiveEndDate, 'start')].filter(x => x);
 
-  return Joi.date().format('YYYY-MM-DD').options({ convert: false }).raw().valid(...allowedDates).required();
+  return Joi.date().format(DATE_FORMAT).options({ convert: false }).raw().valid(...allowedDates).required();
 };
 
 const getAgreementEndDateValidator = (licence, chargeVersions, agreement) => {
@@ -87,7 +87,7 @@ const getAgreementEndDateValidator = (licence, chargeVersions, agreement) => {
 
   const allowedDates = [...chargeVersionEndDates, ...getFinancialYearsDateBetweenDates(agreement.dateRange.startDate, effectiveEndDate, 'end')].filter(x => x);
 
-  return Joi.date().format('YYYY-MM-DD').options({ convert: false }).raw().valid(...allowedDates).required();
+  return Joi.date().format(DATE_FORMAT).options({ convert: false }).raw().valid(...allowedDates).required();
 };
 
 /**
@@ -100,7 +100,7 @@ const getAgreementEndDateValidator = (licence, chargeVersions, agreement) => {
 const getDateValidator = licence => {
   const { startDate, endDate } = licence;
   const { maxDate } = getMaxDate(endDate);
-  return Joi.date().format('YYYY-MM-DD').min(startDate).max(maxDate).required();
+  return Joi.date().format(DATE_FORMAT).min(startDate).max(maxDate).required();
 };
 
 exports.getMaxDate = getMaxDate;

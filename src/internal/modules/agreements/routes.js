@@ -333,4 +333,4 @@ if (config.featureToggles.manageAgreements) {
     }
   };
 }
-;
+

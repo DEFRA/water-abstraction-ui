@@ -69,21 +69,21 @@ describe('Licence agreement - Set up, View, End and Delete', () => {
     });
 
     describe('End the created agreement using valid date', () => {
-      cy.get('#endDate-day').clear().type('01');
-      cy.get('#endDate-month').clear().type('05');
-      cy.get('#endDate-year').clear().type('2021');
+      cy.get('#endDate-day').clear().type('31');
+      cy.get('#endDate-month').clear().type('03');
+      cy.get('#endDate-year').clear().type('2022');
       cy.get('form > .govuk-button').click();
       cy.get('.govuk-table')
         .children()
         .should('contain', 'End date')
-        .should('contain', '1 May 2021');
+        .should('contain', '31 March 2022');
       // Click end the agreement button
       cy.get('form > .govuk-button').click();
       // assert the agreement end date
       cy.get('.govuk-table')
         .children()
         .should('contain', 'End date').should('be.visible')
-        .should('contain', '1 May 2021').should('be.visible');
+        .should('contain', '31 March 2022').should('be.visible');
     });
     describe('Delete the  agreement', () => {
       cy.get('a.govuk-link').eq(4).contains('Delete').click({ force: true });

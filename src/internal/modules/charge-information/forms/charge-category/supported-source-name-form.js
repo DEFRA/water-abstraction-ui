@@ -9,7 +9,7 @@ const getChoices = (config, supportedSources) => {
   const flattenedOptions = Object.values(optionsByRegion);
 
   const choices = [];
-  flattenedOptions.forEach((region) => {
+  flattenedOptions.forEach(region => {
     choices.push({ divider: region[0].region });
     region.forEach(source => choices.push({ value: source.id, label: source.name }));
   });

@@ -43,6 +43,9 @@ const getCommonErrors = (licenceEndDate, refDate) => {
       message: isLicenceEndDate
         ? 'Enter a date no later than the licence end date'
         : 'The date you enter must be today’s date or earlier. It cannot be in the future'
+    },
+    'date.min': {
+      message: 'Enter a date that is no earlier than the licence start date'
     }
   };
 };

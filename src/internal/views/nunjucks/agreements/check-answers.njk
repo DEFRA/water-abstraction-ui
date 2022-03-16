@@ -11,15 +11,21 @@ formErrorSummary %}
 
       {{ title(pageTitle, caption)}}
 
-      {{ govukInsetText({
-        text: 'Go to the charge information to check which elements this agreement applies to.'
-      })}}
-
       {{ govukSummaryList(answers | checkAnswers) }}
 
-      <p>
-        This licence will be added to the supplementary bill run if a bill is due.
-      </p>
+      {% if startDateIsBeforeSrocStart and isTwoPartTariff %}
+      {{ govukInsetText({
+          text: 'To affect the charge, this agreement must be applied to a charge element.'
+      })}}
+
+      {% else %}
+
+      {{ govukInsetText({
+        text: 'To affect the charge, this agreement must be applied to a charge category.'
+      })}}
+      {% endif %}
+
+
       {{ formRender(form) }}
     </div>
   </div>

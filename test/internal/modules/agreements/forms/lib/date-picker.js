@@ -27,6 +27,9 @@ experiment('internal/modules/agreements/forms/lib/date-picker', () => {
     test('returns the correct common date field errors when the licence end date is earlier', async () => {
       const errors = datePicker.getCommonErrors('2020-09-01', '2020-09-29');
       expect(errors).to.equal({
+        'any.required': {
+          message: 'Enter a real date'
+        },
         'date.format': {
           message: 'Enter a real date'
         },
@@ -40,6 +43,9 @@ experiment('internal/modules/agreements/forms/lib/date-picker', () => {
     test('returns the correct common date field errors when today is earlier', async () => {
       const errors = datePicker.getCommonErrors('2020-09-29', '2020-09-01');
       expect(errors).to.equal({
+        'any.required': {
+          message: 'Enter a real date'
+        },
         'date.format': {
           message: 'Enter a real date'
         },

@@ -177,7 +177,8 @@ if (config.featureToggles.manageAgreements) {
           })
         },
         pre: [
-          { method: sharedPreHandlers.loadLicence, assign: 'licence' }
+          { method: sharedPreHandlers.loadLicence, assign: 'licence' },
+          { method: sharedPreHandlers.loadChargeVersions, assign: 'chargeVersions' }
         ]
       }
     },
@@ -272,7 +273,8 @@ if (config.featureToggles.manageAgreements) {
         },
         pre: [
           { method: preHandlers.loadAgreement, assign: 'agreement' },
-          { method: sharedPreHandlers.loadLicence, assign: 'licence' }
+          { method: sharedPreHandlers.loadLicence, assign: 'licence' },
+          { method: sharedPreHandlers.loadChargeVersions, assign: 'chargeVersions' }
         ]
       }
     },
@@ -330,4 +332,4 @@ if (config.featureToggles.manageAgreements) {
       }
     }
   };
-};
+}

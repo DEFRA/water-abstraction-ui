@@ -181,7 +181,7 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
     test('maps the agreements, including a human-readable description', async () => {
       const [, { agreements }] = h.view.lastCall.args;
       expect(agreements).to.be.an.array().length(1);
-      expect(agreements[0].agreement.description).to.equal('Two-part tariff (S127)');
+      expect(agreements[0].agreement.description).to.equal('Two-part tariff');
     });
 
     test('maps the returns to include a view/edit link', async () => {

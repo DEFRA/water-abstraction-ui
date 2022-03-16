@@ -65,7 +65,7 @@ describe('Licence agreement - Set up, View, End and Delete', () => {
       cy.get('#endDate-year').type('2021');
       cy.get('form > .govuk-button').click();
       // error message
-      cy.get('.govuk-error-summary').contains('Enter an end date on or after the agreement start date (01-04-2021)').should('be.visible');
+      cy.get('.govuk-error-summary').contains('You must enter an end date that matches some existing charge information or is 31 March.').should('be.visible');
     });
 
     describe('End the created agreement using valid date', () => {

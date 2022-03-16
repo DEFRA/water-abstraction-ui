@@ -58,7 +58,7 @@ experiment('internal/modules/charge-information/forms/charge-element/agreements'
         const field = findField(agreementForm, 'isSection127AgreementEnabled');
         expect(field.options.caption).to.equal(`Licence ${licenceNumber}`);
         expect(field.options.label).to.equal('Should two-part tariff agreements apply to this element?');
-        expect(field.options.hint).to.equal('Normally, a two-part tariff  agreement will apply to all elements');
+        expect(field.options.hint).to.equal('Normally, a two-part tariff agreement will apply to all elements');
         expect(field.options.widget).to.equal('radio');
         expect(field.options.mapper).to.equal('booleanMapper');
         expect(field.value).to.be.undefined();

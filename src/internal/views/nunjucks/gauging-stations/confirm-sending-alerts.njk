@@ -32,17 +32,24 @@
     {% for notification in notifications %}
         <tr class="govuk-table__row">
             <td class="govuk-table__cell">
-            {% if notification.personalisation.address_line_1 %}
-                <p class="govuk-body govuk-!-margin-0">{{notification.personalisation.address_line_1}}</p>
-            {% endif %}
-            {% if notification.personalisation.address_line_2 %}
-                <p class="govuk-body govuk-!-margin-0">{{notification.personalisation.address_line_2}}</p>
-            {% endif %}
-            {% if notification.personalisation.address_line_3 %}
-                <p class="govuk-body govuk-!-margin-0">{{notification.personalisation.address_line_3}}</p>
-            {% endif %}
-            {% if notification.personalisation.address_line_4 %}
-                <p class="govuk-body govuk-!-margin-0">{{notification.personalisation.address_line_4}}</p>
+            {% if notification.messageType == "email" %}
+                {% if notification.personalisation.address_line_1 %}
+                    <p class="govuk-body govuk-!-margin-0">{{notification.personalisation.address_line_1}}</p>
+                {% endif %}
+                <p class="govuk-body govuk-!-margin-0">{{notification.recipient}}</p>
+            {% else %}
+                {% if notification.personalisation.address_line_1 %}
+                    <p class="govuk-body govuk-!-margin-0">{{notification.personalisation.address_line_1}}</p>
+                {% endif %}
+                {% if notification.personalisation.address_line_2 %}
+                    <p class="govuk-body govuk-!-margin-0">{{notification.personalisation.address_line_2}}</p>
+                {% endif %}
+                {% if notification.personalisation.address_line_3 %}
+                    <p class="govuk-body govuk-!-margin-0">{{notification.personalisation.address_line_3}}</p>
+                {% endif %}
+                {% if notification.personalisation.address_line_4 %}
+                    <p class="govuk-body govuk-!-margin-0">{{notification.personalisation.address_line_4}}</p>
+                {% endif %}
             {% endif %}
             </td>
             <td class="govuk-table__cell">

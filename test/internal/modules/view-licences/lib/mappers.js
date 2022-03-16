@@ -157,7 +157,7 @@ experiment('internal/modules/billing/controllers/lib/mappers', () => {
       const result = mappers.mapLicenceAgreements(agreements, options);
       expect(result).to.be.an.array().length(1);
       expect(result[0].id).to.equal(agreements[0].id);
-      expect(result[0].agreement).to.equal({ code: 'S127', description: 'Two-part tariff (S127)' });
+      expect(result[0].agreement).to.equal({ code: 'S127', description: 'Two-part tariff' });
     });
 
     test('includes action links', async () => {

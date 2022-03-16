@@ -300,7 +300,7 @@ experiment('modules/billing/lib/mappers', () => {
         expect(agreements).to.equal([
           {
             code: 'S127',
-            description: 'Two-part tariff (S127)'
+            description: 'Two-part tariff'
           }
         ]);
       });

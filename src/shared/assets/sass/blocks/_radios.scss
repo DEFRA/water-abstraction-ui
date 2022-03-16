@@ -1,6 +1,7 @@
 .radios-dividers-bold {
   .govuk-radios__divider {
-    @include _govuk-responsive-spacing(3, 'margin', 'left');
+    @include _govuk-responsive-spacing(0, 'margin', 'left');
+    @include _govuk-responsive-spacing(5, 'margin', 'top');
     @include govuk-typography-weight-bold($important: true);
     width: max-content;
   }

@@ -139,10 +139,10 @@ formErrorSummary %}
             {% if scheme != 'sroc' %}
               {{ summaryListRow('Environmental Improvement Unit Charge', chargeElement.eiucSource | title,'',isEditable) }}
             {% endif %}
-            
+
             {% if chargeElement.purposeUse.isTwoPartTariff %}
               {{ summaryListRow(
-                'Agreements apply',
+                'Two-part tariff agreements apply',
                 agreementsApplyText(chargeElement.isSection127AgreementEnabled),
                 changeLink('/agreements', chargeElement.id, licenceId, chargeVersionWorkflowId),
                 isEditable

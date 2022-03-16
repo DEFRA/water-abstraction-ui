@@ -19,12 +19,12 @@ const LOSS_CATEGORIES = {
 
 const IS_RESTRICTED_SOURCE = [
   {
-    label: 'restricted availablity or no availability',
-    value: true
-  },
-  {
     label: 'available',
     value: false
+  },
+  {
+    label: 'restricted availablity or no availability',
+    value: true
   }
 ];
 

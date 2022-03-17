@@ -3,6 +3,8 @@
 cd "$(dirname "$0")" || exit
 
 export $(grep -v '^#' ../water-abstraction-orchestration/secrets/.env | xargs)
+export $(grep -v '^#' ../water-abstraction-orchestration/shared/variables.env | xargs)
+
 DISPLAY=$IP:0
 
 export WATER_URI="http://host.docker.internal:8001/water/1.0"

@@ -43,7 +43,7 @@ describe('Create SRoC Charge version workflow journey', () => {
 
     describe('user selects reason for new charge information', () => {
       cy.get('.govuk-heading-l').contains('Select reason for new charge information');
-      cy.get('[type="radio"]#reason-7').click();
+      cy.get('[type="radio"]#reason-12').click();
       cy.get('button.govuk-button').click();
     });
 
@@ -111,7 +111,7 @@ describe('Create SRoC Charge version workflow journey', () => {
     });
 
     describe('user sees the new charge version', () => {
-      cy.get('.govuk-table__body').contains('td', 'Billing contact change');
+      cy.get('.govuk-table__body').contains('td', 'Strategic review of charges (SRoC)');
       cy.get('.govuk-table__body').contains('td', 'Approved');
     });
 

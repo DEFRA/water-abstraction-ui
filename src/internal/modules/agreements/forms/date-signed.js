@@ -9,7 +9,10 @@ const { getFormAction } = require('./lib/routing');
 
 const getDateErrors = (isDateSignedKnown, endDate) => {
   const errors = {
-    ...getCommonErrors(endDate)
+    ...getCommonErrors(endDate),
+    'date.min': {
+      message: 'Enter a date that is no earlier than the licence start date'
+    }
   };
   if (isDateSignedKnown) {
     errors['any.required'] = {
@@ -45,9 +48,12 @@ const dateSignedForm = request => {
       label: 'Yes',
       fields: [
         fields.date('dateSigned', {
+          label: 'Date signed',
           type: 'date',
           mapper: 'dateMapper',
           controlClass: 'form-control form-control--small',
+          heading: true,
+          size: 'm',
           errors: getDateErrors(isDateSignedKnown, endDate)
         }, dateSigned)]
     }, {

@@ -6,6 +6,7 @@ const sessionForms = require('shared/lib/session-forms');
 const { agreementDescriptions } = require('shared/lib/mappers/agreements');
 const { logger } = require('internal/logger');
 const helpers = require('./lib/helpers');
+const config = require('internal/config');
 const forms = require('shared/lib/forms');
 
 // Services
@@ -21,7 +22,11 @@ const dateSigned = require('./forms/date-signed');
 const checkStartDate = require('./forms/check-start-date');
 const confirmForm = require('./forms/confirm');
 
-const { createAddAgreementPostHandler, getAddAgreementSessionData, clearAddAgreementSessionData } = require('./lib/helpers');
+const {
+  createAddAgreementPostHandler,
+  getAddAgreementSessionData,
+  clearAddAgreementSessionData
+} = require('./lib/helpers');
 const actions = require('./lib/actions');
 
 const getDefaultView = request => ({
@@ -177,6 +182,8 @@ const getCheckAnswers = async (request, h) => {
     pageTitle: 'Check agreement details',
     back: `${basePath}/check-start-date`,
     form: confirmForm.form(request),
+    startDateIsBeforeSrocStart: moment(flowState.startDate).isBefore(config.srocStartDate, 'day'),
+    isTwoPartTariff: flowState.code === 'S127',
     answers: [{
       label: 'Agreement',
       value: agreementDescriptions[flowState.code],

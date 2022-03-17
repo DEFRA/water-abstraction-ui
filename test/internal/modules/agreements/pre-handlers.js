@@ -54,7 +54,7 @@ experiment('internal/modules/agreements/pre-handlers', () => {
         id: 'test-agreement-id',
         agreement: {
           code: 'S127',
-          description: 'Two-part tariff (S127)'
+          description: 'Two-part tariff'
         }
       });
     });

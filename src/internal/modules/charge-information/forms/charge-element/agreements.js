@@ -8,7 +8,7 @@ const { getChargeElementActionUrl } = require('../../lib/form-helpers');
 
 const getRadioChoices = () => [{
   value: true,
-  label: 'Yes, agreements should apply to this element'
+  label: 'Yes, two-part tariff agreements should apply to this element'
 }, {
   value: false,
   label: 'No, exclude this element from two-part tariff agreements'
@@ -16,9 +16,9 @@ const getRadioChoices = () => [{
 
 const getRadioField = (licenceNumber, value) => fields.radio('isSection127AgreementEnabled', {
   caption: `Licence ${licenceNumber}`,
-  label: 'Should agreements apply to this element?',
+  label: 'Should two-part tariff agreements apply to this element?',
   heading: true,
-  hint: 'Normally, an agreement will apply to all elements',
+  hint: 'Normally, a two-part tariff agreement will apply to all elements',
   errors: {
     'any.required': {
       message: 'Select if agreements should apply to this element'

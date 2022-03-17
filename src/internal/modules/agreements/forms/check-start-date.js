@@ -3,19 +3,25 @@
 const Joi = require('joi');
 
 const { formFactory, fields } = require('shared/lib/forms/');
-const { getCommonErrors, getDateValidator } = require('./lib/date-picker');
+const { getCommonErrors, getAgreementStartDateValidator } = require('./lib/date-picker');
 const { getFormAction } = require('./lib/routing');
 
 const getDatePicker = licenceEndDate => {
   return fields.date('startDate', {
     label: 'Start date',
     isHeading: true,
+    heading: true,
     size: 'm',
+    hint: 'Enter a date that either matches the start date on some existing charge information or is 1 April',
     errors: {
+      ...getCommonErrors(licenceEndDate),
       'any.required': {
-        message: 'Enter the agreement start date'
+        message: 'Enter the agreement start date.'
       },
-      ...getCommonErrors(licenceEndDate)
+      'any.only': {
+        message: `You must enter a start date that matches some existing charge information or is 1 April. 
+        If you need to use another date, you must set up new charge information first.`
+      }
     }
   });
 };
@@ -65,14 +71,15 @@ const checkStartDateForm = request => {
   return f;
 };
 
-const checkStartDateSchema = (request, refDate) => {
-  const { licence } = request.pre;
+const checkStartDateSchema = request => {
+  const { licence, chargeVersions } = request.pre;
+
   return Joi.object({
     csrf_token: Joi.string().uuid().required(),
     isCustomStartDate: Joi.boolean().required(),
     startDate: Joi.when('isCustomStartDate', {
       is: true,
-      then: getDateValidator(licence)
+      then: getAgreementStartDateValidator(licence, chargeVersions.data)
     })
   });
 };

@@ -11,7 +11,7 @@ const getDatePicker = licenceEndDate => {
     label: 'Start date',
     isHeading: true,
     heading: true,
-    size: 'l',
+    size: 'm',
     hint: 'Enter a date that either matches the start date on some existing charge information or is 1 April',
     errors: {
       ...getCommonErrors(licenceEndDate),

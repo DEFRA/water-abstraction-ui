@@ -53,7 +53,7 @@ const dateSignedForm = request => {
           mapper: 'dateMapper',
           controlClass: 'form-control form-control--small',
           heading: true,
-          size: 'l',
+          size: 'm',
           errors: getDateErrors(isDateSignedKnown, endDate)
         }, dateSigned)]
     }, {

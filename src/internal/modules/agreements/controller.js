@@ -182,7 +182,7 @@ const getCheckAnswers = async (request, h) => {
     pageTitle: 'Check agreement details',
     back: `${basePath}/check-start-date`,
     form: confirmForm.form(request),
-    startDateIsBeforeSrocStart: moment(flowState.startDate).isSameOrBefore(config.srocStartDate, 'day'),
+    startDateIsBeforeSrocStart: moment(flowState.startDate).isBefore(config.srocStartDate, 'day'),
     isTwoPartTariff: flowState.code === 'S127',
     answers: [{
       label: 'Agreement',

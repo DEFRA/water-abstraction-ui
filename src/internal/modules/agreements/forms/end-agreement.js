@@ -20,14 +20,15 @@ const endAgreementForm = (request, endDate) => {
     caption: 'Enter a date that either matches the date some existing charge information ends or is 31 March.',
     errors: {
       'date.min': {
-        message: `You cannot use a date that is before the agreement start date.
+        message: `You cannot use an end date that is before the agreement start date.
         It must either match the date some existing charge information ends or be 31 March.`
       },
       'any.required': {
         message: 'Enter the agreement end date.'
       },
       'any.only': {
-        message: 'You must enter an end date that matches some existing charge information or is 31 March.'
+        message: 'You must enter an end date that matches some existing charge information or is 31 March.' +
+          'You cannot use a date that is before the agreement start date.'
       }
     }
   }, endDate));

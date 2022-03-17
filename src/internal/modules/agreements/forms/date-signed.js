@@ -52,6 +52,8 @@ const dateSignedForm = request => {
           type: 'date',
           mapper: 'dateMapper',
           controlClass: 'form-control form-control--small',
+          heading: true,
+          size: 'l',
           errors: getDateErrors(isDateSignedKnown, endDate)
         }, dateSigned)]
     }, {

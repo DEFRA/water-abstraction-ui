@@ -10,7 +10,9 @@ const getDatePicker = licenceEndDate => {
   return fields.date('startDate', {
     label: 'Start date',
     isHeading: true,
-    size: 'm',
+    heading: true,
+    size: 'l',
+    hint: 'Enter a date that either matches the start date on some existing charge information or is 1 April',
     errors: {
       ...getCommonErrors(licenceEndDate),
       'any.required': {

@@ -4,6 +4,7 @@
  */
 const { hasScope } = require('../../../lib/permissions');
 const { scope } = require('../../../lib/constants');
+const { featureToggles } = require('../../../config');
 const { mapValues } = require('lodash');
 
 /**
@@ -19,7 +20,7 @@ const createLink = (name, path, scopes) => ({ name, path, scopes });
  * Gets a skeleton object for the manage tab view
  * @type {Object}
  */
-const manageTabSkeleton = {
+const manageTabSkeleton = () => ({
   reports: [
     createLink('Notices', '/notifications/report', scope.allNotifications),
     createLink('Returns cycles', '/returns-reports', scope.returns),
@@ -40,6 +41,9 @@ const manageTabSkeleton = {
     createLink('Hands-off flow', 'notifications/3?start=1', scope.hofNotifications),
     createLink('Resume', 'notifications/4?start=1', scope.hofNotifications)
   ],
+  uploadChargeInformation: [
+    createLink('Upload a file', '/charge-information/upload', featureToggles.allowChargeVersionUploads && scope.chargeVersionWorkflowReviewer)
+  ],
   accounts: [
     createLink('Create an internal account', '/account/create-user', scope.manageAccounts)
   ],
@@ -49,19 +53,17 @@ const manageTabSkeleton = {
       scope.chargeVersionWorkflowReviewer
     ])
   ]
-};
+});
 
 /**
  * Get a config object for the current user's manage tab
+ * by filtering the skeleton items by scope
  * @param  {Object} request
- * @param  {Array} tasks   - list of tasks from water service
  * @return {[type]}         [description]
  */
-const getManageTabConfig = (request) => {
-  // Filter skeleton items by scope
-  return mapValues(manageTabSkeleton, (links, key) => {
-    return links.filter(link => hasScope(request, link.scopes));
-  });
-};
+const getManageTabConfig = request => mapValues(
+  manageTabSkeleton(),
+  links => links.filter(link => hasScope(request, link.scopes))
+);
 
 exports.getManageTabConfig = getManageTabConfig;

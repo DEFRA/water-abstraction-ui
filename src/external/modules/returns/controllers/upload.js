@@ -1,31 +1,45 @@
-const { get, set, isEmpty, lowerCase } = require('lodash');
+const { get, isEmpty, lowerCase } = require('lodash');
 const Boom = require('@hapi/boom');
-const { throwIfError } = require('@envage/hapi-pg-rest-api');
 
 const { uploadForm } = require('../forms/upload');
 const files = require('../../../../shared/lib/files');
-const uploadHelpers = require('../lib/upload-helpers');
-const uploadSummaryHelpers = require('../lib/upload-summary-helpers');
 const { logger } = require('../../../logger');
+const config = require('../../../config');
 const services = require('../../../lib/connectors/services');
 const fileCheck = require('../../../../shared/lib/file-check');
+const UploadHelpers = require('../../../../shared/lib/upload-helpers');
+const validTypes = ['csv', 'xml'];
+const uploadHelpers = new UploadHelpers('returns', validTypes, services, logger, config.testMode);
+const { NO_FILE, OK } = UploadHelpers.fileStatuses;
+const uploadSummaryHelpers = require('../lib/upload-summary-helpers');
 const csvTemplates = require('../lib/csv-templates');
 
 const confirmForm = require('../forms/confirm-upload');
 const helpers = require('../lib/helpers');
 
-const spinnerConfig = {
+uploadHelpers.spinnerConfig = {
   processing: {
     await: 'ready',
     path: '/returns/upload-summary',
+    errorPath: '/returns/upload',
     pageTitle: 'Uploading returns data'
   },
   submitting: {
     await: 'submitted',
     path: '/returns/upload-submitted',
+    errorPath: '/returns/upload',
     pageTitle: 'Submitting returns data'
   }
 };
+
+const errorMessages = {
+  'invalid-date-format': 'The date format must only include DD/MM/YYYY'
+};
+validTypes.forEach(type => {
+  errorMessages[`invalid-${type}`] = 'The selected file must use the template';
+});
+
+uploadHelpers.bespokeErrorMessages = errorMessages;
 
 /**
  * Upload bulk returns data
@@ -48,22 +62,6 @@ const getBulkUpload = (request, h) => {
 };
 
 /**
- * Gets the path to redirect to after a file has been uploaded
- * @param  {String} status  - the file upload status
- * @param  {String} eventId - the water service event ID
- * @return {String}         - the path to redirect to
- */
-const getRedirectPath = (status, eventId) => {
-  const paths = {
-    [uploadHelpers.fileStatuses.VIRUS]: '/returns/upload?error=virus',
-    [uploadHelpers.fileStatuses.INVALID_TYPE]: '/returns/upload?error=invalid-type',
-    [uploadHelpers.fileStatuses.NO_FILE]: '/returns/upload?error=no-file',
-    [uploadHelpers.fileStatuses.OK]: `/returns/processing-upload/processing/${eventId}`
-  };
-  return paths[status];
-};
-
-/**
  * Post handler for bulk upload
  * @param {Object} request - HAPI HTTP request
  * @param {Object} h - HAPI HTTP reply
@@ -72,7 +70,7 @@ async function postBulkUpload (request, h) {
   let eventId, redirectPath;
 
   if (request.payload.file.hapi && !request.payload.file.hapi.filename) {
-    return h.redirect(getRedirectPath(uploadHelpers.fileStatuses.NO_FILE));
+    return h.redirect(uploadHelpers.getRedirectPath(NO_FILE));
   }
 
   const localPath = uploadHelpers.getFile();
@@ -88,7 +86,7 @@ async function postBulkUpload (request, h) {
     const status = await uploadHelpers.getUploadedFileStatus(localPath, type);
 
     // Upload to water service and get event ID
-    if (status === uploadHelpers.fileStatuses.OK) {
+    if (status === OK) {
       const { userName, companyId } = request.defra;
       const fileData = await files.readFile(localPath);
 
@@ -97,7 +95,7 @@ async function postBulkUpload (request, h) {
       eventId = get(postData, 'data.eventId');
     }
 
-    redirectPath = getRedirectPath(status, eventId);
+    redirectPath = uploadHelpers.getRedirectPath(status, eventId);
   } catch (error) {
     logger.errorWithJourney('Error with bulk upload checks', error, request);
     throw error;
@@ -108,84 +106,6 @@ async function postBulkUpload (request, h) {
 
   return h.redirect(redirectPath);
 }
-
-const isError = evt => get(evt, 'status') === 'error';
-
-/**
- * Gets the path the spinner page will redirect to.
- * If the event is in error status, it always redirects back to the upload
- * form with a relevant error status.
- * Otherwise it redirects to the next page in the flow depending on the 'status'
- *
- * @param  {Object} evt    - event data loaded from water service
- * @param  {String} status - success status we are awaiting
- * @param {String} path - the path to redirect to if event status matches status
- *                        the event ID is appended to this path
- * @return {String|Undefined} - URL path to redirect to
- */
-const getSpinnerRedirectPath = (evt, status, path) => {
-  // If error redirect to error page
-  if (isError(evt)) {
-    const errorType = get(evt, 'metadata.error.key', 'default');
-    return `/returns/upload?error=${errorType}`;
-  }
-
-  if (evt.status === status) {
-    return `${path}/${evt.event_id}`;
-  }
-};
-
-/**
- * Retrieves the upload event from the water service
- * @param  {String}  eventId  - water service event GUID
- * @param  {String}  userName - current user's email address
- * @return {Promise}          resolves with row of event data
- */
-const getUploadEvent = async (eventId, userName) => {
-  const filter = {
-    event_id: eventId,
-    issuer: userName,
-    type: 'returns-upload'
-  };
-
-  // Get data from event database
-  const { data: [evt], error } = await services.water.events.findMany(filter);
-  throwIfError(error);
-  return evt;
-};
-
-/**
- * Waiting page to be diplayed whilst bulk return is being processed,
- * page refreshes every 5 seconds and checks the status of the event
- * @param {Object} request - HAPI HTTP request
- * @param {Object} h - HAPI HTTP reply
- */
-const getSpinnerPage = async (request, h) => {
-  // Get data from request
-  const { eventId, status } = request.params;
-  const config = spinnerConfig[status];
-  const { userName } = request.defra;
-
-  // Set page title
-  set(request, 'view.pageTitle', config.pageTitle);
-
-  // Load event data from water service
-  const evt = await getUploadEvent(eventId, userName);
-
-  if (evt) {
-    const path = getSpinnerRedirectPath(evt, config.await, config.path);
-
-    if (path) {
-      return h.redirect(path);
-    }
-
-    return h.view('nunjucks/waiting/index', request.view);
-  } else {
-    const error = Boom.notFound('Upload event not found', { eventId });
-    logger.errorWithJourney('No event found with selected event_id and issuer', error, request, { eventId });
-    throw error;
-  }
-};
 
 const pageTitles = {
   ok: 'Your data is ready to send',
@@ -206,7 +126,7 @@ const getSummary = async (request, h) => {
 
   try {
     // get view data from event metadata
-    const evt = await getUploadEvent(eventId, userName);
+    const evt = await uploadHelpers.getUploadEvent(eventId, userName);
     const grouped = uploadSummaryHelpers.groupReturns(get(evt.metadata, 'validationResults'), eventId);
 
     if (isEmpty(grouped)) {
@@ -336,7 +256,7 @@ const getUploadInstructions = async (request, h) => {
 
 exports.getBulkUpload = getBulkUpload;
 exports.postBulkUpload = postBulkUpload;
-exports.getSpinnerPage = getSpinnerPage;
+exports.getSpinnerPage = uploadHelpers.getSpinnerPage();
 exports.getSummary = getSummary;
 exports.getSummaryReturn = getSummaryReturn;
 exports.pageTitles = pageTitles;

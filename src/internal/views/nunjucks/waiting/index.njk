@@ -4,6 +4,7 @@
 
   {% if waitingType === 'returns' %}
     {{ billRunDate }}
+  {% endif %}
     {{ title(pageTitle) }}
 
     <div class="govuk-grid-row">
@@ -13,6 +14,5 @@
     </div>
     <img class="spinner" src="/public/images/ajax-loader.gif" alt="spinner">
     <meta http-equiv="refresh" content="5">
-  {% endif %}
 
 {% endblock %}

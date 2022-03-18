@@ -3,7 +3,7 @@ const ServiceClient = require('../ServiceClient');
 class ChargeVersionsService extends ServiceClient {
   /**
    * Gets the charge versions for the given licence
-   * @param {String} licenceRef The licence id
+   * @param {String} licenceId The licence id
    * @return {Promise} resolves with the charge versions data
    */
   getChargeVersionsByLicenceId (licenceId) {
@@ -39,6 +39,16 @@ class ChargeVersionsService extends ServiceClient {
   postCreateFromWorkflow (chargeVersionWorkflowId) {
     const url = this.joinUrl('charge-versions/create-from-workflow', chargeVersionWorkflowId);
     return this.serviceRequest.post(url);
+  }
+
+  postUpload (fileData, userName, filename, type = 'csv') {
+    const url = this.joinUrl('charge-versions/upload', type.toLowerCase());
+    return this.serviceRequest.post(url, { body: { fileData, userName, filename } });
+  }
+
+  getUploadErrors (eventId) {
+    const url = this.joinUrl('charge-versions/download/', eventId);
+    return this.serviceRequest.get(url);
   }
 }
 

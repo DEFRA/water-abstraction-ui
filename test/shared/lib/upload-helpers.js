@@ -5,13 +5,24 @@ const fs = require('fs');
 const config = require('external/config');
 const EventEmitter = require('events');
 
-const uploadHelpers = require('external/modules/returns/lib/upload-helpers');
 const { errorMessages } = require('external/modules/returns/controllers/upload');
 const fileCheck = require('shared/lib/file-check');
 
 const csrfToken = '4a0b2424-6c02-45a5-9935-70a4c41538d2';
 
-const { logger } = require('external/logger');
+const mockServices = {
+  water: {
+    events: {
+      findMany: () => {}
+    }
+  }
+};
+const mockLogger = {
+  error: () => {}
+};
+
+const UploadHelpers = require('shared/lib/upload-helpers');
+const uploadHelpers = new UploadHelpers('test-upload', ['csv', 'xml'], mockServices, mockLogger);
 
 const form = {
   file: {
@@ -48,7 +59,7 @@ experiment('upload Helpers', () => {
 
     sandbox.stub(fs, 'createWriteStream').returns(write);
 
-    sandbox.stub(logger, 'error');
+    sandbox.stub(mockLogger, 'error');
   });
   afterEach(async () => {
     sandbox.restore();
@@ -148,28 +159,29 @@ experiment('upload Helpers', () => {
   });
 
   experiment('getUploadedFileStatus', () => {
+    const { OK, VIRUS, INVALID_TYPE } = UploadHelpers.fileStatuses;
     test('returns OK status when virus check passes and supported file type', async () => {
       await fileCheck.virusCheck.resolves({ isClean: true });
       const status = await uploadHelpers.getUploadedFileStatus('fileName', 'xml');
-      expect(status).to.equal(uploadHelpers.fileStatuses.OK);
+      expect(status).to.equal(OK);
     });
 
     test('returns virus status when virus check fails', async () => {
       await fileCheck.virusCheck.resolves({ isClean: false });
       const status = await uploadHelpers.getUploadedFileStatus('fileName', 'xml');
-      expect(status).to.equal(uploadHelpers.fileStatuses.VIRUS);
+      expect(status).to.equal(VIRUS);
     });
 
     test('returns invalid type status when unsupported file type supplied', async () => {
       await fileCheck.virusCheck.resolves({ isClean: true });
       const checkResults = await uploadHelpers.getUploadedFileStatus('fileName', 'ppt');
-      expect(checkResults).to.equal(uploadHelpers.fileStatuses.INVALID_TYPE);
+      expect(checkResults).to.equal(INVALID_TYPE);
     });
 
     test('logs the error if the file is infected', async () => {
       await fileCheck.virusCheck.resolves({ isClean: false });
       await uploadHelpers.getUploadedFileStatus('fileName', 'xml');
-      expect(logger.error.callCount).to.equal(1);
+      expect(mockLogger.error.callCount).to.equal(1);
     });
   });
 });

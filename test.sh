@@ -16,6 +16,7 @@ DOCKER_BUILDKIT=0 docker build -f cypress.Dockerfile -t cypress:1 .
 
 docker run \
   --env DISPLAY \
+  --add-host=host.docker.internal:host-gateway \
   -w /e2e \
   --env JWT_TOKEN=$JWT_TOKEN \
   --env NOTIFY_CALLBACK_TOKEN=$NOTIFY_CALLBACK_TOKEN \

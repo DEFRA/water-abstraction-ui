@@ -10,7 +10,7 @@ const { groupBy, endsWith } = require('lodash');
 const services = require('../../lib/connectors/services');
 const { waterAbstractionAlerts: isWaterAbstractionAlertsEnabled } = require('../../config').featureToggles;
 const { hasScope } = require('../../lib/permissions');
-const { manageGaugingStationLicenceLinks } = require('../../lib/constants').scope;
+const { manageGaugingStationLicenceLinks, hofNotifications } = require('../../lib/constants').scope;
 
 /**
  * Main Gauging station page
@@ -24,6 +24,7 @@ const getMonitoringStation = async (request, h) => {
   const { data } = licenceGaugingStations;
 
   const hasPermissionToManageLinks = hasScope(request, [manageGaugingStationLicenceLinks]);
+  const hasPermissionToSendAlert = hasScope(request, [hofNotifications]);
 
   return h.view('nunjucks/gauging-stations/gauging-station', {
     ...request.view,
@@ -31,6 +32,7 @@ const getMonitoringStation = async (request, h) => {
     station,
     sendUrl: `/monitoring-stations/${station.gaugingStationId}/send-alert`,
     hasPermissionToManageLinks,
+    hasPermissionToSendAlert,
     isWaterAbstractionAlertsEnabled,
     licenceGaugingStations: helpers.groupByLicence(data),
     back: '/licences'

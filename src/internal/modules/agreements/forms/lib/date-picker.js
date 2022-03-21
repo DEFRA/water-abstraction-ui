@@ -65,6 +65,7 @@ const getFinancialYearsDateBetweenDates = (startDate, endDate, startOrEnd = 'sta
     }
     now.add(1, 'year');
   }
+  dates.push(effectiveEndDate);
   return dates;
 };
 
@@ -88,7 +89,7 @@ const getAgreementEndDateValidator = (licence, chargeVersions, agreement) => {
   const allowedDates = [...chargeVersionEndDates, ...getFinancialYearsDateBetweenDates(agreement.dateRange.startDate, effectiveEndDate, 'end')]
     .filter(x => x && moment(x).isAfter(agreement.dateRange.startDate)); // Remove dates that are prior to the agreement start date
 
-  return Joi.date().format(DATE_FORMAT).options({ convert: false }).raw().valid(...allowedDates).required();
+  return Joi.date().options({ convert: false, abortEarly: true }).format(DATE_FORMAT).min(new Date(agreement.dateRange.startDate)).required().raw().valid(...allowedDates);
 };
 
 /**

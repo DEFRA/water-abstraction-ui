@@ -18,7 +18,7 @@ formErrorSummary %}
           text: 'To affect the charge, this agreement must be applied to a charge element.'
       })}}
 
-      {% else %}
+      {% elif not startDateIsBeforeSrocStart %}
 
       {{ govukInsetText({
         text: 'To affect the charge, this agreement must be applied to a charge category.'

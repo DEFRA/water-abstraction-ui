@@ -81,42 +81,18 @@ describe('Create SRoC Charge version workflow journey', () => {
 
     describe('user selects abstraction data', () => {
       cy.get('.govuk-heading-l').contains('Use abstraction data to set up the element?');
-      cy.get('[type="radio"]#useAbstractionData').click();
-      cy.get('button.govuk-button').click();
+      cy.get('#useAbstractionData-4').click();
+      cy.get('form > .govuk-button').contains('Continue').click();
     });
-
-    describe('user checks charge information details', () => {
-      cy.get('.govuk-heading-xl').contains('Check charge information');
-      cy.get('.govuk-button').contains('Confirm').click();
+    describe('user enters notes', () => {
+      cy.get('.govuk-body > .govuk-link').contains('Add a note').should('be.visible').click();
+      cy.get('#note').type('This is Automation Testing');
+      cy.get('form > .govuk-button').contains('Continue').click();
     });
-
-    describe('user checks charge information confirmation page', () => {
-      cy.get('.govuk-panel__title').contains('Charge information complete');
-      cy.get('.govuk-link').contains('View charge information').click();
-    });
-
-    describe('user clicks review link', () => {
-      cy.get('.govuk-heading-l').contains('Charge information');
-      cy.get('.govuk-link').contains('Review').click({ force: true });
-    });
-
-    describe('user approves the charge versiobn', () => {
-      cy.get('.govuk-heading-l').contains('Check charge information');
-      cy.get('[type="radio"]#reviewOutcome').click();
-      cy.get('.govuk-button').contains('Continue').click();
-    });
-
-    describe('navigates to the Charge information tab', () => {
-      cy.get('#charge > .govuk-heading-l').should('have.text', 'Charge information');
-    });
-
-    describe('user sees the new charge version', () => {
-      cy.get('.govuk-table__body').contains('td', 'Strategic review of charges (SRoC)');
-      cy.get('.govuk-table__body').contains('td', 'Approved');
-    });
-
-    describe('licence should be flagged for the next supplementary bill run', () => {
-      cy.get('.govuk-notification-banner__content').contains('This licence has been marked for the next supplementary bill run').should('be.visible');
+    describe('user verifies the entered information', () => {
+      cy.get('.govuk-summary-list__value').contains('This is Automation Testing').should('be.visible');
+      cy.get('.govuk-summary-list__value').contains('1 June 2022').should('be.visible');
+      cy.get('form > .govuk-button').contains('Continue').click();
     });
   });
 });

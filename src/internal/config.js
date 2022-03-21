@@ -1,6 +1,7 @@
 'use strict';
 
 require('dotenv').config();
+const { get } = require('lodash');
 const testMode = parseInt(process.env.TEST_MODE) === 1;
 
 const isLocal = process.env.NODE_ENV === 'local';
@@ -152,6 +153,6 @@ module.exports = {
     deleteAllBillingData: ['local', 'dev', 'development', 'test', 'qa'].includes(process.env.NODE_ENV),
     waterAbstractionAlerts: true,
     recalculateBills: true,
-    allowChargeVersionUploads: !!process.env.ALLOW_CHARGE_VERSION_UPLOADS
+    allowChargeVersionUploads: (get(process.env, 'ALLOW_CHARGE_VERSION_UPLOADS') || '').toLowerCase() === 'true'
   }
 };

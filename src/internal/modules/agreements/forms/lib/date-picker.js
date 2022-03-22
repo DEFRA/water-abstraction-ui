@@ -65,6 +65,7 @@ const getFinancialYearsDateBetweenDates = (startDate, endDate, startOrEnd = 'sta
     }
     now.add(1, 'year');
   }
+  dates.push(effectiveEndDate);
   return dates;
 };
 

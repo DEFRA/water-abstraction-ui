@@ -103,6 +103,7 @@ const getConfirmEndAgreement = async (request, h) => {
     verb: 'end',
     back: `/licences/${licenceId}/agreements/${agreementId}/end`,
     agreement,
+    startDateIsBeforeSrocStart: moment(agreement.dateRange.startDate).isBefore(config.srocStartDate, 'day'),
     licenceId: licence.id,
     endDate: endDate,
     form: confirmEndAgreementForm(request)

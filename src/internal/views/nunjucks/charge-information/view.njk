@@ -191,14 +191,16 @@ formErrorSummary %}
                 text: 'Update and send back for review',
                 name: 'buttonAction',
                 value: 'update',
-                classes: 'govuk-!-margin-right-6'
+                classes: 'govuk-!-margin-right-6',
+                preventDoubleClick: true
               }) }}
             {% elif chargeVersion.status != 'review' %}
               {{ govukButton({
                 text: 'Confirm',
                 name: 'buttonAction',
                 value: 'confirm',
-                classes: 'govuk-!-margin-right-6'
+                classes: 'govuk-!-margin-right-6',
+                preventDoubleClick: true
               }) }}
             {% endif %}
           {% endif %}
@@ -206,7 +208,8 @@ formErrorSummary %}
             text: 'Cancel charge information',
             name: 'buttonAction',
             value: 'cancel',
-            classes: 'govuk-button--secondary'
+            classes: 'govuk-button--secondary',
+            preventDoubleClick: true
           }) }}
         </form>
       </div>

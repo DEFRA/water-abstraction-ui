@@ -92,7 +92,50 @@ describe('Create SRoC Charge version workflow journey', () => {
     describe('user verifies the entered information', () => {
       cy.get('.govuk-summary-list__value').contains('This is Automation Testing').should('be.visible');
       cy.get('.govuk-summary-list__value').contains('1 June 2022').should('be.visible');
+    });
+    describe('user verifies the entered information', () => {
+      cy.get('.govuk-summary-list__value').contains('This is Automation Testing').should('be.visible');
+      cy.get('.govuk-summary-list__value').contains('1 June 2022').should('be.visible');
+      cy.get('[value="addChargeCategory"]').click();
+    });
+    describe('user Assign charge referrence', () => {
+      cy.get('[value="addChargeCategory"]').click();
+      cy.get('#description').type('Automation-Test');
       cy.get('form > .govuk-button').contains('Continue').click();
+      cy.get('.govuk-radios > :nth-child(1) > #source').click();
+      cy.get('form > .govuk-button').contains('Continue').click();
+      cy.get('.govuk-radios > :nth-child(1) > #loss').click();
+      cy.get('form > .govuk-button').contains('Continue').click();
+      cy.get('#volume').type('150');
+      cy.get('form > .govuk-button').contains('Continue').click();
+      cy.get('.govuk-radios > :nth-child(1) > #isRestrictedSource').click();
+      cy.get('form > .govuk-button').contains('Continue').click();
+      cy.get('#waterModel-2').click();
+      cy.get('form > .govuk-button').contains('Continue').click();
+      cy.get('.govuk-radios > :nth-child(1) > #isAdditionalCharges').click();
+      cy.get('form > .govuk-button').contains('Continue').click();
+      cy.get('.govuk-radios > :nth-child(1) > #isSupportedSource').click();
+      cy.get('form > .govuk-button').contains('Continue').click();
+      cy.get('#supportedSourceId-12').click();
+      cy.get('form > .govuk-button').contains('Continue').click();
+      cy.get('.govuk-radios > :nth-child(1) > #isSupplyPublicWater').click();
+      cy.get('form > .govuk-button').contains('Continue').click();
+      cy.get('.govuk-radios > :nth-child(1) > #isAdjustments').click();
+      cy.get('form > .govuk-button').contains('Continue').click();
+      cy.get('#adjustments-2').click();
+      cy.get('#chargeFactor').type('25');
+      cy.get('form > .govuk-button').contains('Continue').click();
+      cy.get('#main-content')
+        .children()
+        .should('contain', 'Check charge information')
+        .should('contain', 'Licence AT/CURR/DAILY/01')
+        .should('contain', '1 June 2022')
+        .should('contain', 'This is Automation Testing')
+        .should('contain', 'Additional Charges')
+        .should('contain', 'Adjustment factor')
+        .should('contain', '25');
+      cy.get(':nth-child(2) > .govuk-grid-column-full').contains('Confirm').click();
+      cy.get('.govuk-panel__title').contains('Charge information complete').should('be.visible');
     });
   });
 });

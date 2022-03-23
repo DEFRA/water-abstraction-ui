@@ -5,7 +5,8 @@
     govukButton({
       text: field.options.label,
       classes: field.options.controlClass,
-      isStartButton: field.options.isStartButton
+      isStartButton: field.options.isStartButton,
+      preventDoubleClick: true
     })
   }}
 {% endmacro %}

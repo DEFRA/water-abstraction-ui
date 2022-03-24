@@ -10,9 +10,11 @@
       {% set warningText = 'When you ' + verb + ' this agreement, the licence will be added 
         to the supplementary bill run. A new charge will be calculated 
         for the time the agreement was in place.' %}
-      {{ govukWarningText({
-        text: warningText
-      })}}
+      {% if startDateIsBeforeSrocStart %}
+        {{ govukWarningText({
+          text: warningText
+        })}}
+        {% endif %}
     </div>
   </div>
 

@@ -1191,6 +1191,11 @@ experiment('internal/modules/gauging-stations/controller - viewing', () => {
         licenceGaugingStations: {
           data: res
         }
+      },
+      auth: {
+        credentials: {
+          scope: ['hof_notifications']
+        }
       }
     };
 
@@ -1209,6 +1214,10 @@ experiment('internal/modules/gauging-stations/controller - viewing', () => {
   test('the page is loaded with the correct nunjucks template', async () => {
     const [template] = h.view.lastCall.args;
     expect(template).to.equal('nunjucks/gauging-stations/gauging-station');
+  });
+  test('the user has permission to send alerts then this sent to the view', async () => {
+    const viewData = h.view.lastCall.args[1];
+    expect(viewData.hasPermissionToSendAlert).to.be.true();
   });
 });
 

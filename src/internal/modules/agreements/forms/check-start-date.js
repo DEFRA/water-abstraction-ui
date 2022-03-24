@@ -19,7 +19,7 @@ const getDatePicker = licenceEndDate => {
         message: 'Enter the agreement start date.'
       },
       'any.only': {
-        message: `You must enter a start date that matches some existing charge information or is 1 April. 
+        message: `You cannot use a date that is before the licence start date. You must enter a start date that matches some existing charge information or is 1 April. 
         If you need to use another date, you must set up new charge information first.`
       }
     }

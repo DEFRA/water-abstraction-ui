@@ -53,6 +53,9 @@ module.exports = {
         params: Joi.object().keys({
           status: Joi.string().valid('processing', 'submitting'),
           eventId: Joi.string().guid()
+        }),
+        query: Joi.object().keys({
+          filename: Joi.string()
         })
       },
       description: 'Uploading returns data',

@@ -1,6 +1,7 @@
 'use strict';
 
 require('dotenv').config();
+const { get } = require('lodash');
 const testMode = parseInt(process.env.TEST_MODE) === 1;
 
 const isLocal = process.env.NODE_ENV === 'local';
@@ -10,7 +11,7 @@ const srocStartDate = new Date('2022-04-01');
 
 const { internal } = require('./lib/constants').scope;
 const isSrocLive = new Date() >= srocStartDate ||
-  ['local', 'dev', 'development', 'test'].includes(process.env.NODE_ENV);
+  ['local', 'dev', 'development', 'test', 'qa', 'preprod'].includes(process.env.NODE_ENV);
 
 module.exports = {
 
@@ -151,6 +152,7 @@ module.exports = {
     manageInvoiceAccounts: true,
     deleteAllBillingData: ['local', 'dev', 'development', 'test', 'qa'].includes(process.env.NODE_ENV),
     waterAbstractionAlerts: true,
-    recalculateBills: true
+    recalculateBills: true,
+    allowChargeVersionUploads: (get(process.env, 'ALLOW_CHARGE_VERSION_UPLOADS') || '').toLowerCase() === 'true'
   }
 };

@@ -11,7 +11,7 @@ const srocStartDate = new Date('2022-04-01');
 
 const { internal } = require('./lib/constants').scope;
 const isSrocLive = new Date() >= srocStartDate ||
-  ['local', 'dev', 'development', 'test'].includes(process.env.NODE_ENV);
+  ['local', 'dev', 'development', 'test', 'qa', 'preprod'].includes(process.env.NODE_ENV);
 
 module.exports = {
 

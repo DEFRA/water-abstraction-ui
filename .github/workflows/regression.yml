@@ -87,7 +87,6 @@ jobs:
           bash ./water-abstraction-orchestration/dependencies/database/configure-psql.sh
           bash ./water-abstraction-orchestration/dependencies/database/setup-user.sh
           bash ./water-abstraction-orchestration/dependencies/database/create-schema.sh
-          bash ./water-abstraction-orchestration/dependencies/database/test-setup.sh
       - name: Charge Module - Migrate & Seed
         run: |
           bash ./water-abstraction-orchestration/dependencies/charge-module/migrate.sh
@@ -115,6 +114,9 @@ jobs:
       - name: nap
         run: |
           sleep 60
+      - name: Test setup
+        run: |
+          bash ./water-abstraction-orchestration/dependencies/database/test-setup.sh
       - name: Cypress test - ${{ matrix.cypressTests }}
         uses: cypress-io/github-action@v2
         with:

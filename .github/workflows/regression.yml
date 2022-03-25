@@ -87,6 +87,7 @@ jobs:
           bash ./water-abstraction-orchestration/dependencies/database/configure-psql.sh
           bash ./water-abstraction-orchestration/dependencies/database/setup-user.sh
           bash ./water-abstraction-orchestration/dependencies/database/create-schema.sh
+          bash ./water-abstraction-orchestration/dependencies/database/test-setup.sh
       - name: Charge Module - Migrate & Seed
         run: |
           bash ./water-abstraction-orchestration/dependencies/charge-module/migrate.sh

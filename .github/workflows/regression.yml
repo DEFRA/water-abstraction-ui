@@ -83,9 +83,6 @@ jobs:
       - name: nap
         run: |
           sleep 60
-      - name: Dcoker logs
-        run: |
-          docker ps
       - name: WRLS Database Setup
         run: |
           bash ./water-abstraction-orchestration/dependencies/database/configure-psql.sh
@@ -95,39 +92,26 @@ jobs:
         run: |
           bash ./water-abstraction-orchestration/dependencies/charge-module/migrate.sh
           bash ./water-abstraction-orchestration/dependencies/charge-module/seed.sh
-      - name: Clone all repos for orchestration
+      - name: Compose - services
         run: |
-          bash ./water-abstraction-orchestration/tools/git/clone-repos.sh
-      - name: Checkout feature branch or default to main
+          bash ./water-abstraction-orchestration/services/docker/start.sh ${{ env.BRANCH }}
+          docker ps
+      - name: Migrate services
         run: |
-          echo "Branch: ${{ env.BRANCH }}"
-          bash ./water-abstraction-orchestration/tools/git/checkout-feature-branch.sh ${{ env.BRANCH }}
+          bash ./water-abstraction-orchestration/services/docker/migrate.sh
+          sleep 2m
+#      Tests setup
+      - name: Checkout water-abstraction-ui
+        uses: actions/checkout@v2
+        with:
+          repository: DEFRA/water-abstraction-ui
+          path: 'water-abstraction-ui'
       - name: Node
         uses: actions/setup-node@v2
         with:
           node-version: 12
           cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
-      - name: Install node modules
-        run: |
-          bash ./water-abstraction-orchestration/services/install-node-modules.sh
-      - name: Migrate services
-        run: |
-          bash ./water-abstraction-orchestration/services/node-migrate.sh
-          sleep 2m
-      - name: Start Services
-        run: |
-          bash ./water-abstraction-orchestration/services/pm2/start.sh
-      - name: Stop PM2 Services to switch to docker
-        run: |
-          echo "Stop water api in pm2"
-          pm2 stop water-api
-          pm2 stop ui
-          pm2 stop ui-internal
-      - name: Compose - services
-        run: |
-          bash ./water-abstraction-orchestration/services/docker/start.sh ${{ env.BRANCH }}
-          docker ps
+          cache-dependency-path: './water-abstraction-ui/package-lock.json'
       - name: nap
         run: |
           sleep 60

@@ -159,7 +159,7 @@ const invoice =
     ],
     invoiceAccount: {
       id: '2f3853a0-61f0-49e4-81ca-60c1a49f665d',
-      accountNumber: 'A12345678A',
+      invoiceAccountNumber: 'A12345678A',
       company: {
         id: 'e8f5db63-fa46-4b25-b193-4f48733524aa',
         name: 'R G Applehead & sons LTD',
@@ -371,7 +371,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
     });
 
     test('maps account number to user friendly heading', async () => {
-      expect(invoiceAccountData['Billing account number']).to.equal(invoiceAccount.accountNumber);
+      expect(invoiceAccountData['Billing account number']).to.equal(invoiceAccount.invoiceAccountNumber);
     });
 
     test('maps account number to user friendly heading', async () => {

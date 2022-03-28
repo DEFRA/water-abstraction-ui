@@ -13,11 +13,6 @@ const getAbsStartAndEnd = absPeriod => ({
   'Abstraction period end date': moment().month(absPeriod.endMonth - 1).date(absPeriod.endDay).format('D MMM')
 });
 
-const findAgreementValue = (agreements, code) => {
-  const value = (agreements || []).filter(agreement => agreement.code.indexOf(code) > -1);
-  return value && value.length > 0 ? value[0].code : null;
-};
-
 const getChargeElementData = trans => {
   if (trans.isMinimumCharge) return {};
   return {
@@ -27,31 +22,37 @@ const getChargeElementData = trans => {
     'Billable annual quantity (megalitres)': trans.chargeElement.billableAnnualQuantity,
     'Source type': trans.chargeElement.source,
     'Source factor': trans.calcSourceFactor,
-    'Adjusted source type': trans.chargeElement.eiucSource,
+    'Adjusted source type': trans.chargeElement.source === 'tidal' ? 'tidal' : 'other',
     'Adjusted source factor': trans.calcEiucSourceFactor,
     Season: trans.chargeElement.season,
     'Season factor': trans.calcSeasonFactor,
     Loss: trans.chargeElement.loss,
     'Loss factor': trans.calcLossFactor,
-    'Purpose code': trans.chargeElement.purposeUse.code,
-    'Purpose name': trans.chargeElement.purposeUse.name,
-    ...getAbsStartAndEnd(trans.chargeElement.abstractionPeriod)
+    'Purpose code': trans.chargeElement.purposeUse.legacyId,
+    'Purpose name': trans.chargeElement.purposeUse.description,
+    ...getAbsStartAndEnd(trans.abstractionPeriod)
   };
+};
+
+const getBillingVolume = trans => {
+  const transactionYear = new Date(trans.endDate).getFullYear();
+  const billingVolume = trans.billingVolume.find(row => row.financialYear === transactionYear);
+  return billingVolume ? billingVolume.calculatedVolume : null;
 };
 
 const getTransactionData = trans => ({
   description: trans.description,
   'Compensation charge Y/N': trans.isCompensationCharge ? 'Y' : 'N',
   ...getChargeElementData(trans),
-  'Charge period start date': trans.chargePeriod.startDate,
-  'Charge period end date': trans.chargePeriod.endDate,
+  'Charge period start date': trans.startDate,
+  'Charge period end date': trans.endDate,
   'Authorised days': trans.authorisedDays,
   'Billable days': trans.billableDays,
-  'Calculated quantity': trans.billingVolume ? trans.billingVolume.calculatedVolume : null,
+  'Calculated quantity': getBillingVolume(trans),
   Quantity: trans.volume,
-  'S127 agreement (Y/N)': trans.calcS127FactorValue ? 'Y' : 'N',
-  'S127 agreement value': trans.calcS127FactorValue || null,
-  'S130 agreement': findAgreementValue(trans.agreements, '130'),
+  'S127 agreement (Y/N)': trans.section127Agreement ? 'Y' : 'N',
+  'S127 agreement value': trans.calcS127Factor || null,
+  'S130 agreement': trans.section130Agreement,
   'S130 agreement value': null
 });
 
@@ -75,25 +76,25 @@ const getDebitCreditLines = (value, isCredit, debitLabel, creditLabel) => {
 };
 
 const getInvoiceData = invoice => {
-  const { netTotal, isCredit } = invoice;
+  const { netAmount, isCredit } = invoice;
   return {
     'Bill number': invoice.invoiceNumber,
-    'Financial year': invoice.financialYear.yearEnding,
-    ...getDebitCreditLines(netTotal, isCredit, 'Invoice amount', 'Credit amount')
+    'Financial year': invoice.financialYearEnding,
+    ...getDebitCreditLines(netAmount, isCredit, 'Invoice amount', 'Credit amount')
   }
   ;
 };
 
 const getTransactionAmounts = trans => {
-  const { value, isCredit } = trans;
+  const { netAmount, isCredit } = trans;
 
-  if (isNull(value)) {
+  if (isNull(netAmount)) {
     return {
       'Net transaction line amount(debit)': 'Error - not calculated',
       'Net transaction line amount(credit)': 'Error - not calculated'
     };
   }
-  return getDebitCreditLines(value, isCredit, 'Net transaction line amount(debit)', 'Net transaction line amount(credit)');
+  return getDebitCreditLines(netAmount, isCredit, 'Net transaction line amount(debit)', 'Net transaction line amount(credit)');
 };
 
 const getChangeReason = (chargeVersions, transaction) => {
@@ -105,15 +106,15 @@ const getChangeReason = (chargeVersions, transaction) => {
 };
 
 const createCSV = async (invoices, chargeVersions) => {
-  const sortedInvoices = sortBy(invoices, 'invoiceAccount.accountNumber', 'invoiceLicences[0].licences.licenceNumber');
+  const sortedInvoices = sortBy(invoices, 'invoiceAccountaNumber', 'billingInvoiceLicences[0].licence.licenceRef');
   return sortedInvoices.reduce((dataForCSV, invoice) => {
-    invoice.invoiceLicences.forEach(invLic => {
+    invoice.billingInvoiceLicences.forEach(invLic => {
       const { isDeMinimis } = invoice;
-      invLic.transactions.forEach(trans => {
+      invLic.billingTransactions.forEach(trans => {
         const { description, ...transactionData } = getTransactionData(trans);
         const csvLine = {
           ...getInvoiceAccountData(invoice.invoiceAccount),
-          'Licence number': invLic.licence.licenceNumber,
+          'Licence number': invLic.licenceRef,
           ...getInvoiceData(invoice),
           ...getTransactionAmounts(trans),
           'Charge information reason': getChangeReason(chargeVersions, trans),
@@ -121,7 +122,7 @@ const createCSV = async (invoices, chargeVersions) => {
           'De minimis rule Y/N': isDeMinimis ? 'Y' : 'N',
           'Transaction description': description,
           'Water company Y/N': invLic.licence.isWaterUndertaker ? 'Y' : 'N',
-          'Historical area': invLic.licence.historicalArea.code,
+          'Historical area': invLic.licence.regions.historicalAreaCode,
           ...transactionData
         };
         dataForCSV.push(rowToStrings(csvLine));

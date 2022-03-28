@@ -1,11 +1,11 @@
 name: Regression tests
 
 on:
-#  workflow_dispatch:
-#    branch:
-#      logLevel:
-#        description: 'Branch name'
-#        required: true
+  workflow_dispatch:
+    branch:
+      logLevel:
+        description: 'Branch name'
+        required: true
   push:
     branches:
       - '**'
@@ -151,7 +151,7 @@ jobs:
 #          docker logs water-abstraction-external-ui
       - name: docker logs water-abstraction-service-api
         continue-on-error: true
-#        run: |
+        run: |
           docker logs water-abstraction-service-api
       - name: Upload Cypress Artifact
         continue-on-error: true

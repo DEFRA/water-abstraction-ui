@@ -101,6 +101,7 @@ class UploadHelpers {
       OK: 'ok',
       VIRUS: 'virus',
       INVALID_TYPE: 'invalid-type',
+      INVALID_ROWS: 'invalid-csv-rows',
       NO_FILE: 'no-file'
     };
   }

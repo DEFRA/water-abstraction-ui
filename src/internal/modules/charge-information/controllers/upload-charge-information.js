@@ -9,7 +9,7 @@ const services = require('../../../lib/connectors/services');
 const fileCheck = require('../../../../shared/lib/file-check');
 const UploadHelpers = require('../../../../shared/lib/upload-helpers');
 const uploadHelpers = new UploadHelpers('charge-information', ['csv'], services, logger, config.testMode);
-const { NO_FILE, OK } = UploadHelpers.fileStatuses;
+const { NO_FILE, OK, INVALID_ROWS } = UploadHelpers.fileStatuses;
 
 uploadHelpers.spinnerConfig = {
   processing: {
@@ -21,7 +21,7 @@ uploadHelpers.spinnerConfig = {
 };
 
 uploadHelpers.bespokeErrorMessages = {
-  'invalid-csv-rows': 'Download a report of the errors',
+  [INVALID_ROWS]: 'Download a report of the errors',
   default: 'Unable to upload error'
 };
 
@@ -40,7 +40,7 @@ async function getUploadChargeInformation (request, h) {
     const evt = await uploadHelpers.getUploadEvent(eventId, userName);
     const { filename = '', rows = 0, error } = get(evt, 'metadata', {});
     if (error) {
-      if (error.validationErrors) {
+      if (get(evt, 'metadata.error.key') === INVALID_ROWS) {
         errorFileLink = urlJoin(evt.event_id, `${filename.split('.')[0]}-error.csv`);
       }
     } else {

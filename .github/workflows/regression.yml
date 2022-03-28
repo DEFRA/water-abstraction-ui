@@ -1,6 +1,11 @@
 name: Regression tests
 
 on:
+  workflow_dispatch:
+    branch:
+      logLevel:
+        description: 'Branch name'
+        required: true
   push:
     branches:
       - '**'

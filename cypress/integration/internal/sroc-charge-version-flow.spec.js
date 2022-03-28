@@ -99,7 +99,6 @@ describe('Create SRoC Charge version workflow journey', () => {
       cy.get('[value="addChargeCategory"]').click();
     });
     describe('user Assign charge referrence', () => {
-      cy.get('[value="addChargeCategory"]').click();
       cy.get('#description').type('Automation-Test');
       cy.get('form > .govuk-button').contains('Continue').click();
       cy.get('.govuk-radios > :nth-child(1) > #source').click();

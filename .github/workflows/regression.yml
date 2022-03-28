@@ -119,9 +119,9 @@ jobs:
       - name: nap
         run: |
           sleep 120
-      - name: Test setup
-        run: |
-          bash ./water-abstraction-orchestration/dependencies/database/test-setup.sh
+#      - name: Test setup
+#        run: |
+#          bash ./water-abstraction-orchestration/dependencies/database/test-setup.sh
       - name: Cypress test - ${{ matrix.cypressTests }}
         uses: cypress-io/github-action@v2
         with:

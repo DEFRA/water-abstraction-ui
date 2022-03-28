@@ -130,7 +130,7 @@ jobs:
           browser: chrome
           headless: true
           spec: |
-            cypress/integration/${{ matrix.cypressTests }}/*[!.ci-ignore]*.js
+            cypress/integration/${{ matrix.cypressTests }}/**[!.ci].spec.js
           config: pageLoadTimeout=100000,baseUrl=http://localhost:8008,video=false
         env:
           WATER_URI: "http://localhost:8001/water/1.0"

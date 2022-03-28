@@ -57,7 +57,7 @@ const getTransactionData = trans => ({
 });
 
 const getInvoiceAccountData = invoiceAccount => ({
-  'Billing account number': invoiceAccount.accountNumber,
+  'Billing account number': invoiceAccount.invoiceAccountNumber,
   'Customer name': invoiceAccount.company.name
 });
 

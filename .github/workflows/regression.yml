@@ -10,7 +10,6 @@ on:
     branches:
       - '**'
 
-
 env:
   # Put back to auto pick from GitHub
   BRANCH: "feat/pipeline-regression-tests"

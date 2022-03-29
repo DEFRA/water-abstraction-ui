@@ -2,17 +2,13 @@ name: Regression tests
 
 on:
   workflow_dispatch:
-    branch:
-      logLevel:
+    inputs:
+      branch:
         description: 'Branch name'
         required: true
-  push:
-    branches:
-      - '**'
 
 env:
-  # Put back to auto pick from GitHub
-  BRANCH: "feat/pipeline-regression-tests"
+  BRANCH: ${{ github.event.inputs.branch }}
   # Charge Module config
   AIRBRAKE_HOST: ${{ secrets.AIRBRAKE_HOST }}
   AIRBRAKE_KEY: ${{ secrets.AIRBRAKE_KEY }}

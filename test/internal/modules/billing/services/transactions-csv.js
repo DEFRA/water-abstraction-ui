@@ -20,10 +20,11 @@ const invoice =
   {
     id: '0817794f-b5b4-47e8-8172-3411bd6165bd',
     isDeMinimis: false,
-    invoiceLicences: [
+    billingInvoiceLicences: [
       {
+        licenceRef: '1/23/45/*S/6789',
         id: 'e93c4697-f288-491e-b9fe-6cab333bbef5',
-        transactions: [
+        billingTransactions: [
           {
             value: 4005,
             isCredit: false,
@@ -35,10 +36,21 @@ const invoice =
             description: 'The description - with 007',
             transactionKey: 'efab988ba55a9f3a729c672cf76aaee6',
             externalId: 'b97b7fe2-8704-4efa-9f39-277d8df997a0',
-            chargePeriod: {
-              startDate: '2019-04-01',
-              endDate: '2020-03-31'
+            startDate: '2019-04-01',
+            endDate: '2020-03-31',
+            abstractionPeriod: {
+              startDay: 1,
+              startMonth: 11,
+              endDay: 31,
+              endMonth: 3
             },
+            billingVolume: [
+              {
+                calculatedVolume: 10.3,
+                volume: 9.1,
+                financialYear: 2020
+              }
+            ],
             isCompensationCharge: false,
             chargeElement: {
               id: '13597728-0390-48b3-8c97-adbc17b6111a',
@@ -47,33 +59,25 @@ const invoice =
               eiucSource: 'other',
               season: 'winter',
               loss: 'high',
-              abstractionPeriod: {
-                startDay: 1,
-                startMonth: 11,
-                endDay: 31,
-                endMonth: 3
-              },
               authorisedAnnualQuantity: '9.1',
               billableAnnualQuantity: '9.1',
               purposeUse: {
                 type: 'use',
-                code: '420',
-                name: 'Spray Irrigation - Storage'
+                legacyId: '420',
+                description: 'Spray Irrigation - Storage'
               }
             },
             volume: 9.1,
-            billingVolume: {
-              calculatedVolume: 10.3,
-              volume: 9.1
-            },
             calcEiucFactor: 1,
             calcSucFactor: 1,
             calcSourceFactor: 0.5,
             calcSeasonFactor: 0.5,
             calcLossFactor: 0.5,
             calcEiucSourceFactor: 0.5,
-            calcS126FactorValue: 1.0,
-            calcS127FactorValue: 0.5
+            calcS126Factor: 1.0,
+            calcS127Factor: 0.5,
+            section130Agreement: 'S130W',
+            section127Agreement: true
           },
           {
             value: 4006,
@@ -90,6 +94,12 @@ const invoice =
               startDate: '2019-04-01',
               endDate: '2020-03-31'
             },
+            abstractionPeriod: {
+              startDay: 1,
+              startMonth: 11,
+              endDay: 31,
+              endMonth: 3
+            },
             isCompensationCharge: false,
             chargeElement: {
               id: '13597728-0390-48b3-8c97-adbc17b6111a',
@@ -112,10 +122,12 @@ const invoice =
               }
             },
             volume: 9.1,
-            billingVolume: {
-              calculatedVolume: null,
-              volume: 9.1
-            },
+            billingVolume: [
+              {
+                calculatedVolume: null,
+                volume: 9.1
+              }
+            ],
             isDeMinimis: true,
             calcEiucFactor: 1,
             calcSucFactor: 1,
@@ -129,7 +141,7 @@ const invoice =
         ],
         licence: {
           id: '31679203-f2e5-4d35-b0d1-fcb2745268aa',
-          licenceNumber: '1/23/45/*S/6789',
+          licenceRef: '1/23/45/*S/6789',
           isWaterUndertaker: false,
           region: {
             type: 'region',
@@ -139,16 +151,15 @@ const invoice =
             code: 'A',
             numericCode: 1
           },
-          historicalArea: {
-            type: 'EAAR',
-            code: 'AREA'
+          regions: {
+            historicalAreaCode: 'AREA'
           }
         }
       }
     ],
     invoiceAccount: {
       id: '2f3853a0-61f0-49e4-81ca-60c1a49f665d',
-      accountNumber: 'A12345678A',
+      invoiceAccountNumber: 'A12345678A',
       company: {
         id: 'e8f5db63-fa46-4b25-b193-4f48733524aa',
         name: 'R G Applehead & sons LTD',
@@ -166,10 +177,8 @@ const invoice =
       addressLine3: 'Orchard Hill',
       addressLine4: 'The Royal Gala Valley'
     },
-    financialYear: {
-      yearEnding: 2019
-    },
-    netTotal: 123456
+    financialYearEnding: 2019,
+    netAmount: 123456
   };
 
 const chargeVersions = [{
@@ -188,7 +197,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
   experiment('_getTransactionData maps', () => {
     let transaction, transactionData;
     beforeEach(() => {
-      transaction = invoice.invoiceLicences[0].transactions[0];
+      transaction = invoice.billingInvoiceLicences[0].billingTransactions[0];
       transactionData = transactionsCSV._getTransactionData(transaction);
     });
 
@@ -213,8 +222,8 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       expect(transactionData['Season factor']).to.equal(transaction.calcSeasonFactor);
       expect(transactionData.Loss).to.equal(transaction.chargeElement.loss);
       expect(transactionData['Loss factor']).to.equal(transaction.calcLossFactor);
-      expect(transactionData['Purpose code']).to.equal(transaction.chargeElement.purposeUse.code);
-      expect(transactionData['Purpose name']).to.equal(transaction.chargeElement.purposeUse.name);
+      expect(transactionData['Purpose code']).to.equal(transaction.chargeElement.purposeUse.legacyId);
+      expect(transactionData['Purpose name']).to.equal(transaction.chargeElement.purposeUse.description);
       expect(transactionData['Abstraction period start date']).to.equal('1 Nov');
       expect(transactionData['Abstraction period end date']).to.equal('31 Mar');
     });
@@ -225,8 +234,8 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
     });
 
     test('charge period to user friendly headings', () => {
-      expect(transactionData['Charge period start date']).to.equal(transaction.chargePeriod.startDate);
-      expect(transactionData['Charge period end date']).to.equal(transaction.chargePeriod.endDate);
+      expect(transactionData['Charge period start date']).to.equal(transaction.startDate);
+      expect(transactionData['Charge period end date']).to.equal(transaction.endDate);
     });
 
     test('authorised days to user friendly heading', () => {
@@ -239,7 +248,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
 
     test('quantities to user friendly heading', () => {
       expect(transactionData.Quantity).to.equal(transaction.volume);
-      expect(transactionData['Calculated quantity']).to.equal(transaction.billingVolume.calculatedVolume);
+      expect(transactionData['Calculated quantity']).to.equal(transaction.billingVolume[0].calculatedVolume);
     });
 
     test('handles multiple agreements', async () => {
@@ -256,7 +265,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
     test('handles undefined billing volume', async () => {
       const transactionData = transactionsCSV._getTransactionData({
         ...transaction,
-        billingVolume: undefined
+        billingVolume: []
       });
       expect(transactionData['Calculated quantity']).to.be.null();
     });
@@ -266,6 +275,8 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         value: 1468,
         isCredit: false,
         agreements: [],
+        section130Agreement: null,
+        section127Agreement: null,
         status: 'candidate',
         startDate: '2019-04-01',
         endDate: '2020-03-31',
@@ -278,7 +289,8 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         chargePeriod: {
           startDate: '2019-04-01',
           endDate: '2020-03-31'
-        }
+        },
+        billingVolume: []
       };
 
       const transactionData = transactionsCSV._getTransactionData(minChargeTransaction);
@@ -309,7 +321,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
     });
 
     test('maps financial year to user friendly heading', async () => {
-      expect(invoiceData['Financial year']).to.equal(invoice.financialYear.yearEnding);
+      expect(invoiceData['Financial year']).to.equal(invoice.financialYearEnding);
     });
 
     experiment('maps invoice total as expected when', () => {
@@ -320,7 +332,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         });
 
         test('and the total is negative', async () => {
-          invoice.netTotal = -123456;
+          invoice.netAmount = -123456;
           invoice.isCredit = true;
           invoiceData = transactionsCSV._getInvoiceData(invoice);
 
@@ -331,7 +343,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
 
       experiment('invoice amounts come from WRLS', () => {
         test('and the isCredit flag is false', async () => {
-          invoice.netTotal = 123456;
+          invoice.netAmount = 123456;
           invoice.isCredit = false;
           invoiceData = transactionsCSV._getInvoiceData(invoice);
 
@@ -340,7 +352,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         });
 
         test('and the isCredit flag is true', async () => {
-          invoice.netTotal = -123456;
+          invoice.netAmount = -123456;
           invoice.isCredit = true;
           invoiceData = transactionsCSV._getInvoiceData(invoice);
 
@@ -359,7 +371,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
     });
 
     test('maps account number to user friendly heading', async () => {
-      expect(invoiceAccountData['Billing account number']).to.equal(invoiceAccount.accountNumber);
+      expect(invoiceAccountData['Billing account number']).to.equal(invoiceAccount.invoiceAccountNumber);
     });
 
     test('maps account number to user friendly heading', async () => {
@@ -369,13 +381,13 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
 
   experiment('_getTransactionAmounts', () => {
     test('when value is a number, value is mapped to relevant line', async () => {
-      const transactionLines = transactionsCSV._getTransactionAmounts({ value: 123456, isCredit: false });
+      const transactionLines = transactionsCSV._getTransactionAmounts({ netAmount: 123456, isCredit: false });
       expect(transactionLines['Net transaction line amount(debit)']).to.equal('1,234.56');
       expect(transactionLines['Net transaction line amount(credit)']).to.be.null();
     });
 
     test('when value is null, an error message is mapped to both lines', async () => {
-      const transactionLines = transactionsCSV._getTransactionAmounts({ value: null });
+      const transactionLines = transactionsCSV._getTransactionAmounts({ netAmount: null });
       expect(transactionLines['Net transaction line amount(debit)']).to.equal('Error - not calculated');
       expect(transactionLines['Net transaction line amount(credit)']).to.equal('Error - not calculated');
     });
@@ -413,7 +425,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
     });
 
     test('water company when true is mapped to user friendly heading', async () => {
-      invoice.invoiceLicences[0].licence.isWaterUndertaker = true;
+      invoice.billingInvoiceLicences[0].licence.isWaterUndertaker = true;
       csvData = await transactionsCSV.createCSV([invoice], chargeVersions);
       expect(csvData[0]['Water company Y/N']).to.equal('Y');
     });
@@ -433,9 +445,9 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
     });
 
     test('creates a line for each transaction', async () => {
-      const licenceNumber = invoice.invoiceLicences[0].licence.licenceNumber;
-      expect(csvData[0]['Licence number']).to.equal(licenceNumber);
-      expect(csvData[1]['Licence number']).to.equal(licenceNumber);
+      const licenceRef = invoice.billingInvoiceLicences[0].licence.licenceRef;
+      expect(csvData[0]['Licence number']).to.equal(licenceRef);
+      expect(csvData[1]['Licence number']).to.equal(licenceRef);
     });
   });
 

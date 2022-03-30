@@ -18,7 +18,7 @@ const form = request => {
 
   const f = formFactory(action, 'POST');
   f.fields.push(fields.text('description', {
-    hint: 'For example, describe where the abstraction point is',
+    hint: 'This is the description that will appear on the invoice',
     errors: {
       'string.empty': {
         message: 'Enter a description for the charge reference'

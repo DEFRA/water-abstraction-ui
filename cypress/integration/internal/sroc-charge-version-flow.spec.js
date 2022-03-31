@@ -1,4 +1,5 @@
 const { setUp, tearDown } = require('../../support/setup');
+const { checkInlineAndSummaryErrorMessage, validateRadioOptions, validateRadioOptionsNthChild1 } = require('../../support/validation');
 const LICENCE_NUMBER = 'AT/CURR/DAILY/01';
 
 describe('Create SRoC Charge version workflow journey', () => {
@@ -13,23 +14,26 @@ describe('Create SRoC Charge version workflow journey', () => {
 
   it('Create SRoC Charge version workflow journey', () => {
     cy.visit(Cypress.env('ADMIN_URI'));
-    // Enter the user name and Password
-    cy.fixture('users.json').then(users => {
-      cy.get('input#email').type(users.billingAndData);
-      cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
-      cy.get('.govuk-button.govuk-button--start').click();
-      // assert once the user is signed in
-      cy.contains('Search').should('be.visible');
-      cy.contains('Enter a licence number, customer name, returns ID, registered email address or monitoring station').should('be.visible');
-      // search for a license
-      cy.get('#query').type(LICENCE_NUMBER).should('be.visible');
-      cy.get('.search__button').click();
-      cy.contains('Licences').should('be.visible');
 
-      // click on the licence number
-      cy.get('td').first().click();
-      cy.url().should('contain', '/licences/');
-      cy.contains(LICENCE_NUMBER).should('be.visible');
+    describe('User login', () => {
+      // Enter the user name and Password
+      cy.fixture('users.json').then(users => {
+        cy.get('input#email').type(users.billingAndData);
+        cy.get('#password').type(Cypress.env('DEFAULT_PASSWORD'));
+        cy.get('.govuk-button.govuk-button--start').click();
+        // assert once the user is signed in
+        cy.contains('Search').should('be.visible');
+        cy.contains('Enter a licence number, customer name, returns ID, registered email address or monitoring station').should('be.visible');
+        // search for a license
+        cy.get('#query').type(LICENCE_NUMBER).should('be.visible');
+        cy.get('.search__button').click();
+        cy.contains('Licences').should('be.visible');
+
+        // click on the licence number
+        cy.get('td').first().click();
+        cy.url().should('contain', '/licences/');
+        cy.contains(LICENCE_NUMBER).should('be.visible');
+      });
     });
 
     describe('user navigates to the Charge information tab', () => {
@@ -41,37 +45,67 @@ describe('Create SRoC Charge version workflow journey', () => {
       cy.get('.govuk-button').contains('Set up a new charge').click();
     });
 
-    describe('user selects reason for new charge information', () => {
-      cy.get('.govuk-heading-l').contains('Select reason for new charge information');
-      cy.get('[type="radio"]#reason-12').click();
-      cy.get('button.govuk-button').click();
+    describe('Select reason for new charge information', () => {
+      validateRadioOptions('Select reason for new charge information', 'reason-12', 'Select a reason for new charge information');
     });
 
-    describe('user sets start date', () => {
-      cy.get('.govuk-heading-l').contains('Set charge start date');
-      cy.get('#startDate-4').click();
-      cy.get('#customDate-day').type('01');
-      cy.get('#customDate-month').type('06');
-      cy.get('#customDate-year').type('2022');
-      cy.get('form > .govuk-button').contains('Continue').click();
+    describe('Set charge start date', () => {
+      describe('user clicks continue without choosing an option', () => {
+        cy.get('button.govuk-button').click();
+        checkInlineAndSummaryErrorMessage('Select charge information start date');
+        cy.reload();
+      });
+
+      describe('user click continue without setting start date', () => {
+        cy.get('.govuk-heading-l').contains('Set charge start date');
+        cy.get('#startDate-4').click();
+        cy.get('form > .govuk-button').contains('Continue').click();
+        checkInlineAndSummaryErrorMessage('Enter the charge information start date');
+        cy.reload();
+      });
+
+      describe('user click continue without setting a year', () => {
+        cy.get('.govuk-heading-l').contains('Set charge start date');
+        cy.get('#startDate-4').click();
+        cy.get('#customDate-day').type('01');
+        cy.get('#customDate-month').type('06');
+        cy.get('form > .govuk-button').contains('Continue').click();
+        checkInlineAndSummaryErrorMessage('Date must be after the start date of the earliest known licence version');
+        cy.reload();
+      });
+
+      describe('user click continue without correct date format', () => {
+        cy.get('.govuk-heading-l').contains('Set charge start date');
+        cy.get('#startDate-4').click();
+        cy.get('#customDate-day').type('aa');
+        cy.get('#customDate-month').type('06');
+        cy.get('form > .govuk-button').contains('Continue').click();
+        checkInlineAndSummaryErrorMessage('Enter a real date for the charge information start date');
+        cy.reload();
+      });
+
+      describe('user sets start date', () => {
+        cy.get('.govuk-heading-l').contains('Set charge start date');
+        cy.get('#startDate-4').click();
+        cy.get('#customDate-day').type('01');
+        cy.get('#customDate-month').type('06');
+        cy.get('#customDate-year').type('2022');
+        cy.get('form > .govuk-button').contains('Continue').click();
+      });
     });
 
     describe('user selects billing contact', () => {
       cy.get('.govuk-heading-l').contains('Who should the bills go to?');
-      cy.get('[type="radio"]#account').click();
+      cy.get('#account').click();
       cy.get('button.govuk-button').click();
     });
 
-    describe('user selects address', () => {
-      cy.get('.govuk-heading-l').contains('Select an existing address for Big Farm Co Ltd');
-      cy.get('[type="radio"]#selectedAddress').click();
-      cy.get('button.govuk-button').click();
+    describe('Select an existing address for Big Farm Co Ltd', () => {
+      validateRadioOptions('Select an existing address for Big Farm Co Ltd', 'selectedAddress', 'Select an existing address, or set up a new one.');
     });
 
-    describe('user selects no for FAO', () => {
-      cy.get('.govuk-heading-l').contains('Do you need to add an FAO?');
-      cy.get('#faoRequired-2').click();
-      cy.get('button.govuk-button').click();
+    describe('Do you need to add an FAO?', () => {
+      validateRadioOptions('Do you need to add an FAO?', 'faoRequired-2', 'Select yes if you need to add a person or department as an FAO');
     });
 
     describe('user checks billing account details', () => {
@@ -79,51 +113,155 @@ describe('Create SRoC Charge version workflow journey', () => {
       cy.get('button.govuk-button').click();
     });
 
-    describe('user selects abstraction data', () => {
-      cy.get('.govuk-heading-l').contains('Use abstraction data to set up the element?');
-      cy.get('#useAbstractionData-4').click();
-      cy.get('form > .govuk-button').contains('Continue').click();
+    describe('Use abstraction data to set up the element?', () => {
+      validateRadioOptions('Use abstraction data to set up the element?', 'useAbstractionData-4', 'Select whether to use abstraction data to set up the element');
     });
-    describe('user enters notes', () => {
-      cy.get('.govuk-body > .govuk-link').contains('Add a note').should('be.visible').click();
-      cy.get('#note').type('This is Automation Testing');
-      cy.get('form > .govuk-button').contains('Continue').click();
+
+    describe('Check charge information', () => {
+      cy.get('#main-content')
+        .children()
+        .should('contain', 'Check charge information');
     });
-    describe('user verifies the entered information', () => {
-      cy.get('.govuk-summary-list__value').contains('This is Automation Testing').should('be.visible');
-      cy.get('.govuk-summary-list__value').contains('1 June 2022').should('be.visible');
+
+    describe('Add a note', () => {
+      describe('user enters notes page', () => {
+        cy.get('.govuk-body > .govuk-link').contains('Add a note').should('be.visible').click();
+      });
+      describe('user enters an empty note', () => {
+        cy.get('form > .govuk-button').contains('Continue').click();
+        checkInlineAndSummaryErrorMessage('Enter details.');
+        cy.reload();
+      });
+      describe('user enters notes', () => {
+        cy.get('#note').type('This is Automation Testing');
+        cy.get('form > .govuk-button').contains('Continue').click();
+      });
     });
-    describe('user verifies the entered information', () => {
-      cy.get('.govuk-summary-list__value').contains('This is Automation Testing').should('be.visible');
-      cy.get('.govuk-summary-list__value').contains('1 June 2022').should('be.visible');
-      cy.get('[value="addChargeCategory"]').click();
+
+    describe('Check charge information and add Charge Category', () => {
+      cy.get('#main-content')
+        .children()
+        .should('contain', 'Check charge information');
+      describe('user verifies the entered information', () => {
+        cy.get('.govuk-summary-list__value').contains('This is Automation Testing').should('be.visible');
+        cy.get('.govuk-summary-list__value').contains('1 June 2022').should('be.visible');
+      });
+      describe('user verifies the entered information', () => {
+        cy.get('.govuk-summary-list__value').contains('This is Automation Testing').should('be.visible');
+        cy.get('.govuk-summary-list__value').contains('1 June 2022').should('be.visible');
+        cy.get('[value="addChargeCategory"]').click();
+      });
     });
-    describe('user Assign charge referrence', () => {
-      cy.get('#description').type('Automation-Test');
-      cy.get('form > .govuk-button').contains('Continue').click();
-      cy.get('.govuk-radios > :nth-child(1) > #source').click();
-      cy.get('form > .govuk-button').contains('Continue').click();
-      cy.get('.govuk-radios > :nth-child(1) > #loss').click();
-      cy.get('form > .govuk-button').contains('Continue').click();
-      cy.get('#volume').type('150');
-      cy.get('form > .govuk-button').contains('Continue').click();
-      cy.get('.govuk-radios > :nth-child(1) > #isRestrictedSource').click();
-      cy.get('form > .govuk-button').contains('Continue').click();
-      cy.get('#waterModel-2').click();
-      cy.get('form > .govuk-button').contains('Continue').click();
-      cy.get('.govuk-radios > :nth-child(1) > #isAdditionalCharges').click();
-      cy.get('form > .govuk-button').contains('Continue').click();
-      cy.get('.govuk-radios > :nth-child(1) > #isSupportedSource').click();
-      cy.get('form > .govuk-button').contains('Continue').click();
-      cy.get('#supportedSourceId-12').click();
-      cy.get('form > .govuk-button').contains('Continue').click();
-      cy.get('.govuk-radios > :nth-child(1) > #isSupplyPublicWater').click();
-      cy.get('form > .govuk-button').contains('Continue').click();
-      cy.get('.govuk-radios > :nth-child(1) > #isAdjustments').click();
-      cy.get('form > .govuk-button').contains('Continue').click();
-      cy.get('#adjustments-2').click();
-      cy.get('#chargeFactor').type('25');
-      cy.get('form > .govuk-button').contains('Continue').click();
+
+    describe('user Assign charge reference', () => {
+      describe('Enter a description for the charge reference', () => {
+        cy.get('.govuk-heading-l').contains('Enter a description for the charge reference');
+        describe('user clicks continue without choosing an option', () => {
+          cy.get('form > .govuk-button').contains('Continue').click();
+          checkInlineAndSummaryErrorMessage('Enter a description for the charge reference');
+          cy.reload();
+        });
+        describe('user description contain an unsupported character', () => {
+          cy.get('#description').type('@ is an unsupported character');
+          cy.get('form > .govuk-button').contains('Continue').click();
+          checkInlineAndSummaryErrorMessage(
+            'The description must only include letters a-z, hyphens, numbers and be 180 characters or fewer.');
+          cy.reload();
+        });
+        describe('user enters a description', () => {
+          cy.get('#description').type('Automation-Test');
+          cy.get('form > .govuk-button').contains('Continue').click();
+        });
+      });
+
+      describe('Select the source', () => {
+        validateRadioOptionsNthChild1('Select the source', 'source', 'Select if the source is tidal or non-tidal.');
+      });
+
+      describe('Select the loss category', () => {
+        validateRadioOptionsNthChild1('Select the loss category', 'loss', 'Select if the loss category is high, medium or low.');
+      });
+
+      describe('Enter the total quantity to use for this charge reference', () => {
+        cy.get('.govuk-heading-l').contains('Enter the total quantity to use for this charge reference');
+        describe('user clicks continue without entering a volume', () => {
+          cy.get('form > .govuk-button').contains('Continue').click();
+          checkInlineAndSummaryErrorMessage('Enter the volume in ML (megalitres).');
+          cy.reload();
+        });
+        describe('user clicks continue entering a volume containing a char', () => {
+          cy.get('#volume').type('1a');
+          cy.get('form > .govuk-button').contains('Continue').click();
+          checkInlineAndSummaryErrorMessage('Enter the volume in ML (megalitres).');
+          cy.reload();
+        });
+        describe('user inputs amount', () => {
+          cy.get('#volume').type('150');
+          cy.get('form > .govuk-button').contains('Continue').click();
+        });
+      });
+
+      describe('Select the water availability', () => {
+        validateRadioOptionsNthChild1('Select the water availability', 'isRestrictedSource', 'Select the water availability.');
+      });
+
+      describe('Select the water modelling charge', () => {
+        cy.get('.govuk-heading-l').contains('Select the water modelling charge');
+        describe('user clicks continue without choosing an option', () => {
+          cy.get('form > .govuk-button').contains('Continue').click();
+          checkInlineAndSummaryErrorMessage('Select the water modelling charge.');
+          cy.reload();
+        });
+        describe('user selects option', () => {
+          cy.get('#waterModel-2').click();
+          cy.get('form > .govuk-button').contains('Continue').click();
+        });
+      });
+
+      describe('Do additional charges apply?', () => {
+        validateRadioOptionsNthChild1('Do additional charges apply?', 'isAdditionalCharges', 'Select \'yes\' if additional charges apply.');
+      });
+
+      describe('Is abstraction from a supported source?', () => {
+        validateRadioOptionsNthChild1('Is abstraction from a supported source?', 'isSupportedSource', 'Select \'yes\' if abstraction is from a supported source.');
+      });
+
+      describe('Select the name of the supported source', () => {
+        validateRadioOptions('Select the name of the supported source', 'supportedSourceId-12', 'Select the name of the supported source.');
+      });
+
+      describe('Is abstraction for the supply of public water?', () => {
+        validateRadioOptionsNthChild1('Is abstraction for the supply of public water?', 'isSupplyPublicWater', 'Select \'yes\' if abstraction is for the supply of public water.');
+      });
+
+      describe('Do adjustments apply?', () => {
+        validateRadioOptionsNthChild1('Do adjustments apply?', 'isAdjustments', 'Select \'yes\' if adjustments apply.');
+      });
+
+      describe('Which adjustments apply?', () => {
+        cy.get('.govuk-heading-l').contains('Which adjustments apply?');
+        describe('user clicks continue without choosing an option', () => {
+          cy.get('form > .govuk-button').contains('Continue').click();
+          checkInlineAndSummaryErrorMessage('At least one condition must be selected');
+          cy.reload();
+        });
+
+        describe('user clicks chargeFactor without entering a value', () => {
+          cy.get('#adjustments-2').click();
+          cy.get('form > .govuk-button').contains('Continue').click();
+          checkInlineAndSummaryErrorMessage('The \'Charge adjustment\' factor must not have more than 15 decimal places.');
+          cy.reload();
+        });
+
+        describe('user selects option', () => {
+          cy.get('#adjustments-2').click();
+          cy.get('#chargeFactor').type('25');
+          cy.get('form > .govuk-button').contains('Continue').click();
+        });
+      });
+    });
+
+    describe('Check charge information', () => {
       cy.get('#main-content')
         .children()
         .should('contain', 'Check charge information')

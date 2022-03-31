@@ -99,11 +99,11 @@ const ROUTING_CONFIG = {
   },
   waterModel: {
     step: 'water-model',
-    pageTitle: 'Select the water model',
+    pageTitle: 'Select the water modelling charge',
     nextStep: 'isAdditionalCharges',
     back: 'isRestrictedSource',
     options: WATER_MODEL,
-    errorMessage: 'Select the water model.'
+    errorMessage: 'Select the water modelling charge.'
   },
   isAdditionalCharges: {
     step: 'additional-charges',

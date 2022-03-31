@@ -55,7 +55,7 @@ const ADJUSTMENTS = [
 const ROUTING_CONFIG = {
   whichElement: {
     step: 'which-element',
-    pageTitle: 'Assign charge reference to',
+    pageTitle: 'Select the elements this charge reference is for\n',
     caption: 'Select all that apply',
     nextStep: 'description',
     errorMessage: 'Select all that apply'

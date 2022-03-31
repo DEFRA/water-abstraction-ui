@@ -130,7 +130,7 @@ describe('Create SRoC Charge version workflow journey', () => {
         .should('contain', 'Licence AT/CURR/DAILY/01')
         .should('contain', '1 June 2022')
         .should('contain', 'This is Automation Testing')
-        .should('contain', 'Additional Charges')
+        .should('contain', 'Additional charges')
         .should('contain', 'Adjustment factor')
         .should('contain', '25');
       cy.get(':nth-child(2) > .govuk-grid-column-full').contains('Confirm').click();

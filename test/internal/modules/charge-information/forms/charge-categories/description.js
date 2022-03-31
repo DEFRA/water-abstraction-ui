@@ -27,7 +27,7 @@ const createRequest = chargeElements => ({
   }
 });
 
-experiment('internal/modules/charge-information/forms/charge-category/adjustments', () => {
+experiment('internal/modules/charge-information/forms/charge-category/description', () => {
   let formResponse;
 
   beforeEach(async () => {
@@ -45,10 +45,13 @@ experiment('internal/modules/charge-information/forms/charge-category/adjustment
     });
 
     test('has a continue button', async () => {
-      const adjustmentCheckBoxes = findField(formResponse, 'description');
-      expect(adjustmentCheckBoxes.options.widget).to.equal('text');
-      expect(adjustmentCheckBoxes.options.type).to.equal('text');
-      expect(adjustmentCheckBoxes.options.hint).to.equal('This is the description that will appear on the invoice');
+      const descriptionField = findField(formResponse, 'description');
+      expect(descriptionField.options.widget).to.equal('text');
+      expect(descriptionField.options.type).to.equal('text');
+      expect(descriptionField.options.hint).to.equal('This is the description that will appear on the invoice');
+      expect(descriptionField.options.errors['string.empty'].message).to.equal('Enter a description for the charge reference');
+      expect(descriptionField.options.errors['any.required'].message).to.equal('Enter a description for the charge reference');
+      expect(descriptionField.options.errors['string.pattern.base'].message).to.equal('The description must only include letters a-z, hyphens, numbers and be 180 characters or fewer.');
     });
 
     test('has a submit button', async () => {

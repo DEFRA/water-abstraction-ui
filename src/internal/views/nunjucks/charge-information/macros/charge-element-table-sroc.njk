@@ -207,7 +207,7 @@ formErrorSummary %}
       </dl>
       {% if chargeElement.isAdditionalCharges %}
         <hr class="govuk-section-break  govuk-!-margin-bottom-6">
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-3">Additional Charges</h2>
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-3">Additional charges</h2>
         <dl class="govuk-summary-list">
           {{ summaryListRow('Supported source', getBooleanText(chargeElement.isSupportedSource) | title, changeLinkSroc('/supported-source', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
           {% if chargeElement.supportedSourceName %}

@@ -55,7 +55,7 @@ const ADJUSTMENTS = [
 const ROUTING_CONFIG = {
   whichElement: {
     step: 'which-element',
-    pageTitle: 'Assign charge reference to',
+    pageTitle: 'Select the elements this charge reference is for\n',
     caption: 'Select all that apply',
     nextStep: 'description',
     errorMessage: 'Select all that apply'
@@ -76,15 +76,15 @@ const ROUTING_CONFIG = {
   },
   loss: {
     step: 'loss',
-    pageTitle: 'Select the loss',
+    pageTitle: 'Select the loss category',
     nextStep: 'volume',
     back: 'source',
     options: LOSS_CATEGORIES,
-    errorMessage: 'Select if the loss is high, medium or low.'
+    errorMessage: 'Select if the loss category is high, medium or low.'
   },
   volume: {
     step: 'volume',
-    pageTitle: 'Enter a volume',
+    pageTitle: 'Enter the total quantity to use for this charge reference',
     nextStep: 'isRestrictedSource',
     back: 'loss'
   },
@@ -99,16 +99,16 @@ const ROUTING_CONFIG = {
   },
   waterModel: {
     step: 'water-model',
-    pageTitle: 'Select the water model',
+    pageTitle: 'Select the water modelling charge',
     nextStep: 'isAdditionalCharges',
     back: 'isRestrictedSource',
     options: WATER_MODEL,
-    errorMessage: 'Select the water model.'
+    errorMessage: 'Select the water modelling charge.'
   },
   isAdditionalCharges: {
     step: 'additional-charges',
     pageTitle: 'Do additional charges apply?',
-    caption: 'Select \'yes\' if the licence is for the supply of public water or abstraction from a supported source such as a reservoir.',
+    caption: 'Additional charges apply to licences that are for the supply of public water or abstraction from a supported source',
     nextStep: 'isAdjustments',
     nextStepYes: 'isSupportedSource',
     back: 'waterModel',
@@ -119,7 +119,6 @@ const ROUTING_CONFIG = {
   isSupportedSource: {
     step: 'supported-source',
     pageTitle: 'Is abstraction from a supported source?',
-    caption: 'These are water sources the EA pays an additional charge to access, for example Glen Groundwater.',
     back: 'isAdditionalCharges',
     nextStep: 'isSupplyPublicWater',
     nextStepYes: 'supportedSourceName',
@@ -138,7 +137,7 @@ const ROUTING_CONFIG = {
   isSupplyPublicWater: {
     step: 'supply-public-water',
     pageTitle: 'Is abstraction for the supply of public water?',
-    caption: 'In the case of a permit authorising a water abstraction activity held by a water undertaker carrying out its statutory functions',
+    caption: 'Select yes if the permit is held by a water undertaker carrying out its statutory functions',
     back: 'isSupportedSource',
     nextStep: 'isAdjustments',
     options: YES_NO,
@@ -148,6 +147,7 @@ const ROUTING_CONFIG = {
   isAdjustments: {
     step: 'adjustments-apply',
     pageTitle: 'Do adjustments apply?',
+    caption: 'Adjustments include any discounts or agreements that should apply to this charge. These include a winter discount or two-part tariff agreement',
     back: 'isAdditionalCharges',
     options: YES_NO,
     errorMessage: 'Select \'yes\' if adjustments apply.',

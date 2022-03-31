@@ -106,7 +106,7 @@ experiment('internal/modules/charge-information/forms/charge-category/adjustment
           description: stringBiggerThan180Chars
         }, { allowUnknown: true });
         expect(result.error).to.be.an.instanceof(Error);
-        expect(result.error.message).to.equal(`"description" with value "${stringBiggerThan180Chars}" fails to match the required pattern: /^[a-zA-Z/s 0-9-\'.,]{1,180}$/`);
+        expect(result.error.message).to.equal(`"description" with value "${stringBiggerThan180Chars}" fails to match the required pattern: /^[a-zA-Z/s 0-9-'.,]{1,180}$/`);
       });
     });
   });

@@ -84,7 +84,7 @@ const ROUTING_CONFIG = {
   },
   volume: {
     step: 'volume',
-    pageTitle: 'Enter a volume',
+    pageTitle: 'Enter the total quantity to use for this charge reference',
     nextStep: 'isRestrictedSource',
     back: 'loss'
   },

@@ -81,14 +81,15 @@ experiment('internal/modules/charge-information/lib/actions', () => {
 
     test('does not restart the flow because there are charge elements', () => {
       const formValues = { startDate: 'today' };
-      request.pre.draftChargeInformation.chargeElements = [{ scheme: 'alcs' }];
+      request.pre.draftChargeInformation.chargeElements = [{ scheme: 'sroc' }];
       const action = actions.setStartDate(request, formValues);
       expect(action).to.equal({
         type: actions.ACTION_TYPES.setStartDate,
         payload: {
-          chargeElements: [{ scheme: 'alcs' }],
+          chargeElements: [],
           changeReason: 'test-reason',
-          scheme: 'alcs',
+          restartFlow: true,
+          scheme: 'sroc',
           dateRange: { startDate: moment().format('YYYY-MM-DD') }
         }
       });
@@ -103,7 +104,7 @@ experiment('internal/modules/charge-information/lib/actions', () => {
           restartFlow: true,
           chargeElements: [],
           changeReason: 'test-reason',
-          scheme: 'alcs',
+          scheme: 'sroc',
           dateRange: { startDate: moment().format('YYYY-MM-DD') }
         }
       });

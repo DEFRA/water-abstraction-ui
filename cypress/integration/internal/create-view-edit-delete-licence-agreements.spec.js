@@ -20,10 +20,10 @@ describe('Licence agreement - Set up, View, End and Delete', () => {
     // assert the user is signed in
     cy.contains('Search');
     cy.get('#query').clear();
-    cy.get('#query').type('AT/CURR/MONTHLY/02').should('be.visible');
+    cy.get('#query').type('AT/CURR/DAILY/01').should('be.visible');
     cy.get('.search__button').click();
     cy.contains('Licences').should('be.visible');
-    cy.get('.govuk-table__row').contains('AT/CURR/MONTHLY/02').click();
+    cy.get('.govuk-table__row').contains('AT/CURR/DAILY/01').click();
 
     describe('sets up the sets up new License Agreemen', () => {
       // setting up the new agreement
@@ -33,7 +33,10 @@ describe('Licence agreement - Set up, View, End and Delete', () => {
       cy.get('form > .govuk-button').click();
       cy.get('#isDateSignedKnown-2').check();
       cy.get('form > .govuk-button').click();
-      cy.get('#isCustomStartDate-2').click();
+      cy.get('[type="radio"]').check('true');
+      cy.get('#startDate-day').type('01');
+      cy.get('#startDate-month').type('01');
+      cy.get('#startDate-year').type('2018');
       cy.get('form > .govuk-button').click();
     // Agreement details entered and ready to submit
     });
@@ -58,14 +61,14 @@ describe('Licence agreement - Set up, View, End and Delete', () => {
     });
 
     describe('End the created agreement using invalid date', () => {
-      cy.get('a.govuk-link').eq(5).contains('End').click({ force: true });
+      cy.get('a.govuk-link').contains('End').click({ force: true });
       cy.get('.govuk-heading-l').contains('Set agreement end date');
       cy.get('#endDate-day').type('01');
       cy.get('#endDate-month').type('01');
       cy.get('#endDate-year').type('2021');
       cy.get('form > .govuk-button').click();
       // error message
-      cy.get('.govuk-error-summary').contains('You must enter an end date that matches some existing charge information or is 31 March.').should('be.visible');
+      cy.get('.govuk-error-summary').contains('You must enter an end date that matches some existing charge information or is 31 March.You cannot use a date that is before the agreement start date.').should('be.visible');
     });
 
     describe('End the created agreement using valid date', () => {
@@ -86,7 +89,7 @@ describe('Licence agreement - Set up, View, End and Delete', () => {
         .should('contain', '31 March 2022').should('be.visible');
     });
     describe('Delete the  agreement', () => {
-      cy.get('a.govuk-link').eq(4).contains('Delete').click({ force: true });
+      cy.get('a.govuk-link').contains('Delete').click({ force: true });
       cy.get('.govuk-heading-l').contains("You're about to delete this agreement");
       cy.get('form > .govuk-button').contains('Delete agreement').click();
       cy.get('#charge').contains('Set up a new agreement').should('be.visible');

@@ -109,11 +109,10 @@ const getErrorMessages = (error, customErrors = {}) => {
 };
 
 const formatError = (error, customErrors) => {
-  const formattedError = {
+  return {
     name: getErrorKey(error),
     ...getErrorMessages(error, customErrors)
   };
-  return formattedError;
 };
 
 /**

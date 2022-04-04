@@ -1,9 +1,12 @@
 {
+  "ignorePatterns": ["test/"],
   "extends":[
     "standard",
-    "plugin:cypress/recommended"
+    "plugin:cypress/recommended",
+    "plugin:sonarjs/recommended"
   ],
   "rules":{
+    "sonarjs/no-duplicate-string": "off",
     "semi":[
       2,
       "always"
@@ -14,6 +17,7 @@
     ]
   },
   "plugins":[
-    "cypress"
+    "cypress",
+    "sonarjs"
   ]
 }

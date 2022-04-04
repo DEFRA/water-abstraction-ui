@@ -29,7 +29,7 @@ class LicenceTitleLoader {
     const data = await csvParse(str, { columns: true });
 
     // Sentence case all titles
-    const dataTransformed = data.map((row) => {
+    return data.map((row) => {
       const { code, subCode, displayTitle, parameter1Label, parameter2Label } = row;
       return {
         code,
@@ -39,8 +39,6 @@ class LicenceTitleLoader {
         parameter2Label
       };
     });
-
-    return dataTransformed;
   }
 }
 

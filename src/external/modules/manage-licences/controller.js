@@ -23,7 +23,7 @@ async function getManageLicences (request, h) {
  */
 const createAccessListViewModel = licenceAccess => {
   const userRoles = licenceAccess.filter(r => r.role === 'user');
-  const mapped = userRoles.map(ur => {
+  return userRoles.map(ur => {
     const returnsRole = licenceAccess.find(la => {
       return (
         la.company_entity_id === ur.company_entity_id &&
@@ -42,7 +42,6 @@ const createAccessListViewModel = licenceAccess => {
       colleagueEntityID: ur.individual_entity_id
     };
   });
-  return mapped;
 };
 
 const getLicenceAccessListViewModel = async userEntityID => {

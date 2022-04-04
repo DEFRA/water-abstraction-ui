@@ -83,14 +83,13 @@ const getBatchDetails = (request, billingRegionForm, refDate = Date.now()) => {
   const isSummer = selectedTwoPartTariffSeason === seasons.SUMMER;
   const financialYearEnding = getBatchFinancialYearEnding(selectedBillingType, isSummer, refDate);
 
-  const batch = {
+  return {
     userEmail: request.defra.user.user_name,
     regionId: selectedBillingRegion,
     batchType: selectedBillingType,
     financialYearEnding,
     isSummer: selectedTwoPartTariffSeason === seasons.SUMMER
   };
-  return batch;
 };
 
 const getBatchCreationErrorRedirectPath = err => {

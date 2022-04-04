@@ -36,15 +36,13 @@ class UsersApiClient extends APIClient {
     try {
       const uri = urlJoin(this.config.endpoint, 'login');
 
-      const response = await serviceRequest.post(uri, {
+      return await serviceRequest.post(uri, {
         body: {
           user_name: email,
           password,
           application
         }
       });
-
-      return response;
     } catch (error) {
       // Unauthorized
       if (error.statusCode === 401) {

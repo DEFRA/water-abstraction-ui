@@ -8,6 +8,7 @@
     "url": "https://github.com/DEFRA/water-abstraction-ui"
   },
   "scripts": {
+    "dev:internal": "nodemon server-internal.js",
     "clean:reports": "rm -rf cypress/reports/*",
     "pretest": "npm run clean:reports",
     "install-assets": "gulp build",
@@ -120,6 +121,7 @@
     "moment-range": "^4.0.2",
     "moment-timezone": "^0.5.34",
     "nearest-date": "^1.0.1",
+    "nodemon": "^2.0.15",
     "nunjucks": "^3.2.3",
     "parse-domain": "^4.1.0",
     "path": "^0.12.7",

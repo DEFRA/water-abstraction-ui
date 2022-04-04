@@ -103,6 +103,9 @@ describe('Step through the returns paper forms flow:', function () {
       // the notification banner with the correct message is displayed for the licence with no return due'
       cy.get('.govuk-notification-banner__heading').contains('There are no returns due for licence AT/CURR/MONTHLY/01');
       cy.get('.govuk-heading-l').should('contain.text', 'Check returns details');
+      cy.get('a[href*="select-returns"]').click();
+      cy.get('#returnIds').check();
+      cy.get('button.govuk-button').click();
       cy.get('.govuk-button').should('contain.text', 'Send paper forms');
       // the licence header is displayed in the list',
       cy.get('.govuk-heading-m').contains('Licence AT/CURR/MONTHLY/02');

@@ -284,7 +284,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         description:
          'Minimum Charge Calculation - raised under Schedule 23 of the Environment Act 1995',
         isCompensationCharge: true,
-        isMinimumCharge: true,
+        chargeType: 'minimum_charge',
         isNewLicence: true,
         chargePeriod: {
           startDate: '2019-04-01',

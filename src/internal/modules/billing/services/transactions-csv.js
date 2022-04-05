@@ -14,7 +14,7 @@ const getAbsStartAndEnd = absPeriod => ({
 });
 
 const getChargeElementData = trans => {
-  if (trans.isMinimumCharge) return {};
+  if (trans.chargeType === 'minimum_charge') return {};
   return {
     'Standard Unit Charge (SUC) (£/1000 cubic metres)': trans.calcSucFactor,
     'Environmental Improvement Unit Charge (EIUC) (£/1000 cubic metres)': trans.calcEiucFactor,
@@ -48,7 +48,7 @@ const getTransactionData = trans => ({
   'Charge period end date': trans.endDate,
   'Authorised days': trans.authorisedDays,
   'Billable days': trans.billableDays,
-  'Calculated quantity': getBillingVolume(trans),
+  'Calculated quantity': trans.volume ? getBillingVolume(trans) : null,
   Quantity: trans.volume,
   'S127 agreement (Y/N)': trans.section127Agreement ? 'Y' : 'N',
   'S127 agreement value': trans.calcS127Factor || null,

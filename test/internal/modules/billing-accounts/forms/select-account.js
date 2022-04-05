@@ -107,7 +107,7 @@ experiment('invoice-accounts/forms/select-company schema', () => {
         accountSearch: '',
         account: OTHER_ACCOUNT
       });
-      expect(result.error).to.be.undefined();
+      expect(result.error.message).to.equal('"accountSearch" is not allowed to be empty');
     });
 
     test('It fails for an invalid value', async () => {

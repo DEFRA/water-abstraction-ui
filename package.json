@@ -8,7 +8,7 @@
     "url": "https://github.com/DEFRA/water-abstraction-ui"
   },
   "scripts": {
-    "dev:internal": "nodemon server-internal.js",
+    "dev:internal": "cd \"$(dirname \"$0\")\" || exit && export $(grep -v '^#' ../water-abstraction-orchestration/secrets/.env | xargs) && export $(grep -v '^#' ../water-abstraction-orchestration/services/variables.env | xargs) && nodemon server-internal.js ",
     "clean:reports": "rm -rf cypress/reports/*",
     "pretest": "npm run clean:reports",
     "install-assets": "gulp build",

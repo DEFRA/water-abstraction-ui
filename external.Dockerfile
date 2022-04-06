@@ -1,18 +1,14 @@
-FROM node:14.19.1-alpine
-
+# ---- Base Node ----
+FROM node:14.19.1-alpine AS base
+# set working directory
 WORKDIR /app
 
-RUN apk update && apk add cmake
-
-COPY package*.json ./
-
-RUN npm ci
-# If you are building your code for production
-# RUN npm ci --only=production
-
-# Bundle app source
+COPY package.json .
 COPY . .
 
+RUN npm install
 RUN npm run install-assets
 
+# Can be mutli stage build
+RUN npm ci --only=production
 CMD [ "node", "server-external.js" ]

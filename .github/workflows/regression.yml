@@ -114,7 +114,7 @@ jobs:
           cache-dependency-path: './water-abstraction-ui/package-lock.json'
       - name: nap
         run: |
-          sleep 30
+          sleep 120
       - name: Test setup
         run: |
           bash ./water-abstraction-orchestration/dependencies/database/test-setup.sh

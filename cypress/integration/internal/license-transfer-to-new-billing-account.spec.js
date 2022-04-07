@@ -217,8 +217,7 @@ describe('License transfer to new billing account', () => {
         expect(items[1]).to.contain.text('Start date');
         expect(items[1]).to.contain.text('1 June 2022');
         expect(items[2]).to.contain.text('Billing account');
-        expect(items[2]).to.contain.text(
-            'FAO\n                \n  \n    \n    ' +
+        expect(items[2]).to.contain.text('FAO\n                \n  \n    \n    ' +
             'Jim\n    Bob\n  \n\n              \n              \n                \n  ' +
             'John Smith\n\n              \n              \n  \n    ' +
             'Environment Agency\n  \n  \n    ' +

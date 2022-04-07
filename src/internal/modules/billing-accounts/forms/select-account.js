@@ -75,13 +75,10 @@ const selectCompanyFormSchema = () => {
   return Joi.object({
     csrf_token: Joi.string().uuid().required(),
     account: Joi.string().required().valid(...[BILLING_ACCOUNT_HOLDER, OTHER_ACCOUNT]),
-    accountSearch: Joi.string().allow('').when(
-      'account',
-      {
-        is: OTHER_ACCOUNT,
-        then: Joi.string().required()
-      }
-    )
+    accountSearch: Joi.alternatives()
+      .conditional('account',
+        { is: OTHER_ACCOUNT, then: Joi.string().required(), otherwise: Joi.optional() }
+      )
   });
 };
 

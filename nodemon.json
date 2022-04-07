@@ -1,3 +1,4 @@
 {
-  "ext": "js,html,njk"
+  "ext": "js,html,njk",
+  "ignore": ["cypress/", "README"]
 }

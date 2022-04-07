@@ -15,7 +15,7 @@
 {% endmacro %}
 
 {% macro reportedVolume(billingVolume) %}
-{% if billingVolume.error != 'No returns received' | isFinite %}
+{% if billingVolume.error != 'No returns received' %}
   {{ billingVolume.calculatedVolume + 'Ml' }}
 {% else %}
   No returns received

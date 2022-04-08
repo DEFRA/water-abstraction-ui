@@ -1,6 +1,5 @@
-# ---- Base Node ----
-FROM node:14.19.1-alpine AS base
-# set working directory
+FROM node:14.19.1
+
 WORKDIR /app
 
 COPY package.json .

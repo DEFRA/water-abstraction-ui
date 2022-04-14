@@ -59,7 +59,7 @@ const form = request => {
                   hint: item.hint || '',
                   mapper: 'numberMapper',
                   label: 'Factor',
-                  controlClass: 'govuk-input--width-4'
+                  controlClass: 'govuk-input--width-20'
                 }, data.adjustments[item.value])
             ]
           : []

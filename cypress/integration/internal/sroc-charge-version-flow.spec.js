@@ -195,8 +195,22 @@ describe('Create SRoC Charge version workflow journey', () => {
           checkInlineAndSummaryErrorMessage('Enter the volume in ML (megalitres).');
           cy.reload();
         });
+        describe('user clicks continue entering a value that\'s too low', () => {
+          cy.get('#volume').type('-1');
+          cy.get('form > .govuk-button').contains('Continue').click();
+          checkInlineAndSummaryErrorMessage('The volume must be equal to or greater than 0');
+          cy.reload();
+        });
+        describe('user inputs value between 0 and 1', () => {
+          cy.get('#volume').type('0.5');
+          cy.get('form > .govuk-button').contains('Continue').click();
+          // Check that the input was accepted and we moved to a new page, then go back
+          cy.get('.govuk-heading-l').should('not.contain.text', 'Enter the total quantity to use for this charge reference');
+          cy.get('.govuk-back-link').click();
+        });
         describe('user inputs amount', () => {
-          cy.get('#volume').type('150');
+          // We use .clear() to delete any previously accepted input
+          cy.get('#volume').clear().type('150');
           cy.get('form > .govuk-button').contains('Continue').click();
         });
       });

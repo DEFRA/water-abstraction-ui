@@ -19,9 +19,9 @@ const mapBadgeToTag = (param, status) => {
   const options = isObject(param)
     ? param
     : {
-        text: param,
-        status
-      };
+      text: param,
+      status
+    };
 
   const cssClasses = [
     colourMap[options.status] || 'govuk-tag--blue',

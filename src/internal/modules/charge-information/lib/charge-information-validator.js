@@ -44,12 +44,12 @@ const addValidation = chargeInformation => {
   const chargeElementsWithValidationWarnings = chargeInformation.chargeElements.map(element => ({
     ...(element.chargePurposes
       ? {
-          ...element,
-          chargePurposes: element.chargePurposes.map(purpose => ({
-            ...purpose,
-            validationWarnings: chargeInformation.scheme === 'alcs' ? validate(purpose) : []
-          }))
-        }
+        ...element,
+        chargePurposes: element.chargePurposes.map(purpose => ({
+          ...purpose,
+          validationWarnings: chargeInformation.scheme === 'alcs' ? validate(purpose) : []
+        }))
+      }
       : element),
     validationWarnings: chargeInformation.scheme === 'alcs' ? validate(element) : []
   }));

@@ -65,9 +65,9 @@ const getLicenceReturns = async (licenceNumbers, page = 1) => {
   const requestPagination = isObject(page)
     ? page
     : {
-        page,
-        perPage: 50
-      };
+      page,
+      perPage: 50
+    };
 
   const { data, error, pagination } = await services.returns.returns.findMany(filter, sort, requestPagination, columns);
   if (error) {

@@ -38,9 +38,9 @@ const getLicenceReturnsFilter = (licenceNumbers, showFutureReturns = false) => {
 const getPagination = page => isObject(page)
   ? page
   : {
-      page,
-      perPage: 50
-    };
+    page,
+    perPage: 50
+  };
 
 class ReturnsApiClient extends SharedReturnsApiClient {
   /**

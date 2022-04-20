@@ -1,5 +1,5 @@
 const { setUp, tearDown } = require('../../support/setup');
-const { checkInlineAndSummaryErrorMessage, validateRadioOptions, validateRadioOptionsNthChild1 } = require('../../support/validation');
+const { checkInlineAndSummaryErrorMessage, validateRadioOptions, validateRadioOptionsNthChild1, checkNoErrorMessage } = require('../../support/validation');
 const LICENCE_NUMBER = 'AT/CURR/DAILY/01';
 
 describe('Create SRoC Charge version workflow journey', () => {
@@ -204,8 +204,8 @@ describe('Create SRoC Charge version workflow journey', () => {
         describe('user inputs value between 0 and 1', () => {
           cy.get('#volume').type('0.5');
           cy.get('form > .govuk-button').contains('Continue').click();
-          // Check that the input was accepted and we moved to a new page, then go back
-          cy.get('.govuk-heading-l').should('not.contain.text', 'Enter the total quantity to use for this charge reference');
+          // Check that no error message was generated, then go back from the page we arrived at
+          checkNoErrorMessage();
           cy.get('.govuk-back-link').click();
         });
         describe('user inputs amount', () => {

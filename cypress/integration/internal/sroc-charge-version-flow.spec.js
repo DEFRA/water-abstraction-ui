@@ -1,5 +1,5 @@
 const { setUp, tearDown } = require('../../support/setup');
-const { checkInlineAndSummaryErrorMessage, validateRadioOptions, validateRadioOptionsNthChild1 } = require('../../support/validation');
+const { checkInlineAndSummaryErrorMessage, validateRadioOptions, validateRadioOptionsNthChild1, checkNoErrorMessage } = require('../../support/validation');
 const LICENCE_NUMBER = 'AT/CURR/DAILY/01';
 
 describe('Create SRoC Charge version workflow journey', () => {
@@ -195,8 +195,22 @@ describe('Create SRoC Charge version workflow journey', () => {
           checkInlineAndSummaryErrorMessage('Enter the volume in ML (megalitres).');
           cy.reload();
         });
+        describe('user clicks continue entering a value that\'s too low', () => {
+          cy.get('#volume').type('-1');
+          cy.get('form > .govuk-button').contains('Continue').click();
+          checkInlineAndSummaryErrorMessage('The volume must be equal to or greater than 0');
+          cy.reload();
+        });
+        describe('user inputs value between 0 and 1', () => {
+          cy.get('#volume').type('0.5');
+          cy.get('form > .govuk-button').contains('Continue').click();
+          // Check that no error message was generated, then go back from the page we arrived at
+          checkNoErrorMessage();
+          cy.get('.govuk-back-link').click();
+        });
         describe('user inputs amount', () => {
-          cy.get('#volume').type('150');
+          // We use .clear() to delete any previously accepted input
+          cy.get('#volume').clear().type('150');
           cy.get('form > .govuk-button').contains('Continue').click();
         });
       });

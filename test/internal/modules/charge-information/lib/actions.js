@@ -155,6 +155,10 @@ experiment('internal/modules/charge-information/lib/actions', () => {
 
     beforeEach(async () => {
       request = {
+        defra: {
+          userName: 'test@test.email',
+          userId: 12345
+        },
         pre: {
           defaultCharges: [
             { source: 'unsupported' }
@@ -182,15 +186,15 @@ experiment('internal/modules/charge-information/lib/actions', () => {
         const formValues = { useAbstractionData: 'yes' };
         const action = actions.setAbstractionData(request, formValues);
 
-        expect(action.type).to.equal(actions.ACTION_TYPES.setChargeElementData);
-        expect(action.payload[0]).to.contain(request.pre.defaultCharges[0]);
+        expect(action.type).to.equal(actions.ACTION_TYPES.setAbstractionData);
+        expect(action.payload.chargeElements[0]).to.contain(request.pre.defaultCharges[0]);
       });
 
       test('the charge elements are assigned a guid id', async () => {
         const formValues = { useAbstractionData: 'yes' };
         const action = actions.setAbstractionData(request, formValues);
         const guidRegex = /^[a-z,0-9]{8}-[a-z,0-9]{4}-[a-z,0-9]{4}-[a-z,0-9]{4}-[a-z,0-9]{12}$/;
-        expect(action.payload[0].id).to.match(guidRegex);
+        expect(action.payload.chargeElements[0].id).to.match(guidRegex);
       });
     });
 
@@ -199,8 +203,8 @@ experiment('internal/modules/charge-information/lib/actions', () => {
         const formValues = { useAbstractionData: 'no' };
         const action = actions.setAbstractionData(request, formValues);
 
-        expect(action.type).to.equal(actions.ACTION_TYPES.setChargeElementData);
-        expect(action.payload).to.equal([]);
+        expect(action.type).to.equal(actions.ACTION_TYPES.setAbstractionData);
+        expect(action.payload).to.equal({ chargeElements: [] });
       });
     });
 
@@ -209,15 +213,15 @@ experiment('internal/modules/charge-information/lib/actions', () => {
         const formValues = { useAbstractionData: 'test-cv-id-1' };
         const action = actions.setAbstractionData(request, formValues);
 
-        expect(action.type).to.equal(actions.ACTION_TYPES.setChargeElementData);
-        expect(action.payload[0].source).to.equal(request.pre.chargeVersions[0].chargeElements[0].source);
+        expect(action.type).to.equal(actions.ACTION_TYPES.setAbstractionData);
+        expect(action.payload.chargeElements[0].source).to.equal(request.pre.chargeVersions[0].chargeElements[0].source);
       });
 
       test('the charge elements are assigned a guid id', async () => {
         const formValues = { useAbstractionData: 'test-cv-id-1' };
         const action = actions.setAbstractionData(request, formValues);
         const guidRegex = /^[a-z,0-9]{8}-[a-z,0-9]{4}-[a-z,0-9]{4}-[a-z,0-9]{4}-[a-z,0-9]{12}$/;
-        expect(action.payload[0].id).to.match(guidRegex);
+        expect(action.payload.chargeElements[0].id).to.match(guidRegex);
       });
     });
   });

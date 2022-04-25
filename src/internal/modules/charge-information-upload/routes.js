@@ -1,7 +1,7 @@
 const Joi = require('joi');
-const { scope } = require('../../../lib/constants');
-const controller = require('../controllers/upload-charge-information');
-const config = require('../../../config');
+const { scope } = require('../../lib/constants');
+const controller = require('./controller');
+const config = require('../../config');
 
 const allowedScopes = [scope.chargeVersionWorkflowReviewer];
 

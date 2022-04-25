@@ -15,6 +15,7 @@ const accountRoutes = require('./account/routes');
 const unlinkLicenceRoutes = require('./unlink-licence/routes');
 const billingRoutes = require('./billing/routes');
 const chargeInformationRoutes = require('./charge-information/routes');
+const chargeInformationUploadRoutes = require('./charge-information-upload/routes');
 const agreementsRoutes = require('./agreements/routes');
 const reportingRoutes = require('./reporting/routes');
 const kpiReporting = require('../../internal/modules/kpi-reporting/routes');
@@ -42,6 +43,7 @@ module.exports = [
   ...Object.values(unlinkLicenceRoutes),
   ...Object.values(billingRoutes),
   ...Object.values(chargeInformationRoutes),
+  ...Object.values(chargeInformationUploadRoutes),
   ...Object.values(agreementsRoutes),
   ...Object.values(reportingRoutes),
   ...Object.values(kpiReporting),

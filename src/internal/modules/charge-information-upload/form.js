@@ -17,6 +17,4 @@ const form = request => {
   return f;
 };
 
-module.exports = {
-  uploadForm: form
-};
+module.exports = form;

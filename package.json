@@ -71,7 +71,7 @@
   },
   "dependencies": {
     "@envage/hapi-pg-rest-api": "^7.0.0",
-    "@envage/water-abstraction-helpers": "4.7.0",
+    "@envage/water-abstraction-helpers": "4.8.0",
     "@hapi/boom": "^9.1.4",
     "@hapi/catbox-redis": "^6.0.2",
     "@hapi/good": "^9.0.1",

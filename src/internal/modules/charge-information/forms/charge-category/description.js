@@ -27,7 +27,7 @@ const form = request => {
         message: 'Enter a description for the charge reference'
       },
       'string.pattern.base': {
-        message: 'The description must only include letters a-z, hyphens, numbers and be 180 characters or fewer.'
+        message: 'You can only include letters, numbers, hyphens, the and symbol (&) and brackets. The description must be less than 181 characters.'
       }
     }
   }, data.description || ''));
@@ -38,7 +38,7 @@ const form = request => {
 };
 
 const schema = () => {
-  const descriptionRegex = /^[a-zA-Z/s 0-9-'.,]{1,180}$/;
+  const descriptionRegex = /^[a-zA-Z/s 0-9-'.,()&*]{1,180}$/;
   return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
     description: Joi.string().pattern(descriptionRegex).required()

@@ -17,6 +17,7 @@ const ACTION_TYPES = {
   createChargeElement: 'create.chargeElement',
   createChargeCategory: 'create.chargeCategory',
   updateChargeCategory: 'update.chargeCategory',
+  setAbstractionData: 'set.abstractionData',
   setChargePurposeData: 'set.chargePurposeData'
 };
 
@@ -78,22 +79,31 @@ const setBillingAccount = id => ({
 
 const generateIds = chargeElements =>
   chargeElements.map(element => ({
+    scheme: 'alcs', // default to 'alcs'
     ...element,
-    scheme: 'alcs',
-    id: uuid()
+    id: uuid() // overrides the id
   }));
 
 const setAbstractionData = (request, formValues) => {
   let chargeElements = [];
+  let note;
   if (formValues.useAbstractionData === 'yes') {
     chargeElements = generateIds(request.pre.defaultCharges);
   } else if (formValues.useAbstractionData !== 'no') {
     const chargeVersion = request.pre.chargeVersions.find(cv => cv.id === formValues.useAbstractionData);
     chargeElements = generateIds(chargeVersion.chargeElements);
+    note = get(chargeVersion, 'note');
+    if (note) {
+      const { userName, userId } = request.defra; // Logged in user details
+      note.user = {
+        email: userName,
+        id: userId
+      };
+    }
   }
   return {
-    type: ACTION_TYPES.setChargeElementData,
-    payload: chargeElements
+    type: ACTION_TYPES.setAbstractionData,
+    payload: note ? { chargeElements, note } : { chargeElements }
   };
 };
 

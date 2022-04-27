@@ -169,7 +169,7 @@ describe('Create SRoC Charge version workflow journey', () => {
           cy.reload();
         });
         describe('user description contains an unusual but supported character', () => {
-          cy.get('#description').type('* is an supported character');
+          cy.get('#description').type('-\'.,()&* are supported characters');
           cy.get('form > .govuk-button').contains('Continue').click();
           // Check that no error message was generated, then go back from the page we arrived at
           checkNoErrorMessage();

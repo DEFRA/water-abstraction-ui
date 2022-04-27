@@ -21,6 +21,13 @@ const reducer = (state, action) => {
         }
       };
 
+    case ACTION_TYPES.setAbstractionData:
+      return {
+        ...state,
+        note: action.payload.note,
+        chargeElements: action.payload.chargeElements
+      };
+
     case ACTION_TYPES.setChargeElementData:
     case ACTION_TYPES.updateChargeCategory:
       return {

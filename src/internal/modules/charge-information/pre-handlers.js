@@ -129,7 +129,14 @@ const loadDefaultCharges = async request => {
 const loadChargeVersions = async request => {
   const { licenceId } = request.params;
   try {
-    const { data: chargeVersions } = await services.water.chargeVersions.getChargeVersionsByLicenceId(licenceId);
+    const { data } = await services.water.chargeVersions.getChargeVersionsByLicenceId(licenceId);
+    const chargeVersions = await Promise.all(data.map(async chargeVersion => {
+      if (chargeVersion.note) {
+        const { user_name: email } = await services.idm.users.findOneById(chargeVersion.note.userId) || {};
+        chargeVersion.note.user = { email };
+      }
+      return chargeVersion;
+    }));
     return sortBy(chargeVersions, ['dateRange.startDate', 'versionNumber']);
   } catch (err) {
     return errorHandler(err, `Cannot load charge versions for licence ${licenceId}`);

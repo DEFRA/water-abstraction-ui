@@ -91,6 +91,31 @@ experiment('internal/modules/charge-information/lib/reducer', () => {
     });
   });
 
+  experiment('when the action is setAbstractionData', () => {
+    let action;
+    let state;
+
+    beforeEach(async () => {
+      action = {
+        type: ACTION_TYPES.setAbstractionData,
+        payload: { note: 'note-data', chargeElements: 'charge-elements-data' }
+      };
+
+      state = reducer(initialState, action);
+    });
+
+    test('the abstractionData is updated', async () => {
+      expect(state.chargeElements).to.equal('charge-elements-data');
+      expect(state.note).to.equal('note-data');
+    });
+
+    test('the other data is untouched', async () => {
+      expect(state.changeReason).to.equal(initialState.changeReason);
+      expect(state.billingAccount).to.equal(initialState.billingAccount);
+      expect(state.startDate).to.equal(initialState.startDate);
+    });
+  });
+
   experiment('when the reason is setBillingAccount', () => {
     let action;
     let state;

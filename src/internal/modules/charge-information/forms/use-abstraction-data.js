@@ -22,17 +22,18 @@ const getAddionalChoices = (chargeVersions) => {
   return [];
 };
 
-const filterChargeVersions = chargeVersions => chargeVersions.filter(cv => cv.status === 'current');
+const filterChargeVersions = (chargeVersions, scheme) => chargeVersions.filter(cv => cv.status === 'current' && (scheme === 'sroc' || scheme === cv.scheme));
 
 const useAbstractionDataForm = request => {
   const { csrfToken } = request.view;
   const { chargeVersionWorkflowId } = request.query;
   const { licence, draftChargeInformation, chargeVersions } = request.pre;
   const useAbstractionData = get(draftChargeInformation, 'abstractionData');
+  const filteredChargeVersions = filterChargeVersions(chargeVersions, draftChargeInformation.scheme);
   const choices = [
     { value: 'yes', label: 'Yes' },
     { value: 'no', label: 'No' },
-    ...getAddionalChoices(filterChargeVersions(chargeVersions))
+    ...getAddionalChoices(filteredChargeVersions)
   ];
 
   const action = routing.getUseAbstractionData(licence.id, { chargeVersionWorkflowId });
@@ -55,8 +56,8 @@ const useAbstractionDataForm = request => {
 };
 
 const useAbstractionDataSchema = (request) => {
-  const { chargeVersions } = request.pre;
-  const validIds = filterChargeVersions(chargeVersions).map(cv => cv.id);
+  const { chargeVersions, draftChargeInformation } = request.pre;
+  const validIds = filterChargeVersions(chargeVersions, draftChargeInformation.scheme).map(cv => cv.id);
   return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
     useAbstractionData: Joi.string().valid(...['yes', 'no', ...validIds]).required()

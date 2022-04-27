@@ -27,7 +27,7 @@ const form = request => {
         message: 'Enter a description for the charge reference'
       },
       'string.pattern.base': {
-        message: 'You can only include letters, numbers, hyphens, the and symbol (&) and brackets. The description must be less than 181 characters.'
+        message: 'You can only include letters, numbers, hyphens, the and symbol (&) and brackets. The description must be less than 181 characters'
       }
     }
   }, data.description || ''));

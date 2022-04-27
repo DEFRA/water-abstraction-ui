@@ -51,7 +51,7 @@ experiment('internal/modules/charge-information/forms/charge-category/descriptio
       expect(descriptionField.options.hint).to.equal('This is the description that will appear on the invoice');
       expect(descriptionField.options.errors['string.empty'].message).to.equal('Enter a description for the charge reference');
       expect(descriptionField.options.errors['any.required'].message).to.equal('Enter a description for the charge reference');
-      expect(descriptionField.options.errors['string.pattern.base'].message).to.equal('You can only include letters, numbers, hyphens, the and symbol (&) and brackets. The description must be less than 181 characters.');
+      expect(descriptionField.options.errors['string.pattern.base'].message).to.equal('You can only include letters, numbers, hyphens, the and symbol (&) and brackets. The description must be less than 181 characters');
     });
 
     test('has a submit button', async () => {

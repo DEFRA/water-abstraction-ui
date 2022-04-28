@@ -115,7 +115,7 @@ experiment('internal/modules/charge-information/forms/charge-category/volume', (
         expect(result.error).to.exist();
       });
 
-      test('must be greater than 0', async () => {
+      test('must be equal to or greater than 0', async () => {
         const result = schema(createRequest()).validate({
           csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
           volume: '-1'

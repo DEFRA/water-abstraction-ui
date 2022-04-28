@@ -1,13 +1,13 @@
 const { get } = require('lodash');
 const urlJoin = require('url-join');
 
-const { uploadForm } = require('../forms/upload-charge-information');
-const files = require('../../../../shared/lib/files');
-const { logger } = require('../../../logger');
-const config = require('../../../config');
-const services = require('../../../lib/connectors/services');
-const fileCheck = require('../../../../shared/lib/file-check');
-const UploadHelpers = require('../../../../shared/lib/upload-helpers');
+const uploadForm = require('./form');
+const files = require('shared/lib/files');
+const { logger } = require('../../logger');
+const config = require('../../config');
+const services = require('../../lib/connectors/services');
+const fileCheck = require('shared/lib/file-check');
+const UploadHelpers = require('shared/lib/upload-helpers');
 const uploadHelpers = new UploadHelpers('charge-information', ['csv'], services, logger, config.testMode);
 const { NO_FILE, OK, INVALID_ROWS } = UploadHelpers.fileStatuses;
 

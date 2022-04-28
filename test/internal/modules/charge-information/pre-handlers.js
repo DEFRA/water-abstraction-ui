@@ -93,7 +93,7 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
     });
 
     sandbox.stub(services.water.chargeVersions, 'getChargeVersionsByLicenceId').resolves({
-      data: [{ id: 'test-cv-id', status: 'current', dateRange: { startDate: '2010-04-01' } }]
+      data: [{ id: 'test-cv-id', status: 'current', dateRange: { startDate: '2010-04-01' }, note: { userId: 1234 } }]
     });
 
     sandbox.stub(services.water.chargeVersions, 'getChargeVersion').resolves({
@@ -582,7 +582,14 @@ experiment('internal/modules/charge-information/pre-handlers', () => {
 
       test('resolves with reasons data', async () => {
         expect(result).to.be.an.array().length(1);
-        expect(result[0].id).to.equal('test-cv-id');
+        expect(result).to.equal([
+          {
+            id: 'test-cv-id',
+            status: 'current',
+            dateRange: { startDate: '2010-04-01' },
+            note: { userId: 1234, user: { email: 'test.user@test.defra.gov.uk' } }
+          }
+        ]);
       });
     });
 

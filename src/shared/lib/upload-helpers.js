@@ -230,7 +230,12 @@ class UploadHelpers {
           return h.redirect(spinnerRedirectPath);
         }
 
-        return h.view('nunjucks/waiting/index', request.view);
+        const statusMessage = get(evt, 'metadata.statusMessage') || '';
+
+        return h.view('nunjucks/waiting/index', {
+          ...request.view,
+          statusMessage
+        });
       } else {
         const error = Boom.notFound('Upload event not found', { eventId });
         this._logger.errorWithJourney('No event found with selected event_id and issuer', error, request, { eventId });

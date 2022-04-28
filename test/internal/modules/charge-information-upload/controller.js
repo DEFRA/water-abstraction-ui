@@ -4,12 +4,12 @@ const { experiment, test, beforeEach, afterEach, fail } = exports.lab = require(
 const sinon = require('sinon');
 const sandbox = sinon.createSandbox();
 const services = require('internal/lib/connectors/services');
-const forms = require('shared/lib/forms/index');
+const forms = require('shared/lib/forms');
 const UploadHelpers = require('shared/lib/upload-helpers');
 const files = require('shared/lib/files');
 const fileCheck = require('shared/lib/file-check');
 const { logger } = require('internal/logger');
-const controller = require('internal/modules/charge-information/controllers/upload-charge-information');
+const controller = require('internal/modules/charge-information-upload/controller');
 
 const eventId = 'event_1';
 const userName = 'user_1';
@@ -199,7 +199,7 @@ experiment('external/modules/charge-information/controllers/upload', () => {
     });
 
     test('it should load the waiting page', async () => {
-      const response = createResponse();
+      const response = createResponse('processing', { statusMessage: 'STATUS MESSAGE' });
       const request = createSpinnerRequest();
       services.water.events.findMany.resolves(response);
       await controller.getSpinnerPage(request, h);
@@ -207,7 +207,7 @@ experiment('external/modules/charge-information/controllers/upload', () => {
       const args = h.view.lastCall.args;
       expect(args).to.equal([
         'nunjucks/waiting/index',
-        { csrfToken, pageTitle: `Uploading ${filename}` }
+        { csrfToken, pageTitle: `Uploading ${filename}`, statusMessage: 'STATUS MESSAGE' }
       ]);
     });
 

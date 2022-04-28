@@ -51,7 +51,7 @@ experiment('internal/modules/charge-information/forms/charge-category/descriptio
       expect(descriptionField.options.hint).to.equal('This is the description that will appear on the invoice');
       expect(descriptionField.options.errors['string.empty'].message).to.equal('Enter a description for the charge reference');
       expect(descriptionField.options.errors['any.required'].message).to.equal('Enter a description for the charge reference');
-      expect(descriptionField.options.errors['string.pattern.base'].message).to.equal('The description must only include letters a-z, hyphens, numbers and be 180 characters or fewer.');
+      expect(descriptionField.options.errors['string.pattern.base'].message).to.equal('You can only include letters, numbers, hyphens, the and symbol (&) and brackets. The description must be less than 181 characters');
     });
 
     test('has a submit button', async () => {
@@ -100,7 +100,7 @@ experiment('internal/modules/charge-information/forms/charge-category/descriptio
           description: '@'
         }, { allowUnknown: true });
         expect(result.error).to.be.an.instanceof(Error);
-        expect(result.error.message).to.equal('"description" with value "@" fails to match the required pattern: /^[a-zA-Z/s 0-9-\'.,]{1,180}$/');
+        expect(result.error.message).to.equal('"description" with value "@" fails to match the required pattern: /^[a-zA-Z/s 0-9-\'.,()&*]{1,180}$/');
       });
       test('validates for the descriptionRegex - bigger than 180 chars', async () => {
         const stringBiggerThan180Chars = 'w5OyHN3NWsL9KTKU7afHDMlN1FUzzV3Fj30ci1sr9z1RK1jPxuOv6rFa9yb6tzGvZ6i5uaRF73V5FgwATfN08kdeYisXysk7gc90s1IVI2uyji04Tw8H1ij1o0tAh22r99C8aupphswIQt2I9CBNFhZr4rxaS413lFIb05BrQQ5OQPYVei3k4H6jEKfjCvW1iCMtReZYKE64C6EA9fGjUMrt2wNFKnoQoXo3A66yIS5iCJhV8g94fWEYzI8ZfozqWLR15Sg92HQQsT6Nr37uUFr3zIy79t0pDvcp75Ctq87Dx4eRLNHBTjzB';
@@ -109,7 +109,7 @@ experiment('internal/modules/charge-information/forms/charge-category/descriptio
           description: stringBiggerThan180Chars
         }, { allowUnknown: true });
         expect(result.error).to.be.an.instanceof(Error);
-        expect(result.error.message).to.equal(`"description" with value "${stringBiggerThan180Chars}" fails to match the required pattern: /^[a-zA-Z/s 0-9-'.,]{1,180}$/`);
+        expect(result.error.message).to.equal(`"description" with value "${stringBiggerThan180Chars}" fails to match the required pattern: /^[a-zA-Z/s 0-9-'.,()&*]{1,180}$/`);
       });
     });
   });

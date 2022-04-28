@@ -194,6 +194,23 @@ const clearNoteSessionData = request => {
   }
 };
 
+const flattenAdditionalChargesProperties = ({ additionalCharges, ...element }) => {
+  if (additionalCharges) {
+    const { supportedSource, isSupplyPublicWater } = additionalCharges;
+    element.isAdditionalCharges = true;
+    element.isSupportedSource = !!supportedSource;
+    element.isSupplyPublicWater = isSupplyPublicWater;
+    const { id, name } = supportedSource || {};
+    if (id) {
+      element.supportedSourceId = id;
+    }
+    if (name) {
+      element.supportedSourceName = name;
+    }
+  }
+  return element;
+};
+
 exports.isOverridingChargeVersion = isOverridingChargeVersion;
 exports.getLicencePageUrl = getLicencePageUrl;
 exports.getPostedForm = getPostedForm;
@@ -206,3 +223,4 @@ exports.getChargeCategoryFirstStep = getChargeCategoryFirstStep;
 exports.getAlcsCount = getAlcsCount;
 exports.getCurrentBillingAccountAddress = getCurrentBillingAccountAddress;
 exports.clearNoteSessionData = clearNoteSessionData;
+exports.flattenAdditionalChargesProperties = flattenAdditionalChargesProperties;

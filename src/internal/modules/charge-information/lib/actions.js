@@ -1,9 +1,10 @@
-const { find, omit, get } = require('lodash');
+const { find, omit, get, isEmpty } = require('lodash');
 const moment = require('moment');
 const { v4: uuid } = require('uuid');
 const DATE_FORMAT = 'YYYY-MM-DD';
 const chargeElementMappers = require('./charge-elements/mappers');
 const chargeCategoryMappers = require('./charge-categories/mappers');
+const helpers = require('../lib/helpers');
 const { CHARGE_ELEMENT_STEPS } = require('./charge-elements/constants');
 const { ROUTING_CONFIG } = require('./charge-categories/constants');
 const { srocStartDate } = require('../../../config');
@@ -77,21 +78,22 @@ const setBillingAccount = id => ({
   }
 });
 
-const generateIds = chargeElements =>
-  chargeElements.map(element => ({
+const mapChargeElementData = chargeElements =>
+  chargeElements.map(element => helpers.flattenAdditionalChargesProperties({
     scheme: 'alcs', // default to 'alcs'
     ...element,
-    id: uuid() // overrides the id
+    id: uuid(), // overrides the id
+    isAdjustments: !isEmpty(element.adjustments)
   }));
 
 const setAbstractionData = (request, formValues) => {
   let chargeElements = [];
   let note;
   if (formValues.useAbstractionData === 'yes') {
-    chargeElements = generateIds(request.pre.defaultCharges);
+    chargeElements = mapChargeElementData(request.pre.defaultCharges);
   } else if (formValues.useAbstractionData !== 'no') {
     const chargeVersion = request.pre.chargeVersions.find(cv => cv.id === formValues.useAbstractionData);
-    chargeElements = generateIds(chargeVersion.chargeElements);
+    chargeElements = mapChargeElementData(chargeVersion.chargeElements);
     note = get(chargeVersion, 'note');
     if (note) {
       const { userName, userId } = request.defra; // Logged in user details

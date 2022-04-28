@@ -6,6 +6,7 @@ const { loadLicence } = require('shared/lib/pre-handlers/licences');
 const moment = require('moment');
 const { get, sortBy, isEmpty, pick } = require('lodash');
 const { v4: uuid } = require('uuid');
+const { flattenAdditionalChargesProperties } = require('./lib/helpers');
 const errorHandler = (err, message) => {
   if (err.statusCode === 404) {
     return Boom.notFound(message);
@@ -161,23 +162,6 @@ const loadChargeVersion = async request => {
   } catch (err) {
     return errorHandler(err, `Cannot load charge version ${chargeVersionId}`);
   }
-};
-
-const flattenAdditionalChargesProperties = ({ additionalCharges, ...element }) => {
-  if (additionalCharges) {
-    const { supportedSource, isSupplyPublicWater } = additionalCharges;
-    element.isAdditionalCharges = true;
-    element.isSupportedSource = !!supportedSource;
-    element.isSupplyPublicWater = isSupplyPublicWater;
-    const { id, name } = supportedSource || {};
-    if (id) {
-      element.supportedSourceId = id;
-    }
-    if (name) {
-      element.supportedSourceName = name;
-    }
-  }
-  return element;
 };
 
 const decorateChargeVersion = chargeVersionWorkflow => {

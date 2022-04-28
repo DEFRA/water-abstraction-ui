@@ -4,10 +4,10 @@ const { v4: uuid } = require('uuid');
 const DATE_FORMAT = 'YYYY-MM-DD';
 const chargeElementMappers = require('./charge-elements/mappers');
 const chargeCategoryMappers = require('./charge-categories/mappers');
-const helpers = require('../lib/helpers');
 const { CHARGE_ELEMENT_STEPS } = require('./charge-elements/constants');
 const { ROUTING_CONFIG } = require('./charge-categories/constants');
 const { srocStartDate } = require('../../../config');
+const { flattenAdditionalChargesProperties } = require('internal/modules/charge-information/lib/mappers');
 const ACTION_TYPES = {
   clearData: 'clearData',
   setBillingAccount: 'set.invoiceAccount',
@@ -79,7 +79,7 @@ const setBillingAccount = id => ({
 });
 
 const mapChargeElementData = chargeElements =>
-  chargeElements.map(element => helpers.flattenAdditionalChargesProperties({
+  chargeElements.map(element => flattenAdditionalChargesProperties({
     scheme: 'alcs', // default to 'alcs'
     ...element,
     id: uuid(), // overrides the id

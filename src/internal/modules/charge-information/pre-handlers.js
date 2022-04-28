@@ -6,7 +6,7 @@ const { loadLicence } = require('shared/lib/pre-handlers/licences');
 const moment = require('moment');
 const { get, sortBy, isEmpty, pick } = require('lodash');
 const { v4: uuid } = require('uuid');
-const { flattenAdditionalChargesProperties } = require('./lib/helpers');
+const { flattenAdditionalChargesProperties } = require('./lib/mappers');
 const errorHandler = (err, message) => {
   if (err.statusCode === 404) {
     return Boom.notFound(message);

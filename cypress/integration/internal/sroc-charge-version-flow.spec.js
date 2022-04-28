@@ -216,8 +216,15 @@ describe('Create SRoC Charge version workflow journey', () => {
           checkNoErrorMessage();
           cy.get('.govuk-back-link').click();
         });
-        describe('user inputs amount', () => {
+        describe('user inputs value of 0', () => {
           // We use .clear() to delete any previously accepted input
+          cy.get('#volume').clear().type('0');
+          cy.get('form > .govuk-button').contains('Continue').click();
+          // Check that no error message was generated, then go back from the page we arrived at
+          checkNoErrorMessage();
+          cy.get('.govuk-back-link').click();
+        });
+        describe('user inputs amount', () => {
           cy.get('#volume').clear().type('150');
           cy.get('form > .govuk-button').contains('Continue').click();
         });

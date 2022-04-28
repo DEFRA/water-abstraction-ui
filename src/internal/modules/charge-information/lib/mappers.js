@@ -31,4 +31,22 @@ const mapDataToTaskList = (data, licence) => ([{
   }]
 }]);
 
+const flattenAdditionalChargesProperties = ({ additionalCharges, ...element }) => {
+  if (additionalCharges) {
+    const { supportedSource, isSupplyPublicWater } = additionalCharges;
+    element.isAdditionalCharges = true;
+    element.isSupportedSource = !!supportedSource;
+    element.isSupplyPublicWater = isSupplyPublicWater;
+    const { id, name } = supportedSource || {};
+    if (id) {
+      element.supportedSourceId = id;
+    }
+    if (name) {
+      element.supportedSourceName = name;
+    }
+  }
+  return element;
+};
+
 exports.mapDataToTaskList = mapDataToTaskList;
+exports.flattenAdditionalChargesProperties = flattenAdditionalChargesProperties;

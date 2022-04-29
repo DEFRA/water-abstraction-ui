@@ -40,10 +40,14 @@
 
 {% macro billingContactCell(invoice) %}
   <td class="govuk-table__cell">
+    Billing roles licenceHolder = {{  invoice.billingContact.roleContact.licenceHolder }}
+    <br>
+    Billing role billing = {{  invoice.billingContact.roleContact.billing }}
+    <br>
     {% if invoice.billingContact.agentCompanyName %}
-      {{ invoice.billingContact.agentCompanyName | titleCase }}
+      agentName: {{ invoice.billingContact.agentCompanyName | titleCase }}
     {% else %}
-      {{ invoice.name | titleCase }}
+      name: {{ invoice.name | titleCase }}
     {% endif %}
   </td>
 {% endmacro %}

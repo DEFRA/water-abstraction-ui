@@ -40,7 +40,11 @@
 
 {% macro billingContactCell(invoice) %}
   <td class="govuk-table__cell">
-    {{ invoice.name | titleCase }}
+    {% if invoice.billingContact.agentCompanyName %}
+      {{ invoice.billingContact.agentCompanyName | titleCase }}
+    {% else %}
+      {{ invoice.name | titleCase }}
+    {% endif %}
   </td>
 {% endmacro %}
 
@@ -198,7 +202,7 @@
         {{row.invoice.displayLabel}}
       </a>
       {{displayRebillingState(row.invoice)}}
-      
+
       {% if row.invoice.isFlaggedForRebilling %}
       <p class="govuk-body-s govuk-!-margin-bottom-0">Marked for reissue</p>
       {% endif %}

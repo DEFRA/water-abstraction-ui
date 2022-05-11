@@ -43,9 +43,9 @@ const postSelectContact = async (request, h) => {
   // Data is department or existing selected contact
   const data = selectedContact === CONTACT_TYPES.department
     ? {
-        type: CONTACT_TYPES.department,
-        department
-      }
+      type: CONTACT_TYPES.department,
+      department
+    }
     : request.pre.companyContacts.find(row => row.id === selectedContact);
 
   const { redirectPath } = session.merge(request, key, { data });

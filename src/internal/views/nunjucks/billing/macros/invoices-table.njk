@@ -26,6 +26,7 @@
   </thead>
 {% endmacro %}
 
+
 {% macro billingAccountCell(invoice) %}
   <td class="govuk-table__cell">
     {% if invoice.invoiceAccount %}
@@ -40,15 +41,22 @@
 
 {% macro billingContactCell(invoice) %}
   <td class="govuk-table__cell">
-    Billing roles licenceHolder = {{  invoice.billingContact.roleContact.licenceHolder }}
+
+{#    1 - invoiceAccountAddresses.contact #}
+    FAO: {{ invoice.faoContact | titleCase }}
     <br>
-    Billing role billing = {{  invoice.billingContact.roleContact.billing }}
+{#    2 - invoiceAccountAddresses.agentCompany #}
+    Agent Name: {{ invoice.billingContact.agentCompanyName | titleCase }}
     <br>
-    {% if invoice.billingContact.agentCompanyName %}
-      agentName: {{ invoice.billingContact.agentCompanyName | titleCase }}
-    {% else %}
-      name: {{ invoice.name | titleCase }}
-    {% endif %}
+{#    3 - company.companyContact.contact #}
+{#    contact id then agent then name#}
+    Licence Holder = {{  invoice.billingContact.roleContact.licenceHolder }}
+    <br>
+    Billing contact = {{  invoice.billingContact.roleContact.billing }}
+
+{#    4 - company.companyContact.contact #}
+    <br>
+name: {{ invoice.name | titleCase }}
   </td>
 {% endmacro %}
 

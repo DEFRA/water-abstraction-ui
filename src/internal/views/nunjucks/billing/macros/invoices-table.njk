@@ -26,6 +26,7 @@
   </thead>
 {% endmacro %}
 
+
 {% macro billingAccountCell(invoice) %}
   <td class="govuk-table__cell">
     {% if invoice.invoiceAccount %}
@@ -40,7 +41,24 @@
 
 {% macro billingContactCell(invoice) %}
   <td class="govuk-table__cell">
-    {{ invoice.name | titleCase }}
+
+    {% if invoice.faoContact  %}
+      {{ invoice.faoContact }}
+
+      {% elif invoice.billingContact.agentCompanyName %}
+      {{ invoice.billingContact.agentCompanyName }}
+
+      {% elif invoice.billingContact.roleContact.licenceHolder %}
+      {{  invoice.billingContact.roleContact.licenceHolder }}
+
+      {% elif invoice.billingContact.roleContact.billing %}
+      {{  invoice.billingContact.roleContact.billing }}
+
+    {% else %}
+      {{ invoice.name | titleCase }}
+    {% endif %}
+
+
   </td>
 {% endmacro %}
 
@@ -198,7 +216,7 @@
         {{row.invoice.displayLabel}}
       </a>
       {{displayRebillingState(row.invoice)}}
-      
+
       {% if row.invoice.isFlaggedForRebilling %}
       <p class="govuk-body-s govuk-!-margin-bottom-0">Marked for reissue</p>
       {% endif %}

@@ -42,21 +42,23 @@
 {% macro billingContactCell(invoice) %}
   <td class="govuk-table__cell">
 
-{#    1 - invoiceAccountAddresses.contact #}
-    FAO: {{ invoice.faoContact | titleCase }}
-    <br>
-{#    2 - invoiceAccountAddresses.agentCompany #}
-    Agent Name: {{ invoice.billingContact.agentCompanyName | titleCase }}
-    <br>
-{#    3 - company.companyContact.contact #}
-{#    contact id then agent then name#}
-    Licence Holder = {{  invoice.billingContact.roleContact.licenceHolder }}
-    <br>
-    Billing contact = {{  invoice.billingContact.roleContact.billing }}
+    {% if invoice.faoContact  %}
+      {{ invoice.faoContact | titleCase }}
 
-{#    4 - company.companyContact.contact #}
-    <br>
-name: {{ invoice.name | titleCase }}
+      {% elif invoice.billingContact.agentCompanyName %}
+      {{ invoice.billingContact.agentCompanyName | titleCase }}
+
+      {% elif invoice.billingContact.roleContact.licenceHolder %}
+      {{  invoice.billingContact.roleContact.licenceHolder }}
+
+      {% elif invoice.billingContact.roleContact.billing %}
+      {{  invoice.billingContact.roleContact.billing }}
+
+    {% else %}
+      {{ invoice.name | titleCase }}
+    {% endif %}
+
+
   </td>
 {% endmacro %}
 

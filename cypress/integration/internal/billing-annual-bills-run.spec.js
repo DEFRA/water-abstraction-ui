@@ -83,7 +83,7 @@ describe('annual bill run', () => {
       cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('annual bill run');
       cy.get('#tab_other-abstractors').click();
       cy.get('.govuk-table__row').eq(1).should('contain', 'A99999999A');
-      cy.get('.govuk-table__row').eq(1).should('contain', 'Big Farm Co Ltd');
+      cy.get('.govuk-table__row').eq(1).should('contain', 'Mr John J Testerson');
       cy.get('td.govuk-table__cell').last().children(0).click({ force: true });
       cy.get('.govuk-caption-l').should('contain', 'Billing account A99999999A');
     });

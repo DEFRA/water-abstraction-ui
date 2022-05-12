@@ -43,10 +43,10 @@
   <td class="govuk-table__cell">
 
     {% if invoice.faoContact  %}
-      {{ invoice.faoContact | titleCase }}
+      {{ invoice.faoContact }}
 
       {% elif invoice.billingContact.agentCompanyName %}
-      {{ invoice.billingContact.agentCompanyName | titleCase }}
+      {{ invoice.billingContact.agentCompanyName }}
 
       {% elif invoice.billingContact.roleContact.licenceHolder %}
       {{  invoice.billingContact.roleContact.licenceHolder }}

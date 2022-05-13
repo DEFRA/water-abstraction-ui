@@ -123,6 +123,7 @@ const postBillingBatchRegion = async (request, h, refDate) => {
     const batch = getBatchDetails(request, billingRegionForm, refDate);
     const { data } = await services.water.billingBatches.createBillingBatch(batch);
     const path = routing.getBillingBatchRoute(data.batch, { isBackEnabled: false });
+    console.log("I am not ready to be watched!!")
     return h.redirect(path);
   } catch (err) {
     if (err.statusCode === 409) {

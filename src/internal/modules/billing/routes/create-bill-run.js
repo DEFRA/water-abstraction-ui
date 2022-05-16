@@ -129,7 +129,7 @@ module.exports = {
 
   getBillingBatchFinancialYear: {
     method: 'GET',
-    path: '/billing/batch/financial-year',
+    path: '/billing/batch/financial-year/{billingType}/{season}/{region}',
     handler: controller.getBillingBatchFinancialYear,
     config: {
       pre: [],
@@ -150,7 +150,7 @@ module.exports = {
     handler: controller.postBillingBatchFinancialYear,
     config: {
       auth: { scope: allowedScopes },
-      description: 'post handler for receiving the selected financial year',
+      description: 'post handler for receiving the selected financial year'
     }
   }
 };

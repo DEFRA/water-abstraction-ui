@@ -7,7 +7,7 @@ const services = require('internal/lib/connectors/services');
 
 const { selectBillingTypeForm, billingTypeFormSchema } = require('../forms/billing-type');
 const { selectBillingRegionForm, billingRegionFormSchema } = require('../forms/billing-region');
-const { selectBillingFinancialYearsForm } = require('../forms/financial-years');
+const { selectBillingFinancialYearsForm, billingFinancialYearsFormSchema } = require('../forms/financial-years');
 const { TWO_PART_TARIFF } = require('../lib/bill-run-types');
 const seasons = require('../lib/seasons');
 const routing = require('../lib/routing');
@@ -15,6 +15,8 @@ const sessionForms = require('shared/lib/session-forms');
 const { getBatchFinancialYearEnding } = require('../lib/batch-financial-year');
 
 // New Funcs for sorting hat
+const getFinancialyears = () => [{ from: '2020', to: '2021', isCurrentYear: true }, { from: '2019', to: '2020' }];
+
 const batching = async (request, h, billingRegionForm, refDate) => {
   try {
     const batch = getBatchDetails(request, billingRegionForm, refDate);
@@ -30,26 +32,20 @@ const batching = async (request, h, billingRegionForm, refDate) => {
   }
 };
 
-const doSomething = (billingRegionForm) => {
-  const { selectedBillingType } = forms.getValues(billingRegionForm);
-
-  return selectedBillingType === TWO_PART_TARIFF;
-};
+const getFinancialYearUrl = (selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion) => urlJoin(
+  '/billing/batch/financial-year',
+  kebabCase(selectedBillingType),
+  kebabCase(selectedTwoPartTariffSeason),
+  selectedBillingRegion
+);
 
 // end sorting hat
 
-const getRegionUrl = (selectedBillingType, selectedTwoPartTariffSeason, formKey) => {
-  const path = urlJoin(
-    '/billing/batch/region',
-    kebabCase(selectedBillingType),
-    kebabCase(selectedTwoPartTariffSeason)
-  );
-
-  return formKey
-    ? `${path}?${queryString.stringify({ form: formKey })}`
-    : path;
-};
-
+const getRegionUrl = (selectedBillingType, selectedTwoPartTariffSeason) => urlJoin(
+  '/billing/batch/region',
+  kebabCase(selectedBillingType),
+  kebabCase(selectedTwoPartTariffSeason)
+);
 /**
  * Step 1a of create billing batch flow - display form to select type
  * i.e. Annual, Supplementary, Two-Part Tariff
@@ -63,7 +59,6 @@ const getBillingBatchType = async (request, h) => {
     form: sessionForms.get(request, selectBillingTypeForm(request))
   });
 };
-
 /**
  * Step 1b - receive posted step 1a data
  * @param {*} request
@@ -138,13 +133,20 @@ const postBillingBatchRegion = async (request, h, refDate) => {
   const schema = billingRegionFormSchema(regions);
   const billingRegionForm = forms.handleRequest(selectBillingRegionForm(request, regions), request, schema);
 
+  const { selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion } = forms.getValues(billingRegionForm);
+
   if (!billingRegionForm.isValid) {
-    const { selectedBillingType, selectedTwoPartTariffSeason } = forms.getValues(billingRegionForm);
     const path = getRegionUrl(selectedBillingType, selectedTwoPartTariffSeason);
     return h.postRedirectGet(billingRegionForm, path);
   }
 
-  return doSomething(billingRegionForm) ? h.redirect('/billing/batch/financial-year') : batching(request, h, billingRegionForm, refDate);
+  if (selectedBillingType === TWO_PART_TARIFF) {
+    const path = getFinancialYearUrl(selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion);
+    //  TF
+    return h.postRedirectGet('', path);
+  } else {
+    return batching(request, h, billingRegionForm, refDate);
+  }
 };
 
 const getCreationErrorText = (error, batch) => {
@@ -172,8 +174,7 @@ const getBillingBatchCreationError = async (request, h, error) => {
 };
 
 const getBillingBatchFinancialYear = async (request, h, error) => {
-  // [{ from: '2020', to: '2021', isCurrentYear: false }, { from: '2019', to: '2020', isCurrentYear: true }];
-  const financialYears = [{ from: '2020', to: '2021', isCurrentYear: true }, { from: '2019', to: '2020' }];
+  const financialYears = getFinancialyears();
 
   return h.view('nunjucks/form', {
     ...request.view,
@@ -182,20 +183,20 @@ const getBillingBatchFinancialYear = async (request, h, error) => {
   });
 };
 
-const postBillingBatchFinancialYear =  async (request, h, refDate) => {
+const postBillingBatchFinancialYear = async (request, h, refDate) => {
+  const financialYears = getFinancialyears();
+  const schema = billingFinancialYearsFormSchema(financialYears);
+  const financialYearsForm = forms.handleRequest(selectBillingFinancialYearsForm(request, financialYears), request, schema);
 
-  // create financial year form schema, do something with it below
-  // const schema = billingRegionFormSchema(regions);
-  // const billingRegionForm = forms.handleRequest(selectBillingRegionForm(request, regions), request, schema);
+  const { selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion } = forms.getValues(financialYearsForm);
 
-  // if (!billingRegionForm.isValid) {
-  //   const { selectedBillingType, selectedTwoPartTariffSeason } = forms.getValues(billingRegionForm);
-  //   const path = getRegionUrl(selectedBillingType, selectedTwoPartTariffSeason);
-  //   return h.postRedirectGet(billingRegionForm, path);
-  // }
+  if (!financialYearsForm.isValid) {
+    const path = getFinancialYearUrl(selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion);
+    return h.postRedirectGet(financialYearsForm, path);
+  }
 
-  return h.postRedirectGet('/billing/batch/financial-year');
-}
+  console.log('FIN', request.payload);
+};
 /**
  * If a bill run for the region exists, then display a basic summary page
  * @param {*} request

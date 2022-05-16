@@ -125,6 +125,32 @@ module.exports = {
         })
       }
     }
-  }
+  },
 
+  getBillingBatchFinancialYear: {
+    method: 'GET',
+    path: '/billing/batch/financial-year',
+    handler: controller.getBillingBatchFinancialYear,
+    config: {
+      pre: [],
+      auth: { scope: allowedScopes },
+      description: 'If a bill run has already been run for region, year and season, warn user and display short summary',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Select the finacial year',
+          activeNavLink: ''
+        }
+      }
+    }
+  },
+
+  postBillingFinancialYear: {
+    method: 'POST',
+    path: '/billing/batch/financial-year',
+    handler: controller.postBillingBatchFinancialYear,
+    config: {
+      auth: { scope: allowedScopes },
+      description: 'post handler for receiving the selected financial year',
+    }
+  }
 };

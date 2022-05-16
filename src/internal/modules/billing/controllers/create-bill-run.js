@@ -7,11 +7,36 @@ const services = require('internal/lib/connectors/services');
 
 const { selectBillingTypeForm, billingTypeFormSchema } = require('../forms/billing-type');
 const { selectBillingRegionForm, billingRegionFormSchema } = require('../forms/billing-region');
+const { selectBillingFinancialYearsForm } = require('../forms/financial-years');
 const { TWO_PART_TARIFF } = require('../lib/bill-run-types');
 const seasons = require('../lib/seasons');
 const routing = require('../lib/routing');
 const sessionForms = require('shared/lib/session-forms');
 const { getBatchFinancialYearEnding } = require('../lib/batch-financial-year');
+
+// New Funcs for sorting hat
+const batching = async (request, h, billingRegionForm, refDate) => {
+  try {
+    const batch = getBatchDetails(request, billingRegionForm, refDate);
+    const { data } = await services.water.billingBatches.createBillingBatch(batch);
+    const path = routing.getBillingBatchRoute(data.batch, { isBackEnabled: false });
+    console.log('I am not ready to be watched!!');
+    return h.redirect(path);
+  } catch (err) {
+    if (err.statusCode === 409) {
+      return h.redirect(getBatchCreationErrorRedirectPath(err));
+    }
+    throw err;
+  }
+};
+
+const doSomething = (billingRegionForm) => {
+  const { selectedBillingType } = forms.getValues(billingRegionForm);
+
+  return selectedBillingType === TWO_PART_TARIFF;
+};
+
+// end sorting hat
 
 const getRegionUrl = (selectedBillingType, selectedTwoPartTariffSeason, formKey) => {
   const path = urlJoin(
@@ -119,18 +144,7 @@ const postBillingBatchRegion = async (request, h, refDate) => {
     return h.postRedirectGet(billingRegionForm, path);
   }
 
-  try {
-    const batch = getBatchDetails(request, billingRegionForm, refDate);
-    const { data } = await services.water.billingBatches.createBillingBatch(batch);
-    const path = routing.getBillingBatchRoute(data.batch, { isBackEnabled: false });
-    console.log('I am not ready to be watched!!');
-    return h.redirect(path);
-  } catch (err) {
-    if (err.statusCode === 409) {
-      return h.redirect(getBatchCreationErrorRedirectPath(err));
-    }
-    throw err;
-  }
+  return doSomething(billingRegionForm) ? h.redirect('/billing/batch/financial-year') : batching(request, h, billingRegionForm, refDate);
 };
 
 const getCreationErrorText = (error, batch) => {
@@ -157,6 +171,31 @@ const getBillingBatchCreationError = async (request, h, error) => {
   });
 };
 
+const getBillingBatchFinancialYear = async (request, h, error) => {
+  // [{ from: '2020', to: '2021', isCurrentYear: false }, { from: '2019', to: '2020', isCurrentYear: true }];
+  const financialYears = [{ from: '2020', to: '2021', isCurrentYear: true }, { from: '2019', to: '2020' }];
+
+  return h.view('nunjucks/form', {
+    ...request.view,
+    back: '/billing/batch/region',
+    form: sessionForms.get(request, selectBillingFinancialYearsForm(request, financialYears))
+  });
+};
+
+const postBillingBatchFinancialYear =  async (request, h, refDate) => {
+
+  // create financial year form schema, do something with it below
+  // const schema = billingRegionFormSchema(regions);
+  // const billingRegionForm = forms.handleRequest(selectBillingRegionForm(request, regions), request, schema);
+
+  // if (!billingRegionForm.isValid) {
+  //   const { selectedBillingType, selectedTwoPartTariffSeason } = forms.getValues(billingRegionForm);
+  //   const path = getRegionUrl(selectedBillingType, selectedTwoPartTariffSeason);
+  //   return h.postRedirectGet(billingRegionForm, path);
+  // }
+
+  return h.postRedirectGet('/billing/batch/financial-year');
+}
 /**
  * If a bill run for the region exists, then display a basic summary page
  * @param {*} request
@@ -180,3 +219,6 @@ exports.postBillingBatchRegion = postBillingBatchRegion;
 
 exports.getBillingBatchExists = getBillingBatchExists;
 exports.getBillingBatchDuplicate = getBillingBatchDuplicate;
+
+exports.getBillingBatchFinancialYear = getBillingBatchFinancialYear;
+exports.postBillingBatchFinancialYear = postBillingBatchFinancialYear;

@@ -288,6 +288,15 @@ describe('Create SRoC Charge version workflow journey', () => {
         });
       });
 
+      describe('Both charge elements are created',()=>{
+
+        cy.get('.govuk-caption-m').eq(0).invoke("text").should("eq","Charge element 1")
+        cy.get('.govuk-caption-m').eq(1).invoke("text").should("eq","Charge element 2")
+        cy.get('.govuk-summary-list__value').should('contain','Potable Water Supply - Direct')
+        cy.get('.govuk-summary-list__value').should('contain','test element description')
+
+      })
+
     
   });
 });

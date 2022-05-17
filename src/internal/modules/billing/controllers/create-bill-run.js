@@ -140,13 +140,13 @@ const postBillingBatchRegion = async (request, h, refDate) => {
     return h.postRedirectGet(billingRegionForm, path);
   }
 
-  if (selectedBillingType === TWO_PART_TARIFF) {
-    const path = getFinancialYearUrl(selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion);
-    //  TF
-    return h.postRedirectGet('', path);
-  } else {
+  // if (selectedBillingType === TWO_PART_TARIFF) {
+  //   const path = getFinancialYearUrl(selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion);
+  //   //  TF
+  //   return h.postRedirectGet('', path);
+  // } else {
     return batching(request, h, billingRegionForm, refDate);
-  }
+  // }
 };
 
 const getCreationErrorText = (error, batch) => {

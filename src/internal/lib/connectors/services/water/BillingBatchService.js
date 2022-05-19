@@ -140,6 +140,14 @@ class BillingBatchService extends ServiceClient {
     const uri = this.joinUrl(`/billing/batches/${batchId}/status/cancel`);
     return this.serviceRequest.post(uri);
   }
+
+  getBatchBillableYears (body) {
+    const uri = this.joinUrl('billing/batches/billable-years');
+    const options = {
+      body
+    };
+    return this.serviceRequest.post(uri, options);
+  }
 }
 
 module.exports = BillingBatchService;

@@ -22,7 +22,7 @@ On all platforms run:
 
 ```
 npm install --only=dev
-gulp clean && gulp copy-govuk-files && gulp install-govuk-files && gulp copy-static-assets && gulp sass
+gulp clean && gulp copy-static-assets && gulp sass
 ```
 
 ## Environment Variables

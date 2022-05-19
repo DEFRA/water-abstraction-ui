@@ -1,4 +1,4 @@
-const { kebabCase, partialRight } = require('lodash');
+const { kebabCase, partialRight, snakeCase } = require('lodash');
 const urlJoin = require('url-join');
 const queryString = require('querystring');
 
@@ -13,9 +13,7 @@ const seasons = require('../lib/seasons');
 const routing = require('../lib/routing');
 const sessionForms = require('shared/lib/session-forms');
 const { getBatchFinancialYearEnding } = require('../lib/batch-financial-year');
-
-// New Funcs for sorting hat
-const getFinancialyears = () => [{ from: '2020', to: '2021', isCurrentYear: true }, { from: '2019', to: '2020' }];
+const { water } = require('internal/lib/connectors/services');
 
 const batching = async (request, h, billingRegionForm, refDate) => {
   try {
@@ -140,13 +138,27 @@ const postBillingBatchRegion = async (request, h, refDate) => {
     return h.postRedirectGet(billingRegionForm, path);
   }
 
-  // if (selectedBillingType === TWO_PART_TARIFF) {
-  //   const path = getFinancialYearUrl(selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion);
-  //   //  TF
-  //   return h.postRedirectGet('', path);
-  // } else {
+  if (selectedBillingType !== TWO_PART_TARIFF) {
     return batching(request, h, billingRegionForm, refDate);
-  // }
+  }
+
+  const isSummer = selectedTwoPartTariffSeason === seasons.SUMMER;
+    const body = {
+      userEmail: request.defra.user.user_name,
+      regionId: selectedBillingRegion,
+      batchType: selectedBillingType,
+      isSummer
+    }
+
+  const stuff = await water.billingBatches.getBatchBillableYears(body)
+
+  if (stuff.unsentYears.length > 1) {
+    const path = getFinancialYearUrl(selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion);
+    //  TF
+    return h.postRedirectGet('', path);
+  } else {
+    return batching(request, h, billingRegionForm, refDate);
+  }
 };
 
 const getCreationErrorText = (error, batch) => {
@@ -174,7 +186,23 @@ const getBillingBatchCreationError = async (request, h, error) => {
 };
 
 const getBillingBatchFinancialYear = async (request, h, error) => {
-  const financialYears = getFinancialyears();
+  const isSummer = request.params.season === seasons.SUMMER;
+    const body = {
+      userEmail: request.defra.user.user_name,
+      regionId: request.params.region,
+      batchType: snakeCase(request.params.billingType),
+      isSummer
+    }
+  const stuff = await water.billingBatches.getBatchBillableYears(body)
+
+  const financialYears = stuff.unsentYears.map(year => {
+    return {
+      from: year - 1,
+      to: year
+    }
+  })
+
+  // const financialYears = [{ from: '2020', to: '2021', isCurrentYear: true }, { from: '2019', to: '2020' }];
 
   return h.view('nunjucks/form', {
     ...request.view,

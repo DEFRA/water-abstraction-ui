@@ -91,6 +91,10 @@ describe('Create SRoC Charge version workflow journey', () => {
         .should('contain', 'Check charge information');
     });
 
+    describe('Change charge version start date',()=>{
+        cy.get('a[href*="charge-information/start-date"]').click()
+    });
+
     // describe('Add a new charge element', () => {
     //   cy.get('[value="addElement"]').click();
     //   cy.get('.govuk-heading-l').contains('Select a purpose use');

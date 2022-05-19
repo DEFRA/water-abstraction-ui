@@ -194,11 +194,14 @@ const getBillingBatchFinancialYear = async (request, h, error) => {
       isSummer
     }
   const stuff = await water.billingBatches.getBatchBillableYears(body)
+  const summerStuff = getBatchFinancialYearEnding(body.batchType, isSummer, Date.now())
+  const winterStuff = getBatchFinancialYearEnding(body.batchType, false, Date.now())
 
-  const financialYears = stuff.unsentYears.map(year => {
+  const financialYears = stuff.unsentYears.map(unsentYear => {
     return {
-      from: year - 1,
-      to: year
+      from: unsentYear.financialYear - 1,
+      to: unsentYear.financialYear,
+      isCurrentYear: unsentYear.isCurrent
     }
   })
 

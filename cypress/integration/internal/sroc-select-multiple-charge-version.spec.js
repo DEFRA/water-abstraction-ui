@@ -1,5 +1,4 @@
 const { setUp, tearDown } = require('../../support/setup');
-const { checkInlineAndSummaryErrorMessage, validateRadioOptions, validateRadioOptionsNthChild1, checkNoErrorMessage } = require('../../support/validation');
 const LICENCE_NUMBER = 'AT/CURR/DAILY/01';
 
 describe('Create SRoC Charge version workflow journey', () => {
@@ -46,12 +45,9 @@ describe('Create SRoC Charge version workflow journey', () => {
     });
 
     describe('Select reason for new charge information', () => {
-
       cy.get('#reason-12').click();
       cy.get('form > .govuk-button').contains('Continue').click();
-
     });
-
 
     describe('user sets start date', () => {
       cy.get('.govuk-heading-l').contains('Set charge start date');
@@ -62,7 +58,6 @@ describe('Create SRoC Charge version workflow journey', () => {
       cy.get('form > .govuk-button').contains('Continue').click();
     });
 
-
     describe('user selects billing contact', () => {
       cy.get('.govuk-heading-l').contains('Who should the bills go to?');
       cy.get('#account').click();
@@ -70,17 +65,13 @@ describe('Create SRoC Charge version workflow journey', () => {
     });
 
     describe('Select an existing address for Big Farm Co Ltd', () => {
-
       cy.get('#selectedAddress [type="radio"]').first().click();
       cy.get('form > .govuk-button').contains('Continue').click();
-
     });
 
     describe('Do you need to add an FAO?', () => {
-
       cy.get('[id="faoRequired-2"][type="radio"]').click();
       cy.get('form > .govuk-button').contains('Continue').click();
-
     });
 
     describe('user checks billing account details', () => {
@@ -123,10 +114,7 @@ describe('Create SRoC Charge version workflow journey', () => {
       cy.get('.govuk-heading-l').contains('Select loss category');
       cy.get('[type="radio"]#loss-2').click();
       cy.get('button.govuk-button').click();
-
     });
-
-
 
     describe('Check charge information and add Charge Category', () => {
       cy.get('#main-content')
@@ -164,7 +152,6 @@ describe('Create SRoC Charge version workflow journey', () => {
         cy.get('form > .govuk-button').contains('Continue').click();
       });
 
-
       describe('Select the water availability', () => {
         cy.get('.govuk-heading-l').contains('Select the water availability');
         cy.get('[type="radio"]#isRestrictedSource').click();
@@ -177,20 +164,16 @@ describe('Create SRoC Charge version workflow journey', () => {
         cy.get('form > .govuk-button').contains('Continue').click();
       });
 
-
       describe('Do additional charges apply?', () => {
         cy.get('.govuk-heading-l').contains('Do additional charges apply?');
         cy.get('[type="radio"]#isAdditionalCharges').click();
         cy.get('form > .govuk-button').contains('Continue').click();
-
       });
-
 
       describe('Is abstraction from a supported source?', () => {
         cy.get('.govuk-heading-l').contains('Is abstraction from a supported source?');
         cy.get('[type="radio"]#isSupportedSource').click();
         cy.get('form > .govuk-button').contains('Continue').click();
-
       });
 
       describe('Select the name of the supported source', () => {
@@ -203,7 +186,6 @@ describe('Create SRoC Charge version workflow journey', () => {
         cy.get('.govuk-heading-l').contains('Is abstraction for the supply of public water?');
         cy.get('[type="radio"]#isSupplyPublicWater').click();
         cy.get('form > .govuk-button').contains('Continue').click();
-
       });
 
       describe('Do adjustments apply?', () => {
@@ -211,16 +193,13 @@ describe('Create SRoC Charge version workflow journey', () => {
         cy.get('[type="radio"]#isAdjustments-2').click();
         cy.get('form > .govuk-button').contains('Continue').click();
       });
-
     });
 
     describe('Both charge elements are visible on the charge summary screen', () => {
-
-      cy.get('.govuk-caption-m').eq(0).invoke("text").should("eq", "Charge element 1")
-      cy.get('.govuk-caption-m').eq(1).invoke("text").should("eq", "Charge element 2")
-      cy.get('.govuk-summary-list__value').should('contain', 'Potable Water Supply - Direct')
-      cy.get('.govuk-summary-list__value').should('contain', 'test element description')
+      cy.get('.govuk-caption-m').eq(0).invoke('text').should('eq', 'Charge element 1');
+      cy.get('.govuk-caption-m').eq(1).invoke('text').should('eq', 'Charge element 2');
+      cy.get('.govuk-summary-list__value').should('contain', 'Potable Water Supply - Direct');
+      cy.get('.govuk-summary-list__value').should('contain', 'test element description');
     });
-
   });
 });

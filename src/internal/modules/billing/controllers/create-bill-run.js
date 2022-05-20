@@ -146,7 +146,7 @@ const postBillingBatchRegion = async (request, h, refDate) => {
     const body = {
       userEmail: request.defra.user.user_name,
       regionId: selectedBillingRegion,
-      batchType: selectedBillingType,
+      currentFinancialYear: getBatchFinancialYearEnding(selectedBillingType, isSummer, Date.now()),
       isSummer
     }
 
@@ -186,22 +186,28 @@ const getBillingBatchCreationError = async (request, h, error) => {
 };
 
 const getBillingBatchFinancialYear = async (request, h, error) => {
+
+  const selectedBillingType = snakeCase(request.params.billingType)
+  
   const isSummer = request.params.season === seasons.SUMMER;
-    const body = {
+  
+  const currentFinancialYear = getBatchFinancialYearEnding(selectedBillingType, isSummer, Date.now())
+
+  const body = {
       userEmail: request.defra.user.user_name,
       regionId: request.params.region,
-      batchType: snakeCase(request.params.billingType),
+      currentFinancialYear,
       isSummer
     }
   const stuff = await water.billingBatches.getBatchBillableYears(body)
-  const summerStuff = getBatchFinancialYearEnding(body.batchType, isSummer, Date.now())
-  const winterStuff = getBatchFinancialYearEnding(body.batchType, false, Date.now())
+  // const summerStuff = getBatchFinancialYearEnding(body.batchType, isSummer, Date.now())
+  // const winterStuff = getBatchFinancialYearEnding(body.batchType, false, Date.now())
 
   const financialYears = stuff.unsentYears.map(unsentYear => {
     return {
-      from: unsentYear.financialYear - 1,
-      to: unsentYear.financialYear,
-      isCurrentYear: unsentYear.isCurrent
+      from: unsentYear - 1,
+      to: unsentYear,
+      isCurrentYear: unsentYear === currentFinancialYear
     }
   })
 

@@ -194,5 +194,20 @@ describe('Create SRoC Charge version workflow journey', () => {
             cy.get('.govuk-summary-list__value').should('contain', 'Potable Water Supply - Direct');
         });
 
+        describe('Submit charge version', () => {
+            cy.get('form > .govuk-button').contains('Confirm').click();
+            cy.get('.govuk-panel__title').should('contain', 'Charge information complete');
+            cy.get('a[href*="licences/"]').contains('View charge information').click();
+            cy.get('.govuk-heading-l').should('contain', 'Charge information');
+            //cy.get('[.govuk-table__cell]a[href*="/review"]').click(); 
+            cy.get('a:visible').contains('Review').click();
+            cy.get('.govuk-heading-l').eq(0).invoke('text').should('contains', 'Check charge information');
+            cy.get('[type="radio"]#reviewOutcome').click();
+            cy.get('form > .govuk-button').contains('Continue').click();
+            cy.get('a[href*="/view"]').eq(2).click();
+
+
+            
+        });
     });
 });

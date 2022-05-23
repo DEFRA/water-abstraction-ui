@@ -120,7 +120,6 @@ describe('Create SRoC Charge version workflow journey', () => {
 
     describe('user Assign charge reference', () => {
       cy.get('[value="addChargeCategory"]').click();
-      cy.get('button.govuk-button').click();
 
       describe('Enter a description for the charge reference', () => {
         cy.get('.govuk-heading-l').contains('Enter a description for the charge reference');

@@ -195,16 +195,28 @@ describe('Create SRoC Charge version workflow journey', () => {
     });
 
     describe('Submit charge version, review, approve, and view', () => {
-      cy.get('form > .govuk-button').contains('Confirm').click();
-      cy.get('.govuk-panel__title').should('contain', 'Charge information complete');
-      cy.get('a[href*="licences/"]').contains('View charge information').click();
-      cy.get('.govuk-heading-l').should('contain', 'Charge information');
-      cy.get('a:visible').contains('Review').click();
-      cy.get('.govuk-heading-l').eq(0).invoke('text').should('contains', 'Check charge information');
-      cy.get('[type="radio"]#reviewOutcome').click();
-      cy.get('form > .govuk-button').contains('Continue').click();
-      cy.get('.govuk-tabs').find('a:visible').contains('View').eq(0).click();
-      cy.get('.govuk-heading-l').should('contain', 'Charge information valid');
+      describe('Submit charge version', () => {
+        cy.get('form > .govuk-button').contains('Confirm').click();
+        cy.get('.govuk-panel__title').should('contain', 'Charge information complete');
+      });
+
+      describe('Review charge version', () => {
+        cy.get('a[href*="licences/"]').contains('View charge information').click();
+        cy.get('.govuk-heading-l').should('contain', 'Charge information');
+        cy.get('a:visible').contains('Review').click();
+        cy.get('.govuk-heading-l').eq(0).invoke('text').should('contains', 'Check charge information');
+      });
+
+      describe('Approve charge version', () => {
+        cy.get('[type="radio"]#reviewOutcome').click();
+        cy.get('form > .govuk-button').contains('Continue').click();
+        cy.get('.govuk-heading-l').should('contain', 'Charge information');
+      });
+
+      describe('', () => {
+        cy.get('.govuk-tabs').find('a:visible').contains('View').eq(0).click();
+        cy.get('.govuk-heading-l').should('contain', 'Charge information valid');
+      });
     });
   });
 });

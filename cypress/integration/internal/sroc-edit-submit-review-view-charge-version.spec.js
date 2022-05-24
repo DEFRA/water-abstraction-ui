@@ -190,7 +190,7 @@ describe('Create SRoC Charge version workflow journey', () => {
 
     describe('Charge category and the element are visible on the charge summary screen', () => {
       cy.get('.govuk-caption-l').eq(1).invoke('text').should('contains', 'Charge reference');
-      cy.get('.govuk-summary-list__value').should('contain', 'Potable Water Supply - Direct');
+      cy.get('.govuk-caption-m').should('contain', 'Charge element 1');
     });
 
     describe('Submit charge version, review, approve, and view', () => {

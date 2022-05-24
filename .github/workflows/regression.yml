@@ -100,7 +100,7 @@ jobs:
         run: |
           bash ./water-abstraction-orchestration/services/docker/migrate.sh
           sleep 2m
-#      Tests setup
+      #      Tests setup
       - name: Checkout water-abstraction-ui
         uses: actions/checkout@v2
         with:
@@ -109,7 +109,7 @@ jobs:
       - name: Node
         uses: actions/setup-node@v2
         with:
-          node-version: 12
+          node-version: 14
           cache: 'npm'
           cache-dependency-path: './water-abstraction-ui/package-lock.json'
       - name: nap

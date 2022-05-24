@@ -162,14 +162,14 @@ const mapChoices = (field, prop = 'checked') => {
     choice.divider
       ? { divider: choice.divider }
       : {
-          value: choice[keyProperty],
-          text: choice[labelProperty],
-          html: choice.html,
-          hint: {
-            text: choice.hint
-          },
-          [prop]: radioIsChecked(field, choice)
-        }
+        value: choice[keyProperty],
+        text: choice[labelProperty],
+        html: choice.html,
+        hint: {
+          text: choice.hint
+        },
+        [prop]: radioIsChecked(field, choice)
+      }
   ));
 };
 

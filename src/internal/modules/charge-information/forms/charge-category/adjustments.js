@@ -47,21 +47,21 @@ const form = request => {
         value: item.value,
         fields: item.hasFactor
           ? [
-              fields.text(`${item.value}Factor`,
-                {
-                  errors: {
-                    'number.base': { message: `The '${item.title}' factor must not have more than 15 decimal places.` },
-                    'number.greater': { message: `The '${item.title}' factor must be greater than 0` },
-                    'number.less': { message: `The '${item.title}' factor must be less than 1` },
-                    'number.precision': { message: `The '${item.title}' factor must not have more than 15 decimal places.` },
-                    'number.unsafe': { message: `The '${item.title}' factor must not have more than 15 decimal places.` }
-                  },
-                  hint: item.hint || '',
-                  mapper: 'numberMapper',
-                  label: 'Factor',
-                  controlClass: 'govuk-input--width-20'
-                }, data.adjustments[item.value])
-            ]
+            fields.text(`${item.value}Factor`,
+              {
+                errors: {
+                  'number.base': { message: `The '${item.title}' factor must not have more than 15 decimal places.` },
+                  'number.greater': { message: `The '${item.title}' factor must be greater than 0` },
+                  'number.less': { message: `The '${item.title}' factor must be less than 1` },
+                  'number.precision': { message: `The '${item.title}' factor must not have more than 15 decimal places.` },
+                  'number.unsafe': { message: `The '${item.title}' factor must not have more than 15 decimal places.` }
+                },
+                hint: item.hint || '',
+                mapper: 'numberMapper',
+                label: 'Factor',
+                controlClass: 'govuk-input--width-20'
+              }, data.adjustments[item.value])
+          ]
           : []
       };
     })

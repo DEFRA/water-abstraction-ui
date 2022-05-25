@@ -137,8 +137,8 @@ module.exports = {
       description: 'If a bill run has already been run for region, year and season, warn user and display short summary',
       plugins: {
         viewContext: {
-          pageTitle: 'Select the finacial year',
-          activeNavLink: ''
+          pageTitle: 'Select the financial year',
+          activeNavLink: 'bill-runs'
         }
       }
     }

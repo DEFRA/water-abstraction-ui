@@ -188,9 +188,9 @@ const getBillingBatchCreationError = async (request, h, error) => {
 const getBillingBatchFinancialYear = async (request, h, error) => {
 
   const selectedBillingType = snakeCase(request.params.billingType)
-  
+
   const isSummer = request.params.season === seasons.SUMMER;
-  
+
   const currentFinancialYear = getBatchFinancialYearEnding(selectedBillingType, isSummer, Date.now())
 
   const body = {
@@ -211,13 +211,18 @@ const getBillingBatchFinancialYear = async (request, h, error) => {
     }
   })
 
-  // const financialYears = [{ from: '2020', to: '2021', isCurrentYear: true }, { from: '2019', to: '2020' }];
+  return h.view(
+    'nunjucks/billing/batch-two-part-tariff-billable-years.njk',
+    {
+      ...request.view
+    }
+  );
 
-  return h.view('nunjucks/form', {
-    ...request.view,
-    back: '/billing/batch/region',
-    form: sessionForms.get(request, selectBillingFinancialYearsForm(request, financialYears))
-  });
+  // return h.view('nunjucks/form', {
+  //   ...request.view,
+  //   back: '/billing/batch/region',
+  //   form: sessionForms.get(request, selectBillingFinancialYearsForm(request, financialYears))
+  // });
 };
 
 const postBillingBatchFinancialYear = async (request, h, refDate) => {

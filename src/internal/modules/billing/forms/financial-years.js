@@ -25,10 +25,10 @@ const selectBillingFinancialYearsForm = (request, financialYears) => {
   form.fields.push(fields.radio('selectedFinancialyear', {
     errors: {
       'any.required': {
-        message: 'Select the financial year'
+        message: 'Select the financial year [required]'
       },
       'any.valid': {
-        message: 'Select the financial year you dummy'
+        message: 'Select the financial year [valid]'
       }
     },
     choices: mapChoices(financialYears)

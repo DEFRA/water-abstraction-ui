@@ -212,9 +212,10 @@ describe('Create SRoC Charge version workflow journey', () => {
         cy.get('.govuk-heading-l').should('contain', 'Charge information');
       });
 
-      describe('', () => {
+      describe('View the approved charged version', () => {
         cy.get('.govuk-tabs').find('a:visible').contains('View').eq(0).click();
         cy.get('.govuk-heading-l').should('contain', 'Charge information valid');
+        cy.get('.govuk-tag--green').should('contain', 'Approved');
       });
     });
   });

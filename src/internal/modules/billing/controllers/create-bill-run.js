@@ -186,11 +186,8 @@ const getBillingBatchCreationError = async (request, h, error) => {
 };
 
 const getBillingBatchFinancialYear = async (request, h, error) => {
-
   const selectedBillingType = snakeCase(request.params.billingType)
-
   const isSummer = request.params.season === seasons.SUMMER;
-
   const currentFinancialYear = getBatchFinancialYearEnding(selectedBillingType, isSummer, Date.now())
 
   const body = {
@@ -199,30 +196,26 @@ const getBillingBatchFinancialYear = async (request, h, error) => {
       currentFinancialYear,
       isSummer
     }
-  const stuff = await water.billingBatches.getBatchBillableYears(body)
-  // const summerStuff = getBatchFinancialYearEnding(body.batchType, isSummer, Date.now())
-  // const winterStuff = getBatchFinancialYearEnding(body.batchType, false, Date.now())
+  const billableYears = await water.billingBatches.getBatchBillableYears(body)
 
-  const financialYears = stuff.unsentYears.map(unsentYear => {
+  const items = billableYears.unsentYears.map(unsentYear => {
+    const hint = unsentYear === currentFinancialYear ? { text: "current year" } : null;
     return {
-      from: unsentYear - 1,
-      to: unsentYear,
-      isCurrentYear: unsentYear === currentFinancialYear
+      value: unsentYear,
+      text: `${unsentYear - 1} to ${unsentYear}`,
+      hint
     }
   })
 
   return h.view(
     'nunjucks/billing/batch-two-part-tariff-billable-years.njk',
     {
-      ...request.view
+      ...request.view,
+      back: `/billing/batch/region/${request.params.billingType}/${request.params.season}`,
+      formAction: '/billing/batch/financial-year',
+      items
     }
   );
-
-  // return h.view('nunjucks/form', {
-  //   ...request.view,
-  //   back: '/billing/batch/region',
-  //   form: sessionForms.get(request, selectBillingFinancialYearsForm(request, financialYears))
-  // });
 };
 
 const postBillingBatchFinancialYear = async (request, h, refDate) => {

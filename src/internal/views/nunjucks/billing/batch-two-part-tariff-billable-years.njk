@@ -1,7 +1,31 @@
 {% extends "./nunjucks/layout.njk" %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% block content %}
 
-  {{ title(pageTitle) }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ title(pageTitle) }}
 
+      {{ govukInsetText({
+        text: "There are previous returns cycles that have not yet been billed for this season and region"
+      }) }}
+
+      <form method="POST" action="{{ formAction }}" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrfToken }}" />
+
+        {{ govukRadios({
+          idPrefix: "select-financial-year",
+          name: "select-financial-year",
+          items: items
+        }) }}
+
+        {{ govukButton({
+          text: "Continue"
+        }) }}
+      </form>
+    </div>
+  </div>
 {% endblock %}

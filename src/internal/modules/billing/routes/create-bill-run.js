@@ -146,7 +146,7 @@ module.exports = {
 
   postBillingFinancialYear: {
     method: 'POST',
-    path: '/billing/batch/financial-year',
+    path: '/billing/batch/financial-year/{billingType}/{season}/{region}',
     handler: controller.postBillingBatchFinancialYear,
     config: {
       auth: { scope: allowedScopes },

@@ -1,13 +1,11 @@
 const { kebabCase, partialRight, snakeCase } = require('lodash');
 const urlJoin = require('url-join');
-const queryString = require('querystring');
 
 const forms = require('shared/lib/forms');
 const services = require('internal/lib/connectors/services');
 
 const { selectBillingTypeForm, billingTypeFormSchema } = require('../forms/billing-type');
 const { selectBillingRegionForm, billingRegionFormSchema } = require('../forms/billing-region');
-const { selectBillingFinancialYearsForm, billingFinancialYearsFormSchema } = require('../forms/financial-years');
 const { TWO_PART_TARIFF } = require('../lib/bill-run-types');
 const seasons = require('../lib/seasons');
 const routing = require('../lib/routing');
@@ -15,9 +13,8 @@ const sessionForms = require('shared/lib/session-forms');
 const { getBatchFinancialYearEnding } = require('../lib/batch-financial-year');
 const { water } = require('internal/lib/connectors/services');
 
-const batching = async (request, h, billingRegionForm, refDate) => {
+const batching = async (h, batch) => {
   try {
-    const batch = getBatchDetails(request, billingRegionForm, refDate);
     const { data } = await services.water.billingBatches.createBillingBatch(batch);
     const path = routing.getBillingBatchRoute(data.batch, { isBackEnabled: false });
     console.log('I am not ready to be watched!!');
@@ -91,7 +88,7 @@ const getBillingBatchRegion = async (request, h) => {
   });
 };
 
-const getBatchDetails = (request, billingRegionForm, refDate = Date.now()) => {
+const getBatchDetails = (request, billingRegionForm, refDate = null) => {
   const {
     selectedBillingType,
     selectedBillingRegion,
@@ -99,7 +96,14 @@ const getBatchDetails = (request, billingRegionForm, refDate = Date.now()) => {
   } = forms.getValues(billingRegionForm);
 
   const isSummer = selectedTwoPartTariffSeason === seasons.SUMMER;
-  const financialYearEnding = getBatchFinancialYearEnding(selectedBillingType, isSummer, refDate);
+
+  let financialYearEnding;
+  if (refDate) {
+    financialYearEnding = refDate;
+  } else {
+    financialYearEnding = getBatchFinancialYearEnding(selectedBillingType, isSummer, Date.now());
+  }
+  // const financialYearEnding = getBatchFinancialYearEnding(selectedBillingType, isSummer, refDate);
 
   const batch = {
     userEmail: request.defra.user.user_name,
@@ -139,25 +143,27 @@ const postBillingBatchRegion = async (request, h, refDate) => {
   }
 
   if (selectedBillingType !== TWO_PART_TARIFF) {
-    return batching(request, h, billingRegionForm, refDate);
+    const batch = getBatchDetails(request, billingRegionForm);
+    return batching(h, batch);
   }
 
   const isSummer = selectedTwoPartTariffSeason === seasons.SUMMER;
-    const body = {
-      userEmail: request.defra.user.user_name,
-      regionId: selectedBillingRegion,
-      currentFinancialYear: getBatchFinancialYearEnding(selectedBillingType, isSummer, Date.now()),
-      isSummer
-    }
+  const body = {
+    userEmail: request.defra.user.user_name,
+    regionId: selectedBillingRegion,
+    currentFinancialYear: getBatchFinancialYearEnding(selectedBillingType, isSummer, Date.now()),
+    isSummer
+  };
 
-  const stuff = await water.billingBatches.getBatchBillableYears(body)
+  const billableYears = await water.billingBatches.getBatchBillableYears(body);
 
-  if (stuff.unsentYears.length > 1) {
+  if (billableYears.unsentYears.length > 1) {
     const path = getFinancialYearUrl(selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion);
     //  TF
     return h.postRedirectGet('', path);
   } else {
-    return batching(request, h, billingRegionForm, refDate);
+    const batch = getBatchDetails(request, billingRegionForm);
+    return batching(h, batch);
   }
 };
 
@@ -186,58 +192,66 @@ const getBillingBatchCreationError = async (request, h, error) => {
 };
 
 const getBillingBatchFinancialYear = async (request, h, error) => {
-  const selectedBillingType = snakeCase(request.params.billingType)
+  const selectedBillingType = snakeCase(request.params.billingType);
   const isSummer = request.params.season === seasons.SUMMER;
-  const currentFinancialYear = getBatchFinancialYearEnding(selectedBillingType, isSummer, Date.now())
+  const currentFinancialYear = getBatchFinancialYearEnding(selectedBillingType, isSummer, Date.now());
 
   const body = {
-      userEmail: request.defra.user.user_name,
-      regionId: request.params.region,
-      currentFinancialYear,
-      isSummer
-    }
-  const billableYears = await water.billingBatches.getBatchBillableYears(body)
+    userEmail: request.defra.user.user_name,
+    regionId: request.params.region,
+    currentFinancialYear,
+    isSummer
+  };
+  const billableYears = await water.billingBatches.getBatchBillableYears(body);
 
   const items = billableYears.unsentYears.map(unsentYear => {
-    const hint = unsentYear === currentFinancialYear ? { text: "current year" } : null;
+    const hint = unsentYear === currentFinancialYear ? { text: 'current year' } : null;
     return {
       value: unsentYear,
       text: `${unsentYear - 1} to ${unsentYear}`,
       hint
-    }
-  })
+    };
+  });
+
+  const viewError = {};
+  if (request.query.error) {
+    viewError.error = true;
+    viewError.errorList = [
+      {
+        text: 'You need to select the financial year',
+        href: '#select-financial-year'
+      }
+    ];
+    viewError.errorMessage = {
+      text: 'You need to select the financial year'
+    };
+  }
 
   return h.view(
     'nunjucks/billing/batch-two-part-tariff-billable-years.njk',
     {
       ...request.view,
       back: `/billing/batch/region/${request.params.billingType}/${request.params.season}`,
-      formAction: '/billing/batch/financial-year',
       items,
-      error: true,
-      errorList: [
-        {
-          text: "You need to select the financial year",
-          href: "#select-financial-year"
-        }
-      ]
+      ...viewError
     }
   );
 };
 
-const postBillingBatchFinancialYear = async (request, h, refDate) => {
-  const financialYears = getFinancialyears();
-  const schema = billingFinancialYearsFormSchema(financialYears);
-  const financialYearsForm = forms.handleRequest(selectBillingFinancialYearsForm(request, financialYears), request, schema);
-
-  const { selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion } = forms.getValues(financialYearsForm);
-
-  if (!financialYearsForm.isValid) {
-    const path = getFinancialYearUrl(selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion);
-    return h.postRedirectGet(financialYearsForm, path);
+const postBillingBatchFinancialYear = async (request, h) => {
+  if (!request.payload['select-financial-year']) {
+    return h.redirect(`/billing/batch/financial-year/${request.params.billingType}/${request.params.season}/${request.params.region}?error=true`);
   }
 
-  console.log('FIN', request.payload);
+  const batch = {
+    userEmail: request.defra.user.user_name,
+    regionId: request.params.region,
+    batchType: snakeCase(request.params.billingType),
+    financialYearEnding: request.payload['select-financial-year'],
+    isSummer: request.params.season === seasons.SUMMER
+  };
+
+  return batching(h, batch);
 };
 /**
  * If a bill run for the region exists, then display a basic summary page

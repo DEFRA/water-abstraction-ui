@@ -2,8 +2,22 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
 {% block content %}
+
+  {% if error %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {{
+          govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: errorList
+          })
+        }}
+      </div>
+    </div>
+  {% endif %}
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -19,7 +33,10 @@
         {{ govukRadios({
           idPrefix: "select-financial-year",
           name: "select-financial-year",
-          items: items
+          items: items,
+          errorMessage: {
+            text: "You need to select the financial year"
+          }
         }) }}
 
         {{ govukButton({

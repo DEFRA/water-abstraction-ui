@@ -213,7 +213,14 @@ const getBillingBatchFinancialYear = async (request, h, error) => {
       ...request.view,
       back: `/billing/batch/region/${request.params.billingType}/${request.params.season}`,
       formAction: '/billing/batch/financial-year',
-      items
+      items,
+      error: true,
+      errorList: [
+        {
+          text: "You need to select the financial year",
+          href: "#select-financial-year"
+        }
+      ]
     }
   );
 };

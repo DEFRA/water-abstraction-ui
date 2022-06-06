@@ -116,7 +116,7 @@ const getBillingBatchFinancialYear = async (request, h, error) => {
       }
     ];
     viewError.errorMessage = {
-      text: 'You need to select the financial year'
+      text: viewError.errorList[0].text
     };
   }
 
@@ -224,7 +224,7 @@ const _batchingDetails = (request, billingRegionForm, refDate = null) => {
     regionId: selectedBillingRegion,
     batchType: selectedBillingType,
     financialYearEnding,
-    isSummer: selectedTwoPartTariffSeason === seasons.SUMMER
+    isSummer
   };
   return batch;
 };
@@ -235,7 +235,7 @@ async function _creationError (request, h, error) {
     ...request.view,
     ..._creationErrorText(error, batch),
     back: '/billing/batch/region',
-    batch: batch
+    batch
   });
 };
 

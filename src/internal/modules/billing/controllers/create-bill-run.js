@@ -81,7 +81,7 @@ const postBillingBatchRegion = async (request, h, refDate) => {
   }
 
   if (selectedBillingType !== TWO_PART_TARIFF) {
-    const batch = _batchDetails(request, billingRegionForm);
+    const batch = _batchingDetails(request, billingRegionForm);
     return _batching(h, batch);
   }
 
@@ -100,7 +100,7 @@ const postBillingBatchRegion = async (request, h, refDate) => {
     //  TF
     return h.postRedirectGet('', path);
   } else {
-    const batch = _batchDetails(request, billingRegionForm);
+    const batch = _batchingDetails(request, billingRegionForm);
     return _batching(h, batch);
   }
 };
@@ -168,15 +168,20 @@ const postBillingBatchFinancialYear = async (request, h) => {
   return _batching(h, batch);
 };
 
-const getBillingBatchCreationError = async (request, h, error) => {
-  const { batch } = request.pre;
-  return h.view('nunjucks/billing/batch-creation-error', {
-    ...request.view,
-    ..._creationErrorText(error, batch),
-    back: '/billing/batch/region',
-    batch: batch
-  });
-};
+/**
+ * If a bill run for the region exists, then display a basic summary page
+ * @param {*} request
+ * @param {*} h
+ */
+ const getBillingBatchExists = partialRight(_creationError, 'liveBatchExists');
+
+ /**
+  * If the bill run type for the region, year and season has already been run, then display a basic summary page
+  *    Annual and TPT bill runs can only be run once per region, financial year and season
+  * @param {*} request
+  * @param {*} h
+  */
+ const getBillingBatchDuplicate = partialRight(_creationError, 'duplicateSentBatch');
 
 const _batching = async (h, batch) => {
   try {
@@ -186,21 +191,13 @@ const _batching = async (h, batch) => {
     return h.redirect(path);
   } catch (err) {
     if (err.statusCode === 409) {
-      return h.redirect(_batchCreationErrorRedirectPath(err));
+      return h.redirect(_creationErrorRedirectPath(err));
     }
     throw err;
   }
 };
 
-const _batchCreationErrorRedirectPath = err => {
-  const { batch } = err.error;
-  if (batch.status === 'sent') {
-    return `/billing/batch/${batch.id}/duplicate`;
-  }
-  return `/billing/batch/${batch.id}/exists`;
-};
-
-const _batchDetails = (request, billingRegionForm, refDate = null) => {
+const _batchingDetails = (request, billingRegionForm, refDate = null) => {
   const {
     selectedBillingType,
     selectedBillingRegion,
@@ -225,6 +222,24 @@ const _batchDetails = (request, billingRegionForm, refDate = null) => {
     isSummer: selectedTwoPartTariffSeason === seasons.SUMMER
   };
   return batch;
+};
+
+const _creationError = async (request, h, error) => {
+  const { batch } = request.pre;
+  return h.view('nunjucks/billing/batch-creation-error', {
+    ...request.view,
+    ..._creationErrorText(error, batch),
+    back: '/billing/batch/region',
+    batch: batch
+  });
+};
+
+const _creationErrorRedirectPath = err => {
+  const { batch } = err.error;
+  if (batch.status === 'sent') {
+    return `/billing/batch/${batch.id}/duplicate`;
+  }
+  return `/billing/batch/${batch.id}/exists`;
 };
 
 const _creationErrorText = (error, batch) => {
@@ -253,21 +268,6 @@ const _regionUrl = (selectedBillingType, selectedTwoPartTariffSeason) => urlJoin
   kebabCase(selectedBillingType),
   kebabCase(selectedTwoPartTariffSeason)
 );
-
-/**
- * If a bill run for the region exists, then display a basic summary page
- * @param {*} request
- * @param {*} h
- */
-const getBillingBatchExists = partialRight(getBillingBatchCreationError, 'liveBatchExists');
-
-/**
- * If the bill run type for the region, year and season has already been run, then display a basic summary page
- *    Annual and TPT bill runs can only be run once per region, financial year and season
- * @param {*} request
- * @param {*} h
- */
-const getBillingBatchDuplicate = partialRight(getBillingBatchCreationError, 'duplicateSentBatch');
 
 exports.getBillingBatchType = getBillingBatchType;
 exports.postBillingBatchType = postBillingBatchType;

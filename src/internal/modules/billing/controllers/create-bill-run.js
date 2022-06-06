@@ -170,18 +170,24 @@ const postBillingBatchFinancialYear = async (request, h) => {
 
 /**
  * If a bill run for the region exists, then display a basic summary page
+ *
+ * This is calling a shared function (`_creationError`) and using lodash's `partialRight()` to forward on the arg
+ * 'liveBatchExists' to it.
+ *
  * @param {*} request
  * @param {*} h
  */
- const getBillingBatchExists = partialRight(_creationError, 'liveBatchExists');
+const getBillingBatchExists = partialRight(_creationError, 'liveBatchExists');
 
- /**
+/**
   * If the bill run type for the region, year and season has already been run, then display a basic summary page
-  *    Annual and TPT bill runs can only be run once per region, financial year and season
+  *
+  * This is calling a shared function (`_creationError`) and using lodash's `partialRight()` to forward on the arg
+  * 'duplicateSentBatch' to it.
   * @param {*} request
   * @param {*} h
   */
- const getBillingBatchDuplicate = partialRight(_creationError, 'duplicateSentBatch');
+const getBillingBatchDuplicate = partialRight(_creationError, 'duplicateSentBatch');
 
 const _batching = async (h, batch) => {
   try {
@@ -191,7 +197,7 @@ const _batching = async (h, batch) => {
     return h.redirect(path);
   } catch (err) {
     if (err.statusCode === 409) {
-      return h.redirect(_creationErrorRedirectPath(err));
+      return h.redirect(_creationErrorRedirectUrl(err));
     }
     throw err;
   }
@@ -234,7 +240,7 @@ const _creationError = async (request, h, error) => {
   });
 };
 
-const _creationErrorRedirectPath = err => {
+const _creationErrorRedirectUrl = err => {
   const { batch } = err.error;
   if (batch.status === 'sent') {
     return `/billing/batch/${batch.id}/duplicate`;

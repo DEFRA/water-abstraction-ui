@@ -85,17 +85,11 @@ const postBillingBatchRegion = async (request, h, refDate) => {
     return _batching(h, batch);
   }
 
-  const isSummer = selectedTwoPartTariffSeason === seasons.SUMMER;
-  const body = {
-    userEmail: request.defra.user.user_name,
-    regionId: selectedBillingRegion,
-    currentFinancialYear: getBatchFinancialYearEnding(selectedBillingType, isSummer, Date.now()),
-    isSummer
-  };
+  const billableYears = await _batchBillableYears(
+    selectedTwoPartTariffSeason, selectedBillingType, request.defra.user.user_name, selectedBillingRegion
+  );
 
-  const billableYears = await water.billingBatches.getBatchBillableYears(body);
-
-  if (billableYears.unsentYears.length > 1) {
+  if (billableYears.length > 1) {
     const path = _financialYearUrl(selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion);
     //  TF
     return h.postRedirectGet('', path);
@@ -107,25 +101,10 @@ const postBillingBatchRegion = async (request, h, refDate) => {
 
 const getBillingBatchFinancialYear = async (request, h, error) => {
   const selectedBillingType = snakeCase(request.params.billingType);
-  const isSummer = request.params.season === seasons.SUMMER;
-  const currentFinancialYear = getBatchFinancialYearEnding(selectedBillingType, isSummer, Date.now());
 
-  const body = {
-    userEmail: request.defra.user.user_name,
-    regionId: request.params.region,
-    currentFinancialYear,
-    isSummer
-  };
-  const billableYears = await water.billingBatches.getBatchBillableYears(body);
-
-  const items = billableYears.unsentYears.map(unsentYear => {
-    const hint = unsentYear === currentFinancialYear ? { text: 'current year' } : null;
-    return {
-      value: unsentYear,
-      text: `${unsentYear - 1} to ${unsentYear}`,
-      hint
-    };
-  });
+  const items = await _batchBillableYears(
+    request.params.season, selectedBillingType, request.defra.user.user_name, request.params.region
+  );
 
   const viewError = {};
   if (request.query.error) {
@@ -189,6 +168,27 @@ const getBillingBatchExists = partialRight(_creationError, 'liveBatchExists');
   */
 const getBillingBatchDuplicate = partialRight(_creationError, 'duplicateSentBatch');
 
+const _batchBillableYears = async (season, billingType, userEmail, regionId) => {
+  const isSummer = season === seasons.SUMMER;
+  const currentFinancialYear = getBatchFinancialYearEnding(billingType, isSummer, Date.now());
+  const body = {
+    userEmail,
+    regionId,
+    currentFinancialYear,
+    isSummer
+  };
+  const billableYears = await water.billingBatches.getBatchBillableYears(body);
+  const items = billableYears.unsentYears.map(unsentYear => {
+    const hint = unsentYear === currentFinancialYear ? { text: 'current year' } : null;
+    return {
+      value: unsentYear,
+      text: `${unsentYear - 1} to ${unsentYear}`,
+      hint
+    };
+  });
+  return items;
+};
+
 const _batching = async (h, batch) => {
   try {
     const { data } = await services.water.billingBatches.createBillingBatch(batch);
@@ -218,7 +218,6 @@ const _batchingDetails = (request, billingRegionForm, refDate = null) => {
   } else {
     financialYearEnding = getBatchFinancialYearEnding(selectedBillingType, isSummer, Date.now());
   }
-  // const financialYearEnding = getBatchFinancialYearEnding(selectedBillingType, isSummer, refDate);
 
   const batch = {
     userEmail: request.defra.user.user_name,
@@ -230,7 +229,7 @@ const _batchingDetails = (request, billingRegionForm, refDate = null) => {
   return batch;
 };
 
-const _creationError = async (request, h, error) => {
+async function _creationError (request, h, error) {
   const { batch } = request.pre;
   return h.view('nunjucks/billing/batch-creation-error', {
     ...request.view,

@@ -13,34 +13,6 @@ const sessionForms = require('shared/lib/session-forms');
 const { getBatchFinancialYearEnding } = require('../lib/batch-financial-year');
 const { water } = require('internal/lib/connectors/services');
 
-const batching = async (h, batch) => {
-  try {
-    const { data } = await services.water.billingBatches.createBillingBatch(batch);
-    const path = routing.getBillingBatchRoute(data.batch, { isBackEnabled: false });
-    console.log('I am not ready to be watched!!');
-    return h.redirect(path);
-  } catch (err) {
-    if (err.statusCode === 409) {
-      return h.redirect(getBatchCreationErrorRedirectPath(err));
-    }
-    throw err;
-  }
-};
-
-const getFinancialYearUrl = (selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion) => urlJoin(
-  '/billing/batch/financial-year',
-  kebabCase(selectedBillingType),
-  kebabCase(selectedTwoPartTariffSeason),
-  selectedBillingRegion
-);
-
-// end sorting hat
-
-const getRegionUrl = (selectedBillingType, selectedTwoPartTariffSeason) => urlJoin(
-  '/billing/batch/region',
-  kebabCase(selectedBillingType),
-  kebabCase(selectedTwoPartTariffSeason)
-);
 /**
  * Step 1a of create billing batch flow - display form to select type
  * i.e. Annual, Supplementary, Two-Part Tariff
@@ -54,6 +26,7 @@ const getBillingBatchType = async (request, h) => {
     form: sessionForms.get(request, selectBillingTypeForm(request))
   });
 };
+
 /**
  * Step 1b - receive posted step 1a data
  * @param {*} request
@@ -64,7 +37,7 @@ const postBillingBatchType = async (request, h) => {
 
   if (billingTypeForm.isValid) {
     const { selectedBillingType, twoPartTariffSeason } = forms.getValues(billingTypeForm);
-    return h.redirect(getRegionUrl(
+    return h.redirect(_regionUrl(
       selectedBillingType,
       selectedBillingType === TWO_PART_TARIFF ? twoPartTariffSeason : ''
     ));
@@ -88,41 +61,6 @@ const getBillingBatchRegion = async (request, h) => {
   });
 };
 
-const getBatchDetails = (request, billingRegionForm, refDate = null) => {
-  const {
-    selectedBillingType,
-    selectedBillingRegion,
-    selectedTwoPartTariffSeason
-  } = forms.getValues(billingRegionForm);
-
-  const isSummer = selectedTwoPartTariffSeason === seasons.SUMMER;
-
-  let financialYearEnding;
-  if (refDate) {
-    financialYearEnding = refDate;
-  } else {
-    financialYearEnding = getBatchFinancialYearEnding(selectedBillingType, isSummer, Date.now());
-  }
-  // const financialYearEnding = getBatchFinancialYearEnding(selectedBillingType, isSummer, refDate);
-
-  const batch = {
-    userEmail: request.defra.user.user_name,
-    regionId: selectedBillingRegion,
-    batchType: selectedBillingType,
-    financialYearEnding,
-    isSummer: selectedTwoPartTariffSeason === seasons.SUMMER
-  };
-  return batch;
-};
-
-const getBatchCreationErrorRedirectPath = err => {
-  const { batch } = err.error;
-  if (batch.status === 'sent') {
-    return `/billing/batch/${batch.id}/duplicate`;
-  }
-  return `/billing/batch/${batch.id}/exists`;
-};
-
 /**
  * Step 2b received step 2a posted data
  * try to create a new billing run batch
@@ -138,13 +76,13 @@ const postBillingBatchRegion = async (request, h, refDate) => {
   const { selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion } = forms.getValues(billingRegionForm);
 
   if (!billingRegionForm.isValid) {
-    const path = getRegionUrl(selectedBillingType, selectedTwoPartTariffSeason);
+    const path = _regionUrl(selectedBillingType, selectedTwoPartTariffSeason);
     return h.postRedirectGet(billingRegionForm, path);
   }
 
   if (selectedBillingType !== TWO_PART_TARIFF) {
-    const batch = getBatchDetails(request, billingRegionForm);
-    return batching(h, batch);
+    const batch = _batchDetails(request, billingRegionForm);
+    return _batching(h, batch);
   }
 
   const isSummer = selectedTwoPartTariffSeason === seasons.SUMMER;
@@ -158,37 +96,13 @@ const postBillingBatchRegion = async (request, h, refDate) => {
   const billableYears = await water.billingBatches.getBatchBillableYears(body);
 
   if (billableYears.unsentYears.length > 1) {
-    const path = getFinancialYearUrl(selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion);
+    const path = _financialYearUrl(selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion);
     //  TF
     return h.postRedirectGet('', path);
   } else {
-    const batch = getBatchDetails(request, billingRegionForm);
-    return batching(h, batch);
+    const batch = _batchDetails(request, billingRegionForm);
+    return _batching(h, batch);
   }
-};
-
-const getCreationErrorText = (error, batch) => {
-  const creationErrorText = {
-    liveBatchExists: {
-      pageTitle: 'There is already a bill run in progress for this region',
-      warningMessage: 'You need to confirm or cancel this bill run before you can create a new one'
-    },
-    duplicateSentBatch: {
-      pageTitle: `This bill run type has already been processed for ${batch.endYear.yearEnding}`,
-      warningMessage: 'You can only have one of this bill run type for a region in a financial year'
-    }
-  };
-  return creationErrorText[error];
-};
-
-const getBillingBatchCreationError = async (request, h, error) => {
-  const { batch } = request.pre;
-  return h.view('nunjucks/billing/batch-creation-error', {
-    ...request.view,
-    ...getCreationErrorText(error, batch),
-    back: '/billing/batch/region',
-    batch: batch
-  });
 };
 
 const getBillingBatchFinancialYear = async (request, h, error) => {
@@ -251,8 +165,95 @@ const postBillingBatchFinancialYear = async (request, h) => {
     isSummer: request.params.season === seasons.SUMMER
   };
 
-  return batching(h, batch);
+  return _batching(h, batch);
 };
+
+const getBillingBatchCreationError = async (request, h, error) => {
+  const { batch } = request.pre;
+  return h.view('nunjucks/billing/batch-creation-error', {
+    ...request.view,
+    ..._creationErrorText(error, batch),
+    back: '/billing/batch/region',
+    batch: batch
+  });
+};
+
+const _batching = async (h, batch) => {
+  try {
+    const { data } = await services.water.billingBatches.createBillingBatch(batch);
+    const path = routing.getBillingBatchRoute(data.batch, { isBackEnabled: false });
+    console.log('I am not ready to be watched!!');
+    return h.redirect(path);
+  } catch (err) {
+    if (err.statusCode === 409) {
+      return h.redirect(_batchCreationErrorRedirectPath(err));
+    }
+    throw err;
+  }
+};
+
+const _batchCreationErrorRedirectPath = err => {
+  const { batch } = err.error;
+  if (batch.status === 'sent') {
+    return `/billing/batch/${batch.id}/duplicate`;
+  }
+  return `/billing/batch/${batch.id}/exists`;
+};
+
+const _batchDetails = (request, billingRegionForm, refDate = null) => {
+  const {
+    selectedBillingType,
+    selectedBillingRegion,
+    selectedTwoPartTariffSeason
+  } = forms.getValues(billingRegionForm);
+
+  const isSummer = selectedTwoPartTariffSeason === seasons.SUMMER;
+
+  let financialYearEnding;
+  if (refDate) {
+    financialYearEnding = refDate;
+  } else {
+    financialYearEnding = getBatchFinancialYearEnding(selectedBillingType, isSummer, Date.now());
+  }
+  // const financialYearEnding = getBatchFinancialYearEnding(selectedBillingType, isSummer, refDate);
+
+  const batch = {
+    userEmail: request.defra.user.user_name,
+    regionId: selectedBillingRegion,
+    batchType: selectedBillingType,
+    financialYearEnding,
+    isSummer: selectedTwoPartTariffSeason === seasons.SUMMER
+  };
+  return batch;
+};
+
+const _creationErrorText = (error, batch) => {
+  const creationErrorText = {
+    liveBatchExists: {
+      pageTitle: 'There is already a bill run in progress for this region',
+      warningMessage: 'You need to confirm or cancel this bill run before you can create a new one'
+    },
+    duplicateSentBatch: {
+      pageTitle: `This bill run type has already been processed for ${batch.endYear.yearEnding}`,
+      warningMessage: 'You can only have one of this bill run type for a region in a financial year'
+    }
+  };
+  return creationErrorText[error];
+};
+
+const _financialYearUrl = (selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion) => urlJoin(
+  '/billing/batch/financial-year',
+  kebabCase(selectedBillingType),
+  kebabCase(selectedTwoPartTariffSeason),
+  selectedBillingRegion
+);
+
+const _regionUrl = (selectedBillingType, selectedTwoPartTariffSeason) => urlJoin(
+  '/billing/batch/region',
+  kebabCase(selectedBillingType),
+  kebabCase(selectedTwoPartTariffSeason)
+);
+
 /**
  * If a bill run for the region exists, then display a basic summary page
  * @param {*} request

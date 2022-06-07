@@ -106,19 +106,7 @@ const getBillingBatchFinancialYear = async (request, h, error) => {
     request.params.season, selectedBillingType, request.defra.user.user_name, request.params.region
   );
 
-  const viewError = {};
-  if (request.query.error) {
-    viewError.error = true;
-    viewError.errorList = [
-      {
-        text: 'You need to select the financial year',
-        href: '#select-financial-year'
-      }
-    ];
-    viewError.errorMessage = {
-      text: viewError.errorList[0].text
-    };
-  }
+  const viewError = request.yar.get('error', true);
 
   return h.view(
     'nunjucks/billing/batch-two-part-tariff-billable-years.njk',
@@ -133,7 +121,19 @@ const getBillingBatchFinancialYear = async (request, h, error) => {
 
 const postBillingBatchFinancialYear = async (request, h) => {
   if (!request.payload['select-financial-year']) {
-    return h.redirect(`/billing/batch/financial-year/${request.params.billingType}/${request.params.season}/${request.params.region}?error=true`);
+    const viewError = {};
+    viewError.error = true;
+    viewError.errorList = [
+      {
+        text: 'You need to select the financial year',
+        href: '#select-financial-year'
+      }
+    ];
+    viewError.errorMessage = {
+      text: viewError.errorList[0].text
+    };
+    request.yar.set('error', viewError);
+    return h.redirect(`/billing/batch/financial-year/${request.params.billingType}/${request.params.season}/${request.params.region}`);
   }
 
   const batch = {

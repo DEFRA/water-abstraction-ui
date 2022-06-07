@@ -43,6 +43,14 @@ const billingRegions = {
   ]
 };
 
+const batchBillableYears = {
+  unsentYears: [
+    2022,
+    2021,
+    2020
+  ]
+};
+
 const createBatchData = () => ({
   id: 'test-batch-id',
   dateCreated: '2000-01-01T00:00:00.000Z',
@@ -149,6 +157,7 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
     };
 
     sandbox.stub(services.water.regions, 'getRegions').resolves(billingRegions);
+    sandbox.stub(services.water.billingBatches, 'getBatchBillableYears').resolves(batchBillableYears);
     sandbox.stub(services.water.billingBatches, 'getBatch').resolves(batchData);
     sandbox.stub(services.water.billingBatches, 'getBatchInvoice').resolves(invoice);
     sandbox.stub(services.water.billingBatches, 'getBatchInvoices').resolves(batchInvoicesResult);
@@ -492,6 +501,69 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
     test('adds the batch from the pre handler to the view context', async () => {
       const [, context] = h.view.lastCall.args;
       expect(context.batch.id).to.equal('test-batch-id');
+    });
+  });
+
+  experiment.only('.getBillingBatchFinancialYear', () => {
+    beforeEach(async () => {
+      request.params.billingType = 'two-part-tariff';
+      request.params.season = 'summer';
+    });
+    experiment('when the form is valid', () => {
+      beforeEach(async () => {
+        await controller.getBillingBatchFinancialYear(request, h);
+      });
+
+      test('the expected view template is used', async () => {
+        const [templateName] = h.view.lastCall.args;
+        expect(templateName).to.equal('nunjucks/billing/batch-two-part-tariff-billable-years.njk');
+      });
+
+      test('view context is assigned a back link path for type', async () => {
+        const [, view] = h.view.lastCall.args;
+        expect(view.back).to.equal('/billing/batch/region/two-part-tariff/summer');
+      });
+
+      experiment('the view model is defined with', () => {
+        let view;
+
+        beforeEach(async () => {
+          ([, view] = h.view.lastCall.args);
+        });
+
+        test('3 radio buttons representing billable years', async () => {
+          expect(view.items).to.be.an.array().length(3);
+        });
+
+        test('no error details', async () => {
+          expect(view.error).to.be.undefined();
+          expect(view.errorList).to.be.undefined();
+          expect(view.errorMessage).to.be.undefined();
+        });
+      });
+    });
+    experiment('when the form is not valid', () => {
+      let view;
+
+      beforeEach(async () => {
+        request.yar.get = sandbox.stub().returns({
+          error: true,
+          errorList: [],
+          errorMessage: {}
+        });
+        await controller.getBillingBatchFinancialYear(request, h);
+        ([, view] = h.view.lastCall.args);
+      });
+
+      test('3 radio buttons representing billable years', async () => {
+        expect(view.items).to.be.an.array().length(3);
+      });
+
+      test('error details are displayed', async () => {
+        expect(view.error).not.to.be.undefined();
+        expect(view.errorList).not.to.be.undefined();
+        expect(view.errorMessage).not.to.be.undefined();
+      });
     });
   });
 });

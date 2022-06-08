@@ -294,4 +294,28 @@ const createSrocChargeVersion = (licenceRef) => {
   });
 };
 
+const approveSrocChargeVersion = () => {
+  describe('Submit charge version, review, approve, and view', () => {
+    describe('Review charge version', () => {
+      cy.get('a[href*="licences/"]').contains('View charge information').click();
+      cy.get('.govuk-heading-l').should('contain', 'Charge information');
+      cy.get('a:visible').contains('Review').click();
+      cy.get('.govuk-heading-l').eq(0).invoke('text').should('contains', 'Check charge information');
+    });
+
+    describe('Approve charge version', () => {
+      cy.get('[type="radio"]#reviewOutcome').click();
+      cy.get('form > .govuk-button').contains('Continue').click();
+      cy.get('.govuk-heading-l').should('contain', 'Charge information');
+    });
+
+    describe('View the approved charged version', () => {
+      cy.get('.govuk-tabs').find('a:visible').contains('View').eq(0).click();
+      cy.get('.govuk-heading-l').should('contain', 'Charge information valid');
+      cy.get('.govuk-tag--green').should('contain', 'Approved');
+    });
+  });
+};
+
 exports.createSrocChargeVersion = createSrocChargeVersion;
+exports.approveSrocChargeVersion = approveSrocChargeVersion;

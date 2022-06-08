@@ -2,7 +2,6 @@ const { setUp, tearDown } = require('../../support/setup');
 const {
   login,
   viewBillRuns,
-  selectFirstBillRun,
   createBillRun,
   confirmBillRun,
   setTwoPartTariffBillingVolume,

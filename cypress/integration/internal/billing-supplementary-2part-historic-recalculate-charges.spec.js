@@ -14,17 +14,6 @@ const {
 } = require('../../support/common');
 
 const recalculateChargesTest = (customVolume = 25) => {
-  // describe('user enters the create a new annual bill flow', () => {
-  //   const type = 'annual';
-  //   viewBillRuns();
-  //   cy.get('#main-content > a.govuk-button').contains('Create a bill run').click();
-  //   createBillRun(type);
-  //   confirmBillRun(type);
-  //   viewBillRuns();
-  //   selectFirstBillRun();
-  //   cy.get('h2').contains('£550.20');
-  // });
-
   describe('user enters the create a new two-part tariff bill flow', () => {
     const type = 'two-part tariff';
     viewBillRuns();

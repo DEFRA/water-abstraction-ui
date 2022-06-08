@@ -15,7 +15,7 @@ experiment('abstractionPeriod Nunjucks filter', () => {
   });
 
   test('If should return undefined if null argument', async () => {
-    expect(abstractionPeriod(null)).to.be.undefined();
+    expect(abstractionPeriod(null)).to.equal('abstraction period has not been set');
   });
 
   test('If should throw an error if invalid date', async () => {

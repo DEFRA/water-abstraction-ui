@@ -40,14 +40,6 @@ const billingRegions = {
   ]
 };
 
-const batchBillableYears = {
-  unsentYears: [
-    2022,
-    2021,
-    2020
-  ]
-};
-
 const createBatchData = () => ({
   id: 'test-batch-id',
   dateCreated: '2000-01-01T00:00:00.000Z',
@@ -154,7 +146,6 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
     };
 
     sandbox.stub(services.water.regions, 'getRegions').resolves(billingRegions);
-    sandbox.stub(services.water.billingBatches, 'getBatchBillableYears').resolves(batchBillableYears);
     sandbox.stub(services.water.billingBatches, 'getBatch').resolves(batchData);
     sandbox.stub(services.water.billingBatches, 'getBatchInvoice').resolves(invoice);
     sandbox.stub(services.water.billingBatches, 'getBatchInvoices').resolves(batchInvoicesResult);
@@ -269,44 +260,41 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
   });
 
   experiment('.postBillingBatchRegion', () => {
-    let billingType;
-    const billingRegionForm = (billingType) => {
-      return {
-        action: '/billing/batch/region',
-        method: 'POST',
-        isSubmitted: true,
-        isValid: true,
-        fields: [
-          {
-            name: 'selectedBillingRegion',
-            errors: [],
-            value: '6ad67f32-e75d-48c1-93d5-25a0e6263e78'
-          },
-          {
-            name: 'selectedBillingType',
-            value: billingType
-          },
-          {
-            name: 'csrf_token',
-            value: '211e17c9-d285-437b-94c5-adc33ed99dc8'
-          }
-        ]
-      };
+    const billingRegionForm = {
+      action: '/billing/batch/region',
+      method: 'POST',
+      isSubmitted: true,
+      isValid: true,
+      fields: [
+        {
+          name: 'selectedBillingRegion',
+          errors: [],
+          value: '6ad67f32-e75d-48c1-93d5-25a0e6263e78'
+        },
+        {
+          name: 'selectedBillingType',
+          value: ''
+        },
+        {
+          name: 'selectedTwoPartTariffSeason',
+          value: ''
+        },
+        {
+          name: 'csrf_token',
+          value: '211e17c9-d285-437b-94c5-adc33ed99dc8'
+        }
+      ]
     };
     beforeEach(async () => {
-      sandbox.stub(forms, 'getValues').returns({
-        selectedBillingType: billingType,
-        selectedTwoPartTariffSeason: ''
-      });
-
-      sandbox.stub(forms, 'handleRequest').returns(billingRegionForm(billingType));
       sandbox.stub(services.water.billingBatches, 'createBillingBatch');
     });
 
     experiment('when the form is valid', () => {
       experiment('and the billing tye is annual or supplimentary', () => {
         beforeEach(async () => {
-          billingType = 'supplementary';
+          billingRegionForm.fields[1].value = 'supplementary';
+          billingRegionForm.fields[2].value = '';
+          sandbox.stub(forms, 'handleRequest').returns(billingRegionForm);
         });
         test('it redirects to waiting page', async () => {
           services.water.billingBatches.createBillingBatch.resolves({
@@ -365,32 +353,24 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
       });
       experiment('and the billing type is 2 part tarrif', () => {
         beforeEach(async () => {
-          billingType = 'two_part_tariff';
+          billingRegionForm.fields[1].value = 'two_part_tariff';
+          billingRegionForm.fields[2].value = 'summer';
+          sandbox.stub(forms, 'handleRequest').returns(billingRegionForm);
         });
-        test('it redirects to waiting page', async () => {
-          services.water.billingBatches.createBillingBatch.resolves({
-            data: {
-              batch: {
-                id: 'test-batch-id',
-                status: 'processing'
-              }
-            }
+        experiment('and there is a single billable year', () => {
+          beforeEach(async () => {
+            const batchBillableYears = {
+              unsentYears: [
+                2020
+              ]
+            };
+            sandbox.stub(services.water.billingBatches, 'getBatchBillableYears').resolves(batchBillableYears);
           });
-
-          await controller.postBillingBatchRegion(request, h);
-
-          const [url] = h.redirect.lastCall.args;
-          expect(url).to.equal('/billing/batch/test-batch-id/processing?back=0');
-        });
-
-        experiment('if the billing type is already being processed', () => {
-          test('the user is redirected to the batch-exists page', async () => {
-            const id = uuid();
-            services.water.billingBatches.createBillingBatch.rejects({
-              statusCode: 409,
-              error: {
+          test('it redirects to waiting page', async () => {
+            services.water.billingBatches.createBillingBatch.resolves({
+              data: {
                 batch: {
-                  id,
+                  id: 'test-batch-id',
                   status: 'processing'
                 }
               }
@@ -399,33 +379,85 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
             await controller.postBillingBatchRegion(request, h);
 
             const [url] = h.redirect.lastCall.args;
-            expect(url).to.equal(`/billing/batch/${id}/exists`);
+            expect(url).to.equal('/billing/batch/test-batch-id/processing?back=0');
+          });
+
+          experiment('if the billing type is already being processed', () => {
+            test('the user is redirected to the batch-exists page', async () => {
+              const id = uuid();
+              services.water.billingBatches.createBillingBatch.rejects({
+                statusCode: 409,
+                error: {
+                  batch: {
+                    id,
+                    status: 'processing'
+                  }
+                }
+              });
+
+              await controller.postBillingBatchRegion(request, h);
+
+              const [url] = h.redirect.lastCall.args;
+              expect(url).to.equal(`/billing/batch/${id}/exists`);
+            });
+          });
+
+          experiment('if the billing type has already been sent', () => {
+            test('the user is redirected to the duplicate batch page', async () => {
+              const id = uuid();
+              services.water.billingBatches.createBillingBatch.rejects({
+                statusCode: 409,
+                error: {
+                  batch: {
+                    id,
+                    status: 'sent'
+                  }
+                }
+              });
+
+              await controller.postBillingBatchRegion(request, h);
+
+              const [url] = h.redirect.lastCall.args;
+              expect(url).to.equal(`/billing/batch/${id}/duplicate`);
+            });
           });
         });
-
-        experiment('if the billing type has already been sent', () => {
-          test('the user is redirected to the duplicate batch page', async () => {
-            const id = uuid();
-            services.water.billingBatches.createBillingBatch.rejects({
-              statusCode: 409,
-              error: {
+        experiment('and there are multiple billable years', () => {
+          beforeEach(async () => {
+            const batchBillableYears = {
+              unsentYears: [
+                2022,
+                2021,
+                2020
+              ]
+            };
+            sandbox.stub(services.water.billingBatches, 'getBatchBillableYears').resolves(batchBillableYears);
+          });
+          test('it redirects to the Select the financial year page', async () => {
+            services.water.billingBatches.createBillingBatch.resolves({
+              data: {
                 batch: {
-                  id,
-                  status: 'sent'
+                  id: 'test-batch-id',
+                  status: 'processing'
                 }
               }
             });
 
             await controller.postBillingBatchRegion(request, h);
 
-            const [url] = h.redirect.lastCall.args;
-            expect(url).to.equal(`/billing/batch/${id}/duplicate`);
+            const url = h.postRedirectGet.lastCall.args[1];
+            expect(url).to.equal(
+              `/billing/batch/financial-year/two-part-tariff/summer/${billingRegionForm.fields[0].value}`
+            );
           });
         });
       });
     });
 
     experiment('when the form is invalid', () => {
+      beforeEach(async () => {
+        sandbox.stub(forms, 'handleRequest').returns(billingRegionForm);
+      });
       test('billingRegionForm is NOT valid redirects back to form', async () => {
         forms.handleRequest.returns({ isValid: false });
 
@@ -515,6 +547,14 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
     beforeEach(async () => {
       request.params.billingType = 'two-part-tariff';
       request.params.season = 'summer';
+      const batchBillableYears = {
+        unsentYears: [
+          2022,
+          2021,
+          2020
+        ]
+      };
+      sandbox.stub(services.water.billingBatches, 'getBatchBillableYears').resolves(batchBillableYears);
     });
     experiment('when the form is valid', () => {
       beforeEach(async () => {
@@ -597,15 +637,6 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
       test('redirects to waiting page', async () => {
         const [url] = h.redirect.lastCall.args;
         expect(url).to.equal('/billing/batch/test-batch-id/processing?back=0');
-      });
-
-      test('billingRegionForm is NOT valid redirects back to form', async () => {
-        forms.handleRequest.returns({ isValid: false });
-
-        await controller.postBillingBatchFinancialYear(request, h);
-
-        const [form] = h.postRedirectGet.lastCall.args;
-        expect(form).to.be.an.object();
       });
     });
 

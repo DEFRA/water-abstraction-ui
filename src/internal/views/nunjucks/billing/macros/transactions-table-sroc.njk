@@ -2,6 +2,7 @@
 
 {% macro chargeElement(chargeElement) %}
   {% set chargeElementDetails %}
+  {% for purpose in transaction.chargeElement.chargePurposes %}
     <dl class="meta govuk-summary-list govuk-summary-list--no-border govuk-!-font-size-16 govuk-!-margin-bottom-0">
     <div class="meta__row">
       <dt class="meta__key"><strong>Purpose</strong></dt>
@@ -16,6 +17,7 @@
       <dd class="meta__value">{{ chargeElement.authorisedAnnualQuantity }}ML authorised</dd>
     </div>
   </dl>
+  {% endfor %}
   {% endset %}
 
   {{ govukDetails({
@@ -72,7 +74,7 @@
       <br><strong>Additional charges: </strong>{{ transaction.additionalCharges }}
     {% endif %}
     {% if transaction.adjustments %}
-      <br><strong>Adjustments: </strong>{{ transaction.chargeElement.adjustments }}
+      <br><strong>Adjustments: </strong>{{ transaction.adjustments }}
     {% endif %}
   </p>
 {% endmacro %}
@@ -91,9 +93,7 @@
         {% endfor %}
       </ul>
       {% if not transaction.isCompensationCharge %}
-        {% for purpose in transaction.chargeElement.chargePurposes %}
-          {{ chargeElement(purpose) }}
-        {% endfor %}
+        {{ chargeElement(purpose) }}
       {% endif %}
     {% endif %}
   </th>

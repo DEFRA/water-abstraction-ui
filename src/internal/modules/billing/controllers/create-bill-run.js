@@ -193,7 +193,6 @@ const _batching = async (h, batch) => {
   try {
     const { data } = await services.water.billingBatches.createBillingBatch(batch);
     const path = routing.getBillingBatchRoute(data.batch, { isBackEnabled: false });
-    console.log('I am not ready to be watched!!');
     return h.redirect(path);
   } catch (err) {
     if (err.statusCode === 409) {

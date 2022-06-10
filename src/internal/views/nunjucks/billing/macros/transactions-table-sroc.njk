@@ -1,8 +1,8 @@
 {% from "govuk/components/details/macro.njk" import govukDetails %}
 
-{% macro chargeElement(chargeElement) %}
+{% macro chargeElement(transaction) %}
   {% set chargeElementDetails %}
-  {% for purpose in transaction.chargeElement.chargePurposes %}
+  {% for chargeElement in transaction.chargeElement.chargePurposes %}
     <dl class="meta govuk-summary-list govuk-summary-list--no-border govuk-!-font-size-16 govuk-!-margin-bottom-0">
     <div class="meta__row">
       <dt class="meta__key"><strong>Purpose</strong></dt>
@@ -93,7 +93,7 @@
         {% endfor %}
       </ul>
       {% if not transaction.isCompensationCharge %}
-        {{ chargeElement(purpose) }}
+        {{ chargeElement(transaction) }}
       {% endif %}
     {% endif %}
   </th>

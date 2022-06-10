@@ -54,7 +54,7 @@ const getAdditionalCharges = transaction => {
   if (transaction.supportedSourceName) {
     additionalCharges.push(`Supported source ${transaction.supportedSourceName} (${numberFormatter.penceToPound(transaction.grossValuesCalculated.supportedSourceCharge, transaction.isCredit, true)})`);
   }
-  if (transaction.chargeElement.additionalCharges.isSupplyPublicWater) {
+  if (transaction.isWaterCompanyCharge) {
     additionalCharges.push('Public Water Supply');
   }
   return additionalCharges.join(', ');
@@ -83,7 +83,7 @@ const getAdjustments = transaction => {
 const mapTransaction = trans => ({
   ...trans,
   agreements: trans.agreements.map(agreementsMapper.mapAgreement),
-  adjustmennts: getAdjustments(trans),
+  adjustments: getAdjustments(trans),
   additionalCharges: getAdditionalCharges(trans)
 });
 

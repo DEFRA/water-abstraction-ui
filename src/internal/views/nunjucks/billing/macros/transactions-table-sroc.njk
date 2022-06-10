@@ -83,7 +83,7 @@
       <br>Supported source {{ transaction.supportedSourceName }} ({{ transaction.grossValuesCalculated.supportedSourceCharge | charge(true) }})
     {% endif %}
     {% if transaction.chargeElement.additionalCharges.isSupplyPublicWater %}
-      <br>Public Water Supply ({{ getBooleanText(transaction.chargeElement.additionalCharges.isSupplyPublicWater) }})
+      <br>Public Water Supply
     {% endif %}
     {% if transaction.chargeElement.adjustments %}
       <br><strong>Adjustments:</strong>
@@ -97,10 +97,10 @@
           <br>Abatement factor ({{ transaction.chargeElement.adjustments.s126 }})
         {% endif %}
         {% if transaction.chargeElement.adjustments.s130 %}
-          <br>Canals & Rivers trust ({{ getBooleanText(transaction.chargeElement.adjustments.s130) }})
+          <br>Canals & Rivers trust
         {% endif %}
         {% if transaction.chargeElement.adjustments.winter %}
-          <br>Winter Only ({{ getBooleanText(transaction.chargeElement.adjustments.winter) }})
+          <br>Winter Only
         {% endif %}
     {% endif %}
   </p>

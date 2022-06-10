@@ -5,6 +5,7 @@
 invoiceCreditsTotal,
 invoiceDebitsTotal %}
 {% from "./nunjucks/billing/macros/transactions-table-sroc.njk" import transactionsTableSroc %}
+{% from "./nunjucks/billing/macros/transactions-table.njk" import transactionsTable %}
 
 {% from "badge.njk" import badge %}
 {% from "crm/invoice-address.njk" import invoiceAddress %}
@@ -244,7 +245,11 @@ invoiceDebitsTotal %}
           {% if invoiceLicence.hasTransactionErrors%}
             {{ licenceErrors() }}
           {% endif %}
+          {% if batch.scheme === 'sroc' %}
             {{ transactionsTableSroc(invoiceLicence, isCreditDebitBlockVisible) }}
+          {% else %}
+            {{ transactionsTable(invoiceLicence, isCreditDebitBlockVisible) }}
+          {% endif %}
           {% if invoiceLicence.hasTransactionErrors %}
           </div>
           {% endif%}

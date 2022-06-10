@@ -171,13 +171,13 @@ const getBillingBatchDuplicate = partialRight(_creationError, 'duplicateSentBatc
 const _batchBillableYears = async (season, billingType, userEmail, regionId) => {
   const isSummer = season === seasons.SUMMER;
   const currentFinancialYear = getBatchFinancialYearEnding(billingType, isSummer, Date.now());
-  const body = {
+  const requestBody = {
     userEmail,
     regionId,
     currentFinancialYear,
     isSummer
   };
-  const billableYears = await water.billingBatches.getBatchBillableYears(body);
+  const billableYears = await water.billingBatches.getBatchBillableYears(requestBody);
   const items = billableYears.unsentYears.map(unsentYear => {
     const hint = unsentYear === currentFinancialYear ? { text: 'current year' } : null;
     return {

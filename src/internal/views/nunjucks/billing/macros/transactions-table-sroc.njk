@@ -2,30 +2,20 @@
 
 {% macro chargeElement(chargeElement) %}
   {% set chargeElementDetails %}
-  <div class="govuk-grid-row">
-  <div class="govuk-grid-column-full meta-data_extra-width">
-    <dl class="govuk-summary-list govuk-summary-list--no-border govuk-!-font-size-16 govuk-!-margin-bottom-0">
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key meta-data__label"><strong>Purpose</strong></dt>
-        <dd class="govuk-summary-list__value meta-data__value">
-          {{ chargeElement.purposeUse.name | sentenceCase }}
-        </dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key meta-data__label"><strong>Abstraction period:</strong></dt>
-        <dd class="govuk-summary-list__value meta-data__value">
-          {{ chargeElement.abstractionPeriod | abstractionPeriod }}
-        </dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key meta-data__label"><strong>Volume</strong></dt>
-        <dd class="govuk-summary-list__value meta-data__value">
-          {{ chargeElement.authorisedAnnualQuantity }}ML authorised
-        </dd>
-      </div>
-    </dl>
-  </div>
-  </div>
+    <dl class="meta govuk-summary-list govuk-summary-list--no-border govuk-!-font-size-16 govuk-!-margin-bottom-0">
+    <div class="meta__row">
+      <dt class="meta__key"><strong>Purpose</strong></dt>
+      <dd class="meta__value">{{ chargeElement.purposeUse.name | sentenceCase }}</dd>
+    </div>
+    <div class="meta__row">
+      <dt class="meta__key"><strong>Abstraction period</strong></dt>
+      <dd class="meta__value">{{ chargeElement.abstractionPeriod | abstractionPeriod }}</dd>
+    </div>
+    <div class="meta__row">
+      <dt class="meta__key"><strong>Volume</stong></dt>
+      <dd class="meta__value">{{ chargeElement.authorisedAnnualQuantity }}ML authorised</dd>
+    </div>
+  </dl>
   {% endset %}
 
   {{ govukDetails({
@@ -78,30 +68,11 @@
     <br><strong>Charge period:</strong> {{ transaction.chargePeriod.startDate | date }} to {{ transaction.chargePeriod.endDate | date }}
     <br><strong>Charge reference:</strong> {{ transaction.chargeElement.chargeCategory.reference }} ({{ transaction.grossValuesCalculated.baselineCharge | charge(true) }})
     <br><strong>Charge description:</strong> {{ transaction.chargeElement.chargeCategory.shortDescription }}<br>
-    <br><strong>Additional charges:</strong>
-    {% if transaction.supportedSourceName %}
-      <br>Supported source {{ transaction.supportedSourceName }} ({{ transaction.grossValuesCalculated.supportedSourceCharge | charge(true) }})
+    {% if transaction.additionalCharges %}
+      <br><strong>Additional charges: </strong>{{ transaction.additionalCharges }}
     {% endif %}
-    {% if transaction.chargeElement.additionalCharges.isSupplyPublicWater %}
-      <br>Public Water Supply
-    {% endif %}
-    {% if transaction.chargeElement.adjustments %}
-      <br><strong>Adjustments:</strong>
-        {% if transaction.chargeElement.adjustments.aggregate %}
-          <br>Aggregate factor ({{ transaction.chargeElement.adjustments.aggregate }})
-        {% endif %}
-        {% if transaction.chargeElement.adjustments.charge %}
-          <br>Charge factor ({{ transaction.chargeElement.adjustments.charge }})
-        {% endif %}
-        {% if transaction.chargeElement.adjustments.s126 %}
-          <br>Abatement factor ({{ transaction.chargeElement.adjustments.s126 }})
-        {% endif %}
-        {% if transaction.chargeElement.adjustments.s130 %}
-          <br>Canals & Rivers trust
-        {% endif %}
-        {% if transaction.chargeElement.adjustments.winter %}
-          <br>Winter Only
-        {% endif %}
+    {% if transaction.adjustments %}
+      <br><strong>Adjustments: </strong>{{ transaction.chargeElement.adjustments }}
     {% endif %}
   </p>
 {% endmacro %}

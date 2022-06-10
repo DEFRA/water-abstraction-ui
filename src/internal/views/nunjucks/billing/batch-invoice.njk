@@ -4,7 +4,7 @@
 {% from "./nunjucks/billing/macros/totals.njk" import invoiceTotal,
 invoiceCreditsTotal,
 invoiceDebitsTotal %}
-{% from "./nunjucks/billing/macros/transactions-table.njk" import transactionsTable %}
+{% from "./nunjucks/billing/macros/transactions-table-sroc.njk" import transactionsTableSroc %}
 
 {% from "badge.njk" import badge %}
 {% from "crm/invoice-address.njk" import invoiceAddress %}
@@ -244,9 +244,7 @@ invoiceDebitsTotal %}
           {% if invoiceLicence.hasTransactionErrors%}
             {{ licenceErrors() }}
           {% endif %}
-
-          {{ transactionsTable(invoiceLicence, isCreditDebitBlockVisible) }}
-
+            {{ transactionsTableSroc(invoiceLicence, isCreditDebitBlockVisible) }}
           {% if invoiceLicence.hasTransactionErrors %}
           </div>
           {% endif%}

@@ -1,6 +1,5 @@
 const moment = require('moment');
-const { isObject, isString } = require('lodash');
-const isEmpty = require('lodash/isEmpty');
+const { isObject, isString, isEmpty } = require('lodash');
 
 const formatDate = (day, month) => {
   const m = moment(`${day}/${month}`, 'D/M');

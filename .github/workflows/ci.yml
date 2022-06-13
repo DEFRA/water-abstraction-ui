@@ -11,21 +11,12 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [ 14.x, 16.x ]
-    name: Lint - Node.js ${{ matrix.node-version }}
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: Run lint
-        run: |
-          npm ci
-          npm run lint
+  base-node-pipeline:
+    uses: DEFRA/water-abstraction-orchestration/.github/workflows/base-node-pipeline.yml@develop
+    with:
+      serviceName: DEFRA_water-abstraction-ui
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   build-and-push-image-internal:
     runs-on: ubuntu-latest
     permissions:

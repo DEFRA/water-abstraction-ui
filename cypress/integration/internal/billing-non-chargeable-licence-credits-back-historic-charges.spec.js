@@ -4,18 +4,13 @@ const {
   login,
   viewBillRuns,
   createBillRun,
-  confirmBillRun,
-  selectFirstBillRun,
-  setTwoPartTariffBillingVolume,
-  continueSupplementaryBillRun,
-  reviewTwoPartTariffBillingVolume,
   viewChargeInformation
 } = require('../../support/common');
 
 describe('non-chargeable licence credits back historic charges', () => {
   before(() => {
     tearDown();
-    setUp('two-part-tariff-billing-data');
+    setUp('five-year-two-part-tariff-bill-runs');
   });
 
   after(() => {
@@ -25,31 +20,9 @@ describe('non-chargeable licence credits back historic charges', () => {
   it('user logs in', () => {
     login('billingAndData', 'DEFAULT_PASSWORD');
 
-    describe('user enters the create a new annual bill flow', () => {
-      const type = 'annual';
-      viewBillRuns();
-      cy.get('#main-content > a.govuk-button').contains('Create a bill run').click();
-      createBillRun(type);
-      confirmBillRun(type);
-      viewBillRuns();
-      selectFirstBillRun();
-      cy.get('h2').contains('£550.20');
-    });
-
-    describe('user enters the create a new two-part tariff bill flow', () => {
-      const type = 'two-part tariff';
-      viewBillRuns();
-      cy.get('#main-content > a.govuk-button').contains('Create a bill run').click();
-      createBillRun(type);
-      reviewTwoPartTariffBillingVolume();
-      setTwoPartTariffBillingVolume();
-      continueSupplementaryBillRun(type);
-      confirmBillRun(type);
-    });
-
     describe('user makes a licence non chargeable', () => {
-      const type = 'two-part tariff';
-      viewChargeInformation(type);
+      viewChargeInformation('L1');
+
       cy.get('#main-content a.govuk-button').contains('Make licence non-chargeable').click();
       cy.get('[type="radio"]#reason').check();
       cy.get('button.govuk-button').contains('Continue').click();

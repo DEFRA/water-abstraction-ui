@@ -85,7 +85,7 @@ describe('rebilling supplementary bill run', () => {
         // confirm rebill
         cy.get('form > .govuk-button').click();
         // asserting the bill reissue
-        cy.get('.govuk-panel').should('contain', 'You’ve marked 6 bills for reissue');
+        cy.get('.govuk-panel').should('contain', 'You’ve marked 7 bills for reissue');
       });
       describe('user generates the supplementary bill for the marked rebilling licences', () => {
         cy.get('.govuk-grid-column-full > .govuk-button').contains('Create a supplementary bill run').should('be.visible');

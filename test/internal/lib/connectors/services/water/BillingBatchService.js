@@ -252,6 +252,7 @@ experiment('services/water/BillingBatchService', () => {
       currentFinancialYear: 2022,
       isSummer: true
     };
+
     test('passes the expected URL to the service request', async () => {
       await service.getBatchBillableYears(requestBody);
       const [url] = serviceRequest.post.lastCall.args;

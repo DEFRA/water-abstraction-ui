@@ -357,6 +357,7 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
           billingRegionForm.fields[2].value = 'summer';
           sandbox.stub(forms, 'handleRequest').returns(billingRegionForm);
         });
+
         experiment('and there is a single billable year', () => {
           beforeEach(async () => {
             const batchBillableYears = {
@@ -366,6 +367,7 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
             };
             sandbox.stub(services.water.billingBatches, 'getBatchBillableYears').resolves(batchBillableYears);
           });
+
           test('it redirects to waiting page', async () => {
             services.water.billingBatches.createBillingBatch.resolves({
               data: {
@@ -433,6 +435,7 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
             };
             sandbox.stub(services.water.billingBatches, 'getBatchBillableYears').resolves(batchBillableYears);
           });
+
           test('it redirects to the Select the financial year page', async () => {
             services.water.billingBatches.createBillingBatch.resolves({
               data: {
@@ -458,6 +461,7 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
       beforeEach(async () => {
         sandbox.stub(forms, 'handleRequest').returns(billingRegionForm);
       });
+
       test('billingRegionForm is NOT valid redirects back to form', async () => {
         forms.handleRequest.returns({ isValid: false });
 
@@ -556,6 +560,7 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
       };
       sandbox.stub(services.water.billingBatches, 'getBatchBillableYears').resolves(batchBillableYears);
     });
+
     experiment('when the form is valid', () => {
       beforeEach(async () => {
         await controller.getBillingBatchFinancialYear(request, h);
@@ -589,6 +594,7 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
         });
       });
     });
+
     experiment('when the form is not valid', () => {
       let view;
 
@@ -620,6 +626,7 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
       request.params.billingType = 'two-part-tariff';
       request.params.season = 'summer';
     });
+
     experiment('when the form is valid', () => {
       beforeEach(async () => {
         request.payload['select-financial-year'] = '2020';
@@ -634,6 +641,7 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
         });
         await controller.postBillingBatchFinancialYear(request, h);
       });
+
       test('redirects to waiting page', async () => {
         const [url] = h.redirect.lastCall.args;
         expect(url).to.equal('/billing/batch/test-batch-id/processing?back=0');
@@ -644,6 +652,7 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
       beforeEach(async () => {
         await controller.postBillingBatchFinancialYear(request, h);
       });
+
       test('redirects back to form', async () => {
         const [url] = h.redirect.lastCall.args;
         expect(url).to.equal(`/billing/batch/financial-year/${request.params.billingType}/${request.params.season}/${request.params.region}`);

@@ -6,7 +6,7 @@ const { sentenceCase } = require('shared/lib/string-formatter');
 const routing = require('./routing');
 const { transactionStatuses } = require('shared/lib/constants');
 const agreementsMapper = require('shared/lib/mappers/agreements');
-
+const numberFormatter = require('shared/lib/number-formatter');
 const getBillCount = batch => [batch.invoiceCount, batch.creditNoteCount].reduce((acc, value) =>
   isNull(value) ? acc : (acc || 0) + value
 , null);
@@ -49,9 +49,42 @@ const getTransactionTotals = transactions => {
 
 const getSortKey = trans => `${get(trans, 'chargeElement.id')}_${trans.isCompensationCharge ? 1 : 0}`;
 
+const getAdditionalCharges = transaction => {
+  const additionalCharges = [];
+  if (transaction.supportedSourceName) {
+    additionalCharges.push(`Supported source ${transaction.supportedSourceName} (${numberFormatter.penceToPound(transaction.grossValuesCalculated.supportedSourceCharge, transaction.isCredit, true)})`);
+  }
+  if (transaction.isWaterCompanyCharge) {
+    additionalCharges.push('Public Water Supply');
+  }
+  return additionalCharges.join(', ');
+};
+
+const getAdjustments = transaction => {
+  const adjustments = [];
+  if (transaction.chargeElement.adjustments.aggregate) {
+    adjustments.push(`Aggregate factor (${transaction.chargeElement.adjustments.aggregate})`);
+  }
+  if (transaction.chargeElement.adjustments.charge) {
+    adjustments.push(`Adjustment factor (${transaction.chargeElement.adjustments.charge})`);
+  }
+  if (transaction.chargeElement.adjustments.s126) {
+    adjustments.push(`Abatement factor (${transaction.chargeElement.adjustments.s126})`);
+  }
+  if (transaction.chargeElement.adjustments.s130) {
+    adjustments.push('Canal and River Trust (0.5)');
+  }
+  if (transaction.chargeElement.adjustments.winter) {
+    adjustments.push('Winter discount (0.5)');
+  }
+  return adjustments.join(', ');
+};
+
 const mapTransaction = trans => ({
   ...trans,
-  agreements: trans.agreements.map(agreementsMapper.mapAgreement)
+  agreements: trans.agreements.map(agreementsMapper.mapAgreement),
+  adjustments: getAdjustments(trans),
+  additionalCharges: getAdditionalCharges(trans)
 });
 
 const mapInvoiceLicence = (batch, invoice, invoiceLicence) => {

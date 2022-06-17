@@ -62,9 +62,7 @@ const getAdditionalCharges = transaction => {
 
 const getAdjustments = transaction => {
   const adjustments = [];
-  if (!transaction.chargeElement.adjustments) {
-    return adjustments;
-  } else {
+  if (transaction.chargeElement.adjustments) {
     if (transaction.chargeElement.adjustments.aggregate) {
       adjustments.push(`Aggregate factor (${transaction.chargeElement.adjustments.aggregate})`);
     }
@@ -80,8 +78,8 @@ const getAdjustments = transaction => {
     if (transaction.chargeElement.adjustments.winter) {
       adjustments.push('Winter discount (0.5)');
     }
-    return adjustments.join(', ');
   }
+  return adjustments.join(', ');
 };
 
 const mapTransaction = trans => ({

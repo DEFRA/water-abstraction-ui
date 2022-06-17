@@ -79,6 +79,9 @@ const invoice = {
           startDate: '2019-04-01',
           endDate: '2020-03-31'
         },
+        chargeElement: {
+          id: 'charge_element_licence_2'
+        },
         isMinimumCharge: true,
         agreements: []
       }],
@@ -260,13 +263,6 @@ experiment('modules/billing/lib/mappers', () => {
       const [invoiceLicence] = invoice.invoiceLicences;
 
       beforeEach(async () => {
-        // TODO: Check if we should be amending the test data at the start of just applying the fix here. If just
-        // applying here what protections ensure a transaction without a chargeElement is not passed to getAdjustments()
-        //
-        // Needed because src/internal/modules/billing/lib/mappers.js::getAdjustments() expects all transactions
-        // to have a chargeElement.adjustments[] property
-        invoiceLicence.transactions[0].chargeElement.adjustments = { aggregate: true };
-        invoiceLicence.transactions[1].chargeElement = invoiceLicence.transactions[0].chargeElement;
         result = mappers.mapInvoiceLicence(batch, invoice, invoiceLicence);
       });
 

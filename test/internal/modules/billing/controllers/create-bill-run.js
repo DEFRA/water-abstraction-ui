@@ -16,6 +16,7 @@ const forms = require('shared/lib/forms');
 const services = require('internal/lib/connectors/services');
 const controller = require('internal/modules/billing/controllers/create-bill-run');
 const batchService = require('internal/modules/billing/services/batch-service');
+const { getBatchFinancialYearEnding } = require('internal/modules/billing/lib/batch-financial-year');
 
 const billingRegions = {
   data: [
@@ -446,6 +447,7 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
             });
           });
         });
+
         experiment('and there are multiple billable years', () => {
           beforeEach(async () => {
             const batchBillableYears = {
@@ -474,6 +476,77 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
             expect(url).to.equal(
               `/billing/batch/financial-year/two-part-tariff/summer/${billingRegionForm.fields[0].value}`
             );
+          });
+        });
+
+        experiment.only('and there are no billable years', () => {
+          beforeEach(async () => {
+            const batchBillableYears = {
+              unsentYears: []
+            };
+            sandbox.stub(services.water.billingBatches, 'getBatchBillableYears').resolves(batchBillableYears);
+          });
+
+          test('it is called with the expected batch data', async () => {
+            services.water.billingBatches.createBillingBatch.resolves({
+              data: {
+                batch: {
+                  id: 'test-batch-id',
+                  status: 'processing'
+                }
+              }
+            });
+
+            await controller.postBillingBatchRegion(request, h);
+            const [batch] = services.water.billingBatches.createBillingBatch.lastCall.args;
+            const expectedBatch = {
+              userEmail: 'test-user@example.com',
+              regionId: '6ad67f32-e75d-48c1-93d5-25a0e6263e78',
+              batchType: 'two_part_tariff',
+              financialYearEnding: getBatchFinancialYearEnding('two_part_tariff', true, Date.now()),
+              isSummer: true
+            };
+            expect(batch).to.equal(expectedBatch);
+          });
+
+          experiment('if the billing type is already being processed', () => {
+            test('the user is redirected to the batch-exists page', async () => {
+              const id = uuid();
+              services.water.billingBatches.createBillingBatch.rejects({
+                statusCode: 409,
+                error: {
+                  batch: {
+                    id,
+                    status: 'processing'
+                  }
+                }
+              });
+
+              await controller.postBillingBatchRegion(request, h);
+
+              const [url] = h.redirect.lastCall.args;
+              expect(url).to.equal(`/billing/batch/${id}/exists`);
+            });
+          });
+
+          experiment('if the billing type has already been sent', () => {
+            test('the user is redirected to the duplicate batch page', async () => {
+              const id = uuid();
+              services.water.billingBatches.createBillingBatch.rejects({
+                statusCode: 409,
+                error: {
+                  batch: {
+                    id,
+                    status: 'sent'
+                  }
+                }
+              });
+
+              await controller.postBillingBatchRegion(request, h);
+
+              const [url] = h.redirect.lastCall.args;
+              expect(url).to.equal(`/billing/batch/${id}/duplicate`);
+            });
           });
         });
       });

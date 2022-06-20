@@ -52,8 +52,25 @@ describe('non-chargeable licence credits back historic charges', () => {
     });
 
     describe('user proves the credit has been created', () => {
-      cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Test Region supplementary bill run');
-      cy.get('h2 > div > div').should('contain.text', '-£1,100.40');
+      // cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Test Region supplementary bill run');
+      cy.get('.govuk-table__cell--numeric > .govuk-link', { timeout: 20000 }).click();
+      cy.get(':nth-child(10) > .govuk-grid-column-full > .govuk-table > .govuk-table__body > :nth-child(2) > :nth-child(3) > a').click();
+      cy.get('.govuk-radios > :nth-child(1) > #quantity').check();
+      cy.get('form > .govuk-button').contains('Confirm').click();
+      cy.get(':nth-child(7) > .govuk-grid-column-full > .govuk-table > .govuk-table__body > :nth-child(2) > :nth-child(3) > a').click();
+      cy.get('.govuk-radios > :nth-child(1) > #quantity').check();
+      cy.get('form > .govuk-button').contains('Confirm').click();
+      cy.get(':nth-child(13) > .govuk-grid-column-full > .govuk-table > .govuk-table__body > :nth-child(2) > :nth-child(3) > a').click();
+      cy.get('.govuk-radios > :nth-child(1) > #quantity').check();
+      cy.get('form > .govuk-button').contains('Confirm').click();
+      cy.get(':nth-child(16) > .govuk-grid-column-full > .govuk-table > .govuk-table__body > :nth-child(2) > :nth-child(3) > a').click();
+      cy.get('.govuk-radios > :nth-child(1) > #quantity').check();
+      cy.get('form > .govuk-button').contains('Confirm').click();
+      cy.get('.govuk-button').contains('Continue').click({ force: true });
+      cy.get('form > .govuk-button').contains('Confirm').click();
+      cy.wait(20000);
+      cy.get('#main-content').should('contain', '£1,100.40').and('contain', '1 credit note');
+      cy.get('.govuk-table__body > :nth-child(1) > :nth-child(5)').should('contain', '£1,100.40').and('contain', 'Credit note');
     });
   });
 });

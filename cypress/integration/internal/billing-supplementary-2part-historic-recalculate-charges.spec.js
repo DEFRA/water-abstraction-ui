@@ -13,6 +13,7 @@ const {
   reviewTwoPartTariffBillingVolume
 } = require('../../support/common');
 
+// const 2partHistoricrecalculateChargesTest = (customVolume = 25) => {
 const recalculateChargesTest = (customVolume = 25) => {
   describe('user enters the create a new two-part tariff bill flow', () => {
     const type = 'two-part tariff';
@@ -47,10 +48,21 @@ const recalculateChargesTest = (customVolume = 25) => {
   });
 };
 
-describe('recalculating charges', () => {
-  beforeEach(() => {
+describe('2part historic recalculating charges', () => {
+/*   beforeEach(() => {
     tearDown();
     setUp('five-annual-four-two-part-bill-runs');
+    login('billingAndData', 'DEFAULT_PASSWORD');
+  });
+
+  afterEach(() => {
+    cy.get('#signout').click();
+    tearDown();
+  }); */
+
+  beforeEach(() => {
+    tearDown();
+    setUp('five-year-two-part-tariff-bill-runs');
     login('billingAndData', 'DEFAULT_PASSWORD');
   });
 

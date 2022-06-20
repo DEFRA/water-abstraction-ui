@@ -91,12 +91,10 @@ const postBillingBatchRegion = async (request, h, refDate) => {
 
   if (billableYears.length > 1) {
     const path = _financialYearUrl(selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion);
-    //  TF
     return h.postRedirectGet('', path);
-  } else {
-    const batch = _batchingDetails(request, billingRegionForm);
-    return _batching(h, batch);
   }
+  const batch = _batchingDetails(request, billingRegionForm, billableYears[0]?.value);
+  return _batching(h, batch);
 };
 
 const getBillingBatchFinancialYear = async (request, h, error) => {

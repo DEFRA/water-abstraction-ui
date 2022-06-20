@@ -290,7 +290,7 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
     });
 
     experiment('when the form is valid', () => {
-      experiment('and the billing tye is annual or supplimentary', () => {
+      experiment('and the billing type is annual or supplimentary', () => {
         beforeEach(async () => {
           billingRegionForm.fields[1].value = 'supplementary';
           billingRegionForm.fields[2].value = '';
@@ -382,6 +382,28 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
 
             const [url] = h.redirect.lastCall.args;
             expect(url).to.equal('/billing/batch/test-batch-id/processing?back=0');
+          });
+
+          test('it is called with the expected batch data', async () => {
+            services.water.billingBatches.createBillingBatch.resolves({
+              data: {
+                batch: {
+                  id: 'test-batch-id',
+                  status: 'processing'
+                }
+              }
+            });
+
+            await controller.postBillingBatchRegion(request, h);
+            const [batch] = services.water.billingBatches.createBillingBatch.lastCall.args;
+            const expectedBatch = {
+              userEmail: 'test-user@example.com',
+              regionId: '6ad67f32-e75d-48c1-93d5-25a0e6263e78',
+              batchType: 'two_part_tariff',
+              financialYearEnding: 2020,
+              isSummer: true
+            };
+            expect(batch).to.equal(expectedBatch);
           });
 
           experiment('if the billing type is already being processed', () => {

@@ -79,9 +79,6 @@ const invoice = {
           startDate: '2019-04-01',
           endDate: '2020-03-31'
         },
-        chargeElement: {
-          id: 'charge_element_licence_2'
-        },
         isMinimumCharge: true,
         agreements: []
       }],

@@ -1,5 +1,5 @@
 const moment = require('moment');
-const { isObject, isString } = require('lodash');
+const { isObject, isString, isEmpty } = require('lodash');
 
 const formatDate = (day, month) => {
   const m = moment(`${day}/${month}`, 'D/M');
@@ -16,6 +16,9 @@ const formatDate = (day, month) => {
  * @return {String}     - readable day and month string
  */
 const abstractionPeriod = val => {
+  if (isEmpty(val)) {
+    return 'abstraction period has not been set';
+  }
   if (isObject(val)) {
     const dates = [
       formatDate(val.startDay, val.startMonth),

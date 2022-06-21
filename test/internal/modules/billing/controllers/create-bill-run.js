@@ -479,7 +479,7 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
           });
         });
 
-        experiment.only('and there are no billable years', () => {
+        experiment('and there are no billable years', () => {
           beforeEach(async () => {
             const batchBillableYears = {
               unsentYears: []

@@ -12,8 +12,7 @@ const mapChoices = regionsData =>
   }));
 
 /**
- * Creates an object to represent the form for capturing the
- * new user's email address.
+ * Creates an object to represent the form for selecting the region.
  *
  * @param {Object} request The Hapi request object
  * @param  {Array} regions array of billing regions
@@ -24,9 +23,9 @@ const selectBillingRegionForm = (request, regions) => {
   const season = snakeCase(request.params.season);
 
   const action = '/billing/batch/region';
-  const f = formFactory(action, 'POST');
+  const form = formFactory(action, 'POST');
 
-  f.fields.push(fields.radio('selectedBillingRegion', {
+  form.fields.push(fields.radio('selectedBillingRegion', {
     errors: {
       'any.required': {
         message: 'Select the region'
@@ -35,11 +34,11 @@ const selectBillingRegionForm = (request, regions) => {
     choices: mapChoices(regions)
   }));
 
-  f.fields.push(fields.hidden('selectedBillingType', {}, billingType));
-  f.fields.push(fields.hidden('selectedTwoPartTariffSeason', {}, season));
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
-  return f;
+  form.fields.push(fields.hidden('selectedBillingType', {}, billingType));
+  form.fields.push(fields.hidden('selectedTwoPartTariffSeason', {}, season));
+  form.fields.push(fields.hidden('csrf_token', {}, csrfToken));
+  form.fields.push(fields.button(null, { label: 'Continue' }));
+  return form;
 };
 
 const getRegionIds = regions => regions.map(region => region.regionId);

@@ -68,12 +68,13 @@ const getBillingBatchRegion = async (request, h) => {
  * @param {*} request
  * @param {*} h
  */
-const postBillingBatchRegion = async (request, h, refDate) => {
+const postBillingBatchRegion = async (request, h) => {
   const { regions } = request.pre;
   const schema = billingRegionFormSchema(regions);
   const billingRegionForm = forms.handleRequest(selectBillingRegionForm(request, regions), request, schema);
-
   const { selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion } = forms.getValues(billingRegionForm);
+
+  let batch;
 
   if (!billingRegionForm.isValid) {
     const path = _regionUrl(selectedBillingType, selectedTwoPartTariffSeason);
@@ -81,7 +82,7 @@ const postBillingBatchRegion = async (request, h, refDate) => {
   }
 
   if (selectedBillingType !== TWO_PART_TARIFF) {
-    const batch = _batchingDetails(request, billingRegionForm);
+    batch = _batchingDetails(request, billingRegionForm);
     return _batching(h, batch);
   }
 
@@ -93,11 +94,11 @@ const postBillingBatchRegion = async (request, h, refDate) => {
     const path = _financialYearUrl(selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion);
     return h.postRedirectGet('', path);
   }
-  const batch = _batchingDetails(request, billingRegionForm, billableYears[0]?.value);
+  batch = _batchingDetails(request, billingRegionForm, billableYears[0]?.value);
   return _batching(h, batch);
 };
 
-const getBillingBatchFinancialYear = async (request, h, error) => {
+const getBillingBatchFinancialYear = async (request, h) => {
   const selectedBillingType = snakeCase(request.params.billingType);
 
   const items = await _batchBillableYears(
@@ -176,7 +177,8 @@ const _batchBillableYears = async (season, billingType, userEmail, regionId) => 
     isSummer
   };
   const billableYears = await water.billingBatches.getBatchBillableYears(requestBody);
-  const items = billableYears.unsentYears.map(unsentYear => {
+
+  return billableYears.unsentYears.map(unsentYear => {
     const hint = unsentYear === currentFinancialYear ? { text: 'current year' } : null;
     return {
       value: unsentYear,
@@ -184,7 +186,6 @@ const _batchBillableYears = async (season, billingType, userEmail, regionId) => 
       hint
     };
   });
-  return items;
 };
 
 const _batching = async (h, batch) => {
@@ -234,7 +235,7 @@ async function _creationError (request, h, error) {
     back: '/billing/batch/region',
     batch
   });
-};
+}
 
 const _creationErrorRedirectUrl = err => {
   const { batch } = err.error;

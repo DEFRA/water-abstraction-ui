@@ -68,7 +68,8 @@ describe('non-chargeable licence credits back historic charges', () => {
       cy.get('form > .govuk-button').contains('Confirm').click();
       cy.get('.govuk-button').contains('Continue').click({ force: true });
       cy.get('form > .govuk-button').contains('Confirm').click();
-      cy.wait(20000);
+      cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('supplementary bill run');
+      cy.url().should('contain', '/summary');
       cy.get('#main-content').should('contain', '£1,100.40').and('contain', '1 credit note');
       cy.get('.govuk-table__body > :nth-child(1) > :nth-child(5)').should('contain', '£1,100.40').and('contain', 'Credit note');
     });

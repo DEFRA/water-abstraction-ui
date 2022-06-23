@@ -8,11 +8,9 @@ const redirectTo = (request, h, path) => {
   const { checkStageReached } = session.get(request)
 
   if (checkStageReached === true && !['/condition', '/abstraction-period'].includes(path)) {
-    // eslint-disable-next-line no-useless-escape
-    return h.redirect(request.path.replace(/\/[^\/]*$/, '/check'))
+    return h.redirect(request.path.replace(/\/[^/]*$/, '/check'))
   } else {
-    // eslint-disable-next-line no-useless-escape
-    return h.redirect(request.path.replace(/\/[^\/]*$/, path))
+    return h.redirect(request.path.replace(/\/[^/]*$/, path))
   }
 }
 

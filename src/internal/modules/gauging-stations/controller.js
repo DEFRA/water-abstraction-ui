@@ -242,8 +242,7 @@ const postNewTaggingCheckYourAnswers = async (request, h) => {
 
   await helpers.handlePost(request)
 
-  // eslint-disable-next-line no-useless-escape
-  return h.redirect(request.path.replace(/\/[^\/]*$/, '/complete'))
+  return h.redirect(request.path.replace(/\/[^/]*$/, '/complete'))
 }
 
 const getNewTaggingFlowComplete = (request, h) => {
@@ -415,8 +414,7 @@ const postSendAlertSelectAlertType = async (request, h) => {
     sendingAlertType: selectedAlertType
   })
 
-  // eslint-disable-next-line no-useless-escape
-  return h.redirect(request.path.replace(/\/[^\/]*$/, '/alert-thresholds'))
+  return h.redirect(request.path.replace(/\/[^/]*$/, '/alert-thresholds'))
 }
 
 const getSendAlertSelectAlertThresholds = async (request, h) => {
@@ -461,8 +459,7 @@ const postSendAlertSelectAlertThresholds = async (request, h) => {
     selectedGroupedLicences
   })
 
-  // eslint-disable-next-line no-useless-escape
-  return h.redirect(request.path.replace(/\/[^\/]*$/, '/check-licence-matches'))
+  return h.redirect(request.path.replace(/\/[^/]*$/, '/check-licence-matches'))
 }
 
 const getSendAlertCheckLicenceMatches = async (request, h) => {
@@ -472,8 +469,7 @@ const getSendAlertCheckLicenceMatches = async (request, h) => {
   const sessionData = await session.get(request)
   const { selectedGroupedLicences } = sessionData
   if (!selectedGroupedLicences) {
-    // eslint-disable-next-line no-useless-escape
-    return h.redirect(request.path.replace(/\/[^\/]*$/, '/alert-thresholds'))
+    return h.redirect(request.path.replace(/\/[^/]*$/, '/alert-thresholds'))
   }
   const flattenedSelectedGroupedLicences = Object.values(selectedGroupedLicences).map(n => n.map(q => {
     return {
@@ -488,8 +484,7 @@ const getSendAlertCheckLicenceMatches = async (request, h) => {
   }))
 
   if (flattenedSelectedGroupedLicences.length === 0) {
-    // eslint-disable-next-line no-useless-escape
-    return h.redirect(request.path.replace(/\/[^\/]*$/, '/alert-thresholds'))
+    return h.redirect(request.path.replace(/\/[^/]*$/, '/alert-thresholds'))
   }
 
   return h.view('nunjucks/gauging-stations/check-licences-for-sending-alerts', {
@@ -573,8 +568,7 @@ const postSendAlertEmailAddress = async (request, h) => {
     notificationEventId: response.data.id
   })
 
-  // eslint-disable-next-line no-useless-escape
-  return h.redirect(request.path.replace(/\/[^\/]*$/, '/processing'))
+  return h.redirect(request.path.replace(/\/[^/]*$/, '/processing'))
 }
 
 const getSendAlertProcessing = async (request, h) => {
@@ -595,8 +589,7 @@ const getSendAlertProcessing = async (request, h) => {
       pageTitle
     })
   } else {
-    // eslint-disable-next-line no-useless-escape
-    return h.redirect(request.path.replace(/\/[^\/]*$/, '/check'))
+    return h.redirect(request.path.replace(/\/[^/]*$/, '/check'))
   }
 }
 

@@ -112,8 +112,7 @@ const postUpdateCustomerContactName = async (request, h) => {
 
   await services.water.contacts.patchContact(contactId, data)
 
-  // eslint-disable-next-line no-useless-escape
-  return h.redirect(request.path.replace(/\/[^\/]*$/, ''))
+  return h.redirect(request.path.replace(/\/[^/]*$/, ''))
 }
 
 const getUpdateCustomerContactDepartment = async (request, h) => {
@@ -153,8 +152,7 @@ const postUpdateCustomerContactDepartment = async (request, h) => {
 
   await services.water.contacts.patchContact(contactId, data)
 
-  // eslint-disable-next-line no-useless-escape
-  return h.redirect(request.path.replace(/\/[^\/]*$/, ''))
+  return h.redirect(request.path.replace(/\/[^/]*$/, ''))
 }
 
 const getAddCustomerContactEmail = async (request, h) => {
@@ -206,8 +204,7 @@ const postAddCustomerContactEmail = async (request, h) => {
       company
     })
   }
-  // eslint-disable-next-line no-useless-escape
-  return h.redirect(request.path.replace(/\/[^\/]*$/, ''))
+  return h.redirect(request.path.replace(/\/[^/]*$/, ''))
 }
 
 const getUpdateCustomerWaterAbstractionAlertsPreferences = async (request, h) => {
@@ -249,12 +246,10 @@ const postUpdateCustomerWaterAbstractionAlertsPreferences = async (request, h) =
   const companyContact = companyContacts.find(row => row.contact.id === contactId)
 
   if (waterAbstractionAlertsEnabled && !companyContact.contact.email) {
-    // eslint-disable-next-line no-useless-escape
-    return h.redirect(request.path.replace(/\/[^\/]*$/, '/email'))
+    return h.redirect(request.path.replace(/\/[^/]*$/, '/email'))
   }
 
-  // eslint-disable-next-line no-useless-escape
-  return h.redirect(request.path.replace(/\/[^\/]*$/, ''))
+  return h.redirect(request.path.replace(/\/[^/]*$/, ''))
 }
 
 const getCreateCompanyContact = async (request, h) => {
@@ -333,7 +328,6 @@ const postSelectRemoveCompanyContact = async (request, h) => {
 
   session.merge(request, { companyContactId })
 
-  // eslint-disable-next-line no-useless-escape
   return h.redirect(request.path + '/check')
 }
 

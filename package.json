@@ -24,8 +24,8 @@
     "test:cypress-edge": "npm run pretest && node_modules/.bin/cypress run --browser edge && npm run test:cypress-prepare-report",
     "test:cypress-firefox": "npm run pretest && node_modules/.bin/cypress run --browser firefox && npm run test:cypress-prepare-report",
     "test:cypress-prepare-report": "mochawesome-merge ./cypress/reports/mocha/*.json > ./cypress/reports/mocha/combined-report.json && marge --reportDir cypress/reports/mocha/ ./cypress/reports/mocha/combined-report.json",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint": "standard",
+    "lint:fix": "standard --fix",
     "sass": "gulp sass",
     "sass:watch": "gulp sass:watch",
     "snyk-protect": "snyk protect",
@@ -48,13 +48,6 @@
     "cypress-file-upload": "^5.0.8",
     "cypress-multi-reporters": "^1.5.0",
     "del": "^6.0.0",
-    "eslint": "^8.13.0",
-    "eslint-config-standard": "^14.1.1",
-    "eslint-plugin-cypress": "^2.12.1",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^6.0.0",
-    "eslint-plugin-standard": "^5.0.0",
     "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",
     "gulp-sass": "^5.1.0",
@@ -66,7 +59,8 @@
     "mochawesome-report-generator": "^6.0.1",
     "sass": "^1.49.7",
     "sinon": "^12.0.1",
-    "snyk": "^1.852.0"
+    "snyk": "^1.852.0",
+    "standard": "^17.0.0"
   },
   "dependencies": {
     "@envage/hapi-pg-rest-api": "^7.0.0",
@@ -135,5 +129,31 @@
     "uuid": "^8.3.2",
     "winston": "^3.6.0"
   },
-  "snyk": true
+  "snyk": true,
+  "standard": {
+    "ignore": [
+      "coverage",
+      "data",
+      "govuk_modules",
+      "public",
+      "cypress/fixtues/",
+      "cypress/plugins/",
+      "cypress/reports/",
+      "cypress/screenshots/",
+      "cypress/support/",
+      "cypress/videos/",
+      "cypress/temp/"
+    ],
+    "globals": [
+      "cy",
+      "Cypress",
+      "describe",
+      "expect",
+      "it",
+      "before",
+      "beforeEach",
+      "after",
+      "afterEach"
+    ]
+  }
 }

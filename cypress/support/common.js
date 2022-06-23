@@ -110,12 +110,12 @@ const recalculateBills = () => {
 
 const markLicenceForNextSupplementaryRun = () => {
   describe('user marks the licence for the next supplementary run', () => {
-    cy.get('.govuk-heading-l').contains(`You're about to mark this licence for the next supplementary bill run`);
+    cy.get('.govuk-heading-l').contains('You\'re about to mark this licence for the next supplementary bill run');
     cy.get('.govuk-button').contains('Confirm').click();
   });
 
   describe('user creates a bill run', () => {
-    cy.get('.govuk-panel__title').contains(`You've marked this licence for the next supplementary bill run`);
+    cy.get('.govuk-panel__title').contains('You\'ve marked this licence for the next supplementary bill run');
     cy.get('.govuk-button').contains('Create bill run').click();
   });
 };
@@ -144,8 +144,7 @@ const setTwoPartTariffBillingVolume = (customVolume) => {
 
 const continueSupplementaryBillRun = (type) => {
   describe(`user generates ${type} bill run`, () => {
-    cy.get('.govuk-button').contains('Continue').click();
-    cy.get('.govuk-heading-l').contains(`You're about to generate`);
+    cy.get('.govuk-heading-l').contains('You\'re about to generate');
     cy.get('.govuk-button').contains('Confirm').click();
   });
 

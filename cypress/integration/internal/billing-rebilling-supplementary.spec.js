@@ -45,6 +45,7 @@ describe('rebilling supplementary bill run', () => {
       })
 
       describe('user verifys the generated bill', () => {
+        cy.reload()
         cy.get('.govuk-link').eq(4).click()
         cy.url().should('contain', '/billing/batch/')
         cy.get('.govuk-caption-l').contains('Billing account')

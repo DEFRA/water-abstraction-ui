@@ -1,18 +1,18 @@
-const { get } = require('lodash');
-const { createLink, setActiveLink } = require('./helpers');
+const { get } = require('lodash')
+const { createLink, setActiveLink } = require('./helpers')
 
 const {
   isAuthenticated,
   isHofOrRenewalNotifications
-} = require('../permissions');
+} = require('../permissions')
 
 const createPropositionLink = (label, path, id) => {
-  return createLink(label, path, id, { id });
-};
+  return createLink(label, path, id, { id })
+}
 
-const contactLink = createPropositionLink('Contact information', '/contact-information', 'contact-information');
-const changePasswordLink = createPropositionLink('Change password', '/account/update-password', 'change-password');
-const signoutLink = createPropositionLink('Sign out', '/signout', 'signout');
+const contactLink = createPropositionLink('Contact information', '/contact-information', 'contact-information')
+const changePasswordLink = createPropositionLink('Change password', '/account/update-password', 'change-password')
+const signoutLink = createPropositionLink('Sign out', '/signout', 'signout')
 
 /**
  * Given a HAPI request instance, provides a list of links for the
@@ -22,19 +22,19 @@ const signoutLink = createPropositionLink('Sign out', '/signout', 'signout');
  */
 const getPropositionLinks = (request) => {
   if (!isAuthenticated(request)) {
-    return [];
+    return []
   }
 
-  const links = [];
+  const links = []
 
   if (isHofOrRenewalNotifications(request)) {
-    links.push(contactLink);
+    links.push(contactLink)
   }
-  links.push(changePasswordLink, signoutLink);
+  links.push(changePasswordLink, signoutLink)
 
   // Add active boolean to correct link
-  const activeNavLink = get(request, 'view.activeNavLink');
-  return setActiveLink(links, activeNavLink);
-};
+  const activeNavLink = get(request, 'view.activeNavLink')
+  return setActiveLink(links, activeNavLink)
+}
 
-exports.getPropositionLinks = getPropositionLinks;
+exports.getPropositionLinks = getPropositionLinks

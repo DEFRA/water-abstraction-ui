@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 /**
  * Gets the form action
@@ -9,7 +9,7 @@
  * @return {String} form action path
  */
 const getFormAction = request => {
-  return `${request.url.pathname}${request.url.search}`;
-};
+  return `${request.url.pathname}${request.url.search}`
+}
 
-exports.getFormAction = getFormAction;
+exports.getFormAction = getFormAction

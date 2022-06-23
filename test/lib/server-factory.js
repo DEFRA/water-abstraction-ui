@@ -1,34 +1,34 @@
-'use strict';
+'use strict'
 
-const config = require('external/config');
-const viewEngine = require('external/lib/view-engine');
+const config = require('external/config')
+const viewEngine = require('external/lib/view-engine')
 
-const hapi = require('@hapi/hapi');
+const hapi = require('@hapi/hapi')
 
 const createServer = async (route) => {
-  const server = hapi.server();
-  await server.register(require('@hapi/vision'));
-  await server.register(require('hapi-auth-cookie'));
-  await server.register(require('shared/plugins/config'));
+  const server = hapi.server()
+  await server.register(require('@hapi/vision'))
+  await server.register(require('hapi-auth-cookie'))
+  await server.register(require('shared/plugins/config'))
 
-  server.views(viewEngine);
+  server.views(viewEngine)
   server.auth.strategy('standard', 'cookie', {
     ...config.hapiAuthCookie,
     validateFunc: () => {}
-  });
-  server.auth.default('standard');
+  })
+  server.auth.default('standard')
 
   if (route) {
-    server.route(route);
+    server.route(route)
   }
 
-  return server;
-};
+  return server
+}
 
 const createRouteWithNoOpHandler = route => ({
   ...route,
   handler: () => 'ok'
-});
+})
 
-exports.createServer = createServer;
-exports.createRouteWithNoOpHandler = createRouteWithNoOpHandler;
+exports.createServer = createServer
+exports.createRouteWithNoOpHandler = createRouteWithNoOpHandler

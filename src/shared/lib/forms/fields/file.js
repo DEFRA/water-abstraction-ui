@@ -3,17 +3,17 @@ const fileFactory = (name, opts = {}, value) => {
     label: '',
     widget: 'file',
     required: true
-  };
+  }
   const options = {
     ...defaults,
     ...opts
-  };
+  }
   return {
     name,
     value,
     options,
     errors: []
-  };
-};
+  }
+}
 
-module.exports = fileFactory;
+module.exports = fileFactory

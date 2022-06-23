@@ -1,9 +1,9 @@
-const Joi = require('joi');
-const controller = require('./controller');
-const constants = require('../../lib/constants');
-const returns = constants.scope.returns;
+const Joi = require('joi')
+const controller = require('./controller')
+const constants = require('../../lib/constants')
+const returns = constants.scope.returns
 
-const activeNavLink = 'notifications';
+const activeNavLink = 'notifications'
 
 module.exports = {
 
@@ -63,4 +63,4 @@ module.exports = {
     }
   }
 
-};
+}

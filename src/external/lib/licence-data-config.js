@@ -1,13 +1,13 @@
-const services = require('./connectors/services');
+const services = require('./connectors/services')
 
 exports.getLicenceData = (method, documentId, request) => {
   // To be added soon, but currently only for internal users.
   if (method === 'getChargeVersionsByDocumentId') {
-    return [];
+    return []
   }
 
-  const { companyId } = request.defra;
-  const options = companyId ? { companyId } : {};
+  const { companyId } = request.defra
+  const options = companyId ? { companyId } : {}
 
-  return services.water.licences[method](documentId, options);
-};
+  return services.water.licences[method](documentId, options)
+}

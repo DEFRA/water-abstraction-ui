@@ -1,5 +1,5 @@
-const { get } = require('lodash');
-const Boom = require('@hapi/boom');
+const { get } = require('lodash')
+const Boom = require('@hapi/boom')
 
 /**
  * Redirects the user to the billing account
@@ -9,14 +9,14 @@ const Boom = require('@hapi/boom');
  * @return {Object}       - HAPI HTTP redirect response
  */
 const redirectToBillingAccount = (billingAccount, view, h) => {
-  const billingAccountId = get(view, 'billingAccount.invoiceAccountId');
+  const billingAccountId = get(view, 'billingAccount.invoiceAccountId')
   if (billingAccountId) {
-    return h.redirect(`/billing-accounts/${billingAccountId}`);
+    return h.redirect(`/billing-accounts/${billingAccountId}`)
   } else {
-    throw Boom.notFound('Billing account not found');
+    throw Boom.notFound('Billing account not found')
   }
-};
+}
 
 module.exports = {
   redirectToBillingAccount
-};
+}

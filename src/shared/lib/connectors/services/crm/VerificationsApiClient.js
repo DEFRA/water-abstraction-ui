@@ -1,10 +1,10 @@
-const { APIClient } = require('@envage/hapi-pg-rest-api');
-const urlJoin = require('url-join');
-const { http, serviceRequest } = require('@envage/water-abstraction-helpers');
+const { APIClient } = require('@envage/hapi-pg-rest-api')
+const urlJoin = require('url-join')
+const { http, serviceRequest } = require('@envage/water-abstraction-helpers')
 
-const getEndpoint = serviceUrl => urlJoin(serviceUrl, '/verification');
+const getEndpoint = serviceUrl => urlJoin(serviceUrl, '/verification')
 const getVerificationDocumentsEndpoint = (serviceUrl, verificationId) =>
-  urlJoin(getEndpoint(serviceUrl), verificationId, 'documents');
+  urlJoin(getEndpoint(serviceUrl), verificationId, 'documents')
 
 class VerificationsApiClient extends APIClient {
   /**
@@ -13,7 +13,7 @@ class VerificationsApiClient extends APIClient {
    * @param {Object} logger The system logger object
    */
   constructor (config, logger) {
-    const serviceUrl = config.services.crm;
+    const serviceUrl = config.services.crm
 
     super(http.request, {
       serviceUrl,
@@ -22,7 +22,7 @@ class VerificationsApiClient extends APIClient {
       headers: {
         Authorization: config.jwt.token
       }
-    });
+    })
   }
 
   /**
@@ -32,12 +32,12 @@ class VerificationsApiClient extends APIClient {
    * @return {Promise}
    */
   addDocuments (verificationId, documentIds) {
-    const uri = getVerificationDocumentsEndpoint(this.config.serviceUrl, verificationId);
+    const uri = getVerificationDocumentsEndpoint(this.config.serviceUrl, verificationId)
     return serviceRequest.post(uri, {
       body: {
         document_id: documentIds
       }
-    });
+    })
   };
 
   /**
@@ -46,9 +46,9 @@ class VerificationsApiClient extends APIClient {
    * @return {Promise}
    */
   getDocuments (verificationId, documentIds) {
-    const uri = getVerificationDocumentsEndpoint(this.config.serviceUrl, verificationId);
-    return serviceRequest.get(uri);
+    const uri = getVerificationDocumentsEndpoint(this.config.serviceUrl, verificationId)
+    return serviceRequest.get(uri)
   };
 }
 
-module.exports = VerificationsApiClient;
+module.exports = VerificationsApiClient

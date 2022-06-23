@@ -1,5 +1,5 @@
-const controller = require('./controller');
-const { baseUrl } = require('../../config');
+const controller = require('./controller')
+const { baseUrl } = require('../../config')
 
 module.exports = {
 
@@ -67,4 +67,4 @@ module.exports = {
     },
     handler: controller.staticPage
   }
-};
+}

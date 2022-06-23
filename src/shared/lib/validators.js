@@ -1,8 +1,8 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
+const Joi = require('joi')
 
-const returnIDRegex = /^v1:[1-8]:[^:]+:[0-9]+:[0-9]{4}-[0-9]{2}-[0-9]{2}:[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
+const returnIDRegex = /^v1:[1-8]:[^:]+:[0-9]+:[0-9]{4}-[0-9]{2}-[0-9]{2}:[0-9]{4}-[0-9]{2}-[0-9]{2}$/
 
 const joiPasswordValidator = Joi.extend(joi => {
   return {
@@ -18,33 +18,33 @@ const joiPasswordValidator = Joi.extend(joi => {
     },
     validate: (value, helpers) => {
       // eslint-disable-next-line no-useless-escape
-      const hasUpperCase = /(?=.*[A-Z])/.test(value);
+      const hasUpperCase = /(?=.*[A-Z])/.test(value)
       // eslint-disable-next-line no-useless-escape
-      const hasSymbol = /^.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?].*$/.test(value);
-      const errors = [];
+      const hasSymbol = /^.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?].*$/.test(value)
+      const errors = []
 
       if (!value) {
-        return { value, errors: helpers.error('password.required') };
+        return { value, errors: helpers.error('password.required') }
       }
       if (!hasUpperCase) {
-        errors.push(helpers.error('password.uppercase'));
+        errors.push(helpers.error('password.uppercase'))
       }
       if (!hasSymbol) {
-        errors.push(helpers.error('password.symbol'));
+        errors.push(helpers.error('password.symbol'))
       }
 
       if (value.length < 8) {
-        errors.push(helpers.error('password.min'));
+        errors.push(helpers.error('password.min'))
       }
 
       if (errors.length === 0) {
-        return { value };
+        return { value }
       } else {
-        return { value, errors };
+        return { value, errors }
       }
     }
-  };
-});
+  }
+})
 
 module.exports = {
 
@@ -76,4 +76,4 @@ module.exports = {
   VALID_LICENCE_NAME: Joi.string().trim().min(2).max(32).regex(/^[a-z0-9 ']+$/i),
 
   VALID_RETURN_ID: Joi.string().pattern(returnIDRegex).required()
-};
+}

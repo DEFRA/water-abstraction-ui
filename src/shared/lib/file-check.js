@@ -1,11 +1,11 @@
-const fs = require('fs');
-const { pick } = require('lodash');
-const fileType = require('file-type');
-const readChunk = require('read-chunk');
-const util = require('util');
-const parseCsv = util.promisify(require('csv-parse'));
-const childProcessHelpers = require('./child-process-helpers');
-const files = require('./files');
+const fs = require('fs')
+const { pick } = require('lodash')
+const fileType = require('file-type')
+const readChunk = require('read-chunk')
+const util = require('util')
+const parseCsv = util.promisify(require('csv-parse'))
+const childProcessHelpers = require('./child-process-helpers')
+const files = require('./files')
 
 /**
  * Throws an error if the specified file does not exist
@@ -13,20 +13,20 @@ const files = require('./files');
  */
 const throwIfFileDoesNotExist = (file) => {
   if (!fs.existsSync(file)) {
-    throw new Error(`File not found: ${file}`);
+    throw new Error(`File not found: ${file}`)
   }
-  return true;
-};
+  return true
+}
 
 const isInfectedFile = (err) => {
-  return err.code === 1;
-};
+  return err.code === 1
+}
 
 const createLoggerError = (err) => {
-  const error = new Error('Virus checker found infected file');
-  error.params = pick(err, ['code', 'cmd', 'stdout']);
-  return error;
-};
+  const error = new Error('Virus checker found infected file')
+  error.params = pick(err, ['code', 'cmd', 'stdout'])
+  return error
+}
 
 /**
  * Runs the Clam Scan virus check on a particular file
@@ -35,15 +35,15 @@ const createLoggerError = (err) => {
  */
 const clamScan = async (file) => {
   try {
-    await childProcessHelpers.exec(`clamdscan ${file}`);
-    return { isClean: true };
+    await childProcessHelpers.exec(`clamdscan ${file}`)
+    return { isClean: true }
   } catch (err) {
     if (isInfectedFile(err)) {
-      return { isClean: false, err: createLoggerError(err) };
+      return { isClean: false, err: createLoggerError(err) }
     }
-    throw err;
+    throw err
   }
-};
+}
 
 /**
  * Runs clamscan virus check on specified file
@@ -52,9 +52,9 @@ const clamScan = async (file) => {
  * @return {Boolean}     - true if successful
  */
 const virusCheck = async (file) => {
-  throwIfFileDoesNotExist(file);
-  return clamScan(file);
-};
+  throwIfFileDoesNotExist(file)
+  return clamScan(file)
+}
 
 /**
  * Checks whether supplied file path is a valid CSV file
@@ -63,30 +63,30 @@ const virusCheck = async (file) => {
  */
 const isCsv = async file => {
   try {
-    const str = await files.readFile(file);
-    await parseCsv(str);
-    return true;
+    const str = await files.readFile(file)
+    await parseCsv(str)
+    return true
   } catch (err) {
-    return false;
+    return false
   }
-};
+}
 
 const detectFileType = async (file) => {
-  throwIfFileDoesNotExist(file);
+  throwIfFileDoesNotExist(file)
 
   // Detect file types supported by file-type module
-  const buffer = readChunk.sync(file, 0, fileType.minimumBytes);
-  const result = fileType(buffer);
+  const buffer = readChunk.sync(file, 0, fileType.minimumBytes)
+  const result = fileType(buffer)
   if (result) {
-    return result.ext;
+    return result.ext
   }
 
   // Detect CSV file
-  const isCsvResult = await isCsv(file);
+  const isCsvResult = await isCsv(file)
   if (isCsvResult) {
-    return 'csv';
+    return 'csv'
   }
-};
+}
 
 module.exports = {
   throwIfFileDoesNotExist,
@@ -94,4 +94,4 @@ module.exports = {
   virusCheck,
   detectFileType,
   _isCsv: isCsv
-};
+}

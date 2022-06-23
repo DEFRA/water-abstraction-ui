@@ -1,5 +1,5 @@
-const { signInForm, signInSchema, signInApplyErrorState } = require('./sign-in');
+const { signInForm, signInSchema, signInApplyErrorState } = require('./sign-in')
 
-exports.signInForm = signInForm;
-exports.signInSchema = signInSchema;
-exports.signInApplyErrorState = signInApplyErrorState;
+exports.signInForm = signInForm
+exports.signInSchema = signInSchema
+exports.signInApplyErrorState = signInApplyErrorState

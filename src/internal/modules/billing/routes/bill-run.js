@@ -1,12 +1,12 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
-const controller = require('../controllers/bill-run');
-const { billing } = require('../../../../internal/lib/constants').scope;
-const allowedScopes = [billing];
-const preHandlers = require('../pre-handlers');
+const Joi = require('joi')
+const controller = require('../controllers/bill-run')
+const { billing } = require('../../../../internal/lib/constants').scope
+const allowedScopes = [billing]
+const preHandlers = require('../pre-handlers')
 
-const { featureToggles } = require('../../../config');
+const { featureToggles } = require('../../../config')
 
 const routes = {
 
@@ -342,7 +342,7 @@ const routes = {
       ]
     }
   }
-};
+}
 
 if (featureToggles.deleteAllBillingData) {
   routes.postDeleteAllBillingData = {
@@ -352,7 +352,7 @@ if (featureToggles.deleteAllBillingData) {
     config: {
       auth: { scope: allowedScopes }
     }
-  };
+  }
 }
 
-module.exports = routes;
+module.exports = routes

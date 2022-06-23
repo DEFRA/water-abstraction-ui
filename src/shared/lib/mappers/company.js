@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
 const mapCompanyToString = company =>
-  company.name;
+  company.name
 
-exports.mapCompanyToString = mapCompanyToString;
+exports.mapCompanyToString = mapCompanyToString

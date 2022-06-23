@@ -13,8 +13,8 @@ const createLink = (text, href, id, attributes = {}) => {
     href,
     id,
     attributes
-  };
-};
+  }
+}
 
 /**
  * Sets the active link on a list of links
@@ -26,10 +26,10 @@ const setActiveLink = (links, activeNavLink) => {
   return links.map(link => ({
     ...link,
     active: link.id === activeNavLink
-  }));
-};
+  }))
+}
 
 module.exports = {
   createLink,
   setActiveLink
-};
+}

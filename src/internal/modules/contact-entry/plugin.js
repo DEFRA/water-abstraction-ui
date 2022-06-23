@@ -1,7 +1,7 @@
-'use strict';
-const Joi = require('joi');
-const routes = Object.values(require('./routes'));
-const session = require('./lib/session');
+'use strict'
+const Joi = require('joi')
+const routes = Object.values(require('./routes'))
+const session = require('./lib/session')
 
 const OPTIONS_SCHEMA = Joi.object().keys({
   back: Joi.string().required(),
@@ -11,7 +11,7 @@ const OPTIONS_SCHEMA = Joi.object().keys({
   companyId: Joi.string().guid().required().allow(null),
   data: Joi.object().optional(),
   disableExistingContactSelection: Joi.boolean().optional().default(false)
-});
+})
 
 /**
  * This function stores data in the session and returns
@@ -21,13 +21,13 @@ const OPTIONS_SCHEMA = Joi.object().keys({
  */
 function contactEntryRedirect (options) {
   // Validate options
-  Joi.assert(options, OPTIONS_SCHEMA);
+  Joi.assert(options, OPTIONS_SCHEMA)
 
   // Store in session
-  session.set(this, options.key, options);
+  session.set(this, options.key, options)
 
   // Return redirect path to enter flow
-  return `/contact-entry/${options.key}/select-contact`;
+  return `/contact-entry/${options.key}/select-contact`
 }
 
 /**
@@ -36,23 +36,23 @@ function contactEntryRedirect (options) {
  * @return {Object}
  */
 function getNewContact (key) {
-  return (session.get(this, key) || {}).data;
+  return (session.get(this, key) || {}).data
 }
 
 const contactEntryPlugin = {
   register: server => {
     // Register method to initiate flow and get data
-    server.decorate('request', 'contactEntryRedirect', contactEntryRedirect);
-    server.decorate('request', 'getNewContact', getNewContact);
+    server.decorate('request', 'contactEntryRedirect', contactEntryRedirect)
+    server.decorate('request', 'getNewContact', getNewContact)
 
     // Register flow routes
-    server.route(routes);
+    server.route(routes)
   },
 
   pkg: {
     name: 'contactEntryPlugin',
     version: '1.0.0'
   }
-};
+}
 
-module.exports = contactEntryPlugin;
+module.exports = contactEntryPlugin

@@ -1,10 +1,10 @@
-const Joi = require('joi');
-const controller = require('./controller');
-const { VALID_GUID, VALID_LICENCE_QUERY } = require('shared/lib/validators');
+const Joi = require('joi')
+const controller = require('./controller')
+const { VALID_GUID, VALID_LICENCE_QUERY } = require('shared/lib/validators')
 
-const { scope } = require('../../lib/constants');
+const { scope } = require('../../lib/constants')
 
-const allowedScopes = [scope.licenceHolder, scope.colleague, scope.colleagueWithReturns];
+const allowedScopes = [scope.licenceHolder, scope.colleague, scope.colleagueWithReturns]
 
 const getLicenceRename = {
   method: 'GET',
@@ -31,7 +31,7 @@ const getLicenceRename = {
       }
     }
   }
-};
+}
 
 const postLicenceRename = {
   method: 'POST',
@@ -62,7 +62,7 @@ const postLicenceRename = {
       }
     }
   }
-};
+}
 
 module.exports = {
   getLicences: {
@@ -109,4 +109,4 @@ module.exports = {
   },
   getLicenceRename,
   postLicenceRename
-};
+}

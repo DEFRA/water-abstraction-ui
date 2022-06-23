@@ -1,12 +1,12 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
-const controller = require('./controller');
-const preHandlers = require('./lib/prehandlers');
-const helpers = require('./lib/helpers');
-const { manageGaugingStationLicenceLinks, hofNotifications } = require('internal/lib/constants').scope;
-const taggingAllowedScopes = [manageGaugingStationLicenceLinks];
-const sendingAllowedScopes = [hofNotifications];
+const Joi = require('joi')
+const controller = require('./controller')
+const preHandlers = require('./lib/prehandlers')
+const helpers = require('./lib/helpers')
+const { manageGaugingStationLicenceLinks, hofNotifications } = require('internal/lib/constants').scope
+const taggingAllowedScopes = [manageGaugingStationLicenceLinks]
+const sendingAllowedScopes = [hofNotifications]
 
 module.exports = {
 
@@ -490,4 +490,4 @@ module.exports = {
       }
     }
   }
-};
+}

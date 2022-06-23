@@ -1,11 +1,11 @@
-const { fields } = require('shared/lib/forms');
+const { fields } = require('shared/lib/forms')
 
 const choices = [
   { value: 'm³', label: 'Cubic metres' },
   { value: 'l', label: 'Litres' },
   { value: 'Ml', label: 'Megalitres' },
   { value: 'gal', label: 'Gallons' }
-];
+]
 
 const getUnitsField = label => fields.radio('units', {
   label,
@@ -16,6 +16,6 @@ const getUnitsField = label => fields.radio('units', {
     }
   },
   choices
-});
+})
 
-exports.getUnitsField = getUnitsField;
+exports.getUnitsField = getUnitsField

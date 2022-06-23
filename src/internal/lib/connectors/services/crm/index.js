@@ -1,11 +1,11 @@
-const EntitiesApiClient = require('shared/lib/connectors/services/crm/EntitiesApiClient');
-const EntityRolesApiClient = require('shared/lib/connectors/services/crm/EntityRolesApiClient');
-const DocumentVerificationsApiClient = require('shared/lib/connectors/services/crm/DocumentVerificationsApiClient');
-const DocumentsApiClient = require('shared/lib/connectors/services/crm/DocumentsApiClient');
-const VerificationsApiClient = require('shared/lib/connectors/services/crm/VerificationsApiClient');
-const DocumentRolesApiClient = require('shared/lib/connectors/services/crm/DocumentRolesApiClient');
+const EntitiesApiClient = require('shared/lib/connectors/services/crm/EntitiesApiClient')
+const EntityRolesApiClient = require('shared/lib/connectors/services/crm/EntityRolesApiClient')
+const DocumentVerificationsApiClient = require('shared/lib/connectors/services/crm/DocumentVerificationsApiClient')
+const DocumentsApiClient = require('shared/lib/connectors/services/crm/DocumentsApiClient')
+const VerificationsApiClient = require('shared/lib/connectors/services/crm/VerificationsApiClient')
+const DocumentRolesApiClient = require('shared/lib/connectors/services/crm/DocumentRolesApiClient')
 
-const { logger } = require('../../../../logger');
+const { logger } = require('../../../../logger')
 
 module.exports = config => ({
   entities: new EntitiesApiClient(config, logger),
@@ -14,4 +14,4 @@ module.exports = config => ({
   documents: new DocumentsApiClient(config, logger),
   documentRoles: new DocumentRolesApiClient(config, logger),
   verifications: new VerificationsApiClient(config, logger)
-});
+})

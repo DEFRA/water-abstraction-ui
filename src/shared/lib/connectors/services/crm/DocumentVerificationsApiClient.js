@@ -1,8 +1,8 @@
-const { APIClient, throwIfError } = require('@envage/hapi-pg-rest-api');
-const urlJoin = require('url-join');
-const { http, serviceRequest } = require('@envage/water-abstraction-helpers');
+const { APIClient, throwIfError } = require('@envage/hapi-pg-rest-api')
+const urlJoin = require('url-join')
+const { http, serviceRequest } = require('@envage/water-abstraction-helpers')
 
-const getEndpoint = serviceUrl => urlJoin(serviceUrl, 'document_verifications');
+const getEndpoint = serviceUrl => urlJoin(serviceUrl, 'document_verifications')
 
 class DocumentVerificationsApiClient extends APIClient {
   /**
@@ -11,7 +11,7 @@ class DocumentVerificationsApiClient extends APIClient {
    * @param {Object} logger The system logger object
    */
   constructor (config, logger) {
-    const serviceUrl = config.services.crm;
+    const serviceUrl = config.services.crm
 
     super(http.request, {
       serviceUrl,
@@ -20,20 +20,20 @@ class DocumentVerificationsApiClient extends APIClient {
       headers: {
         Authorization: config.jwt.token
       }
-    });
+    })
   }
 
   getDocumentVerifications (documentId) {
-    const url = this.config.endpoint;
+    const url = this.config.endpoint
 
     const qs = {
       filter: JSON.stringify({
         document_id: documentId,
         'verification.date_verified': null
       })
-    };
+    }
 
-    return serviceRequest.get(url, { qs });
+    return serviceRequest.get(url, { qs })
   }
 
   /**
@@ -42,20 +42,20 @@ class DocumentVerificationsApiClient extends APIClient {
    * @return {Promise} resolves with array of verification data
    */
   async getUniqueDocumentVerifications (documentId) {
-    const { error, data: verifications } = await this.getDocumentVerifications(documentId);
-    throwIfError(error);
+    const { error, data: verifications } = await this.getDocumentVerifications(documentId)
+    throwIfError(error)
 
     const withKey = verifications.map(v => {
-      return { key: `${v.entity_id}.${v.document_id}`, ...v };
-    });
+      return { key: `${v.entity_id}.${v.document_id}`, ...v }
+    })
 
     const sorted = withKey.sort((a, b) => {
-      return new Date(b.date_created) - new Date(a.date_created);
-    });
+      return new Date(b.date_created) - new Date(a.date_created)
+    })
 
-    const unique = sorted.reduce((acc, v) => acc.set(v.key, v), new Map());
-    return Array.from(unique.values());
+    const unique = sorted.reduce((acc, v) => acc.set(v.key, v), new Map())
+    return Array.from(unique.values())
   }
 }
 
-module.exports = DocumentVerificationsApiClient;
+module.exports = DocumentVerificationsApiClient

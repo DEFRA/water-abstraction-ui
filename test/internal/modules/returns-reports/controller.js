@@ -1,16 +1,16 @@
-'use strict';
-const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
-const { expect } = require('@hapi/code');
+'use strict'
+const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script()
+const { expect } = require('@hapi/code')
 
-const sinon = require('sinon');
-const sandbox = sinon.createSandbox();
+const sinon = require('sinon')
+const sandbox = sinon.createSandbox()
 
-const services = require('internal/lib/connectors/services');
-const controller = require('internal/modules/returns-reports/controller');
-const csv = require('internal/lib/csv-download');
+const services = require('internal/lib/connectors/services')
+const controller = require('internal/modules/returns-reports/controller')
+const csv = require('internal/lib/csv-download')
 
-const futureReturnCycleId = 'future-return-cycle-id';
-const returnCycleId = 'test-id-1';
+const futureReturnCycleId = 'future-return-cycle-id'
+const returnCycleId = 'test-id-1'
 
 const data = {
   report: [
@@ -57,125 +57,125 @@ const data = {
     },
     userType: 'external'
   }]
-};
+}
 
 experiment('internal/modules/returns-reports/controller.js', () => {
-  let h, request;
+  let h, request
 
   beforeEach(async () => {
-    sandbox.stub(services.water.returnCycles, 'getReport').resolves({ data: data.report });
-    sandbox.stub(services.water.returnCycles, 'getReturnCycleById');
-    sandbox.stub(services.water.returnCycles, 'getReturnCycleReturns').resolves({ data: data.returns });
+    sandbox.stub(services.water.returnCycles, 'getReport').resolves({ data: data.report })
+    sandbox.stub(services.water.returnCycles, 'getReturnCycleById')
+    sandbox.stub(services.water.returnCycles, 'getReturnCycleReturns').resolves({ data: data.returns })
 
-    sandbox.stub(csv, 'csvDownload');
+    sandbox.stub(csv, 'csvDownload')
     h = {
       response: sandbox.stub().returns({
         header: sandbox.stub().returnsThis()
       }),
       view: sandbox.stub()
-    };
+    }
     request = {
       params: {
         returnCycleId
       }
-    };
-  });
+    }
+  })
 
   afterEach(async () => {
-    sandbox.restore();
-  });
+    sandbox.restore()
+  })
 
   experiment('.getReturnCycles', () => {
     beforeEach(async () => {
-      await controller.getReturnCycles(request, h);
-    });
+      await controller.getReturnCycles(request, h)
+    })
 
     test('calls the water service api', async () => {
-      expect(services.water.returnCycles.getReport.called).to.be.true();
-    });
+      expect(services.water.returnCycles.getReport.called).to.be.true()
+    })
 
     test('uses the correct template', async () => {
-      const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/returns-reports/index');
-    });
+      const [template] = h.view.lastCall.args
+      expect(template).to.equal('nunjucks/returns-reports/index')
+    })
 
     test('outputs the most recent cycle to the view', async () => {
-      const [, { currentCycle }] = h.view.lastCall.args;
-      expect(currentCycle.id).to.equal('test-id-1');
-    });
+      const [, { currentCycle }] = h.view.lastCall.args
+      expect(currentCycle.id).to.equal('test-id-1')
+    })
 
     test('outputs the other cycles to the view sorted by date descending', async () => {
-      const [, { cycles }] = h.view.lastCall.args;
-      expect(cycles).to.be.an.array().length(2);
-      expect(cycles[0].id).to.equal('test-id-2');
-      expect(cycles[1].id).to.equal('test-id-3');
-    });
+      const [, { cycles }] = h.view.lastCall.args
+      expect(cycles).to.be.an.array().length(2)
+      expect(cycles[0].id).to.equal('test-id-2')
+      expect(cycles[1].id).to.equal('test-id-3')
+    })
 
     test('does not output future returns to the view', async () => {
-      const ids = h.view.lastCall.args[1].cycles.map(row => row.id);
-      expect(ids).to.not.include(futureReturnCycleId);
-    });
-  });
+      const ids = h.view.lastCall.args[1].cycles.map(row => row.id)
+      expect(ids).to.not.include(futureReturnCycleId)
+    })
+  })
 
   experiment('.getConfirmDownload', () => {
     beforeEach(async () => {
       services.water.returnCycles.getReturnCycleById.resolves(
         data.report[0]
-      );
-      await controller.getConfirmDownload(request, h);
-    });
+      )
+      await controller.getConfirmDownload(request, h)
+    })
 
     test('calls the water service api', async () => {
       expect(services.water.returnCycles.getReturnCycleById.calledWith(
         returnCycleId
-      )).to.be.true();
-    });
+      )).to.be.true()
+    })
 
     test('uses the correct template', async () => {
-      const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/returns-reports/confirm-download');
-    });
+      const [template] = h.view.lastCall.args
+      expect(template).to.equal('nunjucks/returns-reports/confirm-download')
+    })
 
     test('outputs a page title', async () => {
-      const [, { pageTitle }] = h.view.lastCall.args;
-      expect(pageTitle).to.equal('Download returns report for 1 April 2020 to 31 March 2021');
-    });
+      const [, { pageTitle }] = h.view.lastCall.args
+      expect(pageTitle).to.equal('Download returns report for 1 April 2020 to 31 March 2021')
+    })
 
     test('outputs a back link', async () => {
-      const [, { back }] = h.view.lastCall.args;
-      expect(back).to.equal('/returns-reports');
-    });
+      const [, { back }] = h.view.lastCall.args
+      expect(back).to.equal('/returns-reports')
+    })
 
     test('outputs a download link', async () => {
-      const [, { link }] = h.view.lastCall.args;
-      expect(link).to.equal(`/returns-reports/download/${returnCycleId}`);
-    });
-  });
+      const [, { link }] = h.view.lastCall.args
+      expect(link).to.equal(`/returns-reports/download/${returnCycleId}`)
+    })
+  })
 
   experiment('.getDownloadReport', () => {
     beforeEach(async () => {
       services.water.returnCycles.getReturnCycleById.resolves(
         data.report[0]
-      );
-      await controller.getDownloadReport(request, h);
-    });
+      )
+      await controller.getDownloadReport(request, h)
+    })
 
     test('calls the water service api to get the cycle', async () => {
       expect(services.water.returnCycles.getReturnCycleById.calledWith(
         returnCycleId
-      )).to.be.true();
-    });
+      )).to.be.true()
+    })
 
     test('calls the water service api to get returns in the cycle', async () => {
       expect(services.water.returnCycles.getReturnCycleReturns.calledWith(
         returnCycleId
-      )).to.be.true();
-    });
+      )).to.be.true()
+    })
 
     test('outputs the csv file', async () => {
-      const { args } = csv.csvDownload.lastCall;
+      const { args } = csv.csvDownload.lastCall
 
-      expect(args[0]).to.equal(h);
+      expect(args[0]).to.equal(h)
       expect(args[1]).to.equal([{
         'Return ID': 'test-id',
         'Licence number': '01/123/ABC',
@@ -188,8 +188,8 @@ experiment('internal/modules/returns-reports/controller.js', () => {
         'Date received': '2021-04-25',
         'Submitted by': 'bob@example.com',
         'User type': 'external'
-      }]);
-      expect(args[2]).to.equal('1 April 2020 to 31 March 2021 winter/all year returns.csv');
-    });
-  });
-});
+      }])
+      expect(args[2]).to.equal('1 April 2020 to 31 March 2021 winter/all year returns.csv')
+    })
+  })
+})

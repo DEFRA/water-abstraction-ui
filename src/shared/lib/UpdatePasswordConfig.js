@@ -4,8 +4,8 @@
 
 class UpdatePasswordConfig {
   constructor (config, connectors) {
-    this.connectors = connectors;
-    this.config = config;
+    this.connectors = connectors
+    this.config = config
   }
 
   /**
@@ -15,8 +15,8 @@ class UpdatePasswordConfig {
    * @param {string} password The user password
    */
   authenticate (email, password) {
-    const { application } = this.config.idm;
-    return this.connectors.idm.users.authenticate(email, password, application);
+    const { application } = this.config.idm
+    return this.connectors.idm.users.authenticate(email, password, application)
   }
 
   /**
@@ -26,9 +26,9 @@ class UpdatePasswordConfig {
    * @param {string} password The new password for the user
    */
   updatePassword (userId, password) {
-    const { application } = this.config.idm;
-    return this.connectors.idm.users.updatePassword(application, userId, password);
+    const { application } = this.config.idm
+    return this.connectors.idm.users.updatePassword(application, userId, password)
   }
 }
 
-module.exports = UpdatePasswordConfig;
+module.exports = UpdatePasswordConfig

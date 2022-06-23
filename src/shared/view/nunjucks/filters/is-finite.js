@@ -1,1 +1,1 @@
-exports.isFinite = require('lodash').isFinite;
+exports.isFinite = require('lodash').isFinite

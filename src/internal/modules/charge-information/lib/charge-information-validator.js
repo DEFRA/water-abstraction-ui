@@ -1,21 +1,21 @@
-'use-strict';
-const { getAbstractionPeriodSeason } = require('@envage/water-abstraction-helpers').returns.date;
+'use-strict'
+const { getAbstractionPeriodSeason } = require('@envage/water-abstraction-helpers').returns.date
 
 const isMatchingAbstractionPeriodAndSeason = chargeElement => {
-  const { abstractionPeriod, season } = chargeElement;
-  const absPeriodSeason = getAbstractionPeriodSeason(abstractionPeriod);
-  return absPeriodSeason === season;
-};
+  const { abstractionPeriod, season } = chargeElement
+  const absPeriodSeason = getAbstractionPeriodSeason(abstractionPeriod)
+  return absPeriodSeason === season
+}
 
 const isDefaultLossFactor = chargeElement => {
-  const { loss, purposeUse } = chargeElement;
-  return loss === purposeUse.lossFactor;
-};
+  const { loss, purposeUse } = chargeElement
+  return loss === purposeUse.lossFactor
+}
 
 const isBillableVolumeLessThanAuthorisedVolume = chargeElement => {
-  const { billableAnnualQuantity, authorisedAnnualQuantity } = chargeElement;
-  return billableAnnualQuantity <= authorisedAnnualQuantity;
-};
+  const { billableAnnualQuantity, authorisedAnnualQuantity } = chargeElement
+  return billableAnnualQuantity <= authorisedAnnualQuantity
+}
 
 const validations = {
   abstractionPeriod: {
@@ -30,33 +30,33 @@ const validations = {
     validatorFunc: isBillableVolumeLessThanAuthorisedVolume,
     warningMessage: 'The billable quantity is more than the authorised quantity'
   }
-};
+}
 
 const validate = chargeElement =>
   Object.values(validations).reduce((validationWarnings, validation) => {
     if (!validation.validatorFunc(chargeElement)) {
-      validationWarnings.push(validation.warningMessage);
+      validationWarnings.push(validation.warningMessage)
     }
-    return validationWarnings;
-  }, []);
+    return validationWarnings
+  }, [])
 
 const addValidation = chargeInformation => {
   const chargeElementsWithValidationWarnings = chargeInformation.chargeElements.map(element => ({
     ...(element.chargePurposes
       ? {
-        ...element,
-        chargePurposes: element.chargePurposes.map(purpose => ({
-          ...purpose,
-          validationWarnings: chargeInformation.scheme === 'alcs' ? validate(purpose) : []
-        }))
-      }
+          ...element,
+          chargePurposes: element.chargePurposes.map(purpose => ({
+            ...purpose,
+            validationWarnings: chargeInformation.scheme === 'alcs' ? validate(purpose) : []
+          }))
+        }
       : element),
     validationWarnings: chargeInformation.scheme === 'alcs' ? validate(element) : []
-  }));
+  }))
   return {
     ...chargeInformation,
     chargeElements: chargeElementsWithValidationWarnings
-  };
-};
+  }
+}
 
-exports.addValidation = addValidation;
+exports.addValidation = addValidation

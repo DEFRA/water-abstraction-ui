@@ -1,14 +1,14 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
-const { createRoutePair } = require('shared/lib/route-helpers');
-const controller = require('./controller');
+const Joi = require('joi')
+const { createRoutePair } = require('shared/lib/route-helpers')
+const controller = require('./controller')
 
 const redirectPath = Joi
   .string()
   .regex(/^\/[^/].*/)
   .uri({ relativeOnly: true })
-  .max(256);
+  .max(256)
 
 module.exports = {
   ...createRoutePair(controller, 'cookies', {
@@ -50,4 +50,4 @@ module.exports = {
       }
     }
   }
-};
+}

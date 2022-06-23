@@ -1,4 +1,4 @@
-const { get, negate, isEmpty } = require('lodash');
+const { get, negate, isEmpty } = require('lodash')
 
 const getAddressLinesFromLicence = licence => {
   return [
@@ -11,8 +11,8 @@ const getAddressLinesFromLicence = licence => {
     get(licence, 'metadata.County', '')
   ]
     .map(str => str.trim())
-    .filter(negate(isEmpty));
-};
+    .filter(negate(isEmpty))
+}
 
 /**
  * Add FAO details to first line of address. If address lines are full, add FAO to start of first line
@@ -21,12 +21,12 @@ const getAddressLinesFromLicence = licence => {
  */
 const addFaoToAddress = (lines, fao) => {
   if (lines.length >= 6) {
-    lines[0] = `${fao}, `.concat(lines[0]);
+    lines[0] = `${fao}, `.concat(lines[0])
   } else {
-    lines.unshift(fao);
+    lines.unshift(fao)
   }
-  return lines;
-};
+  return lines
+}
 
 /**
  * There are 6 available address slots in the notify templates, plus an extra for postcode.
@@ -36,22 +36,22 @@ const addFaoToAddress = (lines, fao) => {
  */
 const ensureMaximumAddressLength = lines => {
   if (lines.length > 6) {
-    lines.splice(4, 1);
+    lines.splice(4, 1)
   }
-  return lines;
-};
+  return lines
+}
 
 const createAddress = (licence, fao) => {
-  const lines = getAddressLinesFromLicence(licence);
-  if (fao) addFaoToAddress(lines, fao);
-  ensureMaximumAddressLength(lines);
+  const lines = getAddressLinesFromLicence(licence)
+  if (fao) addFaoToAddress(lines, fao)
+  ensureMaximumAddressLength(lines)
 
   return lines.reduce((memo, line, i) => {
-    memo[`address_line_${i + 1}`] = line;
-    return memo;
+    memo[`address_line_${i + 1}`] = line
+    return memo
   }, {
     postcode: get(licence, 'metadata.Postcode', '')
-  });
-};
+  })
+}
 
-exports.createAddress = createAddress;
+exports.createAddress = createAddress

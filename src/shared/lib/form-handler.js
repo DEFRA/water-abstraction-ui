@@ -1,12 +1,12 @@
-'use strict';
+'use strict'
 
-const forms = require('./forms');
-const sessionForms = require('./session-forms');
+const forms = require('./forms')
+const sessionForms = require('./session-forms')
 
-const isEqualCaseInsensitive = (a, b) => a.toLowerCase() === b.toLowerCase();
+const isEqualCaseInsensitive = (a, b) => a.toLowerCase() === b.toLowerCase()
 
-const isPost = method => isEqualCaseInsensitive(method, 'post');
-const isGet = method => isEqualCaseInsensitive(method, 'get');
+const isPost = method => isEqualCaseInsensitive(method, 'post')
+const isGet = method => isEqualCaseInsensitive(method, 'get')
 
 /**
  * Handles form including session forms implementation for POST forms
@@ -15,11 +15,11 @@ const isGet = method => isEqualCaseInsensitive(method, 'get');
  * @return {Object}
  */
 const handleFormRequest = (request, formContainer) => {
-  let form = formContainer.form(request);
+  let form = formContainer.form(request)
 
   // Use session forms for post forms
   if (isPost(form.method) && isGet(request.method)) {
-    form = sessionForms.get(request, formContainer.form(request));
+    form = sessionForms.get(request, formContainer.form(request))
   }
 
   // Handle request
@@ -28,10 +28,10 @@ const handleFormRequest = (request, formContainer) => {
       formContainer.form(request),
       request,
       formContainer.schema(request)
-    );
+    )
   }
 
-  return form;
-};
+  return form
+}
 
-exports.handleFormRequest = handleFormRequest;
+exports.handleFormRequest = handleFormRequest

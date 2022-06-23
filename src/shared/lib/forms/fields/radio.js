@@ -4,17 +4,17 @@ const radioFieldFactory = (name, opts = {}, value) => {
     label: '',
     widget: 'radio',
     required: true
-  };
+  }
   const options = {
     ...defaults,
     ...opts
-  };
+  }
   return {
     name,
     value,
     options,
     errors: []
-  };
-};
+  }
+}
 
-module.exports = radioFieldFactory;
+module.exports = radioFieldFactory

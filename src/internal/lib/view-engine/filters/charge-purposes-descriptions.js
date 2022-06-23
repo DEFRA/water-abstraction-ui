@@ -1,5 +1,5 @@
 const chargePurposesDescriptions = elements => elements
   .map(element => element.description)
-  .join(',\n');
+  .join(',\n')
 
-exports.chargePurposesDescriptions = chargePurposesDescriptions;
+exports.chargePurposesDescriptions = chargePurposesDescriptions

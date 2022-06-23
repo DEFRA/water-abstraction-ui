@@ -1,15 +1,15 @@
-'use strict';
+'use strict'
 
-const Lab = require('@hapi/lab');
-const { experiment, test, beforeEach } = exports.lab = Lab.script();
+const Lab = require('@hapi/lab')
+const { experiment, test, beforeEach } = exports.lab = Lab.script()
 
-const { expect } = require('@hapi/code');
-const { v4: uuid } = require('uuid');
+const { expect } = require('@hapi/code')
+const { v4: uuid } = require('uuid')
 
-const { setInitialState, setReturnIds, setSelectedRole } = require('internal/modules/returns-notifications/lib/actions');
-const reducer = require('internal/modules/returns-notifications/lib/reducer');
+const { setInitialState, setReturnIds, setSelectedRole } = require('internal/modules/returns-notifications/lib/actions')
+const reducer = require('internal/modules/returns-notifications/lib/reducer')
 
-const DOCUMENT_ID = uuid();
+const DOCUMENT_ID = uuid()
 
 const licence = {
   id: '00000000-0000-0000-0000-000000000001',
@@ -36,7 +36,7 @@ const licence = {
     displayName: 'Anglian'
   },
   endDate: null
-};
+}
 
 const createRole = roleName => ({
   roleName,
@@ -63,7 +63,7 @@ const createRole = roleName => ({
     addressLine3: 'TESTINGLY',
     addressLine4: null
   }
-});
+})
 
 const createReturn = (startDate, endDate, status, isSummer = false) => ({
   status,
@@ -104,23 +104,23 @@ const createReturn = (startDate, endDate, status, isSummer = false) => ({
     externalId: '1:1234',
     legacyId: 1234
   }
-});
+})
 
 experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
   experiment('for an unknown action', () => {
     test('the state is passed through unchanghed', async () => {
       const action = {
         type: 'unknown'
-      };
-      const initialState = { foo: 'bar' };
-      const nextState = reducer.reducer(initialState, action);
-      expect(nextState).to.equal(initialState);
-    });
-  });
+      }
+      const initialState = { foo: 'bar' }
+      const nextState = reducer.reducer(initialState, action)
+      expect(nextState).to.equal(initialState)
+    })
+  })
 
   experiment('setInitialState action', () => {
-    const refDate = '2020-10-16';
-    let licences, nextState;
+    const refDate = '2020-10-16'
+    let licences, nextState
 
     experiment('for a simple example', () => {
       beforeEach(async () => {
@@ -137,23 +137,23 @@ experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
               createReturn('2019-04-01', '2020-03-31', 'due')
             ]
           }]
-        }];
+        }]
 
-        nextState = reducer.reducer({}, setInitialState({}, licences, refDate));
-      });
+        nextState = reducer.reducer({}, setInitialState({}, licences, refDate))
+      })
 
       test('the return is pre-selected because it is due and in the current return cycle', async () => {
-        expect(nextState[DOCUMENT_ID].returns[0].isSelected).to.be.true();
-      });
+        expect(nextState[DOCUMENT_ID].returns[0].isSelected).to.be.true()
+      })
 
       test('the selected role is "licenceHolder"', async () => {
-        expect(nextState[DOCUMENT_ID].selectedRole).to.equal('licenceHolder');
-      });
+        expect(nextState[DOCUMENT_ID].selectedRole).to.equal('licenceHolder')
+      })
 
       test('the document is selected', async () => {
-        expect(nextState[DOCUMENT_ID].isSelected).to.be.true();
-      });
-    });
+        expect(nextState[DOCUMENT_ID].isSelected).to.be.true()
+      })
+    })
 
     experiment('when a return is "received"', () => {
       beforeEach(async () => {
@@ -170,15 +170,15 @@ experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
               createReturn('2019-04-01', '2020-03-31', 'received')
             ]
           }]
-        }];
+        }]
 
-        nextState = reducer.reducer({}, setInitialState({}, licences, refDate));
-      });
+        nextState = reducer.reducer({}, setInitialState({}, licences, refDate))
+      })
 
       test('the return is not pre-selected', async () => {
-        expect(nextState[DOCUMENT_ID].returns[0].isSelected).to.be.false();
-      });
-    });
+        expect(nextState[DOCUMENT_ID].returns[0].isSelected).to.be.false()
+      })
+    })
 
     experiment('when a return is in a previous return cycle', () => {
       beforeEach(async () => {
@@ -195,15 +195,15 @@ experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
               createReturn('2018-04-01', '2019-03-31', 'due')
             ]
           }]
-        }];
+        }]
 
-        nextState = reducer.reducer({}, setInitialState({}, licences, refDate));
-      });
+        nextState = reducer.reducer({}, setInitialState({}, licences, refDate))
+      })
 
       test('the return is not pre-selected', async () => {
-        expect(nextState[DOCUMENT_ID].returns[0].isSelected).to.be.false();
-      });
-    });
+        expect(nextState[DOCUMENT_ID].returns[0].isSelected).to.be.false()
+      })
+    })
 
     experiment('when a return does not match the current cycle season', () => {
       beforeEach(async () => {
@@ -220,15 +220,15 @@ experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
               createReturn('2019-04-01', '2020-03-31', 'due', true)
             ]
           }]
-        }];
+        }]
 
-        nextState = reducer.reducer({}, setInitialState({}, licences, refDate));
-      });
+        nextState = reducer.reducer({}, setInitialState({}, licences, refDate))
+      })
 
       test('the return is not pre-selected', async () => {
-        expect(nextState[DOCUMENT_ID].returns[0].isSelected).to.be.false();
-      });
-    });
+        expect(nextState[DOCUMENT_ID].returns[0].isSelected).to.be.false()
+      })
+    })
 
     experiment('when there is a licenceHolder and returnsTo role', () => {
       beforeEach(async () => {
@@ -246,15 +246,15 @@ experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
               createReturn('2019-04-01', '2020-03-31', 'due')
             ]
           }]
-        }];
+        }]
 
-        nextState = reducer.reducer({}, setInitialState({}, licences, refDate));
-      });
+        nextState = reducer.reducer({}, setInitialState({}, licences, refDate))
+      })
 
       test('the selected role is "returnsTo"', async () => {
-        expect(nextState[DOCUMENT_ID].selectedRole).to.equal('returnsTo');
-      });
-    });
+        expect(nextState[DOCUMENT_ID].selectedRole).to.equal('returnsTo')
+      })
+    })
 
     experiment('when there is a 2+ documents', () => {
       beforeEach(async () => {
@@ -281,27 +281,27 @@ experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
               createReturn('2019-04-01', '2020-03-31', 'due')
             ]
           }]
-        }];
+        }]
 
-        nextState = reducer.reducer({}, setInitialState({}, licences, refDate));
-      });
+        nextState = reducer.reducer({}, setInitialState({}, licences, refDate))
+      })
 
       test('the documents are not selected', async () => {
-        const arr = Object.values(nextState).map(doc => doc.isSelected);
-        expect(arr).to.only.include(false);
-      });
-    });
-  });
+        const arr = Object.values(nextState).map(doc => doc.isSelected)
+        expect(arr).to.only.include(false)
+      })
+    })
+  })
 
   experiment('setReturnIds action', () => {
-    let nextState;
+    let nextState
 
     beforeEach(async () => {
       const request = {
         params: {
           documentId: 'test-document-id'
         }
-      };
+      }
       const currentState = {
         'test-document-id': {
           returns: [
@@ -310,44 +310,44 @@ experiment('internal/modules/returns-notifications/lib/reducer.js', () => {
             createReturn('2019-04-01', '2020-03-31')
           ]
         }
-      };
-      const action = setReturnIds(request, { returnIds: ['v1:1:01/123/ABC:1234:2018-04-01:2019-03-31'] });
-      nextState = reducer.reducer(currentState, action);
-    });
+      }
+      const action = setReturnIds(request, { returnIds: ['v1:1:01/123/ABC:1234:2018-04-01:2019-03-31'] })
+      nextState = reducer.reducer(currentState, action)
+    })
 
     test('sets the isSelected flags for return IDs in the provided array', async () => {
-      expect(nextState['test-document-id'].returns[0].isSelected).to.be.false();
-      expect(nextState['test-document-id'].returns[1].isSelected).to.be.true();
-      expect(nextState['test-document-id'].returns[2].isSelected).to.be.false();
-    });
-  });
+      expect(nextState['test-document-id'].returns[0].isSelected).to.be.false()
+      expect(nextState['test-document-id'].returns[1].isSelected).to.be.true()
+      expect(nextState['test-document-id'].returns[2].isSelected).to.be.false()
+    })
+  })
 
   experiment('setSelectedRole action', () => {
-    let currentState, request;
+    let currentState, request
 
     beforeEach(async () => {
       request = {
         params: {
           documentId: 'test-document-id'
         }
-      };
+      }
       currentState = {
         'test-document-id': {
           selectedRole: 'returnsTo'
         }
-      };
-    });
+      }
+    })
 
     test('sets the selected role when the role is "licenceHolder"', async () => {
-      const action = setSelectedRole(request, { selectedRole: 'licenceHolder' });
-      const nextState = reducer.reducer(currentState, action);
-      expect(nextState['test-document-id'].selectedRole).to.equal('licenceHolder');
-    });
+      const action = setSelectedRole(request, { selectedRole: 'licenceHolder' })
+      const nextState = reducer.reducer(currentState, action)
+      expect(nextState['test-document-id'].selectedRole).to.equal('licenceHolder')
+    })
 
     test('does not set the selected role when the role is "createOneTimeAddress"', async () => {
-      const action = setSelectedRole(request, { selectedRole: 'createOneTimeAddress' });
-      const nextState = reducer.reducer(currentState, action);
-      expect(nextState['test-document-id'].selectedRole).to.equal('returnsTo');
-    });
-  });
-});
+      const action = setSelectedRole(request, { selectedRole: 'createOneTimeAddress' })
+      const nextState = reducer.reducer(currentState, action)
+      expect(nextState['test-document-id'].selectedRole).to.equal('returnsTo')
+    })
+  })
+})

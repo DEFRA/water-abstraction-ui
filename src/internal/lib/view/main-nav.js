@@ -1,11 +1,11 @@
-const { get } = require('lodash');
+const { get } = require('lodash')
 
-const { isAnyAR, isAuthenticated, isBilling, isManageTab } = require('../permissions');
-const { createLink, setActiveLink } = require('./helpers');
+const { isAnyAR, isAuthenticated, isBilling, isManageTab } = require('../permissions')
+const { createLink, setActiveLink } = require('./helpers')
 
 const createNavLink = (label, path, id) => {
-  return createLink(label, path, id, { id: `navbar-${id}` });
-};
+  return createLink(label, path, id, { id: `navbar-${id}` })
+}
 
 // Internal links
 const availableLinks = {
@@ -13,7 +13,7 @@ const availableLinks = {
   billRuns: createNavLink('Bill runs', '/billing/batch/list', 'bill-runs'),
   ar: createNavLink('Digitise!', '/digitise', 'ar'),
   notifications: createNavLink('Manage', '/manage', 'notifications')
-};
+}
 
 /**
  * Get links that the current user is authorised to see.
@@ -21,18 +21,18 @@ const availableLinks = {
  * @return {Array}         - array of links
  */
 const getNavigationForUser = (request) => {
-  const links = [availableLinks.licences];
+  const links = [availableLinks.licences]
   if (isBilling(request)) {
-    links.push(availableLinks.billRuns);
+    links.push(availableLinks.billRuns)
   }
   if (isAnyAR(request)) {
-    links.push(availableLinks.ar);
+    links.push(availableLinks.ar)
   }
   if (isManageTab(request)) {
-    links.push(availableLinks.notifications);
+    links.push(availableLinks.notifications)
   }
-  return links;
-};
+  return links
+}
 
 /**
  * Gets main nav links for displaying tabs
@@ -41,14 +41,14 @@ const getNavigationForUser = (request) => {
  */
 const getMainNav = (request) => {
   if (!isAuthenticated(request)) {
-    return [];
+    return []
   }
 
-  const links = getNavigationForUser(request);
+  const links = getNavigationForUser(request)
 
   // Add active boolean to correct link
-  const activeNavLink = get(request, 'view.activeNavLink');
-  return setActiveLink(links, activeNavLink);
-};
+  const activeNavLink = get(request, 'view.activeNavLink')
+  return setActiveLink(links, activeNavLink)
+}
 
-exports.getMainNav = getMainNav;
+exports.getMainNav = getMainNav

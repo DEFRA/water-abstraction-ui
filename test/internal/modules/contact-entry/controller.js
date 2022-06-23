@@ -1,35 +1,35 @@
-'use strict';
+'use strict'
 
-const { expect } = require('@hapi/code');
+const { expect } = require('@hapi/code')
 const {
   experiment,
   test,
   beforeEach,
   afterEach
-} = exports.lab = require('@hapi/lab').script();
-const sandbox = require('sinon').createSandbox();
-const { v4: uuid } = require('uuid');
+} = exports.lab = require('@hapi/lab').script()
+const sandbox = require('sinon').createSandbox()
+const { v4: uuid } = require('uuid')
 
-const controller = require('internal/modules/contact-entry/controller');
-const session = require('internal/modules/contact-entry/lib/session');
-const { CONTACT_TYPES } = require('internal/modules/contact-entry/lib/constants');
+const controller = require('internal/modules/contact-entry/controller')
+const session = require('internal/modules/contact-entry/lib/session')
+const { CONTACT_TYPES } = require('internal/modules/contact-entry/lib/constants')
 
-const KEY = 'test-key';
-const CONTACT_ID = uuid();
-const CSRF_TOKEN = uuid();
-const COMPANY_NAME = 'TEST CO LTD';
-const REDIRECT_PATH = '/redirect/path';
-const BACK_PATH = '/back';
+const KEY = 'test-key'
+const CONTACT_ID = uuid()
+const CSRF_TOKEN = uuid()
+const COMPANY_NAME = 'TEST CO LTD'
+const REDIRECT_PATH = '/redirect/path'
+const BACK_PATH = '/back'
 
 const CONTACT = {
   title: 'Mr',
   firstName: 'Lando',
   lastName: 'Norris',
   department: 'McLaren Racing'
-};
+}
 
 experiment('src/internal/modules/contact-entry/controller', () => {
-  let request, h;
+  let request, h
 
   beforeEach(async () => {
     request = {
@@ -62,57 +62,57 @@ experiment('src/internal/modules/contact-entry/controller', () => {
         set: sandbox.stub(),
         clear: sandbox.stub()
       }
-    };
+    }
 
     h = {
       view: sandbox.stub(),
       redirect: sandbox.stub(),
       postRedirectGet: sandbox.stub()
-    };
+    }
 
     sandbox.stub(session, 'merge').returns({
       redirectPath: REDIRECT_PATH
-    });
-  });
+    })
+  })
 
   afterEach(async () => {
-    sandbox.restore();
-  });
+    sandbox.restore()
+  })
 
   experiment('.getSelectContact', () => {
     beforeEach(async () => {
-      await controller.getSelectContact(request, h);
-    });
+      await controller.getSelectContact(request, h)
+    })
 
     test('the correct template is used', async () => {
-      const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/form');
-    });
+      const [template] = h.view.lastCall.args
+      expect(template).to.equal('nunjucks/form')
+    })
 
     test('the correct data is output to the view', async () => {
-      const [, { pageTitle, caption, back, form }] = h.view.lastCall.args;
-      expect(pageTitle).to.equal(`Set up a contact for ${COMPANY_NAME}`);
-      expect(caption).to.equal(request.pre.sessionData.caption);
-      expect(back).to.equal(BACK_PATH);
-      expect(form).to.be.an.object();
-    });
-  });
+      const [, { pageTitle, caption, back, form }] = h.view.lastCall.args
+      expect(pageTitle).to.equal(`Set up a contact for ${COMPANY_NAME}`)
+      expect(caption).to.equal(request.pre.sessionData.caption)
+      expect(back).to.equal(BACK_PATH)
+      expect(form).to.be.an.object()
+    })
+  })
 
   experiment('.postSelectContact', () => {
     beforeEach(async () => {
-      request.method = 'post';
-      request.path = `/contact-entry/${KEY}/select-contact`;
-    });
+      request.method = 'post'
+      request.path = `/contact-entry/${KEY}/select-contact`
+    })
 
     experiment('when the form is invalid', () => {
       beforeEach(async () => {
-        await controller.postSelectContact(request, h);
-      });
+        await controller.postSelectContact(request, h)
+      })
 
       test('the user is redirected to the get page with errors', async () => {
-        expect(h.postRedirectGet.called).to.be.true();
-      });
-    });
+        expect(h.postRedirectGet.called).to.be.true()
+      })
+    })
 
     experiment('when the form is valid', () => {
       experiment('and an existing contact is selected', () => {
@@ -120,40 +120,40 @@ experiment('src/internal/modules/contact-entry/controller', () => {
           request.payload = {
             selectedContact: CONTACT_ID,
             csrf_token: CSRF_TOKEN
-          };
-          await controller.postSelectContact(request, h);
-        });
+          }
+          await controller.postSelectContact(request, h)
+        })
 
         test('the contact id is stored in the session', async () => {
           expect(session.merge.calledWith(
             request, KEY, {
               data: request.pre.companyContacts[0]
             }
-          )).to.be.true();
-        });
+          )).to.be.true()
+        })
 
         test('redirects to the redirect path', async () => {
-          expect(h.redirect.calledWith(REDIRECT_PATH)).to.be.true();
-        });
-      });
+          expect(h.redirect.calledWith(REDIRECT_PATH)).to.be.true()
+        })
+      })
 
       experiment('and a new person is being created', () => {
         beforeEach(async () => {
           request.payload = {
             selectedContact: CONTACT_TYPES.person,
             csrf_token: CSRF_TOKEN
-          };
-          await controller.postSelectContact(request, h);
-        });
+          }
+          await controller.postSelectContact(request, h)
+        })
 
         test('no data is saved', async () => {
-          expect(session.merge.called).to.be.false();
-        });
+          expect(session.merge.called).to.be.false()
+        })
 
         test('redirects to the create contact page', async () => {
-          expect(h.redirect.calledWith(`/contact-entry/${KEY}/create-contact`)).to.be.true();
-        });
-      });
+          expect(h.redirect.calledWith(`/contact-entry/${KEY}/create-contact`)).to.be.true()
+        })
+      })
 
       experiment('and a new department is being created', () => {
         beforeEach(async () => {
@@ -161,9 +161,9 @@ experiment('src/internal/modules/contact-entry/controller', () => {
             selectedContact: CONTACT_TYPES.department,
             department: 'Accounts Payable',
             csrf_token: CSRF_TOKEN
-          };
-          await controller.postSelectContact(request, h);
-        });
+          }
+          await controller.postSelectContact(request, h)
+        })
 
         test('the contact is stored in the session', async () => {
           expect(session.merge.calledWith(
@@ -173,63 +173,63 @@ experiment('src/internal/modules/contact-entry/controller', () => {
                 department: 'Accounts Payable'
               }
             }
-          )).to.be.true();
-        });
+          )).to.be.true()
+        })
 
         test('redirects to the redirect path', async () => {
-          expect(h.redirect.calledWith(REDIRECT_PATH)).to.be.true();
-        });
-      });
-    });
-  });
+          expect(h.redirect.calledWith(REDIRECT_PATH)).to.be.true()
+        })
+      })
+    })
+  })
 
   experiment('.getCreateContact', () => {
     beforeEach(async () => {
-      await controller.getCreateContact(request, h);
-    });
+      await controller.getCreateContact(request, h)
+    })
 
     test('the correct template is used', async () => {
-      const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/form');
-    });
+      const [template] = h.view.lastCall.args
+      expect(template).to.equal('nunjucks/form')
+    })
 
     test('the correct data is output to the view', async () => {
-      const [, { pageTitle, caption, back, form }] = h.view.lastCall.args;
-      expect(pageTitle).to.equal(`Add a new contact for ${COMPANY_NAME}`);
-      expect(caption).to.equal(request.pre.sessionData.caption);
-      expect(back).to.equal(`/contact-entry/${KEY}/select-contact`);
-      expect(form).to.be.an.object();
-    });
-  });
+      const [, { pageTitle, caption, back, form }] = h.view.lastCall.args
+      expect(pageTitle).to.equal(`Add a new contact for ${COMPANY_NAME}`)
+      expect(caption).to.equal(request.pre.sessionData.caption)
+      expect(back).to.equal(`/contact-entry/${KEY}/select-contact`)
+      expect(form).to.be.an.object()
+    })
+  })
 
   experiment('.postCreateContact', () => {
     beforeEach(async () => {
-      request.method = 'post';
-    });
+      request.method = 'post'
+    })
 
     experiment('when the form is invalid', () => {
       beforeEach(async () => {
-        await controller.postCreateContact(request, h);
-      });
+        await controller.postCreateContact(request, h)
+      })
 
       test('the user is redirected to the get page with errors', async () => {
-        expect(h.postRedirectGet.called).to.be.true();
-      });
-    });
+        expect(h.postRedirectGet.called).to.be.true()
+      })
+    })
 
     experiment('when the form is valid', () => {
       beforeEach(async () => {
         request.payload = {
           ...CONTACT,
           csrf_token: CSRF_TOKEN
-        };
-        await controller.postCreateContact(request, h);
-      });
+        }
+        await controller.postCreateContact(request, h)
+      })
 
       test('the contact is stored in the session', async () => {
         // Note that title is saved as salutation
-        const { title: salutation, ...contact } = CONTACT;
-        const { args } = session.merge.lastCall;
+        const { title: salutation, ...contact } = CONTACT
+        const { args } = session.merge.lastCall
         expect(args).to.equal([
           request, KEY, {
             data: {
@@ -239,12 +239,12 @@ experiment('src/internal/modules/contact-entry/controller', () => {
               ...contact
             }
           }
-        ]);
-      });
+        ])
+      })
 
       test('redirects to the redirect path', async () => {
-        expect(h.redirect.calledWith(REDIRECT_PATH)).to.be.true();
-      });
-    });
-  });
-});
+        expect(h.redirect.calledWith(REDIRECT_PATH)).to.be.true()
+      })
+    })
+  })
+})

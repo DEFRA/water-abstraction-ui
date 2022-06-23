@@ -1,15 +1,15 @@
-const { v4: uuid } = require('uuid');
-const { statuses, actionTypes } = require('@envage/water-abstraction-helpers').digitise;
+const { v4: uuid } = require('uuid')
+const { statuses, actionTypes } = require('@envage/water-abstraction-helpers').digitise
 const {
   EDIT_PURPOSE, EDIT_LICENCE, EDIT_POINT, EDIT_CONDITION, SET_STATUS,
   EDIT_VERSION, EDIT_PARTY, EDIT_ADDRESS,
   ADD_DATA, EDIT_DATA, DELETE_DATA
-} = actionTypes;
+} = actionTypes
 
 const formatUser = (defra) => {
-  const { userId: id, userName: email } = defra;
-  return { id, email };
-};
+  const { userId: id, userName: email } = defra
+  return { id, email }
+}
 
 /**
  * Edits the purpose of a licence
@@ -27,8 +27,8 @@ const createEditPurpose = (data, defra, id) => {
       user: formatUser(defra),
       timestamp: Date.now()
     }
-  };
-};
+  }
+}
 
 /**
  * Edits the base licence data
@@ -44,8 +44,8 @@ const createEditLicence = (data, defra) => {
       user: formatUser(defra),
       timestamp: Date.now()
     }
-  };
-};
+  }
+}
 
 /**
  * Edits the point of a licence
@@ -63,8 +63,8 @@ const createEditPoint = (data, defra, id) => {
       user: formatUser(defra),
       timestamp: Date.now()
     }
-  };
-};
+  }
+}
 
 /**
  * Edits the condition of a licence
@@ -82,8 +82,8 @@ const createEditCondition = (data, defra, id) => {
       user: formatUser(defra),
       timestamp: Date.now()
     }
-  };
-};
+  }
+}
 
 /**
  * Edits the condition of a licence
@@ -94,7 +94,7 @@ const createEditCondition = (data, defra, id) => {
  */
 const createSetStatus = (status, notes, user) => {
   if (!Object.values(statuses).includes(status)) {
-    throw new Error(`Invalid AR status ${status}`);
+    throw new Error(`Invalid AR status ${status}`)
   }
 
   return {
@@ -105,8 +105,8 @@ const createSetStatus = (status, notes, user) => {
       user: formatUser(user),
       timestamp: Date.now()
     }
-  };
-};
+  }
+}
 
 /**
  * Edits a licence version
@@ -126,8 +126,8 @@ const createEditVersion = (data, user, issueNumber, incrementNumber) => {
       user: formatUser(user),
       timestamp: Date.now()
     }
-  };
-};
+  }
+}
 
 /**
  * Edits a licence party
@@ -145,8 +145,8 @@ const createEditParty = (data, defra, id) => {
       user: formatUser(defra),
       timestamp: Date.now()
     }
-  };
-};
+  }
+}
 
 /**
  * Edits a licence address
@@ -164,8 +164,8 @@ const createEditAddress = (data, defra, id) => {
       user: formatUser(defra),
       timestamp: Date.now()
     }
-  };
-};
+  }
+}
 
 /**
  * Creates a new data object - e.g. for WR22 data
@@ -185,8 +185,8 @@ const createAddData = (schema, user, issueNumber, incrementNumber) => {
       issueNumber: parseInt(issueNumber),
       incrementNumber: parseInt(incrementNumber)
     }
-  };
-};
+  }
+}
 
 /**
  * Edits a data object in the AR data items list
@@ -203,8 +203,8 @@ const createEditData = (data, user, id) => {
       data,
       timestamp: Date.now()
     }
-  };
-};
+  }
+}
 
 /**
  * Deletes a data object in the AR data items list
@@ -219,8 +219,8 @@ const createDeleteData = (user, id) => {
       user: formatUser(user),
       timestamp: Date.now()
     }
-  };
-};
+  }
+}
 
 module.exports = {
   createEditPurpose,
@@ -234,4 +234,4 @@ module.exports = {
   createAddData,
   createEditData,
   createDeleteData
-};
+}

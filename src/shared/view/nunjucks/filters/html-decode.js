@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
-const Entities = require('html-entities').AllHtmlEntities;
-const htmlEntityEncoder = new Entities();
+const Entities = require('html-entities').AllHtmlEntities
+const htmlEntityEncoder = new Entities()
 
 /**
  * Handle special characters e.g.
@@ -9,7 +9,7 @@ const htmlEntityEncoder = new Entities();
  */
 
 const htmlDecode = str => {
-  return htmlEntityEncoder.decode(str);
-};
+  return htmlEntityEncoder.decode(str)
+}
 
-exports.htmlDecode = htmlDecode;
+exports.htmlDecode = htmlDecode

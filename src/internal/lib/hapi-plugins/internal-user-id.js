@@ -1,9 +1,9 @@
-'use strict';
+'use strict'
 
-const { get, set } = require('lodash');
-const { http } = require('@envage/water-abstraction-helpers');
+const { get, set } = require('lodash')
+const { http } = require('@envage/water-abstraction-helpers')
 
-const getUserFromRequest = request => get(request, 'defra.user');
+const getUserFromRequest = request => get(request, 'defra.user')
 
 /**
  * Plugin that adds the currently logged in user id
@@ -15,34 +15,34 @@ const internalUserId = {
     server.ext({
       type: 'onPreHandler',
       method: async (request, h) => {
-        const user = getUserFromRequest(request);
+        const user = getUserFromRequest(request)
 
         if (user) {
           http.onPreRequest(options => {
-            set(options, ['headers', 'defra-internal-user-id'], user.user_id);
-          });
+            set(options, ['headers', 'defra-internal-user-id'], user.user_id)
+          })
         }
-        return h.continue;
+        return h.continue
       }
-    });
+    })
 
     server.ext({
       type: 'onPostHandler',
       method: async (request, h) => {
-        const user = getUserFromRequest(request);
+        const user = getUserFromRequest(request)
 
         if (user) {
-          http.removePreRequestListener();
+          http.removePreRequestListener()
         }
-        return h.continue;
+        return h.continue
       }
-    });
+    })
   },
 
   pkg: {
     name: 'internalUserId',
     version: '1.0.0'
   }
-};
+}
 
-module.exports = internalUserId;
+module.exports = internalUserId

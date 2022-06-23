@@ -1,7 +1,7 @@
-const { formFactory, fields } = require('shared/lib/forms/');
-const JoiDate = require('@joi/date');
-const Joi = require('joi').extend(JoiDate);
-const { getAgreementEndDateValidator } = require('./lib/date-picker');
+const { formFactory, fields } = require('shared/lib/forms/')
+const JoiDate = require('@joi/date')
+const Joi = require('joi').extend(JoiDate)
+const { getAgreementEndDateValidator } = require('./lib/date-picker')
 
 /**
  * Creates an object to represent the form for setting the
@@ -12,9 +12,9 @@ const { getAgreementEndDateValidator } = require('./lib/date-picker');
  * @return {Object} form object
  */
 const endAgreementForm = (request, endDate) => {
-  const { csrfToken } = request.view;
-  const { licenceId, agreementId } = request.params;
-  const f = formFactory(`/licences/${licenceId}/agreements/${agreementId}/end`, 'POST');
+  const { csrfToken } = request.view
+  const { licenceId, agreementId } = request.params
+  const f = formFactory(`/licences/${licenceId}/agreements/${agreementId}/end`, 'POST')
   f.fields.push(fields.date('endDate', {
     type: 'date',
     caption: 'Enter a date that either matches the date some existing charge information ends or is 31 March.',
@@ -31,19 +31,19 @@ const endAgreementForm = (request, endDate) => {
           'You cannot use a date that is before the agreement start date.'
       }
     }
-  }, endDate));
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-  f.fields.push(fields.button(null, { label: 'End agreement' }));
-  return f;
-};
+  }, endDate))
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
+  f.fields.push(fields.button(null, { label: 'End agreement' }))
+  return f
+}
 
 const endAgreementFormSchema = (request, h) => {
-  const { licence, chargeVersions, agreement } = request.pre;
+  const { licence, chargeVersions, agreement } = request.pre
   return Joi.object({
     csrf_token: Joi.string().uuid().required(),
     endDate: getAgreementEndDateValidator(licence, chargeVersions.data, agreement)
-  });
-};
+  })
+}
 
-exports.endAgreementForm = endAgreementForm;
-exports.endAgreementFormSchema = endAgreementFormSchema;
+exports.endAgreementForm = endAgreementForm
+exports.endAgreementFormSchema = endAgreementFormSchema

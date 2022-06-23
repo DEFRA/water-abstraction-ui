@@ -1,5 +1,5 @@
-const { isDateWithinAbstractionPeriod } = require('./return-date-helpers');
-const { returns: { lines: { getRequiredLines } } } = require('@envage/water-abstraction-helpers');
+const { isDateWithinAbstractionPeriod } = require('./return-date-helpers')
+const { returns: { lines: { getRequiredLines } } } = require('@envage/water-abstraction-helpers')
 
 /**
  * Creates lines array from data
@@ -7,12 +7,12 @@ const { returns: { lines: { getRequiredLines } } } = require('@envage/water-abst
  * @return {Array}
  */
 const createLines = (data) => {
-  const { lines = [], startDate, endDate, frequency } = data;
+  const { lines = [], startDate, endDate, frequency } = data
   if (lines.length) {
-    return lines;
+    return lines
   }
-  return getRequiredLines(startDate, endDate, frequency);
-};
+  return getRequiredLines(startDate, endDate, frequency)
+}
 
 /**
  * Gets default quantity.  If within abstraction period, this is 0, otherwise null
@@ -21,18 +21,18 @@ const createLines = (data) => {
  * @return {Number|null}
  */
 const getDefaultQuantity = (line, abstractionPeriod) => {
-  return isDateWithinAbstractionPeriod(line.endDate, abstractionPeriod) ? 0 : null;
-};
+  return isDateWithinAbstractionPeriod(line.endDate, abstractionPeriod) ? 0 : null
+}
 
 const createLine = (row, quantity, endReading, includeReadings) => {
   const line = {
     ...row,
     quantity
-  };
-  return includeReadings ? { ...line, endReading } : line;
-};
+  }
+  return includeReadings ? { ...line, endReading } : line
+}
 
-const getReadingKey = line => `${line.startDate}_${line.endDate}`;
+const getReadingKey = line => `${line.startDate}_${line.endDate}`
 
 /**
  * We need to introduce a multiplication and division to discard
@@ -43,29 +43,29 @@ const getReadingKey = line => `${line.startDate}_${line.endDate}`;
  * @return {Number}
  */
 const calculateQuantity = (multiplier, reading, lastReading) => {
-  const difference = ((100 * reading) - (100 * lastReading));
-  return multiplier * difference / 100;
-};
+  const difference = ((100 * reading) - (100 * lastReading))
+  return multiplier * difference / 100
+}
 
 const mapMeterLinesToVolumes = (startReading, readings, lines, multiplier = 1, includeReadings = false) => {
   const result = lines.reduce((acc, line) => {
-    const reading = readings[getReadingKey(line)];
+    const reading = readings[getReadingKey(line)]
 
-    let quantity = null;
+    let quantity = null
     if (reading !== null) {
-      quantity = calculateQuantity(multiplier, reading, acc.lastMeterReading);
-      acc.lastMeterReading = reading;
+      quantity = calculateQuantity(multiplier, reading, acc.lastMeterReading)
+      acc.lastMeterReading = reading
     }
 
     // Create line with volume and optionally meter reading
-    const newLine = createLine(line, quantity, reading, includeReadings);
-    acc.lines.push(newLine);
+    const newLine = createLine(line, quantity, reading, includeReadings)
+    acc.lines.push(newLine)
 
-    return acc;
-  }, { lines: [], lastMeterReading: startReading });
+    return acc
+  }, { lines: [], lastMeterReading: startReading })
 
-  return result.lines;
-};
+  return result.lines
+}
 
 /**
  * Gets total abstracted quantity
@@ -74,14 +74,14 @@ const mapMeterLinesToVolumes = (startReading, readings, lines, multiplier = 1, i
  */
 const getReturnTotal = (lines) => {
   if (!lines) {
-    return null;
+    return null
   }
-  const filteredLines = lines.filter(line => line.quantity !== null && line.quantity !== undefined);
+  const filteredLines = lines.filter(line => line.quantity !== null && line.quantity !== undefined)
 
   return filteredLines.length === 0
     ? null
-    : filteredLines.reduce((acc, line) => acc + parseFloat(line.quantity), 0);
-};
+    : filteredLines.reduce((acc, line) => acc + parseFloat(line.quantity), 0)
+}
 
 /**
  * Distributes a single total among the supplied abstraction period for
@@ -94,21 +94,21 @@ const getReturnTotal = (lines) => {
 const getSingleTotalLines = (abstractionPeriod, lines, total) => {
   const indexes = lines.reduce((acc, line, index) => {
     if (isDateWithinAbstractionPeriod(line.endDate, abstractionPeriod)) {
-      acc.push(index);
+      acc.push(index)
     }
-    return acc;
-  }, []);
+    return acc
+  }, [])
 
-  const perPeriod = total / indexes.length;
+  const perPeriod = total / indexes.length
 
   return lines.map((line, i) => ({
     ...line,
     quantity: indexes.includes(i) ? perPeriod : null
-  }));
-};
+  }))
+}
 
-exports.createLines = createLines;
-exports.getDefaultQuantity = getDefaultQuantity;
-exports.mapMeterLinesToVolumes = mapMeterLinesToVolumes;
-exports.getReturnTotal = getReturnTotal;
-exports.getSingleTotalLines = getSingleTotalLines;
+exports.createLines = createLines
+exports.getDefaultQuantity = getDefaultQuantity
+exports.mapMeterLinesToVolumes = mapMeterLinesToVolumes
+exports.getReturnTotal = getReturnTotal
+exports.getSingleTotalLines = getSingleTotalLines

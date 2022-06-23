@@ -1,11 +1,11 @@
-const { get } = require('lodash');
-const { confirmForm } = require('./forms/confirm');
-const helpers = require('./lib/helpers');
-const csv = require('../../lib/csv-download');
-const services = require('../../lib/connectors/services');
+const { get } = require('lodash')
+const { confirmForm } = require('./forms/confirm')
+const helpers = require('./lib/helpers')
+const csv = require('../../lib/csv-download')
+const services = require('../../lib/connectors/services')
 
 const getPageTitle = (ev) => {
-  const name = get(ev, 'subtype');
+  const name = get(ev, 'subtype')
   const config = {
     returnReminder: {
       pageTitle: 'Send returns reminders',
@@ -17,9 +17,9 @@ const getPageTitle = (ev) => {
       confirmationTitle: 'Return invitations sent',
       back: '/returns-notifications/invitations'
     }
-  };
-  return config[name];
-};
+  }
+  return config[name]
+}
 
 /**
  * Renders a page where the user can download a CSV of recipients and confirm
@@ -27,9 +27,9 @@ const getPageTitle = (ev) => {
  * @param {String} request.params.eventId - the water service event for this message
  */
 const getReview = async (request, h) => {
-  const ev = await helpers.loadEvent(request);
+  const ev = await helpers.loadEvent(request)
 
-  const { pageTitle, back } = getPageTitle(ev);
+  const { pageTitle, back } = getPageTitle(ev)
 
   const view = {
     ev,
@@ -38,10 +38,10 @@ const getReview = async (request, h) => {
     form: confirmForm(request, ev.metadata.recipients),
     back,
     pageTitle
-  };
+  }
 
-  return h.view('nunjucks/batch-notifications/review', view);
-};
+  return h.view('nunjucks/batch-notifications/review', view)
+}
 
 /**
  * Maps a message record from water service to a row in the CSV download
@@ -54,7 +54,7 @@ const mapCSVRow = message => ({
   recipient: message.recipient,
   message_ref: message.message_ref,
   licences: (message.licences || []).join(',')
-});
+})
 
 /**
  * Gets CSV filename
@@ -62,49 +62,49 @@ const mapCSVRow = message => ({
  * @return {String}    CSV filename
  */
 const getCSVFilename = ev => {
-  const notificationName = ev.metadata.name.replace(':', '');
-  return `${notificationName} - ${ev.reference_code}.csv`;
-};
+  const notificationName = ev.metadata.name.replace(':', '')
+  return `${notificationName} - ${ev.reference_code}.csv`
+}
 
 /**
  * Downloads a CSV of data for this notification
  * @param {String} request.params.eventId - the water service event for this message
  */
 const getRecipientsCSV = async (request, h) => {
-  const ev = await helpers.loadEvent(request);
-  const messages = await helpers.loadMessages(ev);
-  return csv.csvDownload(h, messages.map(mapCSVRow), getCSVFilename(ev));
-};
+  const ev = await helpers.loadEvent(request)
+  const messages = await helpers.loadMessages(ev)
+  return csv.csvDownload(h, messages.map(mapCSVRow), getCSVFilename(ev))
+}
 
 /**
  * Send the notification
  * @param {String} request.params.eventId - the water service event for this message
  */
 const postSendNotification = async (request, h) => {
-  const { eventId } = request.params;
-  const { userName } = request.defra;
-  await services.water.batchNotifications.sendReminders(eventId, userName);
-  return h.redirect(`/batch-notifications/confirmation/${eventId}`);
-};
+  const { eventId } = request.params
+  const { userName } = request.defra
+  await services.water.batchNotifications.sendReminders(eventId, userName)
+  return h.redirect(`/batch-notifications/confirmation/${eventId}`)
+}
 
 /**
  * Renders a confirmation page to show the message is sending
  * @param {String} request.params.eventId - the water service event for this message
  */
 const getConfirmation = async (request, h) => {
-  const ev = await helpers.loadEvent(request);
-  const { confirmationTitle } = getPageTitle(ev);
+  const ev = await helpers.loadEvent(request)
+  const { confirmationTitle } = getPageTitle(ev)
 
   const view = {
     ...request.view,
     event: ev,
     pageTitle: confirmationTitle
-  };
+  }
 
-  return h.view('nunjucks/batch-notifications/confirmation', view);
-};
+  return h.view('nunjucks/batch-notifications/confirmation', view)
+}
 
-exports.getReview = getReview;
-exports.getRecipientsCSV = getRecipientsCSV;
-exports.postSendNotification = postSendNotification;
-exports.getConfirmation = getConfirmation;
+exports.getReview = getReview
+exports.getRecipientsCSV = getRecipientsCSV
+exports.postSendNotification = postSendNotification
+exports.getConfirmation = getConfirmation

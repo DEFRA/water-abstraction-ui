@@ -1,9 +1,9 @@
-const controller = require('../controllers/charge-information-workflow-note');
-const preHandlers = require('../pre-handlers');
-const { VALID_GUID } = require('shared/lib/validators');
-const Joi = require('joi');
-const { chargeVersionWorkflowEditor, chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope;
-const allowedScopes = [chargeVersionWorkflowEditor, chargeVersionWorkflowReviewer];
+const controller = require('../controllers/charge-information-workflow-note')
+const preHandlers = require('../pre-handlers')
+const { VALID_GUID } = require('shared/lib/validators')
+const Joi = require('joi')
+const { chargeVersionWorkflowEditor, chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope
+const allowedScopes = [chargeVersionWorkflowEditor, chargeVersionWorkflowReviewer]
 
 module.exports = {
   deleteNote: {
@@ -71,4 +71,4 @@ module.exports = {
       ]
     }
   }
-};
+}

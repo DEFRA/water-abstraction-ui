@@ -1,1 +1,1 @@
-exports.isObject = require('lodash').isObject;
+exports.isObject = require('lodash').isObject

@@ -1,14 +1,14 @@
-'use strict';
+'use strict'
 
-const { isString } = require('lodash');
-const { formFactory, fields } = require('./index');
+const { isString } = require('lodash')
+const { formFactory, fields } = require('./index')
 
 const getPath = (request, options = {}) => {
   if (isString(options)) {
-    return options;
+    return options
   }
-  return options.action || request.path;
-};
+  return options.action || request.path
+}
 
 /**
  * Generic confirm form
@@ -21,20 +21,20 @@ const getPath = (request, options = {}) => {
  * @return {Object} form object
  */
 const form = (request, buttonText = 'Submit', options = {}) => {
-  const { csrfToken } = request.view;
-  const f = formFactory(getPath(request, options), 'POST');
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
+  const { csrfToken } = request.view
+  const f = formFactory(getPath(request, options), 'POST')
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
   if (options.originalInvoiceId) {
-    f.fields.push(fields.hidden('originalInvoiceId', {}, `${options.originalInvoiceId}`));
+    f.fields.push(fields.hidden('originalInvoiceId', {}, `${options.originalInvoiceId}`))
   }
   if (options.rebillInvoiceId) {
-    f.fields.push(fields.hidden('rebillInvoiceId', {}, `${options.rebillInvoiceId}`));
+    f.fields.push(fields.hidden('rebillInvoiceId', {}, `${options.rebillInvoiceId}`))
   }
   f.fields.push(fields.button(null, {
     label: buttonText,
     controlClass: options.isWarning && 'govuk-button--warning'
-  }));
-  return f;
-};
+  }))
+  return f
+}
 
-exports.form = form;
+exports.form = form

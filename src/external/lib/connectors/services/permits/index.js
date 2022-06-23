@@ -1,7 +1,7 @@
-const LicencesApiClient = require('shared/lib/connectors/services/permits/LicencesApiClient');
+const LicencesApiClient = require('shared/lib/connectors/services/permits/LicencesApiClient')
 
-const { logger } = require('../../../../logger');
+const { logger } = require('../../../../logger')
 
 module.exports = config => ({
   licences: new LicencesApiClient(config, logger)
-});
+})

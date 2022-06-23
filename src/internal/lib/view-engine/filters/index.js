@@ -38,4 +38,4 @@ module.exports = {
   ...require('shared/view/nunjucks/filters/units'),
   ...require('shared/view/nunjucks/filters/html-decode'),
   ...require('shared/view/nunjucks/filters/array-filter')
-};
+}

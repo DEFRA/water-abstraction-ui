@@ -1,20 +1,20 @@
-const { v4: uuid } = require('uuid');
-const sinon = require('sinon');
-const sandbox = sinon.createSandbox();
+const { v4: uuid } = require('uuid')
+const sinon = require('sinon')
+const sandbox = sinon.createSandbox()
 
 const {
   experiment,
   beforeEach,
   afterEach,
   test
-} = exports.lab = require('@hapi/lab').script();
-const { expect } = require('@hapi/code');
+} = exports.lab = require('@hapi/lab').script()
+const { expect } = require('@hapi/code')
 
-const BillingBatchService = require('internal/lib/connectors/services/water/BillingBatchService');
-const { serviceRequest } = require('@envage/water-abstraction-helpers');
+const BillingBatchService = require('internal/lib/connectors/services/water/BillingBatchService')
+const { serviceRequest } = require('@envage/water-abstraction-helpers')
 
 experiment('services/water/BillingBatchService', () => {
-  let service;
+  let service
 
   const batch = {
     userEmail: 'userEmail@testmail.com',
@@ -22,228 +22,228 @@ experiment('services/water/BillingBatchService', () => {
     batchType: 'annual',
     financialYear: new Date().getFullYear(),
     isSummer: true
-  };
+  }
 
   beforeEach(async () => {
-    sandbox.stub(serviceRequest, 'get');
-    sandbox.stub(serviceRequest, 'post');
-    sandbox.stub(serviceRequest, 'delete');
-    service = new BillingBatchService('https://example.com/water/1.0');
-  });
+    sandbox.stub(serviceRequest, 'get')
+    sandbox.stub(serviceRequest, 'post')
+    sandbox.stub(serviceRequest, 'delete')
+    service = new BillingBatchService('https://example.com/water/1.0')
+  })
 
   afterEach(async () => {
-    sandbox.restore();
-  });
+    sandbox.restore()
+  })
 
   experiment('.getBatch', () => {
-    let id;
+    let id
 
     experiment('when the batch totals are not requested', () => {
       beforeEach(async () => {
-        id = uuid();
-        await service.getBatch(id);
-      });
+        id = uuid()
+        await service.getBatch(id)
+      })
 
       test('passes the expected URL to the service request', async () => {
-        const [url] = serviceRequest.get.lastCall.args;
-        expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${id}`);
-      });
+        const [url] = serviceRequest.get.lastCall.args
+        expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${id}`)
+      })
 
       test('the totals query parameter is set to 0', async () => {
-        const [, options] = serviceRequest.get.lastCall.args;
-        expect(options).to.equal({ qs: { totals: 0 } });
-      });
-    });
+        const [, options] = serviceRequest.get.lastCall.args
+        expect(options).to.equal({ qs: { totals: 0 } })
+      })
+    })
 
     experiment('when the batch totals are requested', () => {
       beforeEach(async () => {
-        id = uuid();
-        await service.getBatch(id, true);
-      });
+        id = uuid()
+        await service.getBatch(id, true)
+      })
 
       test('the totals query parameter is set to 0', async () => {
-        const [, options] = serviceRequest.get.lastCall.args;
-        expect(options).to.equal({ qs: { totals: 1 } });
-      });
-    });
-  });
+        const [, options] = serviceRequest.get.lastCall.args
+        expect(options).to.equal({ qs: { totals: 1 } })
+      })
+    })
+  })
 
   experiment('.getBatchInvoices', () => {
     test('passes the expected URL to the service request', async () => {
-      const id = uuid();
+      const id = uuid()
 
-      await service.getBatchInvoices(id);
+      await service.getBatchInvoices(id)
 
-      const [url] = serviceRequest.get.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${id}/invoices`);
-    });
-  });
+      const [url] = serviceRequest.get.lastCall.args
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${id}/invoices`)
+    })
+  })
 
   experiment('.getBatchInvoicesDetails', () => {
     test('passes the expected URL to the service request', async () => {
-      const id = uuid();
+      const id = uuid()
 
-      await service.getBatchInvoicesDetails(id);
+      await service.getBatchInvoicesDetails(id)
 
-      const [url] = serviceRequest.get.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${id}/invoices/details`);
-    });
-  });
+      const [url] = serviceRequest.get.lastCall.args
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${id}/invoices/details`)
+    })
+  })
 
   experiment('.getBatchInvoice', () => {
     test('passes the expected URL to the service request', async () => {
-      const batchId = uuid();
-      const invoiceId = uuid();
+      const batchId = uuid()
+      const invoiceId = uuid()
 
-      await service.getBatchInvoice(batchId, invoiceId);
+      await service.getBatchInvoice(batchId, invoiceId)
 
-      const [url] = serviceRequest.get.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/invoices/${invoiceId}`);
-    });
-  });
+      const [url] = serviceRequest.get.lastCall.args
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/invoices/${invoiceId}`)
+    })
+  })
 
   experiment('.getBatchDownloadData', () => {
     test('passes the expected URL to the service request', async () => {
-      const batchId = uuid();
+      const batchId = uuid()
 
-      await service.getBatchDownloadData(batchId);
+      await service.getBatchDownloadData(batchId)
 
-      const [url] = serviceRequest.get.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/download-data`);
-    });
-  });
+      const [url] = serviceRequest.get.lastCall.args
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/download-data`)
+    })
+  })
 
   experiment('.getBatches', () => {
-    let page;
-    let perPage;
+    let page
+    let perPage
 
     beforeEach(async () => {
-      page = 2;
-      perPage = 10;
-      await service.getBatches(page, perPage);
-    });
+      page = 2
+      perPage = 10
+      await service.getBatches(page, perPage)
+    })
 
     test('passes the expected URL to the service request', async () => {
-      const [url] = serviceRequest.get.lastCall.args;
-      expect(url).to.equal('https://example.com/water/1.0/billing/batches');
-    });
+      const [url] = serviceRequest.get.lastCall.args
+      expect(url).to.equal('https://example.com/water/1.0/billing/batches')
+    })
 
     test('passes the pagination params on the query string', async () => {
-      const [, options] = serviceRequest.get.lastCall.args;
-      expect(options.qs.page).to.equal(page);
-      expect(options.qs.perPage).to.equal(perPage);
-    });
-  });
+      const [, options] = serviceRequest.get.lastCall.args
+      expect(options.qs.page).to.equal(page)
+      expect(options.qs.perPage).to.equal(perPage)
+    })
+  })
 
   experiment('.createBillingBatch', () => {
     test('passes the expected URL to the service request', async () => {
-      await service.createBillingBatch(batch);
-      const [url] = serviceRequest.post.lastCall.args;
-      expect(url).to.equal('https://example.com/water/1.0/billing/batches');
-    });
+      await service.createBillingBatch(batch)
+      const [url] = serviceRequest.post.lastCall.args
+      expect(url).to.equal('https://example.com/water/1.0/billing/batches')
+    })
 
     test('passes the expected body to the service request', async () => {
-      await service.createBillingBatch(batch);
-      const [, { body }] = serviceRequest.post.lastCall.args;
-      expect(body).to.equal(batch);
-    });
-  });
+      await service.createBillingBatch(batch)
+      const [, { body }] = serviceRequest.post.lastCall.args
+      expect(body).to.equal(batch)
+    })
+  })
 
   experiment('.deleteInvoiceFromBatch (w/o originalInvoiceId, rebillInvoiceId)', () => {
     test('passes the expected URL to the service request', async () => {
-      const batchId = uuid();
-      const invoiceId = uuid();
-      await service.deleteInvoiceFromBatch(batchId, invoiceId);
-      const [url] = serviceRequest.delete.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/invoices/${invoiceId}`);
-    });
-  });
+      const batchId = uuid()
+      const invoiceId = uuid()
+      await service.deleteInvoiceFromBatch(batchId, invoiceId)
+      const [url] = serviceRequest.delete.lastCall.args
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/invoices/${invoiceId}`)
+    })
+  })
 
   experiment('.deleteInvoiceFromBatch (with originalInvoiceId, rebillInvoiceId)', () => {
     test('passes the expected URL to the service request', async () => {
-      const batchId = uuid();
-      const invoiceId = uuid();
-      const originalInvoiceId = uuid();
-      const rebillInvoiceId = uuid();
+      const batchId = uuid()
+      const invoiceId = uuid()
+      const originalInvoiceId = uuid()
+      const rebillInvoiceId = uuid()
 
-      await service.deleteInvoiceFromBatch(batchId, invoiceId, originalInvoiceId, rebillInvoiceId);
-      const [url] = serviceRequest.delete.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/invoices/${invoiceId}?originalInvoiceId=${originalInvoiceId}&rebillInvoiceId=${rebillInvoiceId}`);
-    });
-  });
+      await service.deleteInvoiceFromBatch(batchId, invoiceId, originalInvoiceId, rebillInvoiceId)
+      const [url] = serviceRequest.delete.lastCall.args
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/invoices/${invoiceId}?originalInvoiceId=${originalInvoiceId}&rebillInvoiceId=${rebillInvoiceId}`)
+    })
+  })
 
   experiment('.approveBatch', () => {
     test('passes the expected URL to the service request', async () => {
-      const batchId = uuid();
-      await service.approveBatch(batchId);
-      const [url] = serviceRequest.post.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/approve`);
-    });
-  });
+      const batchId = uuid()
+      await service.approveBatch(batchId)
+      const [url] = serviceRequest.post.lastCall.args
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/approve`)
+    })
+  })
 
   experiment('.cancelBatch', () => {
     test('passes the expected URL to the service request', async () => {
-      const batchId = uuid();
-      await service.cancelBatch(batchId);
-      const [url] = serviceRequest.delete.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}`);
-    });
-  });
+      const batchId = uuid()
+      await service.cancelBatch(batchId)
+      const [url] = serviceRequest.delete.lastCall.args
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}`)
+    })
+  })
 
   experiment('.getBatchLicences', () => {
     test('passes the expected URL to the service request', async () => {
-      const batchId = uuid();
-      await service.getBatchLicences(batchId);
-      const [url] = serviceRequest.get.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/licences`);
-    });
-  });
+      const batchId = uuid()
+      await service.getBatchLicences(batchId)
+      const [url] = serviceRequest.get.lastCall.args
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/licences`)
+    })
+  })
 
   experiment('.approveBatchReview', () => {
     test('passes the expected URL to the service request', async () => {
-      const batchId = uuid();
-      await service.approveBatchReview(batchId);
-      const [url] = serviceRequest.post.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/approve-review`);
-    });
-  });
+      const batchId = uuid()
+      await service.approveBatchReview(batchId)
+      const [url] = serviceRequest.post.lastCall.args
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/approve-review`)
+    })
+  })
 
   experiment('.getBatchLicenceBillingVolumes', () => {
     test('passes the expected URL to the service request', async () => {
-      const batchId = uuid();
-      const licenceId = uuid();
-      await service.getBatchLicenceBillingVolumes(batchId, licenceId);
-      const [url] = serviceRequest.get.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/licences/${licenceId}/billing-volumes`);
-    });
-  });
+      const batchId = uuid()
+      const licenceId = uuid()
+      await service.getBatchLicenceBillingVolumes(batchId, licenceId)
+      const [url] = serviceRequest.get.lastCall.args
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/licences/${licenceId}/billing-volumes`)
+    })
+  })
 
   experiment('.deleteBatchLicence', () => {
     test('passes the expected URL to the service request', async () => {
-      const batchId = uuid();
-      const licenceId = uuid();
-      await service.deleteBatchLicence(batchId, licenceId);
-      const [url] = serviceRequest.delete.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/licences/${licenceId}`);
-    });
-  });
+      const batchId = uuid()
+      const licenceId = uuid()
+      await service.deleteBatchLicence(batchId, licenceId)
+      const [url] = serviceRequest.delete.lastCall.args
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/licences/${licenceId}`)
+    })
+  })
 
   experiment('.deleteAllBillingData', () => {
     test('passes the expected URL to the service request', async () => {
-      await service.deleteAllBillingData();
-      const [url] = serviceRequest.delete.lastCall.args;
-      expect(url).to.equal('https://example.com/water/1.0/billing/batches');
-    });
-  });
+      await service.deleteAllBillingData()
+      const [url] = serviceRequest.delete.lastCall.args
+      expect(url).to.equal('https://example.com/water/1.0/billing/batches')
+    })
+  })
 
   experiment('.setBatchStatusToError', () => {
     test('passes the expected URL to the service request', async () => {
-      const batchId = uuid();
-      await service.setBatchStatusToError(batchId);
-      const [url] = serviceRequest.post.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/status/cancel`);
-    });
-  });
+      const batchId = uuid()
+      await service.setBatchStatusToError(batchId)
+      const [url] = serviceRequest.post.lastCall.args
+      expect(url).to.equal(`https://example.com/water/1.0/billing/batches/${batchId}/status/cancel`)
+    })
+  })
 
   experiment('.getBatchBillableYears', () => {
     const requestBody = {
@@ -251,18 +251,18 @@ experiment('services/water/BillingBatchService', () => {
       regionId: 'selectedBillingRegion',
       currentFinancialYear: 2022,
       isSummer: true
-    };
+    }
 
     test('passes the expected URL to the service request', async () => {
-      await service.getBatchBillableYears(requestBody);
-      const [url] = serviceRequest.post.lastCall.args;
-      expect(url).to.equal('https://example.com/water/1.0/billing/batches/billable-years');
-    });
+      await service.getBatchBillableYears(requestBody)
+      const [url] = serviceRequest.post.lastCall.args
+      expect(url).to.equal('https://example.com/water/1.0/billing/batches/billable-years')
+    })
 
     test('passes the expected body to the service request', async () => {
-      await service.getBatchBillableYears(requestBody);
-      const [, { body }] = serviceRequest.post.lastCall.args;
-      expect(body).to.equal(requestBody);
-    });
-  });
-});
+      await service.getBatchBillableYears(requestBody)
+      const [, { body }] = serviceRequest.post.lastCall.args
+      expect(body).to.equal(requestBody)
+    })
+  })
+})

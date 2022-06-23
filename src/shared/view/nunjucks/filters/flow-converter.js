@@ -1,23 +1,23 @@
-const Joi = require('joi');
+const Joi = require('joi')
 
 module.exports.flowConverter = (value, unit = 'litre', period = 'second') => {
-  let val = value;
+  let val = value
 
   // Validate
   Joi.assert({ unit, period }, Joi.object().keys({
     unit: Joi.string().valid('cm', 'litre', 'megalitre'),
     period: Joi.string().valid('second', 'day')
-  }));
+  }))
 
   if (unit === 'litre') {
-    val = val * 1000;
+    val = val * 1000
   }
   if (unit === 'megalitre') {
-    val = val / 1000;
+    val = val / 1000
   }
   if (period === 'day') {
-    val = val * 86400;
+    val = val * 86400
   }
 
-  return parseFloat(val).toFixed(1);
-};
+  return parseFloat(val).toFixed(1)
+}

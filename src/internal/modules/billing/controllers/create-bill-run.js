@@ -1,17 +1,17 @@
-const { kebabCase, partialRight, snakeCase } = require('lodash');
-const urlJoin = require('url-join');
+const { kebabCase, partialRight, snakeCase } = require('lodash')
+const urlJoin = require('url-join')
 
-const forms = require('shared/lib/forms');
-const services = require('internal/lib/connectors/services');
+const forms = require('shared/lib/forms')
+const services = require('internal/lib/connectors/services')
 
-const { selectBillingTypeForm, billingTypeFormSchema } = require('../forms/billing-type');
-const { selectBillingRegionForm, billingRegionFormSchema } = require('../forms/billing-region');
-const { TWO_PART_TARIFF } = require('../lib/bill-run-types');
-const seasons = require('../lib/seasons');
-const routing = require('../lib/routing');
-const sessionForms = require('shared/lib/session-forms');
-const { getBatchFinancialYearEnding } = require('../lib/batch-financial-year');
-const { water } = require('internal/lib/connectors/services');
+const { selectBillingTypeForm, billingTypeFormSchema } = require('../forms/billing-type')
+const { selectBillingRegionForm, billingRegionFormSchema } = require('../forms/billing-region')
+const { TWO_PART_TARIFF } = require('../lib/bill-run-types')
+const seasons = require('../lib/seasons')
+const routing = require('../lib/routing')
+const sessionForms = require('shared/lib/session-forms')
+const { getBatchFinancialYearEnding } = require('../lib/batch-financial-year')
+const { water } = require('internal/lib/connectors/services')
 
 /**
  * Step 1a of create billing batch flow - display form to select type
@@ -24,8 +24,8 @@ const getBillingBatchType = async (request, h) => {
     ...request.view,
     back: '/manage',
     form: sessionForms.get(request, selectBillingTypeForm(request))
-  });
-};
+  })
+}
 
 /**
  * Step 1b - receive posted step 1a data
@@ -33,18 +33,18 @@ const getBillingBatchType = async (request, h) => {
  * @param {*} h
  */
 const postBillingBatchType = async (request, h) => {
-  const billingTypeForm = forms.handleRequest(selectBillingTypeForm(request), request, billingTypeFormSchema(request));
+  const billingTypeForm = forms.handleRequest(selectBillingTypeForm(request), request, billingTypeFormSchema(request))
 
   if (billingTypeForm.isValid) {
-    const { selectedBillingType, twoPartTariffSeason } = forms.getValues(billingTypeForm);
+    const { selectedBillingType, twoPartTariffSeason } = forms.getValues(billingTypeForm)
     return h.redirect(_regionUrl(
       selectedBillingType,
       selectedBillingType === TWO_PART_TARIFF ? twoPartTariffSeason : ''
-    ));
+    ))
   }
 
-  return h.postRedirectGet(billingTypeForm);
-};
+  return h.postRedirectGet(billingTypeForm)
+}
 
 /**
  * Step 2a - display select region form
@@ -52,14 +52,14 @@ const postBillingBatchType = async (request, h) => {
  * @param {*} h
  */
 const getBillingBatchRegion = async (request, h) => {
-  const { regions } = request.pre;
+  const { regions } = request.pre
 
   return h.view('nunjucks/form', {
     ...request.view,
     back: '/billing/batch/type',
     form: sessionForms.get(request, selectBillingRegionForm(request, regions))
-  });
-};
+  })
+}
 
 /**
  * Step 2b received step 2a posted data
@@ -69,43 +69,43 @@ const getBillingBatchRegion = async (request, h) => {
  * @param {*} h
  */
 const postBillingBatchRegion = async (request, h) => {
-  const { regions } = request.pre;
-  const schema = billingRegionFormSchema(regions);
-  const billingRegionForm = forms.handleRequest(selectBillingRegionForm(request, regions), request, schema);
-  const { selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion } = forms.getValues(billingRegionForm);
+  const { regions } = request.pre
+  const schema = billingRegionFormSchema(regions)
+  const billingRegionForm = forms.handleRequest(selectBillingRegionForm(request, regions), request, schema)
+  const { selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion } = forms.getValues(billingRegionForm)
 
-  let batch;
+  let batch
 
   if (!billingRegionForm.isValid) {
-    const path = _regionUrl(selectedBillingType, selectedTwoPartTariffSeason);
-    return h.postRedirectGet(billingRegionForm, path);
+    const path = _regionUrl(selectedBillingType, selectedTwoPartTariffSeason)
+    return h.postRedirectGet(billingRegionForm, path)
   }
 
   if (selectedBillingType !== TWO_PART_TARIFF) {
-    batch = _batchingDetails(request, billingRegionForm);
-    return _batching(h, batch);
+    batch = _batchingDetails(request, billingRegionForm)
+    return _batching(h, batch)
   }
 
   const billableYears = await _batchBillableYears(
     selectedTwoPartTariffSeason, selectedBillingType, request.defra.user.user_name, selectedBillingRegion
-  );
+  )
 
   if (billableYears.length > 1) {
-    const path = _financialYearUrl(selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion);
-    return h.postRedirectGet('', path);
+    const path = _financialYearUrl(selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion)
+    return h.postRedirectGet('', path)
   }
-  batch = _batchingDetails(request, billingRegionForm, billableYears[0]?.value);
-  return _batching(h, batch);
-};
+  batch = _batchingDetails(request, billingRegionForm, billableYears[0]?.value)
+  return _batching(h, batch)
+}
 
 const getBillingBatchFinancialYear = async (request, h) => {
-  const selectedBillingType = snakeCase(request.params.billingType);
+  const selectedBillingType = snakeCase(request.params.billingType)
 
   const items = await _batchBillableYears(
     request.params.season, selectedBillingType, request.defra.user.user_name, request.params.region
-  );
+  )
 
-  const viewError = request.yar.get('error', true);
+  const viewError = request.yar.get('error', true)
 
   return h.view(
     'nunjucks/billing/batch-two-part-tariff-billable-years.njk',
@@ -115,24 +115,24 @@ const getBillingBatchFinancialYear = async (request, h) => {
       items,
       ...viewError
     }
-  );
-};
+  )
+}
 
 const postBillingBatchFinancialYear = async (request, h) => {
   if (!request.payload['select-financial-year']) {
-    const viewError = {};
-    viewError.error = true;
+    const viewError = {}
+    viewError.error = true
     viewError.errorList = [
       {
         text: 'You need to select the financial year',
         href: '#select-financial-year'
       }
-    ];
+    ]
     viewError.errorMessage = {
       text: viewError.errorList[0].text
-    };
-    request.yar.set('error', viewError);
-    return h.redirect(`/billing/batch/financial-year/${request.params.billingType}/${request.params.season}/${request.params.region}`);
+    }
+    request.yar.set('error', viewError)
+    return h.redirect(`/billing/batch/financial-year/${request.params.billingType}/${request.params.season}/${request.params.region}`)
   }
 
   const batch = {
@@ -141,10 +141,10 @@ const postBillingBatchFinancialYear = async (request, h) => {
     batchType: snakeCase(request.params.billingType),
     financialYearEnding: request.payload['select-financial-year'],
     isSummer: request.params.season === seasons.SUMMER
-  };
+  }
 
-  return _batching(h, batch);
-};
+  return _batching(h, batch)
+}
 
 /**
  * If a bill run for the region exists, then display a basic summary page
@@ -155,7 +155,7 @@ const postBillingBatchFinancialYear = async (request, h) => {
  * @param {*} request
  * @param {*} h
  */
-const getBillingBatchExists = partialRight(_creationError, 'liveBatchExists');
+const getBillingBatchExists = partialRight(_creationError, 'liveBatchExists')
 
 /**
   * If the bill run type for the region, year and season has already been run, then display a basic summary page
@@ -165,56 +165,56 @@ const getBillingBatchExists = partialRight(_creationError, 'liveBatchExists');
   * @param {*} request
   * @param {*} h
   */
-const getBillingBatchDuplicate = partialRight(_creationError, 'duplicateSentBatch');
+const getBillingBatchDuplicate = partialRight(_creationError, 'duplicateSentBatch')
 
 const _batchBillableYears = async (season, billingType, userEmail, regionId) => {
-  const isSummer = season === seasons.SUMMER;
-  const currentFinancialYear = getBatchFinancialYearEnding(billingType, isSummer, Date.now());
+  const isSummer = season === seasons.SUMMER
+  const currentFinancialYear = getBatchFinancialYearEnding(billingType, isSummer, Date.now())
   const requestBody = {
     userEmail,
     regionId,
     currentFinancialYear,
     isSummer
-  };
-  const billableYears = await water.billingBatches.getBatchBillableYears(requestBody);
+  }
+  const billableYears = await water.billingBatches.getBatchBillableYears(requestBody)
 
   return billableYears.unsentYears.map(unsentYear => {
-    const hint = unsentYear === currentFinancialYear ? { text: 'current year' } : null;
+    const hint = unsentYear === currentFinancialYear ? { text: 'current year' } : null
     return {
       value: unsentYear,
       text: `${unsentYear - 1} to ${unsentYear}`,
       hint
-    };
-  });
-};
+    }
+  })
+}
 
 const _batching = async (h, batch) => {
   try {
-    const { data } = await services.water.billingBatches.createBillingBatch(batch);
-    const path = routing.getBillingBatchRoute(data.batch, { isBackEnabled: false });
-    return h.redirect(path);
+    const { data } = await services.water.billingBatches.createBillingBatch(batch)
+    const path = routing.getBillingBatchRoute(data.batch, { isBackEnabled: false })
+    return h.redirect(path)
   } catch (err) {
     if (err.statusCode === 409) {
-      return h.redirect(_creationErrorRedirectUrl(err));
+      return h.redirect(_creationErrorRedirectUrl(err))
     }
-    throw err;
+    throw err
   }
-};
+}
 
 const _batchingDetails = (request, billingRegionForm, refDate = null) => {
   const {
     selectedBillingType,
     selectedBillingRegion,
     selectedTwoPartTariffSeason
-  } = forms.getValues(billingRegionForm);
+  } = forms.getValues(billingRegionForm)
 
-  const isSummer = selectedTwoPartTariffSeason === seasons.SUMMER;
+  const isSummer = selectedTwoPartTariffSeason === seasons.SUMMER
 
-  let financialYearEnding;
+  let financialYearEnding
   if (refDate) {
-    financialYearEnding = refDate;
+    financialYearEnding = refDate
   } else {
-    financialYearEnding = getBatchFinancialYearEnding(selectedBillingType, isSummer, Date.now());
+    financialYearEnding = getBatchFinancialYearEnding(selectedBillingType, isSummer, Date.now())
   }
 
   const batch = {
@@ -223,27 +223,27 @@ const _batchingDetails = (request, billingRegionForm, refDate = null) => {
     batchType: selectedBillingType,
     financialYearEnding,
     isSummer
-  };
-  return batch;
-};
+  }
+  return batch
+}
 
 async function _creationError (request, h, error) {
-  const { batch } = request.pre;
+  const { batch } = request.pre
   return h.view('nunjucks/billing/batch-creation-error', {
     ...request.view,
     ..._creationErrorText(error, batch),
     back: '/billing/batch/region',
     batch
-  });
+  })
 }
 
 const _creationErrorRedirectUrl = err => {
-  const { batch } = err.error;
+  const { batch } = err.error
   if (batch.status === 'sent') {
-    return `/billing/batch/${batch.id}/duplicate`;
+    return `/billing/batch/${batch.id}/duplicate`
   }
-  return `/billing/batch/${batch.id}/exists`;
-};
+  return `/billing/batch/${batch.id}/exists`
+}
 
 const _creationErrorText = (error, batch) => {
   const creationErrorText = {
@@ -255,31 +255,31 @@ const _creationErrorText = (error, batch) => {
       pageTitle: `This bill run type has already been processed for ${batch.endYear.yearEnding}`,
       warningMessage: 'You can only have one of this bill run type for a region in a financial year'
     }
-  };
-  return creationErrorText[error];
-};
+  }
+  return creationErrorText[error]
+}
 
 const _financialYearUrl = (selectedBillingType, selectedTwoPartTariffSeason, selectedBillingRegion) => urlJoin(
   '/billing/batch/financial-year',
   kebabCase(selectedBillingType),
   kebabCase(selectedTwoPartTariffSeason),
   selectedBillingRegion
-);
+)
 
 const _regionUrl = (selectedBillingType, selectedTwoPartTariffSeason) => urlJoin(
   '/billing/batch/region',
   kebabCase(selectedBillingType),
   kebabCase(selectedTwoPartTariffSeason)
-);
+)
 
-exports.getBillingBatchType = getBillingBatchType;
-exports.postBillingBatchType = postBillingBatchType;
+exports.getBillingBatchType = getBillingBatchType
+exports.postBillingBatchType = postBillingBatchType
 
-exports.getBillingBatchRegion = getBillingBatchRegion;
-exports.postBillingBatchRegion = postBillingBatchRegion;
+exports.getBillingBatchRegion = getBillingBatchRegion
+exports.postBillingBatchRegion = postBillingBatchRegion
 
-exports.getBillingBatchExists = getBillingBatchExists;
-exports.getBillingBatchDuplicate = getBillingBatchDuplicate;
+exports.getBillingBatchExists = getBillingBatchExists
+exports.getBillingBatchDuplicate = getBillingBatchDuplicate
 
-exports.getBillingBatchFinancialYear = getBillingBatchFinancialYear;
-exports.postBillingBatchFinancialYear = postBillingBatchFinancialYear;
+exports.getBillingBatchFinancialYear = getBillingBatchFinancialYear
+exports.postBillingBatchFinancialYear = postBillingBatchFinancialYear

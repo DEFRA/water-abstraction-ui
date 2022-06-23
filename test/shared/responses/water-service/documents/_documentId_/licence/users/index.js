@@ -26,7 +26,7 @@ const multipleUsersIncludingPrimaryUser = () => ({
       roles: ['primary_user']
     }
   ]
-});
+})
 
 const multipleUsersExcludingPrimaryUser = () => ({
   error: null,
@@ -50,16 +50,16 @@ const multipleUsersExcludingPrimaryUser = () => ({
       roles: ['user', 'user_returns']
     }
   ]
-});
+})
 
 const notFound = () => ({
   statusCode: 404,
   error: 'Not Found',
   message: 'Not found'
-});
+})
 
 module.exports = {
   multipleUsersIncludingPrimaryUser,
   multipleUsersExcludingPrimaryUser,
   notFound
-};
+}

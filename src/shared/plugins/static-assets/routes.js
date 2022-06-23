@@ -16,10 +16,10 @@ module.exports = {
             // the cache can be totally busted between releases/
             // index 0: 'stylesheets'
             // index 1: the package version number
-            const afterVersion = request.params.tail.split('/').slice(2);
-            return `public/stylesheets/${afterVersion.join('/')}`;
+            const afterVersion = request.params.tail.split('/').slice(2)
+            return `public/stylesheets/${afterVersion.join('/')}`
           }
-          return `public/${request.params.tail}`;
+          return `public/${request.params.tail}`
         }
       }
     }
@@ -57,4 +57,4 @@ module.exports = {
       file: 'node_modules/govuk-frontend/govuk/all.js'
     }
   }
-};
+}

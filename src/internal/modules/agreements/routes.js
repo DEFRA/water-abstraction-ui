@@ -1,12 +1,12 @@
-'use strict';
-const Joi = require('joi');
-const controller = require('./controller');
-const preHandlers = require('./pre-handlers');
-const sharedPreHandlers = require('shared/lib/pre-handlers/licences');
-const { VALID_GUID } = require('shared/lib/validators');
+'use strict'
+const Joi = require('joi')
+const controller = require('./controller')
+const preHandlers = require('./pre-handlers')
+const sharedPreHandlers = require('shared/lib/pre-handlers/licences')
+const { VALID_GUID } = require('shared/lib/validators')
 
-const config = require('../../config');
-const { deleteAgreements, manageAgreements } = require('internal/lib/constants').scope;
+const config = require('../../config')
+const { deleteAgreements, manageAgreements } = require('internal/lib/constants').scope
 
 if (config.featureToggles.manageAgreements) {
   module.exports = {
@@ -331,5 +331,5 @@ if (config.featureToggles.manageAgreements) {
         ]
       }
     }
-  };
+  }
 }

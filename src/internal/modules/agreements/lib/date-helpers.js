@@ -1,5 +1,5 @@
-'use strict';
-const { getFinancialYear } = require('@envage/water-abstraction-helpers').charging;
+'use strict'
+const { getFinancialYear } = require('@envage/water-abstraction-helpers').charging
 
 /**
  * Gets the default agreement start date.
@@ -12,12 +12,12 @@ const { getFinancialYear } = require('@envage/water-abstraction-helpers').chargi
  * @return {String}
  */
 const getDefaultStartDate = (dateSigned, licenceStartDate, currentDate) => {
-  const financialYearEnding = getFinancialYear(dateSigned || currentDate);
+  const financialYearEnding = getFinancialYear(dateSigned || currentDate)
   const dates = [
     licenceStartDate,
     `${financialYearEnding - 1}-04-01`
-  ];
-  return dates.sort().pop();
-};
+  ]
+  return dates.sort().pop()
+}
 
-exports.getDefaultStartDate = getDefaultStartDate;
+exports.getDefaultStartDate = getDefaultStartDate

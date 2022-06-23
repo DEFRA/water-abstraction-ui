@@ -10,8 +10,8 @@ const getMinimalRequest = () => ({
   url: {},
   auth: {},
   view: {}
-});
+})
 
 module.exports = {
   getMinimalRequest
-};
+}

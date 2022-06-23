@@ -1,4 +1,4 @@
-const services = require('../../lib/connectors/services');
+const services = require('../../lib/connectors/services')
 
 /**
  * Loads the Charging Reports page
@@ -11,8 +11,8 @@ const getChargingForecastReportsPage = (request, h) => {
     ...request.view,
     back: '/manage',
     pageTitle: 'Download a charging forecast report'
-  });
-};
+  })
+}
 
 /**
  * Loads a specific report by making a request to the backend
@@ -21,15 +21,15 @@ const getChargingForecastReportsPage = (request, h) => {
  * @returns {Object} h.response Response body
  */
 const getDownloadableReport = async (request, h) => {
-  const { reportIdentifier } = request.params;
-  const { userId } = request.defra;
+  const { reportIdentifier } = request.params
+  const { userId } = request.defra
   // get signed url
-  const report = await services.water.reporting.getReport(userId, reportIdentifier);
+  const report = await services.water.reporting.getReport(userId, reportIdentifier)
 
   return h.response(report)
     .header('Content-type', 'text/csv')
-    .header('Content-disposition', `attachment; filename="${reportIdentifier}.csv"`);
-};
+    .header('Content-disposition', `attachment; filename="${reportIdentifier}.csv"`)
+}
 
-exports.getChargingForecastReportsPage = getChargingForecastReportsPage;
-exports.getDownloadableReport = getDownloadableReport;
+exports.getChargingForecastReportsPage = getChargingForecastReportsPage
+exports.getDownloadableReport = getDownloadableReport

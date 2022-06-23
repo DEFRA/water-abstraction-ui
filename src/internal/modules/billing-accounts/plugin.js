@@ -1,10 +1,10 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
-const routes = Object.values(require('./routes'));
+const Joi = require('joi')
+const routes = Object.values(require('./routes'))
 
-const session = require('./lib/session');
-const routing = require('./lib/routing');
+const session = require('./lib/session')
+const routing = require('./lib/routing')
 
 const OPTIONS_SCHEMA = Joi.object().keys({
   back: Joi.string().required(),
@@ -43,17 +43,17 @@ const OPTIONS_SCHEMA = Joi.object().keys({
       otherwise: Joi.string().guid().required()
     }
   )
-});
+})
 
 const mapOptions = options => {
   if (!options.isUpdate) {
-    return options;
+    return options
   }
   return {
     ...options,
     companyId: options.data.company.id
-  };
-};
+  }
+}
 
 /**
  * This function stores data in the session and returns
@@ -63,17 +63,17 @@ const mapOptions = options => {
  */
 function billingAccountEntryRedirect (options) {
   // Validate options
-  Joi.assert(options, OPTIONS_SCHEMA);
+  Joi.assert(options, OPTIONS_SCHEMA)
 
   // Store in session
-  session.set(this, options.key, mapOptions(options));
+  session.set(this, options.key, mapOptions(options))
 
-  const { key } = options;
+  const { key } = options
 
   // Return redirect path to enter flow
   return options.isUpdate
     ? routing.getSelectAccount(key)
-    : routing.getSelectExistingBillingAccount(key);
+    : routing.getSelectExistingBillingAccount(key)
 }
 
 /**
@@ -82,25 +82,25 @@ function billingAccountEntryRedirect (options) {
  * @return {Object}
  */
 function getBillingAccount (key) {
-  return (session.get(this, key) || {}).data;
+  return (session.get(this, key) || {}).data
 }
 
 const billingAccountsPlugin = {
   register: server => {
     // Register method to initiate flow and get data
-    server.decorate('request', 'billingAccountEntryRedirect', billingAccountEntryRedirect);
-    server.decorate('request', 'getBillingAccount', getBillingAccount);
+    server.decorate('request', 'billingAccountEntryRedirect', billingAccountEntryRedirect)
+    server.decorate('request', 'getBillingAccount', getBillingAccount)
 
     // Register routes
-    server.route(routes);
+    server.route(routes)
   },
   pkg: {
     name: 'billingAccountsPlugin',
     version: '2.0.0',
     dependencies: ['addressEntryPlugin', 'accountEntryPlugin', 'contactEntryPlugin']
   }
-};
+}
 
-module.exports = billingAccountsPlugin;
-module.exports._billingAccountEntryRedirect = billingAccountEntryRedirect;
-module.exports._getBillingAccount = getBillingAccount;
+module.exports = billingAccountsPlugin
+module.exports._billingAccountEntryRedirect = billingAccountEntryRedirect
+module.exports._getBillingAccount = getBillingAccount

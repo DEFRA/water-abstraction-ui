@@ -2,10 +2,10 @@
  * Contains functions to help with building a list of notifications that
  * can be sent by the current authenticated user
  */
-const { hasScope } = require('../../../lib/permissions');
-const { scope } = require('../../../lib/constants');
-const { featureToggles } = require('../../../config');
-const { mapValues } = require('lodash');
+const { hasScope } = require('../../../lib/permissions')
+const { scope } = require('../../../lib/constants')
+const { featureToggles } = require('../../../config')
+const { mapValues } = require('lodash')
 
 /**
  * Creates a link object for the manage tab view
@@ -14,7 +14,7 @@ const { mapValues } = require('lodash');
  * @param  {Array} scopes  - a list of scopes which can access this link
  * @return {Object}          link object
  */
-const createLink = (name, path, scopes) => ({ name, path, scopes });
+const createLink = (name, path, scopes) => ({ name, path, scopes })
 
 /**
  * Gets a skeleton object for the manage tab view
@@ -53,7 +53,7 @@ const manageTabSkeleton = () => ({
       scope.chargeVersionWorkflowReviewer
     ])
   ]
-});
+})
 
 /**
  * Get a config object for the current user's manage tab
@@ -64,6 +64,6 @@ const manageTabSkeleton = () => ({
 const getManageTabConfig = request => mapValues(
   manageTabSkeleton(),
   links => links.filter(link => hasScope(request, link.scopes))
-);
+)
 
-exports.getManageTabConfig = getManageTabConfig;
+exports.getManageTabConfig = getManageTabConfig

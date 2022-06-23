@@ -1,4 +1,4 @@
-const Boom = require('@hapi/boom');
+const Boom = require('@hapi/boom')
 
 /**
  * Generates Boom error if required
@@ -7,12 +7,12 @@ const Boom = require('@hapi/boom');
  */
 function errorMapper (error) {
   if (error.statusCode === 404) {
-    return Boom.notFound(error);
+    return Boom.notFound(error)
   }
   if (error.name === 'LicenceNotFoundError') {
-    return Boom.notFound('Licence not found', error);
+    return Boom.notFound('Licence not found', error)
   }
-  return error;
+  return error
 }
 
-exports.errorMapper = errorMapper;
+exports.errorMapper = errorMapper

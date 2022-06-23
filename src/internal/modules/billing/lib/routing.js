@@ -10,26 +10,26 @@
  * @return {String} the link
  */
 const getBillingBatchRoute = (batch, opts = {}) => {
-  const { id } = batch;
+  const { id } = batch
 
   const routeMap = new Map()
     .set('processing', `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`)
     .set('sending', `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`)
     .set('ready', opts.invoiceId ? `/billing/batch/${id}/invoice/${opts.invoiceId}` : `/billing/batch/${id}/summary`)
     .set('sent', opts.showSuccessPage ? `/billing/batch/${id}/confirm/success` : `/billing/batch/${id}/summary`)
-    .set('review', `/billing/batch/${id}/two-part-tariff-review`);
+    .set('review', `/billing/batch/${id}/two-part-tariff-review`)
 
   if (opts.isErrorRoutesIncluded) {
     routeMap
       .set('error', `/billing/batch/${id}/processing`)
-      .set('empty', `/billing/batch/${id}/empty`);
+      .set('empty', `/billing/batch/${id}/empty`)
   }
 
-  return routeMap.get(batch.status);
-};
+  return routeMap.get(batch.status)
+}
 
 const getTwoPartTariffLicenceReviewRoute = (batch, invoiceLicenceId) =>
-  `/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicenceId}`;
+  `/billing/batch/${batch.id}/two-part-tariff/licence/${invoiceLicenceId}`
 
-exports.getBillingBatchRoute = getBillingBatchRoute;
-exports.getTwoPartTariffLicenceReviewRoute = getTwoPartTariffLicenceReviewRoute;
+exports.getBillingBatchRoute = getBillingBatchRoute
+exports.getTwoPartTariffLicenceReviewRoute = getTwoPartTariffLicenceReviewRoute

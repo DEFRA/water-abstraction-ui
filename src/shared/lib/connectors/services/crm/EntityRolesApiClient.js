@@ -1,8 +1,8 @@
-const { APIClient } = require('@envage/hapi-pg-rest-api');
-const urlJoin = require('url-join');
-const { http } = require('@envage/water-abstraction-helpers');
+const { APIClient } = require('@envage/hapi-pg-rest-api')
+const urlJoin = require('url-join')
+const { http } = require('@envage/water-abstraction-helpers')
 
-const getEndpoint = serviceUrl => urlJoin(serviceUrl, 'entity/{entityId}/roles');
+const getEndpoint = serviceUrl => urlJoin(serviceUrl, 'entity/{entityId}/roles')
 
 class EntityRolesApiClient extends APIClient {
   /**
@@ -11,7 +11,7 @@ class EntityRolesApiClient extends APIClient {
    * @param {Object} logger The system logger object
    */
   constructor (config, logger) {
-    const serviceUrl = config.services.crm;
+    const serviceUrl = config.services.crm
 
     super(http.request, {
       serviceUrl,
@@ -20,12 +20,12 @@ class EntityRolesApiClient extends APIClient {
       headers: {
         Authorization: config.jwt.token
       }
-    });
+    })
   }
 
   getEntityRoles (entityId) {
-    return this.setParams({ entityId }).findAll();
+    return this.setParams({ entityId }).findAll()
   }
 };
 
-module.exports = EntityRolesApiClient;
+module.exports = EntityRolesApiClient

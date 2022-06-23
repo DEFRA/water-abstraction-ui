@@ -1,16 +1,16 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
-const { get } = require('lodash');
-const { formFactory, fields } = require('shared/lib/forms/');
-const routing = require('../lib/routing');
+const Joi = require('joi')
+const { get } = require('lodash')
+const { formFactory, fields } = require('shared/lib/forms/')
+const routing = require('../lib/routing')
 
 const reviewForm = (request, reviewOutcome, reviewComments) => {
-  const { csrfToken } = request.view;
+  const { csrfToken } = request.view
 
-  const action = routing.postReview(request.params.chargeVersionWorkflowId || request.query.chargeVersionWorkflowId, request.params.licenceId);
+  const action = routing.postReview(request.params.chargeVersionWorkflowId || request.query.chargeVersionWorkflowId, request.params.licenceId)
 
-  const f = formFactory(action, 'POST');
+  const f = formFactory(action, 'POST')
 
   f.fields.push(fields.radio('reviewOutcome', {
     errors: {
@@ -42,15 +42,15 @@ const reviewForm = (request, reviewOutcome, reviewComments) => {
         }, reviewComments)]
       }
     ]
-  }, reviewOutcome));
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
+  }, reviewOutcome))
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
 
-  return f;
-};
+  return f
+}
 
 const reviewFormSchema = request => {
-  const draftChargeInformationStatus = get(request, 'pre.draftChargeInformation.status', null);
+  const draftChargeInformationStatus = get(request, 'pre.draftChargeInformation.status', null)
   return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
     approval_notice: Joi.any(),
@@ -59,8 +59,8 @@ const reviewFormSchema = request => {
       is: 'changes_requested',
       then: Joi.string().required()
     })
-  });
-};
+  })
+}
 
-exports.reviewForm = reviewForm;
-exports.reviewFormSchema = reviewFormSchema;
+exports.reviewForm = reviewForm
+exports.reviewFormSchema = reviewFormSchema

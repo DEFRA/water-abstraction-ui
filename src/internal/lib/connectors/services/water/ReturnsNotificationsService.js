@@ -1,6 +1,6 @@
-const ServiceClient = require('shared/lib/connectors/services/ServiceClient');
-const { last } = require('lodash');
-const helpers = require('@envage/water-abstraction-helpers');
+const ServiceClient = require('shared/lib/connectors/services/ServiceClient')
+const { last } = require('lodash')
+const helpers = require('@envage/water-abstraction-helpers')
 
 /**
  * Gets notification config for return final reminder letter
@@ -25,8 +25,8 @@ const getFinalReminderConfig = (endDate, issuer) => {
       name: 'Returns: final reminder',
       deDupe: false
     }
-  };
-};
+  }
+}
 
 class ReturnsNotificationsService extends ServiceClient {
   /**
@@ -36,8 +36,8 @@ class ReturnsNotificationsService extends ServiceClient {
    * @return {Object} filter
    */
   getPaperFormFilter (licenceNumbers, refDate) {
-    const cycles = helpers.returns.date.createReturnCycles('2017-11-01', refDate);
-    const currentCycle = last(cycles);
+    const cycles = helpers.returns.date.createReturnCycles('2017-11-01', refDate)
+    const currentCycle = last(cycles)
 
     return {
       status: {
@@ -52,7 +52,7 @@ class ReturnsNotificationsService extends ServiceClient {
       licence_ref: {
         $in: licenceNumbers
       }
-    };
+    }
   }
 
   /**
@@ -62,14 +62,14 @@ class ReturnsNotificationsService extends ServiceClient {
    * @return {Promise} resolves with preview data
    */
   sendPaperForms (licenceNumbers, issuer, isPreview = false) {
-    const url = this.joinUrl('returns-notifications', isPreview ? 'preview' : 'send', 'pdf.return_form');
+    const url = this.joinUrl('returns-notifications', isPreview ? 'preview' : 'send', 'pdf.return_form')
     return this.serviceRequest.post(url, {
       body: {
         filter: this.getPaperFormFilter(licenceNumbers),
         issuer,
         name: 'send paper forms'
       }
-    });
+    })
   }
 
   /**
@@ -79,7 +79,7 @@ class ReturnsNotificationsService extends ServiceClient {
    * @return {Promise} resolves with preview data
    */
   previewPaperForms (licenceNumbers, issuer) {
-    return this.sendPaperForms(licenceNumbers, issuer, true);
+    return this.sendPaperForms(licenceNumbers, issuer, true)
   }
 
   /**
@@ -90,12 +90,12 @@ class ReturnsNotificationsService extends ServiceClient {
    * @return Promise                -  resolves with HTTP response
    */
   finalReturnReminders (endDate, issuer, isPreview) {
-    const tail = isPreview ? 'preview?verbose=1' : 'send';
-    const url = this.joinUrl('returns-notifications/invite', tail);
+    const tail = isPreview ? 'preview?verbose=1' : 'send'
+    const url = this.joinUrl('returns-notifications/invite', tail)
     return this.serviceRequest.post(url, {
       body: getFinalReminderConfig(endDate, issuer)
-    });
+    })
   };
 }
 
-module.exports = ReturnsNotificationsService;
+module.exports = ReturnsNotificationsService

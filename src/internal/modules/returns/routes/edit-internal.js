@@ -1,27 +1,27 @@
-const { set } = require('lodash');
-const controller = require('../controllers/edit');
-const constants = require('../../../lib/constants');
-const allowedScopes = [constants.scope.returns];
-const steps = require('shared/modules/returns/steps');
+const { set } = require('lodash')
+const controller = require('../controllers/edit')
+const constants = require('../../../lib/constants')
+const allowedScopes = [constants.scope.returns]
+const steps = require('shared/modules/returns/steps')
 
-const services = require('internal/lib/connectors/services');
-const FlowStorageAdapter = require('shared/modules/returns/FlowStorageAdapter');
-const storageAdapter = new FlowStorageAdapter(services.water.returns);
-const licencePreHandlers = require('shared/lib/pre-handlers/licences');
+const services = require('internal/lib/connectors/services')
+const FlowStorageAdapter = require('shared/modules/returns/FlowStorageAdapter')
+const storageAdapter = new FlowStorageAdapter(services.water.returns)
+const licencePreHandlers = require('shared/lib/pre-handlers/licences')
 
-const { createRoute: sharedCreateRoute } = require('shared/modules/returns/route-helpers');
+const { createRoute: sharedCreateRoute } = require('shared/modules/returns/route-helpers')
 
 const pre = [{
   method: licencePreHandlers.getLicenceByReturnId,
   assign: 'licence'
-}];
+}]
 
 const createRoute = (...args) => {
-  const route = sharedCreateRoute(...args);
-  set(route, 'options.auth.scope', allowedScopes);
-  set(route, 'options.plugins.flow.adapter', storageAdapter);
-  return route;
-};
+  const route = sharedCreateRoute(...args)
+  set(route, 'options.auth.scope', allowedScopes)
+  set(route, 'options.plugins.flow.adapter', storageAdapter)
+  return route
+}
 
 module.exports = [
 
@@ -174,4 +174,4 @@ module.exports = [
     }
   }
 
-];
+]

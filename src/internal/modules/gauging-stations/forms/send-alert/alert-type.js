@@ -1,12 +1,12 @@
-const Joi = require('joi');
-const { get } = require('lodash');
-const { formFactory, fields } = require('shared/lib/forms/');
-const session = require('../../lib/session');
+const Joi = require('joi')
+const { get } = require('lodash')
+const { formFactory, fields } = require('shared/lib/forms/')
+const session = require('../../lib/session')
 
 const sendAlertTypeForm = request => {
-  const f = formFactory(request.path);
+  const f = formFactory(request.path)
 
-  const defaultAlertType = get(session.get(request), 'sendingAlertType.value');
+  const defaultAlertType = get(session.get(request), 'sendingAlertType.value')
 
   f.fields.push(fields.radio('alertType', {
     errors: {
@@ -35,17 +35,17 @@ const sendAlertTypeForm = request => {
       hint: 'Tell licence holders they can take water at the normal amount.'
     }
     ]
-  }, defaultAlertType));
+  }, defaultAlertType))
 
-  f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
-  return f;
-};
+  f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
+  return f
+}
 
 const sendAlertTypeSchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   alertType: Joi.string().required().allow('warning', 'stop', 'reduce', 'resume')
-});
+})
 
-exports.form = sendAlertTypeForm;
-exports.schema = sendAlertTypeSchema;
+exports.form = sendAlertTypeForm
+exports.schema = sendAlertTypeSchema

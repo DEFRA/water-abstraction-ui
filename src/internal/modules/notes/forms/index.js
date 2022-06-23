@@ -1,1 +1,1 @@
-exports.note = require('./note');
+exports.note = require('./note')

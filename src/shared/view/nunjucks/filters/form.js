@@ -1,5 +1,5 @@
-const { cloneDeep, get, set, isObject, isEqual } = require('lodash');
-const { mapFields } = require('shared/lib/forms/mapFields');
+const { cloneDeep, get, set, isObject, isEqual } = require('lodash')
+const { mapFields } = require('shared/lib/forms/mapFields')
 
 /**
  * Applies error message to most form field types
@@ -9,16 +9,16 @@ const { mapFields } = require('shared/lib/forms/mapFields');
  */
 const applyErrors = (obj, errors) => {
   if (errors.length) {
-    const text = errors.map(error => error.message).join(', ');
+    const text = errors.map(error => error.message).join(', ')
     return {
       ...obj,
       errorMessage: {
         text
       }
-    };
+    }
   }
-  return obj;
-};
+  return obj
+}
 
 /**
  * Converts internal form library object to a format expected by the
@@ -45,14 +45,14 @@ const mapFormField = (field) => {
     attributes: field.options.attr || {},
     suffix: { text: field.options.suffix },
     autocomplete: field.options.autoComplete
-  };
-
-  if (field.options.maxlength) {
-    options.maxlength = field.options.maxlength;
   }
 
-  return applyErrors(options, field.errors);
-};
+  if (field.options.maxlength) {
+    options.maxlength = field.options.maxlength
+  }
+
+  return applyErrors(options, field.errors)
+}
 
 /**
  * @param  {String|null} values
@@ -60,16 +60,16 @@ const mapFormField = (field) => {
  * @return {Array}
  */
 const getFormDateItems = (values, items = ['day', 'month', 'year']) => {
-  const formValues = (values || '').toString().split(/[- T]/g);
+  const formValues = (values || '').toString().split(/[- T]/g)
   return items.map((item, index) => {
     return {
       classes: item === 'year' ? 'govuk-input--width-4' : 'govuk-input--width-2',
       // items.length -1 because the array starts at 0 not 1
       value: formValues[(items.length - 1) - index],
       name: item
-    };
-  });
-};
+    }
+  })
+}
 
 /**
  * Converts a date field object from internal form library to a format expected
@@ -91,10 +91,10 @@ const mapFormDateField = (field) => {
     classes: field.options.controlClass,
     items: getFormDateItems(field.value, field.options.items),
     attributes: field.options.attr || {}
-  };
+  }
 
-  return applyErrors(options, field.errors);
-};
+  return applyErrors(options, field.errors)
+}
 
 /**
  * Creates an error summary object for the supplied field.  For certain
@@ -104,14 +104,14 @@ const mapFormDateField = (field) => {
  * @return {Array}       - list of errors for GOV.UK error summary macro
  */
 const mapFieldErrorSummary = (field) => {
-  const errors = field.errors || [];
+  const errors = field.errors || []
 
   // For radio/checkbox fields, the ID is the first item
   return errors.map(error => ({
     text: error.summary || error.message,
     href: error.link ? error.link : `#${field.name}`
-  }));
-};
+  }))
+}
 
 /**
  * Given an internal form object, generates an object for the GOV.UK error
@@ -120,18 +120,18 @@ const mapFieldErrorSummary = (field) => {
  * @return {Object}        options object for GOV.UK error summary macro
  */
 const mapFormErrorSummary = (form) => {
-  const errorList = [];
+  const errorList = []
 
   mapFields(form, (field) => {
-    errorList.push(...mapFieldErrorSummary(field));
-    return field;
-  });
+    errorList.push(...mapFieldErrorSummary(field))
+    return field
+  })
 
   return {
     titleText: 'There is a problem',
     errorList
-  };
-};
+  }
+}
 
 /**
  * If the field value is an object, then it is compared directly with the choice.
@@ -142,10 +142,10 @@ const mapFormErrorSummary = (form) => {
  */
 const radioIsChecked = (field, choice) => {
   if (isObject(field.value)) {
-    return isEqual(field.value, choice);
+    return isEqual(field.value, choice)
   }
-  return field.value === choice.value;
-};
+  return field.value === choice.value
+}
 
 /**
  * Maps the choices from a service form object to a format expected
@@ -155,23 +155,23 @@ const radioIsChecked = (field, choice) => {
  * @return {Array}          array of radio button items
  */
 const mapChoices = (field, prop = 'checked') => {
-  const keyProperty = field.options.keyProperty || 'value';
-  const labelProperty = field.options.labelProperty || 'label';
+  const keyProperty = field.options.keyProperty || 'value'
+  const labelProperty = field.options.labelProperty || 'label'
 
   return field.options.choices.map(choice => (
     choice.divider
       ? { divider: choice.divider }
       : {
-        value: choice[keyProperty],
-        text: choice[labelProperty],
-        html: choice.html,
-        hint: {
-          text: choice.hint
-        },
-        [prop]: radioIsChecked(field, choice)
-      }
-  ));
-};
+          value: choice[keyProperty],
+          text: choice[labelProperty],
+          html: choice.html,
+          hint: {
+            text: choice.hint
+          },
+          [prop]: radioIsChecked(field, choice)
+        }
+  ))
+}
 
 /**
  * Maps label / caption to either an html or text property as needed
@@ -179,11 +179,11 @@ const mapChoices = (field, prop = 'checked') => {
  * @return {Object}
  */
 const getLabelText = options => {
-  const { label, caption } = options;
+  const { label, caption } = options
   return caption
     ? { html: `<span class="govuk-caption-l">${caption}</span> ${label}` }
-    : { text: label };
-};
+    : { text: label }
+}
 
 /**
  * Gets radio legend options.  If field.options.heading is true, it sets
@@ -192,20 +192,20 @@ const getLabelText = options => {
  * @return {Object}       - legend options
  */
 const mapLegendOptions = (field) => {
-  const options = getLabelText(field.options);
+  const options = getLabelText(field.options)
 
   if (field.options.heading) {
-    const size = field.options.size || 'l';
-    options.isPageHeading = true;
-    options.classes = `govuk-fieldset__legend--${size}`;
+    const size = field.options.size || 'l'
+    options.isPageHeading = true
+    options.classes = `govuk-fieldset__legend--${size}`
   }
 
   if (field.options.subHeading) {
-    options.classes = 'govuk-fieldset__legend--m';
+    options.classes = 'govuk-fieldset__legend--m'
   }
 
-  return options;
-};
+  return options
+}
 
 /**
  * Maps a radio field from internal form library to the GOV.UK radio
@@ -214,7 +214,7 @@ const mapLegendOptions = (field) => {
  * @return {Object}       Options object for GOV.UK radio nunjucks macro
  */
 const mapFormRadioField = (field) => {
-  const items = mapChoices(field);
+  const items = mapChoices(field)
 
   const options = {
     items,
@@ -230,10 +230,10 @@ const mapFormRadioField = (field) => {
       legend: mapLegendOptions(field)
     },
     classes: field.options.classes
-  };
+  }
 
-  return applyErrors(options, field.errors);
-};
+  return applyErrors(options, field.errors)
+}
 
 /**
  * For radio buttons, sets conditional HTML on the i'th item in the list
@@ -244,11 +244,11 @@ const mapFormRadioField = (field) => {
  * @return {Object} updated GOV.UK radio nunjucks macro
  */
 const setConditionalField = (options, i, html) => {
-  const path = `items.[${i}].conditional.html`;
-  const value = get(options, path, '');
-  const updated = cloneDeep(options);
-  return set(updated, path, value + html);
-};
+  const path = `items.[${i}].conditional.html`
+  const value = get(options, path, '')
+  const updated = cloneDeep(options)
+  return set(updated, path, value + html)
+}
 
 /**
  * Maps a checkbox field object from our internal form library to a format
@@ -257,8 +257,8 @@ const setConditionalField = (options, i, html) => {
  * @return {Object}       Options object for GOV.UK checkbox nunjucks macro
  */
 const mapFormCheckbox = (field) => {
-  const value = field.value || [];
-  const choices = field.options.choices || [];
+  const value = field.value || []
+  const choices = field.options.choices || []
 
   const items = choices.map(choice => ({
     value: choice.value,
@@ -268,7 +268,7 @@ const mapFormCheckbox = (field) => {
       text: choice.hint
     },
     checked: value.includes(choice.value)
-  }));
+  }))
 
   const options = {
     idPrefix: field.name,
@@ -280,10 +280,10 @@ const mapFormCheckbox = (field) => {
       legend: mapLegendOptions(field)
     },
     items
-  };
+  }
 
-  return applyErrors(options, field.errors);
-};
+  return applyErrors(options, field.errors)
+}
 
 /**
  * Maps a dropdown field object from our internal form library to a format
@@ -292,7 +292,7 @@ const mapFormCheckbox = (field) => {
  * @return {Object}       Options object for GOV.UK dropdown nunjucks macro
  */
 const mapFormDropdownField = (field) => {
-  const items = mapChoices(field, 'selected');
+  const items = mapChoices(field, 'selected')
 
   const options = {
     id: field.name,
@@ -307,21 +307,21 @@ const mapFormDropdownField = (field) => {
     formGroup: {
       classes: 'govuk-body'
     }
-  };
+  }
 
-  return applyErrors(options, field.errors);
-};
+  return applyErrors(options, field.errors)
+}
 
 const isFirstFieldHeading = form => {
-  const firstFieldWithLabel = form.fields.find(field => field.options.label);
-  return get(firstFieldWithLabel, 'options.heading', false);
-};
+  const firstFieldWithLabel = form.fields.find(field => field.options.label)
+  return get(firstFieldWithLabel, 'options.heading', false)
+}
 
-exports.mapFormField = mapFormField;
-exports.mapFormErrorSummary = mapFormErrorSummary;
-exports.mapFormDateField = mapFormDateField;
-exports.mapFormRadioField = mapFormRadioField;
-exports.setConditionalField = setConditionalField;
-exports.mapFormCheckbox = mapFormCheckbox;
-exports.mapFormDropdownField = mapFormDropdownField;
-exports.isFirstFieldHeading = isFirstFieldHeading;
+exports.mapFormField = mapFormField
+exports.mapFormErrorSummary = mapFormErrorSummary
+exports.mapFormDateField = mapFormDateField
+exports.mapFormRadioField = mapFormRadioField
+exports.setConditionalField = setConditionalField
+exports.mapFormCheckbox = mapFormCheckbox
+exports.mapFormDropdownField = mapFormDropdownField
+exports.isFirstFieldHeading = isFirstFieldHeading

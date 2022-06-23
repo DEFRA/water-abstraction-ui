@@ -1,4 +1,4 @@
-const qs = require('querystring');
+const qs = require('querystring')
 
 /**
  * Serializes the supplied object into an HTTP query string
@@ -6,9 +6,9 @@ const qs = require('querystring');
  * @return {String} query string
  */
 const queryString = (obj = {}) => {
-  return qs.stringify(obj);
-};
+  return qs.stringify(obj)
+}
 
 module.exports = {
   queryString
-};
+}

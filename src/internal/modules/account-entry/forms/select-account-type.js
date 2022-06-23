@@ -1,13 +1,13 @@
-'use strict';
+'use strict'
 
-const { formFactory, fields } = require('shared/lib/forms');
-const Joi = require('joi');
-const { accountTypes } = require('shared/lib/constants');
+const { formFactory, fields } = require('shared/lib/forms')
+const Joi = require('joi')
+const { accountTypes } = require('shared/lib/constants')
 
 const form = request => {
-  const { csrfToken } = request.view;
+  const { csrfToken } = request.view
 
-  const f = formFactory(request.path);
+  const f = formFactory(request.path)
 
   f.fields.push(fields.radio('accountType', {
     errors: {
@@ -30,13 +30,13 @@ const form = request => {
           label: 'Full name'
         })]
       }]
-  }));
+  }))
 
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
 
-  return f;
-};
+  return f
+}
 
 const schema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
@@ -45,7 +45,7 @@ const schema = () => Joi.object().keys({
     is: accountTypes.person,
     then: Joi.string().required().trim()
   })
-});
+})
 
-exports.form = form;
-exports.schema = schema;
+exports.form = form
+exports.schema = schema

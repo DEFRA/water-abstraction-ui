@@ -1,20 +1,20 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
+const Joi = require('joi')
 
-const { formFactory, fields } = require('shared/lib/forms/');
+const { formFactory, fields } = require('shared/lib/forms/')
 const {
   ANNUAL,
   SUPPLEMENTARY,
   TWO_PART_TARIFF
-} = require('../lib/bill-run-types');
+} = require('../lib/bill-run-types')
 
-const seasons = require('../lib/seasons');
+const seasons = require('../lib/seasons')
 
 const seasonChoices = [
   { value: seasons.SUMMER, label: 'Summer' },
   { value: seasons.WINTER_AND_ALL_YEAR, label: 'Winter and All year' }
-];
+]
 
 const choices = [
   {
@@ -37,7 +37,7 @@ const choices = [
       })
     ]
   }
-];
+]
 
 /**
  * Creates an object to represent the form for capturing the
@@ -47,10 +47,10 @@ const choices = [
  * @param {string} billRunType The type of bill run selected
   */
 const selectBillingTypeForm = (request) => {
-  const { csrfToken } = request.view;
-  const action = '/billing/batch/type';
+  const { csrfToken } = request.view
+  const action = '/billing/batch/type'
 
-  const f = formFactory(action, 'POST');
+  const f = formFactory(action, 'POST')
 
   f.fields.push(fields.radio('selectedBillingType', {
     errors: {
@@ -62,15 +62,15 @@ const selectBillingTypeForm = (request) => {
       }
     },
     choices
-  }));
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
+  }))
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
 
-  return f;
-};
+  return f
+}
 
 const billingTypeFormSchema = (request) => {
-  const validBillRunTypes = [ANNUAL, SUPPLEMENTARY, TWO_PART_TARIFF];
+  const validBillRunTypes = [ANNUAL, SUPPLEMENTARY, TWO_PART_TARIFF]
 
   return Joi.object({
     csrf_token: Joi.string().uuid().required(),
@@ -82,8 +82,8 @@ const billingTypeFormSchema = (request) => {
         then: Joi.string().required().valid(...Object.values(seasons))
       }
     )
-  });
-};
+  })
+}
 
-exports.selectBillingTypeForm = selectBillingTypeForm;
-exports.billingTypeFormSchema = billingTypeFormSchema;
+exports.selectBillingTypeForm = selectBillingTypeForm
+exports.billingTypeFormSchema = billingTypeFormSchema

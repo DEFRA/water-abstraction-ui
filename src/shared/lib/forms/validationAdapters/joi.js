@@ -1,10 +1,10 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
-const { mapFields } = require('../mapFields');
-const { get, uniqBy } = require('lodash');
+const Joi = require('joi')
+const { mapFields } = require('../mapFields')
+const { get, uniqBy } = require('lodash')
 
-const getChoiceValues = field => field.options.choices.map(choice => choice.value);
+const getChoiceValues = field => field.options.choices.map(choice => choice.value)
 
 /**
  * Generates a Joi validation schema given a form schema
@@ -12,37 +12,37 @@ const getChoiceValues = field => field.options.choices.map(choice => choice.valu
  * @return {Object} Joi schema
  */
 const createSchemaFromForm = form => {
-  const schema = {};
+  const schema = {}
 
   mapFields(form, (field) => {
-    let s = Joi.string();
+    let s = Joi.string()
 
     if (field.options.mapper === 'booleanMapper') {
-      s = Joi.boolean();
+      s = Joi.boolean()
     }
     if (field.options.mapper === 'dateMapper') {
-      s = Joi.string().isoDate().options({ convert: false });
+      s = Joi.string().isoDate().options({ convert: false })
     }
     if (field.options.mapper === 'numberMapper') {
-      s = Joi.number();
+      s = Joi.number()
     }
     if (field.options.mapper === 'arrayMapper' && field.options.choices) {
-      const values = getChoiceValues(field);
-      s = Joi.array().items(Joi.string().valid(...values));
+      const values = getChoiceValues(field)
+      s = Joi.array().items(Joi.string().valid(...values))
     } else if (field.options.choices) {
-      const values = getChoiceValues(field);
-      s = s.valid(...values);
+      const values = getChoiceValues(field)
+      s = s.valid(...values)
     }
     if (field.options.required) {
-      s = s.required();
+      s = s.required()
     }
-    schema[field.name] = s;
-  });
+    schema[field.name] = s
+  })
 
-  return schema;
-};
+  return schema
+}
 
-const validate = (requestData, schema, options = { abortEarly: false }) => schema.validate(requestData);
+const validate = (requestData, schema, options = { abortEarly: false }) => schema.validate(requestData)
 
 /**
  * Formats error object from Joi into an easy format, and includes
@@ -52,20 +52,20 @@ const validate = (requestData, schema, options = { abortEarly: false }) => schem
  * @return {Array} formatted error messages
  */
 const formatErrors = (error, customErrors) => {
-  const details = get(error, 'details', []);
+  const details = get(error, 'details', [])
 
   const errors = details.map(err => {
-    const name = err.context.key;
-    const { type, message } = err;
+    const name = err.context.key
+    const { type, message } = err
 
     // Use custom error messages
     if ((name in customErrors) && (type in customErrors[name])) {
-      const custom = customErrors[name][type];
+      const custom = customErrors[name][type]
       return {
         name,
         message: custom.message,
         summary: custom.summary || custom.message
-      };
+      }
     }
 
     // Use default Joi message
@@ -73,15 +73,15 @@ const formatErrors = (error, customErrors) => {
       name,
       message,
       summary: message
-    };
-  });
+    }
+  })
 
   // only return one error for each field
-  return uniqBy(errors, 'name');
-};
+  return uniqBy(errors, 'name')
+}
 
 module.exports = {
   createSchemaFromForm,
   validate,
   formatErrors
-};
+}

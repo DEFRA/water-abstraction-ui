@@ -8,10 +8,10 @@
  */
 const mapLines = (data, valueKey = 'quantity') => {
   return Object.keys(data).map(key => {
-    const [startDate, endDate] = key.split('_');
-    return { startDate, endDate, [valueKey]: data[key] };
-  });
-};
+    const [startDate, endDate] = key.split('_')
+    return { startDate, endDate, [valueKey]: data[key] }
+  })
+}
 
 /**
  * gets meter details object from form data
@@ -19,10 +19,10 @@ const mapLines = (data, valueKey = 'quantity') => {
  * @return {Object}      - meter details data
  */
 const mapMeterDetails = data => {
-  const { isMultiplier, manufacturer, serialNumber } = data;
-  const multiplier = (isMultiplier || []).includes('multiply') ? 10 : 1;
-  return { manufacturer, serialNumber, multiplier };
-};
+  const { isMultiplier, manufacturer, serialNumber } = data
+  const multiplier = (isMultiplier || []).includes('multiply') ? 10 : 1
+  return { manufacturer, serialNumber, multiplier }
+}
 
-exports.mapLines = mapLines;
-exports.mapMeterDetails = mapMeterDetails;
+exports.mapLines = mapLines
+exports.mapMeterDetails = mapMeterDetails

@@ -1,4 +1,4 @@
-const config = require('../../../config');
+const config = require('../../../config')
 
 module.exports = {
   idm: require('./idm')(config),
@@ -6,4 +6,4 @@ module.exports = {
   permits: require('./permits')(config),
   returns: require('./returns')(config),
   water: require('./water')(config)
-};
+}

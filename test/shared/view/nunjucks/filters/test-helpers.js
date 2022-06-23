@@ -1,5 +1,5 @@
-const Joi = require('joi');
-const { formFactory, fields } = require('shared/lib/forms');
+const Joi = require('joi')
+const { formFactory, fields } = require('shared/lib/forms')
 
 const textField = fields.text('text_field', {
   label: 'A text field',
@@ -8,7 +8,7 @@ const textField = fields.text('text_field', {
   attr: { data: 'test' },
   suffix: 'some unit',
   autoComplete: false
-}, 'value');
+}, 'value')
 
 const radioField = fields.radio('radio_field', {
   label: 'A radio field',
@@ -19,7 +19,7 @@ const radioField = fields.radio('radio_field', {
     hint: 'A hint about option A',
     label: 'A'
   }]
-}, 'value');
+}, 'value')
 
 const checkboxField = fields.checkbox('checkbox_field', {
   label: 'A checkbox field',
@@ -30,12 +30,12 @@ const checkboxField = fields.checkbox('checkbox_field', {
     hint: 'A hint about option A',
     label: 'A'
   }]
-}, ['a']);
+}, ['a'])
 
 const dateField = fields.checkbox('date_field', {
   label: 'Date field',
   hint: 'A hint'
-}, '2018-11-01');
+}, '2018-11-01')
 
 const dropdownField = fields.dropdown('dropdown_field', {
   label: 'A dropdown field',
@@ -48,18 +48,18 @@ const dropdownField = fields.dropdown('dropdown_field', {
     value: 'option-b',
     label: 'B'
   }]
-}, 'option-b');
+}, 'option-b')
 
-const f = formFactory('/action');
-f.fields.push(textField);
-f.fields.push(radioField);
-f.fields.push(checkboxField);
+const f = formFactory('/action')
+f.fields.push(textField)
+f.fields.push(radioField)
+f.fields.push(checkboxField)
 
 const schema = {
   text_field: Joi.string().required(),
   radio_field: Joi.string().required(),
   checkbox_field: Joi.string().required()
-};
+}
 module.exports = {
   textField,
   radioField,
@@ -68,4 +68,4 @@ module.exports = {
   schema,
   dateField,
   dropdownField
-};
+}

@@ -2,10 +2,10 @@
  * HAPI Route handlers for registering a user account
  * @module controllers/registration
  */
-const Joi = require('joi');
-const querystring = require('querystring');
-const config = require('../../config');
-const services = require('../../lib/connectors/services');
+const Joi = require('joi')
+const querystring = require('querystring')
+const config = require('../../config')
+const services = require('../../lib/connectors/services')
 
 /**
  * Render initial page with information for users
@@ -13,7 +13,7 @@ const services = require('../../lib/connectors/services');
  * @param {Object} h - Hapi Response Toolkit
  */
 const getRegisterStart = (request, h) =>
-  h.view('nunjucks/registration/start', request.view);
+  h.view('nunjucks/registration/start', request.view)
 
 /**
  * Render form to get user email address
@@ -21,26 +21,26 @@ const getRegisterStart = (request, h) =>
  * @param {Object} h - Hapi Response Toolkit
  */
 const getEmailAddress = (request, h) =>
-  h.view('nunjucks/registration/enter-email', request.view);
+  h.view('nunjucks/registration/enter-email', request.view)
 
 const getUrlWithEmailParam = (email, options) => {
   if (options.includeEmail) {
-    const query = querystring.stringify({ email });
-    return `${options.redirect}?${query}`;
+    const query = querystring.stringify({ email })
+    return `${options.redirect}?${query}`
   }
-  return options.redirect;
-};
+  return options.redirect
+}
 
 const validateEmail = requestPayload => {
   const { error, value } = Joi.object({
     email: Joi.string().trim().required().email().lowercase()
-  }).validate(requestPayload);
+  }).validate(requestPayload)
 
   if (error) {
-    throw error;
+    throw error
   }
-  return value.email;
-};
+  return value.email
+}
 
 /**
  * Process email form
@@ -59,42 +59,42 @@ const postEmailAddress = async (request, h, options = {}) => {
     template: 'nunjucks/registration/enter-email',
     redirect: '/success',
     includeEmail: true
-  };
-  const emailConfig = Object.assign(defaults, options);
-  let email;
+  }
+  const emailConfig = Object.assign(defaults, options)
+  let email
 
   try {
     // Validate email
-    email = validateEmail(request.payload);
+    email = validateEmail(request.payload)
 
     // Try to create user
-    const { error: createError } = await services.idm.users.createUserWithoutPassword(config.idm.application, email);
+    const { error: createError } = await services.idm.users.createUserWithoutPassword(config.idm.application, email)
 
     if (createError) {
-      throw createError;
+      throw createError
     }
 
-    await services.idm.users.resetPassword(config.idm.application, email, 'new');
-    return h.redirect(getUrlWithEmailParam(email, emailConfig));
+    await services.idm.users.resetPassword(config.idm.application, email, 'new')
+    return h.redirect(getUrlWithEmailParam(email, emailConfig))
   } catch (error) {
     // User exists
     if (error.name === 'DBError' && parseInt(error.code, 10) === 23505) {
-      const { error: resetError } = await services.idm.users.resetPassword(config.idm.application, request.payload.email, 'existing');
+      const { error: resetError } = await services.idm.users.resetPassword(config.idm.application, request.payload.email, 'existing')
       if (resetError) {
-        throw resetError;
+        throw resetError
       }
-      return h.redirect(getUrlWithEmailParam(email, emailConfig));
+      return h.redirect(getUrlWithEmailParam(email, emailConfig))
     }
 
     // Email was invalid - handle error
     if (error.name === 'ValidationError') {
-      request.view.error = error;
-      return h.view(emailConfig.template, request.view);
+      request.view.error = error
+      return h.view(emailConfig.template, request.view)
     }
 
-    throw error;
+    throw error
   }
-};
+}
 
 /**
  * Success page shown when account created
@@ -105,7 +105,7 @@ const getRegisterSuccess = (request, h) =>
   h.view('nunjucks/registration/email-sent', {
     ...request.view,
     email: request.query.email
-  });
+  })
 
 /**
  * Try sending email again
@@ -113,7 +113,7 @@ const getRegisterSuccess = (request, h) =>
  * @param {Object} h - Hapi Response Toolkit
  */
 const getSendAgain = (request, h) =>
-  h.view('nunjucks/registration/email-resend', request.view);
+  h.view('nunjucks/registration/email-resend', request.view)
 
 /**
  * Send email again
@@ -126,9 +126,9 @@ const postSendAgain = (request, h) => {
     template: 'nunjucks/registration/email-resend',
     redirect: '/resent-success',
     includeEmail: false
-  };
-  return postEmailAddress(request, h, options);
-};
+  }
+  return postEmailAddress(request, h, options)
+}
 
 /**
  * Success page shown when account created
@@ -136,13 +136,13 @@ const postSendAgain = (request, h) => {
  * @param {Object} h - Hapi Response Toolkit
  */
 const getResentSuccess = (request, h) =>
-  h.view('nunjucks/registration/email-resent', request.view);
+  h.view('nunjucks/registration/email-resent', request.view)
 
-exports.getRegisterStart = getRegisterStart;
-exports.getEmailAddress = getEmailAddress;
-exports.postEmailAddress = postEmailAddress;
-exports.getRegisterSuccess = getRegisterSuccess;
-exports.getSendAgain = getSendAgain;
-exports.postSendAgain = postSendAgain;
-exports.getResentSuccess = getResentSuccess;
-exports.getUrlWithEmailParam = getUrlWithEmailParam;
+exports.getRegisterStart = getRegisterStart
+exports.getEmailAddress = getEmailAddress
+exports.postEmailAddress = postEmailAddress
+exports.getRegisterSuccess = getRegisterSuccess
+exports.getSendAgain = getSendAgain
+exports.postSendAgain = postSendAgain
+exports.getResentSuccess = getResentSuccess
+exports.getUrlWithEmailParam = getUrlWithEmailParam

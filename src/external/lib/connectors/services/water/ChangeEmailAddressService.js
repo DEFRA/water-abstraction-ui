@@ -1,4 +1,4 @@
-const ServiceClient = require('shared/lib/connectors/services/ServiceClient');
+const ServiceClient = require('shared/lib/connectors/services/ServiceClient')
 
 class ChangeEmailAddressService extends ServiceClient {
   /**
@@ -11,11 +11,11 @@ class ChangeEmailAddressService extends ServiceClient {
    * @return {Promise}
    */
   postGenerateSecurityCode (userId, email) {
-    const url = this.joinUrl(`user/${userId}/change-email-address`);
+    const url = this.joinUrl(`user/${userId}/change-email-address`)
     const options = {
       body: { email }
-    };
-    return this.serviceRequest.post(url, options);
+    }
+    return this.serviceRequest.post(url, options)
   }
 
   /**
@@ -28,11 +28,11 @@ class ChangeEmailAddressService extends ServiceClient {
    * @return {Promise}
    */
   postSecurityCode (userId, securityCode) {
-    const url = this.joinUrl(`user/${userId}/change-email-address/code`);
+    const url = this.joinUrl(`user/${userId}/change-email-address/code`)
     const options = {
       body: { securityCode }
-    };
-    return this.serviceRequest.post(url, options);
+    }
+    return this.serviceRequest.post(url, options)
   }
 
   /**
@@ -40,9 +40,9 @@ class ChangeEmailAddressService extends ServiceClient {
    * @type {[type]}
    */
   getStatus (userId) {
-    const url = this.joinUrl(`user/${userId}/change-email-address`);
-    return this.serviceRequest.get(url);
+    const url = this.joinUrl(`user/${userId}/change-email-address`)
+    return this.serviceRequest.get(url)
   }
 };
 
-module.exports = ChangeEmailAddressService;
+module.exports = ChangeEmailAddressService

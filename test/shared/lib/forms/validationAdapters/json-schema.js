@@ -1,7 +1,7 @@
-const { expect } = require('@hapi/code');
-const { experiment, test } = exports.lab = require('@hapi/lab').script();
+const { expect } = require('@hapi/code')
+const { experiment, test } = exports.lab = require('@hapi/lab').script()
 
-const adapter = require('shared/lib/forms/validationAdapters/json-schema');
+const adapter = require('shared/lib/forms/validationAdapters/json-schema')
 
 experiment('validate', () => {
   const shallowSchema = {
@@ -13,32 +13,32 @@ experiment('validate', () => {
       }
     },
     required: ['colour']
-  };
+  }
 
   test('for a schema and valid data, error is false', async () => {
-    const bike = { colour: 'blue' };
-    const result = adapter.validate(bike, shallowSchema);
-    expect(result.error).to.be.false();
-  });
+    const bike = { colour: 'blue' }
+    const result = adapter.validate(bike, shallowSchema)
+    expect(result.error).to.be.false()
+  })
 
   test('for a schema and valid data, value is the data', async () => {
-    const bike = { colour: 'blue' };
-    const result = adapter.validate(bike, shallowSchema);
-    expect(result.value).to.equal(bike);
-  });
+    const bike = { colour: 'blue' }
+    const result = adapter.validate(bike, shallowSchema)
+    expect(result.value).to.equal(bike)
+  })
 
   test('for a schema and invalid data, error is an object', async () => {
-    const bike = { gears: 7 };
-    const result = adapter.validate(bike, shallowSchema);
-    expect(result.error).to.be.an.object();
-  });
+    const bike = { gears: 7 }
+    const result = adapter.validate(bike, shallowSchema)
+    expect(result.error).to.be.an.object()
+  })
 
   test('for a schema and invalid data, value is the data', async () => {
-    const bike = { gears: 7 };
-    const result = adapter.validate(bike, shallowSchema);
-    expect(result.value).to.equal(bike);
-  });
-});
+    const bike = { gears: 7 }
+    const result = adapter.validate(bike, shallowSchema)
+    expect(result.value).to.equal(bike)
+  })
+})
 
 experiment('formatErrors', () => {
   const error = {
@@ -56,44 +56,44 @@ experiment('formatErrors', () => {
       params: { type: 'number' },
       message: 'should be number'
     }]
-  };
+  }
 
   const customErrors = {
     manufacturer: {
       required: { message: 'Manufacturer is required', summary: 'There is a problem' }
     }
-  };
+  }
 
   test('It should format a required field error', async () => {
-    const errors = adapter.formatErrors(error);
-    const { message } = error.errors[0];
+    const errors = adapter.formatErrors(error)
+    const { message } = error.errors[0]
     expect(errors[0]).to.equal({
       name: 'manufacturer',
       message,
       summary: message
-    });
-  });
+    })
+  })
 
   test('It should format an incorrect type error', async () => {
-    const errors = adapter.formatErrors(error);
-    const { message } = error.errors[1];
+    const errors = adapter.formatErrors(error)
+    const { message } = error.errors[1]
     expect(errors[1]).to.equal({
       name: 'gears',
       message,
       summary: message
-    });
-  });
+    })
+  })
 
   test('It should format an error with custom errors if available', async () => {
-    const errors = adapter.formatErrors(error, customErrors);
-    const { message, summary } = customErrors.manufacturer.required;
+    const errors = adapter.formatErrors(error, customErrors)
+    const { message, summary } = customErrors.manufacturer.required
     expect(errors[0]).to.equal({
       name: 'manufacturer',
       message,
       summary
-    });
-  });
-});
+    })
+  })
+})
 
 const nestedSchema = {
   properties: {
@@ -112,34 +112,34 @@ const nestedSchema = {
       type: 'number'
     }
   }
-};
+}
 
 experiment('getPathMap', () => {
   test('It should create a map of property names to their positions in the object heirarchy', async () => {
-    const map = adapter.getPathMap(nestedSchema);
+    const map = adapter.getPathMap(nestedSchema)
     expect(map).to.equal({
       age: 'age',
       firstName: 'name.firstName',
       lastName: 'name.lastName'
-    });
-  });
-});
+    })
+  })
+})
 
 experiment('mapValue', () => {
   test('It should convert an empty string to undefined', async () => {
-    expect(adapter.mapValue('')).to.equal(undefined);
-  });
+    expect(adapter.mapValue('')).to.equal(undefined)
+  })
 
   test('It should convert null to undefined', async () => {
-    expect(adapter.mapValue(null)).to.equal(undefined);
-  });
+    expect(adapter.mapValue(null)).to.equal(undefined)
+  })
 
   test('It should pass through non-empty strings or other types unchanged', async () => {
-    expect(adapter.mapValue('Hello')).to.equal('Hello');
-    expect(adapter.mapValue(123)).to.equal(123);
-    expect(adapter.mapValue(undefined)).to.equal(undefined);
-  });
-});
+    expect(adapter.mapValue('Hello')).to.equal('Hello')
+    expect(adapter.mapValue(123)).to.equal(123)
+    expect(adapter.mapValue(undefined)).to.equal(undefined)
+  })
+})
 
 experiment('mapRequestData', () => {
   test('It should map an HTTP request to an object for validation with JSON schema', async () => {
@@ -147,13 +147,13 @@ experiment('mapRequestData', () => {
       age: 25,
       firstName: 'John',
       lastName: ''
-    }, nestedSchema);
+    }, nestedSchema)
     expect(result).to.equal({
       age: 25,
       name: {
         firstName: 'John',
         lastName: undefined
       }
-    });
-  });
-});
+    })
+  })
+})

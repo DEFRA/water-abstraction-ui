@@ -1,10 +1,10 @@
-const { get } = require('lodash');
-const config = require('../config');
+const { get } = require('lodash')
+const config = require('../config')
 
-const { getPropositionLinks } = require('./view/proposition-links');
-const { getMainNav } = require('./view/main-nav');
+const { getPropositionLinks } = require('./view/proposition-links')
+const { getMainNav } = require('./view/main-nav')
 
-const getSurveyType = isAuthenticated => isAuthenticated ? 'internal' : 'anonymous';
+const getSurveyType = isAuthenticated => isAuthenticated ? 'internal' : 'anonymous'
 
 /**
  * Get GA tracking details given user credentials
@@ -17,21 +17,21 @@ const getTracking = (defra) => {
     propertyId: config.googleAnalytics.propertyId,
     debug: config.googleAnalytics.debug,
     isLoggedIn: false
-  };
+  }
 
   if (defra) {
-    const { lastLogin } = defra;
+    const { lastLogin } = defra
 
     return Object.assign(base, {
       userType: 'internal',
       isLoggedIn: true,
       newUser: lastLogin === null,
       lastLogin
-    });
+    })
   };
 
-  return base;
-};
+  return base
+}
 
 /**
  * Checks whether the user has multiple companies - i.e. agent
@@ -41,42 +41,42 @@ const getTracking = (defra) => {
  */
 
 function viewContextDefaults (request) {
-  const viewContext = request.view || {};
+  const viewContext = request.view || {}
 
-  viewContext.isAuthenticated = !!get(request, 'state.sid');
-  viewContext.query = request.query;
-  viewContext.payload = request.payload;
-  viewContext.session = request.session;
-  viewContext.nonces = get(request, 'plugins.blankie.nonces', {});
+  viewContext.isAuthenticated = !!get(request, 'state.sid')
+  viewContext.query = request.query
+  viewContext.payload = request.payload
+  viewContext.session = request.session
+  viewContext.nonces = get(request, 'plugins.blankie.nonces', {})
 
-  viewContext.customTitle = null;
-  viewContext.head = '<meta name="format-detection" content="telephone=no"><meta name="robots" content="noindex, nofollow">';
-  viewContext.path = request.path;
+  viewContext.customTitle = null
+  viewContext.head = '<meta name="format-detection" content="telephone=no"><meta name="robots" content="noindex, nofollow">'
+  viewContext.path = request.path
 
-  viewContext.csrfToken = request.yar.get('csrfToken');
+  viewContext.csrfToken = request.yar.get('csrfToken')
 
-  viewContext.labels = {};
-  viewContext.labels.licences = 'Your licences';
+  viewContext.labels = {}
+  viewContext.labels.licences = 'Your licences'
 
-  viewContext.isTestMode = process.env.TEST_MODE;
+  viewContext.isTestMode = process.env.TEST_MODE
 
   // Set navigation links
-  viewContext.mainNavLinks = getMainNav(request);
-  viewContext.propositionLinks = getPropositionLinks(request);
+  viewContext.mainNavLinks = getMainNav(request)
+  viewContext.propositionLinks = getPropositionLinks(request)
 
-  viewContext.showCookieMessage = !(request.state.seen_cookie_message === 'yes');
-  viewContext.user = request.auth.credentials;
+  viewContext.showCookieMessage = !(request.state.seen_cookie_message === 'yes')
+  viewContext.user = request.auth.credentials
 
-  viewContext.tracking = getTracking(request.defra);
+  viewContext.tracking = getTracking(request.defra)
 
-  viewContext.env = process.env.NODE_ENV;
-  viewContext.crownCopyrightMessage = '© Crown copyright';
-  viewContext.surveyType = getSurveyType(viewContext.isAuthenticated);
+  viewContext.env = process.env.NODE_ENV
+  viewContext.crownCopyrightMessage = '© Crown copyright'
+  viewContext.surveyType = getSurveyType(viewContext.isAuthenticated)
 
-  return viewContext;
+  return viewContext
 }
 
 module.exports = {
   contextDefaults: viewContextDefaults,
   getTracking
-};
+}

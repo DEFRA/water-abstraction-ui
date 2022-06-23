@@ -1,83 +1,83 @@
-const moment = require('moment');
-const Joi = require('joi');
-const { get, pick, mapValues } = require('lodash');
-const { getDay, getMonth } = require('./return-date-helpers');
-const { getReturnTotal } = require('./water-return-helpers');
+const moment = require('moment')
+const Joi = require('joi')
+const { get, pick, mapValues } = require('lodash')
+const { getDay, getMonth } = require('./return-date-helpers')
+const { getReturnTotal } = require('./water-return-helpers')
 
-const Reading = require('./Reading');
-const Meter = require('./Meter');
-const Lines = require('./Lines');
+const Reading = require('./Reading')
+const Meter = require('./Meter')
+const Lines = require('./Lines')
 
-const USER_TYPE_INTERNAL = 'internal';
-const USER_TYPE_EXTERNAL = 'external';
-const STATUS_DUE = 'due';
-const STATUS_RECEIVED = 'received';
-const STATUS_COMPLETED = 'completed';
+const USER_TYPE_INTERNAL = 'internal'
+const USER_TYPE_EXTERNAL = 'external'
+const STATUS_DUE = 'due'
+const STATUS_RECEIVED = 'received'
+const STATUS_COMPLETED = 'completed'
 
 const toObjectKeys = ['returnId', 'licenceNumber', 'receivedDate',
   'versionNumber', 'isCurrent', 'status', 'isNil', 'metadata', 'startDate',
-  'endDate', 'frequency', 'user', 'versions', 'isUnderQuery'];
+  'endDate', 'frequency', 'user', 'versions', 'isUnderQuery']
 
 class WaterReturn {
   constructor (data = {}) {
-    this.returnId = data.returnId;
-    this.licenceNumber = data.licenceNumber;
-    this.receivedDate = data.receivedDate;
-    this.versionNumber = data.versionNumber;
-    this.isCurrent = data.isCurrent;
-    this.status = data.status;
-    this.isNil = data.isNil;
+    this.returnId = data.returnId
+    this.licenceNumber = data.licenceNumber
+    this.receivedDate = data.receivedDate
+    this.versionNumber = data.versionNumber
+    this.isCurrent = data.isCurrent
+    this.status = data.status
+    this.isNil = data.isNil
 
     const lineOptions = {
       ...pick(data, ['startDate', 'endDate', 'frequency']),
       isFinal: get(data.metadata, 'isFinal', false)
-    };
-    this.lines = new Lines(data.lines, lineOptions);
-    this.metadata = data.metadata;
-    this.startDate = data.startDate;
-    this.endDate = data.endDate;
-    this.frequency = data.frequency;
-    this.user = data.user;
-    this.versions = data.versions;
-    this.reading = new Reading(data.reading);
-    const meterData = get(data, 'meters[0]', {});
-    this.meter = new Meter(this.reading, this.lines, meterData);
-    this.isUnderQuery = data.isUnderQuery;
+    }
+    this.lines = new Lines(data.lines, lineOptions)
+    this.metadata = data.metadata
+    this.startDate = data.startDate
+    this.endDate = data.endDate
+    this.frequency = data.frequency
+    this.user = data.user
+    this.versions = data.versions
+    this.reading = new Reading(data.reading)
+    const meterData = get(data, 'meters[0]', {})
+    this.meter = new Meter(this.reading, this.lines, meterData)
+    this.isUnderQuery = data.isUnderQuery
   }
 
   toObject () {
-    const obj = pick(this, toObjectKeys);
+    const obj = pick(this, toObjectKeys)
 
     if (!this.isNilReturn()) {
-      const meters = this.reading.isMeasured() ? [this.meter.toObject()] : [];
+      const meters = this.reading.isMeasured() ? [this.meter.toObject()] : []
 
       Object.assign(obj, {
         lines: this.getLines(),
         meters,
         reading: this.reading.toObject()
-      });
+      })
     }
 
-    return obj;
+    return obj
   }
 
   setNilReturn (isNil) {
-    Joi.assert(isNil, Joi.boolean());
-    this.isNil = isNil;
-    return this;
+    Joi.assert(isNil, Joi.boolean())
+    this.isNil = isNil
+    return this
   }
 
   setUser (email, entityId, isInternal) {
-    Joi.assert(email, Joi.string().email());
-    Joi.assert(entityId, Joi.string().guid());
-    Joi.assert(isInternal, Joi.boolean());
+    Joi.assert(email, Joi.string().email())
+    Joi.assert(entityId, Joi.string().guid())
+    Joi.assert(isInternal, Joi.boolean())
 
     this.user = {
       email,
       entityId,
       type: isInternal ? USER_TYPE_INTERNAL : USER_TYPE_EXTERNAL
-    };
-    return this;
+    }
+    return this
   }
 
   /**
@@ -86,13 +86,13 @@ class WaterReturn {
    * @return {Object} updated return data model
    */
   setStatus (status) {
-    Joi.assert(status, Joi.string().valid(STATUS_DUE, STATUS_RECEIVED, STATUS_COMPLETED));
+    Joi.assert(status, Joi.string().valid(STATUS_DUE, STATUS_RECEIVED, STATUS_COMPLETED))
 
     // Don't allow a completed return to go back to an earlier status
     if (this.status !== STATUS_COMPLETED) {
-      this.status = status;
+      this.status = status
     }
-    return this;
+    return this
   };
 
   /**
@@ -100,15 +100,15 @@ class WaterReturn {
    * @param {String} date - ISO 8601 date field
    */
   setReceivedDate (receivedDate) {
-    const date = receivedDate || moment().format('YYYY-MM-DD');
-    Joi.assert(date, Joi.string().isoDate());
-    this.receivedDate = date;
-    return this;
+    const date = receivedDate || moment().format('YYYY-MM-DD')
+    Joi.assert(date, Joi.string().isoDate())
+    this.receivedDate = date
+    return this
   }
 
   setLines (lines) {
-    const abstractionPeriod = this.getAbstractionPeriod();
-    return this.lines.setLines(abstractionPeriod, lines);
+    const abstractionPeriod = this.getAbstractionPeriod()
+    return this.lines.setLines(abstractionPeriod, lines)
   }
 
   /**
@@ -119,13 +119,13 @@ class WaterReturn {
    */
   getLines (includeReadings = false) {
     if (this.isNilReturn()) {
-      return;
+      return
     }
     if (this.reading.isOneMeter()) {
-      return this.meter.getVolumes(includeReadings);
+      return this.meter.getVolumes(includeReadings)
     }
     // Volumes
-    return this.lines.toArray();
+    return this.lines.toArray()
   }
 
   /**
@@ -133,16 +133,16 @@ class WaterReturn {
    * @return {[type]} [description]
    */
   updateSingleTotalLines () {
-    const total = this.reading.getSingleTotal();
-    const abstractionPeriod = this.getAbstractionPeriod();
-    this.lines.setSingleTotal(abstractionPeriod, total);
-    return this;
+    const total = this.reading.getSingleTotal()
+    const abstractionPeriod = this.getAbstractionPeriod()
+    this.lines.setSingleTotal(abstractionPeriod, total)
+    return this
   }
 
   incrementVersionNumber () {
-    this.versionNumber = parseInt(this.versionNumber || 0) + 1;
-    this.isCurrent = true;
-    return this;
+    this.versionNumber = parseInt(this.versionNumber || 0) + 1
+    this.isCurrent = true
+    return this
   }
 
   /**
@@ -153,16 +153,16 @@ class WaterReturn {
    * @return {Object} - abstraction period details
    */
   getAbstractionPeriod () {
-    const isCustomPeriod = get(this, 'reading.totalCustomDates', false);
-    let data;
+    const isCustomPeriod = get(this, 'reading.totalCustomDates', false)
+    let data
     if (isCustomPeriod) {
-      const { totalCustomDateStart, totalCustomDateEnd } = this.reading;
+      const { totalCustomDateStart, totalCustomDateEnd } = this.reading
       data = {
         periodStartDay: getDay(totalCustomDateStart),
         periodStartMonth: getMonth(totalCustomDateStart),
         periodEndDay: getDay(totalCustomDateEnd),
         periodEndMonth: getMonth(totalCustomDateEnd)
-      };
+      }
     } else {
       data = pick(
         this.metadata.nald,
@@ -170,9 +170,9 @@ class WaterReturn {
         'periodEndMonth',
         'periodStartDay',
         'periodStartMonth'
-      );
+      )
     }
-    return mapValues(data, parseInt);
+    return mapValues(data, parseInt)
   }
 
   /**
@@ -180,21 +180,21 @@ class WaterReturn {
    * @return {Number|null} - total abstracted volume
    */
   getReturnTotal () {
-    const lines = this.getLines();
-    return getReturnTotal(lines);
+    const lines = this.getLines()
+    return getReturnTotal(lines)
   }
 
   isNilReturn () {
-    return this.isNil;
+    return this.isNil
   }
 
   setUnderQuery (underQuery) {
-    Joi.assert(underQuery, Joi.boolean());
-    this.isUnderQuery = underQuery;
-    return this;
+    Joi.assert(underQuery, Joi.boolean())
+    this.isUnderQuery = underQuery
+    return this
   }
 }
 
-module.exports = WaterReturn;
-module.exports.STATUS_COMPLETED = STATUS_COMPLETED;
-module.exports.STATUS_RECEIVED = STATUS_RECEIVED;
+module.exports = WaterReturn
+module.exports.STATUS_COMPLETED = STATUS_COMPLETED
+module.exports.STATUS_RECEIVED = STATUS_RECEIVED

@@ -1,13 +1,13 @@
 const { getContinueField, getCsrfTokenField, getHeadingField, getParagraphField } =
- require('shared/modules/returns/forms/common');
-const { get } = require('lodash');
-const { formFactory, fields } = require('shared/lib/forms');
+ require('shared/modules/returns/forms/common')
+const { get } = require('lodash')
+const { formFactory, fields } = require('shared/lib/forms')
 
 const getValue = data => {
-  const method = get(data, 'reading.method');
-  const type = get(data, 'reading.type');
-  return `${method},${type}`;
-};
+  const method = get(data, 'reading.method')
+  const type = get(data, 'reading.type')
+  return `${method},${type}`
+}
 
 exports.form = (request, data) => ({
   ...formFactory(),
@@ -29,4 +29,4 @@ exports.form = (request, data) => ({
     }, getValue(data)),
     getContinueField()
   ]
-});
+})

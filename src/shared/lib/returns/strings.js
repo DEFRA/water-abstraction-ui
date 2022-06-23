@@ -6,8 +6,8 @@
  * @return {Boolean} true if match
  */
 const isReturnId = (returnId) => {
-  const r = /^v1:[1-8]:[^:]+:[0-9]+:[0-9]{4}-[0-9]{2}-[0-9]{2}:[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
-  return r.test(returnId);
-};
+  const r = /^v1:[1-8]:[^:]+:[0-9]+:[0-9]{4}-[0-9]{2}-[0-9]{2}:[0-9]{4}-[0-9]{2}-[0-9]{2}$/
+  return r.test(returnId)
+}
 
-exports.isReturnId = isReturnId;
+exports.isReturnId = isReturnId

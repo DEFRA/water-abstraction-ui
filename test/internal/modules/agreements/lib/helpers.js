@@ -1,19 +1,19 @@
-'use strict';
+'use strict'
 
-const { expect } = require('@hapi/code');
+const { expect } = require('@hapi/code')
 const {
   experiment,
   test,
   beforeEach
-} = exports.lab = require('@hapi/lab').script();
+} = exports.lab = require('@hapi/lab').script()
 
-const sandbox = require('sinon').createSandbox();
+const sandbox = require('sinon').createSandbox()
 
-const helpers = require('internal/modules/agreements/lib/helpers');
-const Joi = require('joi');
+const helpers = require('internal/modules/agreements/lib/helpers')
+const Joi = require('joi')
 
 experiment('internal/modules/agreements/lib/reducer', () => {
-  let request, h;
+  let request, h
 
   beforeEach(async () => {
     request = {
@@ -30,34 +30,34 @@ experiment('internal/modules/agreements/lib/reducer', () => {
           id: 'test-licence-id'
         }
       }
-    };
+    }
 
     h = {
       redirect: sandbox.stub(),
       postRedirectGet: sandbox.stub()
-    };
-  });
+    }
+  })
 
   experiment('.getAddAgreementSessionData', () => {
     test('sets flow state to the session with a generated key', async () => {
-      helpers.getAddAgreementSessionData(request);
+      helpers.getAddAgreementSessionData(request)
       expect(request.yar.get.calledWith(
         'licence.test-licence-id.create-agreement'
-      )).to.be.true();
-    });
-  });
+      )).to.be.true()
+    })
+  })
 
   experiment('.clearAddAgreementSessionData', () => {
     test('clears flow state to the session with a generated key', async () => {
-      helpers.clearAddAgreementSessionData(request);
+      helpers.clearAddAgreementSessionData(request)
       expect(request.yar.clear.calledWith(
         'licence.test-licence-id.create-agreement'
-      )).to.be.true();
-    });
-  });
+      )).to.be.true()
+    })
+  })
 
   experiment('createAddAgreementPostHandler', () => {
-    let formContainer, actionCreator;
+    let formContainer, actionCreator
 
     beforeEach(async () => {
       formContainer = {
@@ -72,67 +72,67 @@ experiment('internal/modules/agreements/lib/reducer', () => {
         schema: () => Joi.object().keys({
           foo: Joi.string().valid('bar')
         })
-      };
+      }
 
-      actionCreator = sandbox.stub().returns({ type: 'test-action' });
-    });
+      actionCreator = sandbox.stub().returns({ type: 'test-action' })
+    })
 
     experiment('when the form is valid', () => {
       beforeEach(async () => {
         request.payload = {
           foo: 'bar'
-        };
-        await helpers.createAddAgreementPostHandler(request, h, formContainer, actionCreator, 'test/path');
-      });
+        }
+        await helpers.createAddAgreementPostHandler(request, h, formContainer, actionCreator, 'test/path')
+      })
 
       test('the next state is set in the session', async () => {
         expect(request.yar.set.calledWith(
           'licence.test-licence-id.create-agreement', { foo: 'bar' }
-        ));
-      });
+        ))
+      })
 
       test('the user is redirected', async () => {
-        expect(h.redirect.calledWith('/licences/test-licence-id/agreements/test/path')).to.be.true();
-      });
-    });
+        expect(h.redirect.calledWith('/licences/test-licence-id/agreements/test/path')).to.be.true()
+      })
+    })
 
     experiment('when the form is valid and the user is in the "check your answers" flow', () => {
       beforeEach(async () => {
-        request.query = { check: 1 };
+        request.query = { check: 1 }
         request.payload = {
           foo: 'bar'
-        };
-        await helpers.createAddAgreementPostHandler(request, h, formContainer, actionCreator, 'test/path');
-      });
+        }
+        await helpers.createAddAgreementPostHandler(request, h, formContainer, actionCreator, 'test/path')
+      })
 
       test('the next state is set in the session', async () => {
         expect(request.yar.set.calledWith(
           'licence.test-licence-id.create-agreement', { foo: 'bar' }
-        ));
-      });
+        ))
+      })
 
       test('the user is redirected', async () => {
-        expect(h.redirect.calledWith('/licences/test-licence-id/agreements/check-answers')).to.be.true();
-      });
-    });
+        expect(h.redirect.calledWith('/licences/test-licence-id/agreements/check-answers')).to.be.true()
+      })
+    })
 
     experiment('when the form is invalid', () => {
       beforeEach(async () => {
         request.payload = {
           foo: 'not-bar'
-        };
-        await helpers.createAddAgreementPostHandler(request, h, formContainer, actionCreator, 'test/path');
-      });
+        }
+        await helpers.createAddAgreementPostHandler(request, h, formContainer, actionCreator, 'test/path')
+      })
 
       test('the next state is not set in the session', async () => {
-        expect(request.yar.set.called).to.be.false();
-      });
+        expect(request.yar.set.called).to.be.false()
+      })
 
       test('h.postRedirectGet is called with the form in error state', async () => {
-        const [form] = h.postRedirectGet.lastCall.args;
-        expect(form).to.be.an.object();
-        expect(form.errors).to.be.an.array().length(1);
-      });
-    });
-  });
-});
+        const [form] = h.postRedirectGet.lastCall.args
+        expect(form).to.be.an.object()
+        expect(form.errors).to.be.an.array().length(1)
+      })
+    })
+  })
+})

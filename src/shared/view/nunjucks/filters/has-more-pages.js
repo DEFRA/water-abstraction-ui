@@ -1,5 +1,5 @@
-'use strict';
+'use strict'
 
-const hasMorePages = pagination => pagination.pageCount > 1;
+const hasMorePages = pagination => pagination.pageCount > 1
 
-exports.hasMorePages = hasMorePages;
+exports.hasMorePages = hasMorePages

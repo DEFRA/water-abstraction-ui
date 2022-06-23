@@ -1,13 +1,13 @@
-'use strict';
+'use strict'
 
-const Lab = require('@hapi/lab');
-const lab = exports.lab = Lab.script();
-const { expect } = require('@hapi/code');
+const Lab = require('@hapi/lab')
+const lab = exports.lab = Lab.script()
+const { expect } = require('@hapi/code')
 
 const {
   mapARComparisonTable,
   ARConditionPlaceholder
-} = require('internal/lib/view-engine/filters/abstraction-reform');
+} = require('internal/lib/view-engine/filters/abstraction-reform')
 
 lab.experiment('mapARComparisonTable', () => {
   const data = {
@@ -19,9 +19,9 @@ lab.experiment('mapARComparisonTable', () => {
       ID: 123,
       DESCR: 'new description'
     }
-  };
+  }
 
-  const result = mapARComparisonTable(data);
+  const result = mapARComparisonTable(data)
 
   lab.test('It should generate an object to pass to the GOV.UK table nunjucks component', async () => {
     expect(result).to.equal({
@@ -61,19 +61,19 @@ lab.experiment('mapARComparisonTable', () => {
           }
         ]
       ]
-    });
-  });
-});
+    })
+  })
+})
 
 lab.experiment('ARConditionPlaceholder', () => {
   lab.test('It should bold placeholders', async () => {
-    const str = 'Text [foo] placeholders [bar]';
-    const html = ARConditionPlaceholder(str);
-    expect(html).to.equal('Text <strong>[foo]</strong> placeholders <strong>[bar]</strong>');
-  });
+    const str = 'Text [foo] placeholders [bar]'
+    const html = ARConditionPlaceholder(str)
+    expect(html).to.equal('Text <strong>[foo]</strong> placeholders <strong>[bar]</strong>')
+  })
   lab.test('It should encode HTML entities to avoid injection', async () => {
-    const str = '&<>';
-    const html = ARConditionPlaceholder(str, {});
-    expect(html).to.equal('&amp;&lt;&gt;');
-  });
-});
+    const str = '&<>'
+    const html = ARConditionPlaceholder(str, {})
+    expect(html).to.equal('&amp;&lt;&gt;')
+  })
+})

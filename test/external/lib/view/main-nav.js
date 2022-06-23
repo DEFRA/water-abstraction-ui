@@ -1,13 +1,13 @@
-'use strict';
+'use strict'
 
-const { find, set } = require('lodash');
-const Lab = require('@hapi/lab');
-const { experiment, test } = exports.lab = Lab.script();
+const { find, set } = require('lodash')
+const Lab = require('@hapi/lab')
+const { experiment, test } = exports.lab = Lab.script()
 
-const { expect } = require('@hapi/code');
+const { expect } = require('@hapi/code')
 
-const { getMainNav } = require('external/lib/view/main-nav');
-const { scope } = require('external/lib/constants');
+const { getMainNav } = require('external/lib/view/main-nav')
+const { scope } = require('external/lib/constants')
 
 const getAuthenticatedRequest = () => {
   return {
@@ -23,61 +23,61 @@ const getAuthenticatedRequest = () => {
         scope: [scope.external]
       }
     }
-  };
-};
+  }
+}
 
 const getPrimaryUserRequest = () => {
-  const request = getAuthenticatedRequest();
-  set(request, 'auth.credentials.scope', [scope.external, scope.licenceHolder]);
-  return request;
-};
+  const request = getAuthenticatedRequest()
+  set(request, 'auth.credentials.scope', [scope.external, scope.licenceHolder])
+  return request
+}
 
-const getIds = links => links.map(link => link.id);
+const getIds = links => links.map(link => link.id)
 
 experiment('getMainNav', () => {
   test('It should not display any links if the user is not authenticated', async () => {
-    const request = {};
-    const links = getMainNav(request);
-    expect(links.length).to.equal(0);
-  });
+    const request = {}
+    const links = getMainNav(request)
+    expect(links.length).to.equal(0)
+  })
 
   test('It should set the active nav link flag', async () => {
-    const request = getPrimaryUserRequest();
-    const links = getMainNav(request);
-    const link = find(links, { id: 'view' });
-    expect(link.active).to.equal(true);
-  });
+    const request = getPrimaryUserRequest()
+    const links = getMainNav(request)
+    const link = find(links, { id: 'view' })
+    expect(link.active).to.equal(true)
+  })
 
   test('Non-active links should have the active flag set to false', async () => {
-    const request = getPrimaryUserRequest();
-    const links = getMainNav(request);
-    const flags = links.filter(link => (link.id !== 'view')).map(link => link.active);
-    expect(flags).to.equal([false, false]);
-  });
+    const request = getPrimaryUserRequest()
+    const links = getMainNav(request)
+    const flags = links.filter(link => (link.id !== 'view')).map(link => link.active)
+    expect(flags).to.equal([false, false])
+  })
 
   test('It should display correct links for external user', async () => {
-    const request = getAuthenticatedRequest();
-    const ids = getIds(getMainNav(request));
-    expect(ids).to.equal(['view']);
-  });
+    const request = getAuthenticatedRequest()
+    const ids = getIds(getMainNav(request))
+    expect(ids).to.equal(['view'])
+  })
 
   test('It should display correct links for external primary', async () => {
-    const request = getPrimaryUserRequest();
-    const ids = getIds(getMainNav(request));
-    expect(ids).to.equal(['view', 'returns', 'manage']);
-  });
+    const request = getPrimaryUserRequest()
+    const ids = getIds(getMainNav(request))
+    expect(ids).to.equal(['view', 'returns', 'manage'])
+  })
 
   test('for a request with licence.userLicenceCount of 0, only view is added', async () => {
-    const request = getPrimaryUserRequest();
-    request.licence = { userLicenceCount: 0 };
-    const ids = getIds(getMainNav(request));
-    expect(ids).to.equal(['view']);
-  });
+    const request = getPrimaryUserRequest()
+    request.licence = { userLicenceCount: 0 }
+    const ids = getIds(getMainNav(request))
+    expect(ids).to.equal(['view'])
+  })
 
   test('for a request with licence.userLicenceCount of 1, all tabs are added', async () => {
-    const request = getPrimaryUserRequest();
-    request.licence = { userLicenceCount: 1 };
-    const ids = getIds(getMainNav(request));
-    expect(ids).to.equal(['view', 'returns', 'manage']);
-  });
-});
+    const request = getPrimaryUserRequest()
+    request.licence = { userLicenceCount: 1 }
+    const ids = getIds(getMainNav(request))
+    expect(ids).to.equal(['view', 'returns', 'manage'])
+  })
+})

@@ -1,5 +1,5 @@
-const moment = require('moment');
-const services = require('../../../lib/connectors/services');
+const moment = require('moment')
+const services = require('../../../lib/connectors/services')
 
 /**
  * Gets CSV data from API in water service using findAll method which
@@ -8,10 +8,10 @@ const services = require('../../../lib/connectors/services');
  * @return {Promise} Resolves with array data for CSV
  */
 const getCSVData = async () => {
-  const sort = { start_date: 1 };
-  const filter = {};
-  return services.water.abstractionReformAnalysis.findAll(filter, sort);
-};
+  const sort = { start_date: 1 }
+  const filter = {}
+  return services.water.abstractionReformAnalysis.findAll(filter, sort)
+}
 
 /**
  * Gets filename for CSV report
@@ -19,9 +19,9 @@ const getCSVData = async () => {
  * @return {String} CSV report filename
  */
 const getReportFilename = (date) => {
-  return `${moment(date).format('YYYY-MM-DD')}-ar-report.csv`;
-};
+  return `${moment(date).format('YYYY-MM-DD')}-ar-report.csv`
+}
 module.exports = {
   getCSVData,
   getReportFilename
-};
+}

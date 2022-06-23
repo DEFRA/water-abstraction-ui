@@ -1,5 +1,5 @@
-const controller = require('./controller');
-const { hasManageTab } = require('internal/lib/constants').scope;
+const controller = require('./controller')
+const { hasManageTab } = require('internal/lib/constants').scope
 
 module.exports = {
   getKpiReporting: {
@@ -16,4 +16,4 @@ module.exports = {
       }
     }
   }
-};
+}

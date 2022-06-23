@@ -1,11 +1,11 @@
-require('dotenv').config();
-const Lab = require('@hapi/lab');
-const { expect } = require('@hapi/code');
-const { find } = require('lodash');
-const { deleteForm } = require('internal/modules/abstraction-reform/forms/delete');
-const { getWR22 } = require('@envage/water-abstraction-helpers').digitise;
+require('dotenv').config()
+const Lab = require('@hapi/lab')
+const { expect } = require('@hapi/code')
+const { find } = require('lodash')
+const { deleteForm } = require('internal/modules/abstraction-reform/forms/delete')
+const { getWR22 } = require('@envage/water-abstraction-helpers').digitise
 
-const lab = exports.lab = Lab.script();
+const lab = exports.lab = Lab.script()
 
 const request = {
   view: {
@@ -15,24 +15,24 @@ const request = {
     documentId: '76288bd8-5d26-4b49-b7cc-b4ba8d3fb3c4',
     id: 'bfecf668-b4ec-4046-85f5-d787d1b1d973'
   }
-};
+}
 
 lab.experiment('delete WR22 condition form', () => {
-  let form;
+  let form
 
   lab.beforeEach(async () => {
-    const wr22 = getWR22();
-    form = deleteForm(request, wr22);
-  });
+    const wr22 = getWR22()
+    form = deleteForm(request, wr22)
+  })
 
   lab.test('The form action should have the correct action', async () => {
-    expect(form.action).to.equal(`/digitise/licence/${request.params.documentId}/delete/${request.params.id}`);
-  });
+    expect(form.action).to.equal(`/digitise/licence/${request.params.documentId}/delete/${request.params.id}`)
+  })
 
   lab.test('The form should have a CSRF token field', async () => {
-    const field = find(form.fields, { name: 'csrf_token' });
-    expect(field.value).to.equal(request.view.csrfToken);
-  });
-});
+    const field = find(form.fields, { name: 'csrf_token' })
+    expect(field.value).to.equal(request.view.csrfToken)
+  })
+})
 
-exports.lab = lab;
+exports.lab = lab

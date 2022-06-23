@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
-const SessionSlice = require('shared/lib/SessionSlice');
+const SessionSlice = require('shared/lib/SessionSlice')
 
-const SESSION_KEY = 'accountEntryPlugin';
-module.exports = new SessionSlice(SESSION_KEY);
+const SESSION_KEY = 'accountEntryPlugin'
+module.exports = new SessionSlice(SESSION_KEY)

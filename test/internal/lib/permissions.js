@@ -1,11 +1,11 @@
-'use strict';
+'use strict'
 
-const Lab = require('@hapi/lab');
-const { experiment, test } = exports.lab = Lab.script();
-const { expect } = require('@hapi/code');
+const Lab = require('@hapi/lab')
+const { experiment, test } = exports.lab = Lab.script()
+const { expect } = require('@hapi/code')
 
-const permissions = require('internal/lib/permissions');
-const { scope } = require('internal/lib/constants');
+const permissions = require('internal/lib/permissions')
+const { scope } = require('internal/lib/constants')
 
 const createRequest = (scope) => ({
   state: {
@@ -17,272 +17,272 @@ const createRequest = (scope) => ({
       scope
     }
   }
-});
+})
 
 experiment('permissions', () => {
   experiment('hasScope', () => {
     experiment('when the supplied scope is a string', () => {
       test('it should return true if scope is in the credentials', async () => {
-        const request = createRequest(['foo', 'bar']);
-        expect(permissions.hasScope(request, 'foo')).to.equal(true);
-      });
+        const request = createRequest(['foo', 'bar'])
+        expect(permissions.hasScope(request, 'foo')).to.equal(true)
+      })
 
       test('it should return false if scope is not in the credentials', async () => {
-        const request = createRequest(['foo', 'bar']);
-        expect(permissions.hasScope(request, 'baz')).to.equal(false);
-      });
-    });
+        const request = createRequest(['foo', 'bar'])
+        expect(permissions.hasScope(request, 'baz')).to.equal(false)
+      })
+    })
 
     experiment('when the supplied scope is an array', () => {
       test('it should return false if provided array is empty', async () => {
-        const request = createRequest(['foo', 'bar']);
-        expect(permissions.hasScope(request, [])).to.equal(false);
-      });
+        const request = createRequest(['foo', 'bar'])
+        expect(permissions.hasScope(request, [])).to.equal(false)
+      })
 
       test('it should return true if scope is in the credentials', async () => {
-        const request = createRequest(['foo', 'bar']);
-        expect(permissions.hasScope(request, ['baz', 'foo'])).to.equal(true);
-      });
+        const request = createRequest(['foo', 'bar'])
+        expect(permissions.hasScope(request, ['baz', 'foo'])).to.equal(true)
+      })
 
       test('it should return false if scope is not in the credentials', async () => {
-        const request = createRequest(['foo', 'bar']);
-        expect(permissions.hasScope(request, ['baz'])).to.equal(false);
-      });
-    });
-  });
+        const request = createRequest(['foo', 'bar'])
+        expect(permissions.hasScope(request, ['baz'])).to.equal(false)
+      })
+    })
+  })
 
   experiment('isAuthenticated', () => {
     test('it should return true if a user ID is present', async () => {
-      const request = createRequest();
-      expect(permissions.isAuthenticated(request)).to.equal(true);
-    });
+      const request = createRequest()
+      expect(permissions.isAuthenticated(request)).to.equal(true)
+    })
 
     test('it should return false if a user ID is absent', async () => {
-      const request = createRequest();
-      delete request.auth.credentials.userId;
-      expect(permissions.isAuthenticated(request)).to.equal(false);
-    });
-  });
+      const request = createRequest()
+      delete request.auth.credentials.userId
+      expect(permissions.isAuthenticated(request)).to.equal(false)
+    })
+  })
 
   experiment('isReturnsUser', () => {
     test('returns true if internal returns in scope', async () => {
-      const request = createRequest([scope.internal, scope.returns]);
-      expect(permissions.isReturnsUser(request)).to.equal(true);
-    });
+      const request = createRequest([scope.internal, scope.returns])
+      expect(permissions.isReturnsUser(request)).to.equal(true)
+    })
 
     test('returns false if internal returns not in scope', async () => {
-      const request = createRequest([scope.internal]);
-      expect(permissions.isReturnsUser(request)).to.equal(false);
-    });
-  });
+      const request = createRequest([scope.internal])
+      expect(permissions.isReturnsUser(request)).to.equal(false)
+    })
+  })
 
   experiment('isARUser', () => {
     test('it should return true if AR user in scope', async () => {
-      const request = createRequest([scope.abstractionReformUser]);
-      expect(permissions.isARUser(request)).to.equal(true);
-    });
+      const request = createRequest([scope.abstractionReformUser])
+      expect(permissions.isARUser(request)).to.equal(true)
+    })
 
     test('it should return false if AR user not in scope', async () => {
-      const request = createRequest([scope.abstractionReformApprover]);
-      expect(permissions.isARUser(request)).to.equal(false);
-    });
-  });
+      const request = createRequest([scope.abstractionReformApprover])
+      expect(permissions.isARUser(request)).to.equal(false)
+    })
+  })
 
   experiment('isARApprover', () => {
     test('it should return true if AR approver in scope', async () => {
-      const request = createRequest([scope.abstractionReformApprover]);
-      expect(permissions.isARApprover(request)).to.equal(true);
-    });
+      const request = createRequest([scope.abstractionReformApprover])
+      expect(permissions.isARApprover(request)).to.equal(true)
+    })
 
     test('it should return false if AR approver not in scope', async () => {
-      const request = createRequest([scope.abstractionReformUser]);
-      expect(permissions.isARApprover(request)).to.equal(false);
-    });
-  });
+      const request = createRequest([scope.abstractionReformUser])
+      expect(permissions.isARApprover(request)).to.equal(false)
+    })
+  })
 
   experiment('isAnyAR', () => {
     test('it should return true if AR user in scope', async () => {
-      const request = createRequest([scope.abstractionReformUser]);
-      expect(permissions.isAnyAR(request)).to.equal(true);
-    });
+      const request = createRequest([scope.abstractionReformUser])
+      expect(permissions.isAnyAR(request)).to.equal(true)
+    })
 
     test('it should return true if AR approver in scope', async () => {
-      const request = createRequest([scope.abstractionReformApprover]);
-      expect(permissions.isAnyAR(request)).to.equal(true);
-    });
+      const request = createRequest([scope.abstractionReformApprover])
+      expect(permissions.isAnyAR(request)).to.equal(true)
+    })
 
     test('it should return false otherwise', async () => {
-      const request = createRequest([scope.internal]);
-      expect(permissions.isAnyAR(request)).to.equal(false);
-    });
-  });
+      const request = createRequest([scope.internal])
+      expect(permissions.isAnyAR(request)).to.equal(false)
+    })
+  })
 
   experiment('isBulkReturnNotifications', () => {
     test('it should return true if bulk returns notifications in scope', async () => {
-      const request = createRequest([scope.bulkReturnNotifications]);
-      expect(permissions.isBulkReturnNotifications(request)).to.equal(true);
-    });
+      const request = createRequest([scope.bulkReturnNotifications])
+      expect(permissions.isBulkReturnNotifications(request)).to.equal(true)
+    })
 
     test('it should return false if bulk returns notifications not in scope', async () => {
-      const request = createRequest([]);
-      expect(permissions.isBulkReturnNotifications(request)).to.equal(false);
-    });
-  });
+      const request = createRequest([])
+      expect(permissions.isBulkReturnNotifications(request)).to.equal(false)
+    })
+  })
 
   experiment('isHofOrRenewalNotifications', () => {
     test('it should return true if HoF notifications in scope', async () => {
-      const request = createRequest([scope.hofNotifications]);
-      expect(permissions.isHofOrRenewalNotifications(request)).to.equal(true);
-    });
+      const request = createRequest([scope.hofNotifications])
+      expect(permissions.isHofOrRenewalNotifications(request)).to.equal(true)
+    })
 
     test('it should return true if renewal notifications in scope', async () => {
-      const request = createRequest([scope.renewalNotifications]);
-      expect(permissions.isHofOrRenewalNotifications(request)).to.equal(true);
-    });
+      const request = createRequest([scope.renewalNotifications])
+      expect(permissions.isHofOrRenewalNotifications(request)).to.equal(true)
+    })
 
     test('it should return true if HoF and renewal notifications in scope', async () => {
-      const request = createRequest([scope.renewalNotifications, scope.hofNotifications]);
-      expect(permissions.isHofOrRenewalNotifications(request)).to.equal(true);
-    });
+      const request = createRequest([scope.renewalNotifications, scope.hofNotifications])
+      expect(permissions.isHofOrRenewalNotifications(request)).to.equal(true)
+    })
 
     test('it should return false if scope does not match', async () => {
-      const request = createRequest(['scope-1', 'scope-2']);
-      expect(permissions.isHofOrRenewalNotifications(request)).to.equal(false);
-    });
+      const request = createRequest(['scope-1', 'scope-2'])
+      expect(permissions.isHofOrRenewalNotifications(request)).to.equal(false)
+    })
 
     test('it should return false if no scopes', async () => {
-      const request = createRequest([]);
-      expect(permissions.isHofOrRenewalNotifications(request)).to.equal(false);
-    });
-  });
+      const request = createRequest([])
+      expect(permissions.isHofOrRenewalNotifications(request)).to.equal(false)
+    })
+  })
 
   experiment('isAnyNotifications', () => {
     test('it should return true if HoF notifications in scope', async () => {
-      const request = createRequest([scope.hofNotifications]);
-      expect(permissions.isAnyNotifications(request)).to.equal(true);
-    });
+      const request = createRequest([scope.hofNotifications])
+      expect(permissions.isAnyNotifications(request)).to.equal(true)
+    })
 
     test('it should return true if renewal notifications in scope', async () => {
-      const request = createRequest([scope.renewalNotifications]);
-      expect(permissions.isAnyNotifications(request)).to.equal(true);
-    });
+      const request = createRequest([scope.renewalNotifications])
+      expect(permissions.isAnyNotifications(request)).to.equal(true)
+    })
 
     test('it should return true if returns in scope', async () => {
-      const request = createRequest([scope.returns]);
-      expect(permissions.isAnyNotifications(request)).to.equal(true);
-    });
+      const request = createRequest([scope.returns])
+      expect(permissions.isAnyNotifications(request)).to.equal(true)
+    })
 
     test('it should return true if bulk returns notifications in scope', async () => {
-      const request = createRequest([scope.bulkReturnNotifications]);
-      expect(permissions.isAnyNotifications(request)).to.equal(true);
-    });
+      const request = createRequest([scope.bulkReturnNotifications])
+      expect(permissions.isAnyNotifications(request)).to.equal(true)
+    })
 
     test('it should return true if several notifications in scope', async () => {
-      const request = createRequest([scope.returns, scope.bulkReturnNotifications]);
-      expect(permissions.isAnyNotifications(request)).to.equal(true);
-    });
+      const request = createRequest([scope.returns, scope.bulkReturnNotifications])
+      expect(permissions.isAnyNotifications(request)).to.equal(true)
+    })
 
     test('it should return false if scope does not match', async () => {
-      const request = createRequest(['scope-1', 'scope-2']);
-      expect(permissions.isAnyNotifications(request)).to.equal(false);
-    });
+      const request = createRequest(['scope-1', 'scope-2'])
+      expect(permissions.isAnyNotifications(request)).to.equal(false)
+    })
 
     test('it should return false if no scopes', async () => {
-      const request = createRequest([]);
-      expect(permissions.isAnyNotifications(request)).to.equal(false);
-    });
-  });
+      const request = createRequest([])
+      expect(permissions.isAnyNotifications(request)).to.equal(false)
+    })
+  })
 
   experiment('isBasicUser', () => {
     test('it should return true if scopes empty', async () => {
-      const request = createRequest([]);
-      expect(permissions.isBasicUser(request)).to.equal(true);
-    });
+      const request = createRequest([])
+      expect(permissions.isBasicUser(request)).to.equal(true)
+    })
 
     test('it should return false if scopes not empty', async () => {
-      const request = createRequest(['a', 'b']);
-      expect(permissions.isBasicUser(request)).to.equal(false);
-    });
-  });
+      const request = createRequest(['a', 'b'])
+      expect(permissions.isBasicUser(request)).to.equal(false)
+    })
+  })
 
   experiment('isManageTab', () => {
     test('it should return true if internal returns scope', async () => {
-      const request = createRequest([scope.returns]);
-      expect(permissions.isManageTab(request)).to.equal(true);
-    });
+      const request = createRequest([scope.returns])
+      expect(permissions.isManageTab(request)).to.equal(true)
+    })
 
     test('it should return true if bulk returns scope', async () => {
-      const request = createRequest([scope.bulkReturnNotifications]);
-      expect(permissions.isManageTab(request)).to.equal(true);
-    });
+      const request = createRequest([scope.bulkReturnNotifications])
+      expect(permissions.isManageTab(request)).to.equal(true)
+    })
 
     test('it should return true if digitise! approver scope', async () => {
-      const request = createRequest([scope.abstractionReformApprover]);
-      expect(permissions.isManageTab(request)).to.equal(true);
-    });
+      const request = createRequest([scope.abstractionReformApprover])
+      expect(permissions.isManageTab(request)).to.equal(true)
+    })
 
     test('it should return true if HoF notifications scope', async () => {
-      const request = createRequest([scope.hofNotifications]);
-      expect(permissions.isManageTab(request)).to.equal(true);
-    });
+      const request = createRequest([scope.hofNotifications])
+      expect(permissions.isManageTab(request)).to.equal(true)
+    })
 
     test('it should return true if renewal reminder scope', async () => {
-      const request = createRequest([scope.renewalNotifications]);
-      expect(permissions.isManageTab(request)).to.equal(true);
-    });
+      const request = createRequest([scope.renewalNotifications])
+      expect(permissions.isManageTab(request)).to.equal(true)
+    })
 
     test('it should return true if renewal reminder scope', async () => {
-      const request = createRequest([scope.manageAccounts]);
-      expect(permissions.isManageTab(request)).to.equal(true);
-    });
+      const request = createRequest([scope.manageAccounts])
+      expect(permissions.isManageTab(request)).to.equal(true)
+    })
 
     test('it should return true if several matching scopes', async () => {
-      const request = createRequest([scope.manageAccounts, scope.renewalNotifications]);
-      expect(permissions.isManageTab(request)).to.equal(true);
-    });
+      const request = createRequest([scope.manageAccounts, scope.renewalNotifications])
+      expect(permissions.isManageTab(request)).to.equal(true)
+    })
 
     test('it should return true if matching and non-matching scopes', async () => {
-      const request = createRequest(['scope-x', scope.renewalNotifications]);
-      expect(permissions.isManageTab(request)).to.equal(true);
-    });
+      const request = createRequest(['scope-x', scope.renewalNotifications])
+      expect(permissions.isManageTab(request)).to.equal(true)
+    })
 
     test('it should return false if no scopes that should see the manage tab', async () => {
-      const request = createRequest(['scope-x', 'scope-y']);
-      expect(permissions.isManageTab(request)).to.equal(false);
-    });
+      const request = createRequest(['scope-x', 'scope-y'])
+      expect(permissions.isManageTab(request)).to.equal(false)
+    })
 
     test('it should return false if no scopes', async () => {
-      const request = createRequest([]);
-      expect(permissions.isManageTab(request)).to.equal(false);
-    });
-  });
+      const request = createRequest([])
+      expect(permissions.isManageTab(request)).to.equal(false)
+    })
+  })
 
   experiment('isManageAccounts', () => {
     test('it should return false if scopes empty', async () => {
-      const request = createRequest([]);
-      expect(permissions.isManageAccounts(request)).to.equal(false);
-    });
+      const request = createRequest([])
+      expect(permissions.isManageAccounts(request)).to.equal(false)
+    })
 
     test('it should return true if scopes "manage_accounts"', async () => {
-      const request = createRequest(['manage_accounts']);
-      expect(permissions.isManageAccounts(request)).to.equal(true);
-    });
-  });
+      const request = createRequest(['manage_accounts'])
+      expect(permissions.isManageAccounts(request)).to.equal(true)
+    })
+  })
 
   experiment('isBilling', () => {
     test('returns false if scopes empty', async () => {
-      const request = createRequest([]);
-      expect(permissions.isBilling(request)).to.equal(false);
-    });
+      const request = createRequest([])
+      expect(permissions.isBilling(request)).to.equal(false)
+    })
 
     test('it should return true if scopes "billing"', async () => {
-      const request = createRequest(['billing']);
-      expect(permissions.isBilling(request)).to.equal(true);
-    });
+      const request = createRequest(['billing'])
+      expect(permissions.isBilling(request)).to.equal(true)
+    })
 
     test('it should return true if scopes contains "billing"', async () => {
-      const request = createRequest(['billing', 'manage_accounts']);
-      expect(permissions.isBilling(request)).to.equal(true);
-    });
-  });
-});
+      const request = createRequest(['billing', 'manage_accounts'])
+      expect(permissions.isBilling(request)).to.equal(true)
+    })
+  })
+})

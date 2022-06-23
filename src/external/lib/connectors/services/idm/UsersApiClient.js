@@ -1,5 +1,5 @@
-const SharedUsersApiClient = require('shared/lib/connectors/services/idm/UsersApiClient');
-const { v4: uuid } = require('uuid');
+const SharedUsersApiClient = require('shared/lib/connectors/services/idm/UsersApiClient')
+const { v4: uuid } = require('uuid')
 
 class UsersApiClient extends SharedUsersApiClient {
   /**
@@ -21,8 +21,8 @@ class UsersApiClient extends SharedUsersApiClient {
       role: {
         scopes: ['external']
       }
-    });
+    })
   }
 }
 
-module.exports = UsersApiClient;
+module.exports = UsersApiClient

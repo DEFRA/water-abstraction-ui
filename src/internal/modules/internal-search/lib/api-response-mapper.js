@@ -1,5 +1,5 @@
-'use strict';
-const returnsMapper = require('../../../lib/mappers/returns');
+'use strict'
+const returnsMapper = require('../../../lib/mappers/returns')
 
 /**
  * Maps the response from the water service internal search API to a form
@@ -9,17 +9,17 @@ const returnsMapper = require('../../../lib/mappers/returns');
  * @return {Object}          - view data
  */
 const mapResponseToView = (response, request) => {
-  const { documents, returns, users, gaugingStations, billingAccounts } = response;
-  const noResults = !(documents || returns || users || gaugingStations || billingAccounts);
+  const { documents, returns, users, gaugingStations, billingAccounts } = response
+  const noResults = !(documents || returns || users || gaugingStations || billingAccounts)
 
   return {
     ...response,
     noResults,
     returns: returns ? returnsMapper.mapReturns(returns, request) : null,
     billingAccounts: billingAccounts || null
-  };
-};
+  }
+}
 
 module.exports = {
   mapResponseToView
-};
+}

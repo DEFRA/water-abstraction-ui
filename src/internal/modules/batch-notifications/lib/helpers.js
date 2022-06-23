@@ -1,6 +1,6 @@
-const Boom = require('@hapi/boom');
-const { throwIfError } = require('@envage/hapi-pg-rest-api');
-const services = require('../../../lib/connectors/services');
+const Boom = require('@hapi/boom')
+const { throwIfError } = require('@envage/hapi-pg-rest-api')
+const services = require('../../../lib/connectors/services')
 
 /**
  * Loads the notification event from the water service
@@ -8,25 +8,25 @@ const services = require('../../../lib/connectors/services');
  * @return {Promise}         resolves with a row of event data
  */
 const loadEvent = async (request) => {
-  const { eventId } = request.params;
+  const { eventId } = request.params
 
   // Load event
-  const { data: ev, error } = await services.water.events.findOne(eventId);
-  throwIfError(error);
+  const { data: ev, error } = await services.water.events.findOne(eventId)
+  throwIfError(error)
 
   // Check access
-  const { userName } = request.defra;
+  const { userName } = request.defra
   if (ev.issuer !== userName) {
-    throw Boom.unauthorized(`User ${userName} is not the issuer of event ${eventId}`);
+    throw Boom.unauthorized(`User ${userName} is not the issuer of event ${eventId}`)
   }
 
   // Check type is "notification"
   if (ev.type !== 'notification') {
-    throw Boom.badRequest(`Event ${eventId} is not a notification`);
+    throw Boom.badRequest(`Event ${eventId} is not a notification`)
   }
 
-  return ev;
-};
+  return ev
+}
 
 /**
  * Loads messages for the specified event
@@ -36,11 +36,11 @@ const loadEvent = async (request) => {
 const loadMessages = ev => {
   const filter = {
     event_id: ev.event_id
-  };
-  return services.water.notifications.findAll(filter);
-};
+  }
+  return services.water.notifications.findAll(filter)
+}
 
 module.exports = {
   loadEvent,
   loadMessages
-};
+}

@@ -1,7 +1,7 @@
-const { chargeElementAbstractionPeriod } = require('shared/view/nunjucks/filters/charge-element-abstraction-period');
+const { chargeElementAbstractionPeriod } = require('shared/view/nunjucks/filters/charge-element-abstraction-period')
 
-const { experiment, test } = exports.lab = require('@hapi/lab').script();
-const { expect } = require('@hapi/code');
+const { experiment, test } = exports.lab = require('@hapi/lab').script()
+const { expect } = require('@hapi/code')
 
 experiment('shared/view/nunjucks/filters/charge-element-abstraction-period', () => {
   const chargeElement = {
@@ -11,10 +11,10 @@ experiment('shared/view/nunjucks/filters/charge-element-abstraction-period', () 
       endDay: 31,
       endMonth: 3
     }
-  };
+  }
 
   test('the abstraction period is returned with GDS format dates', async () => {
-    const str = chargeElementAbstractionPeriod(chargeElement);
-    expect(str).to.equal('1 January to 31 March');
-  });
-});
+    const str = chargeElementAbstractionPeriod(chargeElement)
+    expect(str).to.equal('1 January to 31 March')
+  })
+})

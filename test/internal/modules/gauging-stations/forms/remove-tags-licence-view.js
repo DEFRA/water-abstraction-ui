@@ -1,14 +1,14 @@
-'use strict';
+'use strict'
 
-const { expect } = require('@hapi/code');
-const { test, experiment, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script();
-const sinon = require('sinon');
-const sandbox = sinon.createSandbox();
-const session = require('internal/modules/gauging-stations/lib/session');
-const { form: removeTagsLicenceViewForm, schema: removeTagsLicenceViewSchema } = require('internal/modules/gauging-stations/forms/remove-tag/remove-tags-licence-view');
+const { expect } = require('@hapi/code')
+const { test, experiment, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script()
+const sinon = require('sinon')
+const sandbox = sinon.createSandbox()
+const session = require('internal/modules/gauging-stations/lib/session')
+const { form: removeTagsLicenceViewForm, schema: removeTagsLicenceViewSchema } = require('internal/modules/gauging-stations/forms/remove-tag/remove-tags-licence-view')
 
 experiment('internal/modules/gauging-stations/forms/remove-tags-licence-view.js', () => {
-  let request, form;
+  let request, form
   const data = {
     data: [
       {
@@ -87,14 +87,14 @@ experiment('internal/modules/gauging-stations/forms/remove-tags-licence-view.js'
         northing: null
       }
     ]
-  };
+  }
 
   experiment('.form', () => {
     beforeEach(async () => {
       sandbox.stub(session, 'get').resolves({
         selectedCondition: [],
         licenceGaugingStations: data.data
-      });
+      })
 
       request = {
         path: 'http://example.com/monitoring-stations/123/untagging-licence/remove-tag',
@@ -104,38 +104,38 @@ experiment('internal/modules/gauging-stations/forms/remove-tags-licence-view.js'
         pre: {
           licenceGaugingStations: data
         }
-      };
-    });
-    afterEach(async () => sandbox.restore());
+      }
+    })
+    afterEach(async () => sandbox.restore())
 
     experiment('load request', () => {
       beforeEach(async () => {
-        form = removeTagsLicenceViewForm(request);
-      });
+        form = removeTagsLicenceViewForm(request)
+      })
 
       test('the form has the correct action attribute', async () => {
-        expect(form.action).to.equal('http://example.com/monitoring-stations/123/untagging-licence/remove-tag');
-      });
+        expect(form.action).to.equal('http://example.com/monitoring-stations/123/untagging-licence/remove-tag')
+      })
 
       test('the schema validate', async () => {
         const payload = {
           selectedLicence: '6e21a77b-1525-459d-acb8-3615e5d53f06',
           csrf_token: '6e21a77b-1525-459d-acb8-3615e5d53f06'
-        };
-        const schema = removeTagsLicenceViewSchema();
-        const { error: validationError, value } = schema.validate(payload);
-        expect(validationError).to.equal(undefined);
-        expect(value).to.equal(payload);
-      });
+        }
+        const schema = removeTagsLicenceViewSchema()
+        const { error: validationError, value } = schema.validate(payload)
+        expect(validationError).to.equal(undefined)
+        expect(value).to.equal(payload)
+      })
 
       test('the form has the POST method', async () => {
-        expect(form.method).to.equal('POST');
-      });
+        expect(form.method).to.equal('POST')
+      })
 
       test('the form has a radio button', async () => {
-        const [selectedLicence] = form.fields;
-        expect(selectedLicence.options.widget).to.equal('radio');
-      });
-    });
-  });
-});
+        const [selectedLicence] = form.fields
+        expect(selectedLicence.options.widget).to.equal('radio')
+      })
+    })
+  })
+})

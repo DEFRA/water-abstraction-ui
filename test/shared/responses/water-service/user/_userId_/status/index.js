@@ -54,7 +54,7 @@ const externalUserWithLicences = () => ({
     ]
   },
   error: null
-});
+})
 
 const externalUserWithoutLicences = () => ({
   data: {
@@ -67,7 +67,7 @@ const externalUserWithoutLicences = () => ({
     companies: []
   },
   error: null
-});
+})
 
 const internalUser = () => ({
   data: {
@@ -80,10 +80,10 @@ const internalUser = () => ({
     companies: []
   },
   error: null
-});
+})
 
 module.exports = {
   externalUserWithLicences,
   externalUserWithoutLicences,
   internalUser
-};
+}

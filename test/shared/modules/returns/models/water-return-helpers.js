@@ -1,12 +1,12 @@
 const {
   experiment,
   test
-} = exports.lab = require('@hapi/lab').script();
-const { expect } = require('@hapi/code');
+} = exports.lab = require('@hapi/lab').script()
+const { expect } = require('@hapi/code')
 
 const {
   createLines, mapMeterLinesToVolumes, getReturnTotal
-} = require('shared/modules/returns/models/water-return-helpers');
+} = require('shared/modules/returns/models/water-return-helpers')
 
 experiment('water returns helpers:', () => {
   experiment('createLines', () => {
@@ -16,7 +16,7 @@ experiment('water returns helpers:', () => {
         endDate: '2019-05-30',
         frequency: 'month',
         lines: []
-      });
+      })
       expect(lines).to.equal([
         {
           startDate: '2019-04-01',
@@ -28,8 +28,8 @@ experiment('water returns helpers:', () => {
           endDate: '2019-05-31',
           timePeriod: 'month'
         }
-      ]);
-    });
+      ])
+    })
 
     test('lines are not altered if already present', async () => {
       const lines = createLines({
@@ -41,21 +41,21 @@ experiment('water returns helpers:', () => {
           endDate: '2019-04-01',
           timePeriod: 'day'
         }]
-      });
+      })
       expect(lines).to.equal([{
         startDate: '2019-04-01',
         endDate: '2019-04-01',
         timePeriod: 'day'
-      }]);
-    });
-  });
+      }])
+    })
+  })
 
   experiment('mapMeterLinesToVolumes', () => {
-    const startReading = 10;
+    const startReading = 10
     const readings = {
       '2019-04-01_2019-04-30': 12.5,
       '2019-05-01_2019-05-31': 19.82
-    };
+    }
     const lines = [{
       startDate: '2019-04-01',
       endDate: '2019-04-30',
@@ -64,10 +64,10 @@ experiment('water returns helpers:', () => {
       startDate: '2019-05-01',
       endDate: '2019-05-31',
       timePeriod: 'month'
-    }];
+    }]
 
     test('should create a volumes array from meter readings', async () => {
-      const result = mapMeterLinesToVolumes(startReading, readings, lines);
+      const result = mapMeterLinesToVolumes(startReading, readings, lines)
       expect(result).to.equal([
         {
           startDate: '2019-04-01',
@@ -81,11 +81,11 @@ experiment('water returns helpers:', () => {
           timePeriod: 'month',
           quantity: 7.32
         }
-      ]);
-    });
+      ])
+    })
 
     test('should multiply volumes if multiplier specified', async () => {
-      const result = mapMeterLinesToVolumes(startReading, readings, lines, 10);
+      const result = mapMeterLinesToVolumes(startReading, readings, lines, 10)
       expect(result).to.equal([
         {
           startDate: '2019-04-01',
@@ -99,11 +99,11 @@ experiment('water returns helpers:', () => {
           timePeriod: 'month',
           quantity: 73.2
         }
-      ]);
-    });
+      ])
+    })
 
     test('should include readings if flag set', async () => {
-      const result = mapMeterLinesToVolumes(startReading, readings, lines, 10, true);
+      const result = mapMeterLinesToVolumes(startReading, readings, lines, 10, true)
       expect(result).to.equal([
         {
           startDate: '2019-04-01',
@@ -119,14 +119,14 @@ experiment('water returns helpers:', () => {
           endReading: 19.82,
           quantity: 73.2
         }
-      ]);
-    });
-  });
+      ])
+    })
+  })
 
   experiment('getReturnTotal', () => {
     test('returns null if no lines supplied', async () => {
-      expect(getReturnTotal()).to.equal(null);
-    });
+      expect(getReturnTotal()).to.equal(null)
+    })
 
     test('returns sum of volumes from lines, ignoring nulls', async () => {
       const lines = [{
@@ -137,8 +137,8 @@ experiment('water returns helpers:', () => {
         quantity: 0
       }, {
         quantity: 7
-      }];
-      expect(getReturnTotal(lines)).to.equal(17.5);
-    });
-  });
-});
+      }]
+      expect(getReturnTotal(lines)).to.equal(17.5)
+    })
+  })
+})

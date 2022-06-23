@@ -1,8 +1,8 @@
-const Joi = require('joi');
-const { capitalize, get } = require('lodash');
-const { formFactory, fields } = require('shared/lib/forms/');
+const Joi = require('joi')
+const { capitalize, get } = require('lodash')
+const { formFactory, fields } = require('shared/lib/forms/')
 
-const session = require('../../lib/session');
+const session = require('../../lib/session')
 
 const errors = {
   empty: {
@@ -14,10 +14,10 @@ const errors = {
   invalidEnd: {
     message: 'Enter the abstraction period end date'
   }
-};
+}
 
 const getFormField = (key, date) => {
-  const name = capitalize(key);
+  const name = capitalize(key)
   return fields.date(`${key}Date`, {
     label: `${name} date`,
     subHeading: true,
@@ -31,29 +31,29 @@ const getFormField = (key, date) => {
       'date.isoDate': errors[`invalid${name}`],
       'date.base': errors[`invalid${name}`]
     }
-  }, date);
-};
+  }, date)
+}
 
-const getSessionDates = (key, data) => get(data[`${key}Date`], 'value', null);
+const getSessionDates = (key, data) => get(data[`${key}Date`], 'value', null)
 
 const abstractionPeriodForm = request => {
-  const f = formFactory(request.path);
+  const f = formFactory(request.path)
 
-  const data = session.get(request);
+  const data = session.get(request)
 
-  f.fields.push(getFormField('start', getSessionDates('start', data)));
-  f.fields.push(getFormField('end', getSessionDates('end', data)));
+  f.fields.push(getFormField('start', getSessionDates('start', data)))
+  f.fields.push(getFormField('end', getSessionDates('end', data)))
 
-  f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
-  return f;
-};
+  f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
+  return f
+}
 
 const abstractionPeriodSchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   startDate: Joi.date().required(),
   endDate: Joi.date().required()
-});
+})
 
-exports.form = abstractionPeriodForm;
-exports.schema = abstractionPeriodSchema;
+exports.form = abstractionPeriodForm
+exports.schema = abstractionPeriodSchema

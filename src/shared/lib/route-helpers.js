@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
-const { camelCase } = require('lodash');
+const { camelCase } = require('lodash')
 
 /**
  * Creates a pair of routes, one for the GET and one for the POST,
@@ -11,8 +11,8 @@ const { camelCase } = require('lodash');
  * @return {Object}
  */
 const createRoutePair = (controller, methodNameSuffix, config) => {
-  const getMethodName = camelCase(`get_${methodNameSuffix}`);
-  const postMethodName = camelCase(`post_${methodNameSuffix}`);
+  const getMethodName = camelCase(`get_${methodNameSuffix}`)
+  const postMethodName = camelCase(`post_${methodNameSuffix}`)
   return {
     [getMethodName]: {
       method: 'get',
@@ -24,14 +24,14 @@ const createRoutePair = (controller, methodNameSuffix, config) => {
       handler: controller[postMethodName],
       ...config
     }
-  };
-};
+  }
+}
 
 const createFormRoutes = (controller, config) =>
   Object.keys(config).reduce((acc, methodNameSuffix) => ({
     ...acc,
     ...createRoutePair(controller, methodNameSuffix, config[methodNameSuffix])
-  }), {});
+  }), {})
 
-exports.createRoutePair = createRoutePair;
-exports.createFormRoutes = createFormRoutes;
+exports.createRoutePair = createRoutePair
+exports.createFormRoutes = createFormRoutes

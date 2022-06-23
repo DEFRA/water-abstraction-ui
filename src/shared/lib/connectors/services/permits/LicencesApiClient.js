@@ -1,8 +1,8 @@
-const { APIClient } = require('@envage/hapi-pg-rest-api');
-const urlJoin = require('url-join');
-const { http } = require('@envage/water-abstraction-helpers');
+const { APIClient } = require('@envage/hapi-pg-rest-api')
+const urlJoin = require('url-join')
+const { http } = require('@envage/water-abstraction-helpers')
 
-const getEndpoint = serviceUrl => urlJoin(serviceUrl, '/licence');
+const getEndpoint = serviceUrl => urlJoin(serviceUrl, '/licence')
 
 class LicencesApiClient extends APIClient {
   /**
@@ -11,7 +11,7 @@ class LicencesApiClient extends APIClient {
    * @param {Object} logger The system logger object
    */
   constructor (config, logger) {
-    const serviceUrl = config.services.permits;
+    const serviceUrl = config.services.permits
 
     super(http.request, {
       serviceUrl,
@@ -20,8 +20,8 @@ class LicencesApiClient extends APIClient {
       headers: {
         Authorization: config.jwt.token
       }
-    });
+    })
   }
 }
 
-module.exports = LicencesApiClient;
+module.exports = LicencesApiClient

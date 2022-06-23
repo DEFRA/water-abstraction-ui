@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 class Batch {
   /**
@@ -9,10 +9,10 @@ class Batch {
    * @param {String} type The type of batch (supplementary, annual)
    */
   constructor (batchId, billRunDate, type) {
-    this.region = {};
-    this.id = batchId;
-    this.billRunDate = billRunDate;
-    this.type = type;
+    this.region = {}
+    this.id = batchId
+    this.billRunDate = billRunDate
+    this.type = type
   }
 
   /**
@@ -23,11 +23,11 @@ class Batch {
    * @param {String} displayName The region display name
    */
   setRegion (id, name, displayName) {
-    this.region.id = id;
-    this.region.name = name;
-    this.region.displayName = displayName;
-    return this;
+    this.region.id = id
+    this.region.name = name
+    this.region.displayName = displayName
+    return this
   }
 }
 
-module.exports = Batch;
+module.exports = Batch

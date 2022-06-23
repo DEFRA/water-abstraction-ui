@@ -1,8 +1,8 @@
-const { pick } = require('lodash');
-const shallowDiff = require('shallow-diff');
+const { pick } = require('lodash')
+const shallowDiff = require('shallow-diff')
 
-const { handleRequest, getValues } = require('shared/lib/forms');
-const { load, update } = require('../lib/loader');
+const { handleRequest, getValues } = require('shared/lib/forms')
+const { load, update } = require('../lib/loader')
 const {
   extractData,
   transformNulls,
@@ -17,8 +17,8 @@ const {
   stateManager,
   getInitialState,
   statuses
-} = require('@envage/water-abstraction-helpers').digitise;
-const { getPermissions } = require('../lib/permissions');
+} = require('@envage/water-abstraction-helpers').digitise
+const { getPermissions } = require('../lib/permissions')
 const {
   createEditPurpose,
   createEditLicence,
@@ -28,11 +28,11 @@ const {
   createEditVersion,
   createEditParty,
   createEditAddress
-} = require('../lib/action-creators');
-const { search, recent } = require('../lib/search');
-const { STATUS_IN_PROGRESS, STATUS_IN_REVIEW } = statuses;
+} = require('../lib/action-creators')
+const { search, recent } = require('../lib/search')
+const { STATUS_IN_PROGRESS, STATUS_IN_REVIEW } = statuses
 
-const { setStatusForm, setStatusSchema } = require('../forms/set-status');
+const { setStatusForm, setStatusSchema } = require('../forms/set-status')
 
 // Config for editing different data models
 const objectConfig = {
@@ -71,31 +71,31 @@ const objectConfig = {
     getter: getAddress,
     actionCreator: createEditAddress
   }
-};
+}
 
 /**
  * View / search licences
  */
 const getViewLicences = async (request, h) => {
-  const { q, page } = request.query;
+  const { q, page } = request.query
 
   const view = {
     q,
     ...request.view
-  };
-
-  if (q) {
-    const { data, pagination } = await search(q, page);
-    view.licences = data;
-    view.pagination = pagination;
-  } else {
-    const { data, pagination } = await recent(page);
-    view.licences = data;
-    view.pagination = pagination;
   }
 
-  return h.view('nunjucks/abstraction-reform/licences', view);
-};
+  if (q) {
+    const { data, pagination } = await search(q, page)
+    view.licences = data
+    view.pagination = pagination
+  } else {
+    const { data, pagination } = await recent(page)
+    view.licences = data
+    view.pagination = pagination
+  }
+
+  return h.view('nunjucks/abstraction-reform/licences', view)
+}
 
 /**
  * View a licence, with the original values and abstraction reform values
@@ -103,16 +103,16 @@ const getViewLicences = async (request, h) => {
  * @param {String} request.params.documentId - CRM document ID
  */
 const getViewLicence = async (request, h) => {
-  const { documentId } = request.params;
-  const { flash } = request.query;
+  const { documentId } = request.params
+  const { flash } = request.query
 
-  const form = request.form || setStatusForm(request);
+  const form = request.form || setStatusForm(request)
 
-  const { licence, finalState } = await load(documentId);
+  const { licence, finalState } = await load(documentId)
 
-  const data = prepareData(licence, finalState);
+  const data = prepareData(licence, finalState)
 
-  const permissions = getPermissions(request, finalState);
+  const permissions = getPermissions(request, finalState)
 
   const view = {
     flash,
@@ -125,10 +125,10 @@ const getViewLicence = async (request, h) => {
     ...permissions,
     highlightNald: finalState.status === STATUS_IN_PROGRESS,
     highlightAr: finalState.status === STATUS_IN_REVIEW
-  };
+  }
 
-  return h.view('nunjucks/abstraction-reform/licence', view);
-};
+  return h.view('nunjucks/abstraction-reform/licence', view)
+}
 
 /**
  * Gets additional arguments to supply to getter
@@ -138,8 +138,8 @@ const getViewLicence = async (request, h) => {
  * @return {Array} arguments
  */
 const getAdditionalArgs = (id) => {
-  return id ? id.split('_') : [];
-};
+  return id ? id.split('_') : []
+}
 
 /**
  * Edit an object from within the licence
@@ -148,23 +148,23 @@ const getAdditionalArgs = (id) => {
  * @param {String} request.params.id - the ID of the entity
  */
 const getEditObject = async (request, h) => {
-  const { documentId, type, id } = request.params;
-  const args = getAdditionalArgs(id);
+  const { documentId, type, id } = request.params
+  const args = getAdditionalArgs(id)
 
   // Load licence / AR licence from CRM
-  const { licence, finalState } = await load(documentId);
+  const { licence, finalState } = await load(documentId)
 
   // Check permissions
-  const { canEdit } = getPermissions(request, finalState);
+  const { canEdit } = getPermissions(request, finalState)
   if (!canEdit) {
-    return h.redirect(`/digitise/licence/${documentId}?flash=locked`);
+    return h.redirect(`/digitise/licence/${documentId}?flash=locked`)
   }
 
-  const { schema, getter } = objectConfig[type];
+  const { schema, getter } = objectConfig[type]
 
-  const data = extractData(getter(finalState.licence, ...args), schema);
+  const data = extractData(getter(finalState.licence, ...args), schema)
 
-  const formAction = `/digitise/licence/${documentId}/edit/${type}${id ? `/${id}` : ''}`;
+  const formAction = `/digitise/licence/${documentId}/edit/${type}${id ? `/${id}` : ''}`
 
   const view = {
     ...request.view,
@@ -175,56 +175,56 @@ const getEditObject = async (request, h) => {
     data,
     schema,
     back: `/digitise/licence/${documentId}`
-  };
+  }
 
-  return h.view('nunjucks/abstraction-reform/edit', view);
-};
+  return h.view('nunjucks/abstraction-reform/edit', view)
+}
 
 /**
  * Edits a licence/purpose/point/condition etc.
  */
 const postEditObject = async (request, h) => {
-  const { documentId, type, id } = request.params;
-  const args = getAdditionalArgs(id);
-  const { csrf_token: csrfToken, ...rawPayload } = request.payload;
+  const { documentId, type, id } = request.params
+  const args = getAdditionalArgs(id)
+  const { csrf_token: csrfToken, ...rawPayload } = request.payload
 
-  const payload = transformNulls(rawPayload);
+  const payload = transformNulls(rawPayload)
 
   // Load licence / AR licence from CRM
-  const { licence, arLicence, finalState } = await load(documentId);
-  const { licence_ref: licenceNumber } = licence;
+  const { licence, arLicence, finalState } = await load(documentId)
+  const { licence_ref: licenceNumber } = licence
 
   // Check permissions
-  const { canEdit } = getPermissions(request, finalState);
+  const { canEdit } = getPermissions(request, finalState)
   if (!canEdit) {
-    return h.redirect(`/digitise/licence/${documentId}?flash=locked`);
+    return h.redirect(`/digitise/licence/${documentId}?flash=locked`)
   }
 
-  const { schema, getter, actionCreator } = objectConfig[type];
+  const { schema, getter, actionCreator } = objectConfig[type]
 
-  const data = extractData(getter(finalState.licence, ...args), schema);
+  const data = extractData(getter(finalState.licence, ...args), schema)
 
   // Compare object data with form payload
-  const diff = shallowDiff(data, payload);
+  const diff = shallowDiff(data, payload)
 
   if (diff.updated.length) {
     // Add the new action to the list of actions
-    const action = actionCreator(pick(payload, diff.updated), request.defra, ...args);
-    const { actions } = arLicence.licence_data_value;
-    actions.push(action);
+    const action = actionCreator(pick(payload, diff.updated), request.defra, ...args)
+    const { actions } = arLicence.licence_data_value
+    actions.push(action)
 
     // Re-calculate final state
     // This is so we can get the status and last editor details and store these
     // Calculate final state from list of actions to update last editor/status
-    const { status, lastEdit } = stateManager(getInitialState(licence), actions);
+    const { status, lastEdit } = stateManager(getInitialState(licence), actions)
 
     // Save action list to permit repo
-    await update(arLicence.licence_id, { actions, status, lastEdit }, licenceNumber);
+    await update(arLicence.licence_id, { actions, status, lastEdit }, licenceNumber)
   }
 
-  const path = `/digitise/licence/${documentId}#${type}${id ? `-${id}` : ''}`;
-  return h.redirect(path);
-};
+  const path = `/digitise/licence/${documentId}#${type}${id ? `-${id}` : ''}`
+  return h.redirect(path)
+}
 
 /**
  * Sets document status to a different workflow status
@@ -233,41 +233,41 @@ const postEditObject = async (request, h) => {
  * @param {String} request.payload.status - new status for document
  */
 const postSetStatus = async (request, h) => {
-  const { documentId } = request.params;
+  const { documentId } = request.params
 
-  const schema = setStatusSchema(request);
-  const form = handleRequest(setStatusForm(request), request, schema);
+  const schema = setStatusSchema(request)
+  const form = handleRequest(setStatusForm(request), request, schema)
 
   if (form.isValid) {
-    const { notes, status } = getValues(form);
+    const { notes, status } = getValues(form)
 
     // Load licence / AR licence from CRM
-    const { licence, arLicence } = await load(documentId);
-    const { licence_ref: licenceNumber } = licence;
+    const { licence, arLicence } = await load(documentId)
+    const { licence_ref: licenceNumber } = licence
 
     // Add new action to list
-    const action = createSetStatus(status, notes, request.defra);
-    const { actions } = arLicence.licence_data_value;
-    actions.push(action);
+    const action = createSetStatus(status, notes, request.defra)
+    const { actions } = arLicence.licence_data_value
+    actions.push(action)
 
     // Re-calculate final state
     // This is so we can get the status and last editor details and store these
     // Calculate final state from list of actions to update last editor/status
-    const { lastEdit } = stateManager(getInitialState(licence), actions);
+    const { lastEdit } = stateManager(getInitialState(licence), actions)
 
     // Save action list to permit repo
-    await update(arLicence.licence_id, { actions, status, lastEdit }, licenceNumber);
+    await update(arLicence.licence_id, { actions, status, lastEdit }, licenceNumber)
 
-    return h.redirect('/digitise');
+    return h.redirect('/digitise')
   } else {
     // Re-render licence page
-    request.form = form;
-    return getViewLicence(request, h);
+    request.form = form
+    return getViewLicence(request, h)
   }
-};
+}
 
-exports.getViewLicences = getViewLicences;
-exports.getViewLicence = getViewLicence;
-exports.getEditObject = getEditObject;
-exports.postEditObject = postEditObject;
-exports.postSetStatus = postSetStatus;
+exports.getViewLicences = getViewLicences
+exports.getViewLicence = getViewLicence
+exports.getEditObject = getEditObject
+exports.postEditObject = postEditObject
+exports.postSetStatus = postSetStatus

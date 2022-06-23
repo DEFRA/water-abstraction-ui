@@ -1,5 +1,5 @@
-const Joi = require('joi');
-const { formFactory, fields, applyErrors } = require('shared/lib/forms');
+const Joi = require('joi')
+const { formFactory, fields, applyErrors } = require('shared/lib/forms')
 
 const createEmailField = () => {
   return fields.text('email', {
@@ -15,8 +15,8 @@ const createEmailField = () => {
       }
     },
     autoComplete: 'off'
-  });
-};
+  })
+}
 
 const createPasswordField = () => {
   return fields.text('password', {
@@ -29,34 +29,34 @@ const createPasswordField = () => {
       }
     },
     autoComplete: 'off'
-  });
-};
+  })
+}
 
 /**
  * @return {Object} - form object
  */
 const form = () => {
-  const f = formFactory('/signin');
+  const f = formFactory('/signin')
 
-  f.fields.push(createEmailField());
-  f.fields.push(createPasswordField());
+  f.fields.push(createEmailField())
+  f.fields.push(createPasswordField())
   f.fields.push(fields.button(null, {
     label: 'Sign in',
     isStartButton: true
-  }));
+  }))
 
-  return f;
-};
+  return f
+}
 
 const schema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required()
-});
+})
 
 // Enter if empty, Check your if it's wrong
 const applyErrorState = form => {
   if (form.errors.length) {
-    return form;
+    return form
   }
 
   // return form;
@@ -66,9 +66,9 @@ const applyErrorState = form => {
   }, {
     name: 'password',
     message: 'Check your password'
-  }]);
-};
+  }])
+}
 
-exports.signInForm = form;
-exports.signInSchema = schema;
-exports.signInApplyErrorState = applyErrorState;
+exports.signInForm = form
+exports.signInSchema = schema
+exports.signInApplyErrorState = applyErrorState

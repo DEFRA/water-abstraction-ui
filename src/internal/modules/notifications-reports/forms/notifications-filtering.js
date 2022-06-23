@@ -1,12 +1,12 @@
-const Joi = require('joi');
-const { formFactory, fields } = require('shared/lib/forms');
-const session = require('../lib/session');
+const Joi = require('joi')
+const { formFactory, fields } = require('shared/lib/forms')
+const session = require('../lib/session')
 
 const form = request => {
-  const f = formFactory(request.path);
-  const { notificationCategories } = request.pre;
+  const f = formFactory(request.path)
+  const { notificationCategories } = request.pre
 
-  const { categories, senderInputValue } = session.get(request);
+  const { categories, senderInputValue } = session.get(request)
 
   f.fields.push(fields.checkbox('categories', {
     label: 'Notification type',
@@ -15,7 +15,7 @@ const form = request => {
       value: category.categoryValue,
       label: category.categoryLabel
     }))
-  }, categories));
+  }, categories))
 
   f.fields.push(fields.text('sender', {
     label: 'Sent by',
@@ -25,20 +25,20 @@ const form = request => {
         message: 'Enter a valid email'
       }
     }
-  }, senderInputValue));
+  }, senderInputValue))
 
-  f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));
+  f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken))
 
-  f.fields.push(fields.button(null, { label: 'Apply filters' }));
+  f.fields.push(fields.button(null, { label: 'Apply filters' }))
 
-  return f;
-};
+  return f
+}
 
 const schema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   categories: Joi.array().optional(),
   sender: Joi.string().allow('').email()
-});
+})
 
-exports.form = form;
-exports.schema = schema;
+exports.form = form
+exports.schema = schema

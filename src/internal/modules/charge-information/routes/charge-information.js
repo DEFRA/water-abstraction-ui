@@ -1,10 +1,10 @@
-const controller = require('../controllers/charge-information');
-const preHandlers = require('../pre-handlers');
-const sharedPreHandlers = require('shared/lib/pre-handlers/licences');
-const { VALID_GUID } = require('shared/lib/validators');
-const Joi = require('joi');
-const { chargeVersionWorkflowEditor, chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope;
-const allowedScopes = [chargeVersionWorkflowEditor, chargeVersionWorkflowReviewer];
+const controller = require('../controllers/charge-information')
+const preHandlers = require('../pre-handlers')
+const sharedPreHandlers = require('shared/lib/pre-handlers/licences')
+const { VALID_GUID } = require('shared/lib/validators')
+const Joi = require('joi')
+const { chargeVersionWorkflowEditor, chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope
+const allowedScopes = [chargeVersionWorkflowEditor, chargeVersionWorkflowReviewer]
 
 module.exports = {
   getReason: {
@@ -390,4 +390,4 @@ module.exports = {
       ]
     }
   }
-};
+}

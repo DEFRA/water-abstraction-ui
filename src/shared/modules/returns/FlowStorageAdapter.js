@@ -1,10 +1,10 @@
-const { omit } = require('lodash');
-const WaterReturn = require('./models/WaterReturn');
-const getSessionKey = request => `return_${request.query.returnId}`;
+const { omit } = require('lodash')
+const WaterReturn = require('./models/WaterReturn')
+const getSessionKey = request => `return_${request.query.returnId}`
 
 class FlowStorageAdapter {
   constructor (waterReturnsConnector) {
-    this.waterReturnsConnector = waterReturnsConnector;
+    this.waterReturnsConnector = waterReturnsConnector
   }
 
   /**
@@ -14,17 +14,17 @@ class FlowStorageAdapter {
    * @return {Promise<Object>} - water return model
    */
   async get (request) {
-    const sessionKey = getSessionKey(request);
-    let data = request.yar.get(sessionKey);
+    const sessionKey = getSessionKey(request)
+    let data = request.yar.get(sessionKey)
 
     // Load fresh return data if not in session
     if (!data) {
       // @TODO ensure permissions for external users
-      data = await this.waterReturnsConnector.getReturn(request.query.returnId);
-      request.yar.set(sessionKey, data);
+      data = await this.waterReturnsConnector.getReturn(request.query.returnId)
+      request.yar.set(sessionKey, data)
     }
 
-    return new WaterReturn(data);
+    return new WaterReturn(data)
   };
 
   /**
@@ -33,16 +33,16 @@ class FlowStorageAdapter {
    * @param  {Object}  waterReturn - waterReturn instance
    */
   set (request, waterReturn) {
-    const sessionKey = getSessionKey(request);
-    return request.yar.set(sessionKey, waterReturn.toObject());
+    const sessionKey = getSessionKey(request)
+    return request.yar.set(sessionKey, waterReturn.toObject())
   };
 
   async submit (request, waterReturn) {
-    const data = omit(waterReturn.toObject(), 'versions');
-    await this.waterReturnsConnector.postReturn(data);
-    const sessionKey = getSessionKey(request);
-    request.yar.clear(sessionKey);
+    const data = omit(waterReturn.toObject(), 'versions')
+    await this.waterReturnsConnector.postReturn(data)
+    const sessionKey = getSessionKey(request)
+    request.yar.clear(sessionKey)
   }
 }
 
-module.exports = FlowStorageAdapter;
+module.exports = FlowStorageAdapter

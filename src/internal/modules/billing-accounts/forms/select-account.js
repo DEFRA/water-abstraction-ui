@@ -1,29 +1,29 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
-const { titleCase } = require('shared/lib/string-formatter');
-const { get, isObject, isNull } = require('lodash');
+const Joi = require('joi')
+const { titleCase } = require('shared/lib/string-formatter')
+const { get, isObject, isNull } = require('lodash')
 
-const { formFactory, fields } = require('shared/lib/forms/');
-const { BILLING_ACCOUNT_HOLDER, OTHER_ACCOUNT } = require('../lib/constants');
+const { formFactory, fields } = require('shared/lib/forms/')
+const { BILLING_ACCOUNT_HOLDER, OTHER_ACCOUNT } = require('../lib/constants')
 
 const getRadioValue = request => {
-  const agentCompany = get(request, 'pre.sessionData.data.agentCompany', null);
+  const agentCompany = get(request, 'pre.sessionData.data.agentCompany', null)
 
   if (isObject(agentCompany)) {
-    return OTHER_ACCOUNT;
+    return OTHER_ACCOUNT
   }
   if (isNull(agentCompany)) {
-    return BILLING_ACCOUNT_HOLDER;
+    return BILLING_ACCOUNT_HOLDER
   }
-  return undefined;
-};
+  return undefined
+}
 
 const getSearchValue = request =>
-  get(request, 'pre.sessionData.data.agentCompany.name');
+  get(request, 'pre.sessionData.data.agentCompany.name')
 
 const getChoices = request => {
-  const { account } = request.pre;
+  const { account } = request.pre
   return ([
     {
       value: BILLING_ACCOUNT_HOLDER,
@@ -44,8 +44,8 @@ const getChoices = request => {
         }, getSearchValue(request))
       ]
     }
-  ]);
-};
+  ])
+}
 
 /**
  * returns the selected company id along with the region and company id
@@ -53,9 +53,9 @@ const getChoices = request => {
  * @param {Object} request The Hapi request object
   */
 const selectCompanyForm = request => {
-  const { csrfToken } = request.view;
+  const { csrfToken } = request.view
 
-  const f = formFactory(request.path, 'POST');
+  const f = formFactory(request.path, 'POST')
 
   f.fields.push(fields.radio('account', {
     errors: {
@@ -64,12 +64,12 @@ const selectCompanyForm = request => {
       }
     },
     choices: getChoices(request)
-  }, getRadioValue(request)));
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
+  }, getRadioValue(request)))
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
 
-  return f;
-};
+  return f
+}
 
 const selectCompanyFormSchema = () => {
   return Joi.object({
@@ -79,8 +79,8 @@ const selectCompanyFormSchema = () => {
       .conditional('account',
         { is: OTHER_ACCOUNT, then: Joi.string().required(), otherwise: Joi.optional() }
       )
-  });
-};
+  })
+}
 
-exports.form = selectCompanyForm;
-exports.schema = selectCompanyFormSchema;
+exports.form = selectCompanyForm
+exports.schema = selectCompanyFormSchema

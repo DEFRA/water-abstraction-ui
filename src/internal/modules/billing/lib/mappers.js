@@ -62,19 +62,19 @@ const getAdditionalCharges = transaction => {
 
 const getAdjustments = transaction => {
   const adjustments = [];
-  if (transaction.chargeElement.adjustments.aggregate) {
+  if (transaction.chargeElement?.adjustments?.aggregate) {
     adjustments.push(`Aggregate factor (${transaction.chargeElement.adjustments.aggregate})`);
   }
-  if (transaction.chargeElement.adjustments.charge) {
+  if (transaction.chargeElement?.adjustments?.charge) {
     adjustments.push(`Adjustment factor (${transaction.chargeElement.adjustments.charge})`);
   }
-  if (transaction.chargeElement.adjustments.s126) {
+  if (transaction.chargeElement?.adjustments?.s126) {
     adjustments.push(`Abatement factor (${transaction.chargeElement.adjustments.s126})`);
   }
-  if (transaction.chargeElement.adjustments.s130) {
+  if (transaction.chargeElement?.adjustments?.s130) {
     adjustments.push('Canal and River Trust (0.5)');
   }
-  if (transaction.chargeElement.adjustments.winter) {
+  if (transaction.chargeElement?.adjustments?.winter) {
     adjustments.push('Winter discount (0.5)');
   }
   return adjustments.join(', ');

@@ -106,4 +106,18 @@ experiment('internal/modules/billing/routes', () => {
       expect(route.config.pre[0].assign).to.equal('batch');
     });
   });
+
+  experiment('.postBillingFinancialYear', () => {
+    test('limits scope to users with billing role', async () => {
+      expect(routes.postBillingFinancialYear.config.auth.scope)
+        .to.only.include([scope.billing]);
+    });
+  });
+
+  experiment('.getBillingBatchFinancialYear', () => {
+    test('limits scope to users with billing role', async () => {
+      expect(routes.getBillingBatchFinancialYear.config.auth.scope)
+        .to.only.include([scope.billing]);
+    });
+  });
 });

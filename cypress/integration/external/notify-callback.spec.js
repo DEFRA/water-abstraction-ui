@@ -20,7 +20,6 @@ describe('notify callback attempt', function () {
 
   it('calls the notify callback endpoint', () => {
     cy.simulateNotifyCallback(scheduledNotificationNotifyId) // Pretending to be the Notify Service, submit a callback to the backend, which updateds the status of the Notification to 'delivered'
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(5000)
     cy.fixture('users.json').then(users => { // Load the fixtures again (Probably not necessary if we were storing the email in a local variable!)
       cy.getLastNotifications(Cypress.env('USER_URI'), users.notifyCallbackTestEmail).then(scheduledNotificationAfterCallback => { // Once again, grab the last notification from the service that was sent to that email address

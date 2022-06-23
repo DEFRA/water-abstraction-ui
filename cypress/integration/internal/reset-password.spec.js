@@ -10,7 +10,6 @@ describe('internal user resetting their password:', () => {
     tearDown()
   })
 
-  /* eslint-disable no-undef */
   it('Navigate to the reset your password page', () => {
     cy.visit(Cypress.env('ADMIN_URI'))
     cy.get('a[href*="/reset_password').click()

@@ -1,5 +1,3 @@
-/* /* eslint-disable no-undef */
-
 const { setUp, tearDown } = require('../../support/setup')
 const moment = require('moment')
 

@@ -1,6 +1,5 @@
 const { setUp, tearDown } = require('../../support/setup')
 
-/* eslint-disable no-undef */
 describe('notify callback attempt', function () {
   let scheduledNotificationNotifyId
   before(() => {

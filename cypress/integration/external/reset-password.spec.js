@@ -10,7 +10,6 @@ describe('Reset password', () => {
     tearDown()
   })
 
-  /* eslint-disable no-undef */
   it('Navigate to the signin page', () => {
     cy.visit(Cypress.env('USER_URI'))
     cy.get('a[href*="/signin"]').click()

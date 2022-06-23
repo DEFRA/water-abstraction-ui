@@ -1,5 +1,5 @@
-const controller = require('./controller');
-const { scope } = require('internal/lib/constants');
+const controller = require('./controller')
+const { scope } = require('internal/lib/constants')
 
 module.exports = [
 
@@ -20,4 +20,4 @@ module.exports = [
     },
     handler: controller.getManageTab
   }
-];
+]

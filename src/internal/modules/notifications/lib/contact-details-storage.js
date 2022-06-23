@@ -1,7 +1,7 @@
-const { get } = require('lodash');
-const services = require('internal/lib/connectors/services');
+const { get } = require('lodash')
+const services = require('internal/lib/connectors/services')
 
-const SESSION_KEY = 'contactDetailsFlow';
+const SESSION_KEY = 'contactDetailsFlow'
 
 /**
  * Merges current and new contact details in user data object
@@ -10,12 +10,12 @@ const SESSION_KEY = 'contactDetailsFlow';
  * @return {Object} updated userData
  */
 const mergeContactDetails = (userData, contactDetails) => {
-  const currentDetails = userData.contactDetails || {};
+  const currentDetails = userData.contactDetails || {}
   return {
     ...userData,
     contactDetails: Object.assign({}, currentDetails, contactDetails)
-  };
-};
+  }
+}
 
 /**
  * Gets contact details from session.
@@ -24,32 +24,32 @@ const mergeContactDetails = (userData, contactDetails) => {
  * @return {[type]}         [description]
  */
 const getContactDetails = request => {
-  let userData = request.yar.get(SESSION_KEY);
+  let userData = request.yar.get(SESSION_KEY)
   if (!userData) {
-    userData = request.defra.user.user_data || {};
-    request.yar.set(SESSION_KEY, userData);
+    userData = request.defra.user.user_data || {}
+    request.yar.set(SESSION_KEY, userData)
   }
 
-  return get(userData, 'contactDetails', {});
-};
+  return get(userData, 'contactDetails', {})
+}
 
 const setContactDetails = (request, contactDetails) => {
-  const userData = request.yar.get(SESSION_KEY);
-  const updated = mergeContactDetails(userData, contactDetails);
-  request.yar.set(SESSION_KEY, updated);
-};
+  const userData = request.yar.get(SESSION_KEY)
+  const updated = mergeContactDetails(userData, contactDetails)
+  request.yar.set(SESSION_KEY, updated)
+}
 
 const submitContactDetails = async (request, contactDetails) => {
   // Merge contact data with data in session
-  const userData = request.yar.get(SESSION_KEY);
-  const updated = mergeContactDetails(userData, contactDetails);
+  const userData = request.yar.get(SESSION_KEY)
+  const updated = mergeContactDetails(userData, contactDetails)
   // Save to IDM
-  const { userId } = request.defra;
-  await services.idm.users.updateOne(userId, { user_data: updated });
+  const { userId } = request.defra
+  await services.idm.users.updateOne(userId, { user_data: updated })
   // Clear session key
-  request.yar.clear(SESSION_KEY);
-};
+  request.yar.clear(SESSION_KEY)
+}
 
-exports.get = getContactDetails;
-exports.set = setContactDetails;
-exports.submit = submitContactDetails;
+exports.get = getContactDetails
+exports.set = setContactDetails
+exports.submit = submitContactDetails

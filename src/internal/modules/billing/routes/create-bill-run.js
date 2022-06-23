@@ -1,21 +1,21 @@
-'use strict';
+'use strict'
 
-const { kebabCase } = require('lodash');
-const Joi = require('joi');
-const controller = require('../controllers/create-bill-run');
-const { billing } = require('../../../../internal/lib/constants').scope;
-const allowedScopes = [billing];
-const preHandlers = require('../pre-handlers');
-const billRunTypes = require('../lib/bill-run-types');
-const seasons = require('../lib/seasons');
+const { kebabCase } = require('lodash')
+const Joi = require('joi')
+const controller = require('../controllers/create-bill-run')
+const { billing } = require('../../../../internal/lib/constants').scope
+const allowedScopes = [billing]
+const preHandlers = require('../pre-handlers')
+const billRunTypes = require('../lib/bill-run-types')
+const seasons = require('../lib/seasons')
 
 const VALID_BILL_RUN_TYPES = Joi.string().required().valid(
   ...Object.values(billRunTypes).map(kebabCase)
-);
+)
 
 const VALID_SEASONS = Joi.string().valid(
   ...Object.values(seasons).map(kebabCase)
-);
+)
 
 module.exports = {
   getBillingBatchType: {
@@ -153,4 +153,4 @@ module.exports = {
       description: 'post handler for receiving the selected financial year'
     }
   }
-};
+}

@@ -1,9 +1,9 @@
-const { APIClient } = require('@envage/hapi-pg-rest-api');
-const { get } = require('lodash');
-const urlJoin = require('url-join');
-const { http } = require('@envage/water-abstraction-helpers');
+const { APIClient } = require('@envage/hapi-pg-rest-api')
+const { get } = require('lodash')
+const urlJoin = require('url-join')
+const { http } = require('@envage/water-abstraction-helpers')
 
-const getEndpoint = serviceUrl => urlJoin(serviceUrl, '/returns');
+const getEndpoint = serviceUrl => urlJoin(serviceUrl, '/returns')
 
 class ReturnsApiClient extends APIClient {
   /**
@@ -12,7 +12,7 @@ class ReturnsApiClient extends APIClient {
    * @param {Object} logger The system logger object
    */
   constructor (config, logger) {
-    const serviceUrl = config.services.returns;
+    const serviceUrl = config.services.returns
 
     super(http.request, {
       serviceUrl,
@@ -21,10 +21,10 @@ class ReturnsApiClient extends APIClient {
       headers: {
         Authorization: config.jwt.token
       }
-    });
+    })
 
-    this.showFutureReturns = get(config, 'returns.showFutureReturns', false);
+    this.showFutureReturns = get(config, 'returns.showFutureReturns', false)
   }
 }
 
-module.exports = ReturnsApiClient;
+module.exports = ReturnsApiClient

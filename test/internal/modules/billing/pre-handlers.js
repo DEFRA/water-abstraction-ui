@@ -1,113 +1,113 @@
-'use strict';
+'use strict'
 
 const {
   experiment,
   test,
   beforeEach,
   afterEach
-} = exports.lab = require('@hapi/lab').script();
-const { expect } = require('@hapi/code');
-const sandbox = require('sinon').createSandbox();
+} = exports.lab = require('@hapi/lab').script()
+const { expect } = require('@hapi/code')
+const sandbox = require('sinon').createSandbox()
 
-const { water } = require('internal/lib/connectors/services');
-const preHandlers = require('internal/modules/billing/pre-handlers');
+const { water } = require('internal/lib/connectors/services')
+const preHandlers = require('internal/modules/billing/pre-handlers')
 
 experiment('internal/modules/billing/pre-handlers', () => {
-  let h;
+  let h
 
   beforeEach(async () => {
     sandbox.stub(water.billingBatches, 'getBatch').resolves({
       id: 'test-batch-id',
       type: 'annual'
-    });
+    })
 
     sandbox.stub(water.billingBatches, 'getBatchInvoice').resolves({
       id: 'test-invoice-id'
-    });
+    })
 
     sandbox.stub(water.billingInvoiceLicences, 'getInvoiceLicence').resolves({
       id: 'test-invoice-licence-id'
-    });
+    })
 
     sandbox.stub(water.licences, 'getLicenceById').resolves({
       id: 'test-licence-id'
-    });
+    })
 
     sandbox.stub(water.billingVolumes, 'getBillingVolume').resolves({
       id: 'test-billing-volume-id'
-    });
+    })
 
     h = {
       continue: 'continue',
       redirect: sandbox.stub().returnsThis(),
       takeover: sandbox.spy()
-    };
-  });
+    }
+  })
 
   afterEach(async () => {
-    sandbox.restore();
-  });
+    sandbox.restore()
+  })
 
   experiment('.loadBatch', () => {
-    let request;
+    let request
 
     beforeEach(async () => {
       request = {
         params: {
           batchId: 'test-batch-id'
         }
-      };
-    });
+      }
+    })
 
     test('the batch is returned from the handler', async () => {
-      const result = await preHandlers.loadBatch(request);
+      const result = await preHandlers.loadBatch(request)
       expect(result).to.equal({
         id: 'test-batch-id',
         type: 'annual'
-      });
-    });
+      })
+    })
 
     test('returns a Boom not found when the batch is not found', async () => {
-      water.billingBatches.getBatch.rejects();
-      const result = await preHandlers.loadBatch(request);
+      water.billingBatches.getBatch.rejects()
+      const result = await preHandlers.loadBatch(request)
 
-      const { payload } = result.output;
-      expect(payload.statusCode).to.equal(404);
-      expect(payload.message).to.equal('Batch not found for batchId: test-batch-id');
-    });
-  });
+      const { payload } = result.output
+      expect(payload.statusCode).to.equal(404)
+      expect(payload.message).to.equal('Batch not found for batchId: test-batch-id')
+    })
+  })
 
   experiment('.loadInvoice', () => {
-    let request;
+    let request
 
     beforeEach(async () => {
       request = {
         params: {
           invoiceId: 'test-invoice-id'
         }
-      };
-    });
+      }
+    })
 
     test('the invoice is returned from the handler', async () => {
-      const result = await preHandlers.loadInvoice(request);
+      const result = await preHandlers.loadInvoice(request)
       expect(result).to.equal({
         id: 'test-invoice-id'
-      });
-    });
+      })
+    })
 
     test('returns a Boom not found when the invoice is not found', async () => {
-      water.billingBatches.getBatchInvoice.rejects();
-      const result = await preHandlers.loadInvoice(request);
+      water.billingBatches.getBatchInvoice.rejects()
+      const result = await preHandlers.loadInvoice(request)
 
-      const { payload } = result.output;
-      expect(payload.statusCode).to.equal(404);
-      expect(payload.message).to.equal('Invoice not found for invoiceId: test-invoice-id');
-    });
-  });
+      const { payload } = result.output
+      expect(payload.statusCode).to.equal(404)
+      expect(payload.message).to.equal('Invoice not found for invoiceId: test-invoice-id')
+    })
+  })
 
   experiment('.checkBatchStatusIsReview', () => {
     experiment('when the batch is in review status', () => {
-      let result;
+      let result
 
       beforeEach(async () => {
         const request = {
@@ -116,17 +116,17 @@ experiment('internal/modules/billing/pre-handlers', () => {
               status: 'review'
             }
           }
-        };
-        result = await preHandlers.checkBatchStatusIsReview(request, h);
-      });
+        }
+        result = await preHandlers.checkBatchStatusIsReview(request, h)
+      })
 
       test('the pre handler returns h.continue', async () => {
-        expect(result).to.equal(h.continue);
-      });
-    });
+        expect(result).to.equal(h.continue)
+      })
+    })
 
     experiment('when the batch is not in review status', () => {
-      let result;
+      let result
 
       beforeEach(async () => {
         const request = {
@@ -135,20 +135,20 @@ experiment('internal/modules/billing/pre-handlers', () => {
               status: 'ready'
             }
           }
-        };
-        result = await preHandlers.checkBatchStatusIsReview(request, h);
-      });
+        }
+        result = await preHandlers.checkBatchStatusIsReview(request, h)
+      })
 
       test('the pre handler returns a Boom forbidden error', async () => {
-        expect(result.isBoom).to.be.true();
-        expect(result.output.statusCode).to.equal(403);
-      });
-    });
-  });
+        expect(result.isBoom).to.be.true()
+        expect(result.output.statusCode).to.equal(403)
+      })
+    })
+  })
 
   experiment('.checkBatchStatusIsReady', () => {
     experiment('when the batch is in ready status', () => {
-      let result;
+      let result
 
       beforeEach(async () => {
         const request = {
@@ -157,17 +157,17 @@ experiment('internal/modules/billing/pre-handlers', () => {
               status: 'ready'
             }
           }
-        };
-        result = await preHandlers.checkBatchStatusIsReady(request, h);
-      });
+        }
+        result = await preHandlers.checkBatchStatusIsReady(request, h)
+      })
 
       test('the pre handler returns h.continue', async () => {
-        expect(result).to.equal(h.continue);
-      });
-    });
+        expect(result).to.equal(h.continue)
+      })
+    })
 
     experiment('when the batch is not in ready status', () => {
-      let result;
+      let result
 
       beforeEach(async () => {
         const request = {
@@ -176,47 +176,47 @@ experiment('internal/modules/billing/pre-handlers', () => {
               status: 'review'
             }
           }
-        };
-        result = await preHandlers.checkBatchStatusIsReady(request, h);
-      });
+        }
+        result = await preHandlers.checkBatchStatusIsReady(request, h)
+      })
 
       test('the pre handler returns a Boom forbidden error', async () => {
-        expect(result.isBoom).to.be.true();
-        expect(result.output.statusCode).to.equal(403);
-      });
-    });
-  });
+        expect(result.isBoom).to.be.true()
+        expect(result.output.statusCode).to.equal(403)
+      })
+    })
+  })
 
   experiment('.loadInvoiceLicence', () => {
-    let request;
+    let request
 
     beforeEach(async () => {
       request = {
         params: {
           invoiceLicenceId: 'test-invoice-licence-id'
         }
-      };
-    });
+      }
+    })
 
     test('the invoice licence is returned from the handler', async () => {
-      const result = await preHandlers.loadInvoiceLicence(request);
+      const result = await preHandlers.loadInvoiceLicence(request)
       expect(result).to.equal({
         id: 'test-invoice-licence-id'
-      });
-    });
+      })
+    })
 
     test('returns a Boom not found when the batch is not found', async () => {
-      water.billingInvoiceLicences.getInvoiceLicence.rejects();
-      const result = await preHandlers.loadInvoiceLicence(request);
+      water.billingInvoiceLicences.getInvoiceLicence.rejects()
+      const result = await preHandlers.loadInvoiceLicence(request)
 
-      const { payload } = result.output;
-      expect(payload.statusCode).to.equal(404);
-      expect(payload.message).to.equal('Invoice licence not found for invoiceLicenceId: test-invoice-licence-id');
-    });
-  });
+      const { payload } = result.output
+      expect(payload.statusCode).to.equal(404)
+      expect(payload.message).to.equal('Invoice licence not found for invoiceLicenceId: test-invoice-licence-id')
+    })
+  })
 
   experiment('.loadInvoiceLicenceInvoice', () => {
-    let request;
+    let request
 
     beforeEach(async () => {
       request = {
@@ -229,28 +229,28 @@ experiment('internal/modules/billing/pre-handlers', () => {
             invoiceId: 'test-invoice-id'
           }
         }
-      };
-    });
+      }
+    })
 
     test('the invoice licence is returned from the handler', async () => {
-      const result = await preHandlers.loadInvoiceLicenceInvoice(request);
+      const result = await preHandlers.loadInvoiceLicenceInvoice(request)
       expect(result).to.equal({
         id: 'test-invoice-id'
-      });
-    });
+      })
+    })
 
     test('returns a Boom not found when the batch is not found', async () => {
-      water.billingBatches.getBatchInvoice.rejects();
-      const result = await preHandlers.loadInvoiceLicenceInvoice(request);
+      water.billingBatches.getBatchInvoice.rejects()
+      const result = await preHandlers.loadInvoiceLicenceInvoice(request)
 
-      const { payload } = result.output;
-      expect(payload.statusCode).to.equal(404);
-      expect(payload.message).to.equal('Invoice not found for invoiceLicenceId: test-invoice-licence-id');
-    });
-  });
+      const { payload } = result.output
+      expect(payload.statusCode).to.equal(404)
+      expect(payload.message).to.equal('Invoice not found for invoiceLicenceId: test-invoice-licence-id')
+    })
+  })
 
   experiment('.redirectOnBatchStatus', () => {
-    let request;
+    let request
 
     test('throws an error if the route definition does not define valid statuses', async () => {
       request = {
@@ -261,10 +261,10 @@ experiment('internal/modules/billing/pre-handlers', () => {
             }
           }
         }
-      };
-      const func = () => preHandlers.redirectOnBatchStatus(request, h);
-      expect(func()).to.reject();
-    });
+      }
+      const func = () => preHandlers.redirectOnBatchStatus(request, h)
+      expect(func()).to.reject()
+    })
 
     test('throws an error if the route definition includes invalid statuses', async () => {
       request = {
@@ -275,10 +275,10 @@ experiment('internal/modules/billing/pre-handlers', () => {
             }
           }
         }
-      };
-      const func = () => preHandlers.redirectOnBatchStatus(request, h);
-      expect(func()).to.reject();
-    });
+      }
+      const func = () => preHandlers.redirectOnBatchStatus(request, h)
+      expect(func()).to.reject()
+    })
 
     test('returns h.continue if the batch is in one of valid statuses defined on the route', async () => {
       request = {
@@ -295,10 +295,10 @@ experiment('internal/modules/billing/pre-handlers', () => {
           }
         },
         query: {}
-      };
-      const result = await preHandlers.redirectOnBatchStatus(request, h);
-      expect(result).to.equal(h.continue);
-    });
+      }
+      const result = await preHandlers.redirectOnBatchStatus(request, h)
+      expect(result).to.equal(h.continue)
+    })
 
     test('returns h.redirect if the batch is not in one of valid statuses defined on the route', async () => {
       request = {
@@ -316,17 +316,17 @@ experiment('internal/modules/billing/pre-handlers', () => {
           }
         },
         query: {}
-      };
-      await preHandlers.redirectOnBatchStatus(request, h);
+      }
+      await preHandlers.redirectOnBatchStatus(request, h)
 
-      const [path] = h.redirect.lastCall.args;
-      expect(path).to.equal('/billing/batch/test-batch-id/processing?back=1');
-      expect(h.takeover.called).to.be.true();
-    });
-  });
+      const [path] = h.redirect.lastCall.args
+      expect(path).to.equal('/billing/batch/test-batch-id/processing?back=1')
+      expect(h.takeover.called).to.be.true()
+    })
+  })
 
   experiment('.loadLicence', () => {
-    let request;
+    let request
 
     beforeEach(async () => {
       request = {
@@ -336,28 +336,28 @@ experiment('internal/modules/billing/pre-handlers', () => {
         pre: {
 
         }
-      };
-    });
+      }
+    })
 
     test('the licence is returned from the handler', async () => {
-      const result = await preHandlers.loadLicence(request);
+      const result = await preHandlers.loadLicence(request)
       expect(result).to.equal({
         id: 'test-licence-id'
-      });
-    });
+      })
+    })
 
     test('returns a Boom not found when the licence is not found', async () => {
-      water.licences.getLicenceById.rejects();
-      const result = await preHandlers.loadLicence(request);
+      water.licences.getLicenceById.rejects()
+      const result = await preHandlers.loadLicence(request)
 
-      const { payload } = result.output;
-      expect(payload.statusCode).to.equal(404);
-      expect(payload.message).to.equal('Licence not found for licenceId: test-licence-id');
-    });
-  });
+      const { payload } = result.output
+      expect(payload.statusCode).to.equal(404)
+      expect(payload.message).to.equal('Licence not found for licenceId: test-licence-id')
+    })
+  })
 
   experiment('.loadBillingVolume', () => {
-    let request;
+    let request
 
     beforeEach(async () => {
       request = {
@@ -367,23 +367,23 @@ experiment('internal/modules/billing/pre-handlers', () => {
         pre: {
 
         }
-      };
-    });
+      }
+    })
 
     test('the billing volume is returned from the handler', async () => {
-      const result = await preHandlers.loadBillingVolume(request);
+      const result = await preHandlers.loadBillingVolume(request)
       expect(result).to.equal({
         id: 'test-billing-volume-id'
-      });
-    });
+      })
+    })
 
     test('returns a Boom not found when the licence is not found', async () => {
-      water.billingVolumes.getBillingVolume.rejects();
-      const result = await preHandlers.loadBillingVolume(request);
+      water.billingVolumes.getBillingVolume.rejects()
+      const result = await preHandlers.loadBillingVolume(request)
 
-      const { payload } = result.output;
-      expect(payload.statusCode).to.equal(404);
-      expect(payload.message).to.equal('Billing volume not found for billingVolumeId: test-billing-volume-id');
-    });
-  });
-});
+      const { payload } = result.output
+      expect(payload.statusCode).to.equal(404)
+      expect(payload.message).to.equal('Billing volume not found for billingVolumeId: test-billing-volume-id')
+    })
+  })
+})

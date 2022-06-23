@@ -8,4 +8,4 @@ module.exports = {
   season: require('./season'),
   loss: require('./loss-category'),
   agreements: require('./agreements')
-};
+}

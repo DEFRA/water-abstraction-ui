@@ -1,8 +1,8 @@
-'use strict';
+'use strict'
 
-const helpers = require('@envage/water-abstraction-helpers');
-const { TWO_PART_TARIFF } = require('./bill-run-types');
-const moment = require('moment');
+const helpers = require('@envage/water-abstraction-helpers')
+const { TWO_PART_TARIFF } = require('./bill-run-types')
+const moment = require('moment')
 
 /**
  *
@@ -13,18 +13,18 @@ const moment = require('moment');
  */
 const getBatchFinancialYearEnding = (type, isSummer, refDate) => {
   if (type !== TWO_PART_TARIFF) {
-    return helpers.charging.getFinancialYear(refDate);
+    return helpers.charging.getFinancialYear(refDate)
   }
   // Find most recent cycle with matching season where due date has passed
-  const cycles = helpers.returns.date.createReturnCycles().reverse();
+  const cycles = helpers.returns.date.createReturnCycles().reverse()
   const mostRecentCycle = cycles.find(cycle => {
-    const isDueDatePast = moment(cycle.dueDate).isBefore(moment(refDate), 'day');
-    const isSeasonMatch = cycle.isSummer === isSummer;
-    return isDueDatePast && isSeasonMatch;
-  });
+    const isDueDatePast = moment(cycle.dueDate).isBefore(moment(refDate), 'day')
+    const isSeasonMatch = cycle.isSummer === isSummer
+    return isDueDatePast && isSeasonMatch
+  })
 
   // Get financial year of cycle end date
-  return helpers.charging.getFinancialYear(mostRecentCycle.endDate);
-};
+  return helpers.charging.getFinancialYear(mostRecentCycle.endDate)
+}
 
-exports.getBatchFinancialYearEnding = getBatchFinancialYearEnding;
+exports.getBatchFinancialYearEnding = getBatchFinancialYearEnding

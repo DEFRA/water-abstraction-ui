@@ -6,17 +6,17 @@ const textFactory = (name, opts = {}, value) => {
     type: opts.type || 'text',
     controlClass: 'form-control',
     autoComplete: true
-  };
+  }
   const options = {
     ...defaults,
     ...opts
-  };
+  }
   return {
     name,
     value,
     options,
     errors: []
-  };
-};
+  }
+}
 
-module.exports = textFactory;
+module.exports = textFactory

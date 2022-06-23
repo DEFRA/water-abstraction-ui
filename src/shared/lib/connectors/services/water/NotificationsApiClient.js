@@ -1,8 +1,8 @@
-const { APIClient } = require('@envage/hapi-pg-rest-api');
-const urlJoin = require('url-join');
-const { http, serviceRequest } = require('@envage/water-abstraction-helpers');
+const { APIClient } = require('@envage/hapi-pg-rest-api')
+const urlJoin = require('url-join')
+const { http, serviceRequest } = require('@envage/water-abstraction-helpers')
 
-const getEndpoint = serviceUrl => urlJoin(serviceUrl, 'notification');
+const getEndpoint = serviceUrl => urlJoin(serviceUrl, 'notification')
 
 class NotificationsApiClient extends APIClient {
   /**
@@ -11,7 +11,7 @@ class NotificationsApiClient extends APIClient {
    * @param {Object} logger The system logger object
    */
   constructor (config, logger) {
-    const serviceUrl = config.services.water;
+    const serviceUrl = config.services.water
 
     super(http.request, {
       serviceUrl,
@@ -20,7 +20,7 @@ class NotificationsApiClient extends APIClient {
       headers: {
         Authorization: config.jwt.token
       }
-    });
+    })
   }
 
   /**
@@ -28,24 +28,24 @@ class NotificationsApiClient extends APIClient {
    * @param {String} emailAddress
    */
   getLatestEmailByAddress (emailAddress) {
-    const filter = { recipient: emailAddress, message_type: 'email' };
-    const sort = { send_after: -1 };
-    const pagination = { page: 1, perPage: 1 };
-    return this.findMany(filter, sort, pagination);
+    const filter = { recipient: emailAddress, message_type: 'email' }
+    const sort = { send_after: -1 }
+    const pagination = { page: 1, perPage: 1 }
+    return this.findMany(filter, sort, pagination)
   };
 
   async sendNotifyMessage (messageRef, recipient, personalisation) {
-    const url = urlJoin(this.config.serviceUrl, 'notify', messageRef);
-    const body = { recipient, personalisation };
+    const url = urlJoin(this.config.serviceUrl, 'notify', messageRef)
+    const body = { recipient, personalisation }
 
     try {
-      const response = await serviceRequest.post(url, { body });
-      return response.body;
+      const response = await serviceRequest.post(url, { body })
+      return response.body
     } catch (err) {
-      this.logger.error('Error sending notify message', { error: err });
-      return err;
+      this.logger.error('Error sending notify message', { error: err })
+      return err
     };
   }
 };
 
-module.exports = NotificationsApiClient;
+module.exports = NotificationsApiClient

@@ -1,44 +1,44 @@
-'use strict';
+'use strict'
 
-const { v4: uuid } = require('uuid');
-const { expect } = require('@hapi/code');
-const { experiment, test } = exports.lab = require('@hapi/lab').script();
+const { v4: uuid } = require('uuid')
+const { expect } = require('@hapi/code')
+const { experiment, test } = exports.lab = require('@hapi/lab').script()
 
-const { selectBillingTypeForm, billingTypeFormSchema } = require('internal/modules/billing/forms/billing-type');
-const { findField, findButton } = require('../../../../lib/form-test');
+const { selectBillingTypeForm, billingTypeFormSchema } = require('internal/modules/billing/forms/billing-type')
+const { findField, findButton } = require('../../../../lib/form-test')
 
 const createRequest = () => ({
   view: {
     csrfToken: 'token'
   }
-});
+})
 
-const { ANNUAL, SUPPLEMENTARY, TWO_PART_TARIFF } = require('internal/modules/billing/lib/bill-run-types');
+const { ANNUAL, SUPPLEMENTARY, TWO_PART_TARIFF } = require('internal/modules/billing/lib/bill-run-types')
 
 experiment('billing/forms/billing-type form', () => {
   test('sets the form method to POST', async () => {
-    const form = selectBillingTypeForm(createRequest());
-    expect(form.method).to.equal('POST');
-  });
+    const form = selectBillingTypeForm(createRequest())
+    expect(form.method).to.equal('POST')
+  })
 
   test('has CSRF token field', async () => {
-    const form = selectBillingTypeForm(createRequest());
-    const csrf = findField(form, 'csrf_token');
-    expect(csrf.value).to.equal('token');
-  });
+    const form = selectBillingTypeForm(createRequest())
+    const csrf = findField(form, 'csrf_token')
+    expect(csrf.value).to.equal('token')
+  })
 
   test('has a billing type field', async () => {
-    const form = selectBillingTypeForm(createRequest());
-    const billingType = findField(form, 'selectedBillingType');
-    expect(billingType).to.exist();
-  });
+    const form = selectBillingTypeForm(createRequest())
+    const billingType = findField(form, 'selectedBillingType')
+    expect(billingType).to.exist()
+  })
 
   test('has a submit button', async () => {
-    const form = selectBillingTypeForm(createRequest());
-    const button = findButton(form);
-    expect(button.options.label).to.equal('Continue');
-  });
-});
+    const form = selectBillingTypeForm(createRequest())
+    const button = findButton(form)
+    expect(button.options.label).to.equal('Continue')
+  })
+})
 
 experiment('billing/forms/billing-type schema', () => {
   experiment('csrf token', () => {
@@ -46,75 +46,75 @@ experiment('billing/forms/billing-type schema', () => {
       const result = billingTypeFormSchema(createRequest()).validate({
         csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
         selectedBillingType: 'annual'
-      });
-      expect(result.error).to.be.undefined();
-    });
+      })
+      expect(result.error).to.be.undefined()
+    })
 
     test('fails for a string that is not a uuid', async () => {
       const result = billingTypeFormSchema(createRequest()).validate({
         csrf_token: 'potato',
         selectedBillingType: 'annual'
-      });
-      expect(result.error).to.exist();
-    });
-  });
+      })
+      expect(result.error).to.exist()
+    })
+  })
 
   experiment('billing type', () => {
     test('It should only allow valid billing types in the water service', async () => {
-      const result = billingTypeFormSchema(createRequest()).describe();
-      expect(result.keys.selectedBillingType.allow).to.equal([ANNUAL, SUPPLEMENTARY, TWO_PART_TARIFF]);
-    });
+      const result = billingTypeFormSchema(createRequest()).describe()
+      expect(result.keys.selectedBillingType.allow).to.equal([ANNUAL, SUPPLEMENTARY, TWO_PART_TARIFF])
+    })
 
     test('fails if blank', async () => {
       const result = billingTypeFormSchema(createRequest()).validate({
         csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
         selectedBillingType: null
-      });
-      expect(result.error).to.exist();
-    });
-  });
+      })
+      expect(result.error).to.exist()
+    })
+  })
 
   experiment('twoPartTariffSeason', () => {
     test('is not required for an annual bill run', async () => {
       const data = {
         csrf_token: uuid(),
         selectedBillingType: ANNUAL
-      };
+      }
 
-      const result = billingTypeFormSchema().validate(data);
-      expect(result.error).not.to.exist();
-    });
+      const result = billingTypeFormSchema().validate(data)
+      expect(result.error).not.to.exist()
+    })
 
     test('is valid if a season is selected', async () => {
       const data = {
         csrf_token: uuid(),
         selectedBillingType: TWO_PART_TARIFF,
         twoPartTariffSeason: 'summer'
-      };
+      }
 
-      const result = billingTypeFormSchema().validate(data);
-      expect(result.error).not.to.exist();
-    });
+      const result = billingTypeFormSchema().validate(data)
+      expect(result.error).not.to.exist()
+    })
 
     test('fails if no season is selected', async () => {
       const data = {
         csrf_token: uuid(),
         selectedBillingType: TWO_PART_TARIFF
-      };
+      }
 
-      const result = billingTypeFormSchema().validate(data);
-      expect(result.error).to.exist();
-    });
+      const result = billingTypeFormSchema().validate(data)
+      expect(result.error).to.exist()
+    })
 
     test('fails if season is unexpected value', async () => {
       const data = {
         csrf_token: uuid(),
         selectedBillingType: TWO_PART_TARIFF,
         twoPartTariffSeason: 'spring'
-      };
+      }
 
-      const result = billingTypeFormSchema().validate(data);
-      expect(result.error).to.exist();
-    });
-  });
-});
+      const result = billingTypeFormSchema().validate(data)
+      expect(result.error).to.exist()
+    })
+  })
+})

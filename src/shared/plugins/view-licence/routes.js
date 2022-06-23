@@ -1,9 +1,9 @@
-'use strict';
+'use strict'
 
-const { cloneDeep, set } = require('lodash');
-const Joi = require('joi');
-const controller = require('./controller');
-const { VALID_GUID, VALID_GAUGING_STATION } = require('shared/lib/validators');
+const { cloneDeep, set } = require('lodash')
+const Joi = require('joi')
+const controller = require('./controller')
+const { VALID_GUID, VALID_GAUGING_STATION } = require('shared/lib/validators')
 
 const allRoutes = {
   getLicence: {
@@ -185,16 +185,16 @@ const allRoutes = {
       }
     }
   }
-};
+}
 
 module.exports = (allowedScopes, isSummaryPageEnabled) => {
-  const routes = cloneDeep(allRoutes);
+  const routes = cloneDeep(allRoutes)
 
   if (!isSummaryPageEnabled) {
-    delete routes.getLicence;
+    delete routes.getLicence
   }
 
   return Object.values(routes).map(route =>
     set(route, 'config.auth.scope', allowedScopes)
-  );
-};
+  )
+}

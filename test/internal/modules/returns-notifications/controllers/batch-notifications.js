@@ -1,46 +1,46 @@
-'use strict';
+'use strict'
 
-const { expect } = require('@hapi/code');
+const { expect } = require('@hapi/code')
 const {
   beforeEach,
   afterEach,
   experiment,
   test
-} = exports.lab = require('@hapi/lab').script();
+} = exports.lab = require('@hapi/lab').script()
 
-const sinon = require('sinon');
-const sandbox = sinon.createSandbox();
+const sinon = require('sinon')
+const sandbox = sinon.createSandbox()
 
-const controller = require('internal/modules/returns-notifications/controllers/batch-notifications');
-const services = require('internal/lib/connectors/services');
+const controller = require('internal/modules/returns-notifications/controllers/batch-notifications')
+const services = require('internal/lib/connectors/services')
 
 experiment('getReturnsNotificationsStart', () => {
-  let request;
-  let h;
+  let request
+  let h
 
   beforeEach(async () => {
     request = {
       view: {
         path: '/returns-notifications/reminders'
       }
-    };
+    }
 
     h = {
       view: sandbox.spy()
-    };
+    }
 
-    await controller.getReturnsNotificationsStart(request, h);
-  });
+    await controller.getReturnsNotificationsStart(request, h)
+  })
 
   test('the expected view template is used', async () => {
-    const [templateName] = h.view.lastCall.args;
-    expect(templateName).to.equal('nunjucks/returns-notifications/notifications');
-  });
+    const [templateName] = h.view.lastCall.args
+    expect(templateName).to.equal('nunjucks/returns-notifications/notifications')
+  })
 
   test('view context is assigned a back link path', async () => {
-    const [, view] = h.view.lastCall.args;
-    expect(view.back).to.equal('/notifications');
-  });
+    const [, view] = h.view.lastCall.args
+    expect(view.back).to.equal('/notifications')
+  })
 
   experiment('Return Reminders', () => {
     beforeEach(async () => {
@@ -48,56 +48,56 @@ experiment('getReturnsNotificationsStart', () => {
         view: {
           path: '/returns-notifications/reminders'
         }
-      };
+      }
 
       h = {
         view: sandbox.spy()
-      };
+      }
 
-      await controller.getReturnsNotificationsStart(request, h);
-    });
+      await controller.getReturnsNotificationsStart(request, h)
+    })
 
     test('view context is assigned a form', async () => {
-      const [, view] = h.view.lastCall.args;
-      expect(view.form.action).to.equal('/returns-notifications/reminders');
-    });
-  });
+      const [, view] = h.view.lastCall.args
+      expect(view.form.action).to.equal('/returns-notifications/reminders')
+    })
+  })
 
   experiment('Return Invitations', () => {
-    let request;
-    let h;
+    let request
+    let h
 
     beforeEach(async () => {
       request = {
         view: {
           path: '/returns-notifications/invitations'
         }
-      };
+      }
 
       h = {
         view: sandbox.spy()
-      };
+      }
 
-      await controller.getReturnsNotificationsStart(request, h);
-    });
+      await controller.getReturnsNotificationsStart(request, h)
+    })
 
     test('view context is assigned a form', async () => {
-      const [, view] = h.view.lastCall.args;
-      expect(view.form.action).to.equal('/returns-notifications/invitations');
-    });
-  });
-});
+      const [, view] = h.view.lastCall.args
+      expect(view.form.action).to.equal('/returns-notifications/invitations')
+    })
+  })
+})
 
 experiment('postReturnsNotificationsStart', () => {
-  let request;
-  let h;
-  let username;
+  let request
+  let h
+  let username
 
   beforeEach(async () => {
-    username = 'test@example.com';
+    username = 'test@example.com'
     h = {
       redirect: sandbox.spy()
-    };
+    }
 
     request = {
       view: {
@@ -115,41 +115,41 @@ experiment('postReturnsNotificationsStart', () => {
       payload: {
         excludeLicences: '123\n456'
       }
-    };
+    }
 
     sandbox.stub(services.water.batchNotifications, 'prepareReturnsReminders').resolves({
       data: {
         id: 'test-event-id'
       }
-    });
+    })
 
     sandbox.stub(services.water.batchNotifications, 'prepareReturnsInvitations').resolves({
       data: {
         id: 'test-event-id'
       }
-    });
-  });
+    })
+  })
 
   afterEach(async () => {
-    sandbox.restore();
-  });
+    sandbox.restore()
+  })
   test('the username is used as the notification issuer', async () => {
-    await controller.postReturnsNotificationsStart(request, h);
-    const [issuer] = services.water.batchNotifications.prepareReturnsReminders.lastCall.args;
-    expect(issuer).to.equal(username);
-  });
+    await controller.postReturnsNotificationsStart(request, h)
+    const [issuer] = services.water.batchNotifications.prepareReturnsReminders.lastCall.args
+    expect(issuer).to.equal(username)
+  })
 
   test('the excluded licences are passed as csv', async () => {
-    await controller.postReturnsNotificationsStart(request, h);
-    const [, excludeLicences] = services.water.batchNotifications.prepareReturnsReminders.lastCall.args;
-    expect(excludeLicences).to.equal(['123', '456']);
-  });
+    await controller.postReturnsNotificationsStart(request, h)
+    const [, excludeLicences] = services.water.batchNotifications.prepareReturnsReminders.lastCall.args
+    expect(excludeLicences).to.equal(['123', '456'])
+  })
 
   test('the user is redirected to the event waiting page', async () => {
-    await controller.postReturnsNotificationsStart(request, h);
-    const [url] = h.redirect.lastCall.args;
-    expect(url).to.equal('/waiting/test-event-id');
-  });
+    await controller.postReturnsNotificationsStart(request, h)
+    const [url] = h.redirect.lastCall.args
+    expect(url).to.equal('/waiting/test-event-id')
+  })
 
   experiment('Return Reminders', () => {
     beforeEach(async () => {
@@ -169,19 +169,19 @@ experiment('postReturnsNotificationsStart', () => {
         payload: {
           excludeLicences: '123\n456'
         }
-      };
-    });
+      }
+    })
 
     afterEach(async () => {
-      sandbox.restore();
-    });
+      sandbox.restore()
+    })
 
     test('the returnReminder connector is called', async () => {
-      await controller.postReturnsNotificationsStart(request, h);
-      const previouslyCalled = services.water.batchNotifications.prepareReturnsReminders.calledWith(username, ['123', '456']);
-      expect(previouslyCalled).to.be.true();
-    });
-  });
+      await controller.postReturnsNotificationsStart(request, h)
+      const previouslyCalled = services.water.batchNotifications.prepareReturnsReminders.calledWith(username, ['123', '456'])
+      expect(previouslyCalled).to.be.true()
+    })
+  })
 
   experiment('Return Reminders', () => {
     beforeEach(async () => {
@@ -201,17 +201,17 @@ experiment('postReturnsNotificationsStart', () => {
         payload: {
           excludeLicences: '123\n456'
         }
-      };
-    });
+      }
+    })
 
     afterEach(async () => {
-      sandbox.restore();
-    });
+      sandbox.restore()
+    })
 
     test('the returnInvitations connector is called', async () => {
-      await controller.postReturnsNotificationsStart(request, h);
-      const previouslyCalled = services.water.batchNotifications.prepareReturnsInvitations.calledWith(username, ['123', '456']);
-      expect(previouslyCalled).to.be.true();
-    });
-  });
-});
+      await controller.postReturnsNotificationsStart(request, h)
+      const previouslyCalled = services.water.batchNotifications.prepareReturnsInvitations.calledWith(username, ['123', '456'])
+      expect(previouslyCalled).to.be.true()
+    })
+  })
+})

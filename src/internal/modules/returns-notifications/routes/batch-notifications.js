@@ -1,8 +1,8 @@
-'use strict';
+'use strict'
 
-const controller = require('../controllers/batch-notifications');
-const constants = require('../../../lib/constants');
-const { bulkReturnNotifications } = constants.scope;
+const controller = require('../controllers/batch-notifications')
+const constants = require('../../../lib/constants')
+const { bulkReturnNotifications } = constants.scope
 
 module.exports = {
   getReturnsReminderStart: {
@@ -73,4 +73,4 @@ module.exports = {
     handler: controller.postReturnsNotificationsStart
   }
 
-};
+}

@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
-const { isFinite } = require('lodash');
-const commaNumber = require('comma-number');
+const { isFinite } = require('lodash')
+const commaNumber = require('comma-number')
 
 /**
  * Reduces the supplied number to fixed precision, given the number
@@ -13,16 +13,16 @@ const commaNumber = require('comma-number');
  */
 const maxPrecision = (number, decimalPlaces) => {
   if (typeof (number) !== 'number') {
-    return number;
+    return number
   }
 
   for (let i = 0; i < decimalPlaces; i++) {
     if (parseFloat(number.toFixed(decimalPlaces)) === parseFloat(number.toFixed(i))) {
-      return number.toFixed(i);
+      return number.toFixed(i)
     }
   }
-  return number.toFixed(decimalPlaces);
-};
+  return number.toFixed(decimalPlaces)
+}
 
 /**
  * Moves the decimal 2 spaces left for a number and
@@ -33,17 +33,17 @@ const maxPrecision = (number, decimalPlaces) => {
  * @return {String}
  */
 const penceToPound = (number, isSigned = false, showCurrency = false) => {
-  const parsedNumber = parseFloat(number);
+  const parsedNumber = parseFloat(number)
 
   if (!isFinite(parsedNumber)) {
-    return number;
+    return number
   }
 
-  const sign = parsedNumber < 0 && isSigned ? '-' : '';
-  const value = (Math.abs(number) / 100).toFixed(2);
-  const currencySymbol = showCurrency ? '£' : '';
-  return `${sign}${currencySymbol}${commaNumber(value)}`;
-};
+  const sign = parsedNumber < 0 && isSigned ? '-' : ''
+  const value = (Math.abs(number) / 100).toFixed(2)
+  const currencySymbol = showCurrency ? '£' : ''
+  return `${sign}${currencySymbol}${commaNumber(value)}`
+}
 
-exports.penceToPound = penceToPound;
-exports.maxPrecision = maxPrecision;
+exports.penceToPound = penceToPound
+exports.maxPrecision = maxPrecision

@@ -1,4 +1,4 @@
-const filters = require('./filters');
+const filters = require('./filters')
 
 /**
  * Adds filters to supplied nunjucks environment
@@ -7,12 +7,12 @@ const filters = require('./filters');
  */
 const addFilters = (env) => {
   for (const key in filters) {
-    env.addFilter(key, filters[key]);
+    env.addFilter(key, filters[key])
   }
 
-  return env;
-};
+  return env
+}
 
 module.exports = {
   addFilters
-};
+}

@@ -1,11 +1,11 @@
-const Joi = require('joi');
-const controller = require('./controller');
-const preHandlers = require('./lib/pre-handlers');
-const { VALID_GUID } = require('shared/lib/validators');
-const constants = require('../../lib/constants');
-const { allNotifications } = constants.scope;
+const Joi = require('joi')
+const controller = require('./controller')
+const preHandlers = require('./lib/pre-handlers')
+const { VALID_GUID } = require('shared/lib/validators')
+const constants = require('../../lib/constants')
+const { allNotifications } = constants.scope
 
-const pageTitle = 'Notification report';
+const pageTitle = 'Notification report'
 
 module.exports = {
 
@@ -78,4 +78,4 @@ module.exports = {
       }
     }
   }
-};
+}

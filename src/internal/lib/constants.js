@@ -1,20 +1,20 @@
-'use strict';
+'use strict'
 
-const SCOPE_RETURNS = 'returns';
-const SCOPE_BULK_RETURNS_NOTIFICATIONS = 'bulk_return_notifications';
-const SCOPE_ABSTRACTION_REFORM_USER = 'ar_user';
-const SCOPE_ABSTRACTION_REFORM_APPROVER = 'ar_approver';
-const SCOPE_HOF_NOTIFICATIONS = 'hof_notifications';
-const SCOPE_RENEWAL_NOTIFICATIONS = 'renewal_notifications';
-const SCOPE_MANAGE_ACCOUNTS = 'manage_accounts';
-const SCOPE_BILLING = 'billing';
-const SCOPE_DELETE_AGREEMENTS = 'delete_agreements';
-const SCOPE_MANAGE_AGREEMENTS = 'manage_agreements';
-const SCOPE_CHARGE_VERSION_WORKFLOW_REVIEWER = 'charge_version_workflow_reviewer';
-const SCOPE_CHARGE_VERSION_WORKFLOW_EDITOR = 'charge_version_workflow_editor';
-const SCOPE_MANAGE_BILLING_ACCOUNTS = 'manage_billing_accounts';
-const SCOPE_VIEW_CHARGE_VERSIONS = 'view_charge_versions';
-const SCOPE_MANAGE_GAUGING_STATION_LICENCE_LINKS = 'manage_gauging_station_licence_links';
+const SCOPE_RETURNS = 'returns'
+const SCOPE_BULK_RETURNS_NOTIFICATIONS = 'bulk_return_notifications'
+const SCOPE_ABSTRACTION_REFORM_USER = 'ar_user'
+const SCOPE_ABSTRACTION_REFORM_APPROVER = 'ar_approver'
+const SCOPE_HOF_NOTIFICATIONS = 'hof_notifications'
+const SCOPE_RENEWAL_NOTIFICATIONS = 'renewal_notifications'
+const SCOPE_MANAGE_ACCOUNTS = 'manage_accounts'
+const SCOPE_BILLING = 'billing'
+const SCOPE_DELETE_AGREEMENTS = 'delete_agreements'
+const SCOPE_MANAGE_AGREEMENTS = 'manage_agreements'
+const SCOPE_CHARGE_VERSION_WORKFLOW_REVIEWER = 'charge_version_workflow_reviewer'
+const SCOPE_CHARGE_VERSION_WORKFLOW_EDITOR = 'charge_version_workflow_editor'
+const SCOPE_MANAGE_BILLING_ACCOUNTS = 'manage_billing_accounts'
+const SCOPE_VIEW_CHARGE_VERSIONS = 'view_charge_versions'
+const SCOPE_MANAGE_GAUGING_STATION_LICENCE_LINKS = 'manage_gauging_station_licence_links'
 
 module.exports = {
   scope: {
@@ -49,4 +49,4 @@ module.exports = {
     viewChargeVersions: SCOPE_VIEW_CHARGE_VERSIONS,
     manageGaugingStationLicenceLinks: SCOPE_MANAGE_GAUGING_STATION_LICENCE_LINKS
   }
-};
+}

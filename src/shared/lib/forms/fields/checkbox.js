@@ -4,17 +4,17 @@ const factory = (name, opts = {}, value) => {
     widget: 'checkbox',
     checked: false,
     mapper: 'arrayMapper'
-  };
+  }
   const options = {
     ...defaults,
     ...opts
-  };
+  }
   return {
     name,
     value,
     options,
     errors: []
-  };
-};
+  }
+}
 
-module.exports = factory;
+module.exports = factory

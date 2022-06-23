@@ -1,8 +1,8 @@
-const Joi = require('joi');
-const { get } = require('lodash');
-const { formFactory, fields, setValues } = require('shared/lib/forms');
+const Joi = require('joi')
+const { get } = require('lodash')
+const { formFactory, fields, setValues } = require('shared/lib/forms')
 const { getContinueField, getCsrfTokenField, getSuffix } =
- require('shared/modules/returns/forms/common');
+ require('shared/modules/returns/forms/common')
 
 const getRadioField = suffix => fields.radio('isSingleTotal', {
   label: 'Is it a single volume?',
@@ -37,10 +37,10 @@ const getRadioField = suffix => fields.radio('isSingleTotal', {
     },
     { value: false, label: 'No' }
   ]
-});
+})
 
 exports.form = (request, data) => {
-  const suffix = getSuffix(data.reading.units);
+  const suffix = getSuffix(data.reading.units)
 
   const form = {
     ...formFactory(),
@@ -49,13 +49,13 @@ exports.form = (request, data) => {
       getCsrfTokenField(request),
       getContinueField()
     ]
-  };
+  }
 
-  const isSingleTotal = get(data, 'reading.totalFlag');
-  const total = get(data, 'reading.total');
+  const isSingleTotal = get(data, 'reading.totalFlag')
+  const total = get(data, 'reading.total')
 
-  return setValues(form, { isSingleTotal, total });
-};
+  return setValues(form, { isSingleTotal, total })
+}
 
 exports.schema = () => Joi.object().keys({
   isSingleTotal: Joi.boolean().required(),
@@ -65,4 +65,4 @@ exports.schema = () => Joi.object().keys({
     otherwise: Joi.any().default(null)
   }),
   csrf_token: Joi.string().guid().required()
-});
+})

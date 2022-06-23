@@ -1,7 +1,7 @@
-const controller = require('./controller');
-const constants = require('../../lib/constants');
-const Joi = require('joi');
-const returns = constants.scope.returns;
+const controller = require('./controller')
+const constants = require('../../lib/constants')
+const Joi = require('joi')
+const returns = constants.scope.returns
 
 module.exports = {
 
@@ -81,4 +81,4 @@ module.exports = {
     },
     handler: controller.getConfirmation
   }
-};
+}

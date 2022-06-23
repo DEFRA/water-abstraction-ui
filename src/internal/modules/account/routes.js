@@ -1,5 +1,5 @@
-const controller = require('./controller');
-const Joi = require('joi');
+const controller = require('./controller')
+const Joi = require('joi')
 
 module.exports = {
   getCreateAccount: {
@@ -144,4 +144,4 @@ module.exports = {
       }
     }
   }
-};
+}

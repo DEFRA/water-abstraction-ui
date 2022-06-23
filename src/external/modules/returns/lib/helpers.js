@@ -1,18 +1,18 @@
-'use strict';
+'use strict'
 
-const Boom = require('@hapi/boom');
-const moment = require('moment');
-const { get, isObject, last } = require('lodash');
+const Boom = require('@hapi/boom')
+const moment = require('moment')
+const { get, isObject, last } = require('lodash')
 
-const config = require('../../../config');
-const services = require('../../../lib/connectors/services');
+const config = require('../../../config')
+const services = require('../../../lib/connectors/services')
 
-const { getReturnPath } = require('external/lib/return-path');
-const { throwIfError } = require('@envage/hapi-pg-rest-api');
-const permissions = require('external/lib/permissions');
-const helpers = require('@envage/water-abstraction-helpers');
-const badge = require('shared/lib/returns/badge');
-const dates = require('shared/lib/returns/dates');
+const { getReturnPath } = require('external/lib/return-path')
+const { throwIfError } = require('@envage/hapi-pg-rest-api')
+const permissions = require('external/lib/permissions')
+const helpers = require('@envage/water-abstraction-helpers')
+const badge = require('shared/lib/returns/badge')
+const dates = require('shared/lib/returns/dates')
 
 /**
  * Gets the current return cycle object
@@ -20,8 +20,8 @@ const dates = require('shared/lib/returns/dates');
  * @return {Object}      { startDate, endDate, isSummer }
  */
 const getCurrentCycle = (date) => {
-  return last(helpers.returns.date.createReturnCycles(undefined, date));
-};
+  return last(helpers.returns.date.createReturnCycles(undefined, date))
+}
 
 /**
  * Gets all licences from the CRM that can be viewed by the supplied entity ID
@@ -33,13 +33,13 @@ const getNewTaggingLicenceNumbers = (request, filter = {}) => {
   const f = Object.assign({}, filter, {
     regime_entity_id: config.crm.regimes.water.entityId,
     company_entity_id: get(request, 'defra.companyId')
-  });
+  })
 
-  const sort = {};
-  const columns = ['system_external_id', 'document_name', 'document_id', 'metadata'];
+  const sort = {}
+  const columns = ['system_external_id', 'document_name', 'document_id', 'metadata']
 
-  return services.crm.documents.findAll(f, sort, columns);
-};
+  return services.crm.documents.findAll(f, sort, columns)
+}
 
 /**
  * Gets the filter to use for retrieving licences from returns service
@@ -47,7 +47,7 @@ const getNewTaggingLicenceNumbers = (request, filter = {}) => {
  * @return {Object} filter
  */
 const getLicenceReturnsFilter = licenceNumbers => {
-  const showFutureReturns = get(config, 'returns.showFutureReturns', false);
+  const showFutureReturns = get(config, 'returns.showFutureReturns', false)
 
   const filter = {
     regime: 'water',
@@ -62,18 +62,18 @@ const getLicenceReturnsFilter = licenceNumbers => {
     status: {
       $ne: 'void'
     }
-  };
+  }
 
   // External users on production-like environments can only view returns where
   // return cycle is in the past
   if (!showFutureReturns) {
     filter.end_date = {
       $lte: moment().format('YYYY-MM-DD')
-    };
+    }
   }
 
-  return filter;
-};
+  return filter
+}
 
 /**
  * Get the returns for a list of licence numbers
@@ -81,32 +81,32 @@ const getLicenceReturnsFilter = licenceNumbers => {
  * @return {Promise} resolves with returns
  */
 const getLicenceReturns = async (licenceNumbers, page = 1) => {
-  const filter = getLicenceReturnsFilter(licenceNumbers);
+  const filter = getLicenceReturnsFilter(licenceNumbers)
 
   const sort = {
     start_date: -1,
     licence_ref: 1
-  };
+  }
 
   const columns = [
     'return_id', 'licence_ref', 'start_date', 'end_date', 'metadata',
     'status', 'received_date', 'due_date', 'return_requirement'
-  ];
+  ]
 
   const requestPagination = isObject(page)
     ? page
     : {
-      page,
-      perPage: 50
-    };
+        page,
+        perPage: 50
+      }
 
-  const { data, error, pagination } = await services.returns.returns.findMany(filter, sort, requestPagination, columns);
+  const { data, error, pagination } = await services.returns.returns.findMany(filter, sort, requestPagination, columns)
   if (error) {
-    throw Boom.badImplementation('Returns error', error);
+    throw Boom.badImplementation('Returns error', error)
   }
 
-  return { data, pagination };
-};
+  return { data, pagination }
+}
 
 /**
  * Checks whether user uses bulk Upload for a list of licence numbers
@@ -115,7 +115,7 @@ const getLicenceReturns = async (licenceNumbers, page = 1) => {
  * @return {Promise<boolean>} if user has bulk Upload functionality
  */
 const isBulkUpload = async (licenceNumbers, refDate) => {
-  const cycle = getCurrentCycle(refDate);
+  const cycle = getCurrentCycle(refDate)
 
   const filter = {
     'metadata->>isUpload': 'true',
@@ -128,16 +128,16 @@ const isBulkUpload = async (licenceNumbers, refDate) => {
       $lte: cycle.endDate
     },
     licence_ref: { $in: licenceNumbers }
-  };
+  }
 
-  const requestPagination = { page: 1, perPage: 1 };
-  const columns = ['return_id'];
+  const requestPagination = { page: 1, perPage: 1 }
+  const columns = ['return_id']
 
-  const { error, pagination } = await services.returns.returns.findMany(filter, {}, requestPagination, columns);
-  throwIfError(error);
+  const { error, pagination } = await services.returns.returns.findMany(filter, {}, requestPagination, columns)
+  throwIfError(error)
 
-  return pagination.totalRows > 0;
-};
+  return pagination.totalRows > 0
+}
 
 /**
  * Groups and sorts returns by year descending
@@ -146,19 +146,19 @@ const isBulkUpload = async (licenceNumbers, refDate) => {
  */
 const groupReturnsByYear = (data) => {
   const grouped = data.reduce((acc, row) => {
-    const year = parseInt(row.end_date.substr(0, 4));
+    const year = parseInt(row.end_date.substr(0, 4))
     if (!(year in acc)) {
       acc[year] = {
         year,
         returns: []
-      };
+      }
     }
-    acc[year].returns.push(row);
-    return acc;
-  }, {});
+    acc[year].returns.push(row)
+    return acc
+  }, {})
 
-  return Object.values(grouped).reverse();
-};
+  return Object.values(grouped).reverse()
+}
 
 /**
  * Merges returns data with licence names
@@ -171,24 +171,24 @@ const mergeReturnsAndLicenceNames = (returnsData, documents) => {
     return {
       ...acc,
       [row.system_external_id]: row.document_name
-    };
-  }, {});
+    }
+  }, {})
   return returnsData.map(row => {
     return {
       ...row,
       licenceName: map[row.licence_ref]
-    };
-  });
-};
+    }
+  })
+}
 
 const mapReturnRow = (row, request) => {
-  const isPastDueDate = dates.isReturnPastDueDate(row);
+  const isPastDueDate = dates.isReturnPastDueDate(row)
   return {
     ...row,
     badge: badge.getBadge(row.status, isPastDueDate),
     ...getReturnPath(row, request)
-  };
-};
+  }
+}
 
 /**
  * Adds some flags to the returns to help with view rendering
@@ -204,8 +204,8 @@ const mapReturnRow = (row, request) => {
  * @return {Array} returns with isEditable flag added
  */
 const mapReturns = (returns, request) => {
-  return returns.map(row => mapReturnRow(row, request));
-};
+  return returns.map(row => mapReturnRow(row, request))
+}
 
 /**
  * Gets data to display in returns list view
@@ -217,17 +217,17 @@ const mapReturns = (returns, request) => {
  * @return {Promise} resolves with list view data
  */
 const getReturnsViewData = async (request) => {
-  const { page } = request.query;
-  const { documentId } = request.params;
+  const { page } = request.query
+  const { documentId } = request.params
 
   // Get documents from CRM
-  const filter = documentId ? { document_id: documentId } : {};
+  const filter = documentId ? { document_id: documentId } : {}
 
-  const documents = await getNewTaggingLicenceNumbers(request, filter);
-  const licenceNumbers = documents.map(row => row.system_external_id);
+  const documents = await getNewTaggingLicenceNumbers(request, filter)
+  const licenceNumbers = documents.map(row => row.system_external_id)
 
-  const bulkUpload = await isBulkUpload(licenceNumbers);
-  const externalReturns = permissions.isReturnsUser(request);
+  const bulkUpload = await isBulkUpload(licenceNumbers)
+  const externalReturns = permissions.isReturnsUser(request)
 
   const view = {
     ...request.view,
@@ -235,23 +235,23 @@ const getReturnsViewData = async (request) => {
     document: documentId ? documents[0] : null,
     bulkUpload: bulkUpload && externalReturns,
     returns: []
-  };
-
-  if (licenceNumbers.length) {
-    const { data, pagination } = await getLicenceReturns(licenceNumbers, page);
-    const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(mapReturns(data, request), documents));
-
-    view.pagination = pagination;
-    view.returns = returns;
   }
 
-  return view;
-};
+  if (licenceNumbers.length) {
+    const { data, pagination } = await getLicenceReturns(licenceNumbers, page)
+    const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(mapReturns(data, request), documents))
 
-exports.getNewTaggingLicenceNumbers = getNewTaggingLicenceNumbers;
-exports.getLicenceReturns = getLicenceReturns;
-exports.isBulkUpload = isBulkUpload;
-exports.groupReturnsByYear = groupReturnsByYear;
-exports.mergeReturnsAndLicenceNames = mergeReturnsAndLicenceNames;
-exports.getReturnsViewData = getReturnsViewData;
-exports.mapReturns = mapReturns;
+    view.pagination = pagination
+    view.returns = returns
+  }
+
+  return view
+}
+
+exports.getNewTaggingLicenceNumbers = getNewTaggingLicenceNumbers
+exports.getLicenceReturns = getLicenceReturns
+exports.isBulkUpload = isBulkUpload
+exports.groupReturnsByYear = groupReturnsByYear
+exports.mergeReturnsAndLicenceNames = mergeReturnsAndLicenceNames
+exports.getReturnsViewData = getReturnsViewData
+exports.mapReturns = mapReturns

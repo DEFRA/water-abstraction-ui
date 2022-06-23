@@ -1,14 +1,14 @@
-'use strict';
+'use strict'
 
-const { VALID_GUID } = require('shared/lib/validators');
+const { VALID_GUID } = require('shared/lib/validators')
 
-const controller = require('../controllers/paper-forms');
-const preHandlers = require('../pre-handlers');
-const eventPreHandlers = require('shared/lib/pre-handlers/events');
-const constants = require('../../../lib/constants');
-const { returns } = constants.scope;
-const { createFormRoutes } = require('shared/lib/route-helpers');
-const Joi = require('joi');
+const controller = require('../controllers/paper-forms')
+const preHandlers = require('../pre-handlers')
+const eventPreHandlers = require('shared/lib/pre-handlers/events')
+const constants = require('../../../lib/constants')
+const { returns } = constants.scope
+const { createFormRoutes } = require('shared/lib/route-helpers')
+const Joi = require('joi')
 
 const formRoutes = {
   enterLicenceNumber: {
@@ -139,7 +139,7 @@ const formRoutes = {
     }
   }
 
-};
+}
 
 module.exports = {
 
@@ -182,4 +182,4 @@ module.exports = {
     },
     handler: controller.getSend
   }
-};
+}

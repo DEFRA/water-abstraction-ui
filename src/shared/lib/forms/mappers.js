@@ -1,46 +1,46 @@
-'use strict';
+'use strict'
 
-const { trim, isArray, isUndefined, negate, find, identity } = require('lodash');
-const moment = require('moment');
-const isDefined = negate(isUndefined);
-const { extractLicenceNumbers } = require('../licence-helpers');
+const { trim, isArray, isUndefined, negate, find, identity } = require('lodash')
+const moment = require('moment')
+const isDefined = negate(isUndefined)
+const { extractLicenceNumbers } = require('../licence-helpers')
 
 /**
  * Default mapper - simply extracts the value of the named field
  */
 const defaultMapper = {
   import: (fieldName, payload) => {
-    return payload[fieldName];
+    return payload[fieldName]
   },
   export: identity,
   postValidate: identity
-};
+}
 
 /**
  * Boolean mapper - maps a boolean value to a string 'true' or 'false'
  */
 const booleanMapper = {
   import: (fieldName, payload) => {
-    const value = payload[fieldName];
+    const value = payload[fieldName]
     if (value === 'true') {
-      return true;
+      return true
     }
     if (value === 'false') {
-      return false;
+      return false
     }
-    return undefined;
+    return undefined
   },
   export: (value) => {
     if (value === true) {
-      return 'true';
+      return 'true'
     }
     if (value === false) {
-      return 'false';
+      return 'false'
     }
-    return undefined;
+    return undefined
   },
   postValidate: identity
-};
+}
 
 /**
  * Formats a date segment - day, month or year, by zero padding
@@ -50,10 +50,10 @@ const booleanMapper = {
  */
 const formatDateSegment = (value, length = 2) => {
   if (value) {
-    return value.padStart(length, '0');
+    return value.padStart(length, '0')
   }
-  return '';
-};
+  return ''
+}
 
 /**
  * Formats a year segment.  If a 2 digit year is entered, this is corrected
@@ -63,18 +63,18 @@ const formatDateSegment = (value, length = 2) => {
  */
 const formatYearSegment = (year) => {
   if (year) {
-    const str = year.trim();
-    const currentYear = moment().format('YYYY');
-    return str.length === 2 ? currentYear.substr(0, 2) + str : str;
+    const str = year.trim()
+    const currentYear = moment().format('YYYY')
+    return str.length === 2 ? currentYear.substr(0, 2) + str : str
   }
-  return '';
-};
+  return ''
+}
 
-const getDayFromPayload = (payload, fieldName) => payload[fieldName + '-day'];
-const getMonthFromPayload = (payload, fieldName) => payload[fieldName + '-month'];
-const getYearFromPayload = (payload, fieldName) => payload[fieldName + '-year'];
+const getDayFromPayload = (payload, fieldName) => payload[fieldName + '-day']
+const getMonthFromPayload = (payload, fieldName) => payload[fieldName + '-month']
+const getYearFromPayload = (payload, fieldName) => payload[fieldName + '-year']
 
-const isTrimmedStringEmpty = val => (val || '').trim() === '';
+const isTrimmedStringEmpty = val => (val || '').trim() === ''
 
 /**
  * Date mapper - combines the day month and year form values to a single
@@ -86,11 +86,11 @@ const dateMapper = {
       getYearFromPayload(payload, fieldName),
       getMonthFromPayload(payload, fieldName),
       getDayFromPayload(payload, fieldName)
-    ];
+    ]
 
     // No date entered
     if (arr.every(isTrimmedStringEmpty)) {
-      return undefined;
+      return undefined
     }
 
     // User attempted date entry, parse and format
@@ -98,26 +98,26 @@ const dateMapper = {
       formatYearSegment(arr[0]),
       formatDateSegment(arr[1]),
       formatDateSegment(arr[2])
-    ].join('-');
+    ].join('-')
   },
   postValidate: value => {
     // The internal date format is an ISO 8601 string, YYYY-MM-DD, so if we
     // detect that Joi has converted the value into a date object, convert
     // it back to a string
     if (value instanceof Date) {
-      return moment(value).format('YYYY-MM-DD');
+      return moment(value).format('YYYY-MM-DD')
     }
-    return value;
+    return value
   },
   export: (value) => {
-    const parts = value.split('-');
+    const parts = value.split('-')
     return {
       day: parts[2],
       month: parts[1],
       year: parts[0]
-    };
+    }
   }
-};
+}
 
 /**
  * This mapper is used where you only need a day and month
@@ -128,47 +128,47 @@ const dateMapper = {
  */
 const dayOfYearMapper = {
   import: (fieldName, payload) => {
-    const day = payload[fieldName + '-day'];
-    const month = payload[fieldName + '-month'];
-    const date = moment(`2001-${formatDateSegment(month === '' ? 'invalid' : month)}-${formatDateSegment(day === '' ? 'invalid' : day)}`);
+    const day = payload[fieldName + '-day']
+    const month = payload[fieldName + '-month']
+    const date = moment(`2001-${formatDateSegment(month === '' ? 'invalid' : month)}-${formatDateSegment(day === '' ? 'invalid' : day)}`)
     // add the year if it is a valid date otherwise add invalid to prevent Javascript to convert this as a date that might pass the Joi.date() validation
-    const value = (date.isValid()) ? date.format('YYYY-MM-DD') : `invalid${formatDateSegment(month)}-${formatDateSegment(day)}`;
-    return value;
+    const value = (date.isValid()) ? date.format('YYYY-MM-DD') : `invalid${formatDateSegment(month)}-${formatDateSegment(day)}`
+    return value
   },
   postValidate: value => {
-    const date = moment(value, 'YYYY-MM-DD', true);
+    const date = moment(value, 'YYYY-MM-DD', true)
     if ((date.isValid())) {
       // the value returned here is the month and day only
       // the year is dropped because it is only used to validate the day and month combination
-      return date.format('MM-DD');
+      return date.format('MM-DD')
     };
     // remove the invalid flag to pass the original value back to the form for correction or remove the the year added by the import.
-    return value.includes('invalid') ? value.replace('invalid', '') : value.replace('2001-', '');
+    return value.includes('invalid') ? value.replace('invalid', '') : value.replace('2001-', '')
   },
   export: (value) => {
     return {
       day: value.day,
       month: value.month
-    };
+    }
   }
-};
+}
 
 const numberMapper = {
   import: (fieldName, payload) => {
-    const value = trim(payload[fieldName]).replace(/,/g, '');
+    const value = trim(payload[fieldName]).replace(/,/g, '')
 
     if (value === '') {
-      return null;
+      return null
     }
 
     if (!isNaN(value)) {
-      return parseFloat(value);
+      return parseFloat(value)
     }
-    return value;
+    return value
   },
   export: identity,
   postValidate: identity
-};
+}
 
 /**
  * Delimited mapper - for a pasted set of licence numbers, splits string on common
@@ -176,13 +176,13 @@ const numberMapper = {
  */
 const licenceNumbersMapper = {
   import: (fieldName, payload) => {
-    return extractLicenceNumbers(payload[fieldName]);
+    return extractLicenceNumbers(payload[fieldName])
   },
   export: (value) => {
-    return value.join(', ');
+    return value.join(', ')
   },
   postValidate: identity
-};
+}
 
 /**
  * For checkbox fields, need to force HAPI payload to an array.  If only one
@@ -190,13 +190,13 @@ const licenceNumbersMapper = {
  */
 const arrayMapper = {
   import: (fieldName, payload) => {
-    const value = payload[fieldName];
-    const arr = isArray(value) ? value : [value];
-    return arr.filter(isDefined);
+    const value = payload[fieldName]
+    const arr = isArray(value) ? value : [value]
+    return arr.filter(isDefined)
   },
   export: identity,
   postValidate: identity
-};
+}
 
 const objectMapper = {
 
@@ -211,18 +211,18 @@ const objectMapper = {
   import: (fieldName, payload, field) => {
     const findOptions = {
       [field.options.keyProperty]: payload[fieldName]
-    };
-    return find(field.options.choices, findOptions);
+    }
+    return find(field.options.choices, findOptions)
   },
   export: identity,
   postValidate: identity
-};
+}
 
-exports.defaultMapper = defaultMapper;
-exports.booleanMapper = booleanMapper;
-exports.dateMapper = dateMapper;
-exports.dayOfYearMapper = dayOfYearMapper;
-exports.numberMapper = numberMapper;
-exports.licenceNumbersMapper = licenceNumbersMapper;
-exports.arrayMapper = arrayMapper;
-exports.objectMapper = objectMapper;
+exports.defaultMapper = defaultMapper
+exports.booleanMapper = booleanMapper
+exports.dateMapper = dateMapper
+exports.dayOfYearMapper = dayOfYearMapper
+exports.numberMapper = numberMapper
+exports.licenceNumbersMapper = licenceNumbersMapper
+exports.arrayMapper = arrayMapper
+exports.objectMapper = objectMapper

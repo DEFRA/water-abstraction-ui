@@ -1,12 +1,12 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
-const { createRoutePair } = require('shared/lib/route-helpers');
-const controller = require('../controllers/select-billing-account');
-const preHandlers = require('../pre-handlers');
+const Joi = require('joi')
+const { createRoutePair } = require('shared/lib/route-helpers')
+const controller = require('../controllers/select-billing-account')
+const preHandlers = require('../pre-handlers')
 
-const { manageBillingAccounts } = require('internal/lib/constants').scope;
-const allowedScopes = [manageBillingAccounts];
+const { manageBillingAccounts } = require('internal/lib/constants').scope
+const allowedScopes = [manageBillingAccounts]
 
 module.exports = {
 
@@ -158,4 +158,4 @@ module.exports = {
     }
   })
 
-};
+}

@@ -1,30 +1,30 @@
-'use strict';
+'use strict'
 
-const Boom = require('boom');
-const Joi = require('joi');
+const Boom = require('boom')
+const Joi = require('joi')
 
-const { partialRight, partial } = require('lodash');
+const { partialRight, partial } = require('lodash')
 
-const { water } = require('../../lib/connectors/services');
-const routing = require('./lib/routing');
+const { water } = require('../../lib/connectors/services')
+const routing = require('./lib/routing')
 
 const getBatch = request =>
-  water.billingBatches.getBatch(request.params.batchId, true);
+  water.billingBatches.getBatch(request.params.batchId, true)
 
 const getInvoiceLicence = request =>
-  water.billingInvoiceLicences.getInvoiceLicence(request.params.invoiceLicenceId);
+  water.billingInvoiceLicences.getInvoiceLicence(request.params.invoiceLicenceId)
 
 const getInvoiceLicenceInvoice = request =>
-  water.billingBatches.getBatchInvoice(request.params.batchId, request.pre.invoiceLicence.invoiceId);
+  water.billingBatches.getBatchInvoice(request.params.batchId, request.pre.invoiceLicence.invoiceId)
 
 const getInvoice = request =>
-  water.billingBatches.getBatchInvoice(request.params.batchId, request.params.invoiceId);
+  water.billingBatches.getBatchInvoice(request.params.batchId, request.params.invoiceId)
 
 const getLicence = request =>
-  water.licences.getLicenceById(request.params.licenceId);
+  water.licences.getLicenceById(request.params.licenceId)
 
 const getBillingVolume = request =>
-  water.billingVolumes.getBillingVolume(request.params.billingVolumeId);
+  water.billingVolumes.getBillingVolume(request.params.billingVolumeId)
 
 const config = {
   loadBatch: {
@@ -57,7 +57,7 @@ const config = {
     key: 'billingVolumeId',
     errorMessage: 'Billing volume not found'
   }
-};
+}
 
 /**
  * A default pre handler implementation which loads data using the supplied
@@ -71,28 +71,28 @@ const config = {
  */
 const preHandler = async (config, request, h) => {
   try {
-    const response = await config.connector(request);
-    return response;
+    const response = await config.connector(request)
+    return response
   } catch (err) {
-    const msg = `${config.errorMessage} for ${config.key}: ${request.params[config.key]}`;
-    return Boom.notFound(msg);
+    const msg = `${config.errorMessage} for ${config.key}: ${request.params[config.key]}`
+    return Boom.notFound(msg)
   }
-};
+}
 
 const checkBatchStatus = async (request, h, status) => {
-  const { batch } = request.pre;
+  const { batch } = request.pre
   if (batch.status !== status) {
-    return Boom.forbidden(`Batch ${batch.id} has unexpected status ${batch.status}`);
+    return Boom.forbidden(`Batch ${batch.id} has unexpected status ${batch.status}`)
   }
-  return h.continue;
-};
+  return h.continue
+}
 
-const checkBatchStatusIsReview = partialRight(checkBatchStatus, 'review');
-const checkBatchStatusIsReady = partialRight(checkBatchStatus, 'ready');
+const checkBatchStatusIsReview = partialRight(checkBatchStatus, 'review')
+const checkBatchStatusIsReady = partialRight(checkBatchStatus, 'ready')
 
 const validBatchStatusSchema = Joi.array().min(1).required().items(
   Joi.string().valid('processing', 'review', 'ready', 'error', 'empty', 'sent', 'sending')
-);
+)
 
 /**
  * Redirects the user if the batch is not in one of the allowed statuses
@@ -100,39 +100,39 @@ const validBatchStatusSchema = Joi.array().min(1).required().items(
  * With set with config.app.validBatchStatuses = ['processing', ...]
  */
 const redirectOnBatchStatus = async (request, h) => {
-  const { batch } = request.pre;
-  const { invoiceId } = request.query;
-  const { validBatchStatuses } = request.route.settings.app;
+  const { batch } = request.pre
+  const { invoiceId } = request.query
+  const { validBatchStatuses } = request.route.settings.app
 
-  Joi.assert(validBatchStatuses, validBatchStatusSchema, `Invalid batch statuses ${validBatchStatuses} in route definition, see config.app.validBatchStatuses`);
+  Joi.assert(validBatchStatuses, validBatchStatusSchema, `Invalid batch statuses ${validBatchStatuses} in route definition, see config.app.validBatchStatuses`)
 
   if (validBatchStatuses.includes(batch.status)) {
-    return h.continue;
+    return h.continue
   }
 
   // Redirect to the correct page for this batch
-  const path = routing.getBillingBatchRoute(batch, { isBackEnabled: true, isErrorRoutesIncluded: true, showSuccessPage: true, invoiceId });
-  return h.redirect(path).takeover();
-};
+  const path = routing.getBillingBatchRoute(batch, { isBackEnabled: true, isErrorRoutesIncluded: true, showSuccessPage: true, invoiceId })
+  return h.redirect(path).takeover()
+}
 
 /**
  * Loads a list of available regions from water service
  * @return {Promise<Array>}
  */
 const loadRegions = async (request, h) => {
-  const { data } = await water.regions.getRegions();
-  return data;
-};
+  const { data } = await water.regions.getRegions()
+  return data
+}
 
-exports.loadBatch = partial(preHandler, config.loadBatch);
-exports.checkBatchStatusIsReview = checkBatchStatusIsReview;
-exports.checkBatchStatusIsReady = checkBatchStatusIsReady;
+exports.loadBatch = partial(preHandler, config.loadBatch)
+exports.checkBatchStatusIsReview = checkBatchStatusIsReview
+exports.checkBatchStatusIsReady = checkBatchStatusIsReady
 
-exports.loadInvoiceLicence = partial(preHandler, config.loadInvoiceLicence);
-exports.loadInvoiceLicenceInvoice = partial(preHandler, config.loadInvoiceLicenceInvoice);
-exports.loadInvoice = partial(preHandler, config.loadInvoice);
-exports.loadLicence = partial(preHandler, config.loadLicence);
-exports.loadBillingVolume = partial(preHandler, config.loadBillingVolume);
+exports.loadInvoiceLicence = partial(preHandler, config.loadInvoiceLicence)
+exports.loadInvoiceLicenceInvoice = partial(preHandler, config.loadInvoiceLicenceInvoice)
+exports.loadInvoice = partial(preHandler, config.loadInvoice)
+exports.loadLicence = partial(preHandler, config.loadLicence)
+exports.loadBillingVolume = partial(preHandler, config.loadBillingVolume)
 
-exports.redirectOnBatchStatus = redirectOnBatchStatus;
-exports.loadRegions = loadRegions;
+exports.redirectOnBatchStatus = redirectOnBatchStatus
+exports.loadRegions = loadRegions

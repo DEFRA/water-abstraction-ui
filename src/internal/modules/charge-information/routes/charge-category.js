@@ -1,12 +1,12 @@
-const controller = require('../controllers/charge-category');
-const preHandlers = require('../pre-handlers');
-const { VALID_GUID } = require('shared/lib/validators');
-const Joi = require('joi');
-const { chargeVersionWorkflowEditor, chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope;
-const allowedScopes = [chargeVersionWorkflowEditor, chargeVersionWorkflowReviewer];
-const { ROUTING_CONFIG } = require('../lib/charge-categories/constants');
-const chargeCategorySteps = Object.values(ROUTING_CONFIG).map(routeConfig => routeConfig.step);
-const config = require('../../../config');
+const controller = require('../controllers/charge-category')
+const preHandlers = require('../pre-handlers')
+const { VALID_GUID } = require('shared/lib/validators')
+const Joi = require('joi')
+const { chargeVersionWorkflowEditor, chargeVersionWorkflowReviewer } = require('internal/lib/constants').scope
+const allowedScopes = [chargeVersionWorkflowEditor, chargeVersionWorkflowReviewer]
+const { ROUTING_CONFIG } = require('../lib/charge-categories/constants')
+const chargeCategorySteps = Object.values(ROUTING_CONFIG).map(routeConfig => routeConfig.step)
+const config = require('../../../config')
 
 if (config.featureToggles.srocChargeInformation) {
   module.exports = {
@@ -78,5 +78,5 @@ if (config.featureToggles.srocChargeInformation) {
         ]
       }
     }
-  };
+  }
 }

@@ -1,11 +1,11 @@
-const Joi = require('joi');
-const { formFactory, fields } = require('shared/lib/forms');
+const Joi = require('joi')
+const { formFactory, fields } = require('shared/lib/forms')
 
 /**
  * @return {Object} - form object
  */
 const form = (request, h) => {
-  const f = formFactory('/reset_password');
+  const f = formFactory('/reset_password')
 
   f.fields.push(fields.text('email', {
     label: 'Email address',
@@ -20,19 +20,19 @@ const form = (request, h) => {
         message: 'Enter an email address in the correct format'
       }
     }
-  }));
+  }))
 
   f.fields.push(fields.button(null, {
     label: 'Continue',
     isStartButton: true
-  }));
+  }))
 
-  return f;
-};
+  return f
+}
 
 const schema = Joi.object().keys({
   email: Joi.string().required().email()
-});
+})
 
-exports.resetForm = form;
-exports.resetFormSchema = schema;
+exports.resetForm = form
+exports.resetFormSchema = schema

@@ -1,75 +1,73 @@
-const session = require('./session');
-const services = require('../../../lib/connectors/services');
-const { get, omit, set, chain } = require('lodash');
+const session = require('./session')
+const services = require('../../../lib/connectors/services')
+const { get, omit, set, chain } = require('lodash')
 
-const blankGuid = '00000000-0000-0000-0000-000000000000';
+const blankGuid = '00000000-0000-0000-0000-000000000000'
 
 const redirectTo = (request, h, path) => {
-  const { checkStageReached } = session.get(request);
+  const { checkStageReached } = session.get(request)
 
   if (checkStageReached === true && !['/condition', '/abstraction-period'].includes(path)) {
-    // eslint-disable-next-line no-useless-escape
-    return h.redirect(request.path.replace(/\/[^\/]*$/, '/check'));
+    return h.redirect(request.path.replace(/\/[^/]*$/, '/check'))
   } else {
-    // eslint-disable-next-line no-useless-escape
-    return h.redirect(request.path.replace(/\/[^\/]*$/, path));
+    return h.redirect(request.path.replace(/\/[^/]*$/, path))
   }
-};
+}
 
 const isLicenceNumberValid = async request => {
   try {
-    const licence = await services.water.licences.getLicenceByLicenceNumber(request.payload.licenceNumber);
+    const licence = await services.water.licences.getLicenceByLicenceNumber(request.payload.licenceNumber)
     session.merge(request, {
       fetchedLicence: licence
-    });
-    return !!licence;
+    })
+    return !!licence
   } catch (err) {
     session.merge(request, {
       fetchedLicence: undefined
-    });
-    return false;
+    })
+    return false
   }
-};
+}
 
 const fetchConditionsForLicence = async request => {
   try {
-    const sessionData = session.get(request);
+    const sessionData = session.get(request)
     const { data } = await services.water.licenceVersionPurposeConditionsService
-      .getLicenceVersionPurposeConditionsByLicenceId(sessionData.fetchedLicence.id, { qs: { code: 'CES' } });
-    return data;
+      .getLicenceVersionPurposeConditionsByLicenceId(sessionData.fetchedLicence.id, { qs: { code: 'CES' } })
+    return data
   } catch (err) {
-    return [];
+    return []
   }
-};
+}
 
 const getCaption = async request => {
-  const { gaugingStationId } = request.params;
-  const { label, riverName } = await services.water.gaugingStations.getGaugingStationbyId(gaugingStationId);
-  return `${riverName ? riverName + ' at ' : ''}${label}`;
-};
+  const { gaugingStationId } = request.params
+  const { label, riverName } = await services.water.gaugingStations.getGaugingStationbyId(gaugingStationId)
+  return `${riverName ? riverName + ' at ' : ''}${label}`
+}
 
 const getSelectedConditionText = request => {
-  const { conditionsForSelectedLicence } = request.pre;
-  const sessionData = session.get(request);
-  const selectedCondition = get(sessionData, 'condition.value', null);
+  const { conditionsForSelectedLicence } = request.pre
+  const sessionData = session.get(request)
+  const selectedCondition = get(sessionData, 'condition.value', null)
 
   if (selectedCondition) {
-    return get(conditionsForSelectedLicence.find(x => x.id === selectedCondition), 'notes', 'None');
+    return get(conditionsForSelectedLicence.find(x => x.id === selectedCondition), 'notes', 'None')
   } else {
-    return 'None';
+    return 'None'
   }
-};
+}
 
 const deduceRestrictionTypeFromUnit = unit => {
-  const flowUnits = ['Ml/d', 'm3/s', 'm3/d', 'l/s'];
+  const flowUnits = ['Ml/d', 'm3/s', 'm3/d', 'l/s']
   if (flowUnits.includes(unit)) {
-    return 'flow';
+    return 'flow'
   }
-  return 'level';
-};
+  return 'level'
+}
 
 const createTitle = station =>
-  !station.riverName ? `${station.label}` : `${station.riverName} at ${station.label}`;
+  !station.riverName ? `${station.label}` : `${station.riverName} at ${station.label}`
 
 const mapAbstractionPeriods = input => input.map(licence => ({
   licenceRef: licence.licenceRef,
@@ -81,42 +79,42 @@ const mapAbstractionPeriods = input => input.map(licence => ({
         startMonth: eachLink.abstractionPeriodStartMonth,
         endDay: eachLink.abstractionPeriodEndDay,
         endMonth: eachLink.abstractionPeriodEndMonth
-      };
-      return { ...eachLink, abstractionPeriod };
+      }
+      return { ...eachLink, abstractionPeriod }
     })
     : []
-}));
+}))
 
 const groupByLicence = inputArray => {
   const output = chain(inputArray).groupBy('licenceId').map((value, key) => ({
     licenceRef: value[0].licenceRef,
     licenceId: value[0].licenceId,
     linkages: value
-  })).value();
+  })).value()
 
-  return mapAbstractionPeriods(output);
-};
+  return mapAbstractionPeriods(output)
+}
 
 const handlePost = async request => {
-  const { gaugingStationId } = request.params;
-  const sessionData = session.get(request);
+  const { gaugingStationId } = request.params
+  const sessionData = session.get(request)
 
-  const { id: licenceId } = sessionData.fetchedLicence;
-  const storedLicenceVersionPurposeConditionIdFromSession = get(sessionData, 'condition.value', null);
-  const licenceVersionPurposeConditionId = storedLicenceVersionPurposeConditionIdFromSession === blankGuid ? null : storedLicenceVersionPurposeConditionIdFromSession;
-  const thresholdValue = get(sessionData, 'threshold.value');
-  const thresholdUnit = get(sessionData, 'unit.value');
-  const startDate = get(sessionData, 'startDate.value');
-  const startDay = startDate ? startDate.split('-')[1] : null;
-  const startMonth = startDate ? startDate.split('-')[0] : null;
-  const endDate = get(sessionData, 'endDate.value');
-  const endDay = endDate ? endDate.split('-')[1] : null;
-  const endMonth = endDate ? endDate.split('-')[0] : null;
-  const restrictionType = deduceRestrictionTypeFromUnit(thresholdUnit);
-  const alertType = get(sessionData, 'alertType.value');
-  const volumeLimited = get(sessionData, 'volumeLimited.value');
-  const reductionAlertType = volumeLimited === true ? 'stop_or_reduce' : 'reduce';
-  const derivedAlertType = alertType === 'stop' ? 'stop' : reductionAlertType;
+  const { id: licenceId } = sessionData.fetchedLicence
+  const storedLicenceVersionPurposeConditionIdFromSession = get(sessionData, 'condition.value', null)
+  const licenceVersionPurposeConditionId = storedLicenceVersionPurposeConditionIdFromSession === blankGuid ? null : storedLicenceVersionPurposeConditionIdFromSession
+  const thresholdValue = get(sessionData, 'threshold.value')
+  const thresholdUnit = get(sessionData, 'unit.value')
+  const startDate = get(sessionData, 'startDate.value')
+  const startDay = startDate ? startDate.split('-')[1] : null
+  const startMonth = startDate ? startDate.split('-')[0] : null
+  const endDate = get(sessionData, 'endDate.value')
+  const endDay = endDate ? endDate.split('-')[1] : null
+  const endMonth = endDate ? endDate.split('-')[0] : null
+  const restrictionType = deduceRestrictionTypeFromUnit(thresholdUnit)
+  const alertType = get(sessionData, 'alertType.value')
+  const volumeLimited = get(sessionData, 'volumeLimited.value')
+  const reductionAlertType = volumeLimited === true ? 'stop_or_reduce' : 'reduce'
+  const derivedAlertType = alertType === 'stop' ? 'stop' : reductionAlertType
 
   const parsedPayload = {
     thresholdUnit,
@@ -130,33 +128,33 @@ const handlePost = async request => {
       endMonth: parseInt(endMonth)
     },
     alertType: derivedAlertType
-  };
+  }
 
   // If the LVPC ID is supplied, the abstraction period is omitted.
   if (licenceVersionPurposeConditionId) {
-    return services.water.gaugingStations.postLicenceLinkage(gaugingStationId, licenceId, omit(parsedPayload, ['abstractionPeriod']));
+    return services.water.gaugingStations.postLicenceLinkage(gaugingStationId, licenceId, omit(parsedPayload, ['abstractionPeriod']))
   }
-  return services.water.gaugingStations.postLicenceLinkage(gaugingStationId, licenceId, set(parsedPayload, 'licenceVersionPurposeConditionId', null));
-};
+  return services.water.gaugingStations.postLicenceLinkage(gaugingStationId, licenceId, set(parsedPayload, 'licenceVersionPurposeConditionId', null))
+}
 
 const handleRemovePost = async request => {
-  const sessionData = session.get(request);
-  const removeList = [];
+  const sessionData = session.get(request)
+  const removeList = []
   if (!sessionData.selected) {
-    return Promise.all([]);
+    return Promise.all([])
   }
   sessionData.selected.forEach(item => {
     if (item.linkages && item.linkages.length) {
-      item.linkages.forEach(linkItem => removeList.push(linkItem.licenceGaugingStationId));
+      item.linkages.forEach(linkItem => removeList.push(linkItem.licenceGaugingStationId))
     } else {
-      removeList.push(item.licenceGaugingStationId);
+      removeList.push(item.licenceGaugingStationId)
     }
-  });
+  })
   if (removeList.length) {
-    return Promise.all(removeList.map(licenceGaugingStationId => services.water.gaugingStations.postLicenceLinkageRemove(licenceGaugingStationId)));
+    return Promise.all(removeList.map(licenceGaugingStationId => services.water.gaugingStations.postLicenceLinkageRemove(licenceGaugingStationId)))
   }
-  return Promise.all([]);
-};
+  return Promise.all([])
+}
 
 const longFormDictionary = [
   { dbitem: 'gal', translation: 'Gallons', context: 'Units' },
@@ -168,41 +166,41 @@ const longFormDictionary = [
   { dbitem: 'stop', translation: 'Stop', context: 'AlertType' },
   { dbitem: 'reduce', translation: 'Reduce', context: 'AlertType' },
   { dbitem: 'SLD', translation: 'South Level Datum', context: 'Units' }
-];
+]
 
 /* Converts database representation into description of tags, e.g. Stop at 115 Megalitres per day */
 const toLongForm = (str, context = '') => {
   if (str) {
-    const words = str.split(' ');
-    const firstMatch = 0;
-    let dictionarySubset = longFormDictionary.filter(dict => dict.context.toUpperCase() === context.toUpperCase().trim());
+    const words = str.split(' ')
+    const firstMatch = 0
+    let dictionarySubset = longFormDictionary.filter(dict => dict.context.toUpperCase() === context.toUpperCase().trim())
     if (!dictionarySubset.length) {
-      dictionarySubset = longFormDictionary;
+      dictionarySubset = longFormDictionary
     }
     const translated = words.map(word =>
-      dictionarySubset.filter(dict => dict.dbitem.toUpperCase() === word.toUpperCase().trim())[firstMatch]);
+      dictionarySubset.filter(dict => dict.dbitem.toUpperCase() === word.toUpperCase().trim())[firstMatch])
     if (translated[firstMatch]) {
-      return translated[firstMatch].translation;
+      return translated[firstMatch].translation
     }
   }
-  return str;
-};
+  return str
+}
 
 const isSelectedCheckbox = (licenceGaugingStationId, selectionArray) => {
   if (!selectionArray) {
-    return false;
+    return false
   }
-  return selectionArray.filter(chkItem => chkItem === licenceGaugingStationId).length > 0;
-};
+  return selectionArray.filter(chkItem => chkItem === licenceGaugingStationId).length > 0
+}
 
 const selectedConditionWithLinkages = request => {
-  const { licenceGaugingStations } = request.pre;
-  const { data } = licenceGaugingStations;
-  let checkBoxSelection = [];
+  const { licenceGaugingStations } = request.pre
+  const { data } = licenceGaugingStations
+  let checkBoxSelection = []
   if (session.get(request).selectedCondition === undefined) {
-    return checkBoxSelection;
+    return checkBoxSelection
   }
-  checkBoxSelection = session.get(request).selectedCondition.value;
+  checkBoxSelection = session.get(request).selectedCondition.value
 
   const dataFormatted = data.map(item => ({
     licenceGaugingStationId: item.licenceGaugingStationId,
@@ -212,16 +210,16 @@ const selectedConditionWithLinkages = request => {
     thresholdValue: item.thresholdValue,
     thresholdUnit: toLongForm(item.thresholdUnit, 'Units')
   })
-  );
+  )
 
   const output = chain(dataFormatted).groupBy('licenceId').map(value => ({
     licenceRef: value[0].licenceRef,
     licenceId: value[0].licenceId,
     linkages: value.length <= 0 ? [] : value.filter(itemInLinkages => isSelectedCheckbox(itemInLinkages.licenceGaugingStationId, checkBoxSelection))
-  })).value();
+  })).value()
 
-  return output.filter(chkItem => chkItem.linkages.length > 0);
-};
+  return output.filter(chkItem => chkItem.linkages.length > 0)
+}
 
 const addCheckboxFields = dataWithoutDistinct =>
   dataWithoutDistinct.map(itemWithoutDistinct => ({
@@ -235,11 +233,11 @@ const addCheckboxFields = dataWithoutDistinct =>
     thresholdValue: itemWithoutDistinct.thresholdValue,
     thresholdUnit: toLongForm(itemWithoutDistinct.thresholdUnit, 'Units')
   })
-  );
+  )
 
 const groupLicenceConditions = request => {
-  const { licenceGaugingStations } = request.pre;
-  const { data } = licenceGaugingStations;
+  const { licenceGaugingStations } = request.pre
+  const { data } = licenceGaugingStations
 
   return chain(data).groupBy('licenceId').map(value => ({
     licenceRef: value[0].licenceRef,
@@ -249,11 +247,11 @@ const groupLicenceConditions = request => {
     thresholdValue: value[0].thresholdValue,
     thresholdUnit: value[0].thresholdUnit,
     linkages: value
-  })).value();
-};
+  })).value()
+}
 
 const getBatchAlertData = async request => {
-  const { selectedGroupedLicences, sendingAlertType } = session.get(request);
+  const { selectedGroupedLicences, sendingAlertType } = session.get(request)
 
   return {
     sendingAlertType: sendingAlertType.value,
@@ -272,29 +270,29 @@ const getBatchAlertData = async request => {
       licenceRef: m.licenceRef,
       label: m.label
     })))
-  };
-};
+  }
+}
 
 const getIssuer = async request => {
-  const { customEmailAddress, useLoggedInUserEmailAddress } = await session.get(request);
-  return useLoggedInUserEmailAddress.value === true ? request.defra.userName : customEmailAddress.value;
-};
+  const { customEmailAddress, useLoggedInUserEmailAddress } = await session.get(request)
+  return useLoggedInUserEmailAddress.value === true ? request.defra.userName : customEmailAddress.value
+}
 
-exports.blankGuid = blankGuid;
-exports.createTitle = createTitle;
-exports.redirectTo = redirectTo;
-exports.isLicenceNumberValid = isLicenceNumberValid;
-exports.fetchConditionsForLicence = fetchConditionsForLicence;
-exports.getCaption = getCaption;
-exports.getSelectedConditionText = getSelectedConditionText;
-exports.groupByLicence = groupByLicence;
-exports.handlePost = handlePost;
-exports.handleRemovePost = handleRemovePost;
-exports.toLongForm = toLongForm;
-exports.selectedConditionWithLinkages = selectedConditionWithLinkages;
-exports.groupLicenceConditions = groupLicenceConditions;
-exports.addCheckboxFields = addCheckboxFields;
-exports.isSelectedCheckbox = isSelectedCheckbox;
-exports.deduceRestrictionTypeFromUnit = deduceRestrictionTypeFromUnit;
-exports.getBatchAlertData = getBatchAlertData;
-exports.getIssuer = getIssuer;
+exports.blankGuid = blankGuid
+exports.createTitle = createTitle
+exports.redirectTo = redirectTo
+exports.isLicenceNumberValid = isLicenceNumberValid
+exports.fetchConditionsForLicence = fetchConditionsForLicence
+exports.getCaption = getCaption
+exports.getSelectedConditionText = getSelectedConditionText
+exports.groupByLicence = groupByLicence
+exports.handlePost = handlePost
+exports.handleRemovePost = handleRemovePost
+exports.toLongForm = toLongForm
+exports.selectedConditionWithLinkages = selectedConditionWithLinkages
+exports.groupLicenceConditions = groupLicenceConditions
+exports.addCheckboxFields = addCheckboxFields
+exports.isSelectedCheckbox = isSelectedCheckbox
+exports.deduceRestrictionTypeFromUnit = deduceRestrictionTypeFromUnit
+exports.getBatchAlertData = getBatchAlertData
+exports.getIssuer = getIssuer

@@ -1,11 +1,11 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
-const controller = require('../controllers/view');
-const { scope } = require('../../../lib/constants');
-const licencePreHandlers = require('shared/lib/pre-handlers/licences');
+const Joi = require('joi')
+const controller = require('../controllers/view')
+const { scope } = require('../../../lib/constants')
+const licencePreHandlers = require('shared/lib/pre-handlers/licences')
 
-const allowedScopes = [scope.licenceHolder, scope.colleague, scope.colleagueWithReturns];
+const allowedScopes = [scope.licenceHolder, scope.colleague, scope.colleagueWithReturns]
 
 module.exports = {
   getReturnsForLicence: {
@@ -59,4 +59,4 @@ module.exports = {
       }]
     }
   }
-};
+}

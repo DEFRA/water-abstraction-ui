@@ -1,11 +1,11 @@
-const { formFactory, setValues } = require('shared/lib/forms');
-const { getMeter } = require('shared/modules/returns/forms/common');
-const { get, set } = require('lodash');
+const { formFactory, setValues } = require('shared/lib/forms')
+const { getMeter } = require('shared/modules/returns/forms/common')
+const { get, set } = require('lodash')
 
 const { getContinueField, getCsrfTokenField, getHeadingField } =
- require('shared/modules/returns/forms/common');
+ require('shared/modules/returns/forms/common')
 const { getStartReadingField, getLineFields, schema } =
-  require('shared/modules/returns/forms/meter-readings');
+  require('shared/modules/returns/forms/meter-readings')
 
 const form = (request, data) => {
   const f = {
@@ -17,11 +17,11 @@ const form = (request, data) => {
       getCsrfTokenField(request),
       getContinueField()
     ]
-  };
+  }
 
-  const readings = getMeter(data).readings || {};
-  set(readings, 'startReading', get(data, 'meters[0].startReading'));
-  return setValues(f, readings);
-};
+  const readings = getMeter(data).readings || {}
+  set(readings, 'startReading', get(data, 'meters[0].startReading'))
+  return setValues(f, readings)
+}
 
-module.exports = { form, schema };
+module.exports = { form, schema }

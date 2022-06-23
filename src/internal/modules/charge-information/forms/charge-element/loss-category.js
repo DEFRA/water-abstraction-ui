@@ -1,22 +1,22 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
-const { formFactory, fields } = require('shared/lib/forms/');
-const { capitalize } = require('lodash');
-const { LOSS_CATEGORIES, CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants');
-const { getChargeElementData, getChargeElementActionUrl } = require('../../lib/form-helpers');
+const Joi = require('joi')
+const { formFactory, fields } = require('shared/lib/forms/')
+const { capitalize } = require('lodash')
+const { LOSS_CATEGORIES, CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants')
+const { getChargeElementData, getChargeElementActionUrl } = require('../../lib/form-helpers')
 
 const options = (selectedPurposeUse) => {
-  const { lossFactor } = selectedPurposeUse;
+  const { lossFactor } = selectedPurposeUse
 
   return LOSS_CATEGORIES.map(category => {
-    const option = { value: category, label: capitalize(category) };
+    const option = { value: category, label: capitalize(category) }
     if (category === lossFactor) {
-      option.hint = 'This is the default loss category for the purpose chosen';
+      option.hint = 'This is the default loss category for the purpose chosen'
     }
-    return option;
-  });
-};
+    return option
+  })
+}
 
 /**
  * Form to request the loss category
@@ -25,12 +25,12 @@ const options = (selectedPurposeUse) => {
  * @param {Boolean}  data object containing selected and default options for the form
  */
 const form = request => {
-  const { csrfToken } = request.view;
-  const data = getChargeElementData(request);
+  const { csrfToken } = request.view
+  const data = getChargeElementData(request)
 
-  const action = getChargeElementActionUrl(request, CHARGE_ELEMENT_STEPS.loss);
+  const action = getChargeElementActionUrl(request, CHARGE_ELEMENT_STEPS.loss)
 
-  const f = formFactory(action, 'POST');
+  const f = formFactory(action, 'POST')
 
   f.fields.push(fields.radio('loss', {
     errors: {
@@ -39,18 +39,18 @@ const form = request => {
       }
     },
     choices: options(data.purposeUse || {})
-  }, data.loss || ''));
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
+  }, data.loss || ''))
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
 
-  return f;
-};
+  return f
+}
 
 const schema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   loss: Joi.string().valid(...LOSS_CATEGORIES).required()
-});
+})
 
-exports.schema = schema;
+exports.schema = schema
 
-exports.form = form;
+exports.form = form

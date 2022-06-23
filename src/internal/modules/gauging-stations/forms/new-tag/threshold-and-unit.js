@@ -1,13 +1,13 @@
-const Joi = require('joi');
-const { get } = require('lodash');
-const { formFactory, fields } = require('shared/lib/forms/');
-const validUnits = ['Ml/d', 'm3/s', 'm3/d', 'l/s', 'mAOD', 'mASD', 'm', 'SLD'];
-const session = require('../../lib/session');
+const Joi = require('joi')
+const { get } = require('lodash')
+const { formFactory, fields } = require('shared/lib/forms/')
+const validUnits = ['Ml/d', 'm3/s', 'm3/d', 'l/s', 'mAOD', 'mASD', 'm', 'SLD']
+const session = require('../../lib/session')
 
 const newTagThresholdAndUnitForm = request => {
-  const f = formFactory(request.path);
+  const f = formFactory(request.path)
 
-  const defaultThreshold = get(session.get(request), 'threshold.value');
+  const defaultThreshold = get(session.get(request), 'threshold.value')
   f.fields.push(fields.text('threshold', {
     label: 'Threshold',
     controlClass: 'govuk-input govuk-input--width-10',
@@ -22,9 +22,9 @@ const newTagThresholdAndUnitForm = request => {
         message: 'Enter a number more than zero'
       }
     }
-  }, defaultThreshold));
+  }, defaultThreshold))
 
-  const defaultUnit = get(session.get(request), 'unit.value');
+  const defaultUnit = get(session.get(request), 'unit.value')
 
   f.fields.push(fields.dropdown('unit', {
     label: 'Unit of measurement',
@@ -43,20 +43,20 @@ const newTagThresholdAndUnitForm = request => {
       return {
         value: n,
         label: n
-      };
+      }
     })]
-  }, defaultUnit));
+  }, defaultUnit))
 
-  f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
-  return f;
-};
+  f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
+  return f
+}
 
 const newTagThresholdAndUnitSchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   threshold: Joi.number().min(0).max(1000000).required(),
   unit: Joi.string().required().allow(...validUnits)
-});
+})
 
-exports.form = newTagThresholdAndUnitForm;
-exports.schema = newTagThresholdAndUnitSchema;
+exports.form = newTagThresholdAndUnitForm
+exports.schema = newTagThresholdAndUnitSchema

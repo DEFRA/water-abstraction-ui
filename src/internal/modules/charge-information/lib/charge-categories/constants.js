@@ -1,21 +1,21 @@
-'use-strict';
+'use-strict'
 
 const SOURCES = {
   tidal: 'tidal',
   nonTidal: 'non-tidal'
-};
+}
 
 const WATER_MODEL = {
   noModel: 'no model',
   tier1: 'tier 1',
   tier2: 'tier 2'
-};
+}
 
 const LOSS_CATEGORIES = {
   high: 'high',
   medium: 'medium',
   low: 'low'
-};
+}
 
 const IS_RESTRICTED_SOURCE = [
   {
@@ -26,7 +26,7 @@ const IS_RESTRICTED_SOURCE = [
     label: 'restricted availablity or no availability',
     value: true
   }
-];
+]
 
 const YES_NO = [
   {
@@ -37,7 +37,7 @@ const YES_NO = [
     label: 'no',
     value: false
   }
-];
+]
 const ADJUSTMENTS = [
   { title: 'Aggregate', value: 'aggregate', hasFactor: true },
   { title: 'Charge adjustment', value: 'charge', hasFactor: true },
@@ -45,7 +45,7 @@ const ADJUSTMENTS = [
   { title: 'Two-part tariff agreement', value: 's127', hasFactor: false },
   { title: 'Abatement agreement', value: 's126', hasFactor: true, hint: 'If a licence charge is reduced by 70% the abatement factor is 0.3' },
   { title: 'Canal and River Trust agreement', value: 's130', hasFactor: false }
-];
+]
 
 /**
  * flowConfig is used to define the
@@ -160,22 +160,22 @@ const ROUTING_CONFIG = {
     back: 'isAdjustments',
     options: ADJUSTMENTS
   }
-};
+}
 
 // Replace the routing config strings with the step value for the matching config
 Object.values(ROUTING_CONFIG).forEach(config => {
   ['nextStep', 'nextStepYes', 'back'].forEach(prop => {
     if (config[prop]) {
-      config[prop] = ROUTING_CONFIG[config[prop]].step;
+      config[prop] = ROUTING_CONFIG[config[prop]].step
     }
-  });
-});
+  })
+})
 
-const getStepKeyByValue = value => Object.keys(ROUTING_CONFIG).find(key => ROUTING_CONFIG[key].step === value);
+const getStepKeyByValue = value => Object.keys(ROUTING_CONFIG).find(key => ROUTING_CONFIG[key].step === value)
 
-exports.WATER_MODEL = WATER_MODEL;
-exports.IS_RESTRICTED_SOURCE = IS_RESTRICTED_SOURCE;
-exports.LOSS_CATEGORIES = LOSS_CATEGORIES;
-exports.SOURCES = SOURCES;
-exports.ROUTING_CONFIG = ROUTING_CONFIG;
-exports.getStepKeyByValue = getStepKeyByValue;
+exports.WATER_MODEL = WATER_MODEL
+exports.IS_RESTRICTED_SOURCE = IS_RESTRICTED_SOURCE
+exports.LOSS_CATEGORIES = LOSS_CATEGORIES
+exports.SOURCES = SOURCES
+exports.ROUTING_CONFIG = ROUTING_CONFIG
+exports.getStepKeyByValue = getStepKeyByValue

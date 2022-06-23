@@ -1,30 +1,30 @@
-const Joi = require('joi');
-const { pick, findLastKey } = require('lodash');
+const Joi = require('joi')
+const { pick, findLastKey } = require('lodash')
 
-const { mapMeterLinesToVolumes } = require('./water-return-helpers');
+const { mapMeterLinesToVolumes } = require('./water-return-helpers')
 
 const mapReadingsArrayToObject = arr => arr.reduce((acc, row) => ({
   ...acc,
   [`${row.startDate}_${row.endDate}`]: row.reading
-}), {});
+}), {})
 
 class Meter {
   constructor (reading, lines, meter = {}) {
-    this.reading = reading;
-    this.meterDetailsProvided = meter.meterDetailsProvided || false;
-    this.manufacturer = meter.manufacturer;
-    this.serialNumber = meter.serialNumber;
-    this.startReading = meter.startReading;
-    this.multiplier = meter.multiplier || 1;
-    this.readings = meter.readings || {};
-    this.lines = lines;
+    this.reading = reading
+    this.meterDetailsProvided = meter.meterDetailsProvided || false
+    this.manufacturer = meter.manufacturer
+    this.serialNumber = meter.serialNumber
+    this.startReading = meter.startReading
+    this.multiplier = meter.multiplier || 1
+    this.readings = meter.readings || {}
+    this.lines = lines
   }
 
   toObject () {
-    const obj = pick(this, ['meterDetailsProvided', 'multiplier']);
+    const obj = pick(this, ['meterDetailsProvided', 'multiplier'])
 
     if (this.meterDetailsProvided) {
-      Object.assign(obj, pick(this, 'manufacturer', 'serialNumber'));
+      Object.assign(obj, pick(this, 'manufacturer', 'serialNumber'))
     }
 
     if (this.reading.isOneMeter()) {
@@ -32,9 +32,9 @@ class Meter {
         startReading: this.startReading,
         readings: this.readings,
         units: this.reading.getUnits()
-      });
+      })
     }
-    return obj;
+    return obj
   }
 
   /**
@@ -47,13 +47,13 @@ class Meter {
       serialNumber: Joi.string().required(),
       multiplier: Joi.number().positive(),
       meterDetailsProvided: Joi.boolean().default(true)
-    });
-    const { value, error } = schema.validate(meter);
+    })
+    const { value, error } = schema.validate(meter)
     if (error) {
-      throw new Error('Invalid meter details', meter);
+      throw new Error('Invalid meter details', meter)
     }
-    Object.assign(this, value);
-    return this;
+    Object.assign(this, value)
+    return this
   }
 
   /**
@@ -62,48 +62,48 @@ class Meter {
    * @param {Array} readings
    */
   setMeterReadings (startReading, readings) {
-    Joi.assert(startReading, Joi.number().min(0));
+    Joi.assert(startReading, Joi.number().min(0))
     const schema = Joi.array().items({
       startDate: Joi.string().isoDate(),
       endDate: Joi.string().isoDate(),
       reading: Joi.number().min(0).allow(null)
-    });
-    Joi.assert(readings, schema);
+    })
+    Joi.assert(readings, schema)
 
     // Set meter readings
-    this.startReading = startReading;
-    this.readings = mapReadingsArrayToObject(readings);
+    this.startReading = startReading
+    this.readings = mapReadingsArrayToObject(readings)
 
-    return this;
+    return this
   }
 
   setMeterDetailsProvided (meterDetailsProvided) {
-    Joi.assert(meterDetailsProvided, Joi.boolean());
-    this.meterDetailsProvided = meterDetailsProvided;
-    return this;
+    Joi.assert(meterDetailsProvided, Joi.boolean())
+    this.meterDetailsProvided = meterDetailsProvided
+    return this
   }
 
   getStartReading () {
-    return this.startReading;
+    return this.startReading
   }
 
   getEndReading () {
-    const key = findLastKey(this.readings, reading => reading > 0);
-    return this.readings[key];
+    const key = findLastKey(this.readings, reading => reading > 0)
+    return this.readings[key]
   }
 
   getMultiplier () {
-    return this.multiplier;
+    return this.multiplier
   }
 
   getVolumes (includeReadings = false) {
-    const lines = this.lines.toArray();
-    return mapMeterLinesToVolumes(this.startReading, this.readings, lines, this.multiplier, includeReadings);
+    const lines = this.lines.toArray()
+    return mapMeterLinesToVolumes(this.startReading, this.readings, lines, this.multiplier, includeReadings)
   }
 
   isMeterDetailsProvided () {
-    return this.meterDetailsProvided === true;
+    return this.meterDetailsProvided === true
   }
 };
 
-module.exports = Meter;
+module.exports = Meter

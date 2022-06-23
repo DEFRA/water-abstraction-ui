@@ -1,8 +1,8 @@
-const Joi = require('joi');
-const controller = require('../controllers/view');
-const { scope } = require('../../../lib/constants');
+const Joi = require('joi')
+const controller = require('../controllers/view')
+const { scope } = require('../../../lib/constants')
 
-const allowedScopes = [scope.licenceHolder, scope.colleague, scope.colleagueWithReturns];
+const allowedScopes = [scope.licenceHolder, scope.colleague, scope.colleagueWithReturns]
 
 module.exports = {
   getAllReturns: {
@@ -75,4 +75,4 @@ module.exports = {
       }
     }
   }
-};
+}

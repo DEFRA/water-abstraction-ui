@@ -1,10 +1,10 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
-const routes = Object.values(require('./routes'));
+const Joi = require('joi')
+const routes = Object.values(require('./routes'))
 
-const session = require('./lib/session');
-const routing = require('./lib/routing');
+const session = require('./lib/session')
+const routing = require('./lib/routing')
 
 const OPTIONS_SCHEMA = Joi.object().keys({
   back: Joi.string().required(),
@@ -14,7 +14,7 @@ const OPTIONS_SCHEMA = Joi.object().keys({
   companyNumber: Joi.string().allow(null),
   companyId: Joi.string().guid().optional().allow(null),
   data: Joi.object().optional()
-});
+})
 
 /**
  * This function stores data in the session and returns
@@ -24,25 +24,25 @@ const OPTIONS_SCHEMA = Joi.object().keys({
  */
 function addressLookupRedirect (options) {
   // Validate options
-  Joi.assert(options, OPTIONS_SCHEMA);
+  Joi.assert(options, OPTIONS_SCHEMA)
 
   // Store in session
-  session.set(this, options.key, options);
+  session.set(this, options.key, options)
 
-  const { companyId, companyNumber, key } = options;
+  const { companyId, companyNumber, key } = options
 
   // Display existing company addresses
   if (companyId) {
-    return routing.getCompanyAddress(key);
+    return routing.getCompanyAddress(key)
   }
 
   // Look up registered address at Companies House
   if (companyNumber) {
-    return routing.getRegisteredAddress(key);
+    return routing.getRegisteredAddress(key)
   }
 
   // Return redirect path to enter flow
-  return routing.getPostcode(key);
+  return routing.getPostcode(key)
 }
 
 /**
@@ -51,23 +51,23 @@ function addressLookupRedirect (options) {
  * @return {Object}
  */
 function getNewAddress (key) {
-  return (session.get(this, key) || {}).data;
+  return (session.get(this, key) || {}).data
 }
 
 const addressEntryPlugin = {
   register: server => {
     // Register method to initiate flow and get data
-    server.decorate('request', 'addressLookupRedirect', addressLookupRedirect);
-    server.decorate('request', 'getNewAddress', getNewAddress);
+    server.decorate('request', 'addressLookupRedirect', addressLookupRedirect)
+    server.decorate('request', 'getNewAddress', getNewAddress)
 
     // Register flow routes
-    server.route(routes);
+    server.route(routes)
   },
 
   pkg: {
     name: 'addressEntryPlugin',
     version: '1.0.0'
   }
-};
+}
 
-module.exports = addressEntryPlugin;
+module.exports = addressEntryPlugin

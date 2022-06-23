@@ -1,10 +1,10 @@
-'use strict';
+'use strict'
 
-const controller = require('./controller');
-const constants = require('../../lib/constants');
-const { hofNotifications, renewalNotifications } = constants.scope;
+const controller = require('./controller')
+const constants = require('../../lib/constants')
+const { hofNotifications, renewalNotifications } = constants.scope
 
-const allowedScopes = [hofNotifications, renewalNotifications];
+const allowedScopes = [hofNotifications, renewalNotifications]
 
 const getContactInformation = {
   method: 'GET',
@@ -21,7 +21,7 @@ const getContactInformation = {
       }
     }
   }
-};
+}
 
 const postContactInformation = {
   method: 'POST',
@@ -38,7 +38,7 @@ const postContactInformation = {
       }
     }
   }
-};
+}
 
-exports.getContactInformation = getContactInformation;
-exports.postContactInformation = postContactInformation;
+exports.getContactInformation = getContactInformation
+exports.postContactInformation = postContactInformation

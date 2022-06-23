@@ -1,7 +1,7 @@
-const Joi = require('joi');
-const apiController = require('./api-controller');
+const Joi = require('joi')
+const apiController = require('./api-controller')
 
-const routes = {};
+const routes = {}
 
 if (parseInt(process.env.TEST_MODE) === 1) {
   routes.findEmailByAddress = {
@@ -21,7 +21,7 @@ if (parseInt(process.env.TEST_MODE) === 1) {
         })
       }
     }
-  };
+  }
 }
 
-module.exports = routes;
+module.exports = routes

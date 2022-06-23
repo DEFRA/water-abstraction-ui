@@ -1,12 +1,12 @@
-const ServiceClient = require('../ServiceClient');
+const ServiceClient = require('../ServiceClient')
 
 class ChargeVersionWorkflowsService extends ServiceClient {
   /**
   * Fetches all licences without charge versions
   */
   getLicencesWithoutChargeInformation () {
-    const url = this.joinUrl('licences', 'without-charge-versions');
-    return this.serviceRequest.get(url);
+    const url = this.joinUrl('licences', 'without-charge-versions')
+    return this.serviceRequest.get(url)
   }
 
   /**
@@ -14,14 +14,14 @@ class ChargeVersionWorkflowsService extends ServiceClient {
    */
   getChargeVersionWorkflows (page = 1, perPage = 25, tabFilter = 'review') {
     // options: to_setup, review, changes_requested
-    const url = this.joinUrl('charge-version-workflows');
+    const url = this.joinUrl('charge-version-workflows')
     return this.serviceRequest.get(url, {
       qs: {
         page,
         perPage,
         tabFilter
       }
-    });
+    })
   }
 
   /*
@@ -29,8 +29,8 @@ class ChargeVersionWorkflowsService extends ServiceClient {
    * @param {String} licenceId
    */
   getChargeVersionWorkflow (chargeVersionWorkflowId) {
-    const url = this.joinUrl('charge-version-workflows', chargeVersionWorkflowId);
-    return this.serviceRequest.get(url);
+    const url = this.joinUrl('charge-version-workflows', chargeVersionWorkflowId)
+    return this.serviceRequest.get(url)
   }
 
   /**
@@ -38,10 +38,10 @@ class ChargeVersionWorkflowsService extends ServiceClient {
  * @param {String} licenceId
  */
   getChargeVersionWorkflowsForLicence (licenceId) {
-    const url = this.joinUrl('charge-version-workflows');
+    const url = this.joinUrl('charge-version-workflows')
     return this.serviceRequest.get(url, {
       qs: { licenceId }
-    });
+    })
   }
 
   /**
@@ -49,10 +49,10 @@ class ChargeVersionWorkflowsService extends ServiceClient {
    * @param {Object} draftChargeInformation
    */
   postChargeVersionWorkflow (draftChargeInformation) {
-    const url = this.joinUrl('charge-version-workflows');
+    const url = this.joinUrl('charge-version-workflows')
     return this.serviceRequest.post(url, {
       body: draftChargeInformation
-    });
+    })
   }
 
   /**
@@ -63,18 +63,18 @@ class ChargeVersionWorkflowsService extends ServiceClient {
     approverComments: null,
     chargeVersion: {}
   }) {
-    const { status, approverComments, chargeVersion, createdBy } = patchObject;
-    const url = this.joinUrl('charge-version-workflows', chargeVersionWorkflowId);
+    const { status, approverComments, chargeVersion, createdBy } = patchObject
+    const url = this.joinUrl('charge-version-workflows', chargeVersionWorkflowId)
     const body = {
       status,
       approverComments,
       chargeVersion
-    };
+    }
 
     if (createdBy) {
-      body.createdBy = createdBy;
+      body.createdBy = createdBy
     }
-    return this.serviceRequest.patch(url, { body });
+    return this.serviceRequest.patch(url, { body })
   }
 
   /**
@@ -82,14 +82,14 @@ class ChargeVersionWorkflowsService extends ServiceClient {
    * @param {String} chargeVersionWorkflowId guid
    */
   deleteChargeVersionWorkflow (chargeVersionWorkflowId) {
-    const url = this.joinUrl('charge-version-workflows', chargeVersionWorkflowId);
-    return this.serviceRequest.delete(url);
+    const url = this.joinUrl('charge-version-workflows', chargeVersionWorkflowId)
+    return this.serviceRequest.delete(url)
   }
 
   deleteChargeVersionWorkflowByLicenceId (licenceId, status) {
-    const url = this.joinUrl('licences/', licenceId, 'pending-charge-version-workflow', status);
-    return this.serviceRequest.delete(url);
+    const url = this.joinUrl('licences/', licenceId, 'pending-charge-version-workflow', status)
+    return this.serviceRequest.delete(url)
   }
 }
 
-module.exports = ChargeVersionWorkflowsService;
+module.exports = ChargeVersionWorkflowsService

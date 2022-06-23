@@ -1,6 +1,6 @@
-const { isObject } = require('lodash');
-const Boom = require('@hapi/boom');
-const SharedReturnsApiClient = require('shared/lib/connectors/services/returns/ReturnsApiClient');
+const { isObject } = require('lodash')
+const Boom = require('@hapi/boom')
+const SharedReturnsApiClient = require('shared/lib/connectors/services/returns/ReturnsApiClient')
 
 /**
  * Gets the filter to use for retrieving licences from returns service
@@ -17,17 +17,17 @@ const getLicenceReturnsFilter = (licenceNumbers) => {
     start_date: {
       $gte: '2008-04-01'
     }
-  };
-};
+  }
+}
 
 const getPagination = page => {
   return isObject(page)
     ? page
     : {
-      page,
-      perPage: 50
-    };
-};
+        page,
+        perPage: 50
+      }
+}
 
 class ReturnsApiClient extends SharedReturnsApiClient {
   /**
@@ -36,27 +36,27 @@ class ReturnsApiClient extends SharedReturnsApiClient {
    * @return {Promise} resolves with returns
    */
   async getLicenceReturns (licenceNumbers, page = 1) {
-    const filter = getLicenceReturnsFilter(licenceNumbers);
+    const filter = getLicenceReturnsFilter(licenceNumbers)
 
     const sort = {
       start_date: -1,
       licence_ref: 1
-    };
+    }
 
     const columns = [
       'return_id', 'licence_ref', 'start_date', 'end_date', 'metadata',
       'status', 'received_date', 'due_date', 'return_requirement'
-    ];
+    ]
 
-    const requestPagination = getPagination(page);
+    const requestPagination = getPagination(page)
 
-    const response = await this.findMany(filter, sort, requestPagination, columns);
+    const response = await this.findMany(filter, sort, requestPagination, columns)
     if (response.error) {
-      throw Boom.badImplementation('getLicenceReturns error', response.error);
+      throw Boom.badImplementation('getLicenceReturns error', response.error)
     }
 
-    return response;
+    return response
   };
 }
 
-module.exports = ReturnsApiClient;
+module.exports = ReturnsApiClient

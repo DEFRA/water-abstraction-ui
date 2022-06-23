@@ -4,17 +4,17 @@ const dropdownFactory = (name, opts = {}, value) => {
     label: '',
     widget: 'dropdown',
     required: true
-  };
+  }
   const options = {
     ...defaults,
     ...opts
-  };
+  }
   return {
     name,
     value,
     options,
     errors: []
-  };
-};
+  }
+}
 
-module.exports = dropdownFactory;
+module.exports = dropdownFactory

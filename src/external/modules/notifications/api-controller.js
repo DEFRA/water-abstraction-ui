@@ -1,5 +1,5 @@
-const services = require('../../lib/connectors/services');
-const Boom = require('@hapi/boom');
+const services = require('../../lib/connectors/services')
+const Boom = require('@hapi/boom')
 
 /**
  * Returns the last email message for a given email address.
@@ -13,14 +13,14 @@ const Boom = require('@hapi/boom');
  * @param {String} request.query.email - The email address to filter by,
  */
 async function findLastEmail (request, reply) {
-  const { email } = request.query;
-  const data = await services.water.notifications.getLatestEmailByAddress(email);
+  const { email } = request.query
+  const data = await services.water.notifications.getLatestEmailByAddress(email)
 
   if (data.data.length === 0) {
-    throw Boom.notFound(`No email found for ${email}`);
+    throw Boom.notFound(`No email found for ${email}`)
   }
 
-  return reply.response(data);
+  return reply.response(data)
 };
 
-exports.findLastEmail = findLastEmail;
+exports.findLastEmail = findLastEmail

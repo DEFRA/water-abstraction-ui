@@ -1,8 +1,8 @@
-const { APIClient, throwIfError } = require('@envage/hapi-pg-rest-api');
-const urlJoin = require('url-join');
-const { http } = require('@envage/water-abstraction-helpers');
+const { APIClient, throwIfError } = require('@envage/hapi-pg-rest-api')
+const urlJoin = require('url-join')
+const { http } = require('@envage/water-abstraction-helpers')
 
-const getEndpoint = serviceUrl => urlJoin(serviceUrl, '/entity');
+const getEndpoint = serviceUrl => urlJoin(serviceUrl, '/entity')
 
 class EntitiesApiClient extends APIClient {
   /**
@@ -11,7 +11,7 @@ class EntitiesApiClient extends APIClient {
    * @param {Object} logger The system logger object
    */
   constructor (config, logger) {
-    const serviceUrl = config.services.crm;
+    const serviceUrl = config.services.crm
 
     super(http.request, {
       serviceUrl,
@@ -20,7 +20,7 @@ class EntitiesApiClient extends APIClient {
       headers: {
         Authorization: config.jwt.token
       }
-    });
+    })
   }
 
   /**
@@ -33,26 +33,26 @@ class EntitiesApiClient extends APIClient {
     const filter = {
       entity_nm: emailAddress.toLowerCase().trim(),
       entity_type: 'individual'
-    };
+    }
 
     // Get existing entity
-    const { error, data } = await this.findMany(filter);
-    throwIfError(error);
+    const { error, data } = await this.findMany(filter)
+    throwIfError(error)
 
     if (data.length > 1) {
-      throw new Error(`${data.length} records found looking for entity with name ${emailAddress}`);
+      throw new Error(`${data.length} records found looking for entity with name ${emailAddress}`)
     }
 
     if (data.length === 1) {
-      return data[0];
+      return data[0]
     }
 
     // Create new entity
-    const response = await this.create(filter);
-    throwIfError(response.error);
+    const response = await this.create(filter)
+    throwIfError(response.error)
 
-    return response.data;
+    return response.data
   };
 }
 
-module.exports = EntitiesApiClient;
+module.exports = EntitiesApiClient

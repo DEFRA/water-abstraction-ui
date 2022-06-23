@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
-const { titleCase } = require('shared/lib/string-formatter');
+const { titleCase } = require('shared/lib/string-formatter')
 
 /**
  * Gets badge object to render for return row
@@ -9,9 +9,9 @@ const { titleCase } = require('shared/lib/string-formatter');
  * @return {Object}            - badge text and style
  */
 const getBadge = (status, isPastDueDate) => {
-  let viewStatus = ((status === 'due') && isPastDueDate) ? 'overdue' : status;
+  let viewStatus = ((status === 'due') && isPastDueDate) ? 'overdue' : status
 
-  viewStatus = (viewStatus === 'completed') ? 'complete' : viewStatus;
+  viewStatus = (viewStatus === 'completed') ? 'complete' : viewStatus
 
   const styles = {
     due: 'todo',
@@ -19,12 +19,12 @@ const getBadge = (status, isPastDueDate) => {
     void: 'inactive',
     received: 'success',
     complete: 'success'
-  };
+  }
 
   return {
     text: titleCase(viewStatus),
     status: styles[viewStatus]
-  };
-};
+  }
+}
 
-exports.getBadge = getBadge;
+exports.getBadge = getBadge

@@ -1,25 +1,25 @@
 // Shared services
-const AcceptanceTestsService = require('shared/lib/connectors/services/water/AcceptanceTestsService');
-const CommunicationsService = require('shared/lib/connectors/services/water/CommunicationsService');
-const CompaniesService = require('shared/lib/connectors/services/water/CompaniesService');
-const DocumentsService = require('shared/lib/connectors/services/water/DocumentsService');
-const LicencesService = require('shared/lib/connectors/services/water/LicencesService');
-const ReturnsService = require('shared/lib/connectors/services/water/ReturnsService');
-const UsersService = require('shared/lib/connectors/services/water/UsersService');
-const NotifyService = require('shared/lib/connectors/services/water/NotifyService');
+const AcceptanceTestsService = require('shared/lib/connectors/services/water/AcceptanceTestsService')
+const CommunicationsService = require('shared/lib/connectors/services/water/CommunicationsService')
+const CompaniesService = require('shared/lib/connectors/services/water/CompaniesService')
+const DocumentsService = require('shared/lib/connectors/services/water/DocumentsService')
+const LicencesService = require('shared/lib/connectors/services/water/LicencesService')
+const ReturnsService = require('shared/lib/connectors/services/water/ReturnsService')
+const UsersService = require('shared/lib/connectors/services/water/UsersService')
+const NotifyService = require('shared/lib/connectors/services/water/NotifyService')
 
 // Shared API Clients
-const EventsApiClient = require('shared/lib/connectors/services/water/EventsApiClient');
-const GaugingStationsApiClient = require('shared/lib/connectors/services/water/GaugingStationsApiClient');
-const PendingImportsApiClient = require('shared/lib/connectors/services/water/PendingImportsApiClient');
+const EventsApiClient = require('shared/lib/connectors/services/water/EventsApiClient')
+const GaugingStationsApiClient = require('shared/lib/connectors/services/water/GaugingStationsApiClient')
+const PendingImportsApiClient = require('shared/lib/connectors/services/water/PendingImportsApiClient')
 
 // Services
-const ChangeEmailAddressService = require('./ChangeEmailAddressService');
+const ChangeEmailAddressService = require('./ChangeEmailAddressService')
 
 // API Clients
-const NotificationsApiClient = require('./NotificationsApiClient');
+const NotificationsApiClient = require('./NotificationsApiClient')
 
-const { logger } = require('../../../../logger');
+const { logger } = require('../../../../logger')
 
 module.exports = config => ({
   // Shared services
@@ -42,4 +42,4 @@ module.exports = config => ({
 
   // API Clients
   notifications: new NotificationsApiClient(config, logger)
-});
+})

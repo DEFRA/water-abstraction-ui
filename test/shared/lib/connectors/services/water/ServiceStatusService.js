@@ -1,33 +1,33 @@
-const sinon = require('sinon');
-const sandbox = sinon.createSandbox();
+const sinon = require('sinon')
+const sandbox = sinon.createSandbox()
 
 const {
   experiment,
   beforeEach,
   afterEach,
   test
-} = exports.lab = require('@hapi/lab').script();
-const { expect } = require('@hapi/code');
+} = exports.lab = require('@hapi/lab').script()
+const { expect } = require('@hapi/code')
 
-const ServiceStatusService = require('internal/lib/connectors/services/water/ServiceStatusService');
-const { serviceRequest } = require('@envage/water-abstraction-helpers');
+const ServiceStatusService = require('internal/lib/connectors/services/water/ServiceStatusService')
+const { serviceRequest } = require('@envage/water-abstraction-helpers')
 
 experiment('services/water/ServiceStatusService', () => {
   beforeEach(async () => {
-    sandbox.stub(serviceRequest, 'get');
-  });
+    sandbox.stub(serviceRequest, 'get')
+  })
 
   afterEach(async () => {
-    sandbox.restore();
-  });
+    sandbox.restore()
+  })
 
   experiment('.getServiceStatus', () => {
     test('passes the expected URL to the service request', async () => {
-      const service = new ServiceStatusService('http://127.0.0.1:8001/water/1.0');
-      await service.getServiceStatus();
-      const expectedUrl = 'http://127.0.0.1:8001/water/1.0/service-status';
-      const [url] = serviceRequest.get.lastCall.args;
-      expect(url).to.equal(expectedUrl);
-    });
-  });
-});
+      const service = new ServiceStatusService('http://127.0.0.1:8001/water/1.0')
+      await service.getServiceStatus()
+      const expectedUrl = 'http://127.0.0.1:8001/water/1.0/service-status'
+      const [url] = serviceRequest.get.lastCall.args
+      expect(url).to.equal(expectedUrl)
+    })
+  })
+})

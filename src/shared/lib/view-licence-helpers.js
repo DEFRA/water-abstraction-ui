@@ -5,21 +5,21 @@
  * @return {Object}           view data
  */
 const getCommonViewContext = request => {
-  const { documentId } = request.params;
+  const { documentId } = request.params
   return {
     ...request.view,
     ...request.licence,
     documentId
-  };
-};
+  }
+}
 
 const getCommonBackLink = request => {
-  const { documentId } = request.params;
+  const { documentId } = request.params
   return {
     back: `/licences/${documentId}`,
     backText: 'Back'
-  };
-};
+  }
+}
 
-exports.getCommonViewContext = getCommonViewContext;
-exports.getCommonBackLink = getCommonBackLink;
+exports.getCommonViewContext = getCommonViewContext
+exports.getCommonBackLink = getCommonBackLink

@@ -1,7 +1,7 @@
 const { getContinueField, getCsrfTokenField } =
- require('shared/modules/returns/forms/common');
-const { getUnitsField } = require('shared/modules/returns/forms/units');
-const { formFactory, setValues } = require('shared/lib/forms');
+ require('shared/modules/returns/forms/common')
+const { getUnitsField } = require('shared/modules/returns/forms/units')
+const { formFactory, setValues } = require('shared/lib/forms')
 
 exports.form = (request, data) => setValues({
   ...formFactory(),
@@ -10,4 +10,4 @@ exports.form = (request, data) => setValues({
     getUnitsField('Which units were used?'),
     getContinueField()
   ]
-}, { units: data.reading.units });
+}, { units: data.reading.units })

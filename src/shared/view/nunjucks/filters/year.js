@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
-const { isNil } = require('lodash');
-const moment = require('moment');
+const { isNil } = require('lodash')
+const moment = require('moment')
 
 /**
  * Format a timestamp to YYYY
@@ -10,10 +10,10 @@ const moment = require('moment');
  */
 const year = value => {
   if (isNil(value)) {
-    return undefined;
+    return undefined
   }
-  const m = moment(value);
-  return m.isValid() ? m.format('YYYY') : undefined;
-};
+  const m = moment(value)
+  return m.isValid() ? m.format('YYYY') : undefined
+}
 
-exports.year = year;
+exports.year = year

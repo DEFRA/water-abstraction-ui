@@ -1,4 +1,4 @@
-const config = require('./config');
-const { create } = require('shared/lib/logger-factory');
+const config = require('./config')
+const { create } = require('shared/lib/logger-factory')
 
-exports.logger = create(config);
+exports.logger = create(config)

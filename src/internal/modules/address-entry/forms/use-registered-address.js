@@ -1,18 +1,18 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
+const Joi = require('joi')
 
-const { formFactory, fields } = require('shared/lib/forms');
-const { isEqual, pick, isEmpty, get } = require('lodash');
-const session = require('../lib/session');
+const { formFactory, fields } = require('shared/lib/forms')
+const { isEqual, pick, isEmpty, get } = require('lodash')
+const session = require('../lib/session')
 
-const ADDRESS_FIELDS = ['addressLine1', 'addressLine2', 'addressLine3', 'addressLine4', 'town', 'county', 'postcode', 'country'];
+const ADDRESS_FIELDS = ['addressLine1', 'addressLine2', 'addressLine3', 'addressLine4', 'town', 'county', 'postcode', 'country']
 
-const getAddressForComparison = address => pick(address, ADDRESS_FIELDS);
+const getAddressForComparison = address => pick(address, ADDRESS_FIELDS)
 
 const isSameAddress = (addressA, addressB) => isEqual(
   ...[addressA, addressB].map(getAddressForComparison)
-);
+)
 
 /**
  * Gets the form value - this is a boolean value if the address is set, or null otherwise
@@ -21,14 +21,14 @@ const isSameAddress = (addressA, addressB) => isEqual(
  */
 const isRegisteredAddressSelected = request => {
   // Get the address from session data
-  const { key } = request.params;
-  const address = get(session.get(request, key), 'data', {});
+  const { key } = request.params
+  const address = get(session.get(request, key), 'data', {})
 
   // Get registered address from request.pre
-  const { address: registeredAddress } = request.pre.company;
+  const { address: registeredAddress } = request.pre.company
 
-  return isEmpty(address) ? null : isSameAddress(address, registeredAddress);
-};
+  return isEmpty(address) ? null : isSameAddress(address, registeredAddress)
+}
 
 /**
  * Creates an object to represent the form for capturing the
@@ -38,9 +38,9 @@ const isRegisteredAddressSelected = request => {
  * @param {String} postcode The UK postcode
  */
 const form = request => {
-  const { csrfToken } = request.view;
+  const { csrfToken } = request.view
 
-  const f = formFactory(request.path);
+  const f = formFactory(request.path)
 
   f.fields.push(fields.radio('useRegisteredAddress', {
     label: 'Use the registered office address?',
@@ -61,18 +61,18 @@ const form = request => {
         message: 'Select whether to use the registered office address'
       }
     }
-  }, isRegisteredAddressSelected(request)));
+  }, isRegisteredAddressSelected(request)))
 
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
 
-  return f;
-};
+  return f
+}
 
 const schema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   useRegisteredAddress: Joi.boolean().required()
-});
+})
 
-exports.form = form;
-exports.schema = schema;
+exports.form = form
+exports.schema = schema

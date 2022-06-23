@@ -1,20 +1,20 @@
-'use strict';
+'use strict'
 
-const { licenceHolder, colleague, colleagueWithReturns } = require('./constants').scope;
-const { getReturnPath } = require('./return-path');
-const services = require('./connectors/services');
+const { licenceHolder, colleague, colleagueWithReturns } = require('./constants').scope
+const { getReturnPath } = require('./return-path')
+const services = require('./connectors/services')
 
 const getLicenceSummaryReturns = licenceNumber => {
   return services.returns.returns.getLicenceReturns([licenceNumber], {
     page: 1,
     perPage: 10
-  });
-};
+  })
+}
 
-exports.allowedScopes = [licenceHolder, colleague, colleagueWithReturns];
-exports.getReturnPath = getReturnPath;
-exports.getLicenceSummaryReturns = getLicenceSummaryReturns;
-exports.getCommunication = services.water.communications.getCommunication.bind(services.water.communications);
+exports.allowedScopes = [licenceHolder, colleague, colleagueWithReturns]
+exports.getReturnPath = getReturnPath
+exports.getLicenceSummaryReturns = getLicenceSummaryReturns
+exports.getCommunication = services.water.communications.getCommunication.bind(services.water.communications)
 
 /**
  * Should the licence view show charging information to this external user?
@@ -24,6 +24,6 @@ exports.getCommunication = services.water.communications.getCommunication.bind(s
  * @param {Object} request The HAPI request object
  * @returns {Boolean} True if this user can see charging details
  */
-exports.canShowCharging = request => false;
+exports.canShowCharging = request => false
 
-exports.isSummaryPageEnabled = true;
+exports.isSummaryPageEnabled = true

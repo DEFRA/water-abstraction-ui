@@ -1,4 +1,4 @@
-const { fields } = require('shared/lib/forms');
+const { fields } = require('shared/lib/forms')
 
 const getIsNilField = label => fields.radio('isNil', {
   label,
@@ -13,6 +13,6 @@ const getIsNilField = label => fields.radio('isNil', {
     { value: false, label: 'Yes' },
     { value: true, label: 'No' }
   ]
-});
+})
 
-exports.getIsNilField = getIsNilField;
+exports.getIsNilField = getIsNilField

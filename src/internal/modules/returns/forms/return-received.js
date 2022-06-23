@@ -1,14 +1,14 @@
-const Joi = require('joi');
-const { formFactory, fields } = require('shared/lib/forms');
-const moment = require('moment');
+const Joi = require('joi')
+const { formFactory, fields } = require('shared/lib/forms')
+const moment = require('moment')
 
 const { getContinueField, getCsrfTokenField } =
- require('shared/modules/returns/forms/common');
+ require('shared/modules/returns/forms/common')
 
 const errorMessage = {
   message: 'Enter a date in the right format, for example 31 3 2018',
   summary: 'Enter a date in the right format'
-};
+}
 
 const getDateField = value => fields.date('customDate', {
   label: 'When was the return received?',
@@ -16,7 +16,7 @@ const getDateField = value => fields.date('customDate', {
     'any.required': errorMessage,
     'string.isoDate': errorMessage
   }
-}, value);
+}, value)
 
 /**
  * Given a date, returns either 'today', 'yesterday' or 'custom'
@@ -25,15 +25,15 @@ const getDateField = value => fields.date('customDate', {
  */
 const getReceivedDate = date => {
   if (moment().isSame(date, 'day')) {
-    return 'today';
+    return 'today'
   }
   if (moment().subtract(1, 'day').isSame(date, 'day')) {
-    return 'yesterday';
+    return 'yesterday'
   }
   if (date) {
-    return 'custom';
+    return 'custom'
   }
-};
+}
 
 const getRadioField = value => fields.radio('receivedDate', {
   label: 'When was the return received?',
@@ -60,7 +60,7 @@ const getRadioField = value => fields.radio('receivedDate', {
       ]
     }
   ]
-}, getReceivedDate(value));
+}, getReceivedDate(value))
 
 exports.form = (request, data) => ({
   ...formFactory(),
@@ -70,7 +70,7 @@ exports.form = (request, data) => ({
     getContinueField()
   ]
 }
-);
+)
 
 exports.schema = () => Joi.object().keys({
   csrf_token: Joi.string().guid(),
@@ -79,4 +79,4 @@ exports.schema = () => Joi.object().keys({
     is: 'custom',
     then: Joi.string().isoDate().options({ convert: false })
   })
-});
+})

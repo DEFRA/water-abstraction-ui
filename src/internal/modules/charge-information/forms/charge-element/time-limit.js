@@ -1,10 +1,10 @@
-'use strict';
+'use strict'
 
-const { has } = require('lodash');
-const { formFactory, fields } = require('shared/lib/forms/');
-const Joi = require('joi');
-const { CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants');
-const { getChargeElementData, getChargeElementActionUrl } = require('../../lib/form-helpers');
+const { has } = require('lodash')
+const { formFactory, fields } = require('shared/lib/forms/')
+const Joi = require('joi')
+const { CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants')
+const { getChargeElementData, getChargeElementActionUrl } = require('../../lib/form-helpers')
 
 /**
  * returns the errors for the start and end date form fields
@@ -27,12 +27,12 @@ const getError = (key) => {
     beforeElementStart: {
       message: 'Enter an end date that is after the start date'
     }
-  };
-};
+  }
+}
 
 const getDates = data => (has(data, 'timeLimitedPeriod.startDate'))
   ? data.timeLimitedPeriod
-  : { startDate: null, endDate: null };
+  : { startDate: null, endDate: null }
 
 /**
  * This method returns a date field - it is extracted to avoid code duplication
@@ -53,8 +53,8 @@ const getDateField = (key, data) => {
       'date.base': getError(key).invalid,
       'date.greater': getError(key).beforeElementStart
     }
-  }, getDates(data)[key + 'Date']);
-};
+  }, getDates(data)[key + 'Date'])
+}
 
 const options = (data) => {
   return [
@@ -64,16 +64,16 @@ const options = (data) => {
       fields: [getDateField('start', data), getDateField('end', data)]
     },
     { value: 'no', label: 'No' }
-  ];
-};
+  ]
+}
 
 const getSelectedValue = data => {
   if (!(has(data, 'timeLimitedPeriod'))) {
-    return '';
+    return ''
   } else {
-    return !data.timeLimitedPeriod ? 'no' : 'yes';
+    return !data.timeLimitedPeriod ? 'no' : 'yes'
   }
-};
+}
 
 /**
  * Form to request if an FAO contact should be added to the invoice account
@@ -82,11 +82,11 @@ const getSelectedValue = data => {
  * @param {Boolean}  selected value used to determine what radio option should be checked
   */
 const form = request => {
-  const { csrfToken } = request.view;
-  const data = getChargeElementData(request);
-  const action = getChargeElementActionUrl(request, CHARGE_ELEMENT_STEPS.timeLimit);
+  const { csrfToken } = request.view
+  const data = getChargeElementData(request)
+  const action = getChargeElementActionUrl(request, CHARGE_ELEMENT_STEPS.timeLimit)
 
-  const f = formFactory(action, 'POST');
+  const f = formFactory(action, 'POST')
 
   f.fields.push(fields.radio('timeLimitedPeriod', {
     errors: {
@@ -95,16 +95,16 @@ const form = request => {
       }
     },
     choices: options(data)
-  }, getSelectedValue(data)));
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
+  }, getSelectedValue(data)))
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
 
-  return f;
-};
+  return f
+}
 
 const schema = (request) => {
-  const { startDate } = request.pre.draftChargeInformation.dateRange;
-  const expiredDate = request.pre.licence.expiredDate || '9999-01-01';
+  const { startDate } = request.pre.draftChargeInformation.dateRange
+  const expiredDate = request.pre.licence.expiredDate || '9999-01-01'
   return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
     timeLimitedPeriod: Joi.string().required().allow('yes', 'no'),
@@ -116,8 +116,8 @@ const schema = (request) => {
       is: 'yes',
       then: Joi.date().iso().greater(Joi.ref('startDate')).max(expiredDate).required()
     })
-  });
-};
+  })
+}
 
-exports.schema = schema;
-exports.form = form;
+exports.schema = schema
+exports.form = form

@@ -1,10 +1,10 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
-const { formFactory, fields } = require('shared/lib/forms/');
-const { capitalize, has } = require('lodash');
-const { CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants');
-const { getChargeElementData, getChargeElementActionUrl } = require('../../lib/form-helpers');
+const Joi = require('joi')
+const { formFactory, fields } = require('shared/lib/forms/')
+const { capitalize, has } = require('lodash')
+const { CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants')
+const { getChargeElementData, getChargeElementActionUrl } = require('../../lib/form-helpers')
 
 const errors = {
   empty: {
@@ -16,10 +16,10 @@ const errors = {
   invalidEnd: {
     message: 'Enter a real end date'
   }
-};
+}
 
 const getFormField = (key, date) => {
-  const name = capitalize(key);
+  const name = capitalize(key)
   return fields.date(`${key}Date`, {
     label: `${name} date`,
     subHeading: true,
@@ -33,14 +33,14 @@ const getFormField = (key, date) => {
       'date.isoDate': errors[`invalid${name}`],
       'date.base': errors[`invalid${name}`]
     }
-  }, date);
-};
+  }, date)
+}
 
 const getSessionDates = (key, data) => {
   return has(data, `abstractionPeriod.${key}Day`)
     ? data.abstractionPeriod[`${key}Month`] + '-' + data.abstractionPeriod[`${key}Day`]
-    : '';
-};
+    : ''
+}
 
 /**
  * Form to request the abstraction period
@@ -49,23 +49,23 @@ const getSessionDates = (key, data) => {
  * @param {Boolean}  data object containing selected and default options for the form
   */
 const form = request => {
-  const { csrfToken } = request.view;
-  const data = getChargeElementData(request);
-  const action = getChargeElementActionUrl(request, CHARGE_ELEMENT_STEPS.abstractionPeriod);
+  const { csrfToken } = request.view
+  const data = getChargeElementData(request)
+  const action = getChargeElementActionUrl(request, CHARGE_ELEMENT_STEPS.abstractionPeriod)
 
-  const f = formFactory(action, 'POST');
-  f.fields.push(getFormField('start', getSessionDates('start', data)));
-  f.fields.push(getFormField('end', getSessionDates('end', data)));
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
-  return f;
-};
+  const f = formFactory(action, 'POST')
+  f.fields.push(getFormField('start', getSessionDates('start', data)))
+  f.fields.push(getFormField('end', getSessionDates('end', data)))
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
+  return f
+}
 
 const schema = (request) => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   startDate: Joi.date().raw().required(),
   endDate: Joi.date().required()
-});
+})
 
-exports.schema = schema;
-exports.form = form;
+exports.schema = schema
+exports.form = form

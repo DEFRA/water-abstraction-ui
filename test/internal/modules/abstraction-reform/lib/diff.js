@@ -1,10 +1,10 @@
-require('dotenv').config();
-const Lab = require('@hapi/lab');
-const { expect } = require('@hapi/code');
+require('dotenv').config()
+const Lab = require('@hapi/lab')
+const { expect } = require('@hapi/code')
 
-const { diff } = require('internal/modules/abstraction-reform/lib/diff');
+const { diff } = require('internal/modules/abstraction-reform/lib/diff')
 
-const { experiment, test } = exports.lab = Lab.script();
+const { experiment, test } = exports.lab = Lab.script()
 
 const baseData = {
   stringField: 'test',
@@ -13,28 +13,28 @@ const baseData = {
   objectField: {
     foo: 'bar'
   }
-};
+}
 
 experiment('Test diff', () => {
   test('It should return null if no change', async () => {
-    expect(diff(baseData, baseData)).to.equal(null);
-  });
+    expect(diff(baseData, baseData)).to.equal(null)
+  })
 
   test('It should detect a change to a string field', async () => {
     const data = {
       ...baseData,
       stringField: 'hello'
-    };
-    expect(diff(baseData, data)).to.equal({ stringField: data.stringField });
-  });
+    }
+    expect(diff(baseData, data)).to.equal({ stringField: data.stringField })
+  })
 
   test('It should detect a change to a numeric field', async () => {
     const data = {
       ...baseData,
       numberField: 123.5
-    };
-    expect(diff(baseData, data)).to.equal({ numberField: data.numberField });
-  });
+    }
+    expect(diff(baseData, data)).to.equal({ numberField: data.numberField })
+  })
 
   test('It should detect a change to an object property', async () => {
     const data = {
@@ -42,9 +42,9 @@ experiment('Test diff', () => {
       objectField: {
         foo: 'boo'
       }
-    };
-    expect(diff(baseData, data)).to.equal({ objectField: data.objectField });
-  });
+    }
+    expect(diff(baseData, data)).to.equal({ objectField: data.objectField })
+  })
 
   test('It should detect the addition of an object property', async () => {
     const data = {
@@ -53,15 +53,15 @@ experiment('Test diff', () => {
         ...baseData.objectField,
         bar: 'foo'
       }
-    };
-    expect(diff(baseData, data)).to.equal({ objectField: data.objectField });
-  });
+    }
+    expect(diff(baseData, data)).to.equal({ objectField: data.objectField })
+  })
 
   test('It should detect the addition of a new property', async () => {
     const data = {
       ...baseData,
       newField: 'test'
-    };
-    expect(diff(baseData, data)).to.equal({ newField: 'test' });
-  });
-});
+    }
+    expect(diff(baseData, data)).to.equal({ newField: 'test' })
+  })
+})

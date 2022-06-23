@@ -1,27 +1,27 @@
-const Joi = require('joi');
-const moment = require('moment');
-const { first, last, get } = require('lodash');
-const { formFactory, fields, setValues } = require('shared/lib/forms');
+const Joi = require('joi')
+const moment = require('moment')
+const { first, last, get } = require('lodash')
+const { formFactory, fields, setValues } = require('shared/lib/forms')
 const { getContinueField, getCsrfTokenField } =
- require('shared/modules/returns/forms/common');
+ require('shared/modules/returns/forms/common')
 
 const dateError = {
   message: 'Enter a date in the right format, for example 31 3 2018',
   summary: 'Enter a date in the right format'
-};
+}
 
 const mapDataToForm = data => {
-  const { totalCustomDates, totalCustomDateStart, totalCustomDateEnd } = get(data, 'reading', {});
+  const { totalCustomDates, totalCustomDateStart, totalCustomDateEnd } = get(data, 'reading', {})
 
   if (totalCustomDates === true) {
     return {
       totalCustomDates,
       totalCustomDateStart: moment(totalCustomDateStart).format('YYYY-MM-DD'),
       totalCustomDateEnd: moment(totalCustomDateEnd).format('YYYY-MM-DD')
-    };
+    }
   }
-  return { totalCustomDates };
-};
+  return { totalCustomDates }
+}
 
 const getRadioField = () => fields.radio('totalCustomDates', {
   label: 'What period was used for this volume?',
@@ -78,7 +78,7 @@ const getRadioField = () => fields.radio('totalCustomDates', {
         })
       ]
     }]
-});
+})
 
 exports.form = (request, data) => setValues({
   ...formFactory(),
@@ -87,14 +87,14 @@ exports.form = (request, data) => setValues({
     getCsrfTokenField(request),
     getContinueField()
   ]
-}, mapDataToForm(data));
+}, mapDataToForm(data))
 
-const formatLineDateForValidation = date => moment(date, 'YYYY-MM-DD').format('MM-DD-YYYY');
+const formatLineDateForValidation = date => moment(date, 'YYYY-MM-DD').format('MM-DD-YYYY')
 
 exports.schema = (request, returnData) => {
-  const lines = returnData.lines;
-  const startDate = formatLineDateForValidation(first(lines).startDate);
-  const endDate = formatLineDateForValidation(last(lines).endDate);
+  const lines = returnData.lines
+  const startDate = formatLineDateForValidation(first(lines).startDate)
+  const endDate = formatLineDateForValidation(last(lines).endDate)
 
   return Joi.object().keys({
     totalCustomDates: Joi.boolean().required(),
@@ -107,5 +107,5 @@ exports.schema = (request, returnData) => {
       then: Joi.date().max(endDate).greater(Joi.ref('totalCustomDateStart')).required()
     }),
     csrf_token: Joi.string().guid().required()
-  });
-};
+  })
+}

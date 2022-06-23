@@ -1,7 +1,7 @@
-const moment = require('moment');
-const Boom = require('@hapi/boom');
-const { isObject } = require('lodash');
-const SharedReturnsApiClient = require('shared/lib/connectors/services/returns/ReturnsApiClient');
+const moment = require('moment')
+const Boom = require('@hapi/boom')
+const { isObject } = require('lodash')
+const SharedReturnsApiClient = require('shared/lib/connectors/services/returns/ReturnsApiClient')
 
 /**
  * Gets the filter to use for retrieving licences from returns service
@@ -24,23 +24,23 @@ const getLicenceReturnsFilter = (licenceNumbers, showFutureReturns = false) => {
     },
     'metadata->>isCurrent': 'true',
     status: { $ne: 'void' }
-  };
+  }
 
   // External users on production-like environments can only view returns where
   // return cycle is in the past
   if (showFutureReturns) {
-    delete filter.end_date;
+    delete filter.end_date
   }
 
-  return filter;
-};
+  return filter
+}
 
 const getPagination = page => isObject(page)
   ? page
   : {
-    page,
-    perPage: 50
-  };
+      page,
+      perPage: 50
+    }
 
 class ReturnsApiClient extends SharedReturnsApiClient {
   /**
@@ -50,27 +50,27 @@ class ReturnsApiClient extends SharedReturnsApiClient {
    * @return {Promise} resolves with returns
    */
   async getLicenceReturns (licenceNumbers, page = 1) {
-    const filter = getLicenceReturnsFilter(licenceNumbers, this.showFutureReturns);
+    const filter = getLicenceReturnsFilter(licenceNumbers, this.showFutureReturns)
 
     const sort = {
       start_date: -1,
       licence_ref: 1
-    };
+    }
 
     const columns = [
       'return_id', 'licence_ref', 'start_date', 'end_date', 'metadata',
       'status', 'received_date', 'due_date', 'return_requirement'
-    ];
+    ]
 
-    const pagination = getPagination(page);
+    const pagination = getPagination(page)
 
-    const response = await this.findMany(filter, sort, pagination, columns);
+    const response = await this.findMany(filter, sort, pagination, columns)
     if (response.error) {
-      throw Boom.badImplementation('Returns error', response.error);
+      throw Boom.badImplementation('Returns error', response.error)
     }
 
-    return response;
+    return response
   };
 }
 
-module.exports = ReturnsApiClient;
+module.exports = ReturnsApiClient

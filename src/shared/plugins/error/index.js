@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 /**
  * HAPI error plugin
@@ -8,67 +8,67 @@
  *
  * @module lib/hapi-error-plugin
  */
-const { get, pick } = require('lodash');
+const { get, pick } = require('lodash')
 
-const getStatusCode = request => get(request, 'response.output.statusCode');
+const getStatusCode = request => get(request, 'response.output.statusCode')
 
-const is404 = request => getStatusCode(request) === 404;
+const is404 = request => getStatusCode(request) === 404
 
 const isIgnored = request =>
-  get(request, 'route.settings.plugins.errorPlugin.ignore', false);
+  get(request, 'route.settings.plugins.errorPlugin.ignore', false)
 
 const isCsrfError = request =>
-  get(request, 'response.data.isCsrfError', false);
+  get(request, 'response.data.isCsrfError', false)
 
 const getErrorPageTitle = request => {
-  return is404(request) ? 'We cannot find that page' : 'Something went wrong';
-};
+  return is404(request) ? 'We cannot find that page' : 'Something went wrong'
+}
 
 const getErrorPageContext = request => ({
   ...request.view,
   pageTitle: getErrorPageTitle(request)
-});
+})
 
 const getErrorTemplate = request => {
-  return `nunjucks/errors/${is404(request) ? '404' : 'error'}`;
-};
+  return `nunjucks/errors/${is404(request) ? '404' : 'error'}`
+}
 
 const _handler = async (request, h) => {
-  const res = request.response;
-  const { pluginOptions } = h.realm;
+  const res = request.response
+  const { pluginOptions } = h.realm
 
   if (isIgnored(request) || !res.isBoom) {
-    return h.continue;
+    return h.continue
   }
 
   // Destroy session for CSRF error
   if (isCsrfError(request)) {
-    pluginOptions.logger.info(pick(res, ['error', 'message', 'statusCode', 'stack']));
-    return request.logOut();
+    pluginOptions.logger.info(pick(res, ['error', 'message', 'statusCode', 'stack']))
+    return request.logOut()
   }
 
-  pluginOptions.logger.errorWithJourney('Unexpected error', res, request, pick(res, ['error', 'message', 'statusCode', 'stack']));
+  pluginOptions.logger.errorWithJourney('Unexpected error', res, request, pick(res, ['error', 'message', 'statusCode', 'stack']))
 
   // Render 404 or 500 page depending on statusCode
-  const context = getErrorPageContext(request);
-  const template = getErrorTemplate(request);
-  const statusCode = getStatusCode(request);
-  return h.view(template, context).code(statusCode);
-};
+  const context = getErrorPageContext(request)
+  const template = getErrorTemplate(request)
+  const statusCode = getStatusCode(request)
+  return h.view(template, context).code(statusCode)
+}
 
 const errorPlugin = {
   register: (server, options) => {
     server.ext({
       type: 'onPreResponse',
       method: _handler
-    });
+    })
   },
 
   pkg: {
     name: 'errorPlugin',
     version: '2.0.0'
   }
-};
+}
 
-module.exports = errorPlugin;
-module.exports._handler = _handler;
+module.exports = errorPlugin
+module.exports._handler = _handler

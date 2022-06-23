@@ -1,5 +1,5 @@
-const Joi = require('joi');
-const { formFactory, fields, setValues } = require('shared/lib/forms');
+const Joi = require('joi')
+const { formFactory, fields, setValues } = require('shared/lib/forms')
 
 /**
  * Creates a form object for internal users to search by name, return, licence
@@ -8,7 +8,7 @@ const { formFactory, fields, setValues } = require('shared/lib/forms');
  * @return {Object}       form object
  */
 const form = (query) => {
-  const f = formFactory('/licences', 'GET');
+  const f = formFactory('/licences', 'GET')
 
   f.fields.push(fields.text('query', {
     widget: 'search',
@@ -18,16 +18,16 @@ const form = (query) => {
         message: 'Enter a licence number, customer name, returns ID, registered email address or monitoring station'
       }
     }
-  }));
+  }))
 
-  return setValues(f, { query });
-};
+  return setValues(f, { query })
+}
 
 const schema = () => Joi.object().keys({
   query: Joi.string().trim().required()
-});
+})
 
 module.exports = {
   searchForm: form,
   searchFormSchema: schema
-};
+}

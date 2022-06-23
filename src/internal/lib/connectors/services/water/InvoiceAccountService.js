@@ -1,6 +1,6 @@
-const ServiceClient = require('shared/lib/connectors/services/ServiceClient');
+const ServiceClient = require('shared/lib/connectors/services/ServiceClient')
 
-const pathPrefix = 'invoice-accounts';
+const pathPrefix = 'invoice-accounts'
 
 class InvoiceAccountService extends ServiceClient {
   /**
@@ -8,8 +8,8 @@ class InvoiceAccountService extends ServiceClient {
    * @param {String} invoiceAccountId
    */
   getInvoiceAccount (invoiceAccountId) {
-    const uri = this.joinUrl(pathPrefix, invoiceAccountId);
-    return this.serviceRequest.get(uri);
+    const uri = this.joinUrl(pathPrefix, invoiceAccountId)
+    return this.serviceRequest.get(uri)
   }
 
   /**
@@ -21,8 +21,8 @@ class InvoiceAccountService extends ServiceClient {
    * @param {Object} data.address
    */
   createInvoiceAccountAddress (invoiceAccountId, data) {
-    const uri = this.joinUrl(pathPrefix, invoiceAccountId, 'addresses');
-    return this.serviceRequest.post(uri, { body: data });
+    const uri = this.joinUrl(pathPrefix, invoiceAccountId, 'addresses')
+    return this.serviceRequest.post(uri, { body: data })
   }
 
   /**
@@ -31,8 +31,8 @@ class InvoiceAccountService extends ServiceClient {
    * @param {String} invoiceAccountId
    */
   getLicences (invoiceAccountId) {
-    const uri = this.joinUrl(pathPrefix, invoiceAccountId, 'licences');
-    return this.serviceRequest.get(uri);
+    const uri = this.joinUrl(pathPrefix, invoiceAccountId, 'licences')
+    return this.serviceRequest.get(uri)
   }
 
   /**
@@ -43,14 +43,14 @@ class InvoiceAccountService extends ServiceClient {
    * @returns {Promise<Object>} { data : [], pagination }
    */
   getInvoiceAccountInvoices (invoiceAccountId, page = 1, perPage = 10) {
-    const uri = this.joinUrl(pathPrefix, invoiceAccountId, 'invoices');
+    const uri = this.joinUrl(pathPrefix, invoiceAccountId, 'invoices')
     return this.serviceRequest.get(uri, {
       qs: {
         page,
         perPage
       }
-    });
+    })
   }
 }
 
-module.exports = InvoiceAccountService;
+module.exports = InvoiceAccountService

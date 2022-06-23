@@ -22,4 +22,4 @@ module.exports = {
   ...require('shared/view/nunjucks/filters/unit-conversion'),
   ...require('shared/view/nunjucks/filters/units'),
   ...require('shared/view/nunjucks/filters/html-decode')
-};
+}

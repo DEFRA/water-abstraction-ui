@@ -1,5 +1,5 @@
-const moment = require('moment');
-const { get, groupBy, mapValues, pick } = require('lodash');
+const moment = require('moment')
+const { get, groupBy, mapValues, pick } = require('lodash')
 
 /**
  * Maps data from current request to the body expected in the postUploadPreview
@@ -7,14 +7,14 @@ const { get, groupBy, mapValues, pick } = require('lodash');
  * @param  {Object} request - current HAPI request
  * @return {Object} qs options for postUploadPreview
  */
-const mapRequestOptions = request => pick(request.defra, ['userName', 'entityId', 'companyId']);
+const mapRequestOptions = request => pick(request.defra, ['userName', 'entityId', 'companyId'])
 
-const getReturnRequirmentFromId = returnId => returnId.split(':')[3];
+const getReturnRequirmentFromId = returnId => returnId.split(':')[3]
 
 const getReturnQuantitiesPath = (ret, eventId) => {
-  const hasErrors = ret.errors.length > 0;
-  return hasErrors ? null : `/returns/upload-summary/${eventId}/${ret.returnId}`;
-};
+  const hasErrors = ret.errors.length > 0
+  return hasErrors ? null : `/returns/upload-summary/${eventId}/${ret.returnId}`
+}
 
 /**
  * Maps return from water service returns API call to shape expected by view
@@ -27,39 +27,39 @@ const mapReturn = (ret, eventId) => {
     ...ret,
     returnRequirement: getReturnRequirmentFromId(ret.returnId),
     path: getReturnQuantitiesPath(ret, eventId)
-  };
-};
+  }
+}
 
-const hasErrors = ret => get(ret, 'errors.length') > 0;
-const getGroup = ret => hasErrors(ret) ? 'returnsWithErrors' : 'returnsWithoutErrors';
+const hasErrors = ret => get(ret, 'errors.length') > 0
+const getGroup = ret => hasErrors(ret) ? 'returnsWithErrors' : 'returnsWithoutErrors'
 /**
  * Groups and maps returns into those with and without validation errors
  * @param  {Array} returns - an array of returns from the upload validation endpoint
  * @return {Object} two groups of returns, { returnsWithErrors, returnsWithoutErrors }
  */
 const groupReturns = (returns, eventId) => {
-  const mapped = returns.map(ret => mapReturn(ret, eventId));
-  return groupBy(mapped, getGroup);
-};
+  const mapped = returns.map(ret => mapReturn(ret, eventId))
+  return groupBy(mapped, getGroup)
+}
 
 const groupLines = (ret) => {
   if (ret.frequency !== 'day') {
-    return [{ lines: ret.lines }];
+    return [{ lines: ret.lines }]
   }
   // Group returns by month
-  const obj = groupBy(ret.lines, line => moment(line.startDate).format('MMMM YYYY'));
+  const obj = groupBy(ret.lines, line => moment(line.startDate).format('MMMM YYYY'))
 
   const mapped = mapValues(obj, (lines, key) => {
     return {
       title: key,
       lines
-    };
-  });
+    }
+  })
 
-  return Object.values(mapped);
-};
+  return Object.values(mapped)
+}
 
-exports.mapRequestOptions = mapRequestOptions;
-exports.mapReturn = mapReturn;
-exports.groupReturns = groupReturns;
-exports.groupLines = groupLines;
+exports.mapRequestOptions = mapRequestOptions
+exports.mapReturn = mapReturn
+exports.groupReturns = groupReturns
+exports.groupLines = groupLines

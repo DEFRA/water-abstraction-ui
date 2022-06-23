@@ -8,9 +8,9 @@ const CHARGE_ELEMENT_STEPS = {
   season: 'season',
   loss: 'loss',
   agreements: 'agreements'
-};
+}
 
-const CHARGE_ELEMENT_FIRST_STEP = CHARGE_ELEMENT_STEPS.purpose;
+const CHARGE_ELEMENT_FIRST_STEP = CHARGE_ELEMENT_STEPS.purpose
 
 /**
  * flowConfig is used to define the
@@ -27,31 +27,31 @@ const ROUTING_CONFIG = {
   season: { pageTitle: 'Select season', nextStep: CHARGE_ELEMENT_STEPS.loss, back: CHARGE_ELEMENT_STEPS.source },
   loss: { pageTitle: 'Select loss category', nextStep: CHARGE_ELEMENT_STEPS.agreements, back: CHARGE_ELEMENT_STEPS.season, backSroc: CHARGE_ELEMENT_STEPS.timeLimit },
   agreements: { pageTitle: 'Should two-part-tariff agreements apply to this element?', back: CHARGE_ELEMENT_STEPS.loss }
-};
+}
 
-const LOSS_HIGH = 'high';
-const LOSS_MEDIUM = 'medium';
-const LOSS_LOW = 'low';
-const LOSS_VERY_LOW = 'very low';
-const SEASON_SUMMER = 'summer';
-const SEASON_WINTER = 'winter';
-const SEASON_ALL_YEAR = 'all year';
+const LOSS_HIGH = 'high'
+const LOSS_MEDIUM = 'medium'
+const LOSS_LOW = 'low'
+const LOSS_VERY_LOW = 'very low'
+const SEASON_SUMMER = 'summer'
+const SEASON_WINTER = 'winter'
+const SEASON_ALL_YEAR = 'all year'
 
-const EIUC_SOURCE_OTHER = 'other';
+const EIUC_SOURCE_OTHER = 'other'
 const SOURCES = {
   unsupported: 'unsupported',
   supported: 'supported',
   tidal: 'tidal',
   kielder: 'kielder'
-};
+}
 
-const LOSS_CATEGORIES = [LOSS_HIGH, LOSS_MEDIUM, LOSS_LOW, LOSS_VERY_LOW];
-const SEASONS = [SEASON_SUMMER, SEASON_WINTER, SEASON_ALL_YEAR];
+const LOSS_CATEGORIES = [LOSS_HIGH, LOSS_MEDIUM, LOSS_LOW, LOSS_VERY_LOW]
+const SEASONS = [SEASON_SUMMER, SEASON_WINTER, SEASON_ALL_YEAR]
 
-exports.LOSS_CATEGORIES = LOSS_CATEGORIES;
-exports.SOURCES = SOURCES;
-exports.SEASONS = SEASONS;
-exports.EIUC_SOURCE_OTHER = EIUC_SOURCE_OTHER;
-exports.ROUTING_CONFIG = ROUTING_CONFIG;
-exports.CHARGE_ELEMENT_STEPS = CHARGE_ELEMENT_STEPS;
-exports.CHARGE_ELEMENT_FIRST_STEP = CHARGE_ELEMENT_FIRST_STEP;
+exports.LOSS_CATEGORIES = LOSS_CATEGORIES
+exports.SOURCES = SOURCES
+exports.SEASONS = SEASONS
+exports.EIUC_SOURCE_OTHER = EIUC_SOURCE_OTHER
+exports.ROUTING_CONFIG = ROUTING_CONFIG
+exports.CHARGE_ELEMENT_STEPS = CHARGE_ELEMENT_STEPS
+exports.CHARGE_ELEMENT_FIRST_STEP = CHARGE_ELEMENT_FIRST_STEP

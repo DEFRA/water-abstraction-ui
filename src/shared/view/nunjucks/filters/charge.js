@@ -1,5 +1,5 @@
-const numberFormatter = require('../../../lib/number-formatter');
-const { isNil } = require('lodash');
+const numberFormatter = require('../../../lib/number-formatter')
+const { isNil } = require('lodash')
 /**
  * Formats an integer charge value in pence
  * The sign is discarded as credits either appear in their own column or
@@ -10,9 +10,9 @@ const { isNil } = require('lodash');
  */
 const charge = (value, isSigned = false) => {
   if (isNil(value)) {
-    return;
+    return
   }
-  return `${numberFormatter.penceToPound(value, isSigned, true)}`;
-};
+  return `${numberFormatter.penceToPound(value, isSigned, true)}`
+}
 
-exports.charge = charge;
+exports.charge = charge

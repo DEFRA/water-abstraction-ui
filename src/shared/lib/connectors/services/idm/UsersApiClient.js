@@ -1,8 +1,8 @@
-const { throwIfError, APIClient } = require('@envage/hapi-pg-rest-api');
-const urlJoin = require('url-join');
-const { http, serviceRequest } = require('@envage/water-abstraction-helpers');
+const { throwIfError, APIClient } = require('@envage/hapi-pg-rest-api')
+const urlJoin = require('url-join')
+const { http, serviceRequest } = require('@envage/water-abstraction-helpers')
 
-const getEndpoint = serviceUrl => urlJoin(serviceUrl, 'user');
+const getEndpoint = serviceUrl => urlJoin(serviceUrl, 'user')
 
 class UsersApiClient extends APIClient {
   /**
@@ -11,7 +11,7 @@ class UsersApiClient extends APIClient {
    * @param {Object} logger The system logger object
    */
   constructor (config, logger) {
-    const serviceUrl = config.services.idm;
+    const serviceUrl = config.services.idm
 
     super(http.request, {
       serviceUrl,
@@ -20,7 +20,7 @@ class UsersApiClient extends APIClient {
       headers: {
         Authorization: config.jwt.token
       }
-    });
+    })
   }
 
   /**
@@ -34,7 +34,7 @@ class UsersApiClient extends APIClient {
    */
   async authenticate (email, password, application) {
     try {
-      const uri = urlJoin(this.config.endpoint, 'login');
+      const uri = urlJoin(this.config.endpoint, 'login')
 
       const response = await serviceRequest.post(uri, {
         body: {
@@ -42,16 +42,16 @@ class UsersApiClient extends APIClient {
           password,
           application
         }
-      });
+      })
 
-      return response;
+      return response
     } catch (error) {
       // Unauthorized
       if (error.statusCode === 401) {
-        return;
+        return
       }
       // Throw other errors
-      throw error;
+      throw error
     }
   };
 
@@ -65,15 +65,15 @@ class UsersApiClient extends APIClient {
     const { error, data: [user] } = await this.findMany({
       user_name: email,
       application
-    });
-    throwIfError(error);
-    return user;
+    })
+    throwIfError(error)
+    return user
   }
 
   async findOneById (userId) {
-    const { data: user, error } = await this.findOne(userId);
-    throwIfError(error);
-    return user;
+    const { data: user, error } = await this.findOne(userId)
+    throwIfError(error)
+    return user
   };
 
   /**
@@ -84,9 +84,9 @@ class UsersApiClient extends APIClient {
    */
   updateExternalId (user, externalId) {
     if (user.external_id) {
-      return;
+      return
     }
-    return this.updateOne(user.user_id, { external_id: externalId });
+    return this.updateOne(user.user_id, { external_id: externalId })
   };
 
   /**
@@ -99,13 +99,13 @@ class UsersApiClient extends APIClient {
      * @return {Promise} resolves with {error, data}, data contains user_id and reset_guid
      */
   resetPassword (application, email, mode = 'reset', params = {}) {
-    const uri = urlJoin(this.config.serviceUrl, 'reset', application, email);
+    const uri = urlJoin(this.config.serviceUrl, 'reset', application, email)
     return serviceRequest.patch(uri, {
       qs: {
         mode,
         ...params
       }
-    });
+    })
   }
 
   /**
@@ -118,10 +118,10 @@ class UsersApiClient extends APIClient {
     const filter = {
       application,
       reset_guid: resetGuid
-    };
-    const { error, data: [user] } = await this.findMany(filter);
-    throwIfError(error);
-    return user;
+    }
+    const { error, data: [user] } = await this.findMany(filter)
+    throwIfError(error)
+    return user
   }
 
   /**
@@ -134,13 +134,13 @@ class UsersApiClient extends APIClient {
     const filter = {
       application,
       reset_guid: resetGuid
-    };
+    }
     return this.updateMany(filter, {
       password,
       reset_required: 0,
       bad_logins: 0,
       reset_guid: null
-    });
+    })
   }
 
   /**
@@ -149,7 +149,7 @@ class UsersApiClient extends APIClient {
    * @param {String} password - new password
    */
   updatePassword (application, userId, password) {
-    return this.updateOne(userId, { password });
+    return this.updateOne(userId, { password })
   }
 
   /**
@@ -160,14 +160,14 @@ class UsersApiClient extends APIClient {
    * @return {<Promise>}
    */
   reauthenticate (userId, password) {
-    const uri = urlJoin(this.config.endpoint, `${userId}/reauthenticate`);
+    const uri = urlJoin(this.config.endpoint, `${userId}/reauthenticate`)
     const options = {
       body: {
         password
       }
-    };
-    return serviceRequest.post(uri, options);
+    }
+    return serviceRequest.post(uri, options)
   };
 }
 
-module.exports = UsersApiClient;
+module.exports = UsersApiClient

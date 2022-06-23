@@ -1,13 +1,13 @@
-const Joi = require('joi');
-const { get } = require('lodash');
-const { formFactory, fields } = require('shared/lib/forms/');
-const session = require('../../lib/session');
+const Joi = require('joi')
+const { get } = require('lodash')
+const { formFactory, fields } = require('shared/lib/forms/')
+const session = require('../../lib/session')
 
 const sendAlertEmailAddressForm = request => {
-  const f = formFactory(request.path);
+  const f = formFactory(request.path)
 
-  const useLoggedInUserEmailAddress = get(session.get(request), 'useLoggedInUserEmailAddress.value');
-  const customEmailAddress = get(session.get(request), 'customEmailAddress.value');
+  const useLoggedInUserEmailAddress = get(session.get(request), 'useLoggedInUserEmailAddress.value')
+  const customEmailAddress = get(session.get(request), 'customEmailAddress.value')
 
   f.fields.push(fields.radio('useLoggedInUserEmailAddress', {
     errors: {
@@ -41,12 +41,12 @@ const sendAlertEmailAddressForm = request => {
       ]
     }
     ]
-  }, useLoggedInUserEmailAddress));
+  }, useLoggedInUserEmailAddress))
 
-  f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
-  return f;
-};
+  f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
+  return f
+}
 
 const sendAlertEmailAddressSchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
@@ -56,7 +56,7 @@ const sendAlertEmailAddressSchema = () => Joi.object().keys({
     then: Joi.any(),
     otherwise: Joi.string().email().required()
   })
-});
+})
 
-exports.form = sendAlertEmailAddressForm;
-exports.schema = sendAlertEmailAddressSchema;
+exports.form = sendAlertEmailAddressForm
+exports.schema = sendAlertEmailAddressSchema

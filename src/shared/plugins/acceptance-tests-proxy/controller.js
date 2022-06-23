@@ -5,8 +5,8 @@
  * @param {Object} request HAPI request
  */
 const proxyToWaterService = request => {
-  const { postToPath } = request.route.realm.pluginOptions;
-  return postToPath(request.params.tail, request.payload);
-};
+  const { postToPath } = request.route.realm.pluginOptions
+  return postToPath(request.params.tail, request.payload)
+}
 
-exports.proxyToWaterService = proxyToWaterService;
+exports.proxyToWaterService = proxyToWaterService

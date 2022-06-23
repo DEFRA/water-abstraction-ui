@@ -1,13 +1,13 @@
-'use strict';
+'use strict'
 
 const {
   experiment,
   test
-} = exports.lab = require('@hapi/lab').script();
+} = exports.lab = require('@hapi/lab').script()
 
-const { expect } = require('@hapi/code');
+const { expect } = require('@hapi/code')
 
-const formHelpers = require('internal/modules/charge-information/lib/form-helpers');
+const formHelpers = require('internal/modules/charge-information/lib/form-helpers')
 
 const createRequest = (options = {}) => ({
   params: {
@@ -20,7 +20,7 @@ const createRequest = (options = {}) => ({
       chargeElements: options.chargeElements || []
     }
   }
-});
+})
 
 experiment('internal/modules/charge-information/lib/form-helpers', () => {
   experiment('.getChargeElementData', () => {
@@ -33,30 +33,30 @@ experiment('internal/modules/charge-information/lib/form-helpers', () => {
         id: 'test-element-id-2',
         season: 'winter',
         source: 'supported'
-      }];
-      const chargeElement = formHelpers.getChargeElementData(createRequest({ chargeElements }));
-      expect(chargeElement).to.equal(chargeElements[0]);
-    });
+      }]
+      const chargeElement = formHelpers.getChargeElementData(createRequest({ chargeElements }))
+      expect(chargeElement).to.equal(chargeElements[0])
+    })
 
     test('returns empty object, when the charge element does not exist', async () => {
-      const chargeElement = formHelpers.getChargeElementData(createRequest());
-      expect(chargeElement).to.equal({});
-    });
-  });
+      const chargeElement = formHelpers.getChargeElementData(createRequest())
+      expect(chargeElement).to.equal({})
+    })
+  })
 
   experiment('.getChargeElementActionUrl', () => {
-    const request = createRequest();
-    const { licenceId, elementId } = request.params;
-    const step = 'test-step';
-    const chargeElementStepUrl = `/licences/${licenceId}/charge-information/charge-element/${elementId}/${step}`;
+    const request = createRequest()
+    const { licenceId, elementId } = request.params
+    const step = 'test-step'
+    const chargeElementStepUrl = `/licences/${licenceId}/charge-information/charge-element/${elementId}/${step}`
     test('returns the expected url with no query string when returnToCheckData query param is not present', async () => {
-      const actionUrl = formHelpers.getChargeElementActionUrl(createRequest(), step);
-      expect(actionUrl).to.equal(chargeElementStepUrl);
-    });
+      const actionUrl = formHelpers.getChargeElementActionUrl(createRequest(), step)
+      expect(actionUrl).to.equal(chargeElementStepUrl)
+    })
 
     test('appends a query string to the expected url when returnToCheckData query param is present', async () => {
-      const actionUrl = formHelpers.getChargeElementActionUrl(createRequest({ query: { returnToCheckData: 1 } }), step);
-      expect(actionUrl).to.equal(`${chargeElementStepUrl}?returnToCheckData=1`);
-    });
-  });
-});
+      const actionUrl = formHelpers.getChargeElementActionUrl(createRequest({ query: { returnToCheckData: 1 } }), step)
+      expect(actionUrl).to.equal(`${chargeElementStepUrl}?returnToCheckData=1`)
+    })
+  })
+})

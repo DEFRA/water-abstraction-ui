@@ -1,11 +1,11 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
-const contactController = require('./contact-controller');
-const constants = require('../../lib/constants');
-const { hofNotifications, renewalNotifications } = constants.scope;
+const Joi = require('joi')
+const contactController = require('./contact-controller')
+const constants = require('../../lib/constants')
+const { hofNotifications, renewalNotifications } = constants.scope
 
-const allowedScopes = [hofNotifications, renewalNotifications];
+const allowedScopes = [hofNotifications, renewalNotifications]
 
 module.exports = {
   getNameAndJob: {
@@ -92,4 +92,4 @@ module.exports = {
       }
     }
   }
-};
+}

@@ -1,11 +1,11 @@
-'use strict';
+'use strict'
 
-const { get } = require('lodash');
-const Joi = require('joi');
+const { get } = require('lodash')
+const Joi = require('joi')
 
-const { formFactory, fields } = require('shared/lib/forms/');
-const { getCommonErrors, getDateValidator } = require('./lib/date-picker');
-const { getFormAction } = require('./lib/routing');
+const { formFactory, fields } = require('shared/lib/forms/')
+const { getCommonErrors, getDateValidator } = require('./lib/date-picker')
+const { getFormAction } = require('./lib/routing')
 
 const getDateErrors = (isDateSignedKnown, endDate) => {
   const errors = {
@@ -13,26 +13,26 @@ const getDateErrors = (isDateSignedKnown, endDate) => {
     'date.min': {
       message: 'Enter a date that is no earlier than the licence start date'
     }
-  };
+  }
   if (isDateSignedKnown) {
     errors['any.required'] = {
       message: 'Enter the date the agreement was signed',
       summary: 'Enter the date the agreement was signed'
-    };
+    }
   }
-  return errors;
-};
+  return errors
+}
 /**
  * Gets form to select agreement signed date
  */
 const dateSignedForm = request => {
-  const { csrfToken } = request.view;
+  const { csrfToken } = request.view
 
-  const f = formFactory(getFormAction(request), 'POST');
+  const f = formFactory(getFormAction(request), 'POST')
 
-  const { isDateSignedKnown, dateSigned } = get(request, 'pre.flowState');
+  const { isDateSignedKnown, dateSigned } = get(request, 'pre.flowState')
 
-  const { endDate } = request.pre.licence;
+  const { endDate } = request.pre.licence
 
   f.fields.push(fields.radio('isDateSignedKnown', {
     label: 'Do you know the date the agreement was signed?',
@@ -60,16 +60,16 @@ const dateSignedForm = request => {
       value: false,
       label: 'No'
     }]
-  }, isDateSignedKnown));
+  }, isDateSignedKnown))
 
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
 
-  return f;
-};
+  return f
+}
 
 const dateSignedSchema = (request, refDate) => {
-  const { licence } = request.pre;
+  const { licence } = request.pre
   return Joi.object({
     csrf_token: Joi.string().uuid().required(),
     isDateSignedKnown: Joi.boolean().required(),
@@ -77,8 +77,8 @@ const dateSignedSchema = (request, refDate) => {
       is: true,
       then: getDateValidator(licence)
     })
-  });
-};
+  })
+}
 
-exports.form = dateSignedForm;
-exports.schema = dateSignedSchema;
+exports.form = dateSignedForm
+exports.schema = dateSignedSchema

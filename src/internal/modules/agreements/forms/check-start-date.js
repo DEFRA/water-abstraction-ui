@@ -1,10 +1,10 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
+const Joi = require('joi')
 
-const { formFactory, fields } = require('shared/lib/forms/');
-const { getCommonErrors, getAgreementStartDateValidator } = require('./lib/date-picker');
-const { getFormAction } = require('./lib/routing');
+const { formFactory, fields } = require('shared/lib/forms/')
+const { getCommonErrors, getAgreementStartDateValidator } = require('./lib/date-picker')
+const { getFormAction } = require('./lib/routing')
 
 const getDatePicker = licenceEndDate => {
   return fields.date('startDate', {
@@ -23,15 +23,15 @@ const getDatePicker = licenceEndDate => {
         If you need to use another date, you must set up new charge information first.`
       }
     }
-  });
-};
+  })
+}
 
 /**
  * Gets field description for financial agreement type radio buttons
  * @return {Object}
  */
 const getCustomStartDateField = request => {
-  const { endDate } = request.pre.licence;
+  const { endDate } = request.pre.licence
 
   return fields.radio('isCustomStartDate', {
     mapper: 'booleanMapper',
@@ -53,26 +53,26 @@ const getCustomStartDateField = request => {
       value: false,
       label: 'No'
     }]
-  });
-};
+  })
+}
 
 /**
  * Gets form to select agreement type
  */
 const checkStartDateForm = request => {
-  const { csrfToken } = request.view;
+  const { csrfToken } = request.view
 
-  const f = formFactory(getFormAction(request), 'POST');
+  const f = formFactory(getFormAction(request), 'POST')
 
-  f.fields.push(getCustomStartDateField(request));
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
+  f.fields.push(getCustomStartDateField(request))
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
 
-  return f;
-};
+  return f
+}
 
 const checkStartDateSchema = request => {
-  const { licence, chargeVersions } = request.pre;
+  const { licence, chargeVersions } = request.pre
 
   return Joi.object({
     csrf_token: Joi.string().uuid().required(),
@@ -81,8 +81,8 @@ const checkStartDateSchema = request => {
       is: true,
       then: getAgreementStartDateValidator(licence, chargeVersions.data)
     })
-  });
-};
+  })
+}
 
-exports.form = checkStartDateForm;
-exports.schema = checkStartDateSchema;
+exports.form = checkStartDateForm
+exports.schema = checkStartDateSchema

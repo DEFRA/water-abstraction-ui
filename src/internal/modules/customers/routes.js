@@ -1,5 +1,5 @@
-const controllers = require('./controllers');
-const Joi = require('joi');
+const controllers = require('./controllers')
+const Joi = require('joi')
 
 module.exports = {
   getCustomer: {
@@ -190,4 +190,4 @@ module.exports = {
       description: 'Entry point for checking a company contact should be removed'
     }
   }
-};
+}

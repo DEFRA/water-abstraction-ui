@@ -1,12 +1,12 @@
-'use strict';
+'use strict'
 
-const Boom = require('@hapi/boom');
+const Boom = require('@hapi/boom')
 
 const errorHandler = (err, message) => {
   if (err.statusCode === 404) {
-    return Boom.notFound(message);
+    return Boom.notFound(message)
   }
-  throw err;
-};
+  throw err
+}
 
-exports.errorHandler = errorHandler;
+exports.errorHandler = errorHandler

@@ -1,11 +1,11 @@
-const { URL } = require('url');
-const RefParser = require('json-schema-ref-parser');
-const { isObject, each, get, cloneDeep } = require('lodash');
-const { sentenceCase } = require('shared/lib/string-formatter');
-const { formFactory, fields } = require('shared/lib/forms');
-const services = require('../../../lib/connectors/services');
+const { URL } = require('url')
+const RefParser = require('json-schema-ref-parser')
+const { isObject, each, get, cloneDeep } = require('lodash')
+const { sentenceCase } = require('shared/lib/string-formatter')
+const { formFactory, fields } = require('shared/lib/forms')
+const services = require('../../../lib/connectors/services')
 
-const { mapConditionText } = require('./map-condition');
+const { mapConditionText } = require('./map-condition')
 
 const types = {
   ngr: require('../schema/types/ngr.json'),
@@ -15,46 +15,46 @@ const types = {
   rate: require('../schema/types/rate.json'),
   purpose: require('../schema/types/purpose.json'),
   waterBodies: require('../schema/types/water-bodies.json')
-};
+}
 
 const createEnumsObject = (items, iteratee) => ({
   type: 'object',
   defaultEmpty: true,
   enum: items.map(iteratee)
-});
+})
 
-const mapCondition = condition => ({ id: condition.id, value: mapConditionText(condition) });
+const mapCondition = condition => ({ id: condition.id, value: mapConditionText(condition) })
 
-const mapPoint = point => ({ id: point.id, value: point.name });
+const mapPoint = point => ({ id: point.id, value: point.name })
 
 const resolveLicenceData = async (context, connectorFn, mapFn) => {
-  const { data } = await connectorFn.bind(services.water.licences)(context.documentId);
-  return createEnumsObject(data, mapFn);
-};
+  const { data } = await connectorFn.bind(services.water.licences)(context.documentId)
+  return createEnumsObject(data, mapFn)
+}
 
 const resolveLicenceConditions = async context => {
-  const connector = services.water.licences.getConditionsByDocumentId;
-  return resolveLicenceData(context, connector, mapCondition);
-};
+  const connector = services.water.licences.getConditionsByDocumentId
+  return resolveLicenceData(context, connector, mapCondition)
+}
 
 const resolveLicencePoints = async context => {
-  const connector = services.water.licences.getPointsByDocumentId;
-  return resolveLicenceData(context, connector, mapPoint);
-};
+  const connector = services.water.licences.getPointsByDocumentId
+  return resolveLicenceData(context, connector, mapPoint)
+}
 
 const licenceResolvers = {
   conditions: resolveLicenceConditions,
   points: resolveLicencePoints
-};
+}
 
 const resolveLicences = async (ref, context) => {
-  return licenceResolvers[ref](context, ref);
-};
+  return licenceResolvers[ref](context, ref)
+}
 
 const resolveTypes = async ref => {
   if (ref === 'gaugingStations') {
-    const gaugingStationsFromDb = await services.water.gaugingStations.getAllGaugingStations();
-    const GS = gaugingStationsFromDb.map(station => ({ id: station.gaugingStationId, value: station.label }));
+    const gaugingStationsFromDb = await services.water.gaugingStations.getAllGaugingStations()
+    const GS = gaugingStationsFromDb.map(station => ({ id: station.gaugingStationId, value: station.label }))
     return {
       type: 'object',
       defaultEmpty: true,
@@ -64,15 +64,15 @@ const resolveTypes = async ref => {
         }
       },
       enum: GS
-    };
+    }
   }
-  return types[ref];
-};
+  return types[ref]
+}
 
 const hostLevelResolvers = {
   licences: resolveLicences,
   types: resolveTypes
-};
+}
 
 /**
  * A resolver for json-schema-ref-parser
@@ -86,14 +86,14 @@ const waterResolverFactory = context => ({
 
   read: async function (file) {
     // Parse URL
-    const { host, pathname } = new URL(file.url);
+    const { host, pathname } = new URL(file.url)
 
-    const ref = pathname.replace('/', '').replace('.json', '');
+    const ref = pathname.replace('/', '').replace('.json', '')
 
-    const resolver = hostLevelResolvers[host];
-    return resolver(ref, context);
+    const resolver = hostLevelResolvers[host]
+    return resolver(ref, context)
   }
-});
+})
 
 /**
  * Converts references in the schema to their literals
@@ -102,13 +102,13 @@ const waterResolverFactory = context => ({
  * @return {Promise} resolves with JSON schema with references converted to literals
  */
 const dereference = async (schema, context) => {
-  const refParser = new RefParser();
+  const refParser = new RefParser()
   return refParser.dereference(schema, {
     resolve: {
       waterResolver: waterResolverFactory(context)
     }
-  });
-};
+  })
+}
 
 /**
  * Guess label given a field name
@@ -118,16 +118,16 @@ const dereference = async (schema, context) => {
  * @return {String} label
  */
 const guessLabel = (str, item) => {
-  const defaultLabel = sentenceCase(str.replace(/_+/g, ' '));
-  return get(item, 'label', defaultLabel);
-};
+  const defaultLabel = sentenceCase(str.replace(/_+/g, ' '))
+  return get(item, 'label', defaultLabel)
+}
 
 /**
  * Converts a scalar enum choice to a form object choice.
  * @param  {Object} item - enum choice
  * @return {Object}      form object choice
  */
-const mapScalarEnumChoice = item => ({ label: item, value: item });
+const mapScalarEnumChoice = item => ({ label: item, value: item })
 
 /**
  * If the enum values are to be rendered as a dropdown, and the default
@@ -138,12 +138,12 @@ const getEnumFieldChoices = item => {
   if (item.defaultEmpty && item.enum.length > 5) {
     const empty = isObject(item.enum[0])
       ? { label: '', value: '' }
-      : '';
+      : ''
 
-    return [empty, ...item.enum];
+    return [empty, ...item.enum]
   }
-  return item.enum;
-};
+  return item.enum
+}
 
 /**
  * Create a field for an enum in the JSON schema
@@ -155,12 +155,12 @@ const getEnumFieldChoices = item => {
  * @return {Object}           dropdown/radio field object
  */
 const createEnumField = (fieldName, item) => {
-  const errors = get(item, 'errors');
-  const label = guessLabel(fieldName, item);
-  const hint = get(item, 'hint');
+  const errors = get(item, 'errors')
+  const label = guessLabel(fieldName, item)
+  const hint = get(item, 'hint')
 
-  const fieldFactory = item.enum.length > 5 ? fields.dropdown : fields.radio;
-  const choices = getEnumFieldChoices(item);
+  const fieldFactory = item.enum.length > 5 ? fields.dropdown : fields.radio
+  const choices = getEnumFieldChoices(item)
 
   // Object enum items
   if (isObject(item.enum[0])) {
@@ -172,13 +172,13 @@ const createEnumField = (fieldName, item) => {
       labelProperty: 'value',
       errors,
       mapper: 'objectMapper'
-    });
+    })
   }
 
   // Scalar enum values (string/number)
-  const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper';
-  return fieldFactory(fieldName, { label, hint, choices: choices.map(mapScalarEnumChoice), mapper, errors });
-};
+  const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper'
+  return fieldFactory(fieldName, { label, hint, choices: choices.map(mapScalarEnumChoice), mapper, errors })
+}
 
 /**
  * Adds a named attribute key/value pair to the field
@@ -189,15 +189,15 @@ const createEnumField = (fieldName, item) => {
  * @return {Object} updated field object
  */
 const addAttribute = (field, name, value) => {
-  const f = cloneDeep(field);
-  const val = isObject(value) ? JSON.stringify(value) : value.toString();
-  const attr = get(f, 'options.attr', {});
+  const f = cloneDeep(field)
+  const val = isObject(value) ? JSON.stringify(value) : value.toString()
+  const attr = get(f, 'options.attr', {})
   f.options.attr = {
     ...attr,
     [name]: val
-  };
-  return f;
-};
+  }
+  return f
+}
 
 /**
  * Gets common field options (label, hint errors) from JSON schema item
@@ -206,33 +206,33 @@ const addAttribute = (field, name, value) => {
  * @return {[type]}      options object { errors, label, hint }
  */
 const getFieldOptions = (item, key) => {
-  const errors = get(item, 'errors', {});
-  const label = guessLabel(key, item);
-  const hint = get(item, 'hint');
+  const errors = get(item, 'errors', {})
+  const label = guessLabel(key, item)
+  const hint = get(item, 'hint')
   return {
     errors, label, hint
-  };
-};
+  }
+}
 
 const getFieldType = (item) => {
   if (item.fieldType) {
-    return item.fieldType;
+    return item.fieldType
   }
   if (item.type === 'boolean') {
-    return 'boolean';
+    return 'boolean'
   }
   if ('enum' in item) {
-    return 'enum';
+    return 'enum'
   }
-  return 'default';
-};
+  return 'default'
+}
 
 const getField = (item, key) => {
-  const options = getFieldOptions(item, key);
-  const type = getFieldType(item);
+  const options = getFieldOptions(item, key)
+  const type = getFieldType(item)
 
   const actions = {
-    date: () => { return fields.date(key, options); },
+    date: () => { return fields.date(key, options) },
     boolean: () => {
       return fields.radio(key, {
         ...options,
@@ -241,18 +241,18 @@ const getField = (item, key) => {
           { value: true, label: 'No' }
         ],
         mapper: 'booleanMapper'
-      });
+      })
     },
-    enum: () => { return createEnumField(key, item); },
+    enum: () => { return createEnumField(key, item) },
     default: () => {
     // Scalar values (string/number)
-      const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper';
-      return fields.text(key, { ...options, mapper });
+      const mapper = item.type === 'number' ? 'numberMapper' : 'defaultMapper'
+      return fields.text(key, { ...options, mapper })
     }
-  };
+  }
 
-  return actions[type]();
-};
+  return actions[type]()
+}
 
 /**
  * Creates a list of fields for the HTML form by recursing over all object
@@ -262,23 +262,23 @@ const getField = (item, key) => {
  * @return {Array}                 - array of field objects
  */
 const getFields = (schema) => {
-  const fieldList = [];
+  const fieldList = []
   each(schema.properties, (item, key) => {
     if (item.type === 'object' && item.properties) {
-      fieldList.push(...getFields(item));
+      fieldList.push(...getFields(item))
     } else {
-      let field = getField(item, key);
+      let field = getField(item, key)
 
-      const toggle = get(item, 'toggle');
+      const toggle = get(item, 'toggle')
       if (toggle) {
-        field = addAttribute(field, 'data-toggle', toggle);
+        field = addAttribute(field, 'data-toggle', toggle)
       }
 
-      fieldList.push(field);
+      fieldList.push(field)
     }
-  });
-  return fieldList;
-};
+  })
+  return fieldList
+}
 
 /**
  * Given a JSON schema for WR22 condition, generates a form object
@@ -288,20 +288,20 @@ const getFields = (schema) => {
  * @param {Object} schema - JSON schema object
  */
 const schemaToForm = (action, request, schema) => {
-  const { csrfToken } = request.view;
-  const f = formFactory(action, 'POST', 'jsonSchema');
+  const { csrfToken } = request.view
+  const f = formFactory(action, 'POST', 'jsonSchema')
 
   // Add CSRF token hidden field
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
 
   // Add fields from JSON schema
-  f.fields.push(...getFields(schema));
+  f.fields.push(...getFields(schema))
 
   // Add submit button
-  f.fields.push(fields.button(null, { label: 'Submit' }));
+  f.fields.push(fields.button(null, { label: 'Submit' }))
 
-  return f;
-};
+  return f
+}
 
 module.exports = {
   dereference,
@@ -309,4 +309,4 @@ module.exports = {
   guessLabel,
   addAttribute,
   createEnumField
-};
+}

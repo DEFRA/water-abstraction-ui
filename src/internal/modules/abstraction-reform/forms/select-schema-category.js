@@ -1,10 +1,10 @@
-const Joi = require('joi');
-const { formFactory, fields } = require('shared/lib/forms');
+const Joi = require('joi')
+const { formFactory, fields } = require('shared/lib/forms')
 
 const mapChoice = (category) => {
-  const { title, slug } = category;
-  return { label: title, value: slug };
-};
+  const { title, slug } = category
+  return { label: title, value: slug }
+}
 
 /**
  * Creates a form object to select a schema for the WR22 condition to add
@@ -13,12 +13,12 @@ const mapChoice = (category) => {
  * @return {Object}         form object
  */
 const selectSchemaCategoryForm = (request, categories) => {
-  const { csrfToken } = request.view;
+  const { csrfToken } = request.view
 
-  const { documentId } = request.params;
-  const action = `/digitise/licence/${documentId}/select-schema-category`;
+  const { documentId } = request.params
+  const action = `/digitise/licence/${documentId}/select-schema-category`
 
-  const f = formFactory(action);
+  const f = formFactory(action)
 
   f.fields.push(fields.radio('category', {
     choices: categories.map(mapChoice),
@@ -27,20 +27,20 @@ const selectSchemaCategoryForm = (request, categories) => {
         message: 'Choose a further condition category'
       }
     }
-  }));
+  }))
 
-  f.fields.push(fields.button(null, { label: 'Continue' }));
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
+  f.fields.push(fields.button(null, { label: 'Continue' }))
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
 
-  return f;
-};
+  return f
+}
 
 const selectSchemaCategoryFormSchema = Joi.object().keys({
   category: Joi.any().required(),
   csrf_token: Joi.string().guid().required()
-});
+})
 
 module.exports = {
   selectSchemaCategoryForm,
   selectSchemaCategoryFormSchema
-};
+}

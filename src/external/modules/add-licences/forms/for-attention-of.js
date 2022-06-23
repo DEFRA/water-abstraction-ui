@@ -1,5 +1,5 @@
-const { formFactory, fields } = require('shared/lib/forms');
-const Joi = require('joi');
+const { formFactory, fields } = require('shared/lib/forms')
+const Joi = require('joi')
 
 /**
  * form for page to enter FAO information
@@ -7,12 +7,12 @@ const Joi = require('joi');
  * @return {Object} form object with FAO text field, hidden CSRF and AddressId and Continue button
  */
 const faoForm = (request) => {
-  const { csrfToken } = request.view;
-  const { selectedAddressId } = request.yar.get('addLicenceFlow');
+  const { csrfToken } = request.view
+  const { selectedAddressId } = request.yar.get('addLicenceFlow')
 
-  const action = '/add-addressee';
+  const action = '/add-addressee'
 
-  const f = formFactory(action);
+  const f = formFactory(action)
 
   f.fields.push(fields.text('fao', {
     label: 'Enter a name and, or department (optional)',
@@ -25,14 +25,14 @@ const faoForm = (request) => {
         message: 'Address is invalid'
       }
     }
-  }));
+  }))
 
-  f.fields.push(fields.button(null, { label: 'Continue' }));
-  f.fields.push(fields.hidden('selectedAddressId', {}, selectedAddressId));
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
+  f.fields.push(fields.button(null, { label: 'Continue' }))
+  f.fields.push(fields.hidden('selectedAddressId', {}, selectedAddressId))
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
 
-  return f;
-};
+  return f
+}
 
 /**
  * Gets validation schema for log receipt form
@@ -43,8 +43,8 @@ const getSchema = selectedIds => {
     csrf_token: Joi.string().guid().required(),
     selectedAddressId: Joi.string().guid().required().valid(...selectedIds),
     fao: Joi.string().max(32).allow('')
-  });
-};
+  })
+}
 
-exports.faoForm = faoForm;
-exports.faoSchema = getSchema;
+exports.faoForm = faoForm
+exports.faoSchema = getSchema

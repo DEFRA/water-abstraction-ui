@@ -1,11 +1,11 @@
-'use strict';
+'use strict'
 
-const { expect } = require('@hapi/code');
-const { test, experiment, beforeEach } = exports.lab = require('@hapi/lab').script();
-const { form: removeTagConfirmForm, schema: removeTagConfirmSchema } = require('internal/modules/gauging-stations/forms/remove-tag/remove-tag-confirm');
+const { expect } = require('@hapi/code')
+const { test, experiment, beforeEach } = exports.lab = require('@hapi/lab').script()
+const { form: removeTagConfirmForm, schema: removeTagConfirmSchema } = require('internal/modules/gauging-stations/forms/remove-tag/remove-tag-confirm')
 
 experiment('internal/modules/gauging-stations/forms/remove-tag-confirm.js', () => {
-  let request, form;
+  let request, form
   const data = {
     data: [
       {
@@ -84,7 +84,7 @@ experiment('internal/modules/gauging-stations/forms/remove-tag-confirm.js', () =
         northing: null
       }
     ]
-  };
+  }
 
   experiment('.form', () => {
     beforeEach(async () => {
@@ -99,30 +99,30 @@ experiment('internal/modules/gauging-stations/forms/remove-tag-confirm.js', () =
         pre: {
           licenceGaugingStations: data
         }
-      };
-    });
+      }
+    })
 
     experiment('load request', () => {
       beforeEach(async () => {
-        form = removeTagConfirmForm(request);
-      });
+        form = removeTagConfirmForm(request)
+      })
 
       test('the form has the correct action attribute', async () => {
-        expect(form.action).to.equal('http://example.com/monitoring-stations/123/untagging-licence/remove-tag-confirm');
-      });
+        expect(form.action).to.equal('http://example.com/monitoring-stations/123/untagging-licence/remove-tag-confirm')
+      })
 
       test('the schema validate', async () => {
         const payload = {
           csrf_token: '6e21a77b-1525-459d-acb8-3615e5d53f06'
-        };
-        const { error: validationError, value } = removeTagConfirmSchema.validate(payload);
-        expect(validationError).to.equal(undefined);
-        expect(value).to.equal(payload);
-      });
+        }
+        const { error: validationError, value } = removeTagConfirmSchema.validate(payload)
+        expect(validationError).to.equal(undefined)
+        expect(value).to.equal(payload)
+      })
 
       test('the form has the POST method', async () => {
-        expect(form.method).to.equal('POST');
-      });
-    });
-  });
-});
+        expect(form.method).to.equal('POST')
+      })
+    })
+  })
+})

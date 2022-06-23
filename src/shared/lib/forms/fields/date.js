@@ -4,17 +4,17 @@ const dateFieldFactory = (name, opts = {}, value) => {
     widget: 'date',
     required: true,
     mapper: 'dateMapper'
-  };
+  }
   const options = {
     ...defaults,
     ...opts
-  };
+  }
   return {
     name,
     value,
     options,
     errors: []
-  };
-};
+  }
+}
 
-module.exports = dateFieldFactory;
+module.exports = dateFieldFactory

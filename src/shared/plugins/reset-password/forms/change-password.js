@@ -1,14 +1,14 @@
-const Joi = require('joi');
-const { formFactory, fields } = require('shared/lib/forms');
-const { VALID_GUID, VALID_PASSWORD } = require('../../../lib/validators');
+const Joi = require('joi')
+const { formFactory, fields } = require('shared/lib/forms')
+const { VALID_GUID, VALID_PASSWORD } = require('../../../lib/validators')
 /**
  * @return {Object} - form object
  */
 const form = (request, h) => {
-  const f = formFactory('/reset_password_change_password');
-  const { resetGuid: resetGuidFromPayload } = request.payload || {};
-  const { resetGuid: resetGuidFromQuery } = request.query || {};
-  f.fields.push(fields.hidden('resetGuid', {}, resetGuidFromPayload || resetGuidFromQuery));
+  const f = formFactory('/reset_password_change_password')
+  const { resetGuid: resetGuidFromPayload } = request.payload || {}
+  const { resetGuid: resetGuidFromQuery } = request.query || {}
+  f.fields.push(fields.hidden('resetGuid', {}, resetGuidFromPayload || resetGuidFromQuery))
 
   f.fields.push(fields.text('password', {
     label: 'Enter a new password',
@@ -33,27 +33,27 @@ const form = (request, h) => {
       }
 
     }
-  }));
+  }))
 
   f.fields.push(fields.text('confirmPassword', {
     label: 'Confirm your password',
     type: 'password',
     controlClass: 'govuk-!-width-one-half'
-  }));
+  }))
 
   f.fields.push(fields.button(null, {
     label: 'Set password',
     isStartButton: true
-  }));
+  }))
 
-  return f;
-};
+  return f
+}
 
 const schema = Joi.object().keys({
   resetGuid: VALID_GUID,
   password: VALID_PASSWORD,
   confirmPassword: Joi.any()
-});
+})
 
-exports.changePasswordForm = form;
-exports.changePasswordFormSchema = schema;
+exports.changePasswordForm = form
+exports.changePasswordFormSchema = schema

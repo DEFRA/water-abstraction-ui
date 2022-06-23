@@ -1,8 +1,8 @@
-'use strict';
-const moment = require('moment');
+'use strict'
+const moment = require('moment')
 
 const isCurrentAddress = accountAddress =>
-  accountAddress.dateRange.endDate === null;
+  accountAddress.dateRange.endDate === null
 
 /**
  * Gets the current billing account address
@@ -10,7 +10,7 @@ const isCurrentAddress = accountAddress =>
  * @returns {Object}
  */
 const getCurrentAddress = billingAccount =>
-  billingAccount.invoiceAccountAddresses.find(isCurrentAddress);
+  billingAccount.invoiceAccountAddresses.find(isCurrentAddress)
 
 const generateBillingAccountMetadata = billingAccount => {
   let metadataHtml = `<div class="govuk-summary-list__row-with-minimal-spacing">
@@ -20,7 +20,7 @@ const generateBillingAccountMetadata = billingAccount => {
         <dd class="govuk-summary-list__value meta-data__value">
           ${moment(billingAccount.dateCreated).format('D MMMM YYYY')}
         </dd>
-      </div>`;
+      </div>`
 
   metadataHtml += billingAccount.lastTransactionFileReference
     ? `<div class="govuk-summary-list__row-with-minimal-spacing">
@@ -31,7 +31,7 @@ const generateBillingAccountMetadata = billingAccount => {
       ${billingAccount.lastTransactionFileReference}
     </dd>
   </div>`
-    : '';
+    : ''
 
   metadataHtml += moment(billingAccount.dateLastTransactionFileReferenceUpdated).isValid()
     ? `<div class="govuk-summary-list__row-with-minimal-spacing">
@@ -42,10 +42,10 @@ const generateBillingAccountMetadata = billingAccount => {
         ${moment(billingAccount.dateLastTransactionFileReferenceUpdated).format('D MMMM YYYY')}
     </dd>
   </div>`
-    : '';
+    : ''
 
-  return metadataHtml;
-};
+  return metadataHtml
+}
 
-exports.getCurrentAddress = getCurrentAddress;
-exports.generateBillingAccountMetadata = generateBillingAccountMetadata;
+exports.getCurrentAddress = getCurrentAddress
+exports.generateBillingAccountMetadata = generateBillingAccountMetadata

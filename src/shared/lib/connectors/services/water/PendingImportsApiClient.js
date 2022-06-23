@@ -1,8 +1,8 @@
-const { APIClient } = require('@envage/hapi-pg-rest-api');
-const urlJoin = require('url-join');
-const { http } = require('@envage/water-abstraction-helpers');
+const { APIClient } = require('@envage/hapi-pg-rest-api')
+const urlJoin = require('url-join')
+const { http } = require('@envage/water-abstraction-helpers')
 
-const getEndpoint = serviceUrl => urlJoin(serviceUrl, 'pending_import');
+const getEndpoint = serviceUrl => urlJoin(serviceUrl, 'pending_import')
 
 class PendingImportsApiClient extends APIClient {
   /**
@@ -11,7 +11,7 @@ class PendingImportsApiClient extends APIClient {
    * @param {Object} logger The system logger object
    */
   constructor (config, logger) {
-    const serviceUrl = config.services.water;
+    const serviceUrl = config.services.water
 
     super(http.request, {
       serviceUrl,
@@ -20,8 +20,8 @@ class PendingImportsApiClient extends APIClient {
       headers: {
         Authorization: config.jwt.token
       }
-    });
+    })
   }
 };
 
-module.exports = PendingImportsApiClient;
+module.exports = PendingImportsApiClient

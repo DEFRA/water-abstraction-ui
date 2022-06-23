@@ -1,4 +1,4 @@
-const { isEmpty, isEqual } = require('lodash');
+const { isEmpty, isEqual } = require('lodash')
 
 /**
  * Compares two objects, and returns any items that are new or have changed in the
@@ -10,13 +10,13 @@ const { isEmpty, isEqual } = require('lodash');
 const diff = (base, comparison) => {
   const changes = Object.keys(comparison).reduce((acc, key) => {
     if ((!(key in base)) || !isEqual(base[key], comparison[key])) {
-      acc[key] = comparison[key];
+      acc[key] = comparison[key]
     }
-    return acc;
-  }, {});
-  return isEmpty(changes) ? null : changes;
-};
+    return acc
+  }, {})
+  return isEmpty(changes) ? null : changes
+}
 
 module.exports = {
   diff
-};
+}

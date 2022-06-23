@@ -1,6 +1,6 @@
-const Joi = require('joi');
-const controller = require('./controller');
-const loginHelpers = require('../../lib/login-helpers');
+const Joi = require('joi')
+const controller = require('./controller')
+const loginHelpers = require('../../lib/login-helpers')
 
 module.exports = {
   getStart: {
@@ -141,4 +141,4 @@ module.exports = {
       }
     }
   }
-};
+}

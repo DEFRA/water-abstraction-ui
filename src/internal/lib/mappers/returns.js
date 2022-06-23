@@ -1,8 +1,8 @@
-'use strict';
+'use strict'
 
-const dates = require('shared/lib/returns/dates');
-const badge = require('shared/lib/returns/badge');
-const { getReturnPath } = require('../return-path');
+const dates = require('shared/lib/returns/dates')
+const badge = require('shared/lib/returns/badge')
+const { getReturnPath } = require('../return-path')
 
 /**
  * Maps return data so that it includes the correct paths
@@ -13,13 +13,13 @@ const { getReturnPath } = require('../return-path');
  * @returns {Object}
  */
 const mapReturn = (ret, request) => {
-  const isPastDueDate = dates.isReturnPastDueDate(ret);
+  const isPastDueDate = dates.isReturnPastDueDate(ret)
   return {
     ...ret,
     badge: badge.getBadge(ret.status, isPastDueDate),
     ...getReturnPath(ret, request)
-  };
-};
+  }
+}
 
 /**
  * Adds some flags to the returns to help with view rendering
@@ -35,7 +35,7 @@ const mapReturn = (ret, request) => {
  * @return {Array} returns with isEditable flag added
  */
 const mapReturns = (returns, request) =>
-  returns.map(row => mapReturn(row, request));
+  returns.map(row => mapReturn(row, request))
 
-exports.mapReturn = mapReturn;
-exports.mapReturns = mapReturns;
+exports.mapReturn = mapReturn
+exports.mapReturns = mapReturns

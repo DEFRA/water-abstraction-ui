@@ -4,23 +4,23 @@
  *
  * @module controllers/registration
  */
-const Joi = require('joi');
-const { difference } = require('lodash');
-const crmConnector = require('../../lib/connectors/crm');
-const services = require('../../lib/connectors/services');
-const { forceArray } = require('../../../shared/lib/array-helpers');
-const { logger } = require('../../logger');
-const loginHelpers = require('../../lib/login-helpers');
-const { throwIfError } = require('@envage/hapi-pg-rest-api');
+const Joi = require('joi')
+const { difference } = require('lodash')
+const crmConnector = require('../../lib/connectors/crm')
+const services = require('../../lib/connectors/services')
+const { forceArray } = require('../../../shared/lib/array-helpers')
+const { logger } = require('../../logger')
+const loginHelpers = require('../../lib/login-helpers')
+const { throwIfError } = require('@envage/hapi-pg-rest-api')
 const {
   checkLicenceSimilarity,
   checkNewLicenceSimilarity,
   extractLicenceNumbers,
   uniqueAddresses
-} = require('shared/lib/licence-helpers');
-const forms = require('shared/lib/forms');
-const { faoForm, faoSchema } = require('./forms/for-attention-of');
-const { selectAddressForm, selectAddressSchema } = require('./forms/select-address');
+} = require('shared/lib/licence-helpers')
+const forms = require('shared/lib/forms')
+const { faoForm, faoSchema } = require('./forms/for-attention-of')
+const { selectAddressForm, selectAddressSchema } = require('./forms/select-address')
 
 const {
   LicenceNotFoundError,
@@ -28,7 +28,7 @@ const {
   LicenceSimilarityError,
   NoLicencesSelectedError,
   LicenceFlowError
-} = require('./errors');
+} = require('./errors')
 
 /**
  * Render form to add licences to account
@@ -36,10 +36,10 @@ const {
  * @param {Object} h - HAPI HTTP reply
  */
 async function getLicenceAdd (request, h) {
-  return h.view('nunjucks/add-licences/index', request.view);
+  return h.view('nunjucks/add-licences/index', request.view)
 }
 
-const getFlowDataFromSession = request => request.yar.get('addLicenceFlow');
+const getFlowDataFromSession = request => request.yar.get('addLicenceFlow')
 
 /**
  * Post handler for adding licences
@@ -55,75 +55,75 @@ const getFlowDataFromSession = request => request.yar.get('addLicenceFlow');
  * @param {Object} reply - HAPI HTTP reply
  */
 async function postLicenceAdd (request, reply) {
-  const viewContext = request.view;
-  viewContext.pageTitle = 'Add your licences to the service';
-  viewContext.activeNavLink = 'manage';
+  const viewContext = request.view
+  viewContext.pageTitle = 'Add your licences to the service'
+  viewContext.activeNavLink = 'manage'
 
   // Validate posted data
   const schema = Joi.object().keys({
     licence_no: Joi.string().required().trim().max(9000),
     csrf_token: Joi.string().guid()
-  });
+  })
   try {
     // Validate post data
-    const { error, value } = schema.validate(request.payload);
+    const { error, value } = schema.validate(request.payload)
     if (error) {
-      throw error;
+      throw error
     }
 
     // Get list of licence numbers from supplied data
-    const licenceNumbers = extractLicenceNumbers(value.licence_no);
+    const licenceNumbers = extractLicenceNumbers(value.licence_no)
     if (licenceNumbers.length < 1) {
-      throw new LicenceNotFoundError();
+      throw new LicenceNotFoundError()
     }
 
-    const res = await services.crm.documents.getUnregisteredLicences(licenceNumbers);
+    const res = await services.crm.documents.getUnregisteredLicences(licenceNumbers)
 
     if (res.error) {
-      throw res.error;
+      throw res.error
     }
 
     // Check 1+ licences found
     if (res.data.length < 1) {
-      viewContext.missingNumbers = {};
-      viewContext.missingNumbers.data = licenceNumbers.join(', ');
-      viewContext.missingNumbers.length = licenceNumbers.length;
-      throw new LicenceNotFoundError();
+      viewContext.missingNumbers = {}
+      viewContext.missingNumbers.data = licenceNumbers.join(', ')
+      viewContext.missingNumbers.length = licenceNumbers.length
+      throw new LicenceNotFoundError()
     }
 
     // Check # of licences returned = that searched for
     if (res.data.length !== licenceNumbers.length) {
-      const missingNumbers = difference(licenceNumbers, res.data.map(item => item.system_external_id));
-      viewContext.missingNumbers = {};
-      viewContext.missingNumbers.data = missingNumbers.join(', ');
-      viewContext.missingNumbers.length = licenceNumbers.length;
-      throw new LicenceMissingError(`Not all the licences could be found (missing ${missingNumbers})`);
+      const missingNumbers = difference(licenceNumbers, res.data.map(item => item.system_external_id))
+      viewContext.missingNumbers = {}
+      viewContext.missingNumbers.data = missingNumbers.join(', ')
+      viewContext.missingNumbers.length = licenceNumbers.length
+      throw new LicenceMissingError(`Not all the licences could be found (missing ${missingNumbers})`)
     }
 
     // Check licences are similar
-    const similar = checkLicenceSimilarity(res.data);
+    const similar = checkLicenceSimilarity(res.data)
     if (!similar) {
-      throw new LicenceSimilarityError();
+      throw new LicenceSimilarityError()
     }
 
-    viewContext.licences = res.data;
+    viewContext.licences = res.data
 
     // Seal the list of permitted licence numbers into a token
     // to prevent validation needing to be repeated on following step
-    const documentIds = res.data.map(item => item.document_id);
+    const documentIds = res.data.map(item => item.document_id)
 
     // Store document IDs in session
-    request.yar.set('addLicenceFlow', { documentIds });
+    request.yar.set('addLicenceFlow', { documentIds })
 
-    return reply.redirect('/select-licences');
+    return reply.redirect('/select-licences')
   } catch (err) {
     if (['ValidationError', 'LicenceNotFoundError', 'LicenceMissingError', 'LicenceSimilarityError'].includes(err.name)) {
-      viewContext.error = err;
-      return reply.view('nunjucks/add-licences/index', viewContext);
+      viewContext.error = err
+      return reply.view('nunjucks/add-licences/index', viewContext)
     }
 
-    logger.info('Add licence error', err);
-    throw err;
+    logger.info('Add licence error', err)
+    throw err
   }
 }
 
@@ -134,32 +134,32 @@ async function postLicenceAdd (request, reply) {
  * @param {Object} reply - HAPI HTTP reply
  */
 async function getLicenceSelect (request, reply) {
-  const viewContext = request.view;
+  const viewContext = request.view
 
   if (request.query.error === 'noLicenceSelected') {
-    viewContext.error = { name: 'LicenceNotSelectedError' };
+    viewContext.error = { name: 'LicenceNotSelectedError' }
   }
 
   try {
-    const { documentIds } = getFlowDataFromSession(request);
+    const { documentIds } = getFlowDataFromSession(request)
 
     // Get unverified licences from DB
-    const { data, error } = await services.crm.documents.getUnregisteredLicencesByIds(documentIds);
+    const { data, error } = await services.crm.documents.getUnregisteredLicencesByIds(documentIds)
 
     if (error) {
-      throw error;
+      throw error
     }
 
-    viewContext.token = request.query.token;
+    viewContext.token = request.query.token
     viewContext.licences = data.map(licence => ({
       checked: true,
       value: licence.document_id,
       text: licence.system_external_id
-    }));
+    }))
 
-    return reply.view('nunjucks/add-licences/select-licences', viewContext);
+    return reply.view('nunjucks/add-licences/select-licences', viewContext)
   } catch (err) {
-    reply.redirect('/add-licences?error=flow');
+    reply.redirect('/add-licences?error=flow')
   }
 }
 
@@ -176,62 +176,62 @@ async function getLicenceSelect (request, reply) {
  * @param {Object} reply - HAPI HTTP reply
  */
 async function postLicenceSelect (request, reply) {
-  const { licences } = request.payload;
-  const { entityId } = request.defra;
+  const { licences } = request.payload
+  const { entityId } = request.defra
 
   try {
-    const { documentIds } = getFlowDataFromSession(request);
+    const { documentIds } = getFlowDataFromSession(request)
 
-    const selectedIds = verifySelectedLicences(documentIds, licences);
+    const selectedIds = verifySelectedLicences(documentIds, licences)
 
     // Is there affinity between the selected licences and licences already attached
     // to this user's company where the user is the primary_user role?
     // If so, add the licences to the account directly skipping address verification
-    const companyEntityId = await services.crm.entityRoles.getPrimaryCompany(entityId);
+    const companyEntityId = await services.crm.entityRoles.getPrimaryCompany(entityId)
 
     if (companyEntityId) {
       // Licences already in account
       const { data: existingLicences, error } = await services.crm.documents.findMany({
         company_entity_id: companyEntityId
-      });
+      })
       if (error) {
-        throw error;
+        throw error
       }
       // Licences being added now
       const { data: selectedLicences, error: error2 } = await services.crm.documents.findMany({
         document_id: { $or: documentIds },
         company_entity_id: null
-      });
+      })
       if (error2) {
-        throw error2;
+        throw error2
       }
 
       // Check affinity between existing/selected licences
       if (existingLicences.length > 0) {
-        const similar = checkNewLicenceSimilarity(selectedLicences, existingLicences);
+        const similar = checkNewLicenceSimilarity(selectedLicences, existingLicences)
         if (similar) {
           const { error: error3 } = await services.crm.documents.updateMany({ document_id: { $or: documentIds } }, {
             company_entity_id: companyEntityId
-          });
+          })
 
           if (error3) {
-            throw error3;
+            throw error3
           }
 
-          return reply.redirect('/licences');
+          return reply.redirect('/licences')
         }
       }
     }
 
     // Create new token
-    request.yar.set('addLicenceFlow', { documentIds, selectedIds });
+    request.yar.set('addLicenceFlow', { documentIds, selectedIds })
 
-    return reply.redirect('/select-address');
+    return reply.redirect('/select-address')
   } catch (err) {
     if (err.name === 'NoLicencesSelectedError') {
-      return reply.redirect('/select-licences?error=noLicenceSelected');
+      return reply.redirect('/select-licences?error=noLicenceSelected')
     }
-    throw err;
+    throw err
   }
 }
 
@@ -242,15 +242,15 @@ async function postLicenceSelect (request, reply) {
  * @param {Object} h - HAPI HTTP toolkit
  */
 function getLicenceSelectError (request, h) {
-  return h.view('nunjucks/add-licences/select-licences-error', request.view);
+  return h.view('nunjucks/add-licences/select-licences-error', request.view)
 }
 
 const getUniqueAddresses = async selectedIds => {
   // Find licences in CRM for selected documents
-  const { data } = await services.crm.documents.findMany({ document_id: { $or: selectedIds } });
+  const { data } = await services.crm.documents.findMany({ document_id: { $or: selectedIds } })
 
-  return uniqueAddresses(data);
-};
+  return uniqueAddresses(data)
+}
 
 /**
  * Renders an HTML form for the user to select their address for postal
@@ -260,58 +260,58 @@ const getUniqueAddresses = async selectedIds => {
  * @param {String} request.query.token - signed Iron token containing all and selected licence IDs
  */
 async function getAddressSelect (request, reply) {
-  const { view } = request;
+  const { view } = request
 
   // Load from session
-  const { selectedIds } = getFlowDataFromSession(request);
-  const uniqueAddressLicences = await getUniqueAddresses(selectedIds);
+  const { selectedIds } = getFlowDataFromSession(request)
+  const uniqueAddressLicences = await getUniqueAddresses(selectedIds)
 
   return reply.view('nunjucks/form', {
     ...view,
     back: '/select-licences',
     form: selectAddressForm(request, uniqueAddressLicences)
-  });
+  })
 }
 
-const getEntityIdFromRequest = request => request.defra.entityId;
+const getEntityIdFromRequest = request => request.defra.entityId
 
 const getAddressSelectViewContext = async (request, verification, licence, fao) => {
-  const entityId = getEntityIdFromRequest(request);
-  const userLicences = await getAllUserEntityLicences(entityId);
+  const entityId = getEntityIdFromRequest(request)
+  const userLicences = await getAllUserEntityLicences(entityId)
 
-  const context = request.view;
-  context.pageTitle = 'We are sending you a letter';
-  context.verification = verification;
-  context.fao = fao;
-  context.licence = licence;
-  context.licenceCount = userLicences.length;
-  return context;
-};
+  const context = request.view
+  context.pageTitle = 'We are sending you a letter'
+  context.verification = verification
+  context.fao = fao
+  context.licence = licence
+  context.licenceCount = userLicences.length
+  return context
+}
 
 const getLicences = async selectedIds => {
   const { error, data } = await services.crm.documents.findMany({
     document_id: { $or: selectedIds }
-  });
+  })
 
-  throwIfError(error);
-  return data;
-};
+  throwIfError(error)
+  return data
+}
 
 const getAllUserEntityLicences = async entityId => {
   const { error, data } = await services.crm.documents.findMany({
     company_entity_id: { $ne: null },
     entity_id: entityId
-  });
+  })
 
-  throwIfError(error);
-  return data;
-};
+  throwIfError(error)
+  return data
+}
 
 const getLicence = async documentId => {
-  const { error, data } = await services.crm.documents.findOne(documentId);
-  throwIfError(error);
-  return data;
-};
+  const { error, data } = await services.crm.documents.findOne(documentId)
+  throwIfError(error)
+  return data
+}
 
 /**
  * Post handler for select address form
@@ -322,26 +322,26 @@ const getLicence = async documentId => {
  * @param {Object} h - HAPI Response Toolkit
  */
 async function postAddressSelect (request, h) {
-  const { selectedAddressId } = request.payload;
-  const { selectedIds } = getFlowDataFromSession(request);
+  const { selectedAddressId } = request.payload
+  const { selectedIds } = getFlowDataFromSession(request)
 
-  const uniqueAddresses = await getUniqueAddresses(selectedIds);
-  const form = forms.handleRequest(selectAddressForm(request, uniqueAddresses), request, selectAddressSchema(uniqueAddresses));
+  const uniqueAddresses = await getUniqueAddresses(selectedIds)
+  const form = forms.handleRequest(selectAddressForm(request, uniqueAddresses), request, selectAddressSchema(uniqueAddresses))
 
   if (form.isValid) {
     // add selected address to addLicenceFlow in sessionStore
-    const flowData = getFlowDataFromSession(request);
-    flowData.selectedAddressId = selectedAddressId;
-    request.yar.set('addLicenceFlow', flowData);
+    const flowData = getFlowDataFromSession(request)
+    flowData.selectedAddressId = selectedAddressId
+    request.yar.set('addLicenceFlow', flowData)
 
-    return h.redirect('/add-addressee');
+    return h.redirect('/add-addressee')
   }
 
   return h.view('nunjucks/form', {
     ...request.view,
     back: '/select-licences',
     form
-  });
+  })
 }
 
 /**
@@ -350,13 +350,13 @@ async function postAddressSelect (request, h) {
  * @param {Object} h - HAPI HTTP reply
  */
 function getFAO (request, h) {
-  const { view } = request;
+  const { view } = request
 
   return h.view('nunjucks/form', {
     ...view,
     back: '/select-address',
     form: faoForm(request)
-  });
+  })
 }
 
 /**
@@ -368,46 +368,46 @@ function getFAO (request, h) {
  * @param {Object} h - HAPI Response Toolkit
  */
 async function postFAO (request, h) {
-  const { selectedAddressId, fao } = request.payload;
-  const entityId = getEntityIdFromRequest(request);
+  const { selectedAddressId, fao } = request.payload
+  const entityId = getEntityIdFromRequest(request)
 
   // Load session data
-  const { selectedIds } = getFlowDataFromSession(request);
+  const { selectedIds } = getFlowDataFromSession(request)
 
-  const form = forms.handleRequest(faoForm(request), request, faoSchema(selectedIds));
+  const form = forms.handleRequest(faoForm(request), request, faoSchema(selectedIds))
 
   if (form.isValid) {
     // Find licences in CRM for selected documents
-    const licenceData = await getLicences(selectedIds);
+    const licenceData = await getLicences(selectedIds)
 
     // Get company entity ID for current user
-    const companyName = licenceData[0].metadata.Name;
-    const companyEntityId = await crmConnector.getOrCreateCompanyEntity(entityId, companyName);
+    const companyName = licenceData[0].metadata.Name
+    const companyEntityId = await crmConnector.getOrCreateCompanyEntity(entityId, companyName)
 
     // Create verification
-    const verification = await services.crm.verifications.createVerification(entityId, companyEntityId, selectedIds);
+    const verification = await services.crm.verifications.createVerification(entityId, companyEntityId, selectedIds)
 
     // Get the licence containing the selected verification address
-    const addressLicence = await getLicence(selectedAddressId);
+    const addressLicence = await getLicence(selectedAddressId)
 
     // Post letter
-    await services.water.notifications.sendSecurityCode(addressLicence, fao, verification.verification_code);
+    await services.water.notifications.sendSecurityCode(addressLicence, fao, verification.verification_code)
 
     // Delete data in session
-    request.yar.clear('addLicenceFlow');
+    request.yar.clear('addLicenceFlow')
 
     // add the company id to the cookie to configure company switcher correctly
-    loginHelpers.selectCompany(request, { entityId: companyEntityId, name: companyName });
+    loginHelpers.selectCompany(request, { entityId: companyEntityId, name: companyName })
 
-    const viewContext = await getAddressSelectViewContext(request, verification, addressLicence, fao);
+    const viewContext = await getAddressSelectViewContext(request, verification, addressLicence, fao)
 
-    return h.view('nunjucks/add-licences/verification-sent', viewContext);
+    return h.view('nunjucks/add-licences/verification-sent', viewContext)
   }
 
   return h.view('nunjucks/form', {
     ...request.view,
     form
-  });
+  })
 }
 
 /**
@@ -420,21 +420,21 @@ async function postFAO (request, h) {
  * @return {Array} - list of doc IDs that were included in the token
  */
 function verifySelectedLicences (documentIds, requestDocumentIds) {
-  requestDocumentIds = forceArray(requestDocumentIds);
+  requestDocumentIds = forceArray(requestDocumentIds)
 
   if (requestDocumentIds.length < 1) {
-    throw new NoLicencesSelectedError();
+    throw new NoLicencesSelectedError()
   };
 
   // Ensure all submitted licences are in token
   requestDocumentIds.forEach((documentId) => {
     if (!documentIds.includes(documentId)) {
-      throw new LicenceFlowError();
+      throw new LicenceFlowError()
     }
-  });
+  })
 
   // Return licences
-  return requestDocumentIds;
+  return requestDocumentIds
 }
 
 /**
@@ -443,7 +443,7 @@ function verifySelectedLicences (documentIds, requestDocumentIds) {
  * @param {Object} h - HAPI HTTP response toolkit
  */
 async function getSecurityCode (request, h) {
-  return h.view('nunjucks/add-licences/security-code', request.view);
+  return h.view('nunjucks/add-licences/security-code', request.view)
 }
 
 /**
@@ -452,35 +452,35 @@ async function getSecurityCode (request, h) {
  * @param {Object} reply - HAPI HTTP reply
  */
 async function postSecurityCode (request, reply) {
-  const viewContext = request.view;
-  const { entityId } = request.defra;
+  const viewContext = request.view
+  const { entityId } = request.defra
 
   try {
     // Validate HTTP POST payload
     const schema = Joi.object().keys({
       verification_code: Joi.string().length(5).required(),
       csrf_token: Joi.string().guid()
-    });
-    const { error } = schema.validate(request.payload);
+    })
+    const { error } = schema.validate(request.payload)
 
     if (error) {
-      throw error;
+      throw error
     }
 
     // Verify
-    await crmConnector.verify(entityId, request.payload.verification_code);
+    await crmConnector.verify(entityId, request.payload.verification_code)
 
     // Licences have been verified if no error thrown
-    return reply.redirect('/licences');
+    return reply.redirect('/licences')
   } catch (error) {
     // Verification code invalid
     if (['VerificationNotFoundError', 'ValidationError'].includes(error.name)) {
-      viewContext.licences = await crmConnector.getOutstandingLicenceRequests(entityId);
-      viewContext.error = error;
-      return reply.view('nunjucks/add-licences/security-code', viewContext);
+      viewContext.licences = await crmConnector.getOutstandingLicenceRequests(entityId)
+      viewContext.error = error
+      return reply.view('nunjucks/add-licences/security-code', viewContext)
     }
 
-    throw error;
+    throw error
   }
 }
 
@@ -498,24 +498,24 @@ async function postSecurityCode (request, reply) {
 const ensureSessionDataPreHandler = (request, h) => {
   return getFlowDataFromSession(request)
     ? h.continue
-    : h.redirect('/add-licences').takeover();
-};
+    : h.redirect('/add-licences').takeover()
+}
 
-exports.getLicenceAdd = getLicenceAdd;
-exports.postLicenceAdd = postLicenceAdd;
+exports.getLicenceAdd = getLicenceAdd
+exports.postLicenceAdd = postLicenceAdd
 
-exports.getLicenceSelect = getLicenceSelect;
-exports.postLicenceSelect = postLicenceSelect;
+exports.getLicenceSelect = getLicenceSelect
+exports.postLicenceSelect = postLicenceSelect
 
-exports.getLicenceSelectError = getLicenceSelectError;
+exports.getLicenceSelectError = getLicenceSelectError
 
-exports.getAddressSelect = getAddressSelect;
-exports.postAddressSelect = postAddressSelect;
+exports.getAddressSelect = getAddressSelect
+exports.postAddressSelect = postAddressSelect
 
-exports.getFAO = getFAO;
-exports.postFAO = postFAO;
+exports.getFAO = getFAO
+exports.postFAO = postFAO
 
-exports.getSecurityCode = getSecurityCode;
-exports.postSecurityCode = postSecurityCode;
+exports.getSecurityCode = getSecurityCode
+exports.postSecurityCode = postSecurityCode
 
-exports.ensureSessionDataPreHandler = ensureSessionDataPreHandler;
+exports.ensureSessionDataPreHandler = ensureSessionDataPreHandler

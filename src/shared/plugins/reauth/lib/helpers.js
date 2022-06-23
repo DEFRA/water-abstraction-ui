@@ -1,4 +1,4 @@
-const moment = require('moment');
+const moment = require('moment')
 
 /**
  * Determines whether re-authorisation is required.
@@ -8,12 +8,12 @@ const moment = require('moment');
  */
 const isExpired = expiryTime => {
   if (!expiryTime) {
-    return true;
+    return true
   }
-  return moment().isAfter(expiryTime);
-};
+  return moment().isAfter(expiryTime)
+}
 
-const getExpiryTime = now => moment(now).add(10, 'minute').format();
+const getExpiryTime = now => moment(now).add(10, 'minute').format()
 
-exports.isExpired = isExpired;
-exports.getExpiryTime = getExpiryTime;
+exports.isExpired = isExpired
+exports.getExpiryTime = getExpiryTime

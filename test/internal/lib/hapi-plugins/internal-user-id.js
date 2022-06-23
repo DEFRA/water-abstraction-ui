@@ -1,65 +1,65 @@
-'use strict';
+'use strict'
 
 const {
   experiment,
   test,
   beforeEach,
   afterEach
-} = exports.lab = require('@hapi/lab').script();
-const { expect } = require('@hapi/code');
-const sinon = require('sinon');
-const sandbox = sinon.createSandbox();
+} = exports.lab = require('@hapi/lab').script()
+const { expect } = require('@hapi/code')
+const sinon = require('sinon')
+const sandbox = sinon.createSandbox()
 
-const { http } = require('@envage/water-abstraction-helpers');
-const plugin = require('../../../../src/internal/lib/hapi-plugins/internal-user-id');
+const { http } = require('@envage/water-abstraction-helpers')
+const plugin = require('../../../../src/internal/lib/hapi-plugins/internal-user-id')
 
 experiment('internal/lib/hapi-plugins/internal-user-id', () => {
-  let onPreHandler;
-  let onPostHandler;
-  let h;
+  let onPreHandler
+  let onPostHandler
+  let h
 
   beforeEach(async () => {
-    sandbox.stub(http, 'onPreRequest');
-    sandbox.stub(http, 'removePreRequestListener');
+    sandbox.stub(http, 'onPreRequest')
+    sandbox.stub(http, 'removePreRequestListener')
 
     h = {
       continue: Symbol('continue')
-    };
+    }
 
     const server = {
       ext: sandbox.spy()
-    };
+    }
 
-    await plugin.register(server);
+    await plugin.register(server)
 
-    onPreHandler = server.ext.firstCall.args[0].method;
-    onPostHandler = server.ext.secondCall.args[0].method;
-  });
+    onPreHandler = server.ext.firstCall.args[0].method
+    onPostHandler = server.ext.secondCall.args[0].method
+  })
 
   afterEach(async () => {
-    sandbox.restore();
-  });
+    sandbox.restore()
+  })
 
   experiment('onPreHandler', () => {
     experiment('when the user is not on the request', () => {
-      let result;
+      let result
 
       beforeEach(async () => {
-        const request = {};
-        result = await onPreHandler(request, h);
-      });
+        const request = {}
+        result = await onPreHandler(request, h)
+      })
 
       test('the http.onPreRequest listener is not setup', async () => {
-        expect(http.onPreRequest.called).to.be.false();
-      });
+        expect(http.onPreRequest.called).to.be.false()
+      })
 
       test('the handler continues', async () => {
-        expect(result).to.equal(h.continue);
-      });
-    });
+        expect(result).to.equal(h.continue)
+      })
+    })
 
     experiment('when the user is on the request', () => {
-      let result;
+      let result
 
       beforeEach(async () => {
         const request = {
@@ -68,48 +68,48 @@ experiment('internal/lib/hapi-plugins/internal-user-id', () => {
               user_id: 'test-user-id'
             }
           }
-        };
-        result = await onPreHandler(request, h);
-      });
+        }
+        result = await onPreHandler(request, h)
+      })
 
       test('the http.onPreRequest listener is setup', async () => {
-        expect(http.onPreRequest.called).to.be.true();
-      });
+        expect(http.onPreRequest.called).to.be.true()
+      })
 
       test('the listeners updates the headers to include the user id', async () => {
-        const [handler] = http.onPreRequest.lastCall.args;
-        const options = {};
-        handler(options);
+        const [handler] = http.onPreRequest.lastCall.args
+        const options = {}
+        handler(options)
 
-        expect(options.headers['defra-internal-user-id']).to.equal('test-user-id');
-      });
+        expect(options.headers['defra-internal-user-id']).to.equal('test-user-id')
+      })
 
       test('the handler continues', async () => {
-        expect(result).to.equal(h.continue);
-      });
-    });
-  });
+        expect(result).to.equal(h.continue)
+      })
+    })
+  })
 
   experiment('onPostHandler', () => {
     experiment('when the user is not on the request', () => {
-      let result;
+      let result
 
       beforeEach(async () => {
-        const request = {};
-        result = await onPostHandler(request, h);
-      });
+        const request = {}
+        result = await onPostHandler(request, h)
+      })
 
       test('the onPreRequest listener is not removed', async () => {
-        expect(http.removePreRequestListener.called).to.be.false();
-      });
+        expect(http.removePreRequestListener.called).to.be.false()
+      })
 
       test('the handler continues', async () => {
-        expect(result).to.equal(h.continue);
-      });
-    });
+        expect(result).to.equal(h.continue)
+      })
+    })
 
     experiment('when the user is on the request', () => {
-      let result;
+      let result
 
       beforeEach(async () => {
         const request = {
@@ -118,17 +118,17 @@ experiment('internal/lib/hapi-plugins/internal-user-id', () => {
               user_id: 'test-user-id'
             }
           }
-        };
-        result = await onPostHandler(request, h);
-      });
+        }
+        result = await onPostHandler(request, h)
+      })
 
       test('the onPreRequest listener is removed', async () => {
-        expect(http.removePreRequestListener.called).to.be.true();
-      });
+        expect(http.removePreRequestListener.called).to.be.true()
+      })
 
       test('the handler continues', async () => {
-        expect(result).to.equal(h.continue);
-      });
-    });
-  });
-});
+        expect(result).to.equal(h.continue)
+      })
+    })
+  })
+})

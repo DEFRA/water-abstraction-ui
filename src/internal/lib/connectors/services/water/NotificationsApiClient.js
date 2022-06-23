@@ -1,6 +1,6 @@
-const SharedNotificationsApiClient = require('shared/lib/connectors/services/water/NotificationsApiClient');
-const urlJoin = require('url-join');
-const { serviceRequest } = require('@envage/water-abstraction-helpers');
+const SharedNotificationsApiClient = require('shared/lib/connectors/services/water/NotificationsApiClient')
+const urlJoin = require('url-join')
+const { serviceRequest } = require('@envage/water-abstraction-helpers')
 
 class NotificationsApiClient extends SharedNotificationsApiClient {
   /**
@@ -12,7 +12,7 @@ class NotificationsApiClient extends SharedNotificationsApiClient {
    * @return {Promise} resolves with an array of contacts, each with licence numbers and rendered templates attached
    */
   sendNotification (taskConfigId, licenceNumbers, params = {}, sender = null) {
-    const url = urlJoin(this.config.serviceUrl, 'notification', sender ? 'send' : 'preview');
+    const url = urlJoin(this.config.serviceUrl, 'notification', sender ? 'send' : 'preview')
     const options = {
       body: {
         filter: {
@@ -24,8 +24,8 @@ class NotificationsApiClient extends SharedNotificationsApiClient {
         params,
         sender
       }
-    };
-    return serviceRequest.post(url, options);
+    }
+    return serviceRequest.post(url, options)
   };
 
   /**
@@ -35,9 +35,9 @@ class NotificationsApiClient extends SharedNotificationsApiClient {
    * @param sender An email address (optional)
    */
   getNotifications (page, categories, sender) {
-    const url = urlJoin(this.config.serviceUrl, 'notifications');
+    const url = urlJoin(this.config.serviceUrl, 'notifications')
 
-    const parsedCategoriesString = Array.isArray(categories) ? categories.join(',') : categories;
+    const parsedCategoriesString = Array.isArray(categories) ? categories.join(',') : categories
 
     const options = {
       qs: {
@@ -45,8 +45,8 @@ class NotificationsApiClient extends SharedNotificationsApiClient {
         page: page || 1,
         categories: parsedCategoriesString
       }
-    };
-    return serviceRequest.get(url, options);
+    }
+    return serviceRequest.get(url, options)
   }
 
   /**
@@ -54,8 +54,8 @@ class NotificationsApiClient extends SharedNotificationsApiClient {
    * @param {String} eventId
    */
   getNotification (eventId) {
-    const url = urlJoin(this.config.serviceUrl, 'notifications', eventId);
-    return serviceRequest.get(url);
+    const url = urlJoin(this.config.serviceUrl, 'notifications', eventId)
+    return serviceRequest.get(url)
   }
 
   /**
@@ -63,8 +63,8 @@ class NotificationsApiClient extends SharedNotificationsApiClient {
    * @param {String} eventId
    */
   getNotificationMessages (eventId) {
-    const url = urlJoin(this.config.serviceUrl, 'notifications', eventId, 'messages');
-    return serviceRequest.get(url);
+    const url = urlJoin(this.config.serviceUrl, 'notifications', eventId, 'messages')
+    return serviceRequest.get(url)
   }
 
   /**
@@ -72,14 +72,14 @@ class NotificationsApiClient extends SharedNotificationsApiClient {
    * @param {String} id
    */
   getNotificationMessage (id) {
-    const url = urlJoin(this.config.serviceUrl, 'notifications', id, 'message');
-    return serviceRequest.get(url);
+    const url = urlJoin(this.config.serviceUrl, 'notifications', id, 'message')
+    return serviceRequest.get(url)
   }
 
   getNotificationCategories () {
-    const url = urlJoin(this.config.serviceUrl, 'notifications/categories');
-    return serviceRequest.get(url);
+    const url = urlJoin(this.config.serviceUrl, 'notifications/categories')
+    return serviceRequest.get(url)
   }
 };
 
-module.exports = NotificationsApiClient;
+module.exports = NotificationsApiClient

@@ -1,16 +1,16 @@
-const { experiment, test, beforeEach, afterEach, fail } = exports.lab = require('@hapi/lab').script();
-const { expect } = require('@hapi/code');
-const sandbox = require('sinon').createSandbox();
-const plugin = require('shared/plugins/licence-data');
-const { set } = require('lodash');
+const { experiment, test, beforeEach, afterEach, fail } = exports.lab = require('@hapi/lab').script()
+const { expect } = require('@hapi/code')
+const sandbox = require('sinon').createSandbox()
+const plugin = require('shared/plugins/licence-data')
+const { set } = require('lodash')
 
 experiment('Licence data plugin', () => {
-  let server, h;
+  let server, h
 
   beforeEach(async () => {
     server = {
       ext: sandbox.stub()
-    };
+    }
     h = {
       continue: 'continue',
       realm: {
@@ -18,36 +18,36 @@ experiment('Licence data plugin', () => {
           getLicenceData: sandbox.stub().resolves({ error: null })
         }
       }
-    };
-  });
+    }
+  })
 
   afterEach(async () => {
-    sandbox.restore();
-  });
+    sandbox.restore()
+  })
 
   test('includes package details', async () => {
     expect(plugin.pkg).to.equal({
       name: 'licenceDataPlugin',
       version: '1.0.0'
-    });
-  });
+    })
+  })
 
   experiment('register method', () => {
     test('should be a function', async () => {
-      expect(plugin.register).to.be.a.function();
-    });
+      expect(plugin.register).to.be.a.function()
+    })
 
     test('registers an onPreHandler', async () => {
-      await plugin.register(server);
+      await plugin.register(server)
       expect(server.ext.calledWith({
         type: 'onPreHandler',
         method: plugin._onPreHandler
-      })).to.equal(true);
-    });
-  });
+      })).to.equal(true)
+    })
+  })
 
   experiment('onPreHandler', () => {
-    let request;
+    let request
 
     beforeEach(async () => {
       request = {
@@ -67,13 +67,13 @@ experiment('Licence data plugin', () => {
             }
           }
         }
-      };
-    });
+      }
+    })
 
     test('returns h.continue if plugin config not set on route', async () => {
-      const result = await plugin._onPreHandler(request, h);
-      expect(result).to.equal(h.continue);
-    });
+      const result = await plugin._onPreHandler(request, h)
+      expect(result).to.equal(h.continue)
+    })
 
     experiment('when summary data requested in route config', () => {
       beforeEach(async () => {
@@ -81,41 +81,41 @@ experiment('Licence data plugin', () => {
           load: {
             summary: true
           }
-        });
-      });
+        })
+      })
 
       test('loads data using getSummaryByDocumentId', async () => {
-        await plugin._onPreHandler(request, h);
+        await plugin._onPreHandler(request, h)
 
         expect(h.realm.pluginOptions.getLicenceData.calledWith(
           'getSummaryByDocumentId',
           request.params.documentId,
           request
-        )).to.equal(true);
-      });
+        )).to.equal(true)
+      })
 
       test('returns h.continue', async () => {
-        const result = await plugin._onPreHandler(request, h);
-        expect(result).to.equal(h.continue);
-      });
+        const result = await plugin._onPreHandler(request, h)
+        expect(result).to.equal(h.continue)
+      })
 
       test('throws a Boom error and logs if getter throws error', async () => {
-        h.realm.pluginOptions.getLicenceData.rejects();
+        h.realm.pluginOptions.getLicenceData.rejects()
 
         try {
-          await plugin._onPreHandler(request, h);
-          fail();
+          await plugin._onPreHandler(request, h)
+          fail()
         } catch (err) {
-          expect(err.isBoom).to.equal(true);
-          expect(err.output.statusCode).to.equal(500);
+          expect(err.isBoom).to.equal(true)
+          expect(err.output.statusCode).to.equal(500)
           expect(request.log.calledWith('error', 'Error getting licence data', {
             load: request.load,
             documentId: request.params.documentId,
             credentials: request.auth.credentials
-          })).to.equal(true);
+          })).to.equal(true)
         }
-      });
-    });
+      })
+    })
 
     experiment('when communications data requested in route config', () => {
       beforeEach(async () => {
@@ -123,19 +123,19 @@ experiment('Licence data plugin', () => {
           load: {
             communications: true
           }
-        });
-      });
+        })
+      })
 
       test('loads data using getCommunicationsByDocumentId', async () => {
-        await plugin._onPreHandler(request, h);
+        await plugin._onPreHandler(request, h)
 
         expect(h.realm.pluginOptions.getLicenceData.calledWith(
           'getCommunicationsByDocumentId',
           request.params.documentId,
           request
-        )).to.equal(true);
-      });
-    });
+        )).to.equal(true)
+      })
+    })
 
     experiment('when route config is invalid', () => {
       beforeEach(async () => {
@@ -143,17 +143,17 @@ experiment('Licence data plugin', () => {
           load: {
             unknownOption: true
           }
-        });
-      });
+        })
+      })
 
       test('throws an error when onPreHandler is called', async () => {
         try {
-          await plugin._onPreHandler(request, h);
-          fail();
+          await plugin._onPreHandler(request, h)
+          fail()
         } catch (err) {
-          expect(err.name).to.equal('ValidationError');
+          expect(err.name).to.equal('ValidationError')
         }
-      });
-    });
-  });
-});
+      })
+    })
+  })
+})

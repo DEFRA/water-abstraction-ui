@@ -1,16 +1,16 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
-const { formFactory, fields } = require('shared/lib/forms/');
-const { CONTACT_TYPES } = require('../lib/constants');
-const helpers = require('../lib/helpers');
+const Joi = require('joi')
+const { formFactory, fields } = require('shared/lib/forms/')
+const { CONTACT_TYPES } = require('../lib/constants')
+const helpers = require('../lib/helpers')
 
-const hasExistingContacts = contacts => contacts.length > 0;
+const hasExistingContacts = contacts => contacts.length > 0
 
 const getDepartmentValue = contact =>
   (contact.type && contact.type === CONTACT_TYPES.department)
     ? contact.department
-    : null;
+    : null
 
 const newContactChoices = department => [
   {
@@ -30,25 +30,25 @@ const newContactChoices = department => [
         label: 'Department name'
       }, department)
     ]
-  }];
+  }]
 
 const getNewContactChoices = (contacts, contactData) => {
-  const choices = hasExistingContacts(contacts) ? [{ divider: 'or' }] : [];
-  choices.push(...newContactChoices(getDepartmentValue(contactData)));
-  return choices;
-};
+  const choices = hasExistingContacts(contacts) ? [{ divider: 'or' }] : []
+  choices.push(...newContactChoices(getDepartmentValue(contactData)))
+  return choices
+}
 
 const getContactList = contacts => contacts.map(contact => ({
   value: contact.id,
   label: contact.fullName
-}));
+}))
 
 const getContactChoices = (contacts, contactData) => {
   return [
     ...getContactList(contacts),
     ...getNewContactChoices(contacts, contactData)
-  ];
-};
+  ]
+}
 
 /**
  * returns the selected contact
@@ -56,11 +56,11 @@ const getContactChoices = (contacts, contactData) => {
  * @param {Object} request The Hapi request object
   */
 const selectContactForm = request => {
-  const f = formFactory(request.path);
+  const f = formFactory(request.path)
 
-  const { companyContacts } = request.pre;
-  const contact = helpers.getContactFromSession(request);
-  const value = contact ? contact.contactId || contact.type : null;
+  const { companyContacts } = request.pre
+  const contact = helpers.getContactFromSession(request)
+  const value = contact ? contact.contactId || contact.type : null
 
   f.fields.push(fields.radio('selectedContact', {
     errors: {
@@ -70,18 +70,18 @@ const selectContactForm = request => {
     },
     ...hasExistingContacts(companyContacts) && { hint: 'Existing contacts' },
     choices: getContactChoices(companyContacts, contact)
-  }, value));
-  f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
+  }, value))
+  f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
 
-  return f;
-};
+  return f
+}
 
-const getContactId = contact => contact.id;
+const getContactId = contact => contact.id
 
 const selectContactSchema = request => {
-  const { companyContacts } = request.pre;
-  const validContactIds = companyContacts.map(getContactId);
+  const { companyContacts } = request.pre
+  const validContactIds = companyContacts.map(getContactId)
 
   return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
@@ -91,7 +91,7 @@ const selectContactSchema = request => {
         is: 'department',
         then: Joi.string().required()
       })
-  });
-};
-exports.form = selectContactForm;
-exports.schema = selectContactSchema;
+  })
+}
+exports.form = selectContactForm
+exports.schema = selectContactSchema

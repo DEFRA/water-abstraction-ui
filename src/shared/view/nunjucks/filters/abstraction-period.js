@@ -1,13 +1,13 @@
-const moment = require('moment');
-const { isObject, isString, isEmpty } = require('lodash');
+const moment = require('moment')
+const { isObject, isString, isEmpty } = require('lodash')
 
 const formatDate = (day, month) => {
-  const m = moment(`${day}/${month}`, 'D/M');
+  const m = moment(`${day}/${month}`, 'D/M')
   if (!m.isValid()) {
-    throw new Error(`Invalid abstraction period ${day}/${month} in abstractionPeriod filter`);
+    throw new Error(`Invalid abstraction period ${day}/${month} in abstractionPeriod filter`)
   }
-  return m.format('D MMMM');
-};
+  return m.format('D MMMM')
+}
 
 /**
  * Formats an abstraction period in the form day/month, e.g. 1/4
@@ -17,19 +17,19 @@ const formatDate = (day, month) => {
  */
 const abstractionPeriod = val => {
   if (isEmpty(val)) {
-    return 'abstraction period has not been set';
+    return 'abstraction period has not been set'
   }
   if (isObject(val)) {
     const dates = [
       formatDate(val.startDay, val.startMonth),
       formatDate(val.endDay, val.endMonth)
-    ];
-    return dates.join(' to ');
+    ]
+    return dates.join(' to ')
   }
   if (isString(val)) {
-    const [day, month] = val.split('/');
-    return formatDate(day, month);
+    const [day, month] = val.split('/')
+    return formatDate(day, month)
   }
-};
+}
 
-exports.abstractionPeriod = abstractionPeriod;
+exports.abstractionPeriod = abstractionPeriod

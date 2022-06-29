@@ -114,6 +114,7 @@ describe('Create SRoC Charge version workflow journey', () => {
       cy.get('.govuk-heading-l').contains('Select loss category')
       cy.get('[type="radio"]#loss-2').click()
       cy.get('button.govuk-button').click()
+      cy.get('form > .govuk-button').click();
     })
 
     describe('Check charge information and add Charge Category', () => {

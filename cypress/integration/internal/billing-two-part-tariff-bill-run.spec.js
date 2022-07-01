@@ -42,6 +42,12 @@ describe('two-part-tariff bill run', () => {
       describe('user selects the test region', () => {
         cy.get('[type="radio"]#selectedBillingRegion-9').last().check()
         cy.get('button.govuk-button').click()
+        cy.get('#select-financial-year')
+      })
+
+      describe('user selects the financial year', () => {
+        cy.get('#select-financial-year').click()
+        cy.get('button.govuk-button').click()
       })
 
       describe('user waits for batch to finish generating', () => {

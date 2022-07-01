@@ -194,6 +194,72 @@ const chargeVersions = [{
 }]
 
 experiment('internal/modules/billing/services/transactions-csv', () => {
+  experiment('.createCSV', () => {
+    let csvData
+
+    beforeEach(async () => {
+      csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
+    })
+
+    test('licence number is mapped to user friendly heading', async () => {
+      expect(csvData[0]['Licence number']).to.equal('1/23/45/*S/6789')
+    })
+
+    test('correct charge information reason is mapped', async () => {
+      expect(csvData[0]['Charge information reason']).to.equal('change reason description')
+    })
+
+    test('region is mapped to user friendly heading', async () => {
+      expect(csvData[0].Region).to.equal('Anglian')
+    })
+
+    test('de minimis is mapped to user friendly heading', async () => {
+      expect(csvData[0]['De minimis rule Y/N']).to.equal('N')
+    })
+
+    test('description is mapped to user friendly heading', async () => {
+      expect(csvData[0]['Transaction description']).to.equal('The description - with 007')
+    })
+
+    test('water company when false is mapped to user friendly heading', async () => {
+      expect(csvData[0]['Water company Y/N']).to.equal('N')
+    })
+
+    test('water company when true is mapped to user friendly heading', async () => {
+      invoice.billingInvoiceLicences[0].licence.isWaterUndertaker = true
+      csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
+      expect(csvData[0]['Water company Y/N']).to.equal('Y')
+    })
+
+    test('DeMinimis is mapped to user friendly heading', async () => {
+      csvData = await transactionsCSV.createCSV([
+        {
+          ...invoice,
+          isDeMinimis: true
+        }
+      ], chargeVersions)
+      expect(csvData[0]['De minimis rule Y/N']).to.equal('Y')
+    })
+
+    test('historical area is mapped to user friendly heading', async () => {
+      expect(csvData[0]['Historical area']).to.equal('AREA')
+    })
+
+    test('creates a line for each transaction', async () => {
+      const licenceRef = invoice.billingInvoiceLicences[0].licence.licenceRef
+      expect(csvData[0]['Licence number']).to.equal(licenceRef)
+      expect(csvData[1]['Licence number']).to.equal(licenceRef)
+    })
+  })
+
+  experiment('.getCSVFileName', () => {
+    test('returns expected file name', () => {
+      const expectedFileName = 'South West two-part tariff bill run 2345.csv'
+      const fileName = transactionsCSV.getCSVFileName(batch)
+      expect(fileName).to.equal(expectedFileName)
+    })
+  })
+
   experiment('_getTransactionData maps', () => {
     let transaction, transactionData
     beforeEach(() => {
@@ -390,72 +456,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       const transactionLines = transactionsCSV._getTransactionAmounts({ netAmount: null })
       expect(transactionLines['Net transaction line amount(debit)']).to.equal('Error - not calculated')
       expect(transactionLines['Net transaction line amount(credit)']).to.equal('Error - not calculated')
-    })
-  })
-
-  experiment('.createCSV', () => {
-    let csvData
-
-    beforeEach(async () => {
-      csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
-    })
-
-    test('licence number is mapped to user friendly heading', async () => {
-      expect(csvData[0]['Licence number']).to.equal('1/23/45/*S/6789')
-    })
-
-    test('correct charge information reason is mapped', async () => {
-      expect(csvData[0]['Charge information reason']).to.equal('change reason description')
-    })
-
-    test('region is mapped to user friendly heading', async () => {
-      expect(csvData[0].Region).to.equal('Anglian')
-    })
-
-    test('de minimis is mapped to user friendly heading', async () => {
-      expect(csvData[0]['De minimis rule Y/N']).to.equal('N')
-    })
-
-    test('description is mapped to user friendly heading', async () => {
-      expect(csvData[0]['Transaction description']).to.equal('The description - with 007')
-    })
-
-    test('water company when false is mapped to user friendly heading', async () => {
-      expect(csvData[0]['Water company Y/N']).to.equal('N')
-    })
-
-    test('water company when true is mapped to user friendly heading', async () => {
-      invoice.billingInvoiceLicences[0].licence.isWaterUndertaker = true
-      csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
-      expect(csvData[0]['Water company Y/N']).to.equal('Y')
-    })
-
-    test('DeMinimis is mapped to user friendly heading', async () => {
-      csvData = await transactionsCSV.createCSV([
-        {
-          ...invoice,
-          isDeMinimis: true
-        }
-      ], chargeVersions)
-      expect(csvData[0]['De minimis rule Y/N']).to.equal('Y')
-    })
-
-    test('historical area is mapped to user friendly heading', async () => {
-      expect(csvData[0]['Historical area']).to.equal('AREA')
-    })
-
-    test('creates a line for each transaction', async () => {
-      const licenceRef = invoice.billingInvoiceLicences[0].licence.licenceRef
-      expect(csvData[0]['Licence number']).to.equal(licenceRef)
-      expect(csvData[1]['Licence number']).to.equal(licenceRef)
-    })
-  })
-
-  experiment('.getCSVFileName', () => {
-    test('returns expected file name', () => {
-      const expectedFileName = 'South West two-part tariff bill run 2345.csv'
-      const fileName = transactionsCSV.getCSVFileName(batch)
-      expect(fileName).to.equal(expectedFileName)
     })
   })
 })

@@ -1,4 +1,5 @@
 'use strict'
+
 const moment = require('moment')
 const numberFormatter = require('../../../../shared/lib/number-formatter')
 const { mapValues, isNull, sortBy, get } = require('lodash')
@@ -135,6 +136,7 @@ const getCSVFileName = batch => {
   const batchType = mappers.mapBatchType(batch.type)
   return `${batch.region.displayName} ${batchType.toLowerCase()} bill run ${batch.billRunNumber}.csv`
 }
+
 exports._getInvoiceData = getInvoiceData
 exports._getInvoiceAccountData = getInvoiceAccountData
 exports._getTransactionData = getTransactionData

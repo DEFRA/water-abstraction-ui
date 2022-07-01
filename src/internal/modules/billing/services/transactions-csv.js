@@ -41,7 +41,7 @@ const getBillingVolume = trans => {
   return billingVolume ? billingVolume.calculatedVolume : null
 }
 
-const getTransactionData = trans => ({
+const _getTransactionData = trans => ({
   description: trans.description,
   'Compensation charge Y/N': trans.isCompensationCharge ? 'Y' : 'N',
   ...getChargeElementData(trans),
@@ -57,7 +57,7 @@ const getTransactionData = trans => ({
   'S130 agreement value': null
 })
 
-const getInvoiceAccountData = invoiceAccount => ({
+const _getInvoiceAccountData = invoiceAccount => ({
   'Billing account number': invoiceAccount.invoiceAccountNumber,
   'Customer name': invoiceAccount.company.name
 })
@@ -76,7 +76,7 @@ const getDebitCreditLines = (value, isCredit, debitLabel, creditLabel) => {
   }
 }
 
-const getInvoiceData = invoice => {
+const _getInvoiceData = invoice => {
   const { netAmount, isCredit } = invoice
   return {
     'Bill number': invoice.invoiceNumber,
@@ -85,7 +85,7 @@ const getInvoiceData = invoice => {
   }
 }
 
-const getTransactionAmounts = trans => {
+const _getTransactionAmounts = trans => {
   const { netAmount, isCredit } = trans
 
   if (isNull(netAmount)) {
@@ -111,12 +111,12 @@ const createCSV = async (invoices, chargeVersions) => {
     invoice.billingInvoiceLicences.forEach(invLic => {
       const { isDeMinimis } = invoice
       invLic.billingTransactions.forEach(trans => {
-        const { description, ...transactionData } = getTransactionData(trans)
+        const { description, ...transactionData } = _getTransactionData(trans)
         const csvLine = {
-          ...getInvoiceAccountData(invoice.invoiceAccount),
+          ..._getInvoiceAccountData(invoice.invoiceAccount),
           'Licence number': invLic.licenceRef,
-          ...getInvoiceData(invoice),
-          ...getTransactionAmounts(trans),
+          ..._getInvoiceData(invoice),
+          ..._getTransactionAmounts(trans),
           'Charge information reason': getChangeReason(chargeVersions, trans),
           Region: invLic.licence.region.displayName,
           'De minimis rule Y/N': isDeMinimis ? 'Y' : 'N',
@@ -137,9 +137,11 @@ const getCSVFileName = batch => {
   return `${batch.region.displayName} ${batchType.toLowerCase()} bill run ${batch.billRunNumber}.csv`
 }
 
-exports._getInvoiceData = getInvoiceData
-exports._getInvoiceAccountData = getInvoiceAccountData
-exports._getTransactionData = getTransactionData
-exports._getTransactionAmounts = getTransactionAmounts
-exports.createCSV = createCSV
-exports.getCSVFileName = getCSVFileName
+module.exports = {
+  _getInvoiceData,
+  _getInvoiceAccountData,
+  _getTransactionData,
+  _getTransactionAmounts,
+  createCSV,
+  getCSVFileName
+}

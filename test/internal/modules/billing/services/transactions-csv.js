@@ -204,10 +204,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
     test('formats each CSV row as expected', async () => {
       expect(csvData[0]['Billing account number']).to.equal(invoice.invoiceAccount.invoiceAccountNumber)
       expect(csvData[0]['Customer name']).to.equal(invoice.invoiceAccount.company.name)
-    })
-
-    test('licence number is mapped to user friendly heading', async () => {
-      expect(csvData[0]['Licence number']).to.equal('1/23/45/*S/6789')
+      expect(csvData[0]['Licence number']).to.equal(invoice.billingInvoiceLicences[0].licence.licenceRef)
     })
 
     test('correct charge information reason is mapped', async () => {

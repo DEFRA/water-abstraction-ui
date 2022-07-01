@@ -201,6 +201,11 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
     })
 
+    test('formats each CSV row as expected', async () => {
+      expect(csvData[0]['Billing account number']).to.equal(invoice.invoiceAccount.invoiceAccountNumber)
+      expect(csvData[0]['Customer name']).to.equal(invoice.invoiceAccount.company.name)
+    })
+
     test('licence number is mapped to user friendly heading', async () => {
       expect(csvData[0]['Licence number']).to.equal('1/23/45/*S/6789')
     })
@@ -426,22 +431,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
           expect(invoiceData['Credit amount']).to.equal('-1,234.56')
         })
       })
-    })
-  })
-
-  experiment('_getInvoiceAccountData', () => {
-    let invoiceAccount, invoiceAccountData
-    beforeEach(() => {
-      invoiceAccount = invoice.invoiceAccount
-      invoiceAccountData = transactionsCSV._getInvoiceAccountData(invoiceAccount)
-    })
-
-    test('maps account number to user friendly heading', async () => {
-      expect(invoiceAccountData['Billing account number']).to.equal(invoiceAccount.invoiceAccountNumber)
-    })
-
-    test('maps account number to user friendly heading', async () => {
-      expect(invoiceAccountData['Customer name']).to.equal(invoiceAccount.company.name)
     })
   })
 

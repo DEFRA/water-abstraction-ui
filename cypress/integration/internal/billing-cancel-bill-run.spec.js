@@ -74,7 +74,7 @@ describe('Cancel bill run', () => {
       cy.get('.govuk-radios__item').last().children().first().click()
       cy.get('button.govuk-button').click()
 
-      cy.get('#select-financial-year').click();
+      cy.get('#select-financial-year').click()
       cy.get('button.govuk-button').click()
 
       cy.get('[role="button"]', { timeout: 1000 }).should('contain', 'Cancel bill run')

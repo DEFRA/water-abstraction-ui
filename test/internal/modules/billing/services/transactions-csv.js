@@ -211,130 +211,117 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       chargeVersions = GeneralHelper.cloneObject(chargeVersionsData)
     })
 
-    experiment('when the invoice is a debit', () => {
-      beforeEach(async () => {
-        result = await transactionsCSV.createCSV([invoice], chargeVersions)
-      })
+    test('formats each CSV row as expected', async () => {
+      result = await transactionsCSV.createCSV([invoice], chargeVersions)
 
-      test('formats each CSV row as expected', async () => {
-        expect(result[0]['Billing account number']).to.equal('A12345678A')
-        expect(result[0]['Customer name']).to.equal('R G Applehead & sons LTD')
-        expect(result[0]['Licence number']).to.equal('1/23/45/*S/6789')
-        expect(result[0]['Bill number']).to.equal('IIA123456')
-        expect(result[0]['Financial year']).to.equal('2019')
+      expect(result[0]['Billing account number']).to.equal('A12345678A')
+      expect(result[0]['Customer name']).to.equal('R G Applehead & sons LTD')
+      expect(result[0]['Licence number']).to.equal('1/23/45/*S/6789')
+      expect(result[0]['Bill number']).to.equal('IIA123456')
+      expect(result[0]['Financial year']).to.equal('2019')
+      expect(result[0]['Invoice amount']).to.equal('1,234.56')
+      expect(result[0]['Credit amount']).to.equal('')
+      expect(result[0]['Net transaction line amount(debit)']).to.equal('617.28')
+      expect(result[0]['Net transaction line amount(credit)']).to.equal('')
+      expect(result[0]['Charge information reason']).to.equal('change reason description')
+      expect(result[0].Region).to.equal('Anglian')
+      expect(result[0]['De minimis rule Y/N']).to.equal('N')
+      expect(result[0]['Transaction description']).to.equal('The description - with 007')
+      expect(result[0]['Water company Y/N']).to.equal('N')
+      expect(result[0]['Historical area']).to.equal('AREA')
+      expect(result[0]['Compensation charge Y/N']).to.equal('N')
+      expect(result[0]['Standard Unit Charge (SUC) (£/1000 cubic metres)']).to.equal('1')
+      expect(result[0]['Environmental Improvement Unit Charge (EIUC) (£/1000 cubic metres)']).to.equal('1')
+      expect(result[0]['Authorised annual quantity (megalitres)']).to.equal('9.1')
+      expect(result[0]['Billable annual quantity (megalitres)']).to.equal('9.1')
+      expect(result[0]['Source type']).to.equal('unsupported')
+      expect(result[0]['Source factor']).to.equal('0.5')
+      expect(result[0]['Adjusted source type']).to.equal('other')
+      expect(result[0]['Adjusted source factor']).to.equal('0.5')
+      expect(result[0].Season).to.equal('winter')
+      expect(result[0]['Season factor']).to.equal('0.5')
+      expect(result[0].Loss).to.equal('high')
+      expect(result[0]['Loss factor']).to.equal('0.5')
+      expect(result[0]['Purpose code']).to.equal('420')
+      expect(result[0]['Purpose name']).to.equal('Spray Irrigation - Storage')
+      expect(result[0]['Abstraction period start date']).to.equal('1 Nov')
+      expect(result[0]['Abstraction period end date']).to.equal('31 Mar')
+      expect(result[0]['Charge period start date']).to.equal('2019-04-01')
+      expect(result[0]['Charge period end date']).to.equal('2020-03-31')
+      expect(result[0]['Authorised days']).to.equal('152')
+      expect(result[0]['Billable days']).to.equal('152')
+      expect(result[0]['Calculated quantity']).to.equal('10.3')
+      expect(result[0].Quantity).to.equal('9.1')
+      expect(result[0]['S127 agreement (Y/N)']).to.equal('N')
+      expect(result[0]['S127 agreement value']).to.equal('0.5')
+      expect(result[0]['S130 agreement']).to.equal('S130W')
+      expect(result[0]['S130 agreement value']).to.equal('')
+    })
+
+    test('creates a line for each transaction', async () => {
+      result = await transactionsCSV.createCSV([invoice], chargeVersions)
+
+      expect(result.length).to.equal(invoice.billingInvoiceLicences[0].billingTransactions.length)
+    })
+
+    experiment('when the invoice is a debit', () => {
+      test("sets 'Invoice amount' and 'Credit amount' correctly", async () => {
+        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+
         expect(result[0]['Invoice amount']).to.equal('1,234.56')
         expect(result[0]['Credit amount']).to.equal('')
-        expect(result[0]['Net transaction line amount(debit)']).to.equal('617.28')
-        expect(result[0]['Net transaction line amount(credit)']).to.equal('')
-        expect(result[0]['Charge information reason']).to.equal('change reason description')
-        expect(result[0].Region).to.equal('Anglian')
-        expect(result[0]['De minimis rule Y/N']).to.equal('N')
-        expect(result[0]['Transaction description']).to.equal('The description - with 007')
-        expect(result[0]['Water company Y/N']).to.equal('N')
-        expect(result[0]['Historical area']).to.equal('AREA')
-        expect(result[0]['Compensation charge Y/N']).to.equal('N')
-        expect(result[0]['Standard Unit Charge (SUC) (£/1000 cubic metres)']).to.equal('1')
-        expect(result[0]['Environmental Improvement Unit Charge (EIUC) (£/1000 cubic metres)']).to.equal('1')
-        expect(result[0]['Authorised annual quantity (megalitres)']).to.equal('9.1')
-        expect(result[0]['Billable annual quantity (megalitres)']).to.equal('9.1')
-        expect(result[0]['Source type']).to.equal('unsupported')
-        expect(result[0]['Source factor']).to.equal('0.5')
-        expect(result[0]['Adjusted source type']).to.equal('other')
-        expect(result[0]['Adjusted source factor']).to.equal('0.5')
-        expect(result[0].Season).to.equal('winter')
-        expect(result[0]['Season factor']).to.equal('0.5')
-        expect(result[0].Loss).to.equal('high')
-        expect(result[0]['Loss factor']).to.equal('0.5')
-        expect(result[0]['Purpose code']).to.equal('420')
-        expect(result[0]['Purpose name']).to.equal('Spray Irrigation - Storage')
-        expect(result[0]['Abstraction period start date']).to.equal('1 Nov')
-        expect(result[0]['Abstraction period end date']).to.equal('31 Mar')
-        expect(result[0]['Charge period start date']).to.equal('2019-04-01')
-        expect(result[0]['Charge period end date']).to.equal('2020-03-31')
-        expect(result[0]['Authorised days']).to.equal('152')
-        expect(result[0]['Billable days']).to.equal('152')
-        expect(result[0]['Calculated quantity']).to.equal('10.3')
-        expect(result[0].Quantity).to.equal('9.1')
-        expect(result[0]['S127 agreement (Y/N)']).to.equal('N')
-        expect(result[0]['S127 agreement value']).to.equal('0.5')
-        expect(result[0]['S130 agreement']).to.equal('S130W')
-        expect(result[0]['S130 agreement value']).to.equal('')
-      })
-
-      test('creates a line for each transaction', async () => {
-        expect(result.length).to.equal(invoice.billingInvoiceLicences[0].billingTransactions.length)
       })
     })
 
     experiment('when the invoice is a credit', () => {
-      beforeEach(async () => {
-        invoice.netAmount = -123456
+      beforeEach(() => {
         invoice.isCredit = true
+        invoice.netAmount = -123456
+      })
 
+      test("sets 'Invoice amount' and 'Credit amount' correctly", async () => {
+        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+
+        expect(result[0]['Invoice amount']).to.equal('')
+        expect(result[0]['Credit amount']).to.equal('-1,234.56')
+      })
+    })
+
+    experiment('when the transaction is a debit', () => {
+      test("sets the 'Net transaction line amount' fields correctly", async () => {
+        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+
+        expect(result[0]['Net transaction line amount(debit)']).to.equal('617.28')
+        expect(result[0]['Net transaction line amount(credit)']).to.equal('')
+      })
+    })
+
+    experiment('when the transaction is a credit', () => {
+      beforeEach(() => {
         invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
           transaction.isCredit = true
           transaction.netAmount = -61728
         })
-
-        result = await transactionsCSV.createCSV([invoice], chargeVersions)
       })
 
-      test('formats each CSV row as expected', async () => {
-        expect(result[0]['Billing account number']).to.equal('A12345678A')
-        expect(result[0]['Customer name']).to.equal('R G Applehead & sons LTD')
-        expect(result[0]['Licence number']).to.equal('1/23/45/*S/6789')
-        expect(result[0]['Bill number']).to.equal('IIA123456')
-        expect(result[0]['Financial year']).to.equal('2019')
-        expect(result[0]['Invoice amount']).to.equal('')
-        expect(result[0]['Credit amount']).to.equal('-1,234.56')
+      test("sets the 'Net transaction line amount' fields correctly", async () => {
+        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+
         expect(result[0]['Net transaction line amount(debit)']).to.equal('')
         expect(result[0]['Net transaction line amount(credit)']).to.equal('-617.28')
-        expect(result[0]['Charge information reason']).to.equal('change reason description')
-        expect(result[0].Region).to.equal('Anglian')
-        expect(result[0]['De minimis rule Y/N']).to.equal('N')
-        expect(result[0]['Transaction description']).to.equal('The description - with 007')
-        expect(result[0]['Water company Y/N']).to.equal('N')
-        expect(result[0]['Historical area']).to.equal('AREA')
-        expect(result[0]['Compensation charge Y/N']).to.equal('N')
-        expect(result[0]['Standard Unit Charge (SUC) (£/1000 cubic metres)']).to.equal('1')
-        expect(result[0]['Environmental Improvement Unit Charge (EIUC) (£/1000 cubic metres)']).to.equal('1')
-        expect(result[0]['Authorised annual quantity (megalitres)']).to.equal('9.1')
-        expect(result[0]['Billable annual quantity (megalitres)']).to.equal('9.1')
-        expect(result[0]['Source type']).to.equal('unsupported')
-        expect(result[0]['Source factor']).to.equal('0.5')
-        expect(result[0]['Adjusted source type']).to.equal('other')
-        expect(result[0]['Adjusted source factor']).to.equal('0.5')
-        expect(result[0].Season).to.equal('winter')
-        expect(result[0]['Season factor']).to.equal('0.5')
-        expect(result[0].Loss).to.equal('high')
-        expect(result[0]['Loss factor']).to.equal('0.5')
-        expect(result[0]['Purpose code']).to.equal('420')
-        expect(result[0]['Purpose name']).to.equal('Spray Irrigation - Storage')
-        expect(result[0]['Abstraction period start date']).to.equal('1 Nov')
-        expect(result[0]['Abstraction period end date']).to.equal('31 Mar')
-        expect(result[0]['Charge period start date']).to.equal('2019-04-01')
-        expect(result[0]['Charge period end date']).to.equal('2020-03-31')
-        expect(result[0]['Authorised days']).to.equal('152')
-        expect(result[0]['Billable days']).to.equal('152')
-        expect(result[0]['Calculated quantity']).to.equal('10.3')
-        expect(result[0].Quantity).to.equal('9.1')
-        expect(result[0]['S127 agreement (Y/N)']).to.equal('N')
-        expect(result[0]['S127 agreement value']).to.equal('0.5')
-        expect(result[0]['S130 agreement']).to.equal('S130W')
-        expect(result[0]['S130 agreement value']).to.equal('')
       })
     })
 
     experiment('when `netAmount` in the transactions is null', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
           transaction.netAmount = null
         })
-
-        result = await transactionsCSV.createCSV([invoice], chargeVersions)
       })
 
       test("states 'Error - not calculated' in the transaction line amount fields", async () => {
+        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+
         expect(result[0]['Net transaction line amount(debit)']).to.equal('Error - not calculated')
         expect(result[0]['Net transaction line amount(credit)']).to.equal('Error - not calculated')
       })
@@ -342,78 +329,78 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
 
     experiment('when charge information is missing', () => {
       experiment('such as the charge version not being found', () => {
-        beforeEach(async () => {
+        beforeEach(() => {
           chargeVersions[0].id = 'notgonnafindme'
-
-          result = await transactionsCSV.createCSV([invoice], chargeVersions)
         })
 
-        test("sets the 'Charge information reason' to empty", () => {
+        test("sets the 'Charge information reason' to empty", async () => {
+          result = await transactionsCSV.createCSV([invoice], chargeVersions)
+
           expect(result[0]['Charge information reason']).to.equal('')
         })
       })
 
       experiment('such as the change reason being null', () => {
-        beforeEach(async () => {
+        beforeEach(() => {
           chargeVersions[0].changeReason = null
-
-          result = await transactionsCSV.createCSV([invoice], chargeVersions)
         })
 
-        test("sets the 'Charge information reason' to empty", () => {
+        test("sets the 'Charge information reason' to empty", async () => {
+          result = await transactionsCSV.createCSV([invoice], chargeVersions)
+
           expect(result[0]['Charge information reason']).to.equal('')
         })
       })
     })
 
     experiment('when deminimis is true', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         invoice.isDeMinimis = true
-
-        result = await transactionsCSV.createCSV([invoice], chargeVersions)
       })
 
-      test("sets 'De minimis rule Y/N' to 'Y'", () => {
+      test("sets 'De minimis rule Y/N' to 'Y'", async () => {
+        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+
         expect(result[0]['De minimis rule Y/N']).to.equal('Y')
       })
     })
 
     experiment('when water company is true', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         invoice.billingInvoiceLicences[0].licence.isWaterUndertaker = true
-
-        result = await transactionsCSV.createCSV([invoice], chargeVersions)
       })
 
-      test("sets 'Water company Y/N' to 'Y'", () => {
+      test("sets 'Water company Y/N' to 'Y'", async () => {
+        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+
         expect(result[0]['Water company Y/N']).to.equal('Y')
       })
     })
 
     experiment('when compensation charge is true', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
           transaction.isCompensationCharge = true
         })
-
-        result = await transactionsCSV.createCSV([invoice], chargeVersions)
       })
 
-      test("sets 'Compensation charge Y/N' to 'Y'", () => {
+      test("sets 'Compensation charge Y/N' to 'Y'", async () => {
+        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+
         expect(result[0]['Compensation charge Y/N']).to.equal('Y')
       })
     })
 
     experiment('when the transaction charge type is minimum charge', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
           transaction.chargeType = 'minimum_charge'
         })
-
-        result = await transactionsCSV.createCSV([invoice], chargeVersions)
       })
 
-      test('drops a number of columns', () => {
+      test('drops a number of columns', async () => {
+        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+
         expect(result[0]['Standard Unit Charge (SUC) (£/1000 cubic metres)']).to.be.undefined()
         expect(result[0]['Environmental Improvement Unit Charge (EIUC) (£/1000 cubic metres)']).to.be.undefined()
         expect(result[0]['Authorised annual quantity (megalitres)']).to.be.undefined()
@@ -434,73 +421,73 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
     })
 
     experiment('when the transaction charge element source type is tidal', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
           transaction.chargeElement.source = 'tidal'
         })
-
-        result = await transactionsCSV.createCSV([invoice], chargeVersions)
       })
 
-      test("sets 'Adjusted source type' to 'tidal'", () => {
+      test("sets 'Adjusted source type' to 'tidal'", async () => {
+        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+
         expect(result[0]['Adjusted source type']).to.equal('tidal')
       })
     })
 
     experiment('when billing volume data is missing', () => {
       experiment('such as transaction volumn being null', () => {
-        beforeEach(async () => {
+        beforeEach(() => {
           invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
             transaction.volume = null
           })
-
-          result = await transactionsCSV.createCSV([invoice], chargeVersions)
         })
 
-        test("sets the 'Calculated quantity' to empty", () => {
+        test("sets the 'Calculated quantity' to empty", async () => {
+          result = await transactionsCSV.createCSV([invoice], chargeVersions)
+
           expect(result[0]['Calculated quantity']).to.equal('')
         })
       })
 
       experiment('such as the billing volumes not having a matching financial year for transaction end date', () => {
-        beforeEach(async () => {
+        beforeEach(() => {
           invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
             transaction.billingVolume[0].financialYear = 2018
           })
-
-          result = await transactionsCSV.createCSV([invoice], chargeVersions)
         })
 
-        test("sets the 'Calculated quantity' to empty", () => {
+        test("sets the 'Calculated quantity' to empty", async () => {
+          result = await transactionsCSV.createCSV([invoice], chargeVersions)
+
           expect(result[0]['Calculated quantity']).to.equal('')
         })
       })
     })
 
     experiment('when section 127 agreement is true', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
           transaction.section127Agreement = true
         })
-
-        result = await transactionsCSV.createCSV([invoice], chargeVersions)
       })
 
-      test("sets 'S127 agreement (Y/N)' to 'Y'", () => {
+      test("sets 'S127 agreement (Y/N)' to 'Y'", async () => {
+        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+
         expect(result[0]['S127 agreement (Y/N)']).to.equal('Y')
       })
     })
 
     experiment('when the calculated S127 value is null', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
           transaction.calcS127Factor = null
         })
-
-        result = await transactionsCSV.createCSV([invoice], chargeVersions)
       })
 
-      test("sets 'S127 agreement value' to empty", () => {
+      test("sets 'S127 agreement value' to empty", async () => {
+        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+
         expect(result[0]['S127 agreement value']).to.equal('')
       })
     })

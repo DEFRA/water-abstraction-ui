@@ -246,6 +246,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Calculated quantity']).to.equal('10.3')
         expect(csvData[0].Quantity).to.equal('9.1')
         expect(csvData[0]['S127 agreement (Y/N)']).to.equal('N')
+        expect(csvData[0]['S127 agreement value']).to.equal('0.5')
       })
     })
 
@@ -302,6 +303,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Calculated quantity']).to.equal('10.3')
         expect(csvData[0].Quantity).to.equal('9.1')
         expect(csvData[0]['S127 agreement (Y/N)']).to.equal('N')
+        expect(csvData[0]['S127 agreement value']).to.equal('0.5')
       })
     })
 
@@ -471,6 +473,20 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       })
     })
 
+    experiment('when the calculated S127 value is null', () => {
+      beforeEach(async () => {
+        invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+          transaction.calcS127Factor = null
+        })
+
+        csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
+      })
+
+      test("sets 'S127 agreement value' to empty", () => {
+        expect(csvData[0]['S127 agreement value']).to.equal('')
+      })
+    })
+
     test('creates a line for each transaction', async () => {
       const licenceRef = invoice.billingInvoiceLicences[0].licence.licenceRef
       expect(csvData[0]['Licence number']).to.equal(licenceRef)
@@ -503,7 +519,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         ...transaction,
         agreements: [{ code: 'S130W' }]
       })
-      expect(transactionData['S127 agreement value']).to.equal(0.5)
       expect(transactionData['S130 agreement']).to.equal('S130W')
       expect(transactionData['S130 agreement value']).to.equal(null)
     })

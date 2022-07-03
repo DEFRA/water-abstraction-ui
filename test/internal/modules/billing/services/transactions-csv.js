@@ -222,6 +222,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Transaction description']).to.equal('The description - with 007')
         expect(csvData[0]['Water company Y/N']).to.equal('N')
         expect(csvData[0]['Historical area']).to.equal('AREA')
+        expect(csvData[0]['Compensation charge Y/N']).to.equal('N')
       })
     })
 
@@ -254,6 +255,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Transaction description']).to.equal('The description - with 007')
         expect(csvData[0]['Water company Y/N']).to.equal('N')
         expect(csvData[0]['Historical area']).to.equal('AREA')
+        expect(csvData[0]['Compensation charge Y/N']).to.equal('N')
       })
     })
 
@@ -322,6 +324,20 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       })
     })
 
+    experiment('when compensation charge is true', () => {
+      beforeEach(async () => {
+        invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+          transaction.isCompensationCharge = true
+        })
+
+        csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
+      })
+
+      test("sets 'Compensation charge Y/N' to 'Y'", () => {
+        expect(csvData[0]['Compensation charge Y/N']).to.equal('Y')
+      })
+    })
+
     test('creates a line for each transaction', async () => {
       const licenceRef = invoice.billingInvoiceLicences[0].licence.licenceRef
       expect(csvData[0]['Licence number']).to.equal(licenceRef)
@@ -342,10 +358,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
     beforeEach(() => {
       transaction = invoice.billingInvoiceLicences[0].billingTransactions[0]
       transactionData = transactionsCSV._getTransactionData(transaction)
-    })
-
-    test('compensation charge as Y/N to user friendly heading', () => {
-      expect(transactionData['Compensation charge Y/N']).to.equal('N')
     })
 
     test('charge element data to user friendly headings', () => {

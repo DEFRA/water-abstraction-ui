@@ -216,6 +216,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Credit amount']).to.equal('')
         expect(csvData[0]['Net transaction line amount(debit)']).to.equal('617.28')
         expect(csvData[0]['Net transaction line amount(credit)']).to.equal('')
+        expect(csvData[0]['Charge information reason']).to.equal('change reason description')
       })
     })
 
@@ -242,6 +243,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Credit amount']).to.equal('-1,234.56')
         expect(csvData[0]['Net transaction line amount(debit)']).to.equal('')
         expect(csvData[0]['Net transaction line amount(credit)']).to.equal('-617.28')
+        expect(csvData[0]['Charge information reason']).to.equal('change reason description')
       })
     })
 
@@ -260,8 +262,30 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       })
     })
 
-    test('correct charge information reason is mapped', async () => {
-      expect(csvData[0]['Charge information reason']).to.equal('change reason description')
+    experiment('when charge information is missing', () => {
+      experiment('such as the charge version not being found', () => {
+        beforeEach(async () => {
+          chargeVersions[0].id = 'notgonnafindme'
+
+          csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
+        })
+
+        test("sets the 'Charge information reason' to empty", () => {
+          expect(csvData[0]['Charge information reason']).to.equal('')
+        })
+      })
+
+      experiment('such as the change reason being null', () => {
+        beforeEach(async () => {
+          chargeVersions[0].changeReason = null
+
+          csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
+        })
+
+        test("sets the 'Charge information reason' to empty", () => {
+          expect(csvData[0]['Charge information reason']).to.equal('')
+        })
+      })
     })
 
     test('region is mapped to user friendly heading', async () => {

@@ -178,7 +178,9 @@ const invoice =
       addressLine4: 'The Royal Gala Valley'
     },
     financialYearEnding: 2019,
-    netAmount: 123456
+    netAmount: 123456,
+    isCredit: false,
+    invoiceNumber: 'IIA123456'
   }
 
 const chargeVersions = [{
@@ -197,14 +199,39 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
   experiment('.createCSV', () => {
     let csvData
 
-    beforeEach(async () => {
-      csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
+    experiment('when the invoice is a debit', () => {
+      beforeEach(async () => {
+        csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
+      })
+
+      test('formats each CSV row as expected', async () => {
+        expect(csvData[0]['Billing account number']).to.equal(invoice.invoiceAccount.invoiceAccountNumber)
+        expect(csvData[0]['Customer name']).to.equal(invoice.invoiceAccount.company.name)
+        expect(csvData[0]['Licence number']).to.equal(invoice.billingInvoiceLicences[0].licence.licenceRef)
+        expect(csvData[0]['Bill number']).to.equal(invoice.invoiceNumber)
+        expect(csvData[0]['Financial year']).to.equal(invoice.financialYearEnding.toString())
+        expect(csvData[0]['Invoice amount']).to.equal('1,234.56')
+        expect(csvData[0]['Credit amount']).to.equal('')
+      })
     })
 
-    test('formats each CSV row as expected', async () => {
-      expect(csvData[0]['Billing account number']).to.equal(invoice.invoiceAccount.invoiceAccountNumber)
-      expect(csvData[0]['Customer name']).to.equal(invoice.invoiceAccount.company.name)
-      expect(csvData[0]['Licence number']).to.equal(invoice.billingInvoiceLicences[0].licence.licenceRef)
+    experiment('when the invoice is a credit', () => {
+      beforeEach(async () => {
+        invoice.netAmount = -123456
+        invoice.isCredit = true
+
+        csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
+      })
+
+      test('formats each CSV row as expected', async () => {
+        expect(csvData[0]['Billing account number']).to.equal(invoice.invoiceAccount.invoiceAccountNumber)
+        expect(csvData[0]['Customer name']).to.equal(invoice.invoiceAccount.company.name)
+        expect(csvData[0]['Licence number']).to.equal(invoice.billingInvoiceLicences[0].licence.licenceRef)
+        expect(csvData[0]['Bill number']).to.equal(invoice.invoiceNumber)
+        expect(csvData[0]['Financial year']).to.equal(invoice.financialYearEnding.toString())
+        expect(csvData[0]['Invoice amount']).to.equal('')
+        expect(csvData[0]['Credit amount']).to.equal('-1,234.56')
+      })
     })
 
     test('correct charge information reason is mapped', async () => {
@@ -370,64 +397,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       expect(transactionData['S130 agreement value']).to.equal(null)
       expect(transactionData['Charge period start date']).to.equal(minChargeTransaction.chargePeriod.startDate)
       expect(transactionData['Charge period end date']).to.equal(minChargeTransaction.chargePeriod.endDate)
-    })
-  })
-
-  experiment('_getInvoiceData', () => {
-    let invoiceData
-    beforeEach(() => {
-      invoiceData = transactionsCSV._getInvoiceData(invoice)
-    })
-
-    experiment('invoice number', () => {
-      test('is mapped to user friendly heading when present', async () => {
-        invoiceData = transactionsCSV._getInvoiceData({
-          ...invoice, invoiceNumber: 'IIA123456'
-        })
-        expect(invoiceData['Bill number']).to.equal('IIA123456')
-      })
-    })
-
-    test('maps financial year to user friendly heading', async () => {
-      expect(invoiceData['Financial year']).to.equal(invoice.financialYearEnding)
-    })
-
-    experiment('maps invoice total as expected when', () => {
-      experiment('invoice amounts come from CM', () => {
-        test('and the total is positive', async () => {
-          expect(invoiceData['Invoice amount']).to.equal('1,234.56')
-          expect(invoiceData['Credit amount']).to.equal(null)
-        })
-
-        test('and the total is negative', async () => {
-          invoice.netAmount = -123456
-          invoice.isCredit = true
-          invoiceData = transactionsCSV._getInvoiceData(invoice)
-
-          expect(invoiceData['Invoice amount']).to.equal(null)
-          expect(invoiceData['Credit amount']).to.equal('-1,234.56')
-        })
-      })
-
-      experiment('invoice amounts come from WRLS', () => {
-        test('and the isCredit flag is false', async () => {
-          invoice.netAmount = 123456
-          invoice.isCredit = false
-          invoiceData = transactionsCSV._getInvoiceData(invoice)
-
-          expect(invoiceData['Invoice amount']).to.equal('1,234.56')
-          expect(invoiceData['Credit amount']).to.equal(null)
-        })
-
-        test('and the isCredit flag is true', async () => {
-          invoice.netAmount = -123456
-          invoice.isCredit = true
-          invoiceData = transactionsCSV._getInvoiceData(invoice)
-
-          expect(invoiceData['Invoice amount']).to.equal(null)
-          expect(invoiceData['Credit amount']).to.equal('-1,234.56')
-        })
-      })
     })
   })
 

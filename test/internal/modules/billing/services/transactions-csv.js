@@ -250,6 +250,10 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['S130 agreement']).to.equal('S130W')
         expect(csvData[0]['S130 agreement value']).to.equal('')
       })
+
+      test('creates a line for each transaction', async () => {
+        expect(csvData.length).to.equal(invoice.billingInvoiceLicences[0].billingTransactions.length)
+      })
     })
 
     experiment('when the invoice is a credit', () => {
@@ -489,12 +493,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       test("sets 'S127 agreement value' to empty", () => {
         expect(csvData[0]['S127 agreement value']).to.equal('')
       })
-    })
-
-    test('creates a line for each transaction', async () => {
-      const licenceRef = invoice.billingInvoiceLicences[0].licence.licenceRef
-      expect(csvData[0]['Licence number']).to.equal(licenceRef)
-      expect(csvData[1]['Licence number']).to.equal(licenceRef)
     })
   })
 

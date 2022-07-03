@@ -296,6 +296,18 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       })
     })
 
+    experiment('when deminimis is true', () => {
+      beforeEach(async () => {
+        invoice.isDeMinimis = true
+
+        csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
+      })
+
+      test("sets 'De minimis rule Y/N' to 'Y'", () => {
+        expect(csvData[0]['De minimis rule Y/N']).to.equal('Y')
+      })
+    })
+
     test('description is mapped to user friendly heading', async () => {
       expect(csvData[0]['Transaction description']).to.equal('The description - with 007')
     })
@@ -304,16 +316,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       invoice.billingInvoiceLicences[0].licence.isWaterUndertaker = true
       csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
       expect(csvData[0]['Water company Y/N']).to.equal('Y')
-    })
-
-    test('DeMinimis is mapped to user friendly heading', async () => {
-      csvData = await transactionsCSV.createCSV([
-        {
-          ...invoice,
-          isDeMinimis: true
-        }
-      ], chargeVersions)
-      expect(csvData[0]['De minimis rule Y/N']).to.equal('Y')
     })
 
     test('historical area is mapped to user friendly heading', async () => {

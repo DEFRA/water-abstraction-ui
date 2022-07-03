@@ -338,6 +338,35 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       })
     })
 
+    experiment('when the transaction charge type is minimum charge', () => {
+      beforeEach(async () => {
+        invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+          transaction.chargeType = 'minimum_charge'
+        })
+
+        csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
+      })
+
+      test('drops a number of columns', () => {
+        expect(csvData[0]['Standard Unit Charge (SUC) (£/1000 cubic metres)']).to.be.undefined()
+        expect(csvData[0]['Environmental Improvement Unit Charge (EIUC) (£/1000 cubic metres)']).to.be.undefined()
+        expect(csvData[0]['Authorised annual quantity (megalitres)']).to.be.undefined()
+        expect(csvData[0]['Billable annual quantity (megalitres)']).to.be.undefined()
+        expect(csvData[0]['Source type']).to.be.undefined()
+        expect(csvData[0]['Source factor']).to.be.undefined()
+        expect(csvData[0]['Adjusted source type']).to.be.undefined()
+        expect(csvData[0]['Adjusted source factor']).to.be.undefined()
+        expect(csvData[0].Season).to.be.undefined()
+        expect(csvData[0]['Season factor']).to.be.undefined()
+        expect(csvData[0].Loss).to.be.undefined()
+        expect(csvData[0]['Loss factor']).to.be.undefined()
+        expect(csvData[0]['Purpose code']).to.be.undefined()
+        expect(csvData[0]['Purpose name']).to.be.undefined()
+        expect(csvData[0]['Abstraction period start date']).to.be.undefined()
+        expect(csvData[0]['Abstraction period end date']).to.be.undefined()
+      })
+    })
+
     test('creates a line for each transaction', async () => {
       const licenceRef = invoice.billingInvoiceLicences[0].licence.licenceRef
       expect(csvData[0]['Licence number']).to.equal(licenceRef)
@@ -419,40 +448,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         billingVolume: []
       })
       expect(transactionData['Calculated quantity']).to.be.null()
-    })
-
-    test('handles minimum charge transactions', async () => {
-      const minChargeTransaction = {
-        value: 1468,
-        isCredit: false,
-        agreements: [],
-        section130Agreement: null,
-        section127Agreement: null,
-        status: 'candidate',
-        startDate: '2019-04-01',
-        endDate: '2020-03-31',
-        externalId: 'b97b7fe2-8704-4efa-9f39-277d8df997a0',
-        description:
-         'Minimum Charge Calculation - raised under Schedule 23 of the Environment Act 1995',
-        isCompensationCharge: true,
-        chargeType: 'minimum_charge',
-        isNewLicence: true,
-        chargePeriod: {
-          startDate: '2019-04-01',
-          endDate: '2020-03-31'
-        },
-        billingVolume: []
-      }
-
-      const transactionData = transactionsCSV._getTransactionData(minChargeTransaction)
-      expect(transactionData.description).to.equal(minChargeTransaction.description)
-      expect(transactionData['Compensation charge Y/N']).to.equal('Y')
-      expect(transactionData['S127 agreement (Y/N)']).to.equal('N')
-      expect(transactionData['S127 agreement value']).to.equal(null)
-      expect(transactionData['S130 agreement']).to.equal(null)
-      expect(transactionData['S130 agreement value']).to.equal(null)
-      expect(transactionData['Charge period start date']).to.equal(minChargeTransaction.chargePeriod.startDate)
-      expect(transactionData['Charge period end date']).to.equal(minChargeTransaction.chargePeriod.endDate)
     })
   })
 })

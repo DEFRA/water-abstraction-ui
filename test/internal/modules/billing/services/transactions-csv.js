@@ -308,10 +308,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       })
     })
 
-    test('description is mapped to user friendly heading', async () => {
-      expect(csvData[0]['Transaction description']).to.equal('The description - with 007')
-    })
-
     test('water company when true is mapped to user friendly heading', async () => {
       invoice.billingInvoiceLicences[0].licence.isWaterUndertaker = true
       csvData = await transactionsCSV.createCSV([invoice], chargeVersions)

@@ -247,6 +247,8 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0].Quantity).to.equal('9.1')
         expect(csvData[0]['S127 agreement (Y/N)']).to.equal('N')
         expect(csvData[0]['S127 agreement value']).to.equal('0.5')
+        expect(csvData[0]['S130 agreement']).to.equal('S130W')
+        expect(csvData[0]['S130 agreement value']).to.equal('')
       })
     })
 
@@ -304,6 +306,8 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0].Quantity).to.equal('9.1')
         expect(csvData[0]['S127 agreement (Y/N)']).to.equal('N')
         expect(csvData[0]['S127 agreement value']).to.equal('0.5')
+        expect(csvData[0]['S130 agreement']).to.equal('S130W')
+        expect(csvData[0]['S130 agreement value']).to.equal('')
       })
     })
 
@@ -499,28 +503,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       const expectedFileName = 'South West two-part tariff bill run 2345.csv'
       const fileName = transactionsCSV.getCSVFileName(batch)
       expect(fileName).to.equal(expectedFileName)
-    })
-  })
-
-  experiment('_getTransactionData maps', () => {
-    let transaction, transactionData
-    beforeEach(() => {
-      transaction = invoice.billingInvoiceLicences[0].billingTransactions[0]
-      transactionData = transactionsCSV._getTransactionData(transaction)
-    })
-
-    test('agreement to user friendly heading', () => {
-      expect(transactionData['S130 agreement']).to.equal('S130W')
-      expect(transactionData['S130 agreement value']).to.equal(null)
-    })
-
-    test('handles multiple agreements', async () => {
-      const transactionData = transactionsCSV._getTransactionData({
-        ...transaction,
-        agreements: [{ code: 'S130W' }]
-      })
-      expect(transactionData['S130 agreement']).to.equal('S130W')
-      expect(transactionData['S130 agreement value']).to.equal(null)
     })
   })
 })

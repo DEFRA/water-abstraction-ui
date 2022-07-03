@@ -27,6 +27,7 @@ const invoice =
         billingTransactions: [
           {
             value: 4005,
+            netAmount: 61728,
             isCredit: false,
             agreements: [{ code: 'S130W' }],
             status: 'charge_created',
@@ -81,6 +82,7 @@ const invoice =
           },
           {
             value: 4006,
+            netAmount: 61728,
             isCredit: false,
             agreements: [],
             status: 'charge_created',
@@ -212,6 +214,8 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Financial year']).to.equal(invoice.financialYearEnding.toString())
         expect(csvData[0]['Invoice amount']).to.equal('1,234.56')
         expect(csvData[0]['Credit amount']).to.equal('')
+        expect(csvData[0]['Net transaction line amount(debit)']).to.equal('617.28')
+        expect(csvData[0]['Net transaction line amount(credit)']).to.equal('')
       })
     })
 
@@ -219,6 +223,11 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       beforeEach(async () => {
         invoice.netAmount = -123456
         invoice.isCredit = true
+
+        invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+          transaction.isCredit = true
+          transaction.netAmount = -61728
+        })
 
         csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
       })
@@ -231,6 +240,23 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Financial year']).to.equal(invoice.financialYearEnding.toString())
         expect(csvData[0]['Invoice amount']).to.equal('')
         expect(csvData[0]['Credit amount']).to.equal('-1,234.56')
+        expect(csvData[0]['Net transaction line amount(debit)']).to.equal('')
+        expect(csvData[0]['Net transaction line amount(credit)']).to.equal('-617.28')
+      })
+    })
+
+    experiment('when `netAmount` in the transactions is null', () => {
+      beforeEach(async () => {
+        invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+          transaction.netAmount = null
+        })
+
+        csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
+      })
+
+      test("states 'Error - not calculated' in the transaction line amount fields", async () => {
+        expect(csvData[0]['Net transaction line amount(debit)']).to.equal('Error - not calculated')
+        expect(csvData[0]['Net transaction line amount(credit)']).to.equal('Error - not calculated')
       })
     })
 
@@ -397,20 +423,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       expect(transactionData['S130 agreement value']).to.equal(null)
       expect(transactionData['Charge period start date']).to.equal(minChargeTransaction.chargePeriod.startDate)
       expect(transactionData['Charge period end date']).to.equal(minChargeTransaction.chargePeriod.endDate)
-    })
-  })
-
-  experiment('_getTransactionAmounts', () => {
-    test('when value is a number, value is mapped to relevant line', async () => {
-      const transactionLines = transactionsCSV._getTransactionAmounts({ netAmount: 123456, isCredit: false })
-      expect(transactionLines['Net transaction line amount(debit)']).to.equal('1,234.56')
-      expect(transactionLines['Net transaction line amount(credit)']).to.be.null()
-    })
-
-    test('when value is null, an error message is mapped to both lines', async () => {
-      const transactionLines = transactionsCSV._getTransactionAmounts({ netAmount: null })
-      expect(transactionLines['Net transaction line amount(debit)']).to.equal('Error - not calculated')
-      expect(transactionLines['Net transaction line amount(credit)']).to.equal('Error - not calculated')
     })
   })
 })

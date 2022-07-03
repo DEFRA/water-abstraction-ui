@@ -223,6 +223,12 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Water company Y/N']).to.equal('N')
         expect(csvData[0]['Historical area']).to.equal('AREA')
         expect(csvData[0]['Compensation charge Y/N']).to.equal('N')
+        expect(csvData[0]['Standard Unit Charge (SUC) (£/1000 cubic metres)']).to.equal('1')
+        expect(csvData[0]['Environmental Improvement Unit Charge (EIUC) (£/1000 cubic metres)']).to.equal('1')
+        expect(csvData[0]['Authorised annual quantity (megalitres)']).to.equal('9.1')
+        expect(csvData[0]['Billable annual quantity (megalitres)']).to.equal('9.1')
+        expect(csvData[0]['Source type']).to.equal('unsupported')
+        expect(csvData[0]['Source factor']).to.equal('0.5')
       })
     })
 
@@ -256,6 +262,12 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Water company Y/N']).to.equal('N')
         expect(csvData[0]['Historical area']).to.equal('AREA')
         expect(csvData[0]['Compensation charge Y/N']).to.equal('N')
+        expect(csvData[0]['Standard Unit Charge (SUC) (£/1000 cubic metres)']).to.equal('1')
+        expect(csvData[0]['Environmental Improvement Unit Charge (EIUC) (£/1000 cubic metres)']).to.equal('1')
+        expect(csvData[0]['Authorised annual quantity (megalitres)']).to.equal('9.1')
+        expect(csvData[0]['Billable annual quantity (megalitres)']).to.equal('9.1')
+        expect(csvData[0]['Source type']).to.equal('unsupported')
+        expect(csvData[0]['Source factor']).to.equal('0.5')
       })
     })
 
@@ -390,12 +402,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
     })
 
     test('charge element data to user friendly headings', () => {
-      expect(transactionData['Standard Unit Charge (SUC) (£/1000 cubic metres)']).to.equal(transaction.calcSucFactor)
-      expect(transactionData['Environmental Improvement Unit Charge (EIUC) (£/1000 cubic metres)']).to.equal(transaction.calcEiucFactor)
-      expect(transactionData['Authorised annual quantity (megalitres)']).to.equal(transaction.chargeElement.authorisedAnnualQuantity)
-      expect(transactionData['Billable annual quantity (megalitres)']).to.equal(transaction.chargeElement.billableAnnualQuantity)
-      expect(transactionData['Source type']).to.equal(transaction.chargeElement.source)
-      expect(transactionData['Source factor']).to.equal(transaction.calcSourceFactor)
       expect(transactionData['Adjusted source type']).to.equal(transaction.chargeElement.eiucSource)
       expect(transactionData['Adjusted source factor']).to.equal(transaction.calcEiucSourceFactor)
       expect(transactionData.Season).to.equal(transaction.chargeElement.season)

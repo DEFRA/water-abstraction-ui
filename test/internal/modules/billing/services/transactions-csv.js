@@ -243,6 +243,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Charge period end date']).to.equal('2020-03-31')
         expect(csvData[0]['Authorised days']).to.equal('152')
         expect(csvData[0]['Billable days']).to.equal('152')
+        expect(csvData[0]['Calculated quantity']).to.equal('10.3')
       })
     })
 
@@ -296,6 +297,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Charge period end date']).to.equal('2020-03-31')
         expect(csvData[0]['Authorised days']).to.equal('152')
         expect(csvData[0]['Billable days']).to.equal('152')
+        expect(csvData[0]['Calculated quantity']).to.equal('10.3')
       })
     })
 
@@ -421,6 +423,36 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       })
     })
 
+    experiment('when billing volume data is missing', () => {
+      experiment('such as transaction volumn being null', () => {
+        beforeEach(async () => {
+          invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+            transaction.volume = null
+          })
+
+          csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
+        })
+
+        test("sets the 'Calculated quantity' to empty", () => {
+          expect(csvData[0]['Calculated quantity']).to.equal('')
+        })
+      })
+
+      experiment('such as the billing volumes not having a matching financial year for transaction end date', () => {
+        beforeEach(async () => {
+          invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+            transaction.billingVolume[0].financialYear = 2018
+          })
+
+          csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
+        })
+
+        test("sets the 'Calculated quantity' to empty", () => {
+          expect(csvData[0]['Calculated quantity']).to.equal('')
+        })
+      })
+    })
+
     test('creates a line for each transaction', async () => {
       const licenceRef = invoice.billingInvoiceLicences[0].licence.licenceRef
       expect(csvData[0]['Licence number']).to.equal(licenceRef)
@@ -450,7 +482,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
 
     test('quantities to user friendly heading', () => {
       expect(transactionData.Quantity).to.equal(transaction.volume)
-      expect(transactionData['Calculated quantity']).to.equal(transaction.billingVolume[0].calculatedVolume)
     })
 
     test('handles multiple agreements', async () => {
@@ -462,14 +493,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       expect(transactionData['S127 agreement value']).to.equal(0.5)
       expect(transactionData['S130 agreement']).to.equal('S130W')
       expect(transactionData['S130 agreement value']).to.equal(null)
-    })
-
-    test('handles undefined billing volume', async () => {
-      const transactionData = transactionsCSV._getTransactionData({
-        ...transaction,
-        billingVolume: []
-      })
-      expect(transactionData['Calculated quantity']).to.be.null()
     })
   })
 })

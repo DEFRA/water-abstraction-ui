@@ -308,10 +308,16 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       })
     })
 
-    test('water company when true is mapped to user friendly heading', async () => {
-      invoice.billingInvoiceLicences[0].licence.isWaterUndertaker = true
-      csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
-      expect(csvData[0]['Water company Y/N']).to.equal('Y')
+    experiment('when water company is true', () => {
+      beforeEach(async () => {
+        invoice.billingInvoiceLicences[0].licence.isWaterUndertaker = true
+
+        csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
+      })
+
+      test("sets 'Water company Y/N' to 'Y'", () => {
+        expect(csvData[0]['Water company Y/N']).to.equal('Y')
+      })
     })
 
     test('historical area is mapped to user friendly heading', async () => {

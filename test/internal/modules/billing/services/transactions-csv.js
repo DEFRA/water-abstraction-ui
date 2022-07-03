@@ -219,6 +219,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Charge information reason']).to.equal('change reason description')
         expect(csvData[0].Region).to.equal('Anglian')
         expect(csvData[0]['De minimis rule Y/N']).to.equal('N')
+        expect(csvData[0]['Transaction description']).to.equal('The description - with 007')
       })
     })
 
@@ -248,6 +249,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Charge information reason']).to.equal('change reason description')
         expect(csvData[0].Region).to.equal('Anglian')
         expect(csvData[0]['De minimis rule Y/N']).to.equal('N')
+        expect(csvData[0]['Transaction description']).to.equal('The description - with 007')
       })
     })
 
@@ -340,10 +342,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
     beforeEach(() => {
       transaction = invoice.billingInvoiceLicences[0].billingTransactions[0]
       transactionData = transactionsCSV._getTransactionData(transaction)
-    })
-
-    test('description as is', () => {
-      expect(transactionData.description).to.equal(transaction.description)
     })
 
     test('compensation charge as Y/N to user friendly heading', () => {

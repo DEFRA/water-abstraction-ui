@@ -230,6 +230,15 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Source type']).to.equal('unsupported')
         expect(csvData[0]['Source factor']).to.equal('0.5')
         expect(csvData[0]['Adjusted source type']).to.equal('other')
+        expect(csvData[0]['Adjusted source factor']).to.equal('0.5')
+        expect(csvData[0].Season).to.equal('winter')
+        expect(csvData[0]['Season factor']).to.equal('0.5')
+        expect(csvData[0].Loss).to.equal('high')
+        expect(csvData[0]['Loss factor']).to.equal('0.5')
+        expect(csvData[0]['Purpose code']).to.equal('420')
+        expect(csvData[0]['Purpose name']).to.equal('Spray Irrigation - Storage')
+        expect(csvData[0]['Abstraction period start date']).to.equal('1 Nov')
+        expect(csvData[0]['Abstraction period end date']).to.equal('31 Mar')
       })
     })
 
@@ -270,6 +279,15 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Source type']).to.equal('unsupported')
         expect(csvData[0]['Source factor']).to.equal('0.5')
         expect(csvData[0]['Adjusted source type']).to.equal('other')
+        expect(csvData[0]['Adjusted source factor']).to.equal('0.5')
+        expect(csvData[0].Season).to.equal('winter')
+        expect(csvData[0]['Season factor']).to.equal('0.5')
+        expect(csvData[0].Loss).to.equal('high')
+        expect(csvData[0]['Loss factor']).to.equal('0.5')
+        expect(csvData[0]['Purpose code']).to.equal('420')
+        expect(csvData[0]['Purpose name']).to.equal('Spray Irrigation - Storage')
+        expect(csvData[0]['Abstraction period start date']).to.equal('1 Nov')
+        expect(csvData[0]['Abstraction period end date']).to.equal('31 Mar')
       })
     })
 
@@ -415,18 +433,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
     beforeEach(() => {
       transaction = invoice.billingInvoiceLicences[0].billingTransactions[0]
       transactionData = transactionsCSV._getTransactionData(transaction)
-    })
-
-    test('charge element data to user friendly headings', () => {
-      expect(transactionData['Adjusted source factor']).to.equal(transaction.calcEiucSourceFactor)
-      expect(transactionData.Season).to.equal(transaction.chargeElement.season)
-      expect(transactionData['Season factor']).to.equal(transaction.calcSeasonFactor)
-      expect(transactionData.Loss).to.equal(transaction.chargeElement.loss)
-      expect(transactionData['Loss factor']).to.equal(transaction.calcLossFactor)
-      expect(transactionData['Purpose code']).to.equal(transaction.chargeElement.purposeUse.legacyId)
-      expect(transactionData['Purpose name']).to.equal(transaction.chargeElement.purposeUse.description)
-      expect(transactionData['Abstraction period start date']).to.equal('1 Nov')
-      expect(transactionData['Abstraction period end date']).to.equal('31 Mar')
     })
 
     test('agreement to user friendly heading', () => {

@@ -244,6 +244,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Authorised days']).to.equal('152')
         expect(csvData[0]['Billable days']).to.equal('152')
         expect(csvData[0]['Calculated quantity']).to.equal('10.3')
+        expect(csvData[0].Quantity).to.equal('9.1')
       })
     })
 
@@ -298,6 +299,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Authorised days']).to.equal('152')
         expect(csvData[0]['Billable days']).to.equal('152')
         expect(csvData[0]['Calculated quantity']).to.equal('10.3')
+        expect(csvData[0].Quantity).to.equal('9.1')
       })
     })
 
@@ -478,10 +480,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
     test('agreement to user friendly heading', () => {
       expect(transactionData['S130 agreement']).to.equal('S130W')
       expect(transactionData['S130 agreement value']).to.equal(null)
-    })
-
-    test('quantities to user friendly heading', () => {
-      expect(transactionData.Quantity).to.equal(transaction.volume)
     })
 
     test('handles multiple agreements', async () => {

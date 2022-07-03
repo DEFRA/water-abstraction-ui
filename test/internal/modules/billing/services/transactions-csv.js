@@ -229,6 +229,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Billable annual quantity (megalitres)']).to.equal('9.1')
         expect(csvData[0]['Source type']).to.equal('unsupported')
         expect(csvData[0]['Source factor']).to.equal('0.5')
+        expect(csvData[0]['Adjusted source type']).to.equal('other')
       })
     })
 
@@ -268,6 +269,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Billable annual quantity (megalitres)']).to.equal('9.1')
         expect(csvData[0]['Source type']).to.equal('unsupported')
         expect(csvData[0]['Source factor']).to.equal('0.5')
+        expect(csvData[0]['Adjusted source type']).to.equal('other')
       })
     })
 
@@ -379,6 +381,20 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       })
     })
 
+    experiment('when the transaction charge element source type is tidal', () => {
+      beforeEach(async () => {
+        invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+          transaction.chargeElement.source = 'tidal'
+        })
+
+        csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
+      })
+
+      test("sets 'Adjusted source type' to 'tidal'", () => {
+        expect(csvData[0]['Adjusted source type']).to.equal('tidal')
+      })
+    })
+
     test('creates a line for each transaction', async () => {
       const licenceRef = invoice.billingInvoiceLicences[0].licence.licenceRef
       expect(csvData[0]['Licence number']).to.equal(licenceRef)
@@ -402,7 +418,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
     })
 
     test('charge element data to user friendly headings', () => {
-      expect(transactionData['Adjusted source type']).to.equal(transaction.chargeElement.eiucSource)
       expect(transactionData['Adjusted source factor']).to.equal(transaction.calcEiucSourceFactor)
       expect(transactionData.Season).to.equal(transaction.chargeElement.season)
       expect(transactionData['Season factor']).to.equal(transaction.calcSeasonFactor)

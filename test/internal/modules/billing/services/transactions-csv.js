@@ -217,6 +217,8 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Net transaction line amount(debit)']).to.equal('617.28')
         expect(csvData[0]['Net transaction line amount(credit)']).to.equal('')
         expect(csvData[0]['Charge information reason']).to.equal('change reason description')
+        expect(csvData[0].Region).to.equal('Anglian')
+        expect(csvData[0]['De minimis rule Y/N']).to.equal('N')
       })
     })
 
@@ -244,6 +246,8 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Net transaction line amount(debit)']).to.equal('')
         expect(csvData[0]['Net transaction line amount(credit)']).to.equal('-617.28')
         expect(csvData[0]['Charge information reason']).to.equal('change reason description')
+        expect(csvData[0].Region).to.equal('Anglian')
+        expect(csvData[0]['De minimis rule Y/N']).to.equal('N')
       })
     })
 
@@ -286,14 +290,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
           expect(csvData[0]['Charge information reason']).to.equal('')
         })
       })
-    })
-
-    test('region is mapped to user friendly heading', async () => {
-      expect(csvData[0].Region).to.equal('Anglian')
-    })
-
-    test('de minimis is mapped to user friendly heading', async () => {
-      expect(csvData[0]['De minimis rule Y/N']).to.equal('N')
     })
 
     test('description is mapped to user friendly heading', async () => {

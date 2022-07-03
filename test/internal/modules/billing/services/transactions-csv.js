@@ -78,7 +78,7 @@ const invoice =
             calcS126Factor: 1.0,
             calcS127Factor: 0.5,
             section130Agreement: 'S130W',
-            section127Agreement: true
+            section127Agreement: false
           },
           {
             value: 4006,
@@ -245,6 +245,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Billable days']).to.equal('152')
         expect(csvData[0]['Calculated quantity']).to.equal('10.3')
         expect(csvData[0].Quantity).to.equal('9.1')
+        expect(csvData[0]['S127 agreement (Y/N)']).to.equal('N')
       })
     })
 
@@ -300,6 +301,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Billable days']).to.equal('152')
         expect(csvData[0]['Calculated quantity']).to.equal('10.3')
         expect(csvData[0].Quantity).to.equal('9.1')
+        expect(csvData[0]['S127 agreement (Y/N)']).to.equal('N')
       })
     })
 
@@ -455,6 +457,20 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       })
     })
 
+    experiment('when section 127 agreement is true', () => {
+      beforeEach(async () => {
+        invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+          transaction.section127Agreement = true
+        })
+
+        csvData = await transactionsCSV.createCSV([invoice], chargeVersions)
+      })
+
+      test("sets 'S127 agreement (Y/N)' to 'Y'", () => {
+        expect(csvData[0]['S127 agreement (Y/N)']).to.equal('Y')
+      })
+    })
+
     test('creates a line for each transaction', async () => {
       const licenceRef = invoice.billingInvoiceLicences[0].licence.licenceRef
       expect(csvData[0]['Licence number']).to.equal(licenceRef)
@@ -487,7 +503,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         ...transaction,
         agreements: [{ code: 'S130W' }]
       })
-      expect(transactionData['S127 agreement (Y/N)']).to.equal('Y')
       expect(transactionData['S127 agreement value']).to.equal(0.5)
       expect(transactionData['S130 agreement']).to.equal('S130W')
       expect(transactionData['S130 agreement value']).to.equal(null)

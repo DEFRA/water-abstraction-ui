@@ -221,6 +221,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['De minimis rule Y/N']).to.equal('N')
         expect(csvData[0]['Transaction description']).to.equal('The description - with 007')
         expect(csvData[0]['Water company Y/N']).to.equal('N')
+        expect(csvData[0]['Historical area']).to.equal('AREA')
       })
     })
 
@@ -252,6 +253,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['De minimis rule Y/N']).to.equal('N')
         expect(csvData[0]['Transaction description']).to.equal('The description - with 007')
         expect(csvData[0]['Water company Y/N']).to.equal('N')
+        expect(csvData[0]['Historical area']).to.equal('AREA')
       })
     })
 
@@ -318,10 +320,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       test("sets 'Water company Y/N' to 'Y'", () => {
         expect(csvData[0]['Water company Y/N']).to.equal('Y')
       })
-    })
-
-    test('historical area is mapped to user friendly heading', async () => {
-      expect(csvData[0]['Historical area']).to.equal('AREA')
     })
 
     test('creates a line for each transaction', async () => {

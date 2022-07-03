@@ -239,6 +239,10 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Purpose name']).to.equal('Spray Irrigation - Storage')
         expect(csvData[0]['Abstraction period start date']).to.equal('1 Nov')
         expect(csvData[0]['Abstraction period end date']).to.equal('31 Mar')
+        expect(csvData[0]['Charge period start date']).to.equal('2019-04-01')
+        expect(csvData[0]['Charge period end date']).to.equal('2020-03-31')
+        expect(csvData[0]['Authorised days']).to.equal('152')
+        expect(csvData[0]['Billable days']).to.equal('152')
       })
     })
 
@@ -288,6 +292,10 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(csvData[0]['Purpose name']).to.equal('Spray Irrigation - Storage')
         expect(csvData[0]['Abstraction period start date']).to.equal('1 Nov')
         expect(csvData[0]['Abstraction period end date']).to.equal('31 Mar')
+        expect(csvData[0]['Charge period start date']).to.equal('2019-04-01')
+        expect(csvData[0]['Charge period end date']).to.equal('2020-03-31')
+        expect(csvData[0]['Authorised days']).to.equal('152')
+        expect(csvData[0]['Billable days']).to.equal('152')
       })
     })
 
@@ -438,19 +446,6 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
     test('agreement to user friendly heading', () => {
       expect(transactionData['S130 agreement']).to.equal('S130W')
       expect(transactionData['S130 agreement value']).to.equal(null)
-    })
-
-    test('charge period to user friendly headings', () => {
-      expect(transactionData['Charge period start date']).to.equal(transaction.startDate)
-      expect(transactionData['Charge period end date']).to.equal(transaction.endDate)
-    })
-
-    test('authorised days to user friendly heading', () => {
-      expect(transactionData['Authorised days']).to.equal(transaction.authorisedDays)
-    })
-
-    test('billable days to user friendly heading', () => {
-      expect(transactionData['Billable days']).to.equal(transaction.billableDays)
     })
 
     test('quantities to user friendly heading', () => {

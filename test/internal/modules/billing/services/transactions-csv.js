@@ -207,11 +207,11 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       })
 
       test('formats each CSV row as expected', async () => {
-        expect(csvData[0]['Billing account number']).to.equal(invoice.invoiceAccount.invoiceAccountNumber)
-        expect(csvData[0]['Customer name']).to.equal(invoice.invoiceAccount.company.name)
-        expect(csvData[0]['Licence number']).to.equal(invoice.billingInvoiceLicences[0].licence.licenceRef)
-        expect(csvData[0]['Bill number']).to.equal(invoice.invoiceNumber)
-        expect(csvData[0]['Financial year']).to.equal(invoice.financialYearEnding.toString())
+        expect(csvData[0]['Billing account number']).to.equal('A12345678A')
+        expect(csvData[0]['Customer name']).to.equal('R G Applehead & sons LTD')
+        expect(csvData[0]['Licence number']).to.equal('1/23/45/*S/6789')
+        expect(csvData[0]['Bill number']).to.equal('IIA123456')
+        expect(csvData[0]['Financial year']).to.equal('2019')
         expect(csvData[0]['Invoice amount']).to.equal('1,234.56')
         expect(csvData[0]['Credit amount']).to.equal('')
         expect(csvData[0]['Net transaction line amount(debit)']).to.equal('617.28')
@@ -233,11 +233,11 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       })
 
       test('formats each CSV row as expected', async () => {
-        expect(csvData[0]['Billing account number']).to.equal(invoice.invoiceAccount.invoiceAccountNumber)
-        expect(csvData[0]['Customer name']).to.equal(invoice.invoiceAccount.company.name)
-        expect(csvData[0]['Licence number']).to.equal(invoice.billingInvoiceLicences[0].licence.licenceRef)
-        expect(csvData[0]['Bill number']).to.equal(invoice.invoiceNumber)
-        expect(csvData[0]['Financial year']).to.equal(invoice.financialYearEnding.toString())
+        expect(csvData[0]['Billing account number']).to.equal('A12345678A')
+        expect(csvData[0]['Customer name']).to.equal('R G Applehead & sons LTD')
+        expect(csvData[0]['Licence number']).to.equal('1/23/45/*S/6789')
+        expect(csvData[0]['Bill number']).to.equal('IIA123456')
+        expect(csvData[0]['Financial year']).to.equal('2019')
         expect(csvData[0]['Invoice amount']).to.equal('')
         expect(csvData[0]['Credit amount']).to.equal('-1,234.56')
         expect(csvData[0]['Net transaction line amount(debit)']).to.equal('')

@@ -62,7 +62,6 @@ describe('2part historic recalculating charges', () => {
 
   it('with no change to charge versions', () => {
     recalculateChargesTest()
-    cy.get('.govuk-list > li', { timeout: 20000 }).contains('There are no licences ready for this bill run. Check there are licences ready to be billed and try again.')
   })
 
   it('with change to less volume in charge versions', () => {

@@ -144,6 +144,7 @@ const setTwoPartTariffBillingVolume = (customVolume) => {
 
 const continueSupplementaryBillRun = (type) => {
   describe(`user generates ${type} bill run`, () => {
+    cy.get('[data-module="govuk-button"]').contains('Continue').click({force:true});
     cy.get('.govuk-heading-l').contains('You\'re about to generate');
     cy.get('.govuk-button').contains('Confirm').click();
   });

@@ -9,6 +9,26 @@ const isNullOrUndefined = value => isNull(value) || value === undefined
 const valueToString = value => isNullOrUndefined(value) ? '' : value.toString()
 const rowToStrings = row => mapValues(row, valueToString)
 
+const createCSV = async (invoices, chargeVersions) => {
+  const sortedInvoices = sortBy(invoices, 'invoiceAccountaNumber', 'billingInvoiceLicences[0].licence.licenceRef')
+  const dataForCSV = []
+
+  sortedInvoices.forEach(invoice => {
+    invoice.billingInvoiceLicences.forEach(invoiceLicence => {
+      invoiceLicence.billingTransactions.forEach(transaction => {
+        dataForCSV.push(_csvLine(invoice, invoiceLicence, transaction, chargeVersions))
+      })
+    })
+  })
+
+  return dataForCSV
+}
+
+const getCSVFileName = batch => {
+  const batchType = mappers.mapBatchType(batch.type)
+  return `${batch.region.displayName} ${batchType.toLowerCase()} bill run ${batch.billRunNumber}.csv`
+}
+
 function _billingVolume (transaction) {
   if (!transaction.volume) {
     return null
@@ -28,32 +48,12 @@ function _changeReason (chargeVersions, transaction) {
     : null
 }
 
-function _debitLineValue (isCredit, value) {
-  if (isCredit) {
-    return null
-  }
-
-  return numberFormatter.penceToPound(value, true)
-}
-
 function _creditLineValue (isCredit, value) {
   if (!isCredit) {
     return null
   }
 
   return numberFormatter.penceToPound(value, true)
-}
-
-function _transactionLineValue (isDebit, isCredit, value) {
-  if (!value) {
-    return 'Error - not calculated'
-  }
-
-  if (isDebit) {
-    return _debitLineValue(isCredit, value)
-  }
-
-  return _creditLineValue(isCredit, value)
 }
 
 function _csvLine (invoice, invoiceLicence, transaction, chargeVersions) {
@@ -116,24 +116,24 @@ function _csvLine (invoice, invoiceLicence, transaction, chargeVersions) {
   return rowToStrings(csvLine)
 }
 
-const createCSV = async (invoices, chargeVersions) => {
-  const sortedInvoices = sortBy(invoices, 'invoiceAccountaNumber', 'billingInvoiceLicences[0].licence.licenceRef')
-  const dataForCSV = []
+function _debitLineValue (isCredit, value) {
+  if (isCredit) {
+    return null
+  }
 
-  sortedInvoices.forEach(invoice => {
-    invoice.billingInvoiceLicences.forEach(invoiceLicence => {
-      invoiceLicence.billingTransactions.forEach(transaction => {
-        dataForCSV.push(_csvLine(invoice, invoiceLicence, transaction, chargeVersions))
-      })
-    })
-  })
-
-  return dataForCSV
+  return numberFormatter.penceToPound(value, true)
 }
 
-const getCSVFileName = batch => {
-  const batchType = mappers.mapBatchType(batch.type)
-  return `${batch.region.displayName} ${batchType.toLowerCase()} bill run ${batch.billRunNumber}.csv`
+function _transactionLineValue (isDebit, isCredit, value) {
+  if (!value) {
+    return 'Error - not calculated'
+  }
+
+  if (isDebit) {
+    return _debitLineValue(isCredit, value)
+  }
+
+  return _creditLineValue(isCredit, value)
 }
 
 module.exports = {

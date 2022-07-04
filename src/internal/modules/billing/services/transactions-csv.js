@@ -15,19 +15,6 @@ const getBillingVolume = trans => {
   return billingVolume ? billingVolume.calculatedVolume : null
 }
 
-const _getTransactionData = trans => ({
-  'Charge period start date': trans.startDate,
-  'Charge period end date': trans.endDate,
-  'Authorised days': trans.authorisedDays,
-  'Billable days': trans.billableDays,
-  'Calculated quantity': trans.volume ? getBillingVolume(trans) : null,
-  Quantity: trans.volume,
-  'S127 agreement (Y/N)': trans.section127Agreement ? 'Y' : 'N',
-  'S127 agreement value': trans.calcS127Factor || null,
-  'S130 agreement': trans.section130Agreement,
-  'S130 agreement value': null
-})
-
 function _changeReason (chargeVersions, transaction) {
   const chargeVersionId = get(transaction, 'chargeElement.chargeVersionId')
   const chargeVersion = chargeVersions.find(cv => cv.id === chargeVersionId)
@@ -109,7 +96,16 @@ function _csvLine (invoice, invoiceLicence, transaction, chargeVersions) {
         .date(transaction.abstractionPeriod.endDay)
         .format('D MMM')
     }),
-    ..._getTransactionData(transaction)
+    'Charge period start date': transaction.startDate,
+    'Charge period end date': transaction.endDate,
+    'Authorised days': transaction.authorisedDays,
+    'Billable days': transaction.billableDays,
+    'Calculated quantity': transaction.volume ? getBillingVolume(transaction) : null,
+    Quantity: transaction.volume,
+    'S127 agreement (Y/N)': transaction.section127Agreement ? 'Y' : 'N',
+    'S127 agreement value': transaction.calcS127Factor || null,
+    'S130 agreement': transaction.section130Agreement,
+    'S130 agreement value': null
   }
 
   return rowToStrings(csvLine)

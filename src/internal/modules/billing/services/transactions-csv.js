@@ -57,11 +57,6 @@ const _getTransactionData = trans => ({
   'S130 agreement value': null
 })
 
-const _getInvoiceAccountData = invoiceAccount => ({
-  'Billing account number': invoiceAccount.invoiceAccountNumber,
-  'Customer name': invoiceAccount.company.name
-})
-
 const getDebitCreditLines = (value, isCredit, debitLabel, creditLabel) => {
   const formattedValue = numberFormatter.penceToPound(value, true)
   if (isCredit) {
@@ -109,7 +104,8 @@ function _csvLine (invoice, invoiceLicence, transaction, chargeVersions) {
   const { isDeMinimis } = invoice
   const { description, ...transactionData } = _getTransactionData(transaction)
   const csvLine = {
-    ..._getInvoiceAccountData(invoice.invoiceAccount),
+    'Billing account number': invoice.invoiceAccount.invoiceAccountNumber,
+    'Customer name': invoice.invoiceAccount.company.name,
     'Licence number': invoiceLicence.licenceRef,
     ..._getInvoiceData(invoice),
     ..._getTransactionAmounts(transaction),

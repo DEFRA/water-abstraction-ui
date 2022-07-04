@@ -205,14 +205,16 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
     let chargeVersions
     let invoice
     let result
+    let scheme
 
     beforeEach(() => {
       invoice = GeneralHelper.cloneObject(invoiceData)
       chargeVersions = GeneralHelper.cloneObject(chargeVersionsData)
+      scheme = 'alcs'
     })
 
     test('formats each CSV row as expected', async () => {
-      result = await transactionsCSV.createCSV([invoice], chargeVersions)
+      result = await transactionsCSV.createCSV([invoice], chargeVersions, scheme)
 
       expect(result[0]['Billing account number']).to.equal('A12345678A')
       expect(result[0]['Customer name']).to.equal('R G Applehead & sons LTD')
@@ -259,14 +261,14 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
     })
 
     test('creates a line for each transaction', async () => {
-      result = await transactionsCSV.createCSV([invoice], chargeVersions)
+      result = await transactionsCSV.createCSV([invoice], chargeVersions, scheme)
 
       expect(result.length).to.equal(invoice.billingInvoiceLicences[0].billingTransactions.length)
     })
 
     experiment('when the invoice is a debit', () => {
       test("sets 'Invoice amount' and 'Credit amount' correctly", async () => {
-        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+        result = await transactionsCSV.createCSV([invoice], chargeVersions, scheme)
 
         expect(result[0]['Invoice amount']).to.equal('1,234.56')
         expect(result[0]['Credit amount']).to.equal('')
@@ -280,7 +282,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       })
 
       test("sets 'Invoice amount' and 'Credit amount' correctly", async () => {
-        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+        result = await transactionsCSV.createCSV([invoice], chargeVersions, scheme)
 
         expect(result[0]['Invoice amount']).to.equal('')
         expect(result[0]['Credit amount']).to.equal('-1,234.56')
@@ -289,7 +291,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
 
     experiment('when the transaction is a debit', () => {
       test("sets the 'Net transaction line amount' fields correctly", async () => {
-        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+        result = await transactionsCSV.createCSV([invoice], chargeVersions, scheme)
 
         expect(result[0]['Net transaction line amount(debit)']).to.equal('617.28')
         expect(result[0]['Net transaction line amount(credit)']).to.equal('')
@@ -305,7 +307,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       })
 
       test("sets the 'Net transaction line amount' fields correctly", async () => {
-        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+        result = await transactionsCSV.createCSV([invoice], chargeVersions, scheme)
 
         expect(result[0]['Net transaction line amount(debit)']).to.equal('')
         expect(result[0]['Net transaction line amount(credit)']).to.equal('-617.28')
@@ -320,7 +322,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       })
 
       test("states 'Error - not calculated' in the transaction line amount fields", async () => {
-        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+        result = await transactionsCSV.createCSV([invoice], chargeVersions, scheme)
 
         expect(result[0]['Net transaction line amount(debit)']).to.equal('Error - not calculated')
         expect(result[0]['Net transaction line amount(credit)']).to.equal('Error - not calculated')
@@ -334,7 +336,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         })
 
         test("sets the 'Charge information reason' to empty", async () => {
-          result = await transactionsCSV.createCSV([invoice], chargeVersions)
+          result = await transactionsCSV.createCSV([invoice], chargeVersions, scheme)
 
           expect(result[0]['Charge information reason']).to.equal('')
         })
@@ -346,7 +348,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         })
 
         test("sets the 'Charge information reason' to empty", async () => {
-          result = await transactionsCSV.createCSV([invoice], chargeVersions)
+          result = await transactionsCSV.createCSV([invoice], chargeVersions, scheme)
 
           expect(result[0]['Charge information reason']).to.equal('')
         })
@@ -359,7 +361,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       })
 
       test("sets 'De minimis rule Y/N' to 'Y'", async () => {
-        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+        result = await transactionsCSV.createCSV([invoice], chargeVersions, scheme)
 
         expect(result[0]['De minimis rule Y/N']).to.equal('Y')
       })
@@ -371,7 +373,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       })
 
       test("sets 'Water company Y/N' to 'Y'", async () => {
-        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+        result = await transactionsCSV.createCSV([invoice], chargeVersions, scheme)
 
         expect(result[0]['Water company Y/N']).to.equal('Y')
       })
@@ -385,7 +387,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       })
 
       test("sets 'Compensation charge Y/N' to 'Y'", async () => {
-        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+        result = await transactionsCSV.createCSV([invoice], chargeVersions, scheme)
 
         expect(result[0]['Compensation charge Y/N']).to.equal('Y')
       })
@@ -399,7 +401,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       })
 
       test('drops a number of columns', async () => {
-        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+        result = await transactionsCSV.createCSV([invoice], chargeVersions, scheme)
 
         expect(result[0]['Standard Unit Charge (SUC) (£/1000 cubic metres)']).to.be.undefined()
         expect(result[0]['Environmental Improvement Unit Charge (EIUC) (£/1000 cubic metres)']).to.be.undefined()
@@ -428,7 +430,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       })
 
       test("sets 'Adjusted source type' to 'tidal'", async () => {
-        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+        result = await transactionsCSV.createCSV([invoice], chargeVersions, scheme)
 
         expect(result[0]['Adjusted source type']).to.equal('tidal')
       })
@@ -443,7 +445,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         })
 
         test("sets the 'Calculated quantity' to empty", async () => {
-          result = await transactionsCSV.createCSV([invoice], chargeVersions)
+          result = await transactionsCSV.createCSV([invoice], chargeVersions, scheme)
 
           expect(result[0]['Calculated quantity']).to.equal('')
         })
@@ -457,7 +459,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         })
 
         test("sets the 'Calculated quantity' to empty", async () => {
-          result = await transactionsCSV.createCSV([invoice], chargeVersions)
+          result = await transactionsCSV.createCSV([invoice], chargeVersions, scheme)
 
           expect(result[0]['Calculated quantity']).to.equal('')
         })
@@ -472,7 +474,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       })
 
       test("sets 'S127 agreement (Y/N)' to 'Y'", async () => {
-        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+        result = await transactionsCSV.createCSV([invoice], chargeVersions, scheme)
 
         expect(result[0]['S127 agreement (Y/N)']).to.equal('Y')
       })
@@ -486,7 +488,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
       })
 
       test("sets 'S127 agreement value' to empty", async () => {
-        result = await transactionsCSV.createCSV([invoice], chargeVersions)
+        result = await transactionsCSV.createCSV([invoice], chargeVersions, scheme)
 
         expect(result[0]['S127 agreement value']).to.equal('')
       })

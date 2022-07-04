@@ -4,15 +4,28 @@ const moment = require('moment')
 const numberFormatter = require('../../../../shared/lib/number-formatter')
 const { mapValues, sortBy, get } = require('lodash')
 const mappers = require('../lib/mappers')
+const { logger } = require('../../../logger')
 
-const createCSV = async (invoices, chargeVersions) => {
+const createCSV = async (invoices, chargeVersions, scheme) => {
   const sortedInvoices = sortBy(invoices, 'invoiceAccountaNumber', 'billingInvoiceLicences[0].licence.licenceRef')
   const dataForCSV = []
 
   sortedInvoices.forEach(invoice => {
     invoice.billingInvoiceLicences.forEach(invoiceLicence => {
       invoiceLicence.billingTransactions.forEach(transaction => {
-        dataForCSV.push(_csvLine(invoice, invoiceLicence, transaction, chargeVersions))
+        let csvLine
+
+        switch (scheme) {
+          case 'alcs':
+            csvLine = _csvLine(invoice, invoiceLicence, transaction, chargeVersions)
+            break
+          case 'sroc':
+            csvLine = _csvLine(invoice, invoiceLicence, transaction, chargeVersions)
+            break
+          default:
+            logger.error(`Scheme ${scheme} not recognised when exporting batch ${invoice.billingBatchId}`)
+        }
+        dataForCSV.push(csvLine)
       })
     })
   })

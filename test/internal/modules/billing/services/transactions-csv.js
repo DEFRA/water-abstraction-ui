@@ -495,9 +495,9 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
 
   experiment('.getCSVFileName', () => {
     test('returns expected file name', () => {
-      const expectedFileName = 'South West two-part tariff bill run 2345.csv'
-      const fileName = transactionsCSV.getCSVFileName(batch)
-      expect(fileName).to.equal(expectedFileName)
+      const result = transactionsCSV.getCSVFileName(batch)
+
+      expect(result).to.equal('South West two-part tariff bill run 2345.csv')
     })
   })
 })

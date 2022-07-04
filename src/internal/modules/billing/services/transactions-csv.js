@@ -71,14 +71,14 @@ const getDebitCreditLines = (value, isCredit, debitLabel, creditLabel) => {
   }
 }
 
-const _getInvoiceData = invoice => {
-  const { netAmount, isCredit } = invoice
-  return {
-    'Bill number': invoice.invoiceNumber,
-    'Financial year': invoice.financialYearEnding,
-    ...getDebitCreditLines(netAmount, isCredit, 'Invoice amount', 'Credit amount')
-  }
-}
+// const _getInvoiceData = invoice => {
+//   const { netAmount, isCredit } = invoice
+//   return {
+//     'Bill number': invoice.invoiceNumber,
+//     'Financial year': invoice.financialYearEnding,
+//     ...getDebitCreditLines(netAmount, isCredit, 'Invoice amount', 'Credit amount')
+//   }
+// }
 
 const _getTransactionAmounts = trans => {
   const { netAmount, isCredit } = trans
@@ -107,7 +107,10 @@ function _csvLine (invoice, invoiceLicence, transaction, chargeVersions) {
     'Billing account number': invoice.invoiceAccount.invoiceAccountNumber,
     'Customer name': invoice.invoiceAccount.company.name,
     'Licence number': invoiceLicence.licenceRef,
-    ..._getInvoiceData(invoice),
+    'Bill number': invoice.invoiceNumber,
+    'Financial year': invoice.financialYearEnding,
+    'Invoice amount': invoice.isCredit ? null : numberFormatter.penceToPound(invoice.netAmount, true),
+    'Credit amount': invoice.isCredit ? numberFormatter.penceToPound(invoice.netAmount, true) : null,
     ..._getTransactionAmounts(transaction),
     'Charge information reason': getChangeReason(chargeVersions, transaction),
     Region: invoiceLicence.licence.region.displayName,

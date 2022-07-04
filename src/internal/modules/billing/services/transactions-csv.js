@@ -71,33 +71,40 @@ const getDebitCreditLines = (value, isCredit, debitLabel, creditLabel) => {
   }
 }
 
-// const _getInvoiceData = invoice => {
-//   const { netAmount, isCredit } = invoice
-//   return {
-//     'Bill number': invoice.invoiceNumber,
-//     'Financial year': invoice.financialYearEnding,
-//     ...getDebitCreditLines(netAmount, isCredit, 'Invoice amount', 'Credit amount')
-//   }
-// }
-
-const _getTransactionAmounts = trans => {
-  const { netAmount, isCredit } = trans
-
-  if (isNull(netAmount)) {
-    return {
-      'Net transaction line amount(debit)': 'Error - not calculated',
-      'Net transaction line amount(credit)': 'Error - not calculated'
-    }
-  }
-  return getDebitCreditLines(netAmount, isCredit, 'Net transaction line amount(debit)', 'Net transaction line amount(credit)')
-}
-
 const getChangeReason = (chargeVersions, transaction) => {
   const chargeVersionId = get(transaction, 'chargeElement.chargeVersionId')
   const chargeVersion = chargeVersions.find(cv => cv.id === chargeVersionId)
   return (chargeVersion && chargeVersion.changeReason)
     ? chargeVersion.changeReason.description
     : null
+}
+
+function _debitLineValue (isCredit, value) {
+  if (isCredit) {
+    return null
+  }
+
+  return numberFormatter.penceToPound(value, true)
+}
+
+function _creditLineValue (isCredit, value) {
+  if (!isCredit) {
+    return null
+  }
+
+  return numberFormatter.penceToPound(value, true)
+}
+
+function _transactionLineValue (isDebit, isCredit, value) {
+  if (!value) {
+    return 'Error - not calculated'
+  }
+
+  if (isDebit) {
+    return _debitLineValue(isCredit, value)
+  }
+
+  return _creditLineValue(isCredit, value)
 }
 
 function _csvLine (invoice, invoiceLicence, transaction, chargeVersions) {
@@ -109,9 +116,10 @@ function _csvLine (invoice, invoiceLicence, transaction, chargeVersions) {
     'Licence number': invoiceLicence.licenceRef,
     'Bill number': invoice.invoiceNumber,
     'Financial year': invoice.financialYearEnding,
-    'Invoice amount': invoice.isCredit ? null : numberFormatter.penceToPound(invoice.netAmount, true),
-    'Credit amount': invoice.isCredit ? numberFormatter.penceToPound(invoice.netAmount, true) : null,
-    ..._getTransactionAmounts(transaction),
+    'Invoice amount': _debitLineValue(invoice.isCredit, invoice.netAmount),
+    'Credit amount': _creditLineValue(invoice.isCredit, invoice.netAmount),
+    'Net transaction line amount(debit)': _transactionLineValue(true, transaction.isCredit, transaction.netAmount),
+    'Net transaction line amount(credit)': _transactionLineValue(false, transaction.isCredit, transaction.netAmount),
     'Charge information reason': getChangeReason(chargeVersions, transaction),
     Region: invoiceLicence.licence.region.displayName,
     'De minimis rule Y/N': isDeMinimis ? 'Y' : 'N',

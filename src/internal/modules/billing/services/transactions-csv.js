@@ -138,9 +138,6 @@ const getCSVFileName = batch => {
 }
 
 module.exports = {
-  _getInvoiceData,
-  _getTransactionData,
-  _getTransactionAmounts,
   createCSV,
   getCSVFileName
 }

@@ -105,6 +105,26 @@ const getChangeReason = (chargeVersions, transaction) => {
     : null
 }
 
+function _csvLine (invoice, invoiceLicence, transaction, chargeVersions) {
+  const { isDeMinimis } = invoice
+  const { description, ...transactionData } = _getTransactionData(transaction)
+  const csvLine = {
+    ..._getInvoiceAccountData(invoice.invoiceAccount),
+    'Licence number': invoiceLicence.licenceRef,
+    ..._getInvoiceData(invoice),
+    ..._getTransactionAmounts(transaction),
+    'Charge information reason': getChangeReason(chargeVersions, transaction),
+    Region: invoiceLicence.licence.region.displayName,
+    'De minimis rule Y/N': isDeMinimis ? 'Y' : 'N',
+    'Transaction description': description,
+    'Water company Y/N': invoiceLicence.licence.isWaterUndertaker ? 'Y' : 'N',
+    'Historical area': invoiceLicence.licence.regions.historicalAreaCode,
+    ...transactionData
+  }
+
+  return rowToStrings(csvLine)
+}
+
 const createCSV = async (invoices, chargeVersions) => {
   const sortedInvoices = sortBy(invoices, 'invoiceAccountaNumber', 'billingInvoiceLicences[0].licence.licenceRef')
   const dataForCSV = []
@@ -112,23 +132,7 @@ const createCSV = async (invoices, chargeVersions) => {
   sortedInvoices.forEach(invoice => {
     invoice.billingInvoiceLicences.forEach(invoiceLicence => {
       invoiceLicence.billingTransactions.forEach(transaction => {
-        const { isDeMinimis } = invoice
-        const { description, ...transactionData } = _getTransactionData(transaction)
-        const csvLine = {
-          ..._getInvoiceAccountData(invoice.invoiceAccount),
-          'Licence number': invoiceLicence.licenceRef,
-          ..._getInvoiceData(invoice),
-          ..._getTransactionAmounts(transaction),
-          'Charge information reason': getChangeReason(chargeVersions, transaction),
-          Region: invoiceLicence.licence.region.displayName,
-          'De minimis rule Y/N': isDeMinimis ? 'Y' : 'N',
-          'Transaction description': description,
-          'Water company Y/N': invoiceLicence.licence.isWaterUndertaker ? 'Y' : 'N',
-          'Historical area': invoiceLicence.licence.regions.historicalAreaCode,
-          ...transactionData
-        }
-
-        dataForCSV.push(rowToStrings(csvLine))
+        dataForCSV.push(_csvLine(invoice, invoiceLicence, transaction, chargeVersions))
       })
     })
   })

@@ -9,9 +9,14 @@ const isNullOrUndefined = value => isNull(value) || value === undefined
 const valueToString = value => isNullOrUndefined(value) ? '' : value.toString()
 const rowToStrings = row => mapValues(row, valueToString)
 
-const getBillingVolume = trans => {
-  const transactionYear = new Date(trans.endDate).getFullYear()
-  const billingVolume = trans.billingVolume.find(row => row.financialYear === transactionYear)
+function _billingVolume (transaction) {
+  if (!transaction.volume) {
+    return null
+  }
+
+  const transactionYear = new Date(transaction.endDate).getFullYear()
+  const billingVolume = transaction.billingVolume.find(row => row.financialYear === transactionYear)
+
   return billingVolume ? billingVolume.calculatedVolume : null
 }
 
@@ -100,7 +105,7 @@ function _csvLine (invoice, invoiceLicence, transaction, chargeVersions) {
     'Charge period end date': transaction.endDate,
     'Authorised days': transaction.authorisedDays,
     'Billable days': transaction.billableDays,
-    'Calculated quantity': transaction.volume ? getBillingVolume(transaction) : null,
+    'Calculated quantity': _billingVolume(transaction),
     Quantity: transaction.volume,
     'S127 agreement (Y/N)': transaction.section127Agreement ? 'Y' : 'N',
     'S127 agreement value': transaction.calcS127Factor || null,

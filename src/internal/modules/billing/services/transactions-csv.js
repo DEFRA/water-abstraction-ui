@@ -2,12 +2,8 @@
 
 const moment = require('moment')
 const numberFormatter = require('../../../../shared/lib/number-formatter')
-const { mapValues, isNull, sortBy, get } = require('lodash')
+const { mapValues, sortBy, get } = require('lodash')
 const mappers = require('../lib/mappers')
-
-const isNullOrUndefined = value => isNull(value) || value === undefined
-const valueToString = value => isNullOrUndefined(value) ? '' : value.toString()
-const rowToStrings = row => mapValues(row, valueToString)
 
 const createCSV = async (invoices, chargeVersions) => {
   const sortedInvoices = sortBy(invoices, 'invoiceAccountaNumber', 'billingInvoiceLicences[0].licence.licenceRef')
@@ -113,7 +109,7 @@ function _csvLine (invoice, invoiceLicence, transaction, chargeVersions) {
     'S130 agreement value': null
   }
 
-  return rowToStrings(csvLine)
+  return _rowToStrings(csvLine)
 }
 
 function _debitLineValue (isCredit, value) {
@@ -122,6 +118,12 @@ function _debitLineValue (isCredit, value) {
   }
 
   return numberFormatter.penceToPound(value, true)
+}
+
+function _rowToStrings (row) {
+  return mapValues(row, (value) => {
+    return value ? value.toString() : ''
+  })
 }
 
 function _transactionLineValue (isDebit, isCredit, value) {

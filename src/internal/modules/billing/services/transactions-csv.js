@@ -9,32 +9,6 @@ const isNullOrUndefined = value => isNull(value) || value === undefined
 const valueToString = value => isNullOrUndefined(value) ? '' : value.toString()
 const rowToStrings = row => mapValues(row, valueToString)
 
-const getAbsStartAndEnd = absPeriod => ({
-  'Abstraction period start date': moment().month(absPeriod.startMonth - 1).date(absPeriod.startDay).format('D MMM'),
-  'Abstraction period end date': moment().month(absPeriod.endMonth - 1).date(absPeriod.endDay).format('D MMM')
-})
-
-const getChargeElementData = trans => {
-  if (trans.chargeType === 'minimum_charge') return {}
-  return {
-    'Standard Unit Charge (SUC) (£/1000 cubic metres)': trans.calcSucFactor,
-    'Environmental Improvement Unit Charge (EIUC) (£/1000 cubic metres)': trans.calcEiucFactor,
-    'Authorised annual quantity (megalitres)': trans.chargeElement.authorisedAnnualQuantity,
-    'Billable annual quantity (megalitres)': trans.chargeElement.billableAnnualQuantity,
-    'Source type': trans.chargeElement.source,
-    'Source factor': trans.calcSourceFactor,
-    'Adjusted source type': trans.chargeElement.source === 'tidal' ? 'tidal' : 'other',
-    'Adjusted source factor': trans.calcEiucSourceFactor,
-    Season: trans.chargeElement.season,
-    'Season factor': trans.calcSeasonFactor,
-    Loss: trans.chargeElement.loss,
-    'Loss factor': trans.calcLossFactor,
-    'Purpose code': trans.chargeElement.purposeUse.legacyId,
-    'Purpose name': trans.chargeElement.purposeUse.description,
-    ...getAbsStartAndEnd(trans.abstractionPeriod)
-  }
-}
-
 const getBillingVolume = trans => {
   const transactionYear = new Date(trans.endDate).getFullYear()
   const billingVolume = trans.billingVolume.find(row => row.financialYear === transactionYear)
@@ -42,9 +16,6 @@ const getBillingVolume = trans => {
 }
 
 const _getTransactionData = trans => ({
-  description: trans.description,
-  'Compensation charge Y/N': trans.isCompensationCharge ? 'Y' : 'N',
-  ...getChargeElementData(trans),
   'Charge period start date': trans.startDate,
   'Charge period end date': trans.endDate,
   'Authorised days': trans.authorisedDays,
@@ -57,21 +28,7 @@ const _getTransactionData = trans => ({
   'S130 agreement value': null
 })
 
-const getDebitCreditLines = (value, isCredit, debitLabel, creditLabel) => {
-  const formattedValue = numberFormatter.penceToPound(value, true)
-  if (isCredit) {
-    return {
-      [debitLabel]: null,
-      [creditLabel]: formattedValue
-    }
-  }
-  return {
-    [debitLabel]: formattedValue,
-    [creditLabel]: null
-  }
-}
-
-const getChangeReason = (chargeVersions, transaction) => {
+function _changeReason (chargeVersions, transaction) {
   const chargeVersionId = get(transaction, 'chargeElement.chargeVersionId')
   const chargeVersion = chargeVersions.find(cv => cv.id === chargeVersionId)
   return (chargeVersion && chargeVersion.changeReason)
@@ -108,8 +65,6 @@ function _transactionLineValue (isDebit, isCredit, value) {
 }
 
 function _csvLine (invoice, invoiceLicence, transaction, chargeVersions) {
-  const { isDeMinimis } = invoice
-  const { description, ...transactionData } = _getTransactionData(transaction)
   const csvLine = {
     'Billing account number': invoice.invoiceAccount.invoiceAccountNumber,
     'Customer name': invoice.invoiceAccount.company.name,
@@ -120,13 +75,41 @@ function _csvLine (invoice, invoiceLicence, transaction, chargeVersions) {
     'Credit amount': _creditLineValue(invoice.isCredit, invoice.netAmount),
     'Net transaction line amount(debit)': _transactionLineValue(true, transaction.isCredit, transaction.netAmount),
     'Net transaction line amount(credit)': _transactionLineValue(false, transaction.isCredit, transaction.netAmount),
-    'Charge information reason': getChangeReason(chargeVersions, transaction),
+    'Charge information reason': _changeReason(chargeVersions, transaction),
     Region: invoiceLicence.licence.region.displayName,
-    'De minimis rule Y/N': isDeMinimis ? 'Y' : 'N',
-    'Transaction description': description,
+    'De minimis rule Y/N': invoice.isDeMinimis ? 'Y' : 'N',
+    'Transaction description': transaction.description,
     'Water company Y/N': invoiceLicence.licence.isWaterUndertaker ? 'Y' : 'N',
     'Historical area': invoiceLicence.licence.regions.historicalAreaCode,
-    ...transactionData
+    'Compensation charge Y/N': transaction.isCompensationCharge ? 'Y' : 'N',
+    // This uses the spread operator and a logical AND short circuit evaluation to allow us to determine whether the
+    // following columns are added to the output or not. Thanks to https://stackoverflow.com/a/40560953/6117745 for
+    // this
+    ...(transaction.chargeType !== 'minimum_charge' && {
+      'Standard Unit Charge (SUC) (£/1000 cubic metres)': transaction.calcSucFactor,
+      'Environmental Improvement Unit Charge (EIUC) (£/1000 cubic metres)': transaction.calcEiucFactor,
+      'Authorised annual quantity (megalitres)': transaction.chargeElement.authorisedAnnualQuantity,
+      'Billable annual quantity (megalitres)': transaction.chargeElement.billableAnnualQuantity,
+      'Source type': transaction.chargeElement.source,
+      'Source factor': transaction.calcSourceFactor,
+      'Adjusted source type': transaction.chargeElement.source === 'tidal' ? 'tidal' : 'other',
+      'Adjusted source factor': transaction.calcEiucSourceFactor,
+      Season: transaction.chargeElement.season,
+      'Season factor': transaction.calcSeasonFactor,
+      Loss: transaction.chargeElement.loss,
+      'Loss factor': transaction.calcLossFactor,
+      'Purpose code': transaction.chargeElement.purposeUse.legacyId,
+      'Purpose name': transaction.chargeElement.purposeUse.description,
+      'Abstraction period start date': moment()
+        .month(transaction.abstractionPeriod.startMonth - 1)
+        .date(transaction.abstractionPeriod.startDay)
+        .format('D MMM'),
+      'Abstraction period end date': moment()
+        .month(transaction.abstractionPeriod.endMonth - 1)
+        .date(transaction.abstractionPeriod.endDay)
+        .format('D MMM')
+    }),
+    ..._getTransactionData(transaction)
   }
 
   return rowToStrings(csvLine)

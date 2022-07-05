@@ -75,13 +75,13 @@ function _csvLineAlcs (invoice, invoiceLicence, transaction, chargeVersions) {
       'Purpose code': transaction.chargeElement.purposeUse.legacyId,
       'Purpose name': transaction.chargeElement.purposeUse.description,
       'Abstraction period start date': moment()
-      .month(transaction.abstractionPeriod.startMonth - 1)
-      .date(transaction.abstractionPeriod.startDay)
-      .format('D MMM'),
+        .month(transaction.abstractionPeriod.startMonth - 1)
+        .date(transaction.abstractionPeriod.startDay)
+        .format('D MMM'),
       'Abstraction period end date': moment()
-      .month(transaction.abstractionPeriod.endMonth - 1)
-      .date(transaction.abstractionPeriod.endDay)
-      .format('D MMM')
+        .month(transaction.abstractionPeriod.endMonth - 1)
+        .date(transaction.abstractionPeriod.endDay)
+        .format('D MMM')
     }),
     'Charge period start date': transaction.startDate,
     'Charge period end date': transaction.endDate,
@@ -98,7 +98,7 @@ function _csvLineAlcs (invoice, invoiceLicence, transaction, chargeVersions) {
   return _rowToStrings(csvLine)
 }
 
-function _csvLineSroc(invoice, invoiceLicence, transaction, chargeVersions) {
+function _csvLineSroc (invoice, invoiceLicence, transaction, chargeVersions) {
   const csvLine = {
     'Billing account number': invoice.invoiceAccount.invoiceAccountNumber,
     'Customer name': invoice.invoiceAccount.company.name,
@@ -115,11 +115,11 @@ function _csvLineSroc(invoice, invoiceLicence, transaction, chargeVersions) {
     'Billable days': transaction.billableDays,
     'Charge reference': transaction.chargeCategoryCode,
     'Charge reference description': transaction.chargeCategoryDescription,
-    'Source': transaction.source,
-    'Loss': transaction.loss,
-    'Volume': transaction.volume,
+    Source: transaction.source,
+    Loss: transaction.loss,
+    Volume: transaction.volume,
     'Water available Y/N': transaction.chargeElement.isRestrictedSource ? 'N' : 'Y',
-    'Modelling': transaction.chargeElement.waterModel,
+    Modelling: transaction.chargeElement.waterModel,
     'Public water supply Y/N': transaction.isWaterCompanyCharge ? 'Y' : 'N',
     'Supported source Y/N': transaction.isSupportedSource ? 'Y' : 'N',
     'Supported source name': transaction.supportedSourceName,
@@ -156,7 +156,7 @@ function _billingVolume (transaction) {
   return billingVolume ? billingVolume.calculatedVolume : null
 }
 
-function _changeReason(chargeVersions, transaction) {
+function _changeReason (chargeVersions, transaction) {
   const chargeVersionId = get(transaction, 'chargeElement.chargeVersionId')
   const chargeVersion = chargeVersions.find(cv => cv.id === chargeVersionId)
   return (chargeVersion && chargeVersion.changeReason)

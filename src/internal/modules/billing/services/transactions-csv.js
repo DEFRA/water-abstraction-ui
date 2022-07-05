@@ -17,10 +17,10 @@ const createCSV = async (invoices, chargeVersions, scheme) => {
 
         switch (scheme) {
           case 'alcs':
-            csvLine = _csvLine(invoice, invoiceLicence, transaction, chargeVersions)
+            csvLine = _csvLineAlcs(invoice, invoiceLicence, transaction, chargeVersions)
             break
           case 'sroc':
-            csvLine = _csvLine(invoice, invoiceLicence, transaction, chargeVersions)
+            csvLine = _csvLineSroc(invoice, invoiceLicence, transaction, chargeVersions)
             break
           default:
             logger.error(`Scheme ${scheme} not recognised when exporting batch ${invoice.billingBatchId}`)
@@ -38,7 +38,7 @@ const getCSVFileName = batch => {
   return `${batch.region.displayName} ${batchType.toLowerCase()} bill run ${batch.billRunNumber}.csv`
 }
 
-function _csvLine (invoice, invoiceLicence, transaction, chargeVersions) {
+function _csvLineAlcs (invoice, invoiceLicence, transaction, chargeVersions) {
   const csvLine = {
     'Billing account number': invoice.invoiceAccount.invoiceAccountNumber,
     'Customer name': invoice.invoiceAccount.company.name,
@@ -93,6 +93,53 @@ function _csvLine (invoice, invoiceLicence, transaction, chargeVersions) {
     'S127 agreement value': transaction.calcS127Factor || null,
     'S130 agreement': transaction.section130Agreement,
     'S130 agreement value': null
+  }
+
+  return _rowToStrings(csvLine)
+}
+
+function _csvLineSroc(invoice, invoiceLicence, transaction, chargeVersions) {
+  const csvLine = {
+    'Billing account number': invoice.invoiceAccount.invoiceAccountNumber,
+    'Customer name': invoice.invoiceAccount.company.name,
+    'Licence number': invoiceLicence.licenceRef,
+    'Bill number': invoice.invoiceNumber,
+    'Financial year': invoice.financialYearEnding,
+    'Invoice amount': _debitLineValue(invoice.isCredit, invoice.netAmount),
+    'Credit amount': _creditLineValue(invoice.isCredit, invoice.netAmount),
+    'Net transaction line amount(debit)': _transactionLineValue(true, transaction.isCredit, transaction.netAmount),
+    'Net transaction line amount(credit)': _transactionLineValue(false, transaction.isCredit, transaction.netAmount),
+    'Charge period start date': transaction.startDate,
+    'Charge period end date': transaction.endDate,
+    'Authorised days': transaction.authorisedDays,
+    'Billable days': transaction.billableDays,
+    'Charge reference': transaction.chargeCategoryCode,
+    'Charge reference description': transaction.chargeCategoryDescription,
+    'Source': transaction.source,
+    'Loss': transaction.loss,
+    'Volume': transaction.volume,
+    'Water available Y/N': transaction.chargeElement.isRestrictedSource ? 'N' : 'Y',
+    'Modelling': transaction.chargeElement.waterModel,
+    'Public water supply Y/N': transaction.isWaterCompanyCharge ? 'Y' : 'N',
+    'Supported source Y/N': transaction.isSupportedSource ? 'Y' : 'N',
+    'Supported source name': transaction.supportedSourceName,
+    'Winter discount': transaction.calcWinterDiscountFactor,
+    'Canal and Rivers trust agreement': transaction.calcS130Factor,
+    'Aggregate factor': transaction.aggregateFactor,
+    'Charge adjustment factor': transaction.adjustmentFactor,
+    'Abatement factor': transaction.calcS126Factor,
+    'Two part tariff': transaction.calcS127Factor,
+    'Transaction description': transaction.description,
+    'Charge information reason': _changeReason(chargeVersions, transaction),
+    'Is second part charge? Y/N': transaction.isTwoPartSecondPartCharge ? 'Y' : 'N',
+    'Compensation charge Y/N': transaction.isCompensationCharge ? 'Y' : 'N',
+    'Compensation charge applicable Y/N': invoiceLicence.licence.isWaterUndertaker ? 'N' : 'Y',
+    'De minimis rule Y/N': '',
+    Region: invoiceLicence.licence.region.displayName,
+    'Historical area': invoiceLicence.licence.regions.historicalAreaCode,
+    'EIC region': transaction.chargeElement.eiucRegion,
+    'Calculated quantity': _billingVolume(transaction),
+    Quantity: transaction.volume
   }
 
   return _rowToStrings(csvLine)

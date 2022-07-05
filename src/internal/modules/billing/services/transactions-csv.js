@@ -134,12 +134,12 @@ function _csvLineSroc (invoice, invoiceLicence, transaction, chargeVersions) {
     'Is second part charge? Y/N': transaction.isTwoPartSecondPartCharge ? 'Y' : 'N',
     'Compensation charge Y/N': transaction.isCompensationCharge ? 'Y' : 'N',
     'Compensation charge applicable Y/N': invoiceLicence.licence.isWaterUndertaker ? 'N' : 'Y',
-    'De minimis rule Y/N': '',
+    'De minimis rule Y/N': invoice.isDeMinimis ? 'Y' : 'N',
     Region: invoiceLicence.licence.region.displayName,
     'Historical area': invoiceLicence.licence.regions.historicalAreaCode,
     'EIC region': transaction.chargeElement.eiucRegion,
     'Calculated quantity': _billingVolume(transaction),
-    Quantity: transaction.volume
+    Quantity: transaction.volume // looks like a repeat of line 120
   }
 
   return _rowToStrings(csvLine)

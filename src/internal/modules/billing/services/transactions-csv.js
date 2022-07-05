@@ -38,33 +38,6 @@ const getCSVFileName = batch => {
   return `${batch.region.displayName} ${batchType.toLowerCase()} bill run ${batch.billRunNumber}.csv`
 }
 
-function _billingVolume (transaction) {
-  if (!transaction.volume) {
-    return null
-  }
-
-  const transactionYear = new Date(transaction.endDate).getFullYear()
-  const billingVolume = transaction.billingVolume.find(row => row.financialYear === transactionYear)
-
-  return billingVolume ? billingVolume.calculatedVolume : null
-}
-
-function _changeReason (chargeVersions, transaction) {
-  const chargeVersionId = get(transaction, 'chargeElement.chargeVersionId')
-  const chargeVersion = chargeVersions.find(cv => cv.id === chargeVersionId)
-  return (chargeVersion && chargeVersion.changeReason)
-    ? chargeVersion.changeReason.description
-    : null
-}
-
-function _creditLineValue (isCredit, value) {
-  if (!isCredit) {
-    return null
-  }
-
-  return numberFormatter.penceToPound(value, true)
-}
-
 function _csvLine (invoice, invoiceLicence, transaction, chargeVersions) {
   const csvLine = {
     'Billing account number': invoice.invoiceAccount.invoiceAccountNumber,
@@ -102,13 +75,13 @@ function _csvLine (invoice, invoiceLicence, transaction, chargeVersions) {
       'Purpose code': transaction.chargeElement.purposeUse.legacyId,
       'Purpose name': transaction.chargeElement.purposeUse.description,
       'Abstraction period start date': moment()
-        .month(transaction.abstractionPeriod.startMonth - 1)
-        .date(transaction.abstractionPeriod.startDay)
-        .format('D MMM'),
+      .month(transaction.abstractionPeriod.startMonth - 1)
+      .date(transaction.abstractionPeriod.startDay)
+      .format('D MMM'),
       'Abstraction period end date': moment()
-        .month(transaction.abstractionPeriod.endMonth - 1)
-        .date(transaction.abstractionPeriod.endDay)
-        .format('D MMM')
+      .month(transaction.abstractionPeriod.endMonth - 1)
+      .date(transaction.abstractionPeriod.endDay)
+      .format('D MMM')
     }),
     'Charge period start date': transaction.startDate,
     'Charge period end date': transaction.endDate,
@@ -123,6 +96,33 @@ function _csvLine (invoice, invoiceLicence, transaction, chargeVersions) {
   }
 
   return _rowToStrings(csvLine)
+}
+
+function _billingVolume (transaction) {
+  if (!transaction.volume) {
+    return null
+  }
+
+  const transactionYear = new Date(transaction.endDate).getFullYear()
+  const billingVolume = transaction.billingVolume.find(row => row.financialYear === transactionYear)
+
+  return billingVolume ? billingVolume.calculatedVolume : null
+}
+
+function _changeReason(chargeVersions, transaction) {
+  const chargeVersionId = get(transaction, 'chargeElement.chargeVersionId')
+  const chargeVersion = chargeVersions.find(cv => cv.id === chargeVersionId)
+  return (chargeVersion && chargeVersion.changeReason)
+    ? chargeVersion.changeReason.description
+    : null
+}
+
+function _creditLineValue (isCredit, value) {
+  if (!isCredit) {
+    return null
+  }
+
+  return numberFormatter.penceToPound(value, true)
 }
 
 function _debitLineValue (isCredit, value) {

@@ -63,7 +63,7 @@ const invoiceData =
               eiucSource: 'other',
               season: 'winter',
               loss: 'high',
-              authorisedAnnualQuantity: '9.1',
+              authorisedAnnualQuantity: '8.1',
               billableAnnualQuantity: '9.1',
               purposeUse: {
                 type: 'use',
@@ -269,7 +269,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(result[0]['Compensation charge Y/N']).to.equal('N')
         expect(result[0]['Standard Unit Charge (SUC) (£/1000 cubic metres)']).to.equal('1')
         expect(result[0]['Environmental Improvement Unit Charge (EIUC) (£/1000 cubic metres)']).to.equal('1')
-        expect(result[0]['Authorised annual quantity (megalitres)']).to.equal('9.1')
+        expect(result[0]['Authorised annual quantity (megalitres)']).to.equal('8.1')
         expect(result[0]['Billable annual quantity (megalitres)']).to.equal('9.1')
         expect(result[0]['Source type']).to.equal('unsupported')
         expect(result[0]['Source factor']).to.equal('0.5')
@@ -558,7 +558,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(result[0]['Charge reference']).to.equal('4.5.55')
         expect(result[0].Source).to.equal('non-tidal')
         expect(result[0].Loss).to.equal('medium')
-        expect(result[0].Volume).to.equal('9.1')
+        expect(result[0].Volume).to.equal('8.1')
         expect(result[0]['Water available Y/N']).to.equal('Y')
         expect(result[0].Modelling).to.equal('no model')
         expect(result[0]['Public water supply Y/N']).to.equal('Y')

@@ -117,7 +117,8 @@ function _csvLineSroc (invoice, invoiceLicence, transaction, chargeVersions) {
     'Charge reference description': transaction.chargeCategoryDescription,
     Source: transaction.source,
     Loss: transaction.loss,
-    Volume: transaction.volume,
+    // In the UI, "Volume" is taken from authorisedAnnualQuantity
+    Volume: transaction.chargeElement.authorisedAnnualQuantity,
     'Water available Y/N': transaction.chargeElement.isRestrictedSource ? 'N' : 'Y',
     Modelling: transaction.chargeElement.waterModel,
     'Public water supply Y/N': transaction.isWaterCompanyCharge ? 'Y' : 'N',
@@ -139,7 +140,8 @@ function _csvLineSroc (invoice, invoiceLicence, transaction, chargeVersions) {
     'Historical area': invoiceLicence.licence.regions.historicalAreaCode,
     'EIC region': transaction.chargeElement.eiucRegion,
     'Calculated quantity': _billingVolume(transaction),
-    Quantity: transaction.volume // looks like a repeat of line 120
+    // In the UI, "Quantity" is taken from volume
+    Quantity: transaction.volume
   }
 
   return _rowToStrings(csvLine)

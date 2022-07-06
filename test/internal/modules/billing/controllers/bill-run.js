@@ -653,7 +653,7 @@ experiment('internal/modules/billing/controller', () => {
       services.water.billingBatches.getBatchDownloadData.resolves({ invoices, chargeVersions })
 
       csvData = [['header1', 'header2', 'header2'], ['transaction', 'line', 1]]
-      transactionsCSV.createCSV.resolves(csvData)
+      transactionsCSV.createCSV.returns(csvData)
 
       await controller.getTransactionsCSV(request, h)
     })

@@ -168,7 +168,7 @@ const getBillingBatchConfirmSuccess = (request, h) => {
 const getTransactionsCSV = async (request, h) => {
   const { batchId } = request.params
   const { invoices, chargeVersions } = await services.water.billingBatches.getBatchDownloadData(batchId)
-  const csvData = await transactionsCSV.createCSV(invoices, chargeVersions, request.pre.batch.scheme)
+  const csvData = transactionsCSV.createCSV(invoices, chargeVersions, request.pre.batch.scheme)
   const fileName = transactionsCSV.getCSVFileName(request.pre.batch)
   return csv.csvDownload(h, csvData, fileName)
 }

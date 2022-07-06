@@ -6,7 +6,7 @@ const { mapValues, sortBy, get } = require('lodash')
 const mappers = require('../lib/mappers')
 const { logger } = require('../../../logger')
 
-const createCSV = async (invoices, chargeVersions, scheme) => {
+const createCSV = (invoices, chargeVersions, scheme) => {
   const sortedInvoices = sortBy(invoices, 'invoiceAccountaNumber', 'billingInvoiceLicences[0].licence.licenceRef')
   const dataForCSV = []
 

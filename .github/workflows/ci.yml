@@ -5,6 +5,8 @@ on: push
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      COOKIE_SECRET: somethingverysecrethere
 
     steps:
       # Downloads a copy of the code in your repository before running CI tests

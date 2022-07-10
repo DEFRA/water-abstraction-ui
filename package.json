@@ -117,10 +117,8 @@
     "mochawesome-report-generator": "^6.0.1",
     "sass": "^1.49.7",
     "sinon": "^12.0.1",
-    "snyk": "^1.852.0",
     "standard": "^17.0.0"
   },
-  "snyk": true,
   "standard": {
     "ignore": [
       "coverage",

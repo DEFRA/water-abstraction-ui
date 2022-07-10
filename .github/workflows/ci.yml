@@ -7,6 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       COOKIE_SECRET: somethingverysecrethere
+      GOOGLE_ANALYTICS_PROPERTY_ID: ga-test
 
     steps:
       # Downloads a copy of the code in your repository before running CI tests

@@ -5,10 +5,6 @@ on: push
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      COOKIE_SECRET: somethingverysecrethere
-      GOOGLE_ANALYTICS_PROPERTY_ID: ga-test
-      NOTIFY_CALLBACK_TOKEN: some-token
 
     steps:
       # Downloads a copy of the code in your repository before running CI tests

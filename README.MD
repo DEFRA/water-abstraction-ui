@@ -1,26 +1,24 @@
+# Water Abtrsaction UI
 
-# water-abstraction
+![Build Status](https://github.com/DEFRA/water-abstraction-ui/workflows/CI/badge.svg?branch=develop)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_water-abstraction-ui&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=DEFRA_water-abstraction-ui)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_water-abstraction-ui&metric=coverage)](https://sonarcloud.io/dashboard?id=DEFRA_water-abstraction-ui)
+[![Known Vulnerabilities](https://snyk.io/test/github/DEFRA/water-abstraction-ui/badge.svg)](https://snyk.io/test/github/DEFRA/water-abstraction-ui)
+[![Licence](https://img.shields.io/badge/Licence-OGLv3-blue.svg)](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3)
 
-|               |              |  
-|---------------|--------------|
-| Build         |  ![CI](https://github.com/DEFRA/water-abstraction-ui/workflows/CI/badge.svg) |
-| Test coverage | [![Test Coverage](https://api.codeclimate.com/v1/badges/cbb2d0b03cc084ad17a3/test_coverage)](https://codeclimate.com/github/DEFRA/water-abstraction-ui/test_coverage) |
-| Quality check |  [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_water-abstraction-ui&metric=alert_status)](https://sonarcloud.io/dashboard?id=DEFRA_water-abstraction-ui) |
-
-
-Project for the GOV.UK Water Abstraction service
+External and Internal UI for the GOV.UK Water Abstraction Service
 
 ## Installation
 
 If on Windows you will need to open powershell with administrator privileges and run this command. This is a prerequisite for bcrypt.
 
-```
+```bash
 npm install --global --production windows-build-tools
 ```
 
 On all platforms run:
 
-```
+```bash
 npm install --only=dev
 gulp clean && gulp copy-static-assets && gulp sass
 ```

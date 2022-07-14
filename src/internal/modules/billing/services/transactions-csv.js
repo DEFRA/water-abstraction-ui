@@ -127,7 +127,10 @@ function _csvLineSroc (invoice, invoiceLicence, transaction, chargeVersions) {
     'Canal and Rivers trust agreement': transaction.calcS130Factor,
     'Aggregate factor': transaction.aggregateFactor,
     'Charge adjustment factor': transaction.adjustmentFactor,
-    'Abatement factor': transaction.calcS126Factor,
+    // Note that for sroc we do not receive back from the CM a value that can populate `calcS126Factor` (because the
+    // Rules Service only returns factors that it calculates, when in this case it uses the factor we provide). So
+    // unlike other factor fields, we use the value we sent `section126Factor` instead of the value we receive back.
+    'Abatement factor': transaction.section126Factor,
     'Two part tariff': transaction.calcS127Factor,
     'Transaction description': transaction.description,
     'Charge information reason': _changeReason(chargeVersions, transaction),

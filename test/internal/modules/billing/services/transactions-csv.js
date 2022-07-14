@@ -558,7 +558,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(result[0]['Charge reference']).to.equal('4.5.55')
         expect(result[0].Source).to.equal('non-tidal')
         expect(result[0].Loss).to.equal('medium')
-        expect(result[0].Volume).to.equal('8.1')
+        expect(result[0].Volume).to.equal('9.1')
         expect(result[0]['Water available Y/N']).to.equal('Y')
         expect(result[0].Modelling).to.equal('no model')
         expect(result[0]['Public water supply Y/N']).to.equal('Y')

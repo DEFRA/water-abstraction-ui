@@ -117,8 +117,7 @@ function _csvLineSroc (invoice, invoiceLicence, transaction, chargeVersions) {
     'Charge reference description': transaction.chargeCategoryDescription,
     Source: transaction.source,
     Loss: transaction.loss,
-    // In the UI, "Volume" is taken from authorisedAnnualQuantity
-    Volume: transaction.chargeElement.authorisedAnnualQuantity,
+    Volume: transaction.volume,
     'Water available Y/N': transaction.chargeElement.isRestrictedSource ? 'N' : 'Y',
     Modelling: transaction.chargeElement.waterModel,
     'Public water supply Y/N': transaction.isWaterCompanyCharge ? 'Y' : 'N',

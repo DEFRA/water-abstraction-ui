@@ -82,13 +82,17 @@ async function postUploadChargeInformation (request, h) {
 
   try {
     // Store file locally and run checks
+    logger.info(`Creating directory ${localPath}`)
     await uploadHelpers.createDirectory(localPath)
+    logger.info(`Uploading file to ${localPath}`)
     await uploadHelpers.uploadFile(file, localPath)
 
     // Detect type of uploaded file
     const type = await fileCheck.detectFileType(localPath)
+    logger.info(`File is of type ${type}`)
 
     const status = await uploadHelpers.getUploadedFileStatus(localPath, type)
+    logger.info(`Status is ${status}`)
 
     // Upload to water service and get event ID
     if (status === OK) {

@@ -110,7 +110,8 @@ async function postUploadChargeInformation (request, h) {
     throw error
   } finally {
     // Delete temporary file
-    await files.deleteFile(localPath)
+    // TEMPORARILY DISABLED FOR TESTING
+    // await files.deleteFile(localPath)
   }
 
   return h.redirect(redirectPath)

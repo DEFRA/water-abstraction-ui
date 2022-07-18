@@ -135,7 +135,7 @@ function _csvLineSroc (invoice, invoiceLicence, transaction, chargeVersions) {
     'Transaction description': transaction.description,
     'Charge information reason': _changeReason(chargeVersions, transaction),
     'Is second part charge? Y/N': transaction.isTwoPartSecondPartCharge ? 'Y' : 'N',
-    'Compensation charge Y/N': transaction.isCompensationCharge ? 'Y' : 'N',
+    'Compensation charge Y/N': transaction.chargeType === 'compensation' ? 'Y' : 'N',
     'Compensation charge applicable Y/N': invoiceLicence.licence.isWaterUndertaker ? 'N' : 'Y',
     'De minimis rule Y/N': invoice.isDeMinimis ? 'Y' : 'N',
     Region: invoiceLicence.licence.region.displayName,

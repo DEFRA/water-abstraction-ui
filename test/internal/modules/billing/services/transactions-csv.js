@@ -750,10 +750,10 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         })
       })
 
-      experiment('when compensation charge is true', () => {
+      experiment('when charge type is compensation', () => {
         beforeEach(() => {
           invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
-            transaction.isCompensationCharge = true
+            transaction.chargeType = 'compensation'
           })
         })
 

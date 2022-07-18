@@ -152,7 +152,7 @@ module.exports = {
     manageAgreements: true,
     chargeInformation: true,
     manageInvoiceAccounts: true,
-    deleteAllBillingData: process.env.ENABLE_DELETE_ALL_BILLING_DATA_BUTTON === 'true' && !isProduction,
+    deleteAllBillingData: process.env.ENABLE_DELETE_ALL_BILLING_DATA_FEATURE === 'true' && !isProduction,
     waterAbstractionAlerts: true,
     recalculateBills: true,
     allowChargeVersionUploads: (get(process.env, 'ALLOW_CHARGE_VERSION_UPLOADS') || '').toLowerCase() === 'true'

@@ -72,13 +72,16 @@ async function postUploadChargeInformation (request, h) {
   let eventId, redirectPath
 
   const file = get(request.payload, 'file', {})
+  logger.info(file)
   const filename = get(file, 'hapi.filename')
+  logger.info(filename)
 
   if (!filename) {
     return h.redirect(uploadHelpers.getRedirectPath(NO_FILE))
   }
 
   const localPath = uploadHelpers.getFile()
+  logger.info(localPath)
 
   try {
     // Store file locally and run checks
@@ -106,7 +109,8 @@ async function postUploadChargeInformation (request, h) {
     throw error
   } finally {
     // Delete temporary file
-    await files.deleteFile(localPath)
+    // Temporarily disable deletion just to see if files eventually arrive
+    // await files.deleteFile(localPath)
   }
 
   return h.redirect(redirectPath)

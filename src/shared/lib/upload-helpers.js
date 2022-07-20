@@ -118,7 +118,8 @@ class UploadHelpers {
   async getUploadedFileStatus (file, type) {
     // Run virus check on temp file
     const { VIRUS, OK, INVALID_TYPE } = UploadHelpers.fileStatuses
-    const checkResult = this._testMode ? { isClean: true } : await fileCheck.virusCheck(file)
+    // const checkResult = this._testMode ? { isClean: true } : await fileCheck.virusCheck(file)
+    const checkResult = await fileCheck.virusCheck(file)
     // Set redirectUrl if virusCheck failed
     if (!checkResult.isClean) {
       this._logger.error('Uploaded file failed virus scan', checkResult.err)

@@ -37,6 +37,7 @@ describe('annual bill run', () => {
           doc.addEventListener('click', () => {
             setTimeout(function () { doc.location.reload() }, 5000)
         })
+        // downloading the bill
         cy.get('.govuk-grid-column-full > .govuk-button').click()
       })
     })

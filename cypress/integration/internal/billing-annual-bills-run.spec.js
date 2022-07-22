@@ -32,7 +32,7 @@ describe('annual bill run', () => {
     })
       describe('download the Annual Bill', () => {
         cy.get('.govuk-grid-column-full > .govuk-button').should('have.attr',"href")
-        .and('contain','/transactions-csv');
+        .and('contain','/transactions-csv')
         cy.window().document().then(function (doc) {
           doc.addEventListener('click', () => {
             setTimeout(function () { doc.location.reload() }, 5000)

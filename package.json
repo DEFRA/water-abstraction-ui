@@ -22,6 +22,7 @@
     "test:cypress-firefox": "npm run pretest && node_modules/.bin/cypress run --browser firefox && npm run test:cypress-prepare-report",
     "test:cypress-prepare-report": "mochawesome-merge ./cypress/reports/mocha/*.json > ./cypress/reports/mocha/combined-report.json && marge --reportDir cypress/reports/mocha/ ./cypress/reports/mocha/combined-report.json",
     "lint": "standard",
+    "lint:fix": "standard --fix",
     "sass": "gulp sass",
     "sass:watch": "gulp sass:watch"
   },

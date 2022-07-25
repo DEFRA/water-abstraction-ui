@@ -161,11 +161,12 @@ const longFormDictionary = [
   { dbitem: 'Ml/d', translation: 'Megalitres per day', context: 'Units' },
   { dbitem: 'm³', translation: 'Cubic metres', context: 'Units' },
   { dbitem: 'l/d', translation: 'Litres per day', context: 'Units' },
+  { dbitem: 'SLD', translation: 'South Level Datum', context: 'Units' },
   { dbitem: 'mAOD', translation: 'Ordnance datum (mAOD)', context: 'Units' },
+  { dbitem: 'mBOD', translation: 'Ordnance datum (mBOD)', context: 'Units' },
   { dbitem: 'stop_or_reduce', translation: 'Reduce', context: 'AlertType' },
   { dbitem: 'stop', translation: 'Stop', context: 'AlertType' },
-  { dbitem: 'reduce', translation: 'Reduce', context: 'AlertType' },
-  { dbitem: 'SLD', translation: 'South Level Datum', context: 'Units' }
+  { dbitem: 'reduce', translation: 'Reduce', context: 'AlertType' }
 ]
 
 /* Converts database representation into description of tags, e.g. Stop at 115 Megalitres per day */

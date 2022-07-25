@@ -30,5 +30,16 @@ describe('annual bill run', () => {
       approveSrocChargeVersion()
       createAnnualBillRun()
     })
+    describe('download the Annual Bill', () => {
+      cy.get('.govuk-grid-column-full > .govuk-button').should('have.attr', 'href')
+        .and('contain', '/transactions-csv')
+      cy.window().document().then(function (doc) {
+        doc.addEventListener('click', () => {
+          setTimeout(function () { doc.location.reload() }, 5000)
+        })
+        // downloading the bill
+        cy.get('.govuk-grid-column-full > .govuk-button').click()
+      })
+    })
   })
 })

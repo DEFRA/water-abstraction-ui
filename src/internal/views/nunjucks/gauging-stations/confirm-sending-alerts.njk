@@ -56,12 +56,8 @@
                 {% if notification.personalisation.address_line_6 %}
                     <p class="govuk-body govuk-!-margin-0">{{notification.personalisation.address_line_6}}</p>
                 {% endif %}
-                {# We don't expect to see address_line_7, however it has been used elsewhere so we use it here just in case#}
                 {% if notification.personalisation.address_line_7 %}
                     <p class="govuk-body govuk-!-margin-0">{{notification.personalisation.address_line_7}}</p>
-                {% endif %}
-                {% if notification.personalisation.postcode %}
-                    <p class="govuk-body govuk-!-margin-0">{{notification.personalisation.postcode}}</p>
                 {% endif %}
             {% endif %}
             </td>

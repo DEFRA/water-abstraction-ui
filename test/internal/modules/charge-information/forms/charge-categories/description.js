@@ -98,10 +98,10 @@ experiment('internal/modules/charge-information/forms/charge-category/descriptio
       test('validates for the descriptionRegex - ? not allowed', async () => {
         const result = schema(createRequest()).validate({
           csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
-          description: '?'
+          description: 'test?'
         }, { allowUnknown: true })
         expect(result.error).to.be.an.instanceof(Error)
-        expect(result.error.message).to.equal('"description" contains an invalid value')
+        expect(result.error.message).to.equal('"description" with value "test?" matches the inverted pattern: /[“”?^£≥≤—]/')
       })
       test('validates for the descriptionRegex - bigger than 180 chars', async () => {
         const stringBiggerThan180Chars = 'w5OyHN3NWsL9KTKU7afHDMlN1FUzzV3Fj30ci1sr9z1RK1jPxuOv6rFa9yb6tzGvZ6i5uaRF73V5FgwATfN08kdeYisXysk7gc90s1IVI2uyji04Tw8H1ij1o0tAh22r99C8aupphswIQt2I9CBNFhZr4rxaS413lFIb05BrQQ5OQPYVei3k4H6jEKfjCvW1iCMtReZYKE64C6EA9fGjUMrt2wNFKnoQoXo3A66yIS5iCJhV8g94fWEYzI8ZfozqWLR15Sg92HQQsT6Nr37uUFr3zIy79t0pDvcp75Ctq87Dx4eRLNHBTjzB'

@@ -51,7 +51,7 @@ const schema = () => {
   return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
     volume: Joi
-      .number().required().min(0).max(1000000000000000)
+      .number().required().greater(0).max(1000000000000000)
       .custom((value, helper) => {
         const { error, original } = helper
         const [, decimals = ''] = original.split('.')

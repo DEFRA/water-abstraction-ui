@@ -5,6 +5,7 @@ const { formFactory, fields } = require('shared/lib/forms/')
 const { ROUTING_CONFIG } = require('../../lib/charge-categories/constants')
 const { getChargeCategoryData, getChargeCategoryActionUrl } = require('../../lib/form-helpers')
 
+const INVALID_CHARS = ['“', '”', '?', '^', '£', '≥', '≤', '—']
 /**
  * Form to request the charge category description
  *
@@ -26,8 +27,11 @@ const form = request => {
       'any.required': {
         message: 'Enter a description for the charge reference'
       },
-      'string.pattern.base': {
-        message: 'You can only include letters, numbers, hyphens, the and symbol (&) and brackets. The description must be less than 181 characters'
+      'any.invalid': {
+        message: 'You can only use letters, numbers, hyphens, ampersands, brackets, semi colons and apostrophes'
+      },
+      'string.max': {
+        message: 'The description for the charge reference must be 180 characters or less'
       }
     }
   }, data.description || ''))
@@ -38,10 +42,9 @@ const form = request => {
 }
 
 const schema = () => {
-  const descriptionRegex = /^[a-zA-Z/s 0-9-'.,()&*]{1,180}$/
   return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
-    description: Joi.string().pattern(descriptionRegex).required()
+    description: Joi.string().invalid(...INVALID_CHARS).max(180).required()
   })
 }
 

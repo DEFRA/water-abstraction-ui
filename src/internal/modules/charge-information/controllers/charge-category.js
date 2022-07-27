@@ -101,36 +101,46 @@ const postChargeCategoryStep = async (request, h) => {
   const { step, licenceId, elementId } = request.params
   const { chargeVersionWorkflowId } = request.query
   const form = getPostedForm(request, forms[step])
-  if (form.isValid) {
+
+  if (!form.isValid) {
+    const queryParams = cleanObject(request.query)
+    return h.postRedirectGet(form, routing.getChargeCategoryStep(licenceId, elementId, step), queryParams)
+  }
+
     const stepKey = getStepKeyByValue(step)
     const routeConfig = ROUTING_CONFIG[stepKey]
     const { draftChargeInformation, supportedSources } = request.pre
     const chargeElement = draftChargeInformation.chargeElements.find(element => element.id === elementId)
+
     if (routeConfig === ROUTING_CONFIG.isAdjustments) {
       const route = await adjustementsHandler(request, draftChargeInformation)
       return h.redirect(route)
-    } else if (routeConfig === ROUTING_CONFIG.whichElement) {
+  }
+
+  if (routeConfig === ROUTING_CONFIG.whichElement) {
       const selectedElementIds = form.fields.find(field => field.name === 'selectedElementIds').value
       processElements(request, elementId, selectedElementIds)
       return h.redirect(getRedirectPath(request, stepKey))
-    } else if (routeConfig === ROUTING_CONFIG.isSupportedSource) {
+  }
+
+  if (routeConfig === ROUTING_CONFIG.isSupportedSource) {
       if (request.payload.isSupportedSource === 'false') {
         delete chargeElement.supportedSourceName
         request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation)
       }
-    } else if (routeConfig === ROUTING_CONFIG.supportedSourceName) {
+  }
+
+  if (routeConfig === ROUTING_CONFIG.supportedSourceName) {
       const { supportedSourceId } = request.payload
       const supportedSource = supportedSources.find(({ id }) => id === supportedSourceId)
       chargeElement.supportedSourceName = supportedSource.name
       request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation)
-    }
-    await applyFormResponse(request, form, actions.setChargeElementData)
-    return h.redirect(getRedirectPath(request, stepKey))
   }
 
-  const queryParams = cleanObject(request.query)
+  await applyFormResponse(request, form, actions.setChargeElementData)
 
-  return h.postRedirectGet(form, routing.getChargeCategoryStep(licenceId, elementId, step), queryParams)
+  const redirectPath = getRedirectPath(request, stepKey)
+  return h.redirect(redirectPath)
 }
 
 exports.getRedirectPath = getRedirectPath

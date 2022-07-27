@@ -77,6 +77,13 @@ const getRedirectPath = (request, stepKey) => {
 const getChargeCategoryStep = async (request, h) => {
   const { step } = request.params
   const stepKey = getStepKeyByValue(step)
+
+  // If the page we're trying to get is the public water page, and this isn't a water undertaker, skip the page
+  if (stepKey === 'isSupplyPublicWater' && !request.pre.licence.isWaterUndertaker) {
+    const redirectPath = getRedirectPath(request, stepKey)
+    return h.redirect(redirectPath)
+  }
+
   return h.view('nunjucks/form', {
     ...getDefaultView(request, getBackLink(request, stepKey), forms[step]),
     pageTitle: ROUTING_CONFIG[stepKey].pageTitle
@@ -107,34 +114,34 @@ const postChargeCategoryStep = async (request, h) => {
     return h.postRedirectGet(form, routing.getChargeCategoryStep(licenceId, elementId, step), queryParams)
   }
 
-    const stepKey = getStepKeyByValue(step)
-    const routeConfig = ROUTING_CONFIG[stepKey]
-    const { draftChargeInformation, supportedSources } = request.pre
-    const chargeElement = draftChargeInformation.chargeElements.find(element => element.id === elementId)
+  const stepKey = getStepKeyByValue(step)
+  const routeConfig = ROUTING_CONFIG[stepKey]
+  const { draftChargeInformation, supportedSources } = request.pre
+  const chargeElement = draftChargeInformation.chargeElements.find(element => element.id === elementId)
 
-    if (routeConfig === ROUTING_CONFIG.isAdjustments) {
-      const route = await adjustementsHandler(request, draftChargeInformation)
-      return h.redirect(route)
+  if (routeConfig === ROUTING_CONFIG.isAdjustments) {
+    const route = await adjustementsHandler(request, draftChargeInformation)
+    return h.redirect(route)
   }
 
   if (routeConfig === ROUTING_CONFIG.whichElement) {
-      const selectedElementIds = form.fields.find(field => field.name === 'selectedElementIds').value
-      processElements(request, elementId, selectedElementIds)
-      return h.redirect(getRedirectPath(request, stepKey))
+    const selectedElementIds = form.fields.find(field => field.name === 'selectedElementIds').value
+    processElements(request, elementId, selectedElementIds)
+    return h.redirect(getRedirectPath(request, stepKey))
   }
 
   if (routeConfig === ROUTING_CONFIG.isSupportedSource) {
-      if (request.payload.isSupportedSource === 'false') {
-        delete chargeElement.supportedSourceName
-        request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation)
-      }
+    if (request.payload.isSupportedSource === 'false') {
+      delete chargeElement.supportedSourceName
+      request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation)
+    }
   }
 
   if (routeConfig === ROUTING_CONFIG.supportedSourceName) {
-      const { supportedSourceId } = request.payload
-      const supportedSource = supportedSources.find(({ id }) => id === supportedSourceId)
-      chargeElement.supportedSourceName = supportedSource.name
-      request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation)
+    const { supportedSourceId } = request.payload
+    const supportedSource = supportedSources.find(({ id }) => id === supportedSourceId)
+    chargeElement.supportedSourceName = supportedSource.name
+    request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation)
   }
 
   await applyFormResponse(request, form, actions.setChargeElementData)

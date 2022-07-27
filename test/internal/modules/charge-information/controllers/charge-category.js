@@ -42,7 +42,8 @@ const createRequest = ({ step }, payload = undefined) => ({
       id: 'test-licence-id',
       licenceNumber: '01/123',
       regionalChargeArea: { name: 'Test Region' },
-      startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
+      startDate: moment().subtract(2, 'years').format('YYYY-MM-DD'),
+      isWaterUndertaker: true
     },
     draftChargeInformation: {
       dateRange: { startDate: '2022-04-01' },
@@ -166,6 +167,19 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
       test('the back link is the supported source name page', async () => {
         const { back } = h.view.lastCall.args[1]
         expect(back).to.equal(`${prefixUrl}/charge-category/${elementId}/${ROUTING_CONFIG.supportedSourceName.step}`)
+      })
+    })
+
+    experiment('when the step is isSupplyPublicWater and isWaterUndertaker is false', () => {
+      beforeEach(async () => {
+        request = createRequest(ROUTING_CONFIG.isSupplyPublicWater)
+        request.pre.licence.isWaterUndertaker = false
+        await controller.getChargeCategoryStep(request, h)
+      })
+
+      test('we are redirected', async () => {
+        const [result] = h.redirect.lastCall.args
+        expect(result).to.equal(`${prefixUrl}/charge-category/${elementId}/${ROUTING_CONFIG.isAdjustments.step}`)
       })
     })
 

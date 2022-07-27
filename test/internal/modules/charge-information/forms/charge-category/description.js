@@ -48,10 +48,10 @@ experiment('internal/modules/charge-information/forms/charge-category/descriptio
       const descriptionField = findField(formResponse, 'description')
       expect(descriptionField.options.widget).to.equal('text')
       expect(descriptionField.options.type).to.equal('text')
-      expect(descriptionField.options.hint).to.equal('This is the description that will appear on the invoice')
+      expect(descriptionField.options.hint).to.equal('This is the description that will appear on the invoice. You can use letters, numbers, hyphens, ampersands, brackets, semi colons and apostrophes.')
       expect(descriptionField.options.errors['string.empty'].message).to.equal('Enter a description for the charge reference')
       expect(descriptionField.options.errors['any.required'].message).to.equal('Enter a description for the charge reference')
-      expect(descriptionField.options.errors['string.pattern.invert.base'].message).to.equal('You can only use letters, numbers, hyphens, ampersands, brackets, semi colons and apostrophes')
+      expect(descriptionField.options.errors['string.pattern.invert.base'].message).to.equal('You can not use “ ” ? ^ £ ≥ ≤ — (long dash) in the charge reference description')
       expect(descriptionField.options.errors['string.max'].message).to.equal('The description for the charge reference must be 180 characters or less')
     })
 

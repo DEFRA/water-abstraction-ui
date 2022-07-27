@@ -23,11 +23,8 @@ const form = request => {
       'number.base': {
         message: 'Enter the volume in ML (megalitres).'
       },
-      'number.positive': {
-        message: 'The volume must be equal to or greater than 0'
-      },
-      'number.min': {
-        message: 'The volume must be equal to or greater than 0'
+      'number.greater': {
+        message: 'The volume must be greater than 0'
       },
       'number.max': {
         message: 'The volume must be equal to or less than 1,000,000,000,000,000'

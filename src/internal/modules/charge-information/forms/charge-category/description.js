@@ -27,7 +27,7 @@ const form = request => {
         message: 'Enter a description for the charge reference'
       },
       'string.pattern.invert.base': {
-        message: 'You can only use letters, numbers, hyphens, ampersands, brackets, semi colons and apostrophes'
+        message: 'You can not use “ ” ? ^ £ ≥ ≤ — (long dash) in the charge reference description'
       },
       'string.max': {
         message: 'The description for the charge reference must be 180 characters or less'

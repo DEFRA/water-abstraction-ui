@@ -230,6 +230,7 @@ const getCheckData = async (request, h) => {
     chargeVersionWorkflowId: request.query.chargeVersionWorkflowId,
     isChargeable,
     isEditable: true,
+    isWaterUndertaker: licence.isWaterUndertaker,
     isXlHeading: true,
     editChargeVersionWarning,
     isApprover,

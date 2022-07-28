@@ -37,6 +37,7 @@ const getViewChargeInformation = async (request, h) => {
     pageTitle: `Charge information valid from ${formatDateForPageTitle(chargeVersion.dateRange.startDate)}`,
     chargeVersion,
     isEditable: false,
+    isWaterUndertaker: licence.isWaterUndertaker,
     chargeVersionWorkflowId,
     billingAccount,
     billingAccountAddress,
@@ -72,6 +73,7 @@ const getReviewChargeInformation = async (request, h) => {
     licenceHolder,
     licenceId: licence.id,
     isEditable: draftChargeInformation.status === 'changes_requested' || draftChargeInformation.status === 'review',
+    isWaterUndertaker: licence.isWaterUndertaker,
     isApprover,
     isChargeable,
     chargeVersionWorkflowId,
@@ -105,6 +107,7 @@ const postReviewChargeInformation = async (request, h) => {
       licenceId: licence.id,
       chargeVersionWorkflowId,
       isEditable: draftChargeInformation.status === 'changes_requested',
+      isWaterUndertaker: licence.isWaterUndertaker,
       isApprover,
       isChargeable,
       reviewForm: form

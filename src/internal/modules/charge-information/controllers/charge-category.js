@@ -96,12 +96,12 @@ const adjustementsHandler = async (request, draftChargeInformation) => {
   const chargeElement = draftChargeInformation.chargeElements.find(element => element.id === elementId)
   if (request.payload.isAdjustments === 'true') {
     return routing.getChargeCategoryStep(licenceId, elementId, ROUTING_CONFIG.isAdjustments.nextStep, { chargeVersionWorkflowId })
-  } else {
-    chargeElement.isAdjustments = false
-    chargeElement.adjustments = {}
-    request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation)
-    return getRedirectPath(request, 'adjustments')
   }
+
+  chargeElement.isAdjustments = false
+  chargeElement.adjustments = {}
+  request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation)
+  return getRedirectPath(request, 'adjustments')
 }
 
 const postChargeCategoryStep = async (request, h) => {
@@ -130,11 +130,9 @@ const postChargeCategoryStep = async (request, h) => {
     return h.redirect(getRedirectPath(request, stepKey))
   }
 
-  if (routeConfig === ROUTING_CONFIG.isSupportedSource) {
-    if (request.payload.isSupportedSource === 'false') {
-      delete chargeElement.supportedSourceName
-      request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation)
-    }
+  if (routeConfig === ROUTING_CONFIG.isSupportedSource && request.payload.isSupportedSource === 'false') {
+    delete chargeElement.supportedSourceName
+    request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation)
   }
 
   if (routeConfig === ROUTING_CONFIG.supportedSourceName) {
@@ -150,6 +148,8 @@ const postChargeCategoryStep = async (request, h) => {
   return h.redirect(redirectPath)
 }
 
-exports.getRedirectPath = getRedirectPath
-exports.getChargeCategoryStep = getChargeCategoryStep
-exports.postChargeCategoryStep = postChargeCategoryStep
+module.exports = {
+  getRedirectPath,
+  getChargeCategoryStep,
+  postChargeCategoryStep
+}

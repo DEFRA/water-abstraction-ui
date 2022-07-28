@@ -120,6 +120,11 @@ const postChargeCategoryStep = async (request, h) => {
   const chargeElement = draftChargeInformation.chargeElements.find(element => element.id === elementId)
 
   if (routeConfig === ROUTING_CONFIG.isAdjustments) {
+    // If isSupplyPublicWater hasn't been set at this point we need to set it to false
+    if (chargeElement.isSupplyPublicWater === undefined) {
+      chargeElement.isSupplyPublicWater = false
+      request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation)
+    }
     const route = await adjustementsHandler(request, draftChargeInformation)
     return h.redirect(route)
   }

@@ -276,6 +276,11 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
             `${prefixUrl}/check`
           )).to.be.true()
         })
+
+        test('the draft charge information is updated with the adjustments data', async () => {
+          const args = request.setDraftChargeInformation.lastCall.args
+          expect(args[2].chargeElements[0].isSupplyPublicWater).to.equal(false)
+        })
       })
 
       experiment('when the step is whichElement', () => {

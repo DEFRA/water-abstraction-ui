@@ -134,6 +134,8 @@ const ROUTING_CONFIG = {
     errorMessage: 'Select the name of the supported source.',
     boolean: true
   },
+  // Note that this screen is skipped if the customer is not a water undertaker
+  // See src/internal/modules/charge-information/controllers/charge-category.js#getChargeCategoryStep
   isSupplyPublicWater: {
     step: 'supply-public-water',
     pageTitle: 'Is abstraction for the supply of public water?',

@@ -42,7 +42,8 @@ const createRequest = ({ step }, payload = undefined) => ({
       id: 'test-licence-id',
       licenceNumber: '01/123',
       regionalChargeArea: { name: 'Test Region' },
-      startDate: moment().subtract(2, 'years').format('YYYY-MM-DD')
+      startDate: moment().subtract(2, 'years').format('YYYY-MM-DD'),
+      isWaterUndertaker: true
     },
     draftChargeInformation: {
       dateRange: { startDate: '2022-04-01' },
@@ -169,6 +170,19 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
       })
     })
 
+    experiment('when the step is isSupplyPublicWater and isWaterUndertaker is false', () => {
+      beforeEach(async () => {
+        request = createRequest(ROUTING_CONFIG.isSupplyPublicWater)
+        request.pre.licence.isWaterUndertaker = false
+        await controller.getChargeCategoryStep(request, h)
+      })
+
+      test('we are redirected', async () => {
+        const [result] = h.redirect.lastCall.args
+        expect(result).to.equal(`${prefixUrl}/charge-category/${elementId}/${ROUTING_CONFIG.isAdjustments.step}`)
+      })
+    })
+
     experiment('for a step mid-way through the flow', () => {
       beforeEach(async () => {
         request = createRequest(ROUTING_CONFIG.loss)
@@ -261,6 +275,11 @@ experiment('internal/modules/charge-information/controllers/charge-category', ()
           expect(h.redirect.calledWith(
             `${prefixUrl}/check`
           )).to.be.true()
+        })
+
+        test('the draft charge information is updated with the adjustments data', async () => {
+          const args = request.setDraftChargeInformation.lastCall.args
+          expect(args[2].chargeElements[0].isSupplyPublicWater).to.equal(false)
         })
       })
 

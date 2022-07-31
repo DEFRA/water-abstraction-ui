@@ -145,10 +145,6 @@ describe('Create SRoC Charge version workflow journey', () => {
       describe('user verifies the entered information', () => {
         cy.get('.govuk-summary-list__value').contains('This is Automation Testing').should('be.visible')
         cy.get('.govuk-summary-list__value').contains('1 June 2022').should('be.visible')
-      })
-      describe('user verifies the entered information', () => {
-        cy.get('.govuk-summary-list__value').contains('This is Automation Testing').should('be.visible')
-        cy.get('.govuk-summary-list__value').contains('1 June 2022').should('be.visible')
         cy.get('[value="addChargeCategory"]').click()
       })
     })
@@ -162,12 +158,15 @@ describe('Create SRoC Charge version workflow journey', () => {
           cy.reload()
         })
         describe('user description contain an unsupported character', () => {
-          cy.get('#description').type('@ is an unsupported character')
-          cy.get('form > .govuk-button').contains('Continue').click()
-          checkInlineAndSummaryErrorMessage(
-            'You can only include letters, numbers, hyphens, the and symbol (&) and brackets. The description must be less than 181 characters')
-          cy.reload()
-        })
+          const characters = ['“' ,'”' ,'?' ,'^', '£', '≥', '≤', '—']
+          cy.wrap(characters).each((index) => {
+            cy.get('#description').type(index)
+            cy.get('form > .govuk-button').contains('Continue').click()
+            checkInlineAndSummaryErrorMessage(
+              'You can not use “ ” ? ^ £ ≥ ≤ — (long dash) in the charge reference description')
+            cy.reload()
+          })
+        }) 
         describe('user description contains an unusual but supported character', () => {
           cy.get('#description').type('-\'.,()&* are supported characters')
           cy.get('form > .govuk-button').contains('Continue').click()
@@ -197,6 +196,13 @@ describe('Create SRoC Charge version workflow journey', () => {
           checkInlineAndSummaryErrorMessage('Enter the volume in ML (megalitres).')
           cy.reload()
         })
+
+        describe('User enters 0 as the total quality of charge reference', () => {
+          cy.get('#volume').type('0')
+          cy.get('form > .govuk-button').contains('Continue').click()
+          checkInlineAndSummaryErrorMessage('The volume must be greater than 0')
+          cy.reload()
+        })
         describe('user clicks continue entering a volume containing a char', () => {
           cy.get('#volume').type('1a')
           cy.get('form > .govuk-button').contains('Continue').click()
@@ -206,19 +212,11 @@ describe('Create SRoC Charge version workflow journey', () => {
         describe('user clicks continue entering a value that\'s too low', () => {
           cy.get('#volume').type('-1')
           cy.get('form > .govuk-button').contains('Continue').click()
-          checkInlineAndSummaryErrorMessage('The volume must be equal to or greater than 0')
+          checkInlineAndSummaryErrorMessage('The volume must be greater than 0')
           cy.reload()
         })
         describe('user inputs value between 0 and 1', () => {
           cy.get('#volume').type('0.5')
-          cy.get('form > .govuk-button').contains('Continue').click()
-          // Check that no error message was generated, then go back from the page we arrived at
-          checkNoErrorMessage()
-          cy.get('.govuk-back-link').click()
-        })
-        describe('user inputs value of 0', () => {
-          // We use .clear() to delete any previously accepted input
-          cy.get('#volume').clear().type('0')
           cy.get('form > .govuk-button').contains('Continue').click()
           // Check that no error message was generated, then go back from the page we arrived at
           checkNoErrorMessage()

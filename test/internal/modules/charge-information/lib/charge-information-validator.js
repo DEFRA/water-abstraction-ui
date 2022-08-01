@@ -1,17 +1,17 @@
-'use strict';
+'use strict'
 
 const {
   experiment,
   test,
   beforeEach
-} = exports.lab = require('@hapi/lab').script();
+} = exports.lab = require('@hapi/lab').script()
 
-const { expect } = require('@hapi/code');
+const { expect } = require('@hapi/code')
 
-const chargeInformationValidator = require('internal/modules/charge-information/lib/charge-information-validator');
+const chargeInformationValidator = require('internal/modules/charge-information/lib/charge-information-validator')
 
 const getElement = (chargeInfo, id) =>
-  chargeInfo.chargeElements.find(element => element.id === id);
+  chargeInfo.chargeElements.find(element => element.id === id)
 
 const createChargeElement = (options = {}) => ({
   id: options.id,
@@ -29,11 +29,11 @@ const createChargeElement = (options = {}) => ({
   authorisedAnnualQuantity: 1234,
   billableAnnualQuantity: options.billableQuantity || 1111,
   scheme: 'alcs'
-});
+})
 
 experiment('internal/modules/charge-information/lib/charge-information-validator', () => {
   experiment('.addValidation ALCS', () => {
-    let chargeInfo, decoratedChargeInfo;
+    let chargeInfo, decoratedChargeInfo
     beforeEach(() => {
       chargeInfo = {
         scheme: 'alcs',
@@ -59,39 +59,39 @@ experiment('internal/modules/charge-information/lib/charge-information-validator
             loss: 'medium'
           })
         ]
-      };
-      decoratedChargeInfo = chargeInformationValidator.addValidation(chargeInfo);
-    });
+      }
+      decoratedChargeInfo = chargeInformationValidator.addValidation(chargeInfo)
+    })
     test('validation warnings are blank for compliant elements', () => {
-      const { validationWarnings } = getElement(decoratedChargeInfo, 'compliant-element');
-      expect(validationWarnings).to.equal([]);
-    });
+      const { validationWarnings } = getElement(decoratedChargeInfo, 'compliant-element')
+      expect(validationWarnings).to.equal([])
+    })
 
     test('when the season and abs period don\'t match, the expected validation warning is present', () => {
-      const { validationWarnings } = getElement(decoratedChargeInfo, 'abstraction-period-warning');
-      expect(validationWarnings).to.equal(['The abstraction period does not match the season selected']);
-    });
+      const { validationWarnings } = getElement(decoratedChargeInfo, 'abstraction-period-warning')
+      expect(validationWarnings).to.equal(['The abstraction period does not match the season selected'])
+    })
 
     test('when the loss and purpose use loss factor don\'t match, the expected validation warning is present', () => {
-      const { validationWarnings } = getElement(decoratedChargeInfo, 'loss-factor-warning');
-      expect(validationWarnings).to.equal(['The loss factor does not match the purpose selected']);
-    });
+      const { validationWarnings } = getElement(decoratedChargeInfo, 'loss-factor-warning')
+      expect(validationWarnings).to.equal(['The loss factor does not match the purpose selected'])
+    })
 
     test('when the billable quantity is higher than authorised quantity, the expected validation warning is present', () => {
-      const { validationWarnings } = getElement(decoratedChargeInfo, 'billable-volume-warning');
-      expect(validationWarnings).to.equal(['The billable quantity is more than the authorised quantity']);
-    });
+      const { validationWarnings } = getElement(decoratedChargeInfo, 'billable-volume-warning')
+      expect(validationWarnings).to.equal(['The billable quantity is more than the authorised quantity'])
+    })
 
     test('when there are multiple warnings, all warnings are present', () => {
-      const { validationWarnings } = getElement(decoratedChargeInfo, 'multiple-warnings');
+      const { validationWarnings } = getElement(decoratedChargeInfo, 'multiple-warnings')
       expect(validationWarnings).to.equal([
         'The abstraction period does not match the season selected',
         'The loss factor does not match the purpose selected'
-      ]);
-    });
-  });
+      ])
+    })
+  })
   experiment('.addValidation - SROC', () => {
-    let chargeInfo, decoratedChargeInfo;
+    let chargeInfo, decoratedChargeInfo
     beforeEach(() => {
       chargeInfo = {
         scheme: 'sroc',
@@ -113,27 +113,27 @@ experiment('internal/modules/charge-information/lib/charge-information-validator
             loss: 'medium'
           })
         ]
-      };
-      decoratedChargeInfo = chargeInformationValidator.addValidation(chargeInfo);
-    });
+      }
+      decoratedChargeInfo = chargeInformationValidator.addValidation(chargeInfo)
+    })
     test('validation warnings are blank for compliant elements', () => {
-      const { validationWarnings } = getElement(decoratedChargeInfo, 'compliant-element');
-      expect(validationWarnings).to.equal([]);
-    });
+      const { validationWarnings } = getElement(decoratedChargeInfo, 'compliant-element')
+      expect(validationWarnings).to.equal([])
+    })
 
     test('when the season and abs period don\'t match, SROC scheme doth not present a warning', () => {
-      const { validationWarnings } = getElement(decoratedChargeInfo, 'abstraction-period-warning');
-      expect(validationWarnings).to.equal([]);
-    });
+      const { validationWarnings } = getElement(decoratedChargeInfo, 'abstraction-period-warning')
+      expect(validationWarnings).to.equal([])
+    })
 
     test('when the loss and purpose use loss factor don\'t match, SROC scheme doth not present a warning', () => {
-      const { validationWarnings } = getElement(decoratedChargeInfo, 'loss-factor-warning');
-      expect(validationWarnings).to.equal([]);
-    });
+      const { validationWarnings } = getElement(decoratedChargeInfo, 'loss-factor-warning')
+      expect(validationWarnings).to.equal([])
+    })
 
     test('when there are multiple warnings, SROC scheme doth not present a warning', () => {
-      const { validationWarnings } = getElement(decoratedChargeInfo, 'multiple-warnings');
-      expect(validationWarnings).to.equal([]);
-    });
-  });
-});
+      const { validationWarnings } = getElement(decoratedChargeInfo, 'multiple-warnings')
+      expect(validationWarnings).to.equal([])
+    })
+  })
+})

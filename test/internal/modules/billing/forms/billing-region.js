@@ -1,10 +1,10 @@
-'use strict';
+'use strict'
 
-const { v4: uuid } = require('uuid');
-const { expect } = require('@hapi/code');
-const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
-const { selectBillingRegionForm, billingRegionFormSchema } = require('internal/modules/billing/forms/billing-region');
-const { findField, findButton } = require('../../../../lib/form-test');
+const { v4: uuid } = require('uuid')
+const { expect } = require('@hapi/code')
+const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script()
+const { selectBillingRegionForm, billingRegionFormSchema } = require('internal/modules/billing/forms/billing-region')
+const { findField, findButton } = require('../../../../lib/form-test')
 
 const getBillingRegions = () => ({
   data: [
@@ -27,7 +27,7 @@ const getBillingRegions = () => ({
       dateUpdated: '2019-11-05T12:10:35.164Z'
     }
   ]
-});
+})
 
 const createRequest = () => ({
   view: {
@@ -36,69 +36,69 @@ const createRequest = () => ({
   params: {
     billingType: 'annual'
   }
-});
+})
 
 experiment('billing/forms/billing-region form', () => {
   test('sets the form method to POST', async () => {
-    const { data } = getBillingRegions();
-    const form = selectBillingRegionForm(createRequest(), data);
-    expect(form.method).to.equal('POST');
-  });
+    const { data } = getBillingRegions()
+    const form = selectBillingRegionForm(createRequest(), data)
+    expect(form.method).to.equal('POST')
+  })
 
   test('has CSRF token field', async () => {
-    const { data } = getBillingRegions();
-    const form = selectBillingRegionForm(createRequest(), data);
-    const csrf = findField(form, 'csrf_token');
-    expect(csrf.value).to.equal('token');
-  });
+    const { data } = getBillingRegions()
+    const form = selectBillingRegionForm(createRequest(), data)
+    const csrf = findField(form, 'csrf_token')
+    expect(csrf.value).to.equal('token')
+  })
 
   test('has a region selection field', async () => {
-    const { data } = getBillingRegions();
-    const form = selectBillingRegionForm(createRequest(), data);
-    const radio = findField(form, 'selectedBillingRegion');
-    expect(radio).to.exist();
-  });
+    const { data } = getBillingRegions()
+    const form = selectBillingRegionForm(createRequest(), data)
+    const radio = findField(form, 'selectedBillingRegion')
+    expect(radio).to.exist()
+  })
 
   test('the regions are displayed using the display name', async () => {
-    const { data: regions } = getBillingRegions();
-    const form = selectBillingRegionForm(createRequest(), regions);
-    const radio = findField(form, 'selectedBillingRegion');
+    const { data: regions } = getBillingRegions()
+    const form = selectBillingRegionForm(createRequest(), regions)
+    const radio = findField(form, 'selectedBillingRegion')
 
-    expect(radio.options.choices[0].label).to.equal('Anglian (Display)');
-    expect(radio.options.choices[1].label).to.equal('Midlands (Display)');
-  });
+    expect(radio.options.choices[0].label).to.equal('Anglian (Display)')
+    expect(radio.options.choices[1].label).to.equal('Midlands (Display)')
+  })
 
   test('has a billing type field with a value', async () => {
-    const { data } = getBillingRegions();
-    const form = selectBillingRegionForm(createRequest(), data);
-    const field = findField(form, 'selectedBillingType');
-    expect(field.value).to.equal('annual');
-  });
+    const { data } = getBillingRegions()
+    const form = selectBillingRegionForm(createRequest(), data)
+    const field = findField(form, 'selectedBillingType')
+    expect(field.value).to.equal('annual')
+  })
 
   test('has a season field with a value', async () => {
-    const { data } = getBillingRegions();
-    const request = createRequest();
-    request.params.season = 'summer';
+    const { data } = getBillingRegions()
+    const request = createRequest()
+    request.params.season = 'summer'
 
-    const form = selectBillingRegionForm(request, data);
-    const field = findField(form, 'selectedTwoPartTariffSeason');
-    expect(field.value).to.equal('summer');
-  });
+    const form = selectBillingRegionForm(request, data)
+    const field = findField(form, 'selectedTwoPartTariffSeason')
+    expect(field.value).to.equal('summer')
+  })
 
   test('has a submit button', async () => {
-    const { data } = getBillingRegions();
-    const form = selectBillingRegionForm(createRequest(), data);
-    const button = findButton(form);
-    expect(button.options.label).to.equal('Continue');
-  });
-});
+    const { data } = getBillingRegions()
+    const form = selectBillingRegionForm(createRequest(), data)
+    const button = findButton(form)
+    expect(button.options.label).to.equal('Continue')
+  })
+})
 
 experiment('billing/forms/billing-region schema', () => {
-  let schema;
+  let schema
 
   beforeEach(async () => {
-    schema = billingRegionFormSchema(getBillingRegions().data);
-  });
+    schema = billingRegionFormSchema(getBillingRegions().data)
+  })
 
   experiment('csrf token', () => {
     test('validates for a uuid', async () => {
@@ -106,9 +106,9 @@ experiment('billing/forms/billing-region schema', () => {
         csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
         selectedBillingRegion: '07ae7f3a-2677-4102-b352-cc006828948c',
         selectedBillingType: 'whatever'
-      }, { allowUnknown: true });
-      expect(result.error).to.be.undefined();
-    });
+      }, { allowUnknown: true })
+      expect(result.error).to.be.undefined()
+    })
 
     test('fails for a string that is not a uuid', async () => {
       const result = schema.validate(
@@ -117,10 +117,10 @@ experiment('billing/forms/billing-region schema', () => {
           selectedBillingRegion: '07ae7f3a-2677-4102-b352-cc006828948c',
           selectedBillingType: 'whatever'
         }
-      );
-      expect(result.error).to.exist();
-    });
-  });
+      )
+      expect(result.error).to.exist()
+    })
+  })
 
   experiment('region Id', () => {
     test('validates for a valid region uuid', async () => {
@@ -128,47 +128,47 @@ experiment('billing/forms/billing-region schema', () => {
         csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
         selectedBillingRegion: getBillingRegions().data[0].regionId,
         selectedBillingType: 'whatever'
-      });
-      expect(result.error).to.be.undefined();
-    });
+      })
+      expect(result.error).to.be.undefined()
+    })
 
     test('fails for an invalid uuid', async () => {
       const result = schema.validate({
         csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
         selectedBillingRegion: 'cumquats',
         selectedBillingType: 'whatever'
-      });
-      expect(result.error).to.exist();
-    });
+      })
+      expect(result.error).to.exist()
+    })
 
     test('fails if blank', async () => {
       const result = schema.validate({
         csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
         selectedBillingRegion: '',
         selectedBillingType: 'whatever'
-      });
-      expect(result.error).to.exist();
-    });
-  });
+      })
+      expect(result.error).to.exist()
+    })
+  })
   experiment('billing type', () => {
     test('validates for a string', async () => {
       const result = schema.validate({
         csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
         selectedBillingRegion: getBillingRegions().data[0].regionId,
         selectedBillingType: 'annual'
-      });
-      expect(result.error).to.be.undefined();
-    });
+      })
+      expect(result.error).to.be.undefined()
+    })
 
     test('fails if blank', async () => {
       const result = schema.validate({
         csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
         selectedBillingRegion: getBillingRegions().data[0].regionId,
         selectedBillingType: ''
-      });
-      expect(result.error).to.exist();
-    });
-  });
+      })
+      expect(result.error).to.exist()
+    })
+  })
 
   experiment('selectedTwoPartTariffSeason', () => {
     test('is not required if the billing type is annual', async () => {
@@ -177,11 +177,11 @@ experiment('billing/forms/billing-region schema', () => {
         selectedBillingRegion: getBillingRegions().data[0].regionId,
         selectedBillingType: 'annual',
         selectedTwoPartTariffSeason: ''
-      };
+      }
 
-      const result = schema.validate(data);
-      expect(result.error).not.to.exist();
-    });
+      const result = schema.validate(data)
+      expect(result.error).not.to.exist()
+    })
 
     test('passes for two part tariff when supplied', async () => {
       const data = {
@@ -189,11 +189,11 @@ experiment('billing/forms/billing-region schema', () => {
         selectedBillingRegion: getBillingRegions().data[0].regionId,
         selectedBillingType: 'two_part_tariff',
         selectedTwoPartTariffSeason: 'summer'
-      };
+      }
 
-      const result = schema.validate(data);
-      expect(result.error).not.to.exist();
-    });
+      const result = schema.validate(data)
+      expect(result.error).not.to.exist()
+    })
 
     test('fails when missing for two part tariff', async () => {
       const data = {
@@ -201,10 +201,10 @@ experiment('billing/forms/billing-region schema', () => {
         selectedBillingRegion: getBillingRegions().data[0].regionId,
         selectedBillingType: 'two_part_tariff',
         selectedTwoPartTariffSeason: null
-      };
+      }
 
-      const result = schema.validate(data);
-      expect(result.error).to.exist();
-    });
-  });
-});
+      const result = schema.validate(data)
+      expect(result.error).to.exist()
+    })
+  })
+})

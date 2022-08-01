@@ -1,6 +1,6 @@
-const Boom = require('@hapi/boom');
-const services = require('../../../lib/connectors/services');
-const { stateManager, getInitialState, transformNulls } = require('@envage/water-abstraction-helpers').digitise;
+const Boom = require('@hapi/boom')
+const services = require('../../../lib/connectors/services')
+const { stateManager, getInitialState, transformNulls } = require('@envage/water-abstraction-helpers').digitise
 
 /**
  * Loads or creates an abstraction reform "licence" for the specified
@@ -12,36 +12,36 @@ const loadOrCreateARLicence = async (licenceRef) => {
     licence_regime_id: 1,
     licence_type_id: 10,
     licence_ref: licenceRef
-  };
+  }
 
-  const { error, data } = await services.permits.licences.findMany(filter);
+  const { error, data } = await services.permits.licences.findMany(filter)
 
   if (error) {
-    throw Boom.badImplementation('Permit error', error);
+    throw Boom.badImplementation('Permit error', error)
   }
 
   if (data.length === 1) {
-    return data[0];
+    return data[0]
   }
 
   if (data.length === 0) {
     const licenceData = {
       actions: []
-    };
+    }
 
     const { error: createError, data: createData } = await services.permits.licences.create({
       ...filter,
       licence_data_value: JSON.stringify(licenceData),
       metadata: '{}'
-    });
+    })
 
     if (createError) {
-      throw Boom.badImplementation('Permit error creating AR licence', createError);
+      throw Boom.badImplementation('Permit error creating AR licence', createError)
     }
 
-    return createData;
+    return createData
   }
-};
+}
 
 /**
  * Loads both the abstraction licence, and an existing/created abstraction reform licence
@@ -51,20 +51,20 @@ const loadOrCreateARLicence = async (licenceRef) => {
  */
 const loadLicence = async (documentId) => {
   // Load abstraction licence
-  const { error, data: { system_internal_id: licenceId } } = await services.crm.documents.findOne(documentId);
+  const { error, data: { system_internal_id: licenceId } } = await services.crm.documents.findOne(documentId)
 
   if (error) {
-    throw Boom.badImplementation('CRM error', error);
+    throw Boom.badImplementation('CRM error', error)
   }
 
   // Load permit repo licence
-  const { error: permitError, data: permitData } = await services.permits.licences.findOne(licenceId);
+  const { error: permitError, data: permitData } = await services.permits.licences.findOne(licenceId)
 
   if (permitError) {
-    throw Boom.badImplementation('Permit error', permitError);
+    throw Boom.badImplementation('Permit error', permitError)
   }
 
-  const arLicence = await loadOrCreateARLicence(permitData.licence_ref);
+  const arLicence = await loadOrCreateARLicence(permitData.licence_ref)
 
   return {
     licence: {
@@ -72,8 +72,8 @@ const loadLicence = async (documentId) => {
       licence_data_value: transformNulls(permitData.licence_data_value)
     },
     arLicence
-  };
-};
+  }
+}
 
 /**
  * Load all data required in AR screens, resolves with:
@@ -86,20 +86,20 @@ const loadLicence = async (documentId) => {
  * @return {Promise} resolves with {licence, arLicence, finalState }
  */
 const load = async (documentId) => {
-  const { licence, arLicence } = await loadLicence(documentId);
+  const { licence, arLicence } = await loadLicence(documentId)
 
   // Setup initial state
-  const initialState = getInitialState(licence);
+  const initialState = getInitialState(licence)
 
   // Calculate final state after actions applied
-  const finalState = stateManager(initialState, arLicence.licence_data_value.actions);
+  const finalState = stateManager(initialState, arLicence.licence_data_value.actions)
 
   return {
     licence,
     arLicence,
     finalState
-  };
-};
+  }
+}
 
 /**
  * Updates AR licence with new actions list
@@ -111,11 +111,11 @@ const load = async (documentId) => {
 const update = async (licenceId, data, licenceNumber) => {
   const payload = {
     licence_data_value: JSON.stringify(data)
-  };
-  const result = await services.permits.licences.updateOne(licenceId, payload);
-  await services.water.abstractionReformAnalysis.arRefreshLicenceWebhook(licenceNumber);
-  return result;
-};
+  }
+  const result = await services.permits.licences.updateOne(licenceId, payload)
+  await services.water.abstractionReformAnalysis.arRefreshLicenceWebhook(licenceNumber)
+  return result
+}
 
-exports.load = load;
-exports.update = update;
+exports.load = load
+exports.update = update

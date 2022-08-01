@@ -1,16 +1,16 @@
-'use strict';
-const Joi = require('joi');
-const controller = require('../controllers/two-part-tariff');
-const { billing } = require('../../../../internal/lib/constants').scope;
-const allowedScopes = [billing];
-const preHandlers = require('../pre-handlers');
+'use strict'
+const Joi = require('joi')
+const controller = require('../controllers/two-part-tariff')
+const { billing } = require('../../../../internal/lib/constants').scope
+const allowedScopes = [billing]
+const preHandlers = require('../pre-handlers')
 
-const { VALID_GUID } = require('shared/lib/validators');
+const { VALID_GUID } = require('shared/lib/validators')
 
 const pre = [
   { method: preHandlers.loadBatch, assign: 'batch' },
   { method: preHandlers.checkBatchStatusIsReview }
-];
+]
 
 module.exports = {
   getBillingTwoPartTariffReview: {
@@ -246,4 +246,4 @@ module.exports = {
       }
     }
   }
-};
+}

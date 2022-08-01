@@ -1,4 +1,4 @@
-const { ACTION_TYPES } = require('./actions');
+const { ACTION_TYPES } = require('./actions')
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -6,12 +6,12 @@ const reducer = (state, action) => {
       return {
         ...state,
         changeReason: action.payload
-      };
+      }
 
     case ACTION_TYPES.setStartDate:
       return {
         ...action.payload
-      };
+      }
 
     case ACTION_TYPES.setBillingAccount:
       return {
@@ -19,21 +19,21 @@ const reducer = (state, action) => {
         invoiceAccount: {
           id: action.payload.billingAccountId
         }
-      };
+      }
 
     case ACTION_TYPES.setAbstractionData:
       return {
         ...state,
         note: action.payload.note,
         chargeElements: action.payload.chargeElements
-      };
+      }
 
     case ACTION_TYPES.setChargeElementData:
     case ACTION_TYPES.updateChargeCategory:
       return {
         ...state,
         chargeElements: action.payload
-      };
+      }
     case ACTION_TYPES.createChargeElement:
       return {
         ...state,
@@ -44,18 +44,18 @@ const reducer = (state, action) => {
             isSection127AgreementEnabled: true
           }
         ]
-      };
+      }
     case ACTION_TYPES.createChargeCategory:
       return {
         ...state,
         scheme: 'sroc',
         chargeElements: action.payload
-      };
+      }
     case ACTION_TYPES.clearData:
-      return {};
+      return {}
   }
 
-  return state;
-};
+  return state
+}
 
-exports.reducer = reducer;
+exports.reducer = reducer

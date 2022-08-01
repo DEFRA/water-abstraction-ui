@@ -1,5 +1,5 @@
-const Joi = require('joi');
-const { formFactory, fields } = require('shared/lib/forms');
+const Joi = require('joi')
+const { formFactory, fields } = require('shared/lib/forms')
 
 /**
  * Creates an object to represent the form for confirming
@@ -9,9 +9,9 @@ const { formFactory, fields } = require('shared/lib/forms');
  * @param {String} email The user's email address
  */
 const form = (request, licenceData) => {
-  const { csrfToken } = request.view;
+  const { csrfToken } = request.view
 
-  const f = formFactory(`/licences/${request.params.documentId}/unlink-licence?userId=${request.query.userId}`);
+  const f = formFactory(`/licences/${request.params.documentId}/unlink-licence?userId=${request.query.userId}`)
 
   f.fields.push(fields.checkbox('confirmUnlink', {
     choices: [{
@@ -23,18 +23,18 @@ const form = (request, licenceData) => {
       'array.min': { message: 'Tick the box to confirm you want to unlink this licence' },
       'array.includesRequiredUnknowns': { message: 'Tick the box to confirm you want to unlink this licence' }
     }
-  }));
+  }))
 
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-  f.fields.push(fields.button(null, { label: 'Unlink this licence' }));
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
+  f.fields.push(fields.button(null, { label: 'Unlink this licence' }))
 
-  return f;
-};
+  return f
+}
 
 const schema = Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   confirmUnlink: Joi.array().required().min(1).items(Joi.string().required().valid('confirm')).required()
-});
+})
 
-exports.unlinkLicenceForm = form;
-exports.unlinkLicenceSchema = schema;
+exports.unlinkLicenceForm = form
+exports.unlinkLicenceSchema = schema

@@ -1,58 +1,58 @@
-'use strict';
+'use strict'
 
-const { expect } = require('@hapi/code');
+const { expect } = require('@hapi/code')
 const {
   experiment,
   test,
   beforeEach,
   afterEach
-} = exports.lab = require('@hapi/lab').script();
-const sinon = require('sinon');
+} = exports.lab = require('@hapi/lab').script()
+const sinon = require('sinon')
 
-const sandbox = sinon.createSandbox();
+const sandbox = sinon.createSandbox()
 
-const plugin = require('internal/modules/address-entry/plugin');
+const plugin = require('internal/modules/address-entry/plugin')
 
 experiment('internal/modules/address-entry/plugin', () => {
-  let server;
+  let server
 
   beforeEach(async () => {
     server = {
       decorate: sandbox.stub(),
       route: sandbox.stub()
-    };
-  });
+    }
+  })
 
   afterEach(async () => {
-    sandbox.restore();
-  });
+    sandbox.restore()
+  })
 
   test('has a package name and version', async () => {
-    expect(plugin.pkg.name).to.equal('addressEntryPlugin');
-    expect(plugin.pkg.version).to.equal('1.0.0');
-  });
+    expect(plugin.pkg.name).to.equal('addressEntryPlugin')
+    expect(plugin.pkg.version).to.equal('1.0.0')
+  })
 
   test('has a register method', async () => {
-    expect(plugin.register).to.be.a.function();
-  });
+    expect(plugin.register).to.be.a.function()
+  })
 
   experiment('.register', () => {
     beforeEach(async () => {
-      plugin.register(server);
-    });
+      plugin.register(server)
+    })
 
     test('the request object is decorated with "addressLookupRedirect"', async () => {
-      const [obj, name, func] = server.decorate.firstCall.args;
-      expect(obj).to.equal('request');
-      expect(name).to.equal('addressLookupRedirect');
-      expect(func).to.be.a.function();
-    });
+      const [obj, name, func] = server.decorate.firstCall.args
+      expect(obj).to.equal('request')
+      expect(name).to.equal('addressLookupRedirect')
+      expect(func).to.be.a.function()
+    })
 
     test('the request object is decorated with "getNewAddress"', async () => {
-      const [obj, name, func] = server.decorate.lastCall.args;
-      expect(obj).to.equal('request');
-      expect(name).to.equal('getNewAddress');
-      expect(func).to.be.a.function();
-    });
-  });
-});
+      const [obj, name, func] = server.decorate.lastCall.args
+      expect(obj).to.equal('request')
+      expect(name).to.equal('getNewAddress')
+      expect(func).to.be.a.function()
+    })
+  })
+})

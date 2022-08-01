@@ -25,17 +25,17 @@ const plugin = {
       type: 'onPostAuth',
       method: async (request, h) => {
         if (options.onPostAuth) {
-          options.onPostAuth(request);
+          options.onPostAuth(request)
         }
-        return h.continue;
+        return h.continue
       }
-    });
+    })
   },
 
   pkg: {
     name: 'requestStubPlugin',
     version: '2.0.0'
   }
-};
+}
 
-module.exports = plugin;
+module.exports = plugin

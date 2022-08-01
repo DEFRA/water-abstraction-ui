@@ -3,7 +3,7 @@ const buttonFactory = (name, options = {}, value) => {
     widget: 'button',
     label: 'Submit',
     isStartButton: false
-  };
+  }
   return {
     name,
     value,
@@ -11,7 +11,7 @@ const buttonFactory = (name, options = {}, value) => {
       ...defaults,
       ...options
     }
-  };
-};
+  }
+}
 
-module.exports = buttonFactory;
+module.exports = buttonFactory

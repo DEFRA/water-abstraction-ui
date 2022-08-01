@@ -41,8 +41,8 @@ const getCommunication = () => ({
       }
     ]
   }
-});
+})
 
 module.exports = {
   getCommunication
-};
+}

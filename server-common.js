@@ -1,7 +1,7 @@
-const GoodWinston = require('good-winston');
-const ResetPasswordConfig = require('shared/lib/ResetPasswordConfig');
-const UpdatePasswordConfig = require('shared/lib/UpdatePasswordConfig');
-const CatboxRedis = require('@hapi/catbox-redis');
+const GoodWinston = require('good-winston')
+const ResetPasswordConfig = require('shared/lib/ResetPasswordConfig')
+const UpdatePasswordConfig = require('shared/lib/UpdatePasswordConfig')
+const CatboxRedis = require('@hapi/catbox-redis')
 
 const createPlugins = (config, logger, connectors) => ([
   require('@hapi/scooter'),
@@ -43,7 +43,7 @@ const createPlugins = (config, logger, connectors) => ([
   {
     plugin: require('shared/lib/session-forms').plugin
   }
-]);
+])
 
 const createCache = config => {
   return [
@@ -54,8 +54,8 @@ const createCache = config => {
         options: config.redis
       }
     }
-  ];
-};
+  ]
+}
 
-exports.createPlugins = createPlugins;
-exports.createCache = createCache;
+exports.createPlugins = createPlugins
+exports.createCache = createCache

@@ -8,10 +8,10 @@ function mapSort (sort) {
     licenceNumber: 'system_external_id',
     name: 'document_name',
     expiryDate: 'document_expires'
-  };
+  }
   return {
     [sortFields[sort.sort]]: sort.direction
-  };
+  }
 }
 
 /**
@@ -22,17 +22,17 @@ function mapSort (sort) {
 function mapFilter (companyId, query) {
   const filter = {
     company_entity_id: companyId
-  };
+  }
   // Search on licence name/number
   if (query.licenceNumber) {
-    filter.string = query.licenceNumber.trim();
+    filter.string = query.licenceNumber.trim()
   }
   // Search on user email address
   if (query.emailAddress) {
-    filter.email = query.emailAddress.trim();
+    filter.email = query.emailAddress.trim()
   }
-  return filter;
+  return filter
 }
 
-exports.mapSort = mapSort;
-exports.mapFilter = mapFilter;
+exports.mapSort = mapSort
+exports.mapFilter = mapFilter

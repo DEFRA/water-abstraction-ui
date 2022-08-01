@@ -1,25 +1,25 @@
-'use strict';
+'use strict'
 
-const { titleCase } = require('shared/lib/string-formatter');
-const { pluralize } = require('shared/lib/pluralize');
-const moment = require('moment');
-const Boom = require('@hapi/boom');
-const { get } = require('lodash');
+const { titleCase } = require('shared/lib/string-formatter')
+const { pluralize } = require('shared/lib/pluralize')
+const moment = require('moment')
+const Boom = require('@hapi/boom')
+const { get } = require('lodash')
 
-const { cancelOrConfirmBatchForm } = require('../forms/cancel-or-confirm-batch');
-const services = require('internal/lib/connectors/services');
-const batchService = require('../services/batch-service');
-const transactionsCSV = require('../services/transactions-csv');
-const csv = require('internal/lib/csv-download');
-const { logger } = require('internal/logger');
-const mappers = require('../lib/mappers');
-const { featureToggles } = require('../../../config');
+const { cancelOrConfirmBatchForm } = require('../forms/cancel-or-confirm-batch')
+const services = require('internal/lib/connectors/services')
+const batchService = require('../services/batch-service')
+const transactionsCSV = require('../services/transactions-csv')
+const csv = require('internal/lib/csv-download')
+const { logger } = require('internal/logger')
+const mappers = require('../lib/mappers')
+const { featureToggles } = require('../../../config')
 
-const confirmForm = require('shared/lib/forms/confirm-form');
+const confirmForm = require('shared/lib/forms/confirm-form')
 
-const getBillRunPageTitle = batch => `${batch.region.displayName} ${mappers.mapBatchType(batch.type).toLowerCase()} bill run`;
+const getBillRunPageTitle = batch => `${batch.region.displayName} ${mappers.mapBatchType(batch.type).toLowerCase()} bill run`
 
-const BATCH_LIST_ROUTE = '/billing/batch/list';
+const BATCH_LIST_ROUTE = '/billing/batch/list'
 
 /**
  * Shows a batch with its list of invoices
@@ -27,9 +27,9 @@ const BATCH_LIST_ROUTE = '/billing/batch/list';
  * @param {String} request.params.batchId
  */
 const getBillingBatchSummary = async (request, h) => {
-  const { batch } = request.pre;
+  const { batch } = request.pre
 
-  const invoices = await services.water.billingBatches.getBatchInvoices(batch.id);
+  const invoices = await services.water.billingBatches.getBatchInvoices(batch.id)
 
   return h.view('nunjucks/billing/batch-summary', {
     ...request.view,
@@ -43,27 +43,27 @@ const getBillingBatchSummary = async (request, h) => {
     // only show the back link from the list page, so not to offer the link
     // as part of the batch creation flow.
     back: request.query.back && BATCH_LIST_ROUTE
-  });
-};
+  })
+}
 
 const getCaption = invoice => invoice.invoiceNumber
   ? `Bill ${invoice.invoiceNumber}`
-  : `Billing account ${invoice.invoiceAccount.accountNumber}`;
+  : `Billing account ${invoice.invoiceAccount.accountNumber}`
 
-const getOriginalInvoice = invoice => invoice.linkedInvoices.find(linkedInvoice => linkedInvoice.id === invoice.originalInvoiceId);
+const getOriginalInvoice = invoice => invoice.linkedInvoices.find(linkedInvoice => linkedInvoice.id === invoice.originalInvoiceId)
 
 const getBillingBatchInvoice = async (request, h) => {
-  const { batchId, invoiceId } = request.params;
+  const { batchId, invoiceId } = request.params
 
   const [batch, invoice] = await Promise.all([
     services.water.billingBatches.getBatch(batchId),
     services.water.billingBatches.getBatchInvoice(batchId, invoiceId)
-  ]);
+  ])
 
   if (invoice.originalInvoiceId !== null) {
-    invoice.originalInvoice = getOriginalInvoice(invoice);
+    invoice.originalInvoice = getOriginalInvoice(invoice)
   }
-  const invoiceLicenceMapper = invoiceLicence => mappers.mapInvoiceLicence(batch, invoice, invoiceLicence);
+  const invoiceLicenceMapper = invoiceLicence => mappers.mapInvoiceLicence(batch, invoice, invoiceLicence)
 
   return h.view('nunjucks/billing/batch-invoice', {
     ...request.view,
@@ -81,12 +81,12 @@ const getBillingBatchInvoice = async (request, h) => {
     links: {
       billingAccount: `/billing-accounts/${invoice.invoiceAccount.id}`
     }
-  });
-};
+  })
+}
 
 const getBillingBatchList = async (request, h) => {
-  const { page } = request.query;
-  const { data, pagination } = await batchService.getBatchList(page, 10);
+  const { page } = request.query
+  const { data, pagination } = await batchService.getBatchList(page, 10)
 
   return h.view('nunjucks/billing/batch-list', {
     ...request.view,
@@ -96,12 +96,12 @@ const getBillingBatchList = async (request, h) => {
       action: '/billing/batch/delete-all-data',
       isWarning: true
     })
-  });
-};
+  })
+}
 
 const billingBatchAction = (request, h, action) => {
-  const { batch } = request.pre;
-  const titleAction = (action === 'confirm') ? 'send' : 'cancel';
+  const { batch } = request.pre
+  const titleAction = (action === 'confirm') ? 'send' : 'cancel'
   return h.view('nunjucks/billing/confirm-batch', {
     ...request.view,
     batch,
@@ -110,54 +110,54 @@ const billingBatchAction = (request, h, action) => {
     metadataType: 'batch',
     form: cancelOrConfirmBatchForm(request, action),
     back: `/billing/batch/${batch.id}/summary`
-  });
-};
+  })
+}
 
-const getBillingBatchCancel = async (request, h) => billingBatchAction(request, h, 'cancel');
+const getBillingBatchCancel = async (request, h) => billingBatchAction(request, h, 'cancel')
 
 const postBillingBatchCancel = async (request, h) => {
-  const { batchId } = request.params;
+  const { batchId } = request.params
 
   try {
-    await services.water.billingBatches.cancelBatch(batchId);
+    await services.water.billingBatches.cancelBatch(batchId)
   } catch (err) {
-    logger.info(`Did not successfully delete batch ${batchId}`);
+    logger.info(`Did not successfully delete batch ${batchId}`)
   }
 
-  return h.redirect(BATCH_LIST_ROUTE);
-};
+  return h.redirect(BATCH_LIST_ROUTE)
+}
 
-const getBillingBatchStatusToCancel = async (request, h) => billingBatchAction(request, h, 'cancel/processing-batch');
+const getBillingBatchStatusToCancel = async (request, h) => billingBatchAction(request, h, 'cancel/processing-batch')
 
 const postBillingBatchStatusToCancel = async (request, h) => {
-  const { batchId } = request.params;
+  const { batchId } = request.params
 
   try {
-    await services.water.billingBatches.setBatchStatusToError(batchId);
+    await services.water.billingBatches.setBatchStatusToError(batchId)
   } catch (err) {
-    logger.info(`Did not successfully change batch ${batchId} status`);
+    logger.info(`Did not successfully change batch ${batchId} status`)
   }
 
-  return h.redirect(BATCH_LIST_ROUTE);
-};
+  return h.redirect(BATCH_LIST_ROUTE)
+}
 
-const getBillingBatchConfirm = async (request, h) => billingBatchAction(request, h, 'confirm');
+const getBillingBatchConfirm = async (request, h) => billingBatchAction(request, h, 'confirm')
 
 const postBillingBatchConfirm = async (request, h) => {
-  const { batchId } = request.params;
-  await services.water.billingBatches.approveBatch(batchId);
-  return h.redirect(`/billing/batch/${batchId}/processing`);
-};
+  const { batchId } = request.params
+  await services.water.billingBatches.approveBatch(batchId)
+  return h.redirect(`/billing/batch/${batchId}/processing`)
+}
 
 const getBillingBatchConfirmSuccess = (request, h) => {
-  const { batch } = request.pre;
+  const { batch } = request.pre
   return h.view('nunjucks/billing/batch-sent-success', {
     ...request.view,
     pageTitle: 'Bill run sent',
     panelText: `You've sent the ${getBillRunPageTitle(batch)} ${batch.billRunNumber}`,
     batch
-  });
-};
+  })
+}
 
 /**
  * allows user to download all the invoices, transactions, company,
@@ -166,12 +166,12 @@ const getBillingBatchConfirmSuccess = (request, h) => {
  * @param {*} h
  */
 const getTransactionsCSV = async (request, h) => {
-  const { batchId } = request.params;
-  const { invoices, chargeVersions } = await services.water.billingBatches.getBatchDownloadData(batchId);
-  const csvData = await transactionsCSV.createCSV(invoices, chargeVersions);
-  const fileName = transactionsCSV.getCSVFileName(request.pre.batch);
-  return csv.csvDownload(h, csvData, fileName);
-};
+  const { batchId } = request.params
+  const { invoices, chargeVersions } = await services.water.billingBatches.getBatchDownloadData(batchId)
+  const csvData = transactionsCSV.createCSV(invoices, chargeVersions, request.pre.batch.scheme)
+  const fileName = transactionsCSV.getCSVFileName(request.pre.batch)
+  return csv.csvDownload(h, csvData, fileName)
+}
 
 /**
  * Remove an invoice from the bill run
@@ -179,23 +179,23 @@ const getTransactionsCSV = async (request, h) => {
  * @param {*} h
  */
 const getBillingBatchDeleteInvoice = async (request, h) => {
-  const { batchId } = request.params;
-  const { batch, invoice } = request.pre;
-  const { originalInvoiceId, rebillInvoiceId } = request.query;
-  const batchType = mappers.mapBatchType(batch.type).toLowerCase();
-  const formText = { title: '', button: '' };
+  const { batchId } = request.params
+  const { batch, invoice } = request.pre
+  const { originalInvoiceId, rebillInvoiceId } = request.query
+  const batchType = mappers.mapBatchType(batch.type).toLowerCase()
+  const formText = { title: '', button: '' }
   if (invoice.rebillingState !== null) {
-    formText.title = `You're about to cancel the reissue of ${getOriginalInvoice(invoice).displayLabel}`;
-    formText.button = 'Cancel this reissue';
+    formText.title = `You're about to cancel the reissue of ${getOriginalInvoice(invoice).displayLabel}`
+    formText.button = 'Cancel this reissue'
   } else {
-    formText.title = `You're about to remove this bill from the ${batchType} bill run`;
-    formText.button = 'Remove this bill';
+    formText.title = `You're about to remove this bill from the ${batchType} bill run`
+    formText.button = 'Remove this bill'
   }
 
   const options = {
     originalInvoiceId,
     rebillInvoiceId
-  };
+  }
 
   return h.view('nunjucks/billing/confirm-invoice', {
     ...request.view,
@@ -205,16 +205,16 @@ const getBillingBatchDeleteInvoice = async (request, h) => {
     form: confirmForm.form(request, formText.button, options),
     metadataType: 'invoice',
     back: `/billing/batch/${batchId}/summary`
-  });
-};
+  })
+}
 
 const postBillingBatchDeleteInvoice = async (request, h) => {
-  const { batchId, invoiceId } = request.params;
-  const { originalInvoiceId, rebillInvoiceId } = request.payload;
+  const { batchId, invoiceId } = request.params
+  const { originalInvoiceId, rebillInvoiceId } = request.payload
 
-  await services.water.billingBatches.deleteInvoiceFromBatch(batchId, invoiceId, originalInvoiceId, rebillInvoiceId);
-  return h.redirect(`/billing/batch/${batchId}/summary`);
-};
+  await services.water.billingBatches.deleteInvoiceFromBatch(batchId, invoiceId, originalInvoiceId, rebillInvoiceId)
+  return h.redirect(`/billing/batch/${batchId}/summary`)
+}
 
 /**
  * Renders a 'waiting' page while the batch is processing.
@@ -225,12 +225,12 @@ const postBillingBatchDeleteInvoice = async (request, h) => {
  * @param {Number} request.query.back - whether to render back button
  */
 const getBillingBatchProcessing = async (request, h) => {
-  const { batch } = request.pre;
-  const back = !!request.query.back;
+  const { batch } = request.pre
+  const back = !!request.query.back
 
   // Render error page if batch has errored
   if (batch.status === 'error') {
-    return Boom.badImplementation('Billing batch error');
+    return Boom.badImplementation('Billing batch error')
   }
 
   return h.view('nunjucks/billing/batch-processing', {
@@ -239,51 +239,51 @@ const getBillingBatchProcessing = async (request, h) => {
     caption: moment(batch.createdAt).format('D MMMM YYYY'),
     pageTitle: `${batch.region.displayName} ${mappers.mapBatchType(batch.type).toLowerCase()} bill run`,
     back: back && BATCH_LIST_ROUTE
-  });
-};
+  })
+}
 
 /**
  * Renders an error page if the batch is empty - i.e. no transactions
  * @param {Object} request.pre.batch - billing batch loaded by pre handler
  */
 const getBillingBatchEmpty = async (request, h) => {
-  const { batch } = request.pre;
+  const { batch } = request.pre
 
   return h.view('nunjucks/billing/batch-empty', {
     ...request.view,
     pageTitle: getBillRunPageTitle(batch),
     batch,
     back: BATCH_LIST_ROUTE
-  });
-};
+  })
+}
 
 /**
  * Deletes all billing data
  */
 const postDeleteAllBillingData = async (request, h) => {
-  await services.water.billingBatches.deleteAllBillingData();
-  return h.redirect(BATCH_LIST_ROUTE);
-};
+  await services.water.billingBatches.deleteAllBillingData()
+  return h.redirect(BATCH_LIST_ROUTE)
+}
 
-exports.getBillingBatchList = getBillingBatchList;
-exports.getBillingBatchSummary = getBillingBatchSummary;
-exports.getBillingBatchInvoice = getBillingBatchInvoice;
+exports.getBillingBatchList = getBillingBatchList
+exports.getBillingBatchSummary = getBillingBatchSummary
+exports.getBillingBatchInvoice = getBillingBatchInvoice
 
-exports.getBillingBatchCancel = getBillingBatchCancel;
-exports.postBillingBatchCancel = postBillingBatchCancel;
+exports.getBillingBatchCancel = getBillingBatchCancel
+exports.postBillingBatchCancel = postBillingBatchCancel
 
-exports.getBillingBatchConfirm = getBillingBatchConfirm;
-exports.postBillingBatchConfirm = postBillingBatchConfirm;
-exports.getBillingBatchConfirmSuccess = getBillingBatchConfirmSuccess;
+exports.getBillingBatchConfirm = getBillingBatchConfirm
+exports.postBillingBatchConfirm = postBillingBatchConfirm
+exports.getBillingBatchConfirmSuccess = getBillingBatchConfirmSuccess
 
-exports.getBillingBatchDeleteInvoice = getBillingBatchDeleteInvoice;
-exports.postBillingBatchDeleteInvoice = postBillingBatchDeleteInvoice;
+exports.getBillingBatchDeleteInvoice = getBillingBatchDeleteInvoice
+exports.postBillingBatchDeleteInvoice = postBillingBatchDeleteInvoice
 
-exports.getTransactionsCSV = getTransactionsCSV;
+exports.getTransactionsCSV = getTransactionsCSV
 
-exports.getBillingBatchProcessing = getBillingBatchProcessing;
-exports.getBillingBatchEmpty = getBillingBatchEmpty;
+exports.getBillingBatchProcessing = getBillingBatchProcessing
+exports.getBillingBatchEmpty = getBillingBatchEmpty
 
-exports.postDeleteAllBillingData = postDeleteAllBillingData;
-exports.getBillingBatchStatusToCancel = getBillingBatchStatusToCancel;
-exports.postBillingBatchStatusToCancel = postBillingBatchStatusToCancel;
+exports.postDeleteAllBillingData = postDeleteAllBillingData
+exports.getBillingBatchStatusToCancel = getBillingBatchStatusToCancel
+exports.postBillingBatchStatusToCancel = postBillingBatchStatusToCancel

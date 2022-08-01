@@ -1,4 +1,4 @@
-const { getManageTabConfig } = require('./lib/manage-nav');
+const { getManageTabConfig } = require('./lib/manage-nav')
 
 /**
  * Renders manage tab
@@ -9,8 +9,8 @@ const getManageTab = async (request, h) => {
   const view = {
     ...request.view,
     ...getManageTabConfig(request)
-  };
-  return h.view('nunjucks/notifications/manage-tab', view);
-};
+  }
+  return h.view('nunjucks/notifications/manage-tab', view)
+}
 
-exports.getManageTab = getManageTab;
+exports.getManageTab = getManageTab

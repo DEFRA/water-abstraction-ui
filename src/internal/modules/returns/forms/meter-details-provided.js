@@ -1,8 +1,8 @@
-const Joi = require('joi');
-const { get } = require('lodash');
-const { formFactory, fields, setValues } = require('shared/lib/forms');
+const Joi = require('joi')
+const { get } = require('lodash')
+const { formFactory, fields, setValues } = require('shared/lib/forms')
 const { getContinueField, getCsrfTokenField } =
- require('shared/modules/returns/forms/common');
+ require('shared/modules/returns/forms/common')
 
 const getRadioField = () => fields.radio('meterDetailsProvided', {
   mapper: 'booleanMapper',
@@ -17,7 +17,7 @@ const getRadioField = () => fields.radio('meterDetailsProvided', {
     { value: true, label: 'Yes' },
     { value: false, label: 'No' }
   ]
-});
+})
 
 exports.form = (request, data) => setValues({
   ...formFactory(),
@@ -26,9 +26,9 @@ exports.form = (request, data) => setValues({
     getCsrfTokenField(request),
     getContinueField()
   ]
-}, { meterDetailsProvided: get(data, 'meters[0].meterDetailsProvided') });
+}, { meterDetailsProvided: get(data, 'meters[0].meterDetailsProvided') })
 
 exports.schema = () => Joi.object().keys({
   meterDetailsProvided: Joi.boolean().required(),
   csrf_token: Joi.string().guid().required()
-});
+})

@@ -1,11 +1,11 @@
-const Joi = require('joi');
-const { formFactory, fields, applyErrors } = require('shared/lib/forms');
-const { VALID_PASSWORD, VALID_GUID } = require('shared/lib/validators');
+const Joi = require('joi')
+const { formFactory, fields, applyErrors } = require('shared/lib/forms')
+const { VALID_PASSWORD, VALID_GUID } = require('shared/lib/validators')
 
 const confirmPasswordForm = request => {
-  const { csrfToken } = request.view;
+  const { csrfToken } = request.view
 
-  const f = formFactory('/confirm-password');
+  const f = formFactory('/confirm-password')
 
   f.fields.push(fields.text('password', {
     type: 'password',
@@ -26,17 +26,17 @@ const confirmPasswordForm = request => {
         message: 'Check your password'
       }
     }
-  }));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
+  }))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
 
-  return f;
-};
+  return f
+}
 
 const schema = () => Joi.object().keys({
   password: VALID_PASSWORD,
   csrf_token: VALID_GUID
-});
+})
 
 /**
  * Depending on the error string returned from the water service,
@@ -50,9 +50,9 @@ const confirmPasswordApplyErrors = (form, code) => {
     name: 'password',
     message: 'Check your password',
     summary: 'Check your password'
-  }]);
-};
+  }])
+}
 
-exports.confirmPasswordForm = confirmPasswordForm;
-exports.confirmPasswordSchema = schema;
-exports.confirmPasswordApplyErrors = confirmPasswordApplyErrors;
+exports.confirmPasswordForm = confirmPasswordForm
+exports.confirmPasswordSchema = schema
+exports.confirmPasswordApplyErrors = confirmPasswordApplyErrors

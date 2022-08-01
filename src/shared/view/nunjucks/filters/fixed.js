@@ -5,7 +5,7 @@
  * @return {String}
  */
 const fixed = (value, precision) => {
-  return parseFloat(value).toFixed(precision);
-};
+  return parseFloat(value).toFixed(precision)
+}
 
-exports.fixed = fixed;
+exports.fixed = fixed

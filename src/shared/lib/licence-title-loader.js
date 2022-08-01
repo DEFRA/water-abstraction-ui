@@ -1,6 +1,6 @@
-const files = require('./files');
-const util = require('util');
-const csvParse = util.promisify(require('csv-parse'));
+const files = require('./files')
+const util = require('util')
+const csvParse = util.promisify(require('csv-parse'))
 
 /**
  * Loads and transforms licence condition title data from
@@ -11,7 +11,7 @@ const csvParse = util.promisify(require('csv-parse'));
  */
 class LicenceTitleLoader {
   constructor () {
-    this.data = null;
+    this.data = null
   }
 
   /**
@@ -21,27 +21,27 @@ class LicenceTitleLoader {
    */
   async load () {
     if (this.data) {
-      return this.data;
+      return this.data
     }
 
     // Read condition titles from CSV
-    const str = await files.readFile('./data/condition_titles.csv');
-    const data = await csvParse(str, { columns: true });
+    const str = await files.readFile('./data/condition_titles.csv')
+    const data = await csvParse(str, { columns: true })
 
     // Sentence case all titles
     const dataTransformed = data.map((row) => {
-      const { code, subCode, displayTitle, parameter1Label, parameter2Label } = row;
+      const { code, subCode, displayTitle, parameter1Label, parameter2Label } = row
       return {
         code,
         subCode,
         displayTitle,
         parameter1Label,
         parameter2Label
-      };
-    });
+      }
+    })
 
-    return dataTransformed;
+    return dataTransformed
   }
 }
 
-module.exports = LicenceTitleLoader;
+module.exports = LicenceTitleLoader

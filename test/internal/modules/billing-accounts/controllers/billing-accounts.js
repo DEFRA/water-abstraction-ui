@@ -1,18 +1,18 @@
-'use strict';
+'use strict'
 
-const { expect } = require('@hapi/code');
+const { expect } = require('@hapi/code')
 const {
   experiment,
   test,
   beforeEach,
   afterEach
-} = exports.lab = require('@hapi/lab').script();
-const sandbox = require('sinon').createSandbox();
-const { v4: uuid } = require('uuid');
+} = exports.lab = require('@hapi/lab').script()
+const sandbox = require('sinon').createSandbox()
+const { v4: uuid } = require('uuid')
 
-const controller = require('internal/modules/billing-accounts/controllers/billing-accounts');
+const controller = require('internal/modules/billing-accounts/controllers/billing-accounts')
 
-const addressChangeLink = '/test/link';
+const addressChangeLink = '/test/link'
 
 const createRequest = (query = {}) => ({
   view: {
@@ -72,126 +72,126 @@ const createRequest = (query = {}) => ({
   },
   query,
   billingAccountEntryRedirect: sandbox.stub().returns(addressChangeLink)
-});
+})
 
 const h = {
   view: sandbox.stub()
-};
+}
 
 experiment('internal/modules/billing-accounts/controllers/billing-accounts', () => {
-  let request;
+  let request
 
-  afterEach(() => sandbox.restore());
+  afterEach(() => sandbox.restore())
 
   experiment('.getBillingAccount', () => {
     beforeEach(() => {
-      request = createRequest();
-      controller.getBillingAccount(request, h);
-    });
+      request = createRequest()
+      controller.getBillingAccount(request, h)
+    })
 
     test('uses the correct template', () => {
-      const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/billing-accounts/view');
-    });
+      const [template] = h.view.lastCall.args
+      expect(template).to.equal('nunjucks/billing-accounts/view')
+    })
 
     test('has the correct page title', () => {
-      const [, view] = h.view.lastCall.args;
-      expect(view.pageTitle).to.equal('Billing account for Test Company');
-    });
+      const [, view] = h.view.lastCall.args
+      expect(view.pageTitle).to.equal('Billing account for Test Company')
+    })
 
     test('has the correct caption', () => {
-      const [, view] = h.view.lastCall.args;
-      expect(view.caption).to.equal('Billing account A12345678A');
-    });
+      const [, view] = h.view.lastCall.args
+      expect(view.caption).to.equal('Billing account A12345678A')
+    })
 
     test('has the current address', () => {
-      const [, view] = h.view.lastCall.args;
-      expect(view.currentAddress).to.equal(request.pre.billingAccount.invoiceAccountAddresses[1]);
-    });
+      const [, view] = h.view.lastCall.args
+      expect(view.currentAddress).to.equal(request.pre.billingAccount.invoiceAccountAddresses[1])
+    })
 
     test('contains the billing account', () => {
-      const [, view] = h.view.lastCall.args;
-      expect(view.billingAccount).to.equal(request.pre.billingAccount);
-    });
+      const [, view] = h.view.lastCall.args
+      expect(view.billingAccount).to.equal(request.pre.billingAccount)
+    })
 
     test('calls request.billingAccountEntryRedirect() with the correct params', () => {
-      const [data] = request.billingAccountEntryRedirect.lastCall.args;
-      expect(data.caption).to.equal(`Billing account ${request.pre.billingAccount.accountNumber}`);
-      expect(data.key).to.equal(`change-address-${request.pre.billingAccount.id}`);
-      expect(data.back).to.equal(`/billing-accounts/${request.pre.billingAccount.id}`);
-      expect(data.redirectPath).to.equal(`/billing-accounts/${request.pre.billingAccount.id}`);
-      expect(data.isUpdate).to.equal(true);
+      const [data] = request.billingAccountEntryRedirect.lastCall.args
+      expect(data.caption).to.equal(`Billing account ${request.pre.billingAccount.accountNumber}`)
+      expect(data.key).to.equal(`change-address-${request.pre.billingAccount.id}`)
+      expect(data.back).to.equal(`/billing-accounts/${request.pre.billingAccount.id}`)
+      expect(data.redirectPath).to.equal(`/billing-accounts/${request.pre.billingAccount.id}`)
+      expect(data.isUpdate).to.equal(true)
 
-      const { id, company } = request.pre.billingAccount;
-      expect(data.data).to.equal({ id, company });
-    });
+      const { id, company } = request.pre.billingAccount
+      expect(data.data).to.equal({ id, company })
+    })
 
     test('has a change address link', () => {
-      const [, { changeAddressLink }] = h.view.lastCall.args;
-      expect(changeAddressLink).to.equal(addressChangeLink);
-    });
+      const [, { changeAddressLink }] = h.view.lastCall.args
+      expect(changeAddressLink).to.equal(addressChangeLink)
+    })
 
     test('includes the bills', () => {
-      const [, { bills }] = h.view.lastCall.args;
-      expect(bills).to.equal(request.pre.bills.data);
-    });
+      const [, { bills }] = h.view.lastCall.args
+      expect(bills).to.equal(request.pre.bills.data)
+    })
 
     test('includes a "more bills" link', () => {
-      const { billingAccountId } = request.params;
-      const [, { moreBillsLink }] = h.view.lastCall.args;
-      expect(moreBillsLink).to.equal(`/billing-accounts/${billingAccountId}/bills`);
-    });
+      const { billingAccountId } = request.params
+      const [, { moreBillsLink }] = h.view.lastCall.args
+      expect(moreBillsLink).to.equal(`/billing-accounts/${billingAccountId}/bills`)
+    })
 
     experiment('back link', () => {
       test('is undefined if one is not specified', () => {
-        const [, view] = h.view.lastCall.args;
-        expect(view.back).to.be.undefined();
-      });
+        const [, view] = h.view.lastCall.args
+        expect(view.back).to.be.undefined()
+      })
 
       test('is included if one is specified', () => {
-        request = createRequest({ back: '/back-link' });
-        controller.getBillingAccount(request, h);
-        const [, view] = h.view.lastCall.args;
-        expect(view.back).to.equal('/back-link');
-      });
-    });
-  });
+        request = createRequest({ back: '/back-link' })
+        controller.getBillingAccount(request, h)
+        const [, view] = h.view.lastCall.args
+        expect(view.back).to.equal('/back-link')
+      })
+    })
+  })
 
   experiment('.getBillingAccountBills', () => {
     beforeEach(() => {
-      request = createRequest();
-      controller.getBillingAccountBills(request, h);
-    });
+      request = createRequest()
+      controller.getBillingAccountBills(request, h)
+    })
 
     test('uses the correct template', () => {
-      const [template] = h.view.lastCall.args;
-      expect(template).to.equal('nunjucks/billing-accounts/view-bills');
-    });
+      const [template] = h.view.lastCall.args
+      expect(template).to.equal('nunjucks/billing-accounts/view-bills')
+    })
 
     test('has the correct page title', () => {
-      const [, view] = h.view.lastCall.args;
-      expect(view.pageTitle).to.equal('Sent bills for Test Company');
-    });
+      const [, view] = h.view.lastCall.args
+      expect(view.pageTitle).to.equal('Sent bills for Test Company')
+    })
 
     test('has the correct caption', () => {
-      const [, view] = h.view.lastCall.args;
-      expect(view.caption).to.equal('Billing account A12345678A');
-    });
+      const [, view] = h.view.lastCall.args
+      expect(view.caption).to.equal('Billing account A12345678A')
+    })
 
     test('includes the bills', () => {
-      const [, { bills }] = h.view.lastCall.args;
-      expect(bills).to.equal(request.pre.bills.data);
-    });
+      const [, { bills }] = h.view.lastCall.args
+      expect(bills).to.equal(request.pre.bills.data)
+    })
 
     test('includes the pagination object', () => {
-      const [, { pagination }] = h.view.lastCall.args;
-      expect(pagination).to.equal(request.pre.bills.pagination);
-    });
+      const [, { pagination }] = h.view.lastCall.args
+      expect(pagination).to.equal(request.pre.bills.pagination)
+    })
 
     test('includes a back link', () => {
-      const { billingAccountId } = request.params;
-      const [, { back }] = h.view.lastCall.args;
-      expect(back).to.equal(`/billing-accounts/${billingAccountId}`);
-    });
-  });
-});
+      const { billingAccountId } = request.params
+      const [, { back }] = h.view.lastCall.args
+      expect(back).to.equal(`/billing-accounts/${billingAccountId}`)
+    })
+  })
+})

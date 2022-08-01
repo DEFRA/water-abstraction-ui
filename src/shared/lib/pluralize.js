@@ -1,5 +1,5 @@
-const plural = require('pluralize');
-const { isArray, isNumber } = require('lodash');
+const plural = require('pluralize')
+const { isArray, isNumber } = require('lodash')
 
 /**
  * Conditionally pluralizes string passed in as 'value'
@@ -14,8 +14,8 @@ const pluralize = (value, arg = true) => {
     arg === true,
     isArray(arg) && arg.length !== 1,
     isNumber(arg) && arg !== 1
-  ];
-  return flags.includes(true) ? plural(value) : value;
-};
+  ]
+  return flags.includes(true) ? plural(value) : value
+}
 
-exports.pluralize = pluralize;
+exports.pluralize = pluralize

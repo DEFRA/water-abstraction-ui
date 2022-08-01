@@ -1,10 +1,10 @@
-'use strict';
+'use strict'
 
-const { expect } = require('@hapi/code');
-const { experiment, test } = exports.lab = require('@hapi/lab').script();
+const { expect } = require('@hapi/code')
+const { experiment, test } = exports.lab = require('@hapi/lab').script()
 
-const { form, schema } = require('internal/modules/charge-information/forms/non-chargeable-reason');
-const { findField, findButton } = require('../../../../lib/form-test');
+const { form, schema } = require('internal/modules/charge-information/forms/non-chargeable-reason')
+const { findField, findButton } = require('../../../../lib/form-test')
 
 const createRequest = () => ({
   view: {
@@ -23,37 +23,37 @@ const createRequest = () => ({
     ],
     draftChargeInformation: {}
   }
-});
+})
 
 experiment('internal/modules/charge-information/forms/non-chargeable-reason', () => {
   experiment('form', () => {
     test('sets the form method to POST', async () => {
-      const nonChargeableForm = form(createRequest());
-      expect(nonChargeableForm.method).to.equal('POST');
-    });
+      const nonChargeableForm = form(createRequest())
+      expect(nonChargeableForm.method).to.equal('POST')
+    })
 
     test('has CSRF token field', async () => {
-      const nonChargeableForm = form(createRequest());
-      const csrf = findField(nonChargeableForm, 'csrf_token');
-      expect(csrf.value).to.equal('token');
-    });
+      const nonChargeableForm = form(createRequest())
+      const csrf = findField(nonChargeableForm, 'csrf_token')
+      expect(csrf.value).to.equal('token')
+    })
 
     test('has a submit button', async () => {
-      const nonChargeableForm = form(createRequest());
-      const button = findButton(nonChargeableForm);
-      expect(button.options.label).to.equal('Continue');
-    });
+      const nonChargeableForm = form(createRequest())
+      const button = findButton(nonChargeableForm)
+      expect(button.options.label).to.equal('Continue')
+    })
 
     test('has a choices for the non chargeable reasons', async () => {
-      const nonChargeableForm = form(createRequest());
-      const radio = findField(nonChargeableForm, 'reason');
+      const nonChargeableForm = form(createRequest())
+      const radio = findField(nonChargeableForm, 'reason')
 
-      expect(radio.options.choices[0].value).to.equal('test-id-1');
-      expect(radio.options.choices[0].label).to.equal('test-desc-1');
-      expect(radio.options.choices[1].value).to.equal('test-id-2');
-      expect(radio.options.choices[1].label).to.equal('test-desc-2');
-    });
-  });
+      expect(radio.options.choices[0].value).to.equal('test-id-1')
+      expect(radio.options.choices[0].label).to.equal('test-desc-1')
+      expect(radio.options.choices[1].value).to.equal('test-id-2')
+      expect(radio.options.choices[1].label).to.equal('test-desc-2')
+    })
+  })
 
   experiment('schema', () => {
     experiment('csrf token', () => {
@@ -61,35 +61,35 @@ experiment('internal/modules/charge-information/forms/non-chargeable-reason', ()
         const result = schema(createRequest()).validate({
           csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
           reason: 'test-id-1'
-        });
-        expect(result.error).to.be.undefined();
-      });
+        })
+        expect(result.error).to.be.undefined()
+      })
 
       test('fails for a string that is not a uuid', async () => {
         const result = schema(createRequest()).validate({
           csrf_token: 'Pancreas',
           reason: 'test-id-1'
-        });
-        expect(result.error).to.exist();
-      });
-    });
+        })
+        expect(result.error).to.exist()
+      })
+    })
 
     experiment('reason', () => {
       test('can be an id from the pre handler charge reasons', async () => {
         const result = schema(createRequest()).validate({
           csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
           reason: 'test-id-1'
-        });
-        expect(result.error).to.not.exist();
-      });
+        })
+        expect(result.error).to.not.exist()
+      })
 
       test('cannot be a unexpected string', async () => {
         const result = schema(createRequest()).validate({
           csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842',
           reason: 'Liver'
-        });
-        expect(result.error).to.exist();
-      });
-    });
-  });
-});
+        })
+        expect(result.error).to.exist()
+      })
+    })
+  })
+})

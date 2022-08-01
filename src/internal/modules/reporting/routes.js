@@ -1,7 +1,7 @@
-const controllers = require('./controllers');
-const Joi = require('joi');
-const constants = require('../../lib/constants');
-const { billing } = constants.scope;
+const controllers = require('./controllers')
+const Joi = require('joi')
+const constants = require('../../lib/constants')
+const { billing } = constants.scope
 
 module.exports = {
   getChargingForecastReportsPage: {
@@ -42,4 +42,4 @@ module.exports = {
       }
     }
   }
-};
+}

@@ -15,44 +15,44 @@
 *
 * On successful authentication, the attempt count is reset
 */
-const Joi = require('joi');
-const { get } = require('lodash');
-const helpers = require('./lib/helpers');
+const Joi = require('joi')
+const { get } = require('lodash')
+const helpers = require('./lib/helpers')
 
 const preHandler = async (request, h) => {
-  const expiryTime = request.yar.get('reauthExpiryTime');
+  const expiryTime = request.yar.get('reauthExpiryTime')
 
   // Redirect to enter password if re-auth required
   if (helpers.isExpired(expiryTime)) {
-    request.yar.set('reauthRedirectPath', request.path);
-    return h.redirect('/confirm-password').takeover();
+    request.yar.set('reauthRedirectPath', request.path)
+    return h.redirect('/confirm-password').takeover()
   }
 
   // Continue processing request
-  return h.continue;
-};
+  return h.continue
+}
 
 const _handler = async (request, h) => {
-  const isEnabled = get(request, 'route.settings.plugins.reauth', false);
-  return isEnabled ? preHandler(request, h) : h.continue;
-};
+  const isEnabled = get(request, 'route.settings.plugins.reauth', false)
+  return isEnabled ? preHandler(request, h) : h.continue
+}
 
 const reauthPlugin = {
   register: (server, options) => {
-    Joi.assert(options.reauthenticate, Joi.function());
+    Joi.assert(options.reauthenticate, Joi.function())
 
     server.ext({
       type: 'onPreHandler',
       method: _handler
-    });
-    server.route(require('./routes'));
+    })
+    server.route(require('./routes'))
   },
 
   pkg: {
     name: 'reauthPlugin',
     version: '1.0.0'
   }
-};
+}
 
-module.exports = reauthPlugin;
-module.exports._handler = _handler;
+module.exports = reauthPlugin
+module.exports._handler = _handler

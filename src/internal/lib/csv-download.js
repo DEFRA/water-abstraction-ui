@@ -1,5 +1,5 @@
-const util = require('util');
-const csvStringify = util.promisify(require('csv-stringify'));
+const util = require('util')
+const csvStringify = util.promisify(require('csv-stringify'))
 
 /**
  * Provides a convenient way to download a CSV file
@@ -9,13 +9,13 @@ const csvStringify = util.promisify(require('csv-stringify'));
  * @return {Promise}         resolves with HAPI response
  */
 const csvDownload = async (h, data, filename = 'download.csv', opts = {}) => {
-  const options = Object.assign({ header: true }, opts);
-  const str = await csvStringify(data, options);
+  const options = Object.assign({ header: true }, opts)
+  const str = await csvStringify(data, options)
   return h.response(str)
     .header('Content-type', 'text/csv')
-    .header('Content-disposition', `attachment; filename="${filename}"`);
-};
+    .header('Content-disposition', `attachment; filename="${filename}"`)
+}
 
 module.exports = {
   csvDownload
-};
+}

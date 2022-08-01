@@ -1,9 +1,9 @@
-const Joi = require('joi');
-const { scope } = require('../../lib/constants');
-const controller = require('./controller');
-const config = require('../../config');
+const Joi = require('joi')
+const { scope } = require('../../lib/constants')
+const controller = require('./controller')
+const config = require('../../config')
 
-const allowedScopes = [scope.chargeVersionWorkflowReviewer];
+const allowedScopes = [scope.chargeVersionWorkflowReviewer]
 
 if (config.featureToggles.allowChargeVersionUploads) {
   module.exports = {
@@ -90,5 +90,5 @@ if (config.featureToggles.allowChargeVersionUploads) {
         }
       }
     }
-  };
+  }
 }

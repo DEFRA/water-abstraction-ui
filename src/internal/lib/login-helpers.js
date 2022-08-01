@@ -1,6 +1,6 @@
-const { logger } = require('../logger');
+const { logger } = require('../logger')
 
-const { isAuthenticated } = require('./permissions');
+const { isAuthenticated } = require('./permissions')
 
 /**
  * A pre-handler to redirect the user to the correct page if they attempt
@@ -9,11 +9,11 @@ const { isAuthenticated } = require('./permissions');
  */
 const preRedirectIfAuthenticated = async (request, h) => {
   if (isAuthenticated(request)) {
-    const path = '/licences';
-    logger.info('Redirecting authenticated user', { from: request.path, path });
-    return h.redirect(path).takeover();
+    const path = '/licences'
+    logger.info('Redirecting authenticated user', { from: request.path, path })
+    return h.redirect(path).takeover()
   }
-  return h.continue;
-};
+  return h.continue
+}
 
-exports.preRedirectIfAuthenticated = preRedirectIfAuthenticated;
+exports.preRedirectIfAuthenticated = preRedirectIfAuthenticated

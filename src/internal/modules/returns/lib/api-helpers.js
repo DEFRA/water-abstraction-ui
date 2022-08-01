@@ -1,6 +1,6 @@
-const ExtendableError = require('es6-error');
-const services = require('../../../lib/connectors/services');
-const { isReturnId } = require('shared/lib/returns/strings');
+const ExtendableError = require('es6-error')
+const services = require('../../../lib/connectors/services')
+const { isReturnId } = require('shared/lib/returns/strings')
 
 class ReturnAPIError extends ExtendableError {};
 
@@ -17,21 +17,21 @@ const findLatestReturn = (formatId, regionCode) => {
     licence_type: 'abstraction',
     return_requirement: formatId,
     'metadata->nald->regionCode': parseInt(regionCode)
-  };
+  }
 
   const pagination = {
     perPage: 1,
     page: 1
-  };
+  }
 
   const sort = {
     end_date: -1
-  };
+  }
 
-  const columns = ['return_id', 'status', 'licence_ref', 'return_requirement'];
+  const columns = ['return_id', 'status', 'licence_ref', 'return_requirement']
 
-  return { filter, sort, pagination, columns };
-};
+  return { filter, sort, pagination, columns }
+}
 
 /**
  * Filters row from return service.
@@ -42,10 +42,10 @@ const findLatestReturn = (formatId, regionCode) => {
 */
 const filterReturn = (row) => {
   if (row.error) {
-    throw new ReturnAPIError(row.error);
+    throw new ReturnAPIError(row.error)
   }
-  return row.data[0];
-};
+  return row.data[0]
+}
 
 /**
  * Gets recent returns for a given format ID for every region code
@@ -56,26 +56,26 @@ const getRecentReturns = async (str) => {
   // For QR code support, we check whether the supplied value is a full
   // return ID
   if (isReturnId(str)) {
-    const { data, error } = await services.returns.returns.findOne(str);
+    const { data, error } = await services.returns.returns.findOne(str)
     if (error) {
-      throw new ReturnAPIError(`Error getting return ${str} from returns API`, error);
+      throw new ReturnAPIError(`Error getting return ${str} from returns API`, error)
     }
-    return [data];
+    return [data]
   }
 
-  const regions = [1, 2, 3, 4, 5, 6, 7, 8];
+  const regions = [1, 2, 3, 4, 5, 6, 7, 8]
 
   const tasks = regions.map(regionCode => {
-    const { filter, sort, pagination, columns } = findLatestReturn(str, regionCode);
-    return services.returns.returns.findMany(filter, sort, pagination, columns);
-  });
+    const { filter, sort, pagination, columns } = findLatestReturn(str, regionCode)
+    return services.returns.returns.findMany(filter, sort, pagination, columns)
+  })
 
-  const returns = await Promise.all(tasks);
+  const returns = await Promise.all(tasks)
 
   // Map and filter returned data
-  return returns.map(filterReturn).filter(x => x);
-};
+  return returns.map(filterReturn).filter(x => x)
+}
 
-exports.findLatestReturn = findLatestReturn;
-exports.getRecentReturns = getRecentReturns;
-exports.filterReturn = filterReturn;
+exports.findLatestReturn = findLatestReturn
+exports.getRecentReturns = getRecentReturns
+exports.filterReturn = filterReturn

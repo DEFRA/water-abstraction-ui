@@ -1,30 +1,30 @@
-'use strict';
+'use strict'
 
-const { pick, uniqWith, isEqual, get } = require('lodash');
-const moment = require('moment');
-const formHandler = require('shared/lib/form-handler');
-const forms = require('./forms');
-const mappers = require('./lib/mappers');
-const { scope } = require('../../lib/constants');
-const { hasScope } = require('../../lib/permissions');
-const { featureToggles } = require('../../config');
-const returnsMapper = require('../../lib/mappers/returns');
-const services = require('../../lib/connectors/services');
+const { pick, uniqWith, isEqual, get } = require('lodash')
+const moment = require('moment')
+const formHandler = require('shared/lib/form-handler')
+const forms = require('./forms')
+const mappers = require('./lib/mappers')
+const { scope } = require('../../lib/constants')
+const { hasScope } = require('../../lib/permissions')
+const { featureToggles } = require('../../config')
+const returnsMapper = require('../../lib/mappers/returns')
+const services = require('../../lib/connectors/services')
 
-const getDocumentId = doc => doc.document_id;
+const getDocumentId = doc => doc.document_id
 
 const getIsLicenceChargeVersionsEditingEnabled = licence =>
-  licence.endDate === null || moment(licence.endDate).isAfter(moment().subtract(6, 'years'));
+  licence.endDate === null || moment(licence.endDate).isAfter(moment().subtract(6, 'years'))
 
 const getPermissions = request => {
-  const isLicenceChargeInformationEditable = getIsLicenceChargeVersionsEditingEnabled(request.pre.licence);
+  const isLicenceChargeInformationEditable = getIsLicenceChargeVersionsEditingEnabled(request.pre.licence)
   return {
     billing: hasScope(request, scope.billing),
     editChargeVersions: isLicenceChargeInformationEditable && hasScope(request, scope.chargeVersionWorkflowEditor),
     reviewChargeVersions: isLicenceChargeInformationEditable && hasScope(request, scope.chargeVersionWorkflowReviewer),
     manageAgreements: isLicenceChargeInformationEditable && hasScope(request, scope.manageAgreements)
-  };
-};
+  }
+}
 
 const getLinks = ({ licenceId, documentId }, permissions) => ({
   returns: `/licences/${documentId}/returns`,
@@ -32,7 +32,7 @@ const getLinks = ({ licenceId, documentId }, permissions) => ({
   setupCharge: permissions.editChargeVersions && `/licences/${licenceId}/charge-information/create`,
   makeNonChargeable: permissions.editChargeVersions && `/licences/${licenceId}/charge-information/non-chargeable-reason?start=1`,
   addAgreement: permissions.manageAgreements && `/licences/${licenceId}/agreements/select-type`
-});
+})
 
 /**
  * Main licence summary page
@@ -41,12 +41,12 @@ const getLinks = ({ licenceId, documentId }, permissions) => ({
  * @param {String} request.params.licenceId - licence guid
  */
 const getLicenceSummary = async (request, h) => {
-  const { licenceId } = request.params;
-  const { agreements, licence, returns, document, gaugingStations } = request.pre;
-  const { data: gaugingStationsData } = gaugingStations;
-  const documentId = getDocumentId(document);
+  const { licenceId } = request.params
+  const { agreements, licence, returns, document, gaugingStations } = request.pre
+  const { data: gaugingStationsData } = gaugingStations
+  const documentId = getDocumentId(document)
 
-  const permissions = getPermissions(request);
+  const permissions = getPermissions(request)
 
   const chargeVersions = mappers.mapChargeVersions(
     request.pre.chargeVersions,
@@ -55,9 +55,9 @@ const getLicenceSummary = async (request, h) => {
       licenceId,
       ...permissions
     }
-  );
+  )
 
-  const contacts = await services.crm.documentRoles.getDocumentRolesByDocumentRef(document.system_external_id);
+  const contacts = await services.crm.documentRoles.getDocumentRolesByDocumentRef(document.system_external_id)
 
   return h.view('nunjucks/view-licences/licence.njk', {
     ...request.view,
@@ -79,8 +79,8 @@ const getLicenceSummary = async (request, h) => {
     links: getLinks({ licenceId, documentId }, permissions),
     validityMessage: mappers.getValidityNotice(licence),
     back: '/licences'
-  });
-};
+  })
+}
 
 /**
  * Get a list of bills for a particular licence
@@ -88,10 +88,10 @@ const getLicenceSummary = async (request, h) => {
  * @param {Number} request.query.page - the page number for paginated results
  */
 const getBillsForLicence = async (request, h) => {
-  const { licenceId } = request.params;
-  const { document } = request.pre;
+  const { licenceId } = request.params
+  const { document } = request.pre
 
-  const { data, pagination } = request.pre.bills;
+  const { data, pagination } = request.pre.bills
 
   return h.view('nunjucks/billing/bills', {
     ...request.view,
@@ -102,13 +102,13 @@ const getBillsForLicence = async (request, h) => {
     pagination,
     licenceId,
     back: `/licences/${licenceId}#bills`
-  });
-};
+  })
+}
 
 const getMarkLicenceForSupplementaryBilling = (request, h) => {
-  const { licenceId } = request.params;
-  const { document } = request.pre;
-  const { system_external_id: licenceRef } = document;
+  const { licenceId } = request.params
+  const { document } = request.pre
+  const { system_external_id: licenceRef } = document
 
   return h.view('nunjucks/billing/mark-licence-for-supplementary-billing', {
     ...request.view,
@@ -116,26 +116,26 @@ const getMarkLicenceForSupplementaryBilling = (request, h) => {
     caption: `Licence ${licenceRef}`,
     form: formHandler.handleFormRequest(request, forms.markForSupplementaryBilling),
     back: `/licences/${licenceId}#charge`
-  });
-};
+  })
+}
 
 const postMarkLicenceForSupplementaryBilling = async (request, h) => {
-  const { licenceId } = request.params;
-  const { document } = request.pre;
-  const { system_external_id: licenceRef } = document;
+  const { licenceId } = request.params
+  const { document } = request.pre
+  const { system_external_id: licenceRef } = document
 
   // Call backend to mark the licence for supplementary billing
-  await services.water.licences.postMarkLicenceForSupplementaryBilling(licenceId);
+  await services.water.licences.postMarkLicenceForSupplementaryBilling(licenceId)
 
   return h.view('nunjucks/billing/marked-licence-for-supplementary-billing', {
     ...request.view,
     pageTitle: 'You\'ve marked this licence for the next supplementary bill run',
     panelText: `Licence number: ${licenceRef}`,
     licenceId
-  });
-};
+  })
+}
 
-exports.getLicenceSummary = getLicenceSummary;
-exports.getBillsForLicence = getBillsForLicence;
-exports.getMarkLicenceForSupplementaryBilling = getMarkLicenceForSupplementaryBilling;
-exports.postMarkLicenceForSupplementaryBilling = postMarkLicenceForSupplementaryBilling;
+exports.getLicenceSummary = getLicenceSummary
+exports.getBillsForLicence = getBillsForLicence
+exports.getMarkLicenceForSupplementaryBilling = getMarkLicenceForSupplementaryBilling
+exports.postMarkLicenceForSupplementaryBilling = postMarkLicenceForSupplementaryBilling

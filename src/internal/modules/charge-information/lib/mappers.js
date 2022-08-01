@@ -1,8 +1,8 @@
-const routing = require('./routing');
+const routing = require('./routing')
 
 const getBadge = (isDone, id) => isDone
   ? { text: 'Completed', status: 'success', classes: ['task-list__task-badge'], attributes: { id } }
-  : { text: 'Not started', status: 'inactive', classes: ['task-list__task-badge'], attributes: { id } };
+  : { text: 'Not started', status: 'inactive', classes: ['task-list__task-badge'], attributes: { id } }
 
 const mapDataToTaskList = (data, licence) => ([{
   heading: 'Charge information',
@@ -29,24 +29,24 @@ const mapDataToTaskList = (data, licence) => ([{
   tasks: [{
     text: 'Check charge information'
   }]
-}]);
+}])
 
 const flattenAdditionalChargesProperties = ({ additionalCharges, ...element }) => {
   if (additionalCharges) {
-    const { supportedSource, isSupplyPublicWater } = additionalCharges;
-    element.isAdditionalCharges = true;
-    element.isSupportedSource = !!supportedSource;
-    element.isSupplyPublicWater = isSupplyPublicWater;
-    const { id, name } = supportedSource || {};
+    const { supportedSource, isSupplyPublicWater } = additionalCharges
+    element.isAdditionalCharges = true
+    element.isSupportedSource = !!supportedSource
+    element.isSupplyPublicWater = isSupplyPublicWater
+    const { id, name } = supportedSource || {}
     if (id) {
-      element.supportedSourceId = id;
+      element.supportedSourceId = id
     }
     if (name) {
-      element.supportedSourceName = name;
+      element.supportedSourceName = name
     }
   }
-  return element;
-};
+  return element
+}
 
-exports.mapDataToTaskList = mapDataToTaskList;
-exports.flattenAdditionalChargesProperties = flattenAdditionalChargesProperties;
+exports.mapDataToTaskList = mapDataToTaskList
+exports.flattenAdditionalChargesProperties = flattenAdditionalChargesProperties

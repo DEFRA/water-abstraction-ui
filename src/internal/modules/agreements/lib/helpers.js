@@ -1,29 +1,29 @@
-'use strict';
+'use strict'
 
-const { get } = require('lodash');
-const sessionHelpers = require('shared/lib/session-helpers');
-const urlJoin = require('url-join');
+const { get } = require('lodash')
+const sessionHelpers = require('shared/lib/session-helpers')
+const urlJoin = require('url-join')
 
-const { handleRequest, getValues } = require('shared/lib/forms/');
-const { reducer } = require('./reducer');
+const { handleRequest, getValues } = require('shared/lib/forms/')
+const { reducer } = require('./reducer')
 
 const endAgreementSessionManager = (request, agreementId, data) => {
-  const sessionKey = `endAgreement.${agreementId}`;
-  return sessionHelpers.saveToSession(request, sessionKey, data);
-};
+  const sessionKey = `endAgreement.${agreementId}`
+  return sessionHelpers.saveToSession(request, sessionKey, data)
+}
 
 const clearEndAgreementSessionData = (request, agreementId) => {
-  const sessionKey = `endAgreement.${agreementId}`;
-  return request.yar.clear(sessionKey);
-};
+  const sessionKey = `endAgreement.${agreementId}`
+  return request.yar.clear(sessionKey)
+}
 
-const getAddAgreementSessionKey = request => `licence.${request.params.licenceId}.create-agreement`;
+const getAddAgreementSessionKey = request => `licence.${request.params.licenceId}.create-agreement`
 
-const getAddAgreementSessionData = request => request.yar.get(getAddAgreementSessionKey(request));
+const getAddAgreementSessionData = request => request.yar.get(getAddAgreementSessionKey(request))
 
-const setAddAgreementSessionData = (request, data) => request.yar.set(getAddAgreementSessionKey(request), data);
+const setAddAgreementSessionData = (request, data) => request.yar.set(getAddAgreementSessionKey(request), data)
 
-const clearAddAgreementSessionData = request => request.yar.clear(getAddAgreementSessionKey(request));
+const clearAddAgreementSessionData = request => request.yar.clear(getAddAgreementSessionKey(request))
 
 /**
  * Generic post handler
@@ -35,29 +35,29 @@ const clearAddAgreementSessionData = request => request.yar.clear(getAddAgreemen
  * @return {Object}
  */
 const createAddAgreementPostHandler = (request, h, formContainer, actionCreator, tail) => {
-  const form = handleRequest(formContainer.form(request), request, formContainer.schema(request));
+  const form = handleRequest(formContainer.form(request), request, formContainer.schema(request))
 
   if (form.isValid) {
-    const currentState = getAddAgreementSessionData(request);
-    const nextState = reducer(currentState, actionCreator(request, getValues(form)));
-    setAddAgreementSessionData(request, nextState);
+    const currentState = getAddAgreementSessionData(request)
+    const nextState = reducer(currentState, actionCreator(request, getValues(form)))
+    setAddAgreementSessionData(request, nextState)
 
     // Is the user within the 'check your answers' flow?
-    const check = get(request, 'query.check', false);
+    const check = get(request, 'query.check', false)
     const redirectPath = check
       ? `/licences/${request.pre.licence.id}/agreements/check-answers`
-      : urlJoin(`/licences/${request.pre.licence.id}/agreements/`, tail);
+      : urlJoin(`/licences/${request.pre.licence.id}/agreements/`, tail)
 
     // Redirect to next page in flow
-    return h.redirect(redirectPath);
+    return h.redirect(redirectPath)
   }
   // Redirect to redisplay form with errors
-  return h.postRedirectGet(form);
-};
+  return h.postRedirectGet(form)
+}
 
-exports.endAgreementSessionManager = endAgreementSessionManager;
-exports.clearEndAgreementSessionData = clearEndAgreementSessionData;
+exports.endAgreementSessionManager = endAgreementSessionManager
+exports.clearEndAgreementSessionData = clearEndAgreementSessionData
 
-exports.getAddAgreementSessionData = getAddAgreementSessionData;
-exports.createAddAgreementPostHandler = createAddAgreementPostHandler;
-exports.clearAddAgreementSessionData = clearAddAgreementSessionData;
+exports.getAddAgreementSessionData = getAddAgreementSessionData
+exports.createAddAgreementPostHandler = createAddAgreementPostHandler
+exports.clearAddAgreementSessionData = clearAddAgreementSessionData

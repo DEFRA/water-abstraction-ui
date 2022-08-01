@@ -19,4 +19,4 @@ module.exports = {
   acceptanceTestsProxy: require('shared/plugins/acceptance-tests-proxy'),
   csp: require('shared/plugins/csp'),
   internalUserId: require('./internal-user-id')
-};
+}

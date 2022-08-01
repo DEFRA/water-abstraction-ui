@@ -1,11 +1,11 @@
-'use strict';
+'use strict'
 
-const { cloneDeep, get, isEmpty } = require('lodash');
-const fields = require('./fields');
-const mappers = require('./mappers');
-const { mapFields } = require('./mapFields');
-const validationAdapterFactory = require('./validationAdapters');
-const Joi = require('joi');
+const { cloneDeep, get, isEmpty } = require('lodash')
+const fields = require('./fields')
+const mappers = require('./mappers')
+const { mapFields } = require('./mapFields')
+const validationAdapterFactory = require('./validationAdapters')
+const Joi = require('joi')
 /**
  * Creates the form skeleton which will have fields added to.
  *
@@ -23,8 +23,8 @@ const formFactory = (action, method = 'POST', validationType = 'joi', options = 
     errors: [],
     validationType,
     ...options
-  };
-};
+  }
+}
 
 /**
  * Sets values on form fields
@@ -34,17 +34,17 @@ const formFactory = (action, method = 'POST', validationType = 'joi', options = 
  */
 const setValues = (form, values) => {
   return mapFields(form, (field) => {
-    const { name, value, ...rest } = field;
+    const { name, value, ...rest } = field
 
-    const newValue = get(values, name, value);
+    const newValue = get(values, name, value)
 
     return {
       name,
       ...rest,
       value: newValue
-    };
-  });
-};
+    }
+  })
+}
 
 /**
  * Recursively get all values from form
@@ -52,15 +52,15 @@ const setValues = (form, values) => {
  * @return {Object}
  */
 const getValues = (form) => {
-  const values = {};
+  const values = {}
   mapFields(form, (field) => {
     if (field.name) {
-      values[field.name] = field.value === '' ? null : field.value;
+      values[field.name] = field.value === '' ? null : field.value
     }
-    return field;
-  });
-  return values;
-};
+    return field
+  })
+  return values
+}
 
 /**
  * Given a form object, gets all custom error messages as a flat key/value
@@ -69,15 +69,15 @@ const getValues = (form) => {
  * @return {Object} custom errors objects
  */
 const getCustomErrors = (form) => {
-  const errors = {};
+  const errors = {}
   mapFields(form, (field) => {
     if (field.name && field.options.errors) {
-      errors[field.name] = field.options.errors;
+      errors[field.name] = field.options.errors
     }
-    return field;
-  });
-  return errors;
-};
+    return field
+  })
+  return errors
+}
 
 /**
  * Import data from request to internal format, passing through mappers
@@ -86,16 +86,16 @@ const getCustomErrors = (form) => {
  * @return {Object} payload mapped to internal formats
  */
 const importData = (form, payload) => {
-  const data = {};
+  const data = {}
   mapFields(form, (field) => {
     if (field.name) {
-      const mapper = field.options.mapper || 'defaultMapper';
-      data[field.name] = mappers[mapper].import(field.name, payload, field);
+      const mapper = field.options.mapper || 'defaultMapper'
+      data[field.name] = mappers[mapper].import(field.name, payload, field)
     }
-    return field;
-  });
-  return data;
-};
+    return field
+  })
+  return data
+}
 
 /**
  * Runs data which is output from the validator through the postValidate
@@ -105,21 +105,21 @@ const importData = (form, payload) => {
  * @return {Object}        - flat object of data run through mappers postValidate
  */
 const postValidate = (form, values) => {
-  const data = {};
+  const data = {}
   mapFields(form, (field) => {
     if (field.name) {
-      const mapper = field.options.mapper || 'defaultMapper';
+      const mapper = field.options.mapper || 'defaultMapper'
       data[field.name] =
-        mappers[mapper].postValidate(values[field.name]);
+        mappers[mapper].postValidate(values[field.name])
     }
-    return field;
-  });
-  return data;
-};
+    return field
+  })
+  return data
+}
 
 const getPayload = (form, request) => form.method.toUpperCase() === 'POST'
   ? request.payload
-  : request.query;
+  : request.query
 
 /**
  * Handles HTTP request on form object
@@ -130,23 +130,23 @@ const getPayload = (form, request) => form.method.toUpperCase() === 'POST'
  */
 const handleRequest = (form, request, validationSchema, options = {}) => {
   if (form.method === 'get' && isEmpty(request.query)) {
-    return form;
+    return form
   }
 
-  const adapter = validationAdapterFactory.load(form.validationType);
-  let f = cloneDeep(form);
-  f.isSubmitted = true;
-  const payload = getPayload(form, request);
-  const requestData = importData(f, payload);
+  const adapter = validationAdapterFactory.load(form.validationType)
+  let f = cloneDeep(form)
+  f.isSubmitted = true
+  const payload = getPayload(form, request)
+  const requestData = importData(f, payload)
 
-  const schema = Joi.isSchema(validationSchema) ? validationSchema : Joi.object().keys(adapter.createSchemaFromForm(form));
-  const { error, value } = schema.validate(requestData, options);
-  const customErrors = getCustomErrors(form);
-  const formattedErrors = adapter.formatErrors(error, customErrors);
-  f = applyErrors(f, formattedErrors);
-  f.isValid = !error;
-  return setValues(f, postValidate(form, value));
-};
+  const schema = Joi.isSchema(validationSchema) ? validationSchema : Joi.object().keys(adapter.createSchemaFromForm(form))
+  const { error, value } = schema.validate(requestData, options)
+  const customErrors = getCustomErrors(form)
+  const formattedErrors = adapter.formatErrors(error, customErrors)
+  f = applyErrors(f, formattedErrors)
+  f.isValid = !error
+  return setValues(f, postValidate(form, value))
+}
 
 /**
  * Applies errors to fields and returns a new form object
@@ -156,27 +156,27 @@ const handleRequest = (form, request, validationSchema, options = {}) => {
  */
 const applyErrors = (form, formattedErrors = []) => {
   if (formattedErrors.length === 0) {
-    return form;
+    return form
   }
 
   const f = mapFields(form, (field) => {
     const errors = formattedErrors.filter(err => {
-      return err.name === field.name;
-    });
+      return err.name === field.name
+    })
     return {
       ...field,
       errors
-    };
-  });
+    }
+  })
 
-  f.errors = formattedErrors;
-  return f;
-};
+  f.errors = formattedErrors
+  return f
+}
 
-exports.setValues = setValues;
-exports.getValues = getValues;
-exports.formFactory = formFactory;
-exports.handleRequest = handleRequest;
-exports.fields = fields;
-exports.importData = importData;
-exports.applyErrors = applyErrors;
+exports.setValues = setValues
+exports.getValues = getValues
+exports.formFactory = formFactory
+exports.handleRequest = handleRequest
+exports.fields = fields
+exports.importData = importData
+exports.applyErrors = applyErrors

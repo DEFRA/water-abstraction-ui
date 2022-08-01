@@ -1,3 +1,3 @@
-'use strict';
+'use strict'
 
-exports.NEW_ACCOUNT = 'new_account';
+exports.NEW_ACCOUNT = 'new_account'

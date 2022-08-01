@@ -1,8 +1,8 @@
-const controller = require('./controller');
+const controller = require('./controller')
 
-const isAcceptanceTestTarget = ['local', 'dev', 'development', 'test', 'qa', 'preprod'].includes(process.env.NODE_ENV);
+const isAcceptanceTestTarget = ['local', 'dev', 'development', 'test', 'qa', 'preprod'].includes(process.env.NODE_ENV)
 
-const routes = [];
+const routes = []
 
 if (isAcceptanceTestTarget) {
   routes.push({
@@ -13,7 +13,7 @@ if (isAcceptanceTestTarget) {
       auth: false,
       description: 'Proxies requests to the water service for acceptance tests'
     }
-  });
+  })
 }
 
-module.exports = routes;
+module.exports = routes

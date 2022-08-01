@@ -1,10 +1,10 @@
-const EntitiesApiClient = require('shared/lib/connectors/services/crm/EntitiesApiClient');
-const DocumentVerificationsApiClient = require('shared/lib/connectors/services/crm/DocumentVerificationsApiClient');
-const EntityRolesApiClient = require('./EntityRolesApiClient');
-const DocumentsApiClient = require('./DocumentsApiClient');
-const VerificationsApiClient = require('./VerificationsApiClient');
+const EntitiesApiClient = require('shared/lib/connectors/services/crm/EntitiesApiClient')
+const DocumentVerificationsApiClient = require('shared/lib/connectors/services/crm/DocumentVerificationsApiClient')
+const EntityRolesApiClient = require('./EntityRolesApiClient')
+const DocumentsApiClient = require('./DocumentsApiClient')
+const VerificationsApiClient = require('./VerificationsApiClient')
 
-const { logger } = require('../../../../logger');
+const { logger } = require('../../../../logger')
 
 module.exports = config => ({
   entities: new EntitiesApiClient(config, logger),
@@ -12,4 +12,4 @@ module.exports = config => ({
   documentVerifications: new DocumentVerificationsApiClient(config, logger),
   documents: new DocumentsApiClient(config, logger),
   verifications: new VerificationsApiClient(config, logger)
-});
+})

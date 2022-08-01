@@ -1,20 +1,20 @@
-const { get } = require('lodash');
+const { get } = require('lodash')
 
 const {
   isReturnsUser, isPrimaryUser, isAuthenticated
-} = require('../permissions');
+} = require('../permissions')
 
-const { createLink, setActiveLink } = require('./helpers');
+const { createLink, setActiveLink } = require('./helpers')
 
 const createNavLink = (label, path, id) => {
-  return createLink(label, path, id, { id: `navbar-${id}` });
-};
+  return createLink(label, path, id, { id: `navbar-${id}` })
+}
 
 const externalLinks = {
   licences: createNavLink('View licences', '/licences', 'view'),
   returns: createNavLink('Manage returns', '/returns', 'returns'),
   manage: createNavLink('Add licences or give access', '/manage_licences', 'manage')
-};
+}
 
 /**
  * If a route is configured to load the user licence count,
@@ -24,8 +24,8 @@ const externalLinks = {
  * user does have licences.
  */
 const userHasLicences = request => {
-  return get(request, 'licence.userLicenceCount') !== 0;
-};
+  return get(request, 'licence.userLicenceCount') !== 0
+}
 
 /**
  * Get links for public users
@@ -33,19 +33,19 @@ const userHasLicences = request => {
  * @return {Array}         array of links
  */
 const getExternalNav = (request) => {
-  const links = [externalLinks.licences];
+  const links = [externalLinks.licences]
 
   if (userHasLicences(request)) {
     if (isReturnsUser(request)) {
-      links.push(externalLinks.returns);
+      links.push(externalLinks.returns)
     }
 
     if (isPrimaryUser(request)) {
-      links.push(externalLinks.manage);
+      links.push(externalLinks.manage)
     }
   }
-  return links;
-};
+  return links
+}
 
 /**
  * Gets main nav links for displaying tabs
@@ -54,16 +54,16 @@ const getExternalNav = (request) => {
  */
 const getMainNav = (request) => {
   if (!isAuthenticated(request)) {
-    return [];
+    return []
   }
 
-  const links = getExternalNav(request);
+  const links = getExternalNav(request)
 
   // Add active boolean to correct link
-  const activeNavLink = get(request, 'view.activeNavLink');
-  return setActiveLink(links, activeNavLink);
-};
+  const activeNavLink = get(request, 'view.activeNavLink')
+  return setActiveLink(links, activeNavLink)
+}
 
 module.exports = {
   getMainNav
-};
+}

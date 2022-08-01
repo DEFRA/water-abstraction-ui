@@ -1,13 +1,13 @@
-const Joi = require('joi');
-const { get } = require('lodash');
-const { formFactory, fields } = require('shared/lib/forms/');
-const session = require('../../lib/session');
+const Joi = require('joi')
+const { get } = require('lodash')
+const { formFactory, fields } = require('shared/lib/forms/')
+const session = require('../../lib/session')
 
 const newTagAlertTypeForm = request => {
-  const f = formFactory(request.path);
+  const f = formFactory(request.path)
 
-  const defaultAlertType = get(session.get(request), 'alertType.value');
-  const defaultVolumeLimitedSelection = get(session.get(request), 'volumeLimited.value');
+  const defaultAlertType = get(session.get(request), 'alertType.value')
+  const defaultVolumeLimitedSelection = get(session.get(request), 'volumeLimited.value')
 
   f.fields.push(fields.radio('alertType', {
     errors: {
@@ -38,12 +38,12 @@ const newTagAlertTypeForm = request => {
         }]
       }, defaultVolumeLimitedSelection)]
     }]
-  }, defaultAlertType));
+  }, defaultAlertType))
 
-  f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
-  return f;
-};
+  f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
+  return f
+}
 
 const newTagAlertTypeSchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
@@ -55,7 +55,7 @@ const newTagAlertTypeSchema = () => Joi.object().keys({
       then: Joi.boolean().required()
     }
   )
-});
+})
 
-exports.form = newTagAlertTypeForm;
-exports.schema = newTagAlertTypeSchema;
+exports.form = newTagAlertTypeForm
+exports.schema = newTagAlertTypeSchema

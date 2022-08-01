@@ -1,6 +1,6 @@
-const Joi = require('joi');
-const { formFactory, fields, setValues } = require('shared/lib/forms');
-const { getEmailRegex } = require('./create-user');
+const Joi = require('joi')
+const { formFactory, fields, setValues } = require('shared/lib/forms')
+const { getEmailRegex } = require('./create-user')
 
 const choices = [
   {
@@ -43,7 +43,7 @@ const choices = [
     label: 'Waste and Industry Regulatory Service',
     hint: 'Process returns. '
   }
-];
+]
 
 /**
  * Creates an object representing the form for assigning a permissions group
@@ -52,11 +52,11 @@ const choices = [
  * @param {String} permission The key for the currently assigned group (e.g. basic|psc|wirs)
  */
 const form = (request, permission, newUser) => {
-  const { csrfToken } = request.view;
+  const { csrfToken } = request.view
 
   const f = formFactory(newUser
     ? '/account/create-user/set-permissions'
-    : `/user/${request.params.userId}/update-permissions`);
+    : `/user/${request.params.userId}/update-permissions`)
 
   f.fields.push(fields.radio('permission', {
     choices,
@@ -64,25 +64,25 @@ const form = (request, permission, newUser) => {
       'any.required': { message: 'Select the permissions for the user' },
       'any.only': { message: 'Select the permissions for the user' }
     }
-  }));
+  }))
 
   if (newUser) {
-    const newAccountEmail = request.yar.get('newInternalUserAccountEmail');
-    f.fields.push(fields.hidden('newUserEmail', {}, newAccountEmail));
+    const newAccountEmail = request.yar.get('newInternalUserAccountEmail')
+    f.fields.push(fields.hidden('newUserEmail', {}, newAccountEmail))
   }
 
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
 
-  return setValues(f, { permission });
-};
+  return setValues(f, { permission })
+}
 
 const schema = Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   permission: Joi.string().required().valid(...choices.map(choice => choice.value)),
   newUserEmail: Joi.string().email().lowercase().trim().regex(getEmailRegex())
-});
+})
 
-exports.setPermissionsForm = form;
-exports.setPermissionsSchema = schema;
-exports.permissionsChoices = choices;
+exports.setPermissionsForm = form
+exports.setPermissionsSchema = schema
+exports.permissionsChoices = choices

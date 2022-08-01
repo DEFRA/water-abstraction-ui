@@ -1,4 +1,4 @@
-const { get } = require('lodash');
+const { get } = require('lodash')
 
 /**
  * Performs a redirection using a script/meta tag rather than HTTP header
@@ -7,16 +7,16 @@ const { get } = require('lodash');
  * @param  {String} redirectPath - path to redirect to
  */
 const metaRedirect = function (redirectPath) {
-  const nonce = get(this, 'request.plugins.blankie.nonces.script', {});
-  const meta = `<meta http-equiv="refresh" content="0; url="${redirectPath}" />`;
-  const script = `<script nonce=${nonce}>location.href='${redirectPath}';</script>`;
-  const html = meta + script;
-  return this.response(html);
-};
+  const nonce = get(this, 'request.plugins.blankie.nonces.script', {})
+  const meta = `<meta http-equiv="refresh" content="0; url="${redirectPath}" />`
+  const script = `<script nonce=${nonce}>location.href='${redirectPath}';</script>`
+  const html = meta + script
+  return this.response(html)
+}
 
 module.exports = {
   register: (server) => {
-    server.decorate('toolkit', 'metaRedirect', metaRedirect);
+    server.decorate('toolkit', 'metaRedirect', metaRedirect)
   },
 
   pkg: {
@@ -25,4 +25,4 @@ module.exports = {
   },
 
   _metaRedirect: metaRedirect
-};
+}

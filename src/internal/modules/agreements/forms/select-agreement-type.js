@@ -1,11 +1,11 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
-const { get } = require('lodash');
+const Joi = require('joi')
+const { get } = require('lodash')
 
-const { formFactory, fields } = require('shared/lib/forms/');
-const { agreementDescriptions } = require('shared/lib/mappers/agreements');
-const { getFormAction } = require('./lib/routing');
+const { formFactory, fields } = require('shared/lib/forms/')
+const { agreementDescriptions } = require('shared/lib/mappers/agreements')
+const { getFormAction } = require('./lib/routing')
 
 /**
  * Gets field description for financial agreement type radio buttons
@@ -24,29 +24,29 @@ const getFinancialAgreementTypeField = value => fields.radio('financialAgreement
     value: key,
     label: agreementDescriptions[key]
   }))
-}, value);
+}, value)
 
 /**
  * Gets form to select agreement type
  */
 const selectAgreementTypeForm = request => {
-  const { csrfToken } = request.view;
+  const { csrfToken } = request.view
 
-  const financialAgreementCode = get(request, 'pre.flowState.code');
+  const financialAgreementCode = get(request, 'pre.flowState.code')
 
-  const f = formFactory(getFormAction(request), 'POST');
+  const f = formFactory(getFormAction(request), 'POST')
 
-  f.fields.push(getFinancialAgreementTypeField(financialAgreementCode));
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
+  f.fields.push(getFinancialAgreementTypeField(financialAgreementCode))
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
 
-  return f;
-};
+  return f
+}
 
 const selectAgreementTypeSchema = () => Joi.object({
   csrf_token: Joi.string().uuid().required(),
   financialAgreementCode: Joi.string().required().valid(...Object.keys(agreementDescriptions))
-});
+})
 
-exports.form = selectAgreementTypeForm;
-exports.schema = selectAgreementTypeSchema;
+exports.form = selectAgreementTypeForm
+exports.schema = selectAgreementTypeSchema

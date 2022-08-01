@@ -1,5 +1,5 @@
-const ServiceClient = require('shared/lib/connectors/services/ServiceClient');
-const got = require('got');
+const ServiceClient = require('shared/lib/connectors/services/ServiceClient')
+const got = require('got')
 
 class ReportingService extends ServiceClient {
   /**
@@ -9,16 +9,16 @@ class ReportingService extends ServiceClient {
    * @returns {Request} Request body
    */
   getReport (userId, reportIdentifier) {
-    const uri = this.joinUrl('report/', reportIdentifier);
+    const uri = this.joinUrl('report/', reportIdentifier)
     const options = {
       headers: {
         Authorization: `Bearer ${process.env.JWT_TOKEN}`,
         'defra-internal-user-id': `${userId}`
       }
-    };
+    }
 
-    return got.stream(uri, options);
+    return got.stream(uri, options)
   }
 }
 
-module.exports = ReportingService;
+module.exports = ReportingService

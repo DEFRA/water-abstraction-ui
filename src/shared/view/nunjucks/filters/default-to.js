@@ -1,3 +1,3 @@
-const { defaultTo } = require('lodash');
+const { defaultTo } = require('lodash')
 
-exports.defaultTo = defaultTo;
+exports.defaultTo = defaultTo

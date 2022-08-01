@@ -1,28 +1,28 @@
-const coreRoutes = require('./core/routes');
-const contentRoutes = require('./content/routes');
-const notificationsRoutes = require('./notifications/routes');
-const reportsRoutes = require('./notifications-reports/routes');
-const contactDetailsRoutes = require('./contact-details/routes');
-const abstractionReformRoutes = require('./abstraction-reform/routes');
-const wr22Routes = require('./abstraction-reform/wr22-routes');
-const returnsRoutes = require('./returns/routes');
-const returnNotificationRoutes = require('./returns-notifications/routes');
-const returnsReports = require('./returns-reports/routes');
-const internalSearch = require('./internal-search/routes');
-const waiting = require('./waiting/routes');
-const batchNotifications = require('./batch-notifications/routes');
-const accountRoutes = require('./account/routes');
-const unlinkLicenceRoutes = require('./unlink-licence/routes');
-const billingRoutes = require('./billing/routes');
-const chargeInformationRoutes = require('./charge-information/routes');
-const chargeInformationUploadRoutes = require('./charge-information-upload/routes');
-const agreementsRoutes = require('./agreements/routes');
-const reportingRoutes = require('./reporting/routes');
-const kpiReporting = require('../../internal/modules/kpi-reporting/routes');
-const viewLicences = require('./view-licences/routes');
-const gaugingStations = require('./gauging-stations/routes');
-const customers = require('./customers/routes');
-const notes = require('./notes/routes');
+const coreRoutes = require('./core/routes')
+const contentRoutes = require('./content/routes')
+const notificationsRoutes = require('./notifications/routes')
+const reportsRoutes = require('./notifications-reports/routes')
+const contactDetailsRoutes = require('./contact-details/routes')
+const abstractionReformRoutes = require('./abstraction-reform/routes')
+const wr22Routes = require('./abstraction-reform/wr22-routes')
+const returnsRoutes = require('./returns/routes')
+const returnNotificationRoutes = require('./returns-notifications/routes')
+const returnsReports = require('./returns-reports/routes')
+const internalSearch = require('./internal-search/routes')
+const waiting = require('./waiting/routes')
+const batchNotifications = require('./batch-notifications/routes')
+const accountRoutes = require('./account/routes')
+const unlinkLicenceRoutes = require('./unlink-licence/routes')
+const billingRoutes = require('./billing/routes')
+const chargeInformationRoutes = require('./charge-information/routes')
+const chargeInformationUploadRoutes = require('./charge-information-upload/routes')
+const agreementsRoutes = require('./agreements/routes')
+const reportingRoutes = require('./reporting/routes')
+const kpiReporting = require('../../internal/modules/kpi-reporting/routes')
+const viewLicences = require('./view-licences/routes')
+const gaugingStations = require('./gauging-stations/routes')
+const customers = require('./customers/routes')
+const notes = require('./notes/routes')
 
 module.exports = [
   ...Object.values(coreRoutes),
@@ -51,4 +51,4 @@ module.exports = [
   ...Object.values(gaugingStations),
   ...Object.values(customers),
   ...Object.values(notes)
-];
+]

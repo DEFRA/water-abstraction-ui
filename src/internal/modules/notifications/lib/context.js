@@ -1,5 +1,5 @@
-const { get } = require('lodash');
-const services = require('../../../lib/connectors/services');
+const { get } = require('lodash')
+const services = require('../../../lib/connectors/services')
 
 /**
  * Gets user data
@@ -11,21 +11,21 @@ async function getUser (userId) {
   const {
     data: user,
     error: idmError
-  } = await services.idm.users.findOne(userId);
+  } = await services.idm.users.findOne(userId)
 
   if (idmError) {
-    throw new Error(idmError);
+    throw new Error(idmError)
   }
   if (!user) {
-    throw new Error(`User ${userId} not found`);
+    throw new Error(`User ${userId} not found`)
   }
   // Parse user_data if string
-  const { user_data: userData } = user;
+  const { user_data: userData } = user
 
   return {
     ...user,
     user_data: typeof (userData) === 'string' ? JSON.parse(userData) : userData
-  };
+  }
 }
 
 /**
@@ -35,17 +35,17 @@ async function getUser (userId) {
  * @return {Promise} resolves with context data for Nunjucks templates
  */
 async function getContext (userId) {
-  const context = {};
+  const context = {}
 
   // Load context data for default parameter values
-  const user = await getUser(userId);
+  const user = await getUser(userId)
 
-  context.contactDetails = get(user, 'user_data.contactDetails', {});
+  context.contactDetails = get(user, 'user_data.contactDetails', {})
 
-  return context;
+  return context
 }
 
 module.exports = {
   getContext,
   getUser
-};
+}

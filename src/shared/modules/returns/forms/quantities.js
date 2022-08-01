@@ -1,19 +1,19 @@
-const Joi = require('joi');
-const { get } = require('lodash');
-const { fields } = require('shared/lib/forms');
-const { getLineName, getLineLabel } = require('./common');
-const { maxPrecision } = require('shared/lib/number-formatter');
-const { getSuffix } = require('./common');
+const Joi = require('joi')
+const { get } = require('lodash')
+const { fields } = require('shared/lib/forms')
+const { getLineName, getLineLabel } = require('./common')
+const { maxPrecision } = require('shared/lib/number-formatter')
+const { getSuffix } = require('./common')
 /**
  * Returns form lines
  * @param {Object} returns data model
  * @return {Array} returns lines if set and not empty, otherwise required lines
  */
 const getFormLines = data =>
-  get(data, 'lines.length') > 0 ? data.lines : data.requiredLines;
+  get(data, 'lines.length') > 0 ? data.lines : data.requiredLines
 
 const getLineField = (line, suffix, isFirstLine) => {
-  const name = getLineName(line);
+  const name = getLineName(line)
 
   return fields.text(name, {
     label: getLineLabel(line),
@@ -33,44 +33,44 @@ const getLineField = (line, suffix, isFirstLine) => {
         message: 'Enter an amount of 0 or above'
       }
     }
-  });
-};
+  })
+}
 
 const getLineFields = data => {
-  const suffix = getSuffix(data.reading.units);
-  const lines = getFormLines(data);
+  const suffix = getSuffix(data.reading.units)
+  const lines = getFormLines(data)
   return lines.map((line, index) => {
-    return getLineField(line, suffix, index === 0);
-  });
-};
+    return getLineField(line, suffix, index === 0)
+  })
+}
 
 const getLineValues = (lines) => {
   return lines.reduce((acc, line) => {
-    const name = getLineName(line);
+    const name = getLineName(line)
     return {
       ...acc,
       [name]: maxPrecision(line.quantity, 3)
-    };
-  }, {});
-};
+    }
+  }, {})
+}
 
 const quantitiesSchema = (request, data) => {
-  const lines = getFormLines(data);
+  const lines = getFormLines(data)
 
   const lineSchema = lines.reduce((acc, line) => {
-    const name = getLineName(line);
+    const name = getLineName(line)
     return {
       ...acc,
       [name]: Joi.number().min(0).allow(null)
-    };
-  }, {});
+    }
+  }, {})
 
   return Joi.object().options({ abortEarly: false }).keys({
     csrf_token: Joi.string().guid().required(),
     ...lineSchema
-  });
-};
+  })
+}
 
-exports.getLineFields = getLineFields;
-exports.getLineValues = getLineValues;
-exports.schema = quantitiesSchema;
+exports.getLineFields = getLineFields
+exports.getLineValues = getLineValues
+exports.schema = quantitiesSchema

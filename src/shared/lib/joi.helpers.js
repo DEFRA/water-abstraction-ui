@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
-const { isObject } = require('lodash/lang');
+const Joi = require('joi')
+const { isObject } = require('lodash/lang')
 
 /**
  * Creates a Joi schema and applies defaults to it
@@ -12,16 +12,16 @@ const { isObject } = require('lodash/lang');
  */
 const createSchema = (schema = {}, options = {}) => {
   if (!isObject(schema)) {
-    throw new Error('Invalid schema type, should be plain object or existing joi schema');
+    throw new Error('Invalid schema type, should be plain object or existing joi schema')
   }
 
-  const isValidSchema = Joi.isSchema(schema);
+  const isValidSchema = Joi.isSchema(schema)
   const schemaOptions = {
     abortEarly: false,
     ...options
-  };
+  }
 
-  return isValidSchema ? schema.options(schemaOptions) : Joi.object().options(schemaOptions).keys(schema);
-};
+  return isValidSchema ? schema.options(schemaOptions) : Joi.object().options(schemaOptions).keys(schema)
+}
 
-exports.createSchema = createSchema;
+exports.createSchema = createSchema

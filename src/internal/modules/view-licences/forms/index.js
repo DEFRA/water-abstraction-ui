@@ -1,1 +1,1 @@
-exports.markForSupplementaryBilling = require('./mark-for-supplementary-billing');
+exports.markForSupplementaryBilling = require('./mark-for-supplementary-billing')

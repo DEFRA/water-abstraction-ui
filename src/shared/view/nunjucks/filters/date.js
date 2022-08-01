@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
-const { isNil } = require('lodash');
-const moment = require('moment');
+const { isNil } = require('lodash')
+const moment = require('moment')
 
 /**
  * Format a timestamp
@@ -11,10 +11,10 @@ const moment = require('moment');
  */
 const date = (value, format = 'D MMMM YYYY') => {
   if (isNil(value)) {
-    return undefined;
+    return undefined
   }
-  const m = moment(value);
-  return m.isValid() ? m.format(format) : undefined;
-};
+  const m = moment(value)
+  return m.isValid() ? m.format(format) : undefined
+}
 
-exports.date = date;
+exports.date = date

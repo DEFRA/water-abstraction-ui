@@ -1,7 +1,7 @@
-const Joi = require('joi');
-const controller = require('./controller');
+const Joi = require('joi')
+const controller = require('./controller')
 
-const { scope } = require('../../lib/constants');
+const { scope } = require('../../lib/constants')
 
 exports.getWaiting = {
   method: 'GET',
@@ -26,4 +26,4 @@ exports.getWaiting = {
       }
     }
   }
-};
+}

@@ -1,22 +1,22 @@
-const gulp = require('gulp');
-const sass = require('gulp-sass')(require('sass'));
-const sourcemaps = require('gulp-sourcemaps');
-const concat = require('gulp-concat');
-const uglify = require('gulp-uglify');
-const del = require('del');
+const gulp = require('gulp')
+const sass = require('gulp-sass')(require('sass'))
+const sourcemaps = require('gulp-sourcemaps')
+const concat = require('gulp-concat')
+const uglify = require('gulp-uglify')
+const del = require('del')
 
 const paths = {
   public: 'public/'
-};
+}
 
-gulp.task('clean', () => del([paths.public]));
+gulp.task('clean', () => del([paths.public]))
 
 const combineMinifyJs = (files, destination) => {
   return gulp.src(files)
     .pipe(concat(destination))
     .pipe(uglify({ ie8: true }))
-    .pipe(gulp.dest('./public/javascripts'));
-};
+    .pipe(gulp.dest('./public/javascripts'))
+}
 
 gulp.task('combine-minify-js', () => {
   // All JS files that are required by front end in order
@@ -30,17 +30,17 @@ gulp.task('combine-minify-js', () => {
     './src/shared/public/javascripts/json-forms-toggle.js',
     './src/shared/public/javascripts/toggle-visibility.js',
     './src/shared/public/javascripts/cookie-banner.js'
-  ];
+  ]
 
-  return combineMinifyJs(files, 'application.all.min.js');
-});
+  return combineMinifyJs(files, 'application.all.min.js')
+})
 
 gulp.task('copy-static-assets-orig', () => {
   // copy images and javascript to public
   return gulp
     .src('src/shared/public/{images/**/*.*,javascripts/**/*.*,stylesheets/**/*.*,data/**/*.*}')
-    .pipe(gulp.dest(paths.public));
-});
+    .pipe(gulp.dest(paths.public))
+})
 
 /**
  * Copy all the images supplied from the govuk-frontend
@@ -50,14 +50,14 @@ gulp.task('copy-static-assets-orig', () => {
 gulp.task('copy-govuk-frontend-images', () => {
   return gulp
     .src('./node_modules/govuk-frontend/govuk/assets/images/*.*')
-    .pipe(gulp.dest(paths.public + '/images'));
-});
+    .pipe(gulp.dest(paths.public + '/images'))
+})
 
 gulp.task('copy-govuk-frontend-fonts', () => {
   return gulp
     .src('./node_modules/govuk-frontend/govuk/assets/fonts/*.*')
-    .pipe(gulp.dest(paths.public + '/fonts'));
-});
+    .pipe(gulp.dest(paths.public + '/fonts'))
+})
 
 /**
  * Copies assets from the sources to the public/javascripts folder.
@@ -71,8 +71,8 @@ gulp.task('copy-static-javascript', () => {
     .src([
       'node_modules/accessible-autocomplete/dist/accessible-autocomplete.min.js'
     ])
-    .pipe(gulp.dest(paths.public + '/javascripts'));
-});
+    .pipe(gulp.dest(paths.public + '/javascripts'))
+})
 
 /**
  * Copies assets from the sources to the public/stylesheets folder.
@@ -86,8 +86,8 @@ gulp.task('copy-static-styles', () => {
     .src([
       'node_modules/accessible-autocomplete/dist/accessible-autocomplete.min.css'
     ])
-    .pipe(gulp.dest(paths.public + '/stylesheets'));
-});
+    .pipe(gulp.dest(paths.public + '/stylesheets'))
+})
 
 gulp.task('copy-static-assets', gulp.series(
   'copy-govuk-frontend-images',
@@ -97,7 +97,7 @@ gulp.task('copy-static-assets', gulp.series(
   'copy-static-javascript',
   'copy-static-styles',
   done => done()
-));
+))
 
 // Build the sass-proto
 gulp.task('sass', () => {
@@ -110,12 +110,12 @@ gulp.task('sass', () => {
       ]
     }).on('error', sass.logError))
     .pipe(sourcemaps.write())
-    .pipe(gulp.dest(paths.public + 'stylesheets/'));
-});
+    .pipe(gulp.dest(paths.public + 'stylesheets/'))
+})
 
 gulp.task('sass:watch', () => {
-  return gulp.watch('src/shared/assets/sass/**/*.scss', gulp.series('sass'));
-});
+  return gulp.watch('src/shared/assets/sass/**/*.scss', gulp.series('sass'))
+})
 
 // Build task
 gulp.task('build', gulp.series(
@@ -123,7 +123,7 @@ gulp.task('build', gulp.series(
   'copy-static-assets',
   'sass',
   done => done()
-));
+))
 
 // Default task
-gulp.task('default', gulp.series('build'));
+gulp.task('default', gulp.series('build'))

@@ -1,10 +1,10 @@
-const ServiceClient = require('../ServiceClient');
+const ServiceClient = require('../ServiceClient')
 
 class CommunicationsService extends ServiceClient {
   getCommunication (communicationId) {
-    const url = this.joinUrl('communications', communicationId);
-    return this.serviceRequest.get(url);
+    const url = this.joinUrl('communications', communicationId)
+    return this.serviceRequest.get(url)
   }
 }
 
-module.exports = CommunicationsService;
+module.exports = CommunicationsService

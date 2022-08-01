@@ -1,10 +1,10 @@
-const Joi = require('joi');
-const { formFactory, fields, setValues, applyErrors } = require('shared/lib/forms');
+const Joi = require('joi')
+const { formFactory, fields, setValues, applyErrors } = require('shared/lib/forms')
 
 const verifyNewEmailForm = (request, data = {}) => {
-  const { csrfToken } = request.view;
+  const { csrfToken } = request.view
 
-  const f = formFactory('/account/change-email/verify-new-email');
+  const f = formFactory('/account/change-email/verify-new-email')
 
   f.fields.push(fields.text('verificationCode', {
     type: 'text',
@@ -25,13 +25,13 @@ const verifyNewEmailForm = (request, data = {}) => {
         message: 'Check your code'
       }
     }
-  }));
+  }))
 
-  f.fields.push(fields.button(null, { label: 'Continue' }));
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
+  f.fields.push(fields.button(null, { label: 'Continue' }))
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
 
-  return setValues(f, data);
-};
+  return setValues(f, data)
+}
 
 /**
  * Depending on the error string returned from the water service,
@@ -45,16 +45,16 @@ const verifyNewEmailApplyErrors = (form) => {
     name: 'verificationCode',
     message: 'Check your code',
     summary: 'Check your code'
-  }]);
-};
+  }])
+}
 
-const VERIFICATION_REGEX = /^[0-9]{6}$/;
+const VERIFICATION_REGEX = /^[0-9]{6}$/
 
 const verifyNewEmailSchema = Joi.object({
   csrf_token: Joi.string().guid().required(),
   verificationCode: Joi.string().required().regex(VERIFICATION_REGEX)
-});
+})
 
-exports.verifyNewEmailForm = verifyNewEmailForm;
-exports.verifyNewEmailApplyErrors = verifyNewEmailApplyErrors;
-exports.verifyNewEmailSchema = verifyNewEmailSchema;
+exports.verifyNewEmailForm = verifyNewEmailForm
+exports.verifyNewEmailApplyErrors = verifyNewEmailApplyErrors
+exports.verifyNewEmailSchema = verifyNewEmailSchema

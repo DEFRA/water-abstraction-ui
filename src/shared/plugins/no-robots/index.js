@@ -8,8 +8,8 @@ const plugin = {
       config: {
         auth: false
       }
-    });
+    })
   }
-};
+}
 
-module.exports = plugin;
+module.exports = plugin

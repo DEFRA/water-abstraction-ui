@@ -1,13 +1,13 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
-const { formFactory, fields } = require('shared/lib/forms');
+const Joi = require('joi')
+const { formFactory, fields } = require('shared/lib/forms')
 
 const recipientForm = request => {
-  const { document } = request.pre;
-  const { csrfToken } = request.view;
+  const { document } = request.pre
+  const { csrfToken } = request.view
 
-  const f = formFactory(request.path);
+  const f = formFactory(request.path)
 
   f.fields.push(fields.text('fullName', {
     caption: `Licence ${document.document.licenceNumber}`,
@@ -20,17 +20,17 @@ const recipientForm = request => {
         message: 'Enter a full name'
       }
     }
-  }));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
+  }))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
 
-  return f;
-};
+  return f
+}
 
 const schema = () => Joi.object().keys({
   fullName: Joi.string().required(),
   csrf_token: Joi.string().guid().required()
-});
+})
 
-module.exports.form = recipientForm;
-module.exports.schema = schema;
+module.exports.form = recipientForm
+module.exports.schema = schema

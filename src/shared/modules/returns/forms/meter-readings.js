@@ -1,7 +1,7 @@
-const Joi = require('joi');
-const { get } = require('lodash');
-const { fields, importData } = require('shared/lib/forms');
-const { getLineName, getLineLabel, getFormLines } = require('./common');
+const Joi = require('joi')
+const { get } = require('lodash')
+const { fields, importData } = require('shared/lib/forms')
+const { getLineName, getLineLabel, getFormLines } = require('./common')
 
 const getStartReadingField = label => {
   return fields.text('startReading', {
@@ -18,12 +18,12 @@ const getStartReadingField = label => {
       'any.required': { message: 'Enter a meter start reading' },
       'number.positive': { message: 'This number should be positive' }
     }
-  });
-};
+  })
+}
 
 const getLineField = (line, suffix) => {
-  const name = getLineName(line);
-  const label = getLineLabel(line);
+  const name = getLineName(line)
+  const label = getLineLabel(line)
   return fields.text(name, {
     label,
     autoComplete: false,
@@ -41,28 +41,28 @@ const getLineField = (line, suffix) => {
         message: 'Each meter reading should be higher than or equal to the last'
       }
     }
-  });
-};
+  })
+}
 
-const getLineFields = data => getFormLines(data).map(getLineField);
+const getLineFields = data => getFormLines(data).map(getLineField)
 
-const getStartReading = data => get(data, 'startReading', 0) || 0;
+const getStartReading = data => get(data, 'startReading', 0) || 0
 
 const getMeterReadingValidator = (type, minValue) => {
   return Joi
     .number()
     .allow(null)
-    .min(minValue);
-};
+    .min(minValue)
+}
 
 const getStartReadingValidator = data => getMeterReadingValidator(
   'number.startReading',
   getStartReading(data)
-);
+)
 
 const getRecentReadingValidator = getMeterReadingValidator.bind(
   null, 'number.lastReading'
-);
+)
 
 /**
  * The schema for the meter readings is created dynamically
@@ -77,34 +77,34 @@ const getRecentReadingValidator = getMeterReadingValidator.bind(
  * @param {object} form The form object
  */
 const schema = (request, data, form) => {
-  const internalData = importData(form, request.payload);
+  const internalData = importData(form, request.payload)
 
   const baseSchema = {
     csrf_token: Joi.string().guid().required(),
     startReading: Joi.number().positive().allow(0).required()
-  };
+  }
 
-  const lines = getFormLines(data);
-  const startValidator = getStartReadingValidator(internalData);
-  let lastReading = false;
+  const lines = getFormLines(data)
+  const startValidator = getStartReadingValidator(internalData)
+  let lastReading = false
 
   const schemaContents = lines.reduce((acc, line, currentIndex) => {
-    const name = getLineName(line);
+    const name = getLineName(line)
     const validator = (currentIndex === 0 || lastReading === false)
       ? startValidator
-      : startValidator.concat(getRecentReadingValidator(lastReading));
+      : startValidator.concat(getRecentReadingValidator(lastReading))
 
     if (internalData[name] !== null) {
       // This line has data, keep track for future validations.
-      lastReading = internalData[name];
+      lastReading = internalData[name]
     }
-    return { ...acc, [name]: validator };
-  }, baseSchema);
+    return { ...acc, [name]: validator }
+  }, baseSchema)
 
-  return Joi.object(schemaContents);
-};
+  return Joi.object(schemaContents)
+}
 
-exports.getStartReadingField = getStartReadingField;
-exports.getLineField = getLineField;
-exports.getLineFields = getLineFields;
-exports.schema = schema;
+exports.getStartReadingField = getStartReadingField
+exports.getLineField = getLineField
+exports.getLineFields = getLineFields
+exports.schema = schema

@@ -1,9 +1,9 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
-const { formFactory, fields } = require('shared/lib/forms/');
-const { ROUTING_CONFIG } = require('../../lib/charge-categories/constants');
-const { getChargeCategoryData, getChargeCategoryActionUrl } = require('../../lib/form-helpers');
+const Joi = require('joi')
+const { formFactory, fields } = require('shared/lib/forms/')
+const { ROUTING_CONFIG } = require('../../lib/charge-categories/constants')
+const { getChargeCategoryData, getChargeCategoryActionUrl } = require('../../lib/form-helpers')
 
 /**
  * Form to request the abstraction quantities
@@ -11,11 +11,11 @@ const { getChargeCategoryData, getChargeCategoryActionUrl } = require('../../lib
  * @param {Object} request The Hapi request object
  */
 const form = request => {
-  const { csrfToken } = request.view;
-  const data = getChargeCategoryData(request);
-  const action = getChargeCategoryActionUrl(request, ROUTING_CONFIG.volume.step);
+  const { csrfToken } = request.view
+  const data = getChargeCategoryData(request)
+  const action = getChargeCategoryActionUrl(request, ROUTING_CONFIG.volume.step)
 
-  const f = formFactory(action, 'POST');
+  const f = formFactory(action, 'POST')
   f.fields.push(fields.text('volume', {
     controlClass: 'govuk-input govuk-input--width-10',
     suffix: 'ML',
@@ -23,11 +23,8 @@ const form = request => {
       'number.base': {
         message: 'Enter the volume in ML (megalitres).'
       },
-      'number.positive': {
-        message: 'The volume must be equal to or greater than 0'
-      },
-      'number.min': {
-        message: 'The volume must be equal to or greater than 0'
+      'number.greater': {
+        message: 'The volume must be greater than 0'
       },
       'number.max': {
         message: 'The volume must be equal to or less than 1,000,000,000,000,000'
@@ -40,30 +37,30 @@ const form = request => {
       }
 
     }
-  }, data.volume || ''));
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
+  }, data.volume || ''))
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
 
-  return f;
-};
+  return f
+}
 
 const schema = () => {
   return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
     volume: Joi
-      .number().required().min(0).max(1000000000000000)
+      .number().required().greater(0).max(1000000000000000)
       .custom((value, helper) => {
-        const { error, original } = helper;
-        const [, decimals = ''] = original.split('.');
+        const { error, original } = helper
+        const [, decimals = ''] = original.split('.')
         if (original.length > 16) {
-          return error('number.unsafe');
+          return error('number.unsafe')
         }
         if (decimals.length > 6) {
-          return error('number.custom');
+          return error('number.custom')
         }
-        return value;
+        return value
       })
-  });
-};
-exports.schema = schema;
-exports.form = form;
+  })
+}
+exports.schema = schema
+exports.form = form

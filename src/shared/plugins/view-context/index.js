@@ -9,27 +9,27 @@ const viewContextPlugin = {
     server.ext({
       type: 'onPreHandler',
       method: async (request, h) => {
-        const getContextDefaults = options.getContextDefaults;
+        const getContextDefaults = options.getContextDefaults
 
         if (!getContextDefaults) {
-          throw new Error('viewContext plugin requires the options.getContextDefaults function');
+          throw new Error('viewContext plugin requires the options.getContextDefaults function')
         }
 
-        const currentView = request.view || {};
-        const routeContext = request.route.settings.plugins.viewContext || {};
-        request.view = Object.assign(currentView, routeContext);
-        request.view = getContextDefaults(request);
+        const currentView = request.view || {}
+        const routeContext = request.route.settings.plugins.viewContext || {}
+        request.view = Object.assign(currentView, routeContext)
+        request.view = getContextDefaults(request)
 
         // Continue processing request
-        return h.continue;
+        return h.continue
       }
-    });
+    })
   },
 
   pkg: {
     name: 'viewContext',
     version: '2.0.0'
   }
-};
+}
 
-module.exports = viewContextPlugin;
+module.exports = viewContextPlugin

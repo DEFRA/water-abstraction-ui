@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
-const { withQueryStringSubset } = require('../../lib/url');
+const { withQueryStringSubset } = require('../../lib/url')
 
 /**
  * Provides a controller handler that will redirect to /licences.
@@ -16,15 +16,15 @@ const { withQueryStringSubset } = require('../../lib/url');
  * @param {Object} h HAPI JS response toolkit
  */
 const index = async (request, h) => {
-  const url = withQueryStringSubset('/licences', request.query, '_ga');
-  return h.redirect(url);
-};
+  const url = withQueryStringSubset('/licences', request.query, '_ga')
+  return h.redirect(url)
+}
 
 /**
  * Welcome page before routing to signin/register
  */
 function getWelcome (request, h) {
-  return h.view('nunjucks/core/welcome', request.view);
+  return h.view('nunjucks/core/welcome', request.view)
 }
 
 /**
@@ -34,12 +34,12 @@ const getNotFoundError = (request, h) => {
   const view = {
     ...request.view,
     pageTitle: 'We cannot find that page'
-  };
+  }
   return h
     .view('nunjucks/errors/404', view)
-    .code(404);
-};
+    .code(404)
+}
 
-exports.index = index;
-exports.getWelcome = getWelcome;
-exports.getNotFoundError = getNotFoundError;
+exports.index = index
+exports.getWelcome = getWelcome
+exports.getNotFoundError = getNotFoundError

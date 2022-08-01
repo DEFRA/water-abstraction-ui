@@ -10,16 +10,16 @@
  */
 const formatViewError = (error) => {
   if (!error) {
-    return null;
+    return null
   }
   if (!error.isJoi) {
-    return error;
+    return error
   }
 
   return error.details.reduce((memo, detail) => {
-    memo[detail.path.join('_') + '_' + detail.type.split('.')[1]] = true;
-    return memo;
-  }, {});
-};
+    memo[detail.path.join('_') + '_' + detail.type.split('.')[1]] = true
+    return memo
+  }, {})
+}
 
-module.exports = formatViewError;
+module.exports = formatViewError

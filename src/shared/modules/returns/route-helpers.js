@@ -1,6 +1,6 @@
-const Joi = require('joi');
-const { v4: uuid } = require('uuid');
-const { VALID_RETURN_ID, OPTIONAL_GUID } = require('shared/lib/validators');
+const Joi = require('joi')
+const { v4: uuid } = require('uuid')
+const { VALID_RETURN_ID, OPTIONAL_GUID } = require('shared/lib/validators')
 
 const optionsSchema = Joi.object().keys({
   description: Joi.string(),
@@ -10,7 +10,7 @@ const optionsSchema = Joi.object().keys({
   schema: Joi.function(),
   submit: Joi.boolean(),
   pre: Joi.array().optional()
-});
+})
 
 const createPluginsOptions = options => ({
   viewContext: {
@@ -26,15 +26,15 @@ const createPluginsOptions = options => ({
     schema: options.schema,
     submit: options.submit
   }
-});
+})
 
 const createRoute = (method, path, handler, options) => {
-  Joi.assert(options, optionsSchema);
+  Joi.assert(options, optionsSchema)
 
   return {
     method,
-    path: path,
-    handler: handler,
+    path,
+    handler,
     options: {
       description: options.pageTitle,
       validate: {
@@ -46,8 +46,8 @@ const createRoute = (method, path, handler, options) => {
       plugins: createPluginsOptions(options),
       pre: options.pre
     }
-  };
-};
+  }
+}
 
 /**
  * Adds return ID query string from request.query.returnId to supplied path
@@ -55,8 +55,8 @@ const createRoute = (method, path, handler, options) => {
  * @param {String} path
  */
 const addQuery = (request, path) => {
-  return `${path}?returnId=${request.query.returnId}`;
-};
+  return `${path}?returnId=${request.query.returnId}`
+}
 
 /**
  * Redirects user back to previous page in error state
@@ -67,11 +67,11 @@ const addQuery = (request, path) => {
  * @param {String} step - the step (URL path) to navigate to
  */
 const errorRedirect = (request, h, step) => {
-  const key = uuid();
-  request.yar.set(key, request.view.form);
-  return h.redirect(addQuery(request, step) + '&error=' + key);
-};
+  const key = uuid()
+  request.yar.set(key, request.view.form)
+  return h.redirect(addQuery(request, step) + '&error=' + key)
+}
 
-exports.createRoute = createRoute;
-exports.addQuery = addQuery;
-exports.errorRedirect = errorRedirect;
+exports.createRoute = createRoute
+exports.addQuery = addQuery
+exports.errorRedirect = errorRedirect

@@ -1,10 +1,10 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
-const controller = require('./controller');
-const { scope } = require('../../lib/constants');
-const preHandlers = require('shared/lib/pre-handlers/licences');
-const preHandlersGS = require('internal/modules/gauging-stations/lib/prehandlers');
+const Joi = require('joi')
+const controller = require('./controller')
+const { scope } = require('../../lib/constants')
+const preHandlers = require('shared/lib/pre-handlers/licences')
+const preHandlersGS = require('internal/modules/gauging-stations/lib/prehandlers')
 
 module.exports = {
 
@@ -144,4 +144,4 @@ module.exports = {
     }
   }
 
-};
+}

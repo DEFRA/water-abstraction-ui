@@ -1,6 +1,6 @@
-const controller = require('./controller');
-const { VALID_FLASH, VALID_GUID, VALID_UTM } = require('../../lib/validators');
-const Joi = require('joi');
+const controller = require('./controller')
+const { VALID_FLASH, VALID_GUID, VALID_UTM } = require('../../lib/validators')
+const Joi = require('joi')
 
 module.exports = [
   {
@@ -174,4 +174,4 @@ module.exports = [
     },
     handler: controller.postChangePassword
   }
-];
+]

@@ -1,5 +1,5 @@
-const Joi = require('joi');
-const { formFactory, fields } = require('../../../../shared/lib/forms');
+const Joi = require('joi')
+const { formFactory, fields } = require('../../../../shared/lib/forms')
 
 const createNameField = (name) => {
   return fields.text('name', {
@@ -17,26 +17,26 @@ const createNameField = (name) => {
       }
     },
     controlClass: 'govuk-input--width-20'
-  }, name);
-};
+  }, name)
+}
 
 const renameLicenceForm = (request, name) => {
-  const { csrfToken } = request.view;
-  const { documentId } = request.params;
+  const { csrfToken } = request.view
+  const { documentId } = request.params
 
-  const f = formFactory(`/licences/${documentId}/rename`);
+  const f = formFactory(`/licences/${documentId}/rename`)
 
-  f.fields.push(createNameField(name));
-  f.fields.push(fields.button(null, { label: 'Save', controlClass: 'govuk-!-margin-0' }));
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
+  f.fields.push(createNameField(name))
+  f.fields.push(fields.button(null, { label: 'Save', controlClass: 'govuk-!-margin-0' }))
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
 
-  return f;
-};
+  return f
+}
 
 const renameLicenceSchema = Joi.object().keys({
   csrf_token: Joi.string().guid().required(),
   name: Joi.string().max(32).min(2)
-});
+})
 
-exports.renameLicenceForm = renameLicenceForm;
-exports.renameLicenceSchema = renameLicenceSchema;
+exports.renameLicenceForm = renameLicenceForm
+exports.renameLicenceSchema = renameLicenceSchema

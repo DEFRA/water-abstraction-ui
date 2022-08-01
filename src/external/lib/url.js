@@ -1,5 +1,5 @@
-const { isEmpty, pick, flatten } = require('lodash');
-const querystring = require('querystring');
+const { isEmpty, pick, flatten } = require('lodash')
+const querystring = require('querystring')
 
 /**
  * Appends a subset of the query params to the path to create a new url
@@ -9,11 +9,11 @@ const querystring = require('querystring');
  * @param  {...String} subsetKeys The keys of the query params to add to the path
  */
 const withQueryStringSubset = (path, query, ...subsetKeys) => {
-  const subset = pick(query, flatten(subsetKeys));
+  const subset = pick(query, flatten(subsetKeys))
 
   return isEmpty(subset)
     ? path
-    : `${path}?${querystring.encode(subset)}`;
-};
+    : `${path}?${querystring.encode(subset)}`
+}
 
-exports.withQueryStringSubset = withQueryStringSubset;
+exports.withQueryStringSubset = withQueryStringSubset

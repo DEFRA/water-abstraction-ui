@@ -1,7 +1,7 @@
-const { formFactory, fields } = require('shared/lib/forms');
+const { formFactory, fields } = require('shared/lib/forms')
 const { getContinueField, getCsrfTokenField } =
- require('shared/modules/returns/forms/common');
-const Joi = require('joi');
+ require('shared/modules/returns/forms/common')
+const Joi = require('joi')
 
 exports.form = (request, data) => ({
   ...formFactory(),
@@ -23,9 +23,9 @@ exports.form = (request, data) => ({
     getCsrfTokenField(request),
     getContinueField()
   ]
-});
+})
 
 exports.schema = () => Joi.object({
   csrf_token: Joi.string().guid().required(),
   meterReset: Joi.boolean().required()
-});
+})

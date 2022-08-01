@@ -1,5 +1,5 @@
 // contains generic functions unrelated to a specific component
-const isArray = require('lodash/isArray');
+const isArray = require('lodash/isArray')
 
 /**
  * Force value to be array
@@ -8,9 +8,9 @@ const isArray = require('lodash/isArray');
  */
 function forceArray (val) {
   if (val === null || val === undefined) {
-    return [];
+    return []
   }
-  return isArray(val) ? val : [val];
+  return isArray(val) ? val : [val]
 }
 
-exports.forceArray = forceArray;
+exports.forceArray = forceArray

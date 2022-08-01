@@ -1,11 +1,11 @@
-const { fields } = require('shared/lib/forms');
+const { fields } = require('shared/lib/forms')
 
 const getErrors = message => {
   return {
     'any.required': { message },
     'string.empty': { message }
-  };
-};
+  }
+}
 
 const getTextField = (fieldName, label, errorMessage, autoFocus = false) => {
   return fields.text(fieldName, {
@@ -15,8 +15,8 @@ const getTextField = (fieldName, label, errorMessage, autoFocus = false) => {
     attr: {
       autofocus: autoFocus || undefined
     }
-  });
-};
+  })
+}
 
 const getMultiplierField = (label, hint, checked) => {
   return fields.checkbox('isMultiplier', {
@@ -25,8 +25,8 @@ const getMultiplierField = (label, hint, checked) => {
       hint,
       value: 'multiply'
     }]
-  }, checked);
-};
+  }, checked)
+}
 
-exports.getTextField = getTextField;
-exports.getMultiplierField = getMultiplierField;
+exports.getTextField = getTextField
+exports.getMultiplierField = getMultiplierField

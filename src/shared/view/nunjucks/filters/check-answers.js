@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 /**
  * Maps controller check your answers list to GOV.uk component properties
@@ -23,6 +23,6 @@ const checkAnswers = answers => ({
       ]
     }
   }))
-});
+})
 
-exports.checkAnswers = checkAnswers;
+exports.checkAnswers = checkAnswers

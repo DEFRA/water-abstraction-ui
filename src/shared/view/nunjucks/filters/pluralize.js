@@ -1,1 +1,1 @@
-exports.pluralize = require('../../../lib/pluralize').pluralize;
+exports.pluralize = require('../../../lib/pluralize').pluralize

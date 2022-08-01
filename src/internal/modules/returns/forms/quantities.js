@@ -1,8 +1,8 @@
 const { getContinueField, getCsrfTokenField, getHeadingField, getParagraphField } =
- require('shared/modules/returns/forms/common');
-const { getLineFields, schema } = require('shared/modules/returns/forms/quantities');
-const { formFactory, setValues } = require('shared/lib/forms');
-const { getLineValues } = require('shared/modules/returns/forms/quantities');
+ require('shared/modules/returns/forms/common')
+const { getLineFields, schema } = require('shared/modules/returns/forms/quantities')
+const { formFactory, setValues } = require('shared/lib/forms')
+const { getLineValues } = require('shared/modules/returns/forms/quantities')
 
 exports.form = (request, data) => setValues({
   ...formFactory(),
@@ -14,6 +14,6 @@ exports.form = (request, data) => setValues({
     ...getLineFields(data),
     getContinueField()
   ]
-}, getLineValues(data.lines));
+}, getLineValues(data.lines))
 
-exports.schema = schema;
+exports.schema = schema

@@ -1,4 +1,4 @@
 const arrayFilter = (array, id, val) =>
-  array.filter(row => row[id] === val);
+  array.filter(row => row[id] === val)
 
-exports.arrayFilter = arrayFilter;
+exports.arrayFilter = arrayFilter

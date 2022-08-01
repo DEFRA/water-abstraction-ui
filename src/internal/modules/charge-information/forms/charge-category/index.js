@@ -12,4 +12,4 @@ module.exports = {
   'supply-public-water': require('./default-radio-options-form'),
   'adjustments-apply': require('./default-radio-options-form'),
   adjustments: require('./adjustments')
-};
+}

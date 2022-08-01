@@ -1,6 +1,6 @@
-const Joi = require('joi');
-const { getReturnsForLicence, getReturn } = require('./view');
-const { scope: { internal } } = require('../../../lib/constants');
+const Joi = require('joi')
+const { getReturnsForLicence, getReturn } = require('./view')
+const { scope: { internal } } = require('../../../lib/constants')
 
 module.exports = {
   getAdminReturnsForLicence: {
@@ -36,4 +36,4 @@ module.exports = {
       }
     }
   }
-};
+}

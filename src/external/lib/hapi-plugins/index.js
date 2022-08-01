@@ -1,4 +1,4 @@
-const services = require('../connectors/services');
+const services = require('../connectors/services')
 
 module.exports = {
   config: require('shared/plugins/config'),
@@ -31,4 +31,4 @@ module.exports = {
     }
   },
   csp: require('shared/plugins/csp')
-};
+}

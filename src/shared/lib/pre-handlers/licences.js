@@ -1,30 +1,30 @@
-'use strict';
+'use strict'
 
 /**
  * @module shared pre-handlers for loading licence data
  */
 
-const { partialRight, identity } = require('lodash');
-const { errorHandler } = require('./lib/error-handler');
-const LicenceDataService = require('../services/LicenceDataService');
-const { hasScope } = require('internal/lib/permissions');
-const { scope } = require('internal/lib/constants');
+const { partialRight, identity } = require('lodash')
+const { errorHandler } = require('./lib/error-handler')
+const LicenceDataService = require('../services/LicenceDataService')
+const { hasScope } = require('internal/lib/permissions')
+const { scope } = require('internal/lib/constants')
 
 const createPreHandler = async (request, h, methodName, errorString, allowedScopes) => {
-  const service = new LicenceDataService(request.services.water);
+  const service = new LicenceDataService(request.services.water)
 
   // Check scope
   if (allowedScopes && !hasScope(request, allowedScopes)) {
-    return null;
+    return null
   }
 
-  const { licenceId } = request.params;
+  const { licenceId } = request.params
   try {
-    return await service[methodName](licenceId);
+    return await service[methodName](licenceId)
   } catch (err) {
-    return errorHandler(err, `${errorString} ${licenceId} not found`);
+    return errorHandler(err, `${errorString} ${licenceId} not found`)
   }
-};
+}
 
 /**
  * Loads a licence from the water service using the {licenceId}
@@ -32,7 +32,7 @@ const createPreHandler = async (request, h, methodName, errorString, allowedScop
  * @todo refactor to use this implementation throughout application
  * @param {String} request.params.licenceId
  */
-const loadLicence = partialRight(createPreHandler, 'getLicenceById', 'Licence');
+const loadLicence = partialRight(createPreHandler, 'getLicenceById', 'Licence')
 
 /**
  * Loads a CRM v1 document from the water service using the {licenceId}
@@ -40,22 +40,22 @@ const loadLicence = partialRight(createPreHandler, 'getLicenceById', 'Licence');
  * @todo refactor to use this implementation throughout application
  * @param {String} request.params.licenceId
  */
-const loadLicenceDocument = partialRight(createPreHandler, 'getDocumentByLicenceId', 'CRM document for licence');
+const loadLicenceDocument = partialRight(createPreHandler, 'getDocumentByLicenceId', 'CRM document for licence')
 
 /**
  * Fetches all licence versions
  */
-const loadLicenceVersions = partialRight(createPreHandler, 'loadLicenceVersionsByLicenceId', 'Get all licence versions for a given licence');
+const loadLicenceVersions = partialRight(createPreHandler, 'loadLicenceVersionsByLicenceId', 'Get all licence versions for a given licence')
 
 /**
  * Load default licence version for given licence ID
  */
-const loadDefaultLicenceVersion = partialRight(createPreHandler, 'getDefaultLicenceVersionByLicenceId', 'Default licence version for licence');
+const loadDefaultLicenceVersion = partialRight(createPreHandler, 'getDefaultLicenceVersionByLicenceId', 'Default licence version for licence')
 
 /**
  * Get charge versions for given licence ID
  */
-const loadChargeVersions = partialRight(createPreHandler, 'getChargeVersionsByLicenceId', 'Charge versions for licence', scope.viewChargeVersions);
+const loadChargeVersions = partialRight(createPreHandler, 'getChargeVersionsByLicenceId', 'Charge versions for licence', scope.viewChargeVersions)
 
 /**
  * Get charge version workflows for given licence ID
@@ -65,39 +65,39 @@ const loadChargeVersionWorkflows = partialRight(
   'getChargeVersionWorkflowsByLicenceId',
   'Charge version workflows for licence',
   [scope.chargeVersionWorkflowEditor, scope.chargeVersionWorkflowReviewer, scope.viewChargeVersions]
-);
+)
 
 /**
  * Get bills for given licence ID
  */
 const loadBills = async request => {
   if (!hasScope(request, scope.billing)) {
-    return null;
+    return null
   }
 
   // Allow pagination to be controlled via query params
-  const { licenceId } = request.params;
-  const { page = 1, perPage = 10 } = request.query;
+  const { licenceId } = request.params
+  const { page = 1, perPage = 10 } = request.query
 
   // Create licence data service and fetch data
-  const service = new LicenceDataService(request.services.water);
-  return service.getInvoicesByLicenceId(licenceId, page, perPage);
-};
+  const service = new LicenceDataService(request.services.water)
+  return service.getInvoicesByLicenceId(licenceId, page, perPage)
+}
 
 /**
  * Get agreements for given licence ID
  */
-const loadAgreements = partialRight(createPreHandler, 'getAgreementsByLicenceId', 'Agreements for licence');
+const loadAgreements = partialRight(createPreHandler, 'getAgreementsByLicenceId', 'Agreements for licence')
 
 /**
  * Get returns for given licence ID
  */
-const loadReturns = partialRight(createPreHandler, 'getReturnsByLicenceId', 'Returns for licence');
+const loadReturns = partialRight(createPreHandler, 'getReturnsByLicenceId', 'Returns for licence')
 
 /**
  * Get notifications for given licence ID
  */
-const loadNotifications = partialRight(createPreHandler, 'getNotificationsByLicenceId', 'Notifications for licence');
+const loadNotifications = partialRight(createPreHandler, 'getNotificationsByLicenceId', 'Notifications for licence')
 
 /**
  * Get licence summary data
@@ -105,21 +105,21 @@ const loadNotifications = partialRight(createPreHandler, 'getNotificationsByLice
  * and moving to the LicenceDataService
  */
 const loadSummary = async request => {
-  const { licence, document: { document_id: documentId }, licenceVersion } = request.pre;
+  const { licence, document: { document_id: documentId }, licenceVersion } = request.pre
   // Skip if licence is not active, as only the "current" version of a licence
   // is currently supported
   if (!licence.isActive) {
-    return null;
+    return null
   }
 
   // Skip if there is no licence version to display
   if (!licenceVersion.id) {
-    return null;
+    return null
   }
 
-  const { data } = await request.services.water.licences.getSummaryByDocumentId(documentId, { includeExpired: true });
-  return data;
-};
+  const { data } = await request.services.water.licences.getSummaryByDocumentId(documentId, { includeExpired: true })
+  return data
+}
 
 /**
  * Get licence primary user
@@ -129,13 +129,13 @@ const loadSummary = async request => {
  * @return {Promise<Object|Null}
  */
 const loadPrimaryUser = async request => {
-  const { document: { document_id: documentId } } = request.pre;
-  const { data } = await request.services.water.licences.getPrimaryUserByDocumentId(documentId);
-  return data || null;
-};
+  const { document: { document_id: documentId } } = request.pre
+  const { data } = await request.services.water.licences.getPrimaryUserByDocumentId(documentId)
+  return data || null
+}
 
 const getNewTaggingLicenceNumberFromReturnId = returnId =>
-  returnId.split(/:/g)[2];
+  returnId.split(/:/g)[2]
 
 /**
  * Pre handler to load Return service model
@@ -146,27 +146,27 @@ const getLicenceByReturnId = async request => {
     request.params.returnId,
     request.query.returnId,
     request.query.id
-  ].find(identity);
+  ].find(identity)
 
-  const licenceNumber = getNewTaggingLicenceNumberFromReturnId(returnId);
+  const licenceNumber = getNewTaggingLicenceNumberFromReturnId(returnId)
 
   try {
-    return await request.services.water.licences.getLicenceByLicenceNumber(licenceNumber);
+    return await request.services.water.licences.getLicenceByLicenceNumber(licenceNumber)
   } catch (err) {
-    return errorHandler(err, `Licence ${licenceNumber} for return ${returnId} not found`);
+    return errorHandler(err, `Licence ${licenceNumber} for return ${returnId} not found`)
   }
-};
+}
 
-exports.loadLicence = loadLicence;
-exports.loadLicenceDocument = loadLicenceDocument;
-exports.loadLicenceVersions = loadLicenceVersions;
-exports.loadDefaultLicenceVersion = loadDefaultLicenceVersion;
-exports.loadChargeVersions = loadChargeVersions;
-exports.loadChargeVersionWorkflows = loadChargeVersionWorkflows;
-exports.loadBills = loadBills;
-exports.loadAgreements = loadAgreements;
-exports.loadReturns = loadReturns;
-exports.loadNotifications = loadNotifications;
-exports.loadSummary = loadSummary;
-exports.loadPrimaryUser = loadPrimaryUser;
-exports.getLicenceByReturnId = getLicenceByReturnId;
+exports.loadLicence = loadLicence
+exports.loadLicenceDocument = loadLicenceDocument
+exports.loadLicenceVersions = loadLicenceVersions
+exports.loadDefaultLicenceVersion = loadDefaultLicenceVersion
+exports.loadChargeVersions = loadChargeVersions
+exports.loadChargeVersionWorkflows = loadChargeVersionWorkflows
+exports.loadBills = loadBills
+exports.loadAgreements = loadAgreements
+exports.loadReturns = loadReturns
+exports.loadNotifications = loadNotifications
+exports.loadSummary = loadSummary
+exports.loadPrimaryUser = loadPrimaryUser
+exports.getLicenceByReturnId = getLicenceByReturnId

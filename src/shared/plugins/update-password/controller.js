@@ -1,10 +1,10 @@
-const mapJoiPasswordError = require('shared/plugins/reset-password/map-joi-password-error');
+const mapJoiPasswordError = require('shared/plugins/reset-password/map-joi-password-error')
 
 /**
  * Update password - enter current password
  */
 const getConfirmPassword = async (request, h) =>
-  h.view('nunjucks/update-password/enter-new', { ...request.view });
+  h.view('nunjucks/update-password/enter-new', { ...request.view })
 
 /**
  * Update password form handler for signed-in user
@@ -15,22 +15,22 @@ const getConfirmPassword = async (request, h) =>
 async function postSetPassword (request, h) {
   // Form validation error
   if (request.formError) {
-    const errors = mapJoiPasswordError(request.formError);
-    return h.view('nunjucks/update-password/enter-new', { ...request.view, errors });
+    const errors = mapJoiPasswordError(request.formError)
+    return h.view('nunjucks/update-password/enter-new', { ...request.view, errors })
   }
 
   try {
-    const { password } = request.payload;
+    const { password } = request.payload
     // Change password in database
-    const { userId } = request.defra;
-    const { error } = await h.realm.pluginOptions.updatePassword(userId, password);
+    const { userId } = request.defra
+    const { error } = await h.realm.pluginOptions.updatePassword(userId, password)
     if (error) {
-      throw error;
+      throw error
     }
     // All OK
-    return h.redirect('/account/update-password/success');
+    return h.redirect('/account/update-password/success')
   } catch (error) {
-    return h(error);
+    return h(error)
   }
 }
 
@@ -40,8 +40,8 @@ async function postSetPassword (request, h) {
  * @param {Object} h - HAPI HTTP reply interface
  */
 const getPasswordUpdated = async (request, h) =>
-  h.view('nunjucks/update-password/success', request.view);
+  h.view('nunjucks/update-password/success', request.view)
 
-exports.getConfirmPassword = getConfirmPassword;
-exports.postSetPassword = postSetPassword;
-exports.getPasswordUpdated = getPasswordUpdated;
+exports.getConfirmPassword = getConfirmPassword
+exports.postSetPassword = postSetPassword
+exports.getPasswordUpdated = getPasswordUpdated

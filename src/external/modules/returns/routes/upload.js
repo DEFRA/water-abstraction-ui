@@ -1,10 +1,10 @@
-const Joi = require('joi');
-const { scope } = require('../../../lib/constants');
-const controller = require('../controllers/upload');
+const Joi = require('joi')
+const { scope } = require('../../../lib/constants')
+const controller = require('../controllers/upload')
 
-const validators = require('shared/lib/validators');
+const validators = require('shared/lib/validators')
 
-const allowedScopes = [scope.licenceHolder, scope.colleagueWithReturns];
+const allowedScopes = [scope.licenceHolder, scope.colleagueWithReturns]
 
 module.exports = {
   getBulkUpload: {
@@ -178,4 +178,4 @@ module.exports = {
       }
     }
   }
-};
+}

@@ -1,9 +1,9 @@
-const { expect } = require('@hapi/code');
-const { beforeEach, afterEach, experiment, test } = exports.lab = require('@hapi/lab').script();
-const sandbox = require('sinon').createSandbox();
-const { setPermissionsForm, setPermissionsSchema } = require('internal/modules/account/forms/set-permissions');
+const { expect } = require('@hapi/code')
+const { beforeEach, afterEach, experiment, test } = exports.lab = require('@hapi/lab').script()
+const sandbox = require('sinon').createSandbox()
+const { setPermissionsForm, setPermissionsSchema } = require('internal/modules/account/forms/set-permissions')
 
-const { findField, findButton } = require('../../../../lib/form-test');
+const { findField, findButton } = require('../../../../lib/form-test')
 
 const createRequest = () => ({
   params: {
@@ -15,35 +15,35 @@ const createRequest = () => ({
   yar: {
     get: sandbox.stub().returns('example@defra.gov.uk')
   }
-});
+})
 
 experiment('account/forms/set-permissions form', () => {
-  afterEach(async () => { sandbox.restore(); });
+  afterEach(async () => { sandbox.restore() })
   test('sets the form method to POST', async () => {
-    const form = setPermissionsForm(createRequest());
-    expect(form.method).to.equal('POST');
-  });
+    const form = setPermissionsForm(createRequest())
+    expect(form.method).to.equal('POST')
+  })
 
   test('has CSRF token field', async () => {
-    const form = setPermissionsForm(createRequest());
-    const csrf = findField(form, 'csrf_token');
-    expect(csrf.value).to.equal('token');
-  });
+    const form = setPermissionsForm(createRequest())
+    const csrf = findField(form, 'csrf_token')
+    expect(csrf.value).to.equal('token')
+  })
 
   experiment('permission field', () => {
-    let field;
+    let field
 
     beforeEach(async () => {
-      const form = setPermissionsForm(createRequest());
-      field = findField(form, 'permission');
-    });
+      const form = setPermissionsForm(createRequest())
+      field = findField(form, 'permission')
+    })
 
     test('exists', async () => {
-      expect(field).to.exist();
-    });
+      expect(field).to.exist()
+    })
 
     test('has expected choices', async () => {
-      const values = field.options.choices.map(choice => choice.value);
+      const values = field.options.choices.map(choice => choice.value)
       expect(values).to.once.include([
         'basic',
         'billing_and_data',
@@ -53,73 +53,73 @@ experiment('account/forms/set-permissions form', () => {
         'nps_ar_approver',
         'psc',
         'wirs'
-      ]);
-    });
-  });
+      ])
+    })
+  })
 
   test('sets the value if supplied', async () => {
-    const request = createRequest();
-    const form = setPermissionsForm(request, 'basic');
-    const field = findField(form, 'permission');
+    const request = createRequest()
+    const form = setPermissionsForm(request, 'basic')
+    const field = findField(form, 'permission')
 
-    expect(field.value).to.equal('basic');
-  });
+    expect(field.value).to.equal('basic')
+  })
 
   test('has a submit button', async () => {
-    const form = setPermissionsForm(createRequest());
-    const button = findButton(form);
-    expect(button.options.label).to.equal('Continue');
-  });
+    const form = setPermissionsForm(createRequest())
+    const button = findButton(form)
+    expect(button.options.label).to.equal('Continue')
+  })
 
   test('sets newUserEmail field if newUser is true', async () => {
-    const form = setPermissionsForm(createRequest(), '', true);
-    const field = findField(form, 'newUserEmail');
-    expect(field.value).to.equal('example@defra.gov.uk');
-  });
+    const form = setPermissionsForm(createRequest(), '', true)
+    const field = findField(form, 'newUserEmail')
+    expect(field.value).to.equal('example@defra.gov.uk')
+  })
 
   test('does not set newUserEmail field if newUser is falsy', async () => {
-    const form = setPermissionsForm(createRequest());
-    const field = findField(form, 'newUserEmail');
-    expect(field).to.be.undefined();
-  });
+    const form = setPermissionsForm(createRequest())
+    const field = findField(form, 'newUserEmail')
+    expect(field).to.be.undefined()
+  })
 
   test('sets correct action when newUser === true', async () => {
-    const form = setPermissionsForm(createRequest(), '', true);
-    expect(form.action).to.equal('/account/create-user/set-permissions');
-  });
+    const form = setPermissionsForm(createRequest(), '', true)
+    expect(form.action).to.equal('/account/create-user/set-permissions')
+  })
 
   test('sets correct action when newUser === false', async () => {
-    const request = createRequest();
-    const form = setPermissionsForm(request);
-    expect(form.action).to.equal(`/user/${request.params.userId}/update-permissions`);
-  });
-});
+    const request = createRequest()
+    const form = setPermissionsForm(request)
+    expect(form.action).to.equal(`/user/${request.params.userId}/update-permissions`)
+  })
+})
 
 experiment('account/forms/set-permissions schema', () => {
-  afterEach(async () => { sandbox.restore(); });
+  afterEach(async () => { sandbox.restore() })
   experiment('csrf token', () => {
     test('validates for a uuid', async () => {
-      const result = setPermissionsSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', newUserEmail: 'test@defra.gov.uk', permission: 'basic' });
-      expect(result.error).to.be.undefined();
-    });
+      const result = setPermissionsSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', newUserEmail: 'test@defra.gov.uk', permission: 'basic' })
+      expect(result.error).to.be.undefined()
+    })
 
     test('fails for a string that is not a uuid', async () => {
-      const result = setPermissionsSchema.validate({ csrf_token: 'pasta', newUserEmail: 'test@defra.gov.uk', permission: 'basic' });
-      expect(result.error).to.exist();
-    });
-  });
+      const result = setPermissionsSchema.validate({ csrf_token: 'pasta', newUserEmail: 'test@defra.gov.uk', permission: 'basic' })
+      expect(result.error).to.exist()
+    })
+  })
 
   experiment('email', () => {
     test('validates for an email', async () => {
-      const result = setPermissionsSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', newUserEmail: 'test@defra.gov.uk', permission: 'basic' });
-      expect(result.error).to.be.undefined();
-    });
+      const result = setPermissionsSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', newUserEmail: 'test@defra.gov.uk', permission: 'basic' })
+      expect(result.error).to.be.undefined()
+    })
 
     test('fails for a string that is not a valid email', async () => {
-      const result = setPermissionsSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', newUserEmail: 'test', permission: 'basic' });
-      expect(result.error).to.exist();
-    });
-  });
+      const result = setPermissionsSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', newUserEmail: 'test', permission: 'basic' })
+      expect(result.error).to.exist()
+    })
+  })
 
   experiment('permissions', () => {
     const validPermissions = [
@@ -131,20 +131,20 @@ experiment('account/forms/set-permissions schema', () => {
       'nps_ar_approver',
       'psc',
       'wirs'
-    ];
+    ]
 
     validPermissions.forEach(permission => {
       test(`${permission} is a valid value`, async () => {
-        expect(setPermissionsSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', newUserEmail: 'test@defra.gov.uk', permission: permission }).error).to.be.undefined();
-      });
-    });
+        expect(setPermissionsSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', newUserEmail: 'test@defra.gov.uk', permission }).error).to.be.undefined()
+      })
+    })
 
     test('does not validate invalid permissions', async () => {
-      expect(setPermissionsSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', newUserEmail: 'test@defra.gov.uk', permission: 'overlord' })).to.exist();
-    });
+      expect(setPermissionsSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', newUserEmail: 'test@defra.gov.uk', permission: 'overlord' })).to.exist()
+    })
 
     test('permission is required', async () => {
-      expect(setPermissionsSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', newUserEmail: 'test@defra.gov.uk', permission: null })).to.exist();
-    });
-  });
-});
+      expect(setPermissionsSchema.validate({ csrf_token: 'c5afe238-fb77-4131-be80-384aaf245842', newUserEmail: 'test@defra.gov.uk', permission: null })).to.exist()
+    })
+  })
+})

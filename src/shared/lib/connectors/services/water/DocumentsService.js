@@ -1,4 +1,4 @@
-const ServiceClient = require('../ServiceClient');
+const ServiceClient = require('../ServiceClient')
 
 class DocumentsService extends ServiceClient {
   /**
@@ -7,9 +7,9 @@ class DocumentsService extends ServiceClient {
    * @return {Promise<Array>} resolves with an array of returns
    */
   postLicenceRename (entityId, body) {
-    const url = this.joinUrl('documents', entityId, 'rename');
-    return this.serviceRequest.post(url, { body });
+    const url = this.joinUrl('documents', entityId, 'rename')
+    return this.serviceRequest.post(url, { body })
   }
 }
 
-module.exports = DocumentsService;
+module.exports = DocumentsService

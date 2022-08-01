@@ -1,8 +1,8 @@
-const Joi = require('joi');
+const Joi = require('joi')
 
-const controller = require('./controllers/wr22');
-const { scope } = require('../../lib/constants');
-const allowedScopes = [scope.abstractionReformUser, scope.abstractionReformApprover];
+const controller = require('./controllers/wr22')
+const { scope } = require('../../lib/constants')
+const allowedScopes = [scope.abstractionReformUser, scope.abstractionReformApprover]
 
 module.exports = {
 
@@ -199,4 +199,4 @@ module.exports = {
       }
     }
   }
-};
+}

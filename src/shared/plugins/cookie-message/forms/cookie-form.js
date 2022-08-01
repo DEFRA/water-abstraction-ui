@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
-const { formFactory, fields } = require('shared/lib/forms/');
+const Joi = require('joi')
+const { formFactory, fields } = require('shared/lib/forms/')
 
 const choices = [
   {
@@ -12,7 +12,7 @@ const choices = [
     value: false,
     label: 'No'
   }
-];
+]
 
 /**
  * Creates an object to represent the form for capturing the
@@ -22,12 +22,12 @@ const choices = [
  * @param {string} billRunType The type of bill run selected
   */
 const cookieForm = request => {
-  const { csrfToken } = request.view;
-  const f = formFactory(request.path, 'POST');
+  const { csrfToken } = request.view
+  const f = formFactory(request.path, 'POST')
 
   // Radio field should default to "No"
   // See https://design-system.service.gov.uk/patterns/cookies-page/
-  const value = request.isAnalyticsCookiesEnabled(request) || false;
+  const value = request.isAnalyticsCookiesEnabled(request) || false
 
   f.fields.push(fields.radio('acceptAnalyticsCookies', {
     label: 'Do you want to accept analytics cookies?',
@@ -40,17 +40,17 @@ const cookieForm = request => {
       }
     },
     choices
-  }, value));
-  f.fields.push(fields.hidden('redirectPath', {}, request.query.redirectPath));
+  }, value))
+  f.fields.push(fields.hidden('redirectPath', {}, request.query.redirectPath))
 
   if (request.auth.credentials) {
-    f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
+    f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
   }
 
-  f.fields.push(fields.button(null, { label: 'Save cookie settings' }));
+  f.fields.push(fields.button(null, { label: 'Save cookie settings' }))
 
-  return f;
-};
+  return f
+}
 
 const cookieFormSchema = request => Joi.object().keys({
   acceptAnalyticsCookies: Joi.boolean().required(),
@@ -58,7 +58,7 @@ const cookieFormSchema = request => Joi.object().keys({
   ...request.auth.credentials && {
     csrf_token: Joi.string().guid().required()
   }
-});
+})
 
-exports.form = cookieForm;
-exports.schema = cookieFormSchema;
+exports.form = cookieForm
+exports.schema = cookieFormSchema

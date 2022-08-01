@@ -1,12 +1,12 @@
 /* eslint new-cap: "warn" */
-const Boom = require('@hapi/boom');
-const { get } = require('lodash');
-const helpers = require('../lib/helpers');
-const returnHelpers = require('../lib/return-helpers');
+const Boom = require('@hapi/boom')
+const { get } = require('lodash')
+const helpers = require('../lib/helpers')
+const returnHelpers = require('../lib/return-helpers')
 
-const { getEditButtonPath } = require('internal/lib/return-path');
+const { getEditButtonPath } = require('internal/lib/return-path')
 
-const services = require('../../../lib/connectors/services');
+const services = require('../../../lib/connectors/services')
 
 /**
  * Get a list of returns for a particular licence
@@ -14,46 +14,46 @@ const services = require('../../../lib/connectors/services');
  * @param {Number} request.query.page - the page number for paginated results
  */
 const getReturnsForLicence = async (request, h) => {
-  const view = await helpers.getReturnsViewData(request);
+  const view = await helpers.getReturnsViewData(request)
 
-  const { documentId } = request.params;
+  const { documentId } = request.params
 
   if (!view.document) {
-    throw Boom.notFound(`Document ${documentId} not found - entity ${request.defra.entityId} may not have the correct roles`);
+    throw Boom.notFound(`Document ${documentId} not found - entity ${request.defra.entityId} may not have the correct roles`)
   }
-  view.pageTitle = `Returns for licence number ${view.document.system_external_id}`;
-  view.paginationUrl = `/licences/${documentId}/returns`;
-  view.back = `/licences/${documentId}`;
-  view.backText = `Licence number ${view.document.system_external_id}`;
+  view.pageTitle = `Returns for licence number ${view.document.system_external_id}`
+  view.paginationUrl = `/licences/${documentId}/returns`
+  view.back = `/licences/${documentId}`
+  view.backText = `Licence number ${view.document.system_external_id}`
 
-  return h.view('nunjucks/returns/licence', view);
-};
+  return h.view('nunjucks/returns/licence', view)
+}
 
 /**
  * Gets a single return by ID
  * @param {String} request.query.id - the return ID to display
  */
 const getReturn = async (request, h) => {
-  const { licence } = request.pre;
-  const { id, version } = request.query;
-  const { entityId } = request.defra;
+  const { licence } = request.pre
+  const { id, version } = request.query
+  const { entityId } = request.defra
 
   // Load return data
-  const data = await services.water.returns.getReturn(id, version);
+  const data = await services.water.returns.getReturn(id, version)
 
-  const lines = returnHelpers.getLinesWithReadings(data);
+  const lines = returnHelpers.getLinesWithReadings(data)
 
   // Load CRM data to check access
-  const { licenceNumber } = data;
+  const { licenceNumber } = data
 
   // Load licence from CRM to check user has access
-  const [documentHeader] = await helpers.getNewTaggingLicenceNumbers(request, { system_external_id: licenceNumber, includeExpired: true });
+  const [documentHeader] = await helpers.getNewTaggingLicenceNumbers(request, { system_external_id: licenceNumber, includeExpired: true })
 
   if (!documentHeader) {
-    throw Boom.forbidden(`Access denied return ${id} for entity ${entityId}`);
+    throw Boom.forbidden(`Access denied return ${id} for entity ${entityId}`)
   }
 
-  const showVersions = get(data, 'versions[0].email');
+  const showVersions = get(data, 'versions[0].email')
 
   const view = {
     total: helpers.getReturnTotal(data),
@@ -69,12 +69,12 @@ const getReturn = async (request, h) => {
     links: {
       licence: `/licences/${licence.id}`
     }
-  };
+  }
 
-  return h.view('nunjucks/returns/return', view);
-};
+  return h.view('nunjucks/returns/return', view)
+}
 
 module.exports = {
   getReturnsForLicence,
   getReturn
-};
+}

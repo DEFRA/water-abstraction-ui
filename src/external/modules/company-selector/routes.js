@@ -1,5 +1,5 @@
-const Joi = require('joi');
-const controller = require('./controller');
+const Joi = require('joi')
+const controller = require('./controller')
 
 module.exports = {
   getSelectCompany: {
@@ -25,4 +25,4 @@ module.exports = {
       }
     }
   }
-};
+}

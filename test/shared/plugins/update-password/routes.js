@@ -1,15 +1,15 @@
-const { expect } = require('@hapi/code');
-const { experiment, test } = exports.lab = require('@hapi/lab').script();
+const { expect } = require('@hapi/code')
+const { experiment, test } = exports.lab = require('@hapi/lab').script()
 
-const routes = require('shared/plugins/update-password/routes');
+const routes = require('shared/plugins/update-password/routes')
 
 experiment('getConfirmPassword route', () => {
   test('is configured to load user licence count', async () => {
-    const updatePasswordRoute = routes.filter(route => route.path === '/account/update-password');
-    const loaderConfig = updatePasswordRoute[0].config.plugins.licenceLoader;
-    expect(loaderConfig.loadUserLicenceCount).to.be.true();
-  });
-});
+    const updatePasswordRoute = routes.filter(route => route.path === '/account/update-password')
+    const loaderConfig = updatePasswordRoute[0].config.plugins.licenceLoader
+    expect(loaderConfig.loadUserLicenceCount).to.be.true()
+  })
+})
 
 // experiment('postConfirmPassword route', () => {
 //   test('is configured to load user licence count', async () => {
@@ -21,8 +21,8 @@ experiment('getConfirmPassword route', () => {
 
 experiment('postSetPassword', () => {
   test('is configured to load user licence count', async () => {
-    const setPasswordRoute = routes.filter(route => route.path === '/account/update-password/new');
-    const loaderConfig = setPasswordRoute[0].config.plugins.licenceLoader;
-    expect(loaderConfig.loadUserLicenceCount).to.be.true();
-  });
-});
+    const setPasswordRoute = routes.filter(route => route.path === '/account/update-password/new')
+    const loaderConfig = setPasswordRoute[0].config.plugins.licenceLoader
+    expect(loaderConfig.loadUserLicenceCount).to.be.true()
+  })
+})

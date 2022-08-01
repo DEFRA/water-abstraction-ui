@@ -1,9 +1,9 @@
-const { APIClient } = require('@envage/hapi-pg-rest-api');
-const urlJoin = require('url-join');
-const { http } = require('@envage/water-abstraction-helpers');
-const Boom = require('@hapi/boom');
+const { APIClient } = require('@envage/hapi-pg-rest-api')
+const urlJoin = require('url-join')
+const { http } = require('@envage/water-abstraction-helpers')
+const Boom = require('@hapi/boom')
 
-const getEndpoint = serviceUrl => urlJoin(serviceUrl, 'documentHeader');
+const getEndpoint = serviceUrl => urlJoin(serviceUrl, 'documentHeader')
 
 class DocumentsApiClient extends APIClient {
   /**
@@ -12,7 +12,7 @@ class DocumentsApiClient extends APIClient {
    * @param {Object} logger The system logger object
    */
   constructor (config, logger) {
-    const serviceUrl = config.services.crm;
+    const serviceUrl = config.services.crm
 
     super(http.request, {
       serviceUrl,
@@ -22,7 +22,7 @@ class DocumentsApiClient extends APIClient {
         Authorization: config.jwt.token
       },
       waterRegimeEntityId: config.crm.regimes.water.entityId
-    });
+    })
   }
 
   /**
@@ -33,22 +33,22 @@ class DocumentsApiClient extends APIClient {
    */
   async getWaterLicence (licenceRef, includeExpired = false) {
     if (!licenceRef) {
-      throw Boom.badImplementation('Licence number is required');
+      throw Boom.badImplementation('Licence number is required')
     }
 
     const filter = {
       regime_entity_id: this.config.waterRegimeEntityId,
       system_external_id: licenceRef,
       includeExpired
-    };
-    const { error, data: [document] } = await this.findMany(filter);
+    }
+    const { error, data: [document] } = await this.findMany(filter)
     if (error) {
-      throw Boom.badImplementation(error);
+      throw Boom.badImplementation(error)
     }
     if (!document) {
-      throw Boom.notFound(`Water licence number ${licenceRef} not found in CRM`);
+      throw Boom.notFound(`Water licence number ${licenceRef} not found in CRM`)
     }
-    return document;
+    return document
   };
 
   /**
@@ -65,11 +65,11 @@ class DocumentsApiClient extends APIClient {
       null,
       { page: 1, perPage: Number.MAX_SAFE_INTEGER },
       ['document_id', 'system_external_id']
-    );
+    )
     return new Map(
       data.map(doc => [doc.system_external_id, doc.document_id])
-    );
+    )
   }
 }
 
-module.exports = DocumentsApiClient;
+module.exports = DocumentsApiClient

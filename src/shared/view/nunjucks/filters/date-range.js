@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
-const { date } = require('./date');
+const { date } = require('./date')
 
 /**
  * Format a date range
@@ -12,6 +12,6 @@ const dateRange = ({ startDate, endDate }) => [
   date(startDate),
   'to',
   date(endDate)
-].join(' ');
+].join(' ')
 
-exports.dateRange = dateRange;
+exports.dateRange = dateRange

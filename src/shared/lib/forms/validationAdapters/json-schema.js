@@ -1,7 +1,7 @@
-const Ajv = require('ajv');
-const ajv = new Ajv({ allErrors: true, errorDataPath: 'property' });
-const Joi = require('joi');
-const { get, set } = require('lodash');
+const Ajv = require('ajv')
+const ajv = new Ajv({ allErrors: true, errorDataPath: 'property' })
+const Joi = require('joi')
+const { get, set } = require('lodash')
 
 /**
  * Gets a map of where the flattened form field values should be placed
@@ -14,13 +14,13 @@ const { get, set } = require('lodash');
 const getPathMap = (schema, map = {}, path = '') => {
   for (const key in schema.properties) {
     if (schema.properties[key].properties) {
-      getPathMap(schema.properties[key], map, key + '.');
+      getPathMap(schema.properties[key], map, key + '.')
     } else {
-      map[key] = path + key;
+      map[key] = path + key
     }
   }
-  return map;
-};
+  return map
+}
 
 /**
  * Converts empty strings or nulls to undefined
@@ -29,10 +29,10 @@ const getPathMap = (schema, map = {}, path = '') => {
  */
 const mapValue = (value) => {
   if (value === '' || value === null) {
-    return undefined;
+    return undefined
   }
-  return value;
-};
+  return value
+}
 
 /**
  * Maps the data received from the HTTP request to an object which will be
@@ -44,15 +44,15 @@ const mapValue = (value) => {
  * @return {Object}        data ready for testing against JSON schema
  */
 const mapRequestData = (data, schema) => {
-  const map = getPathMap(schema);
-  const obj = {};
+  const map = getPathMap(schema)
+  const obj = {}
   for (const key in data) {
     if (key in map) {
-      set(obj, map[key], mapValue(data[key]));
+      set(obj, map[key], mapValue(data[key]))
     }
   }
-  return obj;
-};
+  return obj
+}
 
 /**
  * Validates HTTP request data from HTML form against supplied JSON schema
@@ -61,23 +61,23 @@ const mapRequestData = (data, schema) => {
  * @return {Object}             validation result for form library
  */
 const validate = (requestData, schema) => {
-  const validator = ajv.compile(schema);
-  const isValid = validator(mapRequestData(requestData, schema));
+  const validator = ajv.compile(schema)
+  const isValid = validator(mapRequestData(requestData, schema))
 
   return {
     error: isValid ? false : { errors: validator.errors },
     value: requestData
-  };
-};
+  }
+}
 
 const createSchemaFromForm = (form) => {
   // throw new Error('Forms are generated from schemas so not necessary to regenerate back from the form');
 
   // Below is a fabricated, pointless validator to allow Digitise forms to be submitted successfully.
   // Please see WATER-3284 for details as to why this is the case.
-  const schema = form.fields.map(f => ({ [f.name]: Joi.any() }));
-  return Object.assign.apply(Object, schema);
-};
+  const schema = form.fields.map(f => ({ [f.name]: Joi.any() }))
+  return Object.assign.apply(Object, schema)
+}
 
 /**
  * Determines the error key by inspecting the contents of
@@ -85,10 +85,10 @@ const createSchemaFromForm = (form) => {
  */
 const getErrorKey = error => {
   if (error.keyword === 'required') {
-    return get(error, 'params.missingProperty');
+    return get(error, 'params.missingProperty')
   }
-  return get(error, 'dataPath').split('.').pop();
-};
+  return get(error, 'dataPath').split('.').pop()
+}
 
 /**
  * For a given JSON schema validation error, a standard
@@ -97,24 +97,24 @@ const getErrorKey = error => {
  * error text
  */
 const getErrorMessages = (error, customErrors = {}) => {
-  const key = getErrorKey(error);
-  const customError = customErrors[key];
+  const key = getErrorKey(error)
+  const customError = customErrors[key]
 
   if (customError && customError[error.keyword]) {
-    const { summary, message } = customError[error.keyword];
-    return { message, summary: summary || message };
+    const { summary, message } = customError[error.keyword]
+    return { message, summary: summary || message }
   }
 
-  return { message: error.message, summary: error.message };
-};
+  return { message: error.message, summary: error.message }
+}
 
 const formatError = (error, customErrors) => {
   const formattedError = {
     name: getErrorKey(error),
     ...getErrorMessages(error, customErrors)
-  };
-  return formattedError;
-};
+  }
+  return formattedError
+}
 
 /**
  * Given the JSON schema validator result, format the errors into a common
@@ -124,9 +124,9 @@ const formatError = (error, customErrors) => {
  * customErrors: Any custom error text for the form
  */
 const formatErrors = (error, customErrors) => {
-  const errors = get(error, 'errors', []);
-  return errors.map(err => formatError(err, customErrors));
-};
+  const errors = get(error, 'errors', [])
+  return errors.map(err => formatError(err, customErrors))
+}
 
 module.exports = {
   validate,
@@ -135,4 +135,4 @@ module.exports = {
   getPathMap,
   mapValue,
   mapRequestData
-};
+}

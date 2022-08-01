@@ -1,10 +1,10 @@
-'use strict';
+'use strict'
 
-const { get, flatMap } = require('lodash');
-const Joi = require('joi');
+const { get, flatMap } = require('lodash')
+const Joi = require('joi')
 
-const { formFactory, fields } = require('shared/lib/forms/');
-const routing = require('../lib/routing');
+const { formFactory, fields } = require('shared/lib/forms/')
+const routing = require('../lib/routing')
 /**
  * Returns the truthy address parts join using a comma
  * @param {Object} address
@@ -19,8 +19,8 @@ const mapAddress = address => {
     address.county,
     address.postcode,
     address.country
-  ].filter(i => i).join(', ');
-};
+  ].filter(i => i).join(', ')
+}
 
 /**
  * Creates an array of specification objects to use for the choices where
@@ -36,21 +36,21 @@ const mapBillingAccountsToChoices = accounts => {
       const html = [
         `${account.accountNumber} - ${account.company.name}`,
         mapAddress(address.address)
-      ].join('<br>');
+      ].join('<br>')
 
-      return { html, value: address.id };
-    });
-  }));
-};
+      return { html, value: address.id }
+    })
+  }))
+}
 
 const selectBillingAccountForm = request => {
-  const { csrfToken } = request.view;
-  const { licence, draftChargeInformation, billingAccounts } = request.pre;
+  const { csrfToken } = request.view
+  const { licence, draftChargeInformation, billingAccounts } = request.pre
 
-  const invoiceAccountAddress = get(draftChargeInformation, 'invoiceAccount.invoiceAccountAddress');
-  const action = routing.getSelectBillingAccount(licence.id, request.query);
+  const invoiceAccountAddress = get(draftChargeInformation, 'invoiceAccount.invoiceAccountAddress')
+  const action = routing.getSelectBillingAccount(licence.id, request.query)
 
-  const f = formFactory(action, 'POST');
+  const f = formFactory(action, 'POST')
 
   f.fields.push(fields.radio('invoiceAccountAddress', {
     errors: {
@@ -63,29 +63,29 @@ const selectBillingAccountForm = request => {
       { divider: 'or' },
       { label: 'Set up a new billing account', value: 'set-up-new-billing-account' }
     ]
-  }, invoiceAccountAddress));
+  }, invoiceAccountAddress))
 
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
 
-  return f;
-};
+  return f
+}
 
 const selectBillingAccountSchema = request => {
-  const { billingAccounts = [] } = request.pre;
+  const { billingAccounts = [] } = request.pre
 
   return Joi.object({
     csrf_token: Joi.string().uuid().required(),
     invoiceAccountAddress: Joi.string().required().valid(...[
       ...flatMap(billingAccounts.map(billingAccount => {
         return billingAccount.invoiceAccountAddresses.map(invoiceAccountAddress => {
-          return invoiceAccountAddress.id;
-        });
+          return invoiceAccountAddress.id
+        })
       })),
       'set-up-new-billing-account'
     ])
-  });
-};
+  })
+}
 
-exports.form = selectBillingAccountForm;
-exports.schema = selectBillingAccountSchema;
+exports.form = selectBillingAccountForm
+exports.schema = selectBillingAccountSchema

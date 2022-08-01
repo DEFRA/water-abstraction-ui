@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
-const { get } = require('lodash');
-const { scope } = require('./constants');
+const { get } = require('lodash')
+const { scope } = require('./constants')
 
 /**
  * Checks whether user has the supplied scope
@@ -11,22 +11,22 @@ const { scope } = require('./constants');
  * @return {Boolean}         [description]
  */
 const hasScope = (request, scope) => {
-  const scopes = get(request, 'auth.credentials.scope', []);
-  return scopes.includes(scope);
-};
+  const scopes = get(request, 'auth.credentials.scope', [])
+  return scopes.includes(scope)
+}
 
-const isAuthenticated = request => !!get(request, 'auth.credentials.userId');
+const isAuthenticated = request => !!get(request, 'auth.credentials.userId')
 
 // Primary user / assumed licence holder
-const isPrimaryUser = request => hasScope(request, scope.licenceHolder);
+const isPrimaryUser = request => hasScope(request, scope.licenceHolder)
 
 // Returns
 const isReturnsUser = request => {
-  const isReturnsAgent = hasScope(request, scope.colleagueWithReturns);
-  return isPrimaryUser(request) || isReturnsAgent;
-};
+  const isReturnsAgent = hasScope(request, scope.colleagueWithReturns)
+  return isPrimaryUser(request) || isReturnsAgent
+}
 
-exports.hasScope = hasScope;
-exports.isAuthenticated = isAuthenticated;
-exports.isPrimaryUser = isPrimaryUser;
-exports.isReturnsUser = isReturnsUser;
+exports.hasScope = hasScope
+exports.isAuthenticated = isAuthenticated
+exports.isPrimaryUser = isPrimaryUser
+exports.isReturnsUser = isReturnsUser

@@ -62,7 +62,7 @@ const createBillRun = (type) => {
         break;
       case 'two-part tariff':
         cy.get('input#selectedBillingType-3').click();
-        cy.get('input#twoPartTariffSeason').click();
+        cy.get('input#twoPartTariffSeason-2').click();
         break;
     }
     cy.get('button.govuk-button').click();
@@ -88,20 +88,16 @@ const reviewLicence = () => {
   });
 };
 
-const viewChargeInformation = (type) => {
-  describe('user views the bill run', () => {
-    cy.get('.govuk-heading-xl', { timeout: 20000 }).contains(`Test Region ${type} bill run`);
-    cy.get('.govuk-table__cell .govuk-link').contains('View').click();
-  });
-
-  describe('user views the licence', () => {
-    cy.get('.govuk-heading-xl', { timeout: 20000 }).contains('Transactions for 1 licence');
-    cy.get('.govuk-link').contains('View licence').click();
-  });
-
-  describe('user selects the charge information tab', () => {
-    cy.get('.govuk-heading-l').contains('Summary');
-    cy.get('.govuk-tabs__tab').contains('Charge information').click();
+const viewChargeInformation = (licenceRef) => {
+  describe('click search on the main menu', () => {
+    cy.get('#navbar-view').contains('Search').click();
+    cy.get('#query').clear();
+    cy.get('#query').type(licenceRef).should('be.visible');
+    cy.get('.search__button').click();
+    cy.contains('Licences').should('be.visible');
+    cy.get('.govuk-table__row').contains(licenceRef).should('be.visible');
+    cy.get('.govuk-table__row').contains(licenceRef).click();
+    cy.get('#tab_charge').click();
   });
 };
 
@@ -114,12 +110,12 @@ const recalculateBills = () => {
 
 const markLicenceForNextSupplementaryRun = () => {
   describe('user marks the licence for the next supplementary run', () => {
-    cy.get('.govuk-heading-l').contains(`You're about to mark this licence for the next supplementary bill run`);
+    cy.get('.govuk-heading-l').contains('You\'re about to mark this licence for the next supplementary bill run');
     cy.get('.govuk-button').contains('Confirm').click();
   });
 
   describe('user creates a bill run', () => {
-    cy.get('.govuk-panel__title').contains(`You've marked this licence for the next supplementary bill run`);
+    cy.get('.govuk-panel__title').contains('You\'ve marked this licence for the next supplementary bill run');
     cy.get('.govuk-button').contains('Create bill run').click();
   });
 };
@@ -135,8 +131,6 @@ const reviewTwoPartTariffBillingVolume = () => {
 
 const setTwoPartTariffBillingVolume = (customVolume) => {
   describe('user verify the review bill', () => {
-    cy.get('a[href*="billing-volume"]', { timeout: 20000 }).click();
-    cy.get('#quantity', { timeout: 20000 }).click();
     cy.url().should('contain', '/billing/batch/');
     if (customVolume) {
       cy.get('[type="radio"]').check('custom');
@@ -146,17 +140,12 @@ const setTwoPartTariffBillingVolume = (customVolume) => {
     }
     cy.get('.govuk-button').contains('Confirm').click();
   });
-
-  describe('user reviews licenses for bill', () => {
-    cy.url().should('contain', '/billing/batch/');
-    cy.get('.govuk-heading-xl').contains('Review data issues');
-    cy.get('.govuk-button').contains('Continue').click();
-  });
 };
 
 const continueSupplementaryBillRun = (type) => {
   describe(`user generates ${type} bill run`, () => {
-    cy.get('.govuk-heading-l').contains(`You're about to generate`);
+    cy.get('[data-module="govuk-button"]').contains('Continue').click({force:true});
+    cy.get('.govuk-heading-l').contains('You\'re about to generate');
     cy.get('.govuk-button').contains('Confirm').click();
   });
 

@@ -1,22 +1,25 @@
-'use strict';
+'use strict'
 
-const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script();
-const { expect } = require('@hapi/code');
+const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script()
+const { expect } = require('@hapi/code')
 
-const transactionsCSV = require('internal/modules/billing/services/transactions-csv');
+// Test helpers
+const GeneralHelper = require('../../../../support/helpers/general.helper.js')
+
+const transactionsCSV = require('internal/modules/billing/services/transactions-csv')
 
 const batch = {
   id: '8ed86390-3557-4cbb-a43f-bd31db5ae119',
   dateCreated: '2020-01-14',
   type: 'two_part_tariff',
   region: {
-    displayName: 'South West',
+    displayName: 'Anglian',
     id: '7c9e4745-c474-41a4-823a-e18c57e85d4c'
   },
   billRunNumber: 2345
-};
+}
 
-const invoice =
+const invoiceData =
   {
     id: '0817794f-b5b4-47e8-8172-3411bd6165bd',
     isDeMinimis: false,
@@ -27,6 +30,7 @@ const invoice =
         billingTransactions: [
           {
             value: 4005,
+            netAmount: 61728,
             isCredit: false,
             agreements: [{ code: 'S130W' }],
             status: 'charge_created',
@@ -59,13 +63,17 @@ const invoice =
               eiucSource: 'other',
               season: 'winter',
               loss: 'high',
-              authorisedAnnualQuantity: '9.1',
+              authorisedAnnualQuantity: '8.1',
               billableAnnualQuantity: '9.1',
               purposeUse: {
                 type: 'use',
                 legacyId: '420',
                 description: 'Spray Irrigation - Storage'
-              }
+              },
+              // These are sroc transaction line properties
+              isRestrictedSource: false,
+              waterModel: 'no model',
+              eiucRegion: 'Anglian (EIC)'
             },
             volume: 9.1,
             calcEiucFactor: 1,
@@ -77,10 +85,25 @@ const invoice =
             calcS126Factor: 1.0,
             calcS127Factor: 0.5,
             section130Agreement: 'S130W',
-            section127Agreement: true
+            section127Agreement: false,
+            // These are sroc transaction lines
+            chargeCategoryCode: '4.5.55',
+            chargeCategoryDescription: 'Medium loss, non-tidal',
+            source: 'non-tidal',
+            loss: 'medium',
+            isWaterCompanyCharge: true,
+            isSupportedSource: true,
+            supportedSourceName: 'Name of supported source',
+            calcWinterDiscountFactor: null,
+            calcS130Factor: null,
+            aggregateFactor: 1,
+            adjustmentFactor: 1,
+            isTwoPartSecondPartCharge: false,
+            section126Factor: 0.9
           },
           {
             value: 4006,
+            netAmount: 61728,
             isCredit: false,
             agreements: [],
             status: 'charge_created',
@@ -119,7 +142,11 @@ const invoice =
                 type: 'use',
                 code: '420',
                 name: 'Spray Irrigation - Storage'
-              }
+              },
+              // These are sroc transaction line properties
+              isRestrictedSource: false,
+              waterModel: 'no model',
+              eiucRegion: 'Anglian (EIC)'
             },
             volume: 9.1,
             billingVolume: [
@@ -136,7 +163,21 @@ const invoice =
             calcLossFactor: 0.5,
             calcEiucSourceFactor: 0.5,
             calcS126FactorValue: 1.0,
-            calcS127FactorValue: 0.5
+            calcS127FactorValue: 0.5,
+            // These are sroc transaction lines
+            chargeCategoryCode: '4.5.55',
+            chargeCategoryDescription: 'Medium loss, non-tidal',
+            source: 'non-tidal',
+            loss: 'medium',
+            isWaterCompanyCharge: true,
+            isSupportedSource: true,
+            supportedSourceName: 'Name of supported source',
+            calcWinterDiscountFactor: null,
+            calcS130Factor: null,
+            aggregateFactor: 1,
+            adjustmentFactor: 1,
+            isTwoPartSecondPartCharge: false,
+            section126Factor: 0.9
           }
         ],
         licence: {
@@ -178,10 +219,12 @@ const invoice =
       addressLine4: 'The Royal Gala Valley'
     },
     financialYearEnding: 2019,
-    netAmount: 123456
-  };
+    netAmount: 123456,
+    isCredit: false,
+    invoiceNumber: 'IIA123456'
+  }
 
-const chargeVersions = [{
+const chargeVersionsData = [{
   id: '967a1db8-e161-4fd7-b45f-9e96db97202e',
   changeReason: {
     description: 'change reason description'
@@ -191,271 +234,597 @@ const chargeVersions = [{
   changeReason: {
     description: 'irrelevant change reason description'
   }
-}];
+}]
 
 experiment('internal/modules/billing/services/transactions-csv', () => {
-  experiment('_getTransactionData maps', () => {
-    let transaction, transactionData;
-    beforeEach(() => {
-      transaction = invoice.billingInvoiceLicences[0].billingTransactions[0];
-      transactionData = transactionsCSV._getTransactionData(transaction);
-    });
-
-    test('description as is', () => {
-      expect(transactionData.description).to.equal(transaction.description);
-    });
-
-    test('compensation charge as Y/N to user friendly heading', () => {
-      expect(transactionData['Compensation charge Y/N']).to.equal('N');
-    });
-
-    test('charge element data to user friendly headings', () => {
-      expect(transactionData['Standard Unit Charge (SUC) (£/1000 cubic metres)']).to.equal(transaction.calcSucFactor);
-      expect(transactionData['Environmental Improvement Unit Charge (EIUC) (£/1000 cubic metres)']).to.equal(transaction.calcEiucFactor);
-      expect(transactionData['Authorised annual quantity (megalitres)']).to.equal(transaction.chargeElement.authorisedAnnualQuantity);
-      expect(transactionData['Billable annual quantity (megalitres)']).to.equal(transaction.chargeElement.billableAnnualQuantity);
-      expect(transactionData['Source type']).to.equal(transaction.chargeElement.source);
-      expect(transactionData['Source factor']).to.equal(transaction.calcSourceFactor);
-      expect(transactionData['Adjusted source type']).to.equal(transaction.chargeElement.eiucSource);
-      expect(transactionData['Adjusted source factor']).to.equal(transaction.calcEiucSourceFactor);
-      expect(transactionData.Season).to.equal(transaction.chargeElement.season);
-      expect(transactionData['Season factor']).to.equal(transaction.calcSeasonFactor);
-      expect(transactionData.Loss).to.equal(transaction.chargeElement.loss);
-      expect(transactionData['Loss factor']).to.equal(transaction.calcLossFactor);
-      expect(transactionData['Purpose code']).to.equal(transaction.chargeElement.purposeUse.legacyId);
-      expect(transactionData['Purpose name']).to.equal(transaction.chargeElement.purposeUse.description);
-      expect(transactionData['Abstraction period start date']).to.equal('1 Nov');
-      expect(transactionData['Abstraction period end date']).to.equal('31 Mar');
-    });
-
-    test('agreement to user friendly heading', () => {
-      expect(transactionData['S130 agreement']).to.equal('S130W');
-      expect(transactionData['S130 agreement value']).to.equal(null);
-    });
-
-    test('charge period to user friendly headings', () => {
-      expect(transactionData['Charge period start date']).to.equal(transaction.startDate);
-      expect(transactionData['Charge period end date']).to.equal(transaction.endDate);
-    });
-
-    test('authorised days to user friendly heading', () => {
-      expect(transactionData['Authorised days']).to.equal(transaction.authorisedDays);
-    });
-
-    test('billable days to user friendly heading', () => {
-      expect(transactionData['Billable days']).to.equal(transaction.billableDays);
-    });
-
-    test('quantities to user friendly heading', () => {
-      expect(transactionData.Quantity).to.equal(transaction.volume);
-      expect(transactionData['Calculated quantity']).to.equal(transaction.billingVolume[0].calculatedVolume);
-    });
-
-    test('handles multiple agreements', async () => {
-      const transactionData = transactionsCSV._getTransactionData({
-        ...transaction,
-        agreements: [{ code: 'S130W' }]
-      });
-      expect(transactionData['S127 agreement (Y/N)']).to.equal('Y');
-      expect(transactionData['S127 agreement value']).to.equal(0.5);
-      expect(transactionData['S130 agreement']).to.equal('S130W');
-      expect(transactionData['S130 agreement value']).to.equal(null);
-    });
-
-    test('handles undefined billing volume', async () => {
-      const transactionData = transactionsCSV._getTransactionData({
-        ...transaction,
-        billingVolume: []
-      });
-      expect(transactionData['Calculated quantity']).to.be.null();
-    });
-
-    test('handles minimum charge transactions', async () => {
-      const minChargeTransaction = {
-        value: 1468,
-        isCredit: false,
-        agreements: [],
-        section130Agreement: null,
-        section127Agreement: null,
-        status: 'candidate',
-        startDate: '2019-04-01',
-        endDate: '2020-03-31',
-        externalId: 'b97b7fe2-8704-4efa-9f39-277d8df997a0',
-        description:
-         'Minimum Charge Calculation - raised under Schedule 23 of the Environment Act 1995',
-        isCompensationCharge: true,
-        chargeType: 'minimum_charge',
-        isNewLicence: true,
-        chargePeriod: {
-          startDate: '2019-04-01',
-          endDate: '2020-03-31'
-        },
-        billingVolume: []
-      };
-
-      const transactionData = transactionsCSV._getTransactionData(minChargeTransaction);
-      expect(transactionData.description).to.equal(minChargeTransaction.description);
-      expect(transactionData['Compensation charge Y/N']).to.equal('Y');
-      expect(transactionData['S127 agreement (Y/N)']).to.equal('N');
-      expect(transactionData['S127 agreement value']).to.equal(null);
-      expect(transactionData['S130 agreement']).to.equal(null);
-      expect(transactionData['S130 agreement value']).to.equal(null);
-      expect(transactionData['Charge period start date']).to.equal(minChargeTransaction.chargePeriod.startDate);
-      expect(transactionData['Charge period end date']).to.equal(minChargeTransaction.chargePeriod.endDate);
-    });
-  });
-
-  experiment('_getInvoiceData', () => {
-    let invoiceData;
-    beforeEach(() => {
-      invoiceData = transactionsCSV._getInvoiceData(invoice);
-    });
-
-    experiment('invoice number', () => {
-      test('is mapped to user friendly heading when present', async () => {
-        invoiceData = transactionsCSV._getInvoiceData({
-          ...invoice, invoiceNumber: 'IIA123456'
-        });
-        expect(invoiceData['Bill number']).to.equal('IIA123456');
-      });
-    });
-
-    test('maps financial year to user friendly heading', async () => {
-      expect(invoiceData['Financial year']).to.equal(invoice.financialYearEnding);
-    });
-
-    experiment('maps invoice total as expected when', () => {
-      experiment('invoice amounts come from CM', () => {
-        test('and the total is positive', async () => {
-          expect(invoiceData['Invoice amount']).to.equal('1,234.56');
-          expect(invoiceData['Credit amount']).to.equal(null);
-        });
-
-        test('and the total is negative', async () => {
-          invoice.netAmount = -123456;
-          invoice.isCredit = true;
-          invoiceData = transactionsCSV._getInvoiceData(invoice);
-
-          expect(invoiceData['Invoice amount']).to.equal(null);
-          expect(invoiceData['Credit amount']).to.equal('-1,234.56');
-        });
-      });
-
-      experiment('invoice amounts come from WRLS', () => {
-        test('and the isCredit flag is false', async () => {
-          invoice.netAmount = 123456;
-          invoice.isCredit = false;
-          invoiceData = transactionsCSV._getInvoiceData(invoice);
-
-          expect(invoiceData['Invoice amount']).to.equal('1,234.56');
-          expect(invoiceData['Credit amount']).to.equal(null);
-        });
-
-        test('and the isCredit flag is true', async () => {
-          invoice.netAmount = -123456;
-          invoice.isCredit = true;
-          invoiceData = transactionsCSV._getInvoiceData(invoice);
-
-          expect(invoiceData['Invoice amount']).to.equal(null);
-          expect(invoiceData['Credit amount']).to.equal('-1,234.56');
-        });
-      });
-    });
-  });
-
-  experiment('_getInvoiceAccountData', () => {
-    let invoiceAccount, invoiceAccountData;
-    beforeEach(() => {
-      invoiceAccount = invoice.invoiceAccount;
-      invoiceAccountData = transactionsCSV._getInvoiceAccountData(invoiceAccount);
-    });
-
-    test('maps account number to user friendly heading', async () => {
-      expect(invoiceAccountData['Billing account number']).to.equal(invoiceAccount.invoiceAccountNumber);
-    });
-
-    test('maps account number to user friendly heading', async () => {
-      expect(invoiceAccountData['Customer name']).to.equal(invoiceAccount.company.name);
-    });
-  });
-
-  experiment('_getTransactionAmounts', () => {
-    test('when value is a number, value is mapped to relevant line', async () => {
-      const transactionLines = transactionsCSV._getTransactionAmounts({ netAmount: 123456, isCredit: false });
-      expect(transactionLines['Net transaction line amount(debit)']).to.equal('1,234.56');
-      expect(transactionLines['Net transaction line amount(credit)']).to.be.null();
-    });
-
-    test('when value is null, an error message is mapped to both lines', async () => {
-      const transactionLines = transactionsCSV._getTransactionAmounts({ netAmount: null });
-      expect(transactionLines['Net transaction line amount(debit)']).to.equal('Error - not calculated');
-      expect(transactionLines['Net transaction line amount(credit)']).to.equal('Error - not calculated');
-    });
-  });
-
   experiment('.createCSV', () => {
-    let csvData;
+    let chargeVersions
+    let invoice
+    let result
+    let scheme
 
-    beforeEach(async () => {
-      csvData = await transactionsCSV.createCSV([invoice], chargeVersions);
-    });
+    experiment('for an ALCS batch', () => {
+      beforeEach(() => {
+        invoice = GeneralHelper.cloneObject(invoiceData)
+        chargeVersions = GeneralHelper.cloneObject(chargeVersionsData)
+        scheme = 'alcs'
+      })
 
-    test('licence number is mapped to user friendly heading', async () => {
-      expect(csvData[0]['Licence number']).to.equal('1/23/45/*S/6789');
-    });
+      test('formats each CSV row as expected', () => {
+        result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
 
-    test('correct charge information reason is mapped', async () => {
-      expect(csvData[0]['Charge information reason']).to.equal('change reason description');
-    });
+        expect(result[0]['Billing account number']).to.equal('A12345678A')
+        expect(result[0]['Customer name']).to.equal('R G Applehead & sons LTD')
+        expect(result[0]['Licence number']).to.equal('1/23/45/*S/6789')
+        expect(result[0]['Bill number']).to.equal('IIA123456')
+        expect(result[0]['Financial year']).to.equal('2019')
+        expect(result[0]['Invoice amount']).to.equal('1,234.56')
+        expect(result[0]['Credit amount']).to.equal('')
+        expect(result[0]['Net transaction line amount(debit)']).to.equal('617.28')
+        expect(result[0]['Net transaction line amount(credit)']).to.equal('')
+        expect(result[0]['Charge information reason']).to.equal('change reason description')
+        expect(result[0].Region).to.equal('Anglian')
+        expect(result[0]['De minimis rule Y/N']).to.equal('N')
+        expect(result[0]['Transaction description']).to.equal('The description - with 007')
+        expect(result[0]['Water company Y/N']).to.equal('N')
+        expect(result[0]['Historical area']).to.equal('AREA')
+        expect(result[0]['Compensation charge Y/N']).to.equal('N')
+        expect(result[0]['Standard Unit Charge (SUC) (£/1000 cubic metres)']).to.equal('1')
+        expect(result[0]['Environmental Improvement Unit Charge (EIUC) (£/1000 cubic metres)']).to.equal('1')
+        expect(result[0]['Authorised annual quantity (megalitres)']).to.equal('8.1')
+        expect(result[0]['Billable annual quantity (megalitres)']).to.equal('9.1')
+        expect(result[0]['Source type']).to.equal('unsupported')
+        expect(result[0]['Source factor']).to.equal('0.5')
+        expect(result[0]['Adjusted source type']).to.equal('other')
+        expect(result[0]['Adjusted source factor']).to.equal('0.5')
+        expect(result[0].Season).to.equal('winter')
+        expect(result[0]['Season factor']).to.equal('0.5')
+        expect(result[0].Loss).to.equal('high')
+        expect(result[0]['Loss factor']).to.equal('0.5')
+        expect(result[0]['Purpose code']).to.equal('420')
+        expect(result[0]['Purpose name']).to.equal('Spray Irrigation - Storage')
+        expect(result[0]['Abstraction period start date']).to.equal('1 Nov')
+        expect(result[0]['Abstraction period end date']).to.equal('31 Mar')
+        expect(result[0]['Charge period start date']).to.equal('2019-04-01')
+        expect(result[0]['Charge period end date']).to.equal('2020-03-31')
+        expect(result[0]['Authorised days']).to.equal('152')
+        expect(result[0]['Billable days']).to.equal('152')
+        expect(result[0]['Calculated quantity']).to.equal('10.3')
+        expect(result[0].Quantity).to.equal('9.1')
+        expect(result[0]['S127 agreement (Y/N)']).to.equal('N')
+        expect(result[0]['S127 agreement value']).to.equal('0.5')
+        expect(result[0]['S130 agreement']).to.equal('S130W')
+        expect(result[0]['S130 agreement value']).to.equal('')
+      })
 
-    test('region is mapped to user friendly heading', async () => {
-      expect(csvData[0].Region).to.equal('Anglian');
-    });
+      test('creates a line for each transaction', () => {
+        result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
 
-    test('de minimis is mapped to user friendly heading', async () => {
-      expect(csvData[0]['De minimis rule Y/N']).to.equal('N');
-    });
+        expect(result.length).to.equal(invoice.billingInvoiceLicences[0].billingTransactions.length)
+      })
 
-    test('description is mapped to user friendly heading', async () => {
-      expect(csvData[0]['Transaction description']).to.equal('The description - with 007');
-    });
+      experiment('when the invoice is a debit', () => {
+        test("sets 'Invoice amount' and 'Credit amount' correctly", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
 
-    test('water company when false is mapped to user friendly heading', async () => {
-      expect(csvData[0]['Water company Y/N']).to.equal('N');
-    });
+          expect(result[0]['Invoice amount']).to.equal('1,234.56')
+          expect(result[0]['Credit amount']).to.equal('')
+        })
+      })
 
-    test('water company when true is mapped to user friendly heading', async () => {
-      invoice.billingInvoiceLicences[0].licence.isWaterUndertaker = true;
-      csvData = await transactionsCSV.createCSV([invoice], chargeVersions);
-      expect(csvData[0]['Water company Y/N']).to.equal('Y');
-    });
+      experiment('when the invoice is a credit', () => {
+        beforeEach(() => {
+          invoice.isCredit = true
+          invoice.netAmount = -123456
+        })
 
-    test('DeMinimis is mapped to user friendly heading', async () => {
-      csvData = await transactionsCSV.createCSV([
-        {
-          ...invoice,
-          isDeMinimis: true
-        }
-      ], chargeVersions);
-      expect(csvData[0]['De minimis rule Y/N']).to.equal('Y');
-    });
+        test("sets 'Invoice amount' and 'Credit amount' correctly", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
 
-    test('historical area is mapped to user friendly heading', async () => {
-      expect(csvData[0]['Historical area']).to.equal('AREA');
-    });
+          expect(result[0]['Invoice amount']).to.equal('')
+          expect(result[0]['Credit amount']).to.equal('-1,234.56')
+        })
+      })
 
-    test('creates a line for each transaction', async () => {
-      const licenceRef = invoice.billingInvoiceLicences[0].licence.licenceRef;
-      expect(csvData[0]['Licence number']).to.equal(licenceRef);
-      expect(csvData[1]['Licence number']).to.equal(licenceRef);
-    });
-  });
+      experiment('when the transaction is a debit', () => {
+        test("sets the 'Net transaction line amount' fields correctly", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+          expect(result[0]['Net transaction line amount(debit)']).to.equal('617.28')
+          expect(result[0]['Net transaction line amount(credit)']).to.equal('')
+        })
+      })
+
+      experiment('when the transaction is a credit', () => {
+        beforeEach(() => {
+          invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+            transaction.isCredit = true
+            transaction.netAmount = -61728
+          })
+        })
+
+        test("sets the 'Net transaction line amount' fields correctly", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+          expect(result[0]['Net transaction line amount(debit)']).to.equal('')
+          expect(result[0]['Net transaction line amount(credit)']).to.equal('-617.28')
+        })
+      })
+
+      experiment('when `netAmount` in the transactions is null', () => {
+        beforeEach(() => {
+          invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+            transaction.netAmount = null
+          })
+        })
+
+        test("states 'Error - not calculated' in the transaction line amount fields", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+          expect(result[0]['Net transaction line amount(debit)']).to.equal('Error - not calculated')
+          expect(result[0]['Net transaction line amount(credit)']).to.equal('Error - not calculated')
+        })
+      })
+
+      experiment('when charge information is missing', () => {
+        experiment('such as the charge version not being found', () => {
+          beforeEach(() => {
+            chargeVersions[0].id = 'notgonnafindme'
+          })
+
+          test("sets the 'Charge information reason' to empty", () => {
+            result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+            expect(result[0]['Charge information reason']).to.equal('')
+          })
+        })
+
+        experiment('such as the change reason being null', () => {
+          beforeEach(() => {
+            chargeVersions[0].changeReason = null
+          })
+
+          test("sets the 'Charge information reason' to empty", () => {
+            result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+            expect(result[0]['Charge information reason']).to.equal('')
+          })
+        })
+      })
+
+      experiment('when deminimis is true', () => {
+        beforeEach(() => {
+          invoice.isDeMinimis = true
+        })
+
+        test("sets 'De minimis rule Y/N' to 'Y'", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+          expect(result[0]['De minimis rule Y/N']).to.equal('Y')
+        })
+      })
+
+      experiment('when water company is true', () => {
+        beforeEach(() => {
+          invoice.billingInvoiceLicences[0].licence.isWaterUndertaker = true
+        })
+
+        test("sets 'Water company Y/N' to 'Y'", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+          expect(result[0]['Water company Y/N']).to.equal('Y')
+        })
+      })
+
+      experiment('when compensation charge is true', () => {
+        beforeEach(() => {
+          invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+            transaction.isCompensationCharge = true
+          })
+        })
+
+        test("sets 'Compensation charge Y/N' to 'Y'", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+          expect(result[0]['Compensation charge Y/N']).to.equal('Y')
+        })
+      })
+
+      experiment('when the transaction charge type is minimum charge', () => {
+        beforeEach(() => {
+          invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+            transaction.chargeType = 'minimum_charge'
+          })
+        })
+
+        test('drops a number of columns', () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+          expect(result[0]['Standard Unit Charge (SUC) (£/1000 cubic metres)']).to.be.undefined()
+          expect(result[0]['Environmental Improvement Unit Charge (EIUC) (£/1000 cubic metres)']).to.be.undefined()
+          expect(result[0]['Authorised annual quantity (megalitres)']).to.be.undefined()
+          expect(result[0]['Billable annual quantity (megalitres)']).to.be.undefined()
+          expect(result[0]['Source type']).to.be.undefined()
+          expect(result[0]['Source factor']).to.be.undefined()
+          expect(result[0]['Adjusted source type']).to.be.undefined()
+          expect(result[0]['Adjusted source factor']).to.be.undefined()
+          expect(result[0].Season).to.be.undefined()
+          expect(result[0]['Season factor']).to.be.undefined()
+          expect(result[0].Loss).to.be.undefined()
+          expect(result[0]['Loss factor']).to.be.undefined()
+          expect(result[0]['Purpose code']).to.be.undefined()
+          expect(result[0]['Purpose name']).to.be.undefined()
+          expect(result[0]['Abstraction period start date']).to.be.undefined()
+          expect(result[0]['Abstraction period end date']).to.be.undefined()
+        })
+      })
+
+      experiment('when the transaction charge element source type is tidal', () => {
+        beforeEach(() => {
+          invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+            transaction.chargeElement.source = 'tidal'
+          })
+        })
+
+        test("sets 'Adjusted source type' to 'tidal'", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+          expect(result[0]['Adjusted source type']).to.equal('tidal')
+        })
+      })
+
+      experiment('when billing volume data is missing', () => {
+        experiment('such as transaction volumn being null', () => {
+          beforeEach(() => {
+            invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+              transaction.volume = null
+            })
+          })
+
+          test("sets the 'Calculated quantity' to empty", () => {
+            result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+            expect(result[0]['Calculated quantity']).to.equal('')
+          })
+        })
+
+        experiment('such as the billing volumes not having a matching financial year for transaction end date', () => {
+          beforeEach(() => {
+            invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+              transaction.billingVolume[0].financialYear = 2018
+            })
+          })
+
+          test("sets the 'Calculated quantity' to empty", () => {
+            result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+            expect(result[0]['Calculated quantity']).to.equal('')
+          })
+        })
+      })
+
+      experiment('when section 127 agreement is true', () => {
+        beforeEach(() => {
+          invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+            transaction.section127Agreement = true
+          })
+        })
+
+        test("sets 'S127 agreement (Y/N)' to 'Y'", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+          expect(result[0]['S127 agreement (Y/N)']).to.equal('Y')
+        })
+      })
+
+      experiment('when the calculated S127 value is null', () => {
+        beforeEach(() => {
+          invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+            transaction.calcS127Factor = null
+          })
+        })
+
+        test("sets 'S127 agreement value' to empty", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+          expect(result[0]['S127 agreement value']).to.equal('')
+        })
+      })
+    })
+
+    experiment('for an SROC batch', () => {
+      beforeEach(() => {
+        invoice = GeneralHelper.cloneObject(invoiceData)
+        chargeVersions = GeneralHelper.cloneObject(chargeVersionsData)
+        scheme = 'sroc'
+      })
+
+      test('formats each CSV row as expected', () => {
+        result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+        expect(result[0]['Billing account number']).to.equal('A12345678A')
+        expect(result[0]['Customer name']).to.equal('R G Applehead & sons LTD')
+        expect(result[0]['Licence number']).to.equal('1/23/45/*S/6789')
+        expect(result[0]['Bill number']).to.equal('IIA123456')
+        expect(result[0]['Financial year']).to.equal('2019')
+        expect(result[0]['Invoice amount']).to.equal('1,234.56')
+        expect(result[0]['Credit amount']).to.equal('')
+        expect(result[0]['Net transaction line amount(debit)']).to.equal('617.28')
+        expect(result[0]['Net transaction line amount(credit)']).to.equal('')
+        expect(result[0]['Charge period start date']).to.equal('2019-04-01')
+        expect(result[0]['Charge period end date']).to.equal('2020-03-31')
+        expect(result[0]['Authorised days']).to.equal('152')
+        expect(result[0]['Billable days']).to.equal('152')
+        expect(result[0]['Charge reference']).to.equal('4.5.55')
+        expect(result[0]['Charge reference description']).to.equal('Medium loss, non-tidal')
+        expect(result[0]['Charge reference']).to.equal('4.5.55')
+        expect(result[0].Source).to.equal('non-tidal')
+        expect(result[0].Loss).to.equal('medium')
+        expect(result[0].Volume).to.equal('9.1')
+        expect(result[0]['Water available Y/N']).to.equal('Y')
+        expect(result[0].Modelling).to.equal('no model')
+        expect(result[0]['Public water supply Y/N']).to.equal('Y')
+        expect(result[0]['Supported source Y/N']).to.equal('Y')
+        expect(result[0]['Supported source name']).to.equal('Name of supported source')
+        expect(result[0]['Winter discount']).to.equal('')
+        expect(result[0]['Canal and Rivers trust agreement']).to.equal('')
+        expect(result[0]['Aggregate factor']).to.equal('1')
+        expect(result[0]['Charge adjustment factor']).to.equal('1')
+        expect(result[0]['Abatement factor']).to.equal('0.9')
+        expect(result[0]['Two part tariff']).to.equal('0.5')
+        expect(result[0]['Transaction description']).to.equal('The description - with 007')
+        expect(result[0]['Charge information reason']).to.equal('change reason description')
+        expect(result[0]['Is second part charge? Y/N']).to.equal('N')
+        expect(result[0]['Compensation charge Y/N']).to.equal('N')
+        expect(result[0]['Compensation charge applicable Y/N']).to.equal('Y')
+        expect(result[0]['De minimis rule Y/N']).to.equal('N')
+        expect(result[0].Region).to.equal('Anglian')
+        expect(result[0]['Historical area']).to.equal('AREA')
+        expect(result[0]['EIC region']).to.equal('Anglian (EIC)')
+        expect(result[0]['Calculated quantity']).to.equal('10.3')
+        expect(result[0].Quantity).to.equal('9.1')
+      })
+
+      test('creates a line for each transaction', () => {
+        result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+        expect(result.length).to.equal(invoice.billingInvoiceLicences[0].billingTransactions.length)
+      })
+
+      experiment('when the invoice is a debit', () => {
+        test("sets 'Invoice amount' and 'Credit amount' correctly", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+          expect(result[0]['Invoice amount']).to.equal('1,234.56')
+          expect(result[0]['Credit amount']).to.equal('')
+        })
+      })
+
+      experiment('when the invoice is a credit', () => {
+        beforeEach(() => {
+          invoice.isCredit = true
+          invoice.netAmount = -123456
+        })
+
+        test("sets 'Invoice amount' and 'Credit amount' correctly", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+          expect(result[0]['Invoice amount']).to.equal('')
+          expect(result[0]['Credit amount']).to.equal('-1,234.56')
+        })
+      })
+
+      experiment('when the transaction is a debit', () => {
+        test("sets the 'Net transaction line amount' fields correctly", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+          expect(result[0]['Net transaction line amount(debit)']).to.equal('617.28')
+          expect(result[0]['Net transaction line amount(credit)']).to.equal('')
+        })
+      })
+
+      experiment('when the transaction is a credit', () => {
+        beforeEach(() => {
+          invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+            transaction.isCredit = true
+            transaction.netAmount = -61728
+          })
+        })
+
+        test("sets the 'Net transaction line amount' fields correctly", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+          expect(result[0]['Net transaction line amount(debit)']).to.equal('')
+          expect(result[0]['Net transaction line amount(credit)']).to.equal('-617.28')
+        })
+      })
+
+      experiment('when `netAmount` in the transactions is null', () => {
+        beforeEach(() => {
+          invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+            transaction.netAmount = null
+          })
+        })
+
+        test("states 'Error - not calculated' in the transaction line amount fields", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+          expect(result[0]['Net transaction line amount(debit)']).to.equal('Error - not calculated')
+          expect(result[0]['Net transaction line amount(credit)']).to.equal('Error - not calculated')
+        })
+      })
+
+      experiment('when charge information is missing', () => {
+        experiment('such as the charge version not being found', () => {
+          beforeEach(() => {
+            chargeVersions[0].id = 'notgonnafindme'
+          })
+
+          test("sets the 'Charge information reason' to empty", () => {
+            result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+            expect(result[0]['Charge information reason']).to.equal('')
+          })
+        })
+
+        experiment('such as the change reason being null', () => {
+          beforeEach(() => {
+            chargeVersions[0].changeReason = null
+          })
+
+          test("sets the 'Charge information reason' to empty", () => {
+            result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+            expect(result[0]['Charge information reason']).to.equal('')
+          })
+        })
+      })
+
+      experiment('when isRestrictedSource is true', () => {
+        beforeEach(() => {
+          invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+            transaction.chargeElement.isRestrictedSource = true
+          })
+        })
+
+        test("sets 'Water available Y/N' to 'N'", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+          expect(result[0]['Water available Y/N']).to.equal('N')
+        })
+      })
+
+      experiment('when isWaterCompanyCharge is false', () => {
+        beforeEach(() => {
+          invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+            transaction.isWaterCompanyCharge = false
+          })
+        })
+
+        test("sets 'Public water supply Y/N' to 'N'", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+          expect(result[0]['Public water supply Y/N']).to.equal('N')
+        })
+      })
+
+      experiment('when isSupportedSource is false', () => {
+        beforeEach(() => {
+          invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+            transaction.isSupportedSource = false
+          })
+        })
+
+        test("sets 'Supported source Y/N' to 'N'", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+          expect(result[0]['Supported source Y/N']).to.equal('N')
+        })
+      })
+
+      experiment('when isTwoPartSecondPartCharge is true', () => {
+        beforeEach(() => {
+          invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+            transaction.isTwoPartSecondPartCharge = true
+          })
+        })
+
+        test("sets 'Is second part charge? Y/N' to 'N'", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+          expect(result[0]['Is second part charge? Y/N']).to.equal('Y')
+        })
+      })
+
+      experiment('when isTwoPartSecondPartCharge is true', () => {
+        beforeEach(() => {
+          invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+            transaction.isTwoPartSecondPartCharge = true
+          })
+        })
+
+        test("sets 'Is second part charge? Y/N' to 'N'", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+          expect(result[0]['Is second part charge? Y/N']).to.equal('Y')
+        })
+      })
+
+      experiment('when charge type is compensation', () => {
+        beforeEach(() => {
+          invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+            transaction.chargeType = 'compensation'
+          })
+        })
+
+        test("sets 'Compensation charge Y/N' to 'Y'", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+          expect(result[0]['Compensation charge Y/N']).to.equal('Y')
+        })
+      })
+
+      experiment('when water undertaker is true', () => {
+        beforeEach(() => {
+          invoice.billingInvoiceLicences[0].licence.isWaterUndertaker = true
+        })
+
+        test("sets 'Compensation charge applicable Y/N' to 'N'", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+          expect(result[0]['Compensation charge applicable Y/N']).to.equal('N')
+        })
+      })
+
+      experiment('when deminimis is true', () => {
+        beforeEach(() => {
+          invoice.isDeMinimis = true
+        })
+
+        test("sets 'De minimis rule Y/N' to 'Y'", () => {
+          result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+          expect(result[0]['De minimis rule Y/N']).to.equal('Y')
+        })
+      })
+
+      experiment('when billing volume data is missing', () => {
+        experiment('such as transaction volumn being null', () => {
+          beforeEach(() => {
+            invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+              transaction.volume = null
+            })
+          })
+
+          test("sets the 'Calculated quantity' to empty", () => {
+            result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+            expect(result[0]['Calculated quantity']).to.equal('')
+          })
+        })
+
+        experiment('such as the billing volumes not having a matching financial year for transaction end date', () => {
+          beforeEach(() => {
+            invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
+              transaction.billingVolume[0].financialYear = 2018
+            })
+          })
+
+          test("sets the 'Calculated quantity' to empty", () => {
+            result = transactionsCSV.createCSV([invoice], chargeVersions, scheme)
+
+            expect(result[0]['Calculated quantity']).to.equal('')
+          })
+        })
+      })
+    })
+  })
 
   experiment('.getCSVFileName', () => {
     test('returns expected file name', () => {
-      const expectedFileName = 'South West two-part tariff bill run 2345.csv';
-      const fileName = transactionsCSV.getCSVFileName(batch);
-      expect(fileName).to.equal(expectedFileName);
-    });
-  });
-});
+      const result = transactionsCSV.getCSVFileName(batch)
+
+      expect(result).to.equal('Anglian two-part tariff bill run 2345.csv')
+    })
+  })
+})

@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
-const Hapi = require('@hapi/hapi');
-const { cloneDeep, set } = require('lodash');
+const Hapi = require('@hapi/hapi')
+const { cloneDeep, set } = require('lodash')
 
 /**
  * Gets the smallest object that currently works as a test stub when
@@ -15,18 +15,18 @@ const getMinimalRequest = () => ({
   url: {},
   auth: {},
   view: {}
-});
+})
 
 const getTestServer = route => {
-  const server = Hapi.server();
+  const server = Hapi.server()
 
-  const testRoute = cloneDeep(route);
-  testRoute.handler = (req, h) => h.response('Test handler').code(200);
-  set(testRoute, 'options.auth', false);
-  set(testRoute, 'options.pre', []);
-  server.route(testRoute);
-  return server;
-};
+  const testRoute = cloneDeep(route)
+  testRoute.handler = (req, h) => h.response('Test handler').code(200)
+  set(testRoute, 'options.auth', false)
+  set(testRoute, 'options.pre', [])
+  server.route(testRoute)
+  return server
+}
 
-exports.getMinimalRequest = getMinimalRequest;
-exports.getTestServer = getTestServer;
+exports.getMinimalRequest = getMinimalRequest
+exports.getTestServer = getTestServer

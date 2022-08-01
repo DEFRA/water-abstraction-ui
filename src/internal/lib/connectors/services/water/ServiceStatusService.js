@@ -1,4 +1,4 @@
-const ServiceClient = require('shared/lib/connectors/services/ServiceClient');
+const ServiceClient = require('shared/lib/connectors/services/ServiceClient')
 
 class ServiceStatusService extends ServiceClient {
   /**
@@ -6,9 +6,9 @@ class ServiceStatusService extends ServiceClient {
     * @return {Promise} resolves with data
     */
   getServiceStatus () {
-    const url = this.joinUrl('service-status');
-    return this.serviceRequest.get(url);
+    const url = this.joinUrl('service-status')
+    return this.serviceRequest.get(url)
   };
 }
 
-module.exports = ServiceStatusService;
+module.exports = ServiceStatusService

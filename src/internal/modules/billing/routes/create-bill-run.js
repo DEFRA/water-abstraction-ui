@@ -1,21 +1,21 @@
-'use strict';
+'use strict'
 
-const { kebabCase } = require('lodash');
-const Joi = require('joi');
-const controller = require('../controllers/create-bill-run');
-const { billing } = require('../../../../internal/lib/constants').scope;
-const allowedScopes = [billing];
-const preHandlers = require('../pre-handlers');
-const billRunTypes = require('../lib/bill-run-types');
-const seasons = require('../lib/seasons');
+const { kebabCase } = require('lodash')
+const Joi = require('joi')
+const controller = require('../controllers/create-bill-run')
+const { billing } = require('../../../../internal/lib/constants').scope
+const allowedScopes = [billing]
+const preHandlers = require('../pre-handlers')
+const billRunTypes = require('../lib/bill-run-types')
+const seasons = require('../lib/seasons')
 
 const VALID_BILL_RUN_TYPES = Joi.string().required().valid(
   ...Object.values(billRunTypes).map(kebabCase)
-);
+)
 
 const VALID_SEASONS = Joi.string().valid(
   ...Object.values(seasons).map(kebabCase)
-);
+)
 
 module.exports = {
   getBillingBatchType: {
@@ -125,6 +125,32 @@ module.exports = {
         })
       }
     }
-  }
+  },
 
-};
+  getBillingBatchFinancialYear: {
+    method: 'GET',
+    path: '/billing/batch/financial-year/{billingType}/{season}/{region}',
+    handler: controller.getBillingBatchFinancialYear,
+    config: {
+      pre: [],
+      auth: { scope: allowedScopes },
+      description: 'If a bill run has already been run for region, year and season, warn user and display short summary',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Select the financial year',
+          activeNavLink: 'bill-runs'
+        }
+      }
+    }
+  },
+
+  postBillingFinancialYear: {
+    method: 'POST',
+    path: '/billing/batch/financial-year/{billingType}/{season}/{region}',
+    handler: controller.postBillingBatchFinancialYear,
+    config: {
+      auth: { scope: allowedScopes },
+      description: 'post handler for receiving the selected financial year'
+    }
+  }
+}

@@ -1,8 +1,8 @@
-const { APIClient } = require('@envage/hapi-pg-rest-api');
-const urlJoin = require('url-join');
-const { http, serviceRequest } = require('@envage/water-abstraction-helpers');
+const { APIClient } = require('@envage/hapi-pg-rest-api')
+const urlJoin = require('url-join')
+const { http, serviceRequest } = require('@envage/water-abstraction-helpers')
 
-const getEndpoint = serviceUrl => urlJoin(serviceUrl, '/ar/licences');
+const getEndpoint = serviceUrl => urlJoin(serviceUrl, '/ar/licences')
 
 class AbstractionReformAnalysisApiClient extends APIClient {
   /**
@@ -11,7 +11,7 @@ class AbstractionReformAnalysisApiClient extends APIClient {
    * @param {Object} logger The system logger object
    */
   constructor (config, logger) {
-    const serviceUrl = config.services.water;
+    const serviceUrl = config.services.water
 
     super(http.request, {
       serviceUrl,
@@ -20,7 +20,7 @@ class AbstractionReformAnalysisApiClient extends APIClient {
       headers: {
         Authorization: config.jwt.token
       }
-    });
+    })
   }
 
   /**
@@ -31,9 +31,9 @@ class AbstractionReformAnalysisApiClient extends APIClient {
    * @return {Promise}            resolves when licence has been refreshed
    */
   arRefreshLicenceWebhook (licenceRef) {
-    const uri = urlJoin(this.config.serviceUrl, 'ar', licenceRef);
-    return serviceRequest.post(uri);
+    const uri = urlJoin(this.config.serviceUrl, 'ar', licenceRef)
+    return serviceRequest.post(uri)
   }
 };
 
-module.exports = AbstractionReformAnalysisApiClient;
+module.exports = AbstractionReformAnalysisApiClient

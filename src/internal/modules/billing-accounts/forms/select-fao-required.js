@@ -1,19 +1,19 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
-const { isNull, isObject } = require('lodash');
-const { formFactory, fields } = require('shared/lib/forms/');
+const Joi = require('joi')
+const { isNull, isObject } = require('lodash')
+const { formFactory, fields } = require('shared/lib/forms/')
 
 const getValue = request => {
-  const { contact } = request.pre.sessionData.data;
+  const { contact } = request.pre.sessionData.data
   if (isNull(contact)) {
-    return false;
+    return false
   }
   if (isObject(contact)) {
-    return true;
+    return true
   }
-  return undefined;
-};
+  return undefined
+}
 
 /**
  * Form to request if an FAO contact should be added to the invoice account
@@ -21,9 +21,9 @@ const getValue = request => {
  * @param {Object} request The Hapi request object
   */
 const addFaoForm = request => {
-  const { csrfToken } = request.view;
+  const { csrfToken } = request.view
 
-  const f = formFactory(request.path, 'POST');
+  const f = formFactory(request.path, 'POST')
 
   f.fields.push(fields.radio('faoRequired', {
     errors: {
@@ -42,17 +42,17 @@ const addFaoForm = request => {
       }
     ],
     hint: 'For example, FAO Sam Burridge or FAO Accounts department'
-  }, getValue(request)));
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
+  }, getValue(request)))
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
 
-  return f;
-};
+  return f
+}
 
 const addFaoFormSchema = () => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   faoRequired: Joi.boolean().required()
-});
+})
 
-exports.form = addFaoForm;
-exports.schema = addFaoFormSchema;
+exports.form = addFaoForm
+exports.schema = addFaoFormSchema

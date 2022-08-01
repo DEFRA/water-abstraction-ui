@@ -1,3 +1,3 @@
-exports.badge = require('./badge');
-exports.dates = require('./dates');
-exports.strings = require('./strings');
+exports.badge = require('./badge')
+exports.dates = require('./dates')
+exports.strings = require('./strings')

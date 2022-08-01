@@ -1,10 +1,10 @@
-const Joi = require('joi');
-const controller = require('./controller');
-const contactRoutes = require('./contact-routes');
-const apiController = require('./api-controller');
-const { scope } = require('../../lib/constants');
+const Joi = require('joi')
+const controller = require('./controller')
+const contactRoutes = require('./contact-routes')
+const apiController = require('./api-controller')
+const { scope } = require('../../lib/constants')
 
-const allowedScopes = [scope.hofNotifications, scope.renewalNotifications];
+const allowedScopes = [scope.hofNotifications, scope.renewalNotifications]
 
 const routes = {
   getStep: {
@@ -190,7 +190,7 @@ const routes = {
 
   ...contactRoutes
 
-};
+}
 
 if (parseInt(process.env.TEST_MODE) === 1) {
   routes.findEmailByAddress = {
@@ -210,7 +210,7 @@ if (parseInt(process.env.TEST_MODE) === 1) {
         })
       }
     }
-  };
+  }
 }
 
-module.exports = routes;
+module.exports = routes

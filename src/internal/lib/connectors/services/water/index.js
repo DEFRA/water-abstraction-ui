@@ -1,45 +1,45 @@
 // Shared services
-const CommunicationsService = require('shared/lib/connectors/services/water/CommunicationsService');
-const CompaniesService = require('shared/lib/connectors/services/water/CompaniesService');
-const ContactsService = require('shared/lib/connectors/services/water/ContactsService');
-const LicencesService = require('shared/lib/connectors/services/water/LicencesService');
-const LicenceVersionPurposeConditionsService = require('shared/lib/connectors/services/water/LicenceVersionPurposeConditionsService');
-const UsersService = require('shared/lib/connectors/services/water/UsersService');
-const ChargeVersionsService = require('shared/lib/connectors/services/water/ChargeVersionsService');
-const ChargeVersionWorkflowsService = require('shared/lib/connectors/services/water/ChargeVersionWorkflowsService');
+const CommunicationsService = require('shared/lib/connectors/services/water/CommunicationsService')
+const CompaniesService = require('shared/lib/connectors/services/water/CompaniesService')
+const ContactsService = require('shared/lib/connectors/services/water/ContactsService')
+const LicencesService = require('shared/lib/connectors/services/water/LicencesService')
+const LicenceVersionPurposeConditionsService = require('shared/lib/connectors/services/water/LicenceVersionPurposeConditionsService')
+const UsersService = require('shared/lib/connectors/services/water/UsersService')
+const ChargeVersionsService = require('shared/lib/connectors/services/water/ChargeVersionsService')
+const ChargeVersionWorkflowsService = require('shared/lib/connectors/services/water/ChargeVersionWorkflowsService')
 
 // Internal services (possibly unique, or overriding shared)
-const ReturnsService = require('./ReturnsService');
-const BatchNotificationsService = require('./BatchNotificationsService');
-const ChangeReasonsService = require('./ChangeReasonsService');
-const ChargeCategoryService = require('./ChargeCategoryService');
-const ReturnsNotificationsService = require('./ReturnsNotificationsService');
-const ReturnCyclesService = require('./ReturnCyclesService');
-const InternalSearchService = require('./InternalSearchService');
-const InvoiceAccountService = require('./InvoiceAccountService');
-const AddressSearchService = require('./AddressSearchService');
-const BillingBatchService = require('./BillingBatchService');
-const BillingInvoiceService = require('./BillingInvoiceService');
-const BillingInvoiceLicenceService = require('./BillingInvoiceLicenceService');
-const BillingVolumesService = require('./BillingVolumeService');
-const ServiceStatusService = require('./ServiceStatusService');
-const SupportedSourcesService = require('./SupportedSourcesService');
-const RegionsService = require('./RegionsService');
-const AgreementsService = require('./AgreementsService');
-const KpiReportingService = require('./KpiReportingService');
-const ReportingService = require('./ReportingService');
+const ReturnsService = require('./ReturnsService')
+const BatchNotificationsService = require('./BatchNotificationsService')
+const ChangeReasonsService = require('./ChangeReasonsService')
+const ChargeCategoryService = require('./ChargeCategoryService')
+const ReturnsNotificationsService = require('./ReturnsNotificationsService')
+const ReturnCyclesService = require('./ReturnCyclesService')
+const InternalSearchService = require('./InternalSearchService')
+const InvoiceAccountService = require('./InvoiceAccountService')
+const AddressSearchService = require('./AddressSearchService')
+const BillingBatchService = require('./BillingBatchService')
+const BillingInvoiceService = require('./BillingInvoiceService')
+const BillingInvoiceLicenceService = require('./BillingInvoiceLicenceService')
+const BillingVolumesService = require('./BillingVolumeService')
+const ServiceStatusService = require('./ServiceStatusService')
+const SupportedSourcesService = require('./SupportedSourcesService')
+const RegionsService = require('./RegionsService')
+const AgreementsService = require('./AgreementsService')
+const KpiReportingService = require('./KpiReportingService')
+const ReportingService = require('./ReportingService')
 
 // Shared API Clients
-const EventsApiClient = require('shared/lib/connectors/services/water/EventsApiClient');
-const GaugingStationsApiClient = require('shared/lib/connectors/services/water/GaugingStationsApiClient');
-const PendingImportsApiClient = require('shared/lib/connectors/services/water/PendingImportsApiClient');
+const EventsApiClient = require('shared/lib/connectors/services/water/EventsApiClient')
+const GaugingStationsApiClient = require('shared/lib/connectors/services/water/GaugingStationsApiClient')
+const PendingImportsApiClient = require('shared/lib/connectors/services/water/PendingImportsApiClient')
 
 // API Clients
-const AbstractionReformAnalysisApiClient = require('./AbstractionReformAnalysisApiClient');
-const NotificationsApiClient = require('./NotificationsApiClient');
-const TaskConfigsApiClient = require('./TaskConfigsApiClient');
+const AbstractionReformAnalysisApiClient = require('./AbstractionReformAnalysisApiClient')
+const NotificationsApiClient = require('./NotificationsApiClient')
+const TaskConfigsApiClient = require('./TaskConfigsApiClient')
 
-const { logger } = require('../../../../logger');
+const { logger } = require('../../../../logger')
 
 module.exports = config => ({
   // Shared Services
@@ -81,4 +81,4 @@ module.exports = config => ({
   // API Clients
   events: new EventsApiClient(config, logger),
   pendingImports: new PendingImportsApiClient(config, logger)
-});
+})

@@ -1,6 +1,6 @@
-const { internalRoutingForm, internalRoutingFormSchema } = require('./internal-routing');
-const { logReceiptForm, logReceiptSchema } = require('./log-receipt');
-const { returnReceivedForm } = require('./return-received');
+const { internalRoutingForm, internalRoutingFormSchema } = require('./internal-routing')
+const { logReceiptForm, logReceiptSchema } = require('./log-receipt')
+const { returnReceivedForm } = require('./return-received')
 
 module.exports = {
   internalRoutingFormSchema,
@@ -8,4 +8,4 @@ module.exports = {
   logReceiptForm,
   logReceiptSchema,
   returnReceivedForm
-};
+}

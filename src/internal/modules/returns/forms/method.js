@@ -1,7 +1,7 @@
-const { get } = require('lodash');
-const { formFactory, fields, setValues } = require('shared/lib/forms');
+const { get } = require('lodash')
+const { formFactory, fields, setValues } = require('shared/lib/forms')
 const { getContinueField, getCsrfTokenField } =
- require('shared/modules/returns/forms/common');
+ require('shared/modules/returns/forms/common')
 
 const getRadioField = () => fields.radio('method', {
   label: 'How was this return reported?',
@@ -15,7 +15,7 @@ const getRadioField = () => fields.radio('method', {
     { value: 'oneMeter', label: 'Meter readings' },
     { value: 'abstractionVolumes', label: 'Abstraction volumes' }
   ]
-});
+})
 
 exports.form = (request, data) => setValues({
   ...formFactory(),
@@ -24,4 +24,4 @@ exports.form = (request, data) => setValues({
     getCsrfTokenField(request),
     getContinueField()
   ]
-}, { method: get(data, 'reading.method') });
+}, { method: get(data, 'reading.method') })

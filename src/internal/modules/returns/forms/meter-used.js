@@ -1,19 +1,19 @@
-const Joi = require('joi');
-const { formFactory, fields, setValues } = require('shared/lib/forms');
-const { get } = require('lodash');
+const Joi = require('joi')
+const { formFactory, fields, setValues } = require('shared/lib/forms')
+const { get } = require('lodash')
 
 const { getContinueField, getCsrfTokenField } =
- require('shared/modules/returns/forms/common');
+ require('shared/modules/returns/forms/common')
 
 const mapValue = data => {
-  const value = get(data, 'reading.type');
+  const value = get(data, 'reading.type')
   if (value === 'measured') {
-    return true;
+    return true
   }
   if (value === 'estimated') {
-    return false;
+    return false
   }
-};
+}
 
 const getRadioField = () => fields.radio('meterUsed', {
   mapper: 'booleanMapper',
@@ -28,7 +28,7 @@ const getRadioField = () => fields.radio('meterUsed', {
     { value: true, label: 'Yes' },
     { value: false, label: 'No' }
   ]
-});
+})
 
 exports.form = (request, data) => setValues({
   ...formFactory(),
@@ -37,9 +37,9 @@ exports.form = (request, data) => setValues({
     getCsrfTokenField(request),
     getContinueField()
   ]
-}, { meterUsed: mapValue(data) });
+}, { meterUsed: mapValue(data) })
 
 exports.schema = () => ({
   meterUsed: Joi.boolean().required(),
   csrf_token: Joi.string().guid().required()
-});
+})

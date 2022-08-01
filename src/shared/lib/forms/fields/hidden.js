@@ -4,7 +4,7 @@ const hiddenFieldFactory = (name, options = {}, value) => {
     type: 'hidden',
     label: null,
     required: true
-  };
+  }
   return {
     name,
     value,
@@ -12,7 +12,7 @@ const hiddenFieldFactory = (name, options = {}, value) => {
       ...defaults,
       ...options
     }
-  };
-};
+  }
+}
 
-module.exports = hiddenFieldFactory;
+module.exports = hiddenFieldFactory

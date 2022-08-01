@@ -1,9 +1,9 @@
-const Joi = require('joi');
-const { VALID_UTM } = require('shared/lib/validators');
-const controller = require('./controller');
-const loginHelpers = require('../../lib/login-helpers');
-const pkg = require('../../../../package.json');
-const { version } = pkg;
+const Joi = require('joi')
+const { VALID_UTM } = require('shared/lib/validators')
+const controller = require('./controller')
+const loginHelpers = require('../../lib/login-helpers')
+const pkg = require('../../../../package.json')
+const { version } = pkg
 
 module.exports = {
 
@@ -84,4 +84,4 @@ module.exports = {
       }
     }
   }
-};
+}

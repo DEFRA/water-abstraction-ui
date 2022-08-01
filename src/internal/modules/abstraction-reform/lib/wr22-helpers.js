@@ -1,11 +1,11 @@
-const { find, omit, get, mapValues, isObject } = require('lodash');
+const { find, omit, get, mapValues, isObject } = require('lodash')
 
-const { setValues } = require('shared/lib/forms');
-const loader = require('./loader');
-const { getWR22 } = require('@envage/water-abstraction-helpers').digitise;
-const formGenerator = require('./form-generator');
-const { createAddData, createEditData } = require('./action-creators');
-const { stateManager, getInitialState } = require('@envage/water-abstraction-helpers').digitise;
+const { setValues } = require('shared/lib/forms')
+const loader = require('./loader')
+const { getWR22 } = require('@envage/water-abstraction-helpers').digitise
+const formGenerator = require('./form-generator')
+const { createAddData, createEditData } = require('./action-creators')
+const { stateManager, getInitialState } = require('@envage/water-abstraction-helpers').digitise
 
 /**
  * Gets a WR22 schema by name (ID in JSON schema)
@@ -13,12 +13,12 @@ const { stateManager, getInitialState } = require('@envage/water-abstraction-hel
  * @return {Object}            the JSON schema
  */
 const getSchema = (schemaName) => {
-  const item = find(getWR22(), { id: schemaName });
+  const item = find(getWR22(), { id: schemaName })
   if (item) {
-    return item;
+    return item
   }
-  throw new Error(`Schema with name "${schemaName}" not found`);
-};
+  throw new Error(`Schema with name "${schemaName}" not found`)
+}
 
 /**
  * Finds a WR22 data item by ID in the AR final state licence
@@ -27,12 +27,12 @@ const getSchema = (schemaName) => {
  * @return {Object}           data item
  */
 const findDataItem = (arLicence, id) => {
-  const item = find(arLicence.licence.arData, { id });
+  const item = find(arLicence.licence.arData, { id })
   if (item) {
-    return item;
+    return item
   }
-  throw new Error(`Data item with id "${id}" not found`);
-};
+  throw new Error(`Data item with id "${id}" not found`)
+}
 
 /**
  * Gets the action attribute for the add schema form
@@ -41,8 +41,8 @@ const findDataItem = (arLicence, id) => {
  * @return {String}            form action attribute
  */
 const getAddFormAction = (documentId, schemaName) => {
-  return `/digitise/licence/${documentId}/add-data/${schemaName}`;
-};
+  return `/digitise/licence/${documentId}/add-data/${schemaName}`
+}
 
 /**
  * When adding a data point, gets the form and schema
@@ -50,14 +50,14 @@ const getAddFormAction = (documentId, schemaName) => {
  * @return {Promise}         resolves with { schema, form }
  */
 const getAddFormAndSchema = async (request) => {
-  const { documentId, schema: schemaName } = request.params;
+  const { documentId, schema: schemaName } = request.params
 
-  const action = getAddFormAction(documentId, schemaName);
-  const schema = await formGenerator.dereference(getSchema(schemaName), { documentId });
-  const form = formGenerator.schemaToForm(action, request, schema);
+  const action = getAddFormAction(documentId, schemaName)
+  const schema = await formGenerator.dereference(getSchema(schemaName), { documentId })
+  const form = formGenerator.schemaToForm(action, request, schema)
 
-  return { schema, form };
-};
+  return { schema, form }
+}
 
 /**
  * Picklist item objects have a 'value' and 'id' property.  This function
@@ -66,16 +66,16 @@ const getAddFormAndSchema = async (request) => {
  * @return {Boolean}      true if item only has keys 'id' and 'value'
  */
 const isPicklistItemWithId = (item) => {
-  const keys = Object.keys(item);
-  return keys.includes('id') && keys.includes('value');
-};
+  const keys = Object.keys(item)
+  return keys.includes('id') && keys.includes('value')
+}
 
 const flattenObject = (item) => {
   if (isPicklistItemWithId(item)) {
-    return item;
+    return item
   }
-  return flattenData(item);
-};
+  return flattenData(item)
+}
 /**
  * Maps data stored in the AR final state to a flat object ready for setting
  * values in a form object
@@ -83,18 +83,18 @@ const flattenObject = (item) => {
  * @return {Object}     - shallow object with all properties at root level
  */
 const flattenData = (obj) => {
-  const result = {};
+  const result = {}
   mapValues(obj, (item, key) => {
-    let data;
+    let data
     if (!isObject(item) || isPicklistItemWithId(item)) {
-      data = { [key]: item };
+      data = { [key]: item }
     } else {
-      data = flattenObject(item);
+      data = flattenObject(item)
     }
-    Object.assign(result, data);
-  });
-  return result;
-};
+    Object.assign(result, data)
+  })
+  return result
+}
 
 /**
  * When editing a data point, gets the form and schema
@@ -102,27 +102,27 @@ const flattenData = (obj) => {
  * @return {Promise}         resolves with form, schema and various other info
  */
 const getEditFormAndSchema = async (request) => {
-  const { id, documentId } = request.params;
+  const { id, documentId } = request.params
 
   // Form action
-  const action = `/digitise/licence/${documentId}/edit-data/${id}`;
+  const action = `/digitise/licence/${documentId}/edit-data/${id}`
 
   // Load AR licence
-  const result = await loader.load(documentId);
+  const result = await loader.load(documentId)
 
-  const item = findDataItem(result.finalState, id);
+  const item = findDataItem(result.finalState, id)
 
-  const schema = await formGenerator.dereference(getSchema(item.schema), { documentId });
+  const schema = await formGenerator.dereference(getSchema(item.schema), { documentId })
 
-  const values = flattenData(item.content);
-  const form = setValues(formGenerator.schemaToForm(action, request, schema), values);
+  const values = flattenData(item.content)
+  const form = setValues(formGenerator.schemaToForm(action, request, schema), values)
 
   return {
     ...result,
     form,
     schema
-  };
-};
+  }
+}
 
 /**
  * Gets licence issue and increment number
@@ -130,13 +130,13 @@ const getEditFormAndSchema = async (request) => {
  * @return {Object}         { issueNumber, incrementNumber }
  */
 const getLicenceVersion = (licence) => {
-  const issueNumber = get(licence, 'licence_data_value.data.current_version.licence.ISSUE_NO');
-  const incrementNumber = get(licence, 'licence_data_value.data.current_version.licence.INCR_NO');
+  const issueNumber = get(licence, 'licence_data_value.data.current_version.licence.ISSUE_NO')
+  const incrementNumber = get(licence, 'licence_data_value.data.current_version.licence.INCR_NO')
   return {
     issueNumber: parseInt(issueNumber),
     incrementNumber: parseInt(incrementNumber)
-  };
-};
+  }
+}
 
 /**
  * Creates an 'add' WR22 data point action object
@@ -145,10 +145,10 @@ const getLicenceVersion = (licence) => {
  * @return {Object} action
  */
 const addActionFactory = (request, licence) => {
-  const { schema: schemaName } = request.params;
-  const { issueNumber, incrementNumber } = getLicenceVersion(licence);
-  return createAddData(schemaName, request.defra, issueNumber, incrementNumber);
-};
+  const { schema: schemaName } = request.params
+  const { issueNumber, incrementNumber } = getLicenceVersion(licence)
+  return createAddData(schemaName, request.defra, issueNumber, incrementNumber)
+}
 
 /**
  * Creates an 'edit' existing WR22 data point action object
@@ -158,8 +158,8 @@ const addActionFactory = (request, licence) => {
  * @return {Object} action
  */
 const editActionFactory = (request, data, id) => {
-  return createEditData(omit(data, ['csrf_token']), request.defra, id);
-};
+  return createEditData(omit(data, ['csrf_token']), request.defra, id)
+}
 
 /**
  * Persists an array of action objects on to the specified licence
@@ -170,25 +170,25 @@ const editActionFactory = (request, data, id) => {
  * @return {Promise}               resolves when AR licence updated
  */
 const persistActions = async (licence, arLicence, actions = []) => {
-  const { licence_ref: licenceNumber } = licence;
+  const { licence_ref: licenceNumber } = licence
 
   // Add the new action to the list of actions
-  const updatedActions = [...arLicence.licence_data_value.actions, ...actions];
+  const updatedActions = [...arLicence.licence_data_value.actions, ...actions]
 
   // Re-calculate final state
-  const { status, lastEdit } = stateManager(getInitialState(licence), updatedActions);
+  const { status, lastEdit } = stateManager(getInitialState(licence), updatedActions)
 
   // Save action list to permit repo
-  return loader.update(arLicence.licence_id, { actions: updatedActions, status, lastEdit }, licenceNumber);
-};
+  return loader.update(arLicence.licence_id, { actions: updatedActions, status, lastEdit }, licenceNumber)
+}
 
-exports.getSchema = getSchema;
-exports.findDataItem = findDataItem;
-exports.getAddFormAction = getAddFormAction;
-exports.getAddFormAndSchema = getAddFormAndSchema;
-exports.getEditFormAndSchema = getEditFormAndSchema;
-exports.addActionFactory = addActionFactory;
-exports.editActionFactory = editActionFactory;
-exports.persistActions = persistActions;
-exports.getLicenceVersion = getLicenceVersion;
-exports.flattenData = flattenData;
+exports.getSchema = getSchema
+exports.findDataItem = findDataItem
+exports.getAddFormAction = getAddFormAction
+exports.getAddFormAndSchema = getAddFormAndSchema
+exports.getEditFormAndSchema = getEditFormAndSchema
+exports.addActionFactory = addActionFactory
+exports.editActionFactory = editActionFactory
+exports.persistActions = persistActions
+exports.getLicenceVersion = getLicenceVersion
+exports.flattenData = flattenData

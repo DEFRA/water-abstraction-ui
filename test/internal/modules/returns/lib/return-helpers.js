@@ -1,12 +1,12 @@
-'use strict';
+'use strict'
 
-const { test, experiment } = exports.lab = require('@hapi/lab').script();
+const { test, experiment } = exports.lab = require('@hapi/lab').script()
 
-const { expect } = require('@hapi/code');
+const { expect } = require('@hapi/code')
 
 const {
   getLinesWithReadings
-} = require('internal/modules/returns/lib/return-helpers');
+} = require('internal/modules/returns/lib/return-helpers')
 
 experiment('getLinesWithReadings', () => {
   const meter = {
@@ -17,7 +17,7 @@ experiment('getLinesWithReadings', () => {
       '2017-12-01_2017-12-31': null,
       '2018-01-01_2018-01-31': 17
     }
-  };
+  }
 
   const lines = [{
     startDate: '2017-10-01',
@@ -36,7 +36,7 @@ experiment('getLinesWithReadings', () => {
     startDate: '2018-01-01',
     endDate: '2018-01-31',
     quantity: 2
-  }];
+  }]
 
   test('returns lines unchanged if using volumes', async () => {
     const data = {
@@ -45,9 +45,9 @@ experiment('getLinesWithReadings', () => {
       },
       meters: [meter],
       lines
-    };
-    expect(getLinesWithReadings(data)).to.equal(data.lines);
-  });
+    }
+    expect(getLinesWithReadings(data)).to.equal(data.lines)
+  })
 
   test('adds meter readings to lines if using one meter', async () => {
     const data = {
@@ -56,7 +56,7 @@ experiment('getLinesWithReadings', () => {
       },
       meters: [meter],
       lines
-    };
+    }
     expect(getLinesWithReadings(data)).to.equal([{
       startDate: '2017-10-01',
       endDate: '2017-10-31',
@@ -82,6 +82,6 @@ experiment('getLinesWithReadings', () => {
       quantity: 2,
       startReading: 15,
       endReading: 17
-    }]);
-  });
-});
+    }])
+  })
+})

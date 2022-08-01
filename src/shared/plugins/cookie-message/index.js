@@ -1,10 +1,10 @@
-'use strict';
+'use strict'
 
-const { set, isEmpty } = require('lodash');
-const routes = require('./routes');
-const constants = require('./lib/constants');
-const qs = require('querystring');
-const { getAnalyticsCookieDomain } = require('./lib/cookie-domain');
+const { set, isEmpty } = require('lodash')
+const routes = require('./routes')
+const constants = require('./lib/constants')
+const qs = require('querystring')
+const { getAnalyticsCookieDomain } = require('./lib/cookie-domain')
 
 /**
  * HAPI Cookie Message plugin
@@ -19,7 +19,7 @@ const { getAnalyticsCookieDomain } = require('./lib/cookie-domain');
  * @param {Object} request
  * @returns {Boolean}
  */
-const isCookiesPage = request => request.path === '/cookies';
+const isCookiesPage = request => request.path === '/cookies'
 
 /**
  * Gets the current page path, including query string
@@ -29,7 +29,7 @@ const isCookiesPage = request => request.path === '/cookies';
  */
 const getCurrentPath = request => isEmpty(request.query)
   ? request.path
-  : `${request.path}?${qs.stringify(request.query)}`;
+  : `${request.path}?${qs.stringify(request.query)}`
 
 /**
  * Gets the path to set the cookie preferences
@@ -39,13 +39,13 @@ const getCurrentPath = request => isEmpty(request.query)
  * @returns {String}
  */
 const getPreferencesPath = (request, isAccepted) => {
-  const redirectPath = getCurrentPath(request);
+  const redirectPath = getCurrentPath(request)
   const query = qs.stringify({
     redirectPath,
     acceptAnalytics: isAccepted ? 'true' : 'false'
-  });
-  return `/set-cookie-preferences?${query}`;
-};
+  })
+  return `/set-cookie-preferences?${query}`
+}
 
 /**
  * Gets the path to the cookies page, including a redirectPath query param which points
@@ -54,7 +54,7 @@ const getPreferencesPath = (request, isAccepted) => {
  * @param {Object} request
  * @returns {String}
  */
-const getCookiesPagePath = request => `/cookies?${qs.stringify({ redirectPath: getCurrentPath(request) })}`;
+const getCookiesPagePath = request => `/cookies?${qs.stringify({ redirectPath: getCurrentPath(request) })}`
 
 /**
  * Pre handler sets cookie banner state in view
@@ -63,10 +63,10 @@ const getCookiesPagePath = request => `/cookies?${qs.stringify({ redirectPath: g
  * @param {Object} h
  */
 const _handler = async (request, h) => {
-  const isEnabled = request.isAnalyticsCookiesEnabled();
+  const isEnabled = request.isAnalyticsCookiesEnabled()
 
   // Get flash messages
-  const [flashMessage] = request.yar.flash(constants.flashMessageType);
+  const [flashMessage] = request.yar.flash(constants.flashMessageType)
 
   set(request, 'view.cookieBanner', {
     flashMessage,
@@ -75,10 +75,10 @@ const _handler = async (request, h) => {
     acceptPath: getPreferencesPath(request, 1),
     rejectPath: getPreferencesPath(request, 0),
     cookiesPagePath: getCookiesPagePath(request)
-  });
+  })
 
-  return h.continue;
-};
+  return h.continue
+}
 
 /**
  * Checks whether analytics cookies are enabled by inspecting the state
@@ -88,11 +88,11 @@ const _handler = async (request, h) => {
  * @return {Boolean|Null}
  */
 function isAnalyticsCookiesEnabled () {
-  const value = this.state[constants.cookieName];
+  const value = this.state[constants.cookieName]
   if (value === constants.accepted) {
-    return true;
+    return true
   }
-  return value === constants.rejected ? false : null;
+  return value === constants.rejected ? false : null
 }
 
 /**
@@ -106,15 +106,15 @@ function isAnalyticsCookiesEnabled () {
  */
 function setCookiePreferences (isAnalyticsAccepted) {
   // Set preferences
-  this.state(constants.cookieName, isAnalyticsAccepted ? constants.accepted : constants.rejected);
+  this.state(constants.cookieName, isAnalyticsAccepted ? constants.accepted : constants.rejected)
 
   // Clear analytics cookies
   if (!isAnalyticsAccepted) {
     ['_ga', '_gid', '_gat', '_gat_govuk_shared'].forEach(cookieName => {
       this.unstate(cookieName, {
         domain: getAnalyticsCookieDomain(this.request.info.hostname)
-      });
-    });
+      })
+    })
   }
 }
 
@@ -129,25 +129,25 @@ const getCookieOptions = () => ({
   isHttpOnly: true,
   ttl: 365 * 24 * 60 * 60 * 1000,
   isSameSite: 'Lax'
-});
+})
 
 const cookieMessagePlugin = {
   register: server => {
     // Register cookie
-    server.state(constants.cookieName, getCookieOptions());
+    server.state(constants.cookieName, getCookieOptions())
 
     // Register pre handler
     server.ext({
       type: 'onPreHandler',
       method: _handler
-    });
+    })
 
     // Decorate request
-    server.decorate('request', 'isAnalyticsCookiesEnabled', isAnalyticsCookiesEnabled);
-    server.decorate('toolkit', 'setCookiePreferences', setCookiePreferences);
+    server.decorate('request', 'isAnalyticsCookiesEnabled', isAnalyticsCookiesEnabled)
+    server.decorate('toolkit', 'setCookiePreferences', setCookiePreferences)
 
     // Register routes
-    server.route(Object.values(routes));
+    server.route(Object.values(routes))
   },
 
   pkg: {
@@ -157,9 +157,9 @@ const cookieMessagePlugin = {
       yar: '9.x.x'
     }
   }
-};
+}
 
-module.exports = cookieMessagePlugin;
-module.exports._handler = _handler;
-module.exports._isAnalyticsCookiesEnabled = isAnalyticsCookiesEnabled;
-module.exports._setCookiePreferences = setCookiePreferences;
+module.exports = cookieMessagePlugin
+module.exports._handler = _handler
+module.exports._isAnalyticsCookiesEnabled = isAnalyticsCookiesEnabled
+module.exports._setCookiePreferences = setCookiePreferences

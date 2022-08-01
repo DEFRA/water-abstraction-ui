@@ -1,12 +1,12 @@
-'use strict';
-const Joi = require('joi');
-const controller = require('../controllers/rebilling');
-const preHandlers = require('../pre-handlers');
-const { VALID_GUID } = require('shared/lib/validators');
-const { manageBillingAccounts } = require('internal/lib/constants').scope;
-const allowedScopes = [manageBillingAccounts];
+'use strict'
+const Joi = require('joi')
+const controller = require('../controllers/rebilling')
+const preHandlers = require('../pre-handlers')
+const { VALID_GUID } = require('shared/lib/validators')
+const { manageBillingAccounts } = require('internal/lib/constants').scope
+const allowedScopes = [manageBillingAccounts]
 
-const { createRoutePair } = require('shared/lib/route-helpers');
+const { createRoutePair } = require('shared/lib/route-helpers')
 
 const getOptions = description => ({
   description,
@@ -28,7 +28,7 @@ const getOptions = description => ({
     { method: preHandlers.loadBillingAccount, assign: 'billingAccount' },
     { method: preHandlers.getBillingAccountRebillableBills, assign: 'rebillableBills' }
   ]
-});
+})
 
 module.exports = {
   ...createRoutePair(controller, 'rebillingStartDate', {
@@ -45,4 +45,4 @@ module.exports = {
     path: '/billing-accounts/{billingAccountId}/rebilling/select-bills',
     options: getOptions('Select bills for re-billing')
   })
-};
+}

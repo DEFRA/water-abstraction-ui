@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
-const { pick, identity } = require('lodash');
+const { pick, identity } = require('lodash')
 
 /**
  * Maps address object to array
@@ -17,10 +17,10 @@ const mapAddressToArray = address => {
     'county',
     'postcode',
     'country'
-  ]);
+  ])
   return Object.values(parts)
-    .filter(identity);
-};
+    .filter(identity)
+}
 
 /**
  * Maps address object to string
@@ -28,7 +28,7 @@ const mapAddressToArray = address => {
  * @return {String} address as a string, with all empty parts removed
  */
 const mapAddressToString = address =>
-  mapAddressToArray(address).join(', ');
+  mapAddressToArray(address).join(', ')
 
-exports.mapAddressToArray = mapAddressToArray;
-exports.mapAddressToString = mapAddressToString;
+exports.mapAddressToArray = mapAddressToArray
+exports.mapAddressToString = mapAddressToString

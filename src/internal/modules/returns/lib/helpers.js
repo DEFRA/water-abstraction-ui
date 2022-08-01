@@ -1,11 +1,11 @@
 /* eslint new-cap: "warn" */
-const Boom = require('@hapi/boom');
-const { get, isObject, findLastKey } = require('lodash');
+const Boom = require('@hapi/boom')
+const { get, isObject, findLastKey } = require('lodash')
 
-const config = require('../../../config');
-const services = require('../../../lib/connectors/services');
+const config = require('../../../config')
+const services = require('../../../lib/connectors/services')
 
-const returnsMapper = require('../../../lib/mappers/returns');
+const returnsMapper = require('../../../lib/mappers/returns')
 
 /**
  * Gets all licences from the CRM that can be viewed by the supplied entity ID
@@ -17,13 +17,13 @@ const getNewTaggingLicenceNumbers = (request, filter = {}) => {
   const f = Object.assign({}, filter, {
     regime_entity_id: config.crm.regimes.water.entityId,
     includeExpired: true
-  });
+  })
 
-  const sort = {};
-  const columns = ['system_external_id', 'document_name', 'document_id', 'metadata'];
+  const sort = {}
+  const columns = ['system_external_id', 'document_name', 'document_id', 'metadata']
 
-  return services.crm.documents.findAll(f, sort, columns);
-};
+  return services.crm.documents.findAll(f, sort, columns)
+}
 
 /**
  * Gets the filter to use for retrieving licences from returns service
@@ -40,8 +40,8 @@ const getLicenceReturnsFilter = (licenceNumbers) => {
     start_date: {
       $gte: '2008-04-01'
     }
-  };
-};
+  }
+}
 
 /**
  * Get the returns for a list of licence numbers
@@ -50,32 +50,32 @@ const getLicenceReturnsFilter = (licenceNumbers) => {
  * @return {Promise} resolves with returns
  */
 const getLicenceReturns = async (licenceNumbers, page = 1) => {
-  const filter = getLicenceReturnsFilter(licenceNumbers);
+  const filter = getLicenceReturnsFilter(licenceNumbers)
 
   const sort = {
     start_date: -1,
     licence_ref: 1
-  };
+  }
 
   const columns = [
     'return_id', 'licence_ref', 'start_date', 'end_date', 'metadata',
     'status', 'received_date', 'due_date', 'return_requirement'
-  ];
+  ]
 
   const requestPagination = isObject(page)
     ? page
     : {
-      page,
-      perPage: 50
-    };
+        page,
+        perPage: 50
+      }
 
-  const { data, error, pagination } = await services.returns.returns.findMany(filter, sort, requestPagination, columns);
+  const { data, error, pagination } = await services.returns.returns.findMany(filter, sort, requestPagination, columns)
   if (error) {
-    throw Boom.badImplementation('Returns error', error);
+    throw Boom.badImplementation('Returns error', error)
   }
 
-  return { data, pagination };
-};
+  return { data, pagination }
+}
 
 /**
  * Groups and sorts returns by year descending
@@ -84,19 +84,19 @@ const getLicenceReturns = async (licenceNumbers, page = 1) => {
  */
 const groupReturnsByYear = (data) => {
   const grouped = data.reduce((acc, row) => {
-    const year = parseInt(row.end_date.substr(0, 4));
+    const year = parseInt(row.end_date.substr(0, 4))
     if (!(year in acc)) {
       acc[year] = {
         year,
         returns: []
-      };
+      }
     }
-    acc[year].returns.push(row);
-    return acc;
-  }, {});
+    acc[year].returns.push(row)
+    return acc
+  }, {})
 
-  return Object.values(grouped).reverse();
-};
+  return Object.values(grouped).reverse()
+}
 
 /**
  * Merges returns data with licence names
@@ -109,15 +109,15 @@ const mergeReturnsAndLicenceNames = (returnsData, documents) => {
     return {
       ...acc,
       [row.system_external_id]: row.document_name
-    };
-  }, {});
+    }
+  }, {})
   return returnsData.map(row => {
     return {
       ...row,
       licenceName: map[row.licence_ref]
-    };
-  });
-};
+    }
+  })
+}
 
 /**
  * Gets return total, which can also be null if no values are filled in
@@ -126,13 +126,13 @@ const mergeReturnsAndLicenceNames = (returnsData, documents) => {
  */
 const getReturnTotal = (ret) => {
   if (!ret.lines) {
-    return null;
+    return null
   }
-  const lines = ret.lines.filter(line => line.quantity !== null);
+  const lines = ret.lines.filter(line => line.quantity !== null)
   return lines.length === 0
     ? null
-    : lines.reduce((acc, line) => acc + parseFloat(line.quantity), 0);
-};
+    : lines.reduce((acc, line) => acc + parseFloat(line.quantity), 0)
+}
 
 /**
  * Gets data to display in returns list view
@@ -145,32 +145,32 @@ const getReturnTotal = (ret) => {
  * @return {Promise} resolves with list view data
  */
 const getReturnsViewData = async (request) => {
-  const { page } = request.query;
-  const { documentId } = request.params;
+  const { page } = request.query
+  const { documentId } = request.params
 
   // Get documents from CRM
-  const filter = documentId ? { document_id: documentId } : {};
+  const filter = documentId ? { document_id: documentId } : {}
 
-  const documents = await getNewTaggingLicenceNumbers(request, filter);
-  const licenceNumbers = documents.map(row => row.system_external_id);
+  const documents = await getNewTaggingLicenceNumbers(request, filter)
+  const licenceNumbers = documents.map(row => row.system_external_id)
 
   const view = {
     ...request.view,
     documents,
     document: documentId ? documents[0] : null,
     returns: []
-  };
-
-  if (licenceNumbers.length) {
-    const { data, pagination } = await getLicenceReturns(licenceNumbers, page, true);
-    const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(returnsMapper.mapReturns(data, request), documents));
-
-    view.pagination = pagination;
-    view.returns = returns;
   }
 
-  return view;
-};
+  if (licenceNumbers.length) {
+    const { data, pagination } = await getLicenceReturns(licenceNumbers, page, true)
+    const returns = groupReturnsByYear(mergeReturnsAndLicenceNames(returnsMapper.mapReturns(data, request), documents))
+
+    view.pagination = pagination
+    view.returns = returns
+  }
+
+  return view
+}
 
 /**
  * Get common view data used by many controllers
@@ -179,21 +179,21 @@ const getReturnsViewData = async (request) => {
  * @return {Promise} resolves with view data
  */
 const getViewData = async (request, data) => {
-  const documentHeader = await services.crm.documents.getWaterLicence(data.licenceNumber, true);
+  const documentHeader = await services.crm.documents.getWaterLicence(data.licenceNumber, true)
   return {
     ...request.view,
     documentHeader,
     data
-  };
-};
+  }
+}
 
-const endReadingKey = data => findLastKey(get(data, 'meters[0].readings'), key => key > 0);
+const endReadingKey = data => findLastKey(get(data, 'meters[0].readings'), key => key > 0)
 
-exports.getNewTaggingLicenceNumbers = getNewTaggingLicenceNumbers;
-exports.getLicenceReturns = getLicenceReturns;
-exports.groupReturnsByYear = groupReturnsByYear;
-exports.mergeReturnsAndLicenceNames = mergeReturnsAndLicenceNames;
-exports.getReturnsViewData = getReturnsViewData;
-exports.getReturnTotal = getReturnTotal;
-exports.getViewData = getViewData;
-exports.endReadingKey = endReadingKey;
+exports.getNewTaggingLicenceNumbers = getNewTaggingLicenceNumbers
+exports.getLicenceReturns = getLicenceReturns
+exports.groupReturnsByYear = groupReturnsByYear
+exports.mergeReturnsAndLicenceNames = mergeReturnsAndLicenceNames
+exports.getReturnsViewData = getReturnsViewData
+exports.getReturnTotal = getReturnTotal
+exports.getViewData = getViewData
+exports.endReadingKey = endReadingKey

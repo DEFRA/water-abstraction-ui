@@ -1,6 +1,6 @@
-const Joi = require('joi');
-const controller = require('./controller');
-const { scope } = require('../../lib/constants');
+const Joi = require('joi')
+const controller = require('./controller')
+const { scope } = require('../../lib/constants')
 
 module.exports = {
   getManageLicences: {
@@ -167,4 +167,4 @@ module.exports = {
       }
     }
   }
-};
+}

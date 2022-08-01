@@ -1,10 +1,10 @@
-const ServiceClient = require('../ServiceClient');
-const { throwIfError } = require('@envage/hapi-pg-rest-api');
+const ServiceClient = require('../ServiceClient')
+const { throwIfError } = require('@envage/hapi-pg-rest-api')
 
 const responseHandler = response => {
-  throwIfError(response.error);
-  return response.data;
-};
+  throwIfError(response.error)
+  return response.data
+}
 
 class ReturnsService extends ServiceClient {
   /**
@@ -15,10 +15,10 @@ class ReturnsService extends ServiceClient {
   getReturn (returnId, versionNumber) {
     const qs = versionNumber
       ? { returnId, versionNumber }
-      : { returnId };
+      : { returnId }
 
-    const url = this.joinUrl('returns');
-    return this.serviceRequest.get(url, { qs });
+    const url = this.joinUrl('returns')
+    return this.serviceRequest.get(url, { qs })
   };
 
   /**
@@ -28,8 +28,8 @@ class ReturnsService extends ServiceClient {
     * @return {Promise} resolves with post response
     */
   postReturn (body) {
-    const url = this.joinUrl('returns');
-    return this.serviceRequest.post(url, { body });
+    const url = this.joinUrl('returns')
+    return this.serviceRequest.post(url, { body })
   };
 
   /**
@@ -40,8 +40,8 @@ class ReturnsService extends ServiceClient {
     * @return {string} - JSON containing, eventId, filename, location, etc
     */
   postUpload (fileData, userName, companyId, type = 'csv') {
-    const url = this.joinUrl('returns/upload', type.toLowerCase());
-    return this.serviceRequest.post(url, { body: { fileData, userName, companyId } });
+    const url = this.joinUrl('returns/upload', type.toLowerCase())
+    return this.serviceRequest.post(url, { body: { fileData, userName, companyId } })
   }
 
   /**
@@ -54,9 +54,9 @@ class ReturnsService extends ServiceClient {
     * @return {Promise} resolves with { error, data } -  data is array of returns
     */
   async postUploadSubmit (eventId, qs) {
-    const uri = this.joinUrl('returns/upload-submit', eventId);
-    const response = await this.serviceRequest.post(uri, { qs });
-    return responseHandler(response);
+    const uri = this.joinUrl('returns/upload-submit', eventId)
+    const response = await this.serviceRequest.post(uri, { qs })
+    return responseHandler(response)
   }
 
   /**
@@ -71,10 +71,10 @@ class ReturnsService extends ServiceClient {
    * @return {Promise} resolves with array of returns
    */
   async getUploadPreview (eventId, qs, returnId) {
-    const uri = this.joinUrl('returns/upload-preview', eventId, returnId);
-    const response = await this.serviceRequest.get(uri, { qs });
-    return responseHandler(response);
+    const uri = this.joinUrl('returns/upload-preview', eventId, returnId)
+    const response = await this.serviceRequest.get(uri, { qs })
+    return responseHandler(response)
   }
 }
 
-module.exports = ReturnsService;
+module.exports = ReturnsService

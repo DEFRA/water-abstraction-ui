@@ -1,84 +1,84 @@
-const { v4: uuid } = require('uuid');
-const sinon = require('sinon');
-const sandbox = sinon.createSandbox();
+const { v4: uuid } = require('uuid')
+const sinon = require('sinon')
+const sandbox = sinon.createSandbox()
 
 const {
   experiment,
   beforeEach,
   afterEach,
   test
-} = exports.lab = require('@hapi/lab').script();
-const { expect } = require('@hapi/code');
+} = exports.lab = require('@hapi/lab').script()
+const { expect } = require('@hapi/code')
 
-const InvoiceAccountService = require('internal/lib/connectors/services/water/InvoiceAccountService');
-const { serviceRequest } = require('@envage/water-abstraction-helpers');
+const InvoiceAccountService = require('internal/lib/connectors/services/water/InvoiceAccountService')
+const { serviceRequest } = require('@envage/water-abstraction-helpers')
 
 experiment('services/water/InvoiceAccountService', () => {
-  let service;
-  const invoiceAccountId = uuid();
+  let service
+  const invoiceAccountId = uuid()
 
   beforeEach(async () => {
-    sandbox.stub(serviceRequest, 'get');
-    sandbox.stub(serviceRequest, 'post');
+    sandbox.stub(serviceRequest, 'get')
+    sandbox.stub(serviceRequest, 'post')
 
-    service = new InvoiceAccountService('https://example.com/water/1.0');
-  });
+    service = new InvoiceAccountService('https://example.com/water/1.0')
+  })
 
   afterEach(async () => {
-    sandbox.restore();
-  });
+    sandbox.restore()
+  })
 
   experiment('.getInvoiceAccount', () => {
     test('passes the expected URL to the service request', async () => {
-      await service.getInvoiceAccount(invoiceAccountId);
-      const [url] = serviceRequest.get.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/invoice-accounts/${invoiceAccountId}`);
-    });
-  });
+      await service.getInvoiceAccount(invoiceAccountId)
+      const [url] = serviceRequest.get.lastCall.args
+      expect(url).to.equal(`https://example.com/water/1.0/invoice-accounts/${invoiceAccountId}`)
+    })
+  })
 
   experiment('.createInvoiceAccountAddress', () => {
-    const data = { address: {}, agentCompany: null, contact: null };
+    const data = { address: {}, agentCompany: null, contact: null }
 
     beforeEach(async () => {
-      await service.createInvoiceAccountAddress(invoiceAccountId, data);
-    });
+      await service.createInvoiceAccountAddress(invoiceAccountId, data)
+    })
 
     test('passes the expected URL to the service request', async () => {
-      const [url] = serviceRequest.post.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/invoice-accounts/${invoiceAccountId}/addresses`);
-    });
+      const [url] = serviceRequest.post.lastCall.args
+      expect(url).to.equal(`https://example.com/water/1.0/invoice-accounts/${invoiceAccountId}/addresses`)
+    })
 
     test('passes the expected payload to the service request', async () => {
-      const [, { body }] = serviceRequest.post.lastCall.args;
-      expect(body).to.equal(data);
-    });
-  });
+      const [, { body }] = serviceRequest.post.lastCall.args
+      expect(body).to.equal(data)
+    })
+  })
 
   experiment('.getLicences', () => {
     beforeEach(async () => {
-      await service.getLicences(invoiceAccountId);
-    });
+      await service.getLicences(invoiceAccountId)
+    })
 
     test('passes the expected URL to the service request', async () => {
-      const [url] = serviceRequest.get.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/invoice-accounts/${invoiceAccountId}/licences`);
-    });
-  });
+      const [url] = serviceRequest.get.lastCall.args
+      expect(url).to.equal(`https://example.com/water/1.0/invoice-accounts/${invoiceAccountId}/licences`)
+    })
+  })
 
   experiment('.getInvoiceAccountInvoices', () => {
     beforeEach(async () => {
-      await service.getInvoiceAccountInvoices(invoiceAccountId, 2, 50);
-    });
+      await service.getInvoiceAccountInvoices(invoiceAccountId, 2, 50)
+    })
 
     test('passes the expected URL to the service request', async () => {
-      const [url] = serviceRequest.get.lastCall.args;
-      expect(url).to.equal(`https://example.com/water/1.0/invoice-accounts/${invoiceAccountId}/invoices`);
-    });
+      const [url] = serviceRequest.get.lastCall.args
+      expect(url).to.equal(`https://example.com/water/1.0/invoice-accounts/${invoiceAccountId}/invoices`)
+    })
 
     test('passes the expected query params to the service request', async () => {
-      const [, { qs: { page, perPage } }] = serviceRequest.get.lastCall.args;
-      expect(page).to.equal(2);
-      expect(perPage).to.equal(50);
-    });
-  });
-});
+      const [, { qs: { page, perPage } }] = serviceRequest.get.lastCall.args
+      expect(page).to.equal(2)
+      expect(perPage).to.equal(50)
+    })
+  })
+})

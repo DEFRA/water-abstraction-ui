@@ -1,21 +1,21 @@
-const services = require('../connectors/services');
-const documentsService = services.crm.documents;
+const services = require('../connectors/services')
+const documentsService = services.crm.documents
 
-const { set, get } = require('lodash');
+const { set, get } = require('lodash')
 
-const addToRequest = (request, key, value) => set(request, `licence.${key}`, value);
+const addToRequest = (request, key, value) => set(request, `licence.${key}`, value)
 
 const loadUserLicenceCount = async request => {
-  const { companyId } = request.defra;
-  const licenceCount = await documentsService.getLicenceCount(companyId);
-  addToRequest(request, 'userLicenceCount', licenceCount);
-};
+  const { companyId } = request.defra
+  const licenceCount = await documentsService.getLicenceCount(companyId)
+  addToRequest(request, 'userLicenceCount', licenceCount)
+}
 
 const loadOutstandingVerifications = async request => {
-  const { entityId } = request.defra;
-  const { data: verifications } = await services.crm.verifications.getOutstandingVerifications(entityId);
-  addToRequest(request, 'outstandingVerifications', verifications);
-};
+  const { entityId } = request.defra
+  const { data: verifications } = await services.crm.verifications.getOutstandingVerifications(entityId)
+  addToRequest(request, 'outstandingVerifications', verifications)
+}
 
 /*
  * Maps the settings key to a functin that satisfies the requirement
@@ -23,7 +23,7 @@ const loadOutstandingVerifications = async request => {
 const requirementsMap = {
   loadUserLicenceCount,
   loadOutstandingVerifications
-};
+}
 
 /*
  * For each key on the settings object the relevant loading
@@ -34,15 +34,15 @@ const loadRequirements = async (request, settings) => {
   const requirements = Object.keys(settings).reduce((acc, key) => {
     return settings[key] === true
       ? [...acc, key]
-      : acc;
-  }, []);
+      : acc
+  }, [])
 
   const promises = requirements.map(requirement => {
-    return requirementsMap[requirement](request);
-  });
+    return requirementsMap[requirement](request)
+  })
 
-  return Promise.all(promises);
-};
+  return Promise.all(promises)
+}
 
 const plugin = {
   register: (server, options) => {
@@ -50,21 +50,21 @@ const plugin = {
       type: 'onPreHandler',
       async method (request, h) {
         if (get(request, 'auth.isAuthenticated') === true) {
-          const settings = get(request, 'route.settings.plugins.licenceLoader');
+          const settings = get(request, 'route.settings.plugins.licenceLoader')
 
           if (settings) {
-            await loadRequirements(request, settings);
+            await loadRequirements(request, settings)
           }
         }
-        return h.continue;
+        return h.continue
       }
-    });
+    })
   },
 
   pkg: {
     name: 'licenceLoaderPlugin',
     version: '2.0.0'
   }
-};
+}
 
-module.exports = plugin;
+module.exports = plugin

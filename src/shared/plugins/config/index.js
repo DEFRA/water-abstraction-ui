@@ -10,19 +10,19 @@ const configPlugin = {
     server.ext({
       type: 'onPreHandler',
       method: async (request, reply) => {
-        const config = request.route.settings.plugins.config || {};
-        request.config = config;
+        const config = request.route.settings.plugins.config || {}
+        request.config = config
 
         // Continue processing request
-        return reply.continue;
+        return reply.continue
       }
-    });
+    })
   },
 
   pkg: {
     name: 'config',
     version: '1.0.0'
   }
-};
+}
 
-module.exports = configPlugin;
+module.exports = configPlugin

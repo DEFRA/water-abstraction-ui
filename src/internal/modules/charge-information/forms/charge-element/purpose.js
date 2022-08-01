@@ -1,16 +1,16 @@
-'use strict';
+'use strict'
 
-const Joi = require('joi');
-const { formFactory, fields } = require('shared/lib/forms/');
-const { uniqBy } = require('lodash');
-const { CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants');
-const { getChargeElementData, getChargeElementActionUrl } = require('../../lib/form-helpers');
+const Joi = require('joi')
+const { formFactory, fields } = require('shared/lib/forms/')
+const { uniqBy } = require('lodash')
+const { CHARGE_ELEMENT_STEPS } = require('../../lib/charge-elements/constants')
+const { getChargeElementData, getChargeElementActionUrl } = require('../../lib/form-helpers')
 
 const options = defaultCharges => {
   return uniqBy(defaultCharges.map(row => {
-    return { value: row.purposeUse.id, label: row.purposeUse.name };
-  }), 'value');
-};
+    return { value: row.purposeUse.id, label: row.purposeUse.name }
+  }), 'value')
+}
 
 /**
  * Form to request the charge element purpose
@@ -19,12 +19,12 @@ const options = defaultCharges => {
  * @param {Boolean}  data object containing charge element data
   */
 const form = request => {
-  const { csrfToken } = request.view;
-  const { defaultCharges } = request.pre;
-  const { purposeUse } = getChargeElementData(request);
-  const action = getChargeElementActionUrl(request, CHARGE_ELEMENT_STEPS.purpose);
+  const { csrfToken } = request.view
+  const { defaultCharges } = request.pre
+  const { purposeUse } = getChargeElementData(request)
+  const action = getChargeElementActionUrl(request, CHARGE_ELEMENT_STEPS.purpose)
 
-  const f = formFactory(action, 'POST');
+  const f = formFactory(action, 'POST')
 
   f.fields.push(fields.radio('purpose', {
     errors: {
@@ -33,18 +33,18 @@ const form = request => {
       }
     },
     choices: options(defaultCharges)
-  }, purposeUse ? purposeUse.id : ''));
-  f.fields.push(fields.hidden('csrf_token', {}, csrfToken));
-  f.fields.push(fields.button(null, { label: 'Continue' }));
+  }, purposeUse ? purposeUse.id : ''))
+  f.fields.push(fields.hidden('csrf_token', {}, csrfToken))
+  f.fields.push(fields.button(null, { label: 'Continue' }))
 
-  return f;
-};
+  return f
+}
 
 const schema = (request) => Joi.object().keys({
   csrf_token: Joi.string().uuid().required(),
   purpose: Joi.string().uuid().required()
-});
+})
 
-exports.schema = schema;
+exports.schema = schema
 
-exports.form = form;
+exports.form = form

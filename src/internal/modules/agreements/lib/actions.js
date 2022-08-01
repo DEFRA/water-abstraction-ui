@@ -1,16 +1,16 @@
-'useStrict';
-const { pick } = require('lodash');
+'useStrict'
+const { pick } = require('lodash')
 
 const ACTION_TYPES = {
   setAgreementType: 'selectAgreementType',
   setDateSigned: 'dateSigned',
   setStartDate: 'checkStartDate'
-};
+}
 
 const setAgreementType = (request, formValues) => ({
   type: ACTION_TYPES.setAgreementType,
   payload: pick(formValues, 'financialAgreementCode')
-});
+})
 
 const setDateSigned = (request, formValues, currentDate = Date.now()) => ({
   type: ACTION_TYPES.setDateSigned,
@@ -20,14 +20,14 @@ const setDateSigned = (request, formValues, currentDate = Date.now()) => ({
     licenceStartDate: request.pre.licence.startDate,
     currentDate
   }
-});
+})
 
 const setStartDate = (request, formValues) => ({
   type: ACTION_TYPES.setStartDate,
   payload: pick(formValues, ['isCustomStartDate', 'startDate'])
-});
+})
 
-exports.ACTION_TYPES = ACTION_TYPES;
-exports.setAgreementType = setAgreementType;
-exports.setDateSigned = setDateSigned;
-exports.setStartDate = setStartDate;
+exports.ACTION_TYPES = ACTION_TYPES
+exports.setAgreementType = setAgreementType
+exports.setDateSigned = setDateSigned
+exports.setStartDate = setStartDate

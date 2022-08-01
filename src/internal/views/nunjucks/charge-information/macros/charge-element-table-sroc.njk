@@ -185,7 +185,7 @@ formErrorSummary %}
 
 {% endmacro %}
 
-{% macro chargeElementTableSroc(chargeElements, isEditable, licenceId, chargeVersionWorkflowId) %}
+{% macro chargeElementTableSroc(chargeElements, isEditable, licenceId, chargeVersionWorkflowId, isWaterUndertaker) %}
   {% if chargeElements.length > 0 %}
     {% for chargeElement in chargeElements %}
       <h2 class="govuk-heading-l govuk-!-margin-bottom-4">
@@ -213,7 +213,7 @@ formErrorSummary %}
           {% if chargeElement.supportedSourceName %}
             {{ summaryListRow('Supported source name', chargeElement.supportedSourceName, changeLinkSroc('/supported-source-name', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
           {% endif %}
-          {{ summaryListRow('Supply public water', getBooleanText(chargeElement.isSupplyPublicWater) | title, changeLinkSroc('/supply-public-water', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable) }}
+          {{ summaryListRow('Supply public water', getBooleanText(chargeElement.isSupplyPublicWater) | title, changeLinkSroc('/supply-public-water', chargeElement.id, licenceId, chargeVersionWorkflowId), isEditable and isWaterUndertaker) }}
         </dl>
       {% endif %}
       {% if chargeElement.isAdjustments %}

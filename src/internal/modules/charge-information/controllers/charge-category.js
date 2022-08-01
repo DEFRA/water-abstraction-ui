@@ -77,6 +77,13 @@ const getRedirectPath = (request, stepKey) => {
 const getChargeCategoryStep = async (request, h) => {
   const { step } = request.params
   const stepKey = getStepKeyByValue(step)
+
+  // If the page we're trying to get is the public water page, and this isn't a water undertaker, skip the page
+  if (stepKey === 'isSupplyPublicWater' && !request.pre.licence.isWaterUndertaker) {
+    const redirectPath = getRedirectPath(request, stepKey)
+    return h.redirect(redirectPath)
+  }
+
   return h.view('nunjucks/form', {
     ...getDefaultView(request, getBackLink(request, stepKey), forms[step]),
     pageTitle: ROUTING_CONFIG[stepKey].pageTitle
@@ -89,50 +96,65 @@ const adjustementsHandler = async (request, draftChargeInformation) => {
   const chargeElement = draftChargeInformation.chargeElements.find(element => element.id === elementId)
   if (request.payload.isAdjustments === 'true') {
     return routing.getChargeCategoryStep(licenceId, elementId, ROUTING_CONFIG.isAdjustments.nextStep, { chargeVersionWorkflowId })
-  } else {
-    chargeElement.isAdjustments = false
-    chargeElement.adjustments = {}
-    request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation)
-    return getRedirectPath(request, 'adjustments')
   }
+
+  chargeElement.isAdjustments = false
+  chargeElement.adjustments = {}
+  request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation)
+  return getRedirectPath(request, 'adjustments')
 }
 
 const postChargeCategoryStep = async (request, h) => {
   const { step, licenceId, elementId } = request.params
   const { chargeVersionWorkflowId } = request.query
   const form = getPostedForm(request, forms[step])
-  if (form.isValid) {
-    const stepKey = getStepKeyByValue(step)
-    const routeConfig = ROUTING_CONFIG[stepKey]
-    const { draftChargeInformation, supportedSources } = request.pre
-    const chargeElement = draftChargeInformation.chargeElements.find(element => element.id === elementId)
-    if (routeConfig === ROUTING_CONFIG.isAdjustments) {
-      const route = await adjustementsHandler(request, draftChargeInformation)
-      return h.redirect(route)
-    } else if (routeConfig === ROUTING_CONFIG.whichElement) {
-      const selectedElementIds = form.fields.find(field => field.name === 'selectedElementIds').value
-      processElements(request, elementId, selectedElementIds)
-      return h.redirect(getRedirectPath(request, stepKey))
-    } else if (routeConfig === ROUTING_CONFIG.isSupportedSource) {
-      if (request.payload.isSupportedSource === 'false') {
-        delete chargeElement.supportedSourceName
-        request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation)
-      }
-    } else if (routeConfig === ROUTING_CONFIG.supportedSourceName) {
-      const { supportedSourceId } = request.payload
-      const supportedSource = supportedSources.find(({ id }) => id === supportedSourceId)
-      chargeElement.supportedSourceName = supportedSource.name
+
+  if (!form.isValid) {
+    const queryParams = cleanObject(request.query)
+    return h.postRedirectGet(form, routing.getChargeCategoryStep(licenceId, elementId, step), queryParams)
+  }
+
+  const stepKey = getStepKeyByValue(step)
+  const routeConfig = ROUTING_CONFIG[stepKey]
+  const { draftChargeInformation, supportedSources } = request.pre
+  const chargeElement = draftChargeInformation.chargeElements.find(element => element.id === elementId)
+
+  if (routeConfig === ROUTING_CONFIG.isAdjustments) {
+    // If isSupplyPublicWater hasn't been set at this point we need to set it to false
+    if (chargeElement.isSupplyPublicWater === undefined) {
+      chargeElement.isSupplyPublicWater = false
       request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation)
     }
-    await applyFormResponse(request, form, actions.setChargeElementData)
+    const route = await adjustementsHandler(request, draftChargeInformation)
+    return h.redirect(route)
+  }
+
+  if (routeConfig === ROUTING_CONFIG.whichElement) {
+    const selectedElementIds = form.fields.find(field => field.name === 'selectedElementIds').value
+    processElements(request, elementId, selectedElementIds)
     return h.redirect(getRedirectPath(request, stepKey))
   }
 
-  const queryParams = cleanObject(request.query)
+  if (routeConfig === ROUTING_CONFIG.isSupportedSource && request.payload.isSupportedSource === 'false') {
+    delete chargeElement.supportedSourceName
+    request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation)
+  }
 
-  return h.postRedirectGet(form, routing.getChargeCategoryStep(licenceId, elementId, step), queryParams)
+  if (routeConfig === ROUTING_CONFIG.supportedSourceName) {
+    const { supportedSourceId } = request.payload
+    const supportedSource = supportedSources.find(({ id }) => id === supportedSourceId)
+    chargeElement.supportedSourceName = supportedSource.name
+    request.setDraftChargeInformation(licenceId, chargeVersionWorkflowId, draftChargeInformation)
+  }
+
+  await applyFormResponse(request, form, actions.setChargeElementData)
+
+  const redirectPath = getRedirectPath(request, stepKey)
+  return h.redirect(redirectPath)
 }
 
-exports.getRedirectPath = getRedirectPath
-exports.getChargeCategoryStep = getChargeCategoryStep
-exports.postChargeCategoryStep = postChargeCategoryStep
+module.exports = {
+  getRedirectPath,
+  getChargeCategoryStep,
+  postChargeCategoryStep
+}

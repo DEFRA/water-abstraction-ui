@@ -18,7 +18,7 @@ const form = request => {
 
   const f = formFactory(action, 'POST')
   f.fields.push(fields.text('description', {
-    hint: 'This is the description that will appear on the invoice',
+    hint: 'This is the description that will appear on the invoice. You can use letters, numbers, hyphens, ampersands, brackets, semi colons and apostrophes.',
     errors: {
       'string.empty': {
         message: 'Enter a description for the charge reference'
@@ -26,8 +26,11 @@ const form = request => {
       'any.required': {
         message: 'Enter a description for the charge reference'
       },
-      'string.pattern.base': {
-        message: 'You can only include letters, numbers, hyphens, the and symbol (&) and brackets. The description must be less than 181 characters'
+      'string.pattern.invert.base': {
+        message: 'You can not use “ ” ? ^ £ ≥ ≤ — (long dash) in the charge reference description'
+      },
+      'string.max': {
+        message: 'The description for the charge reference must be 180 characters or less'
       }
     }
   }, data.description || ''))
@@ -38,10 +41,9 @@ const form = request => {
 }
 
 const schema = () => {
-  const descriptionRegex = /^[a-zA-Z/s 0-9-'.,()&*]{1,180}$/
   return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
-    description: Joi.string().pattern(descriptionRegex).required()
+    description: Joi.string().pattern(/[“”?^£≥≤—]/, { invert: true }).max(180).required()
   })
 }
 

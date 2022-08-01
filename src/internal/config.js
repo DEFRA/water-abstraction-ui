@@ -6,6 +6,8 @@ const testMode = parseInt(process.env.TEST_MODE) === 1
 
 const isLocal = process.env.NODE_ENV === 'local'
 const isTest = process.env.NODE_ENV === 'test'
+const isProduction = process.env.NODE_ENV === 'production'
+
 const crmUri = process.env.CRM_URI || 'http://127.0.0.1:8002/crm/1.0'
 const srocStartDate = new Date('2022-04-01')
 
@@ -150,7 +152,7 @@ module.exports = {
     manageAgreements: true,
     chargeInformation: true,
     manageInvoiceAccounts: true,
-    deleteAllBillingData: ['local', 'dev', 'development', 'test', 'qa'].includes(process.env.NODE_ENV),
+    deleteAllBillingData: process.env.ENABLE_DELETE_ALL_BILLING_DATA_FEATURE === 'true' && !isProduction,
     waterAbstractionAlerts: true,
     recalculateBills: true,
     allowChargeVersionUploads: (get(process.env, 'ALLOW_CHARGE_VERSION_UPLOADS') || '').toLowerCase() === 'true'

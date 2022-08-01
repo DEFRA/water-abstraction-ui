@@ -98,7 +98,8 @@ const invoiceData =
             calcS130Factor: null,
             aggregateFactor: 1,
             adjustmentFactor: 1,
-            isTwoPartSecondPartCharge: false
+            isTwoPartSecondPartCharge: false,
+            section126Factor: 0.9
           },
           {
             value: 4006,
@@ -175,7 +176,8 @@ const invoiceData =
             calcS130Factor: null,
             aggregateFactor: 1,
             adjustmentFactor: 1,
-            isTwoPartSecondPartCharge: false
+            isTwoPartSecondPartCharge: false,
+            section126Factor: 0.9
           }
         ],
         licence: {
@@ -558,7 +560,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(result[0]['Charge reference']).to.equal('4.5.55')
         expect(result[0].Source).to.equal('non-tidal')
         expect(result[0].Loss).to.equal('medium')
-        expect(result[0].Volume).to.equal('8.1')
+        expect(result[0].Volume).to.equal('9.1')
         expect(result[0]['Water available Y/N']).to.equal('Y')
         expect(result[0].Modelling).to.equal('no model')
         expect(result[0]['Public water supply Y/N']).to.equal('Y')
@@ -568,7 +570,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(result[0]['Canal and Rivers trust agreement']).to.equal('')
         expect(result[0]['Aggregate factor']).to.equal('1')
         expect(result[0]['Charge adjustment factor']).to.equal('1')
-        expect(result[0]['Abatement factor']).to.equal('1')
+        expect(result[0]['Abatement factor']).to.equal('0.9')
         expect(result[0]['Two part tariff']).to.equal('0.5')
         expect(result[0]['Transaction description']).to.equal('The description - with 007')
         expect(result[0]['Charge information reason']).to.equal('change reason description')
@@ -748,10 +750,10 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         })
       })
 
-      experiment('when compensation charge is true', () => {
+      experiment('when charge type is compensation', () => {
         beforeEach(() => {
           invoice.billingInvoiceLicences[0].billingTransactions.forEach((transaction) => {
-            transaction.isCompensationCharge = true
+            transaction.chargeType = 'compensation'
           })
         })
 

@@ -23,11 +23,8 @@ const form = request => {
       'number.base': {
         message: 'Enter the volume in ML (megalitres).'
       },
-      'number.positive': {
-        message: 'The volume must be equal to or greater than 0'
-      },
-      'number.min': {
-        message: 'The volume must be equal to or greater than 0'
+      'number.greater': {
+        message: 'The volume must be greater than 0'
       },
       'number.max': {
         message: 'The volume must be equal to or less than 1,000,000,000,000,000'
@@ -51,7 +48,7 @@ const schema = () => {
   return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
     volume: Joi
-      .number().required().min(0).max(1000000000000000)
+      .number().required().greater(0).max(1000000000000000)
       .custom((value, helper) => {
         const { error, original } = helper
         const [, decimals = ''] = original.split('.')

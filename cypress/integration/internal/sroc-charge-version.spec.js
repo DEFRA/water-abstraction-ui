@@ -158,7 +158,7 @@ describe('Create SRoC Charge version workflow journey', () => {
           cy.reload()
         })
         describe('user description contain an unsupported character', () => {
-          const characters = ['“' ,'”' ,'?' ,'^', '£', '≥', '≤', '—']
+          const characters = ['“', '”', '?', '^', '£', '≥', '≤', '—']
           cy.wrap(characters).each((index) => {
             cy.get('#description').type(index)
             cy.get('form > .govuk-button').contains('Continue').click()
@@ -166,7 +166,7 @@ describe('Create SRoC Charge version workflow journey', () => {
               'You can not use “ ” ? ^ £ ≥ ≤ — (long dash) in the charge reference description')
             cy.reload()
           })
-        }) 
+        })
         describe('user description contains an unusual but supported character', () => {
           cy.get('#description').type('-\'.,()&* are supported characters')
           cy.get('form > .govuk-button').contains('Continue').click()

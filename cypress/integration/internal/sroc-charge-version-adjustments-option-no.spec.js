@@ -110,13 +110,6 @@ describe('Create SRoC Charge version workflow journey', () => {
           checkInlineAndSummaryErrorMessage('Enter a description for the charge reference')
           cy.reload()
         })
-        describe('user description contain an unsupported character', () => {
-          cy.get('#description').type('@ is an unsupported character')
-          cy.get('form > .govuk-button').contains('Continue').click()
-          checkInlineAndSummaryErrorMessage(
-            'You can only include letters, numbers, hyphens, the and symbol (&) and brackets. The description must be less than 181 characters')
-          cy.reload()
-        })
         describe('user description contains an unusual but supported character', () => {
           cy.get('#description').type('-\'.,()&* are supported characters')
           cy.get('form > .govuk-button').contains('Continue').click()

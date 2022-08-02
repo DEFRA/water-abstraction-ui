@@ -1,6 +1,6 @@
 # Water Abtrsaction UI
 
-![Build Status](https://github.com/DEFRA/water-abstraction-ui/workflows/CI/badge.svg?branch=develop)
+![Build Status](https://github.com/DEFRA/water-abstraction-ui/workflows/CI/badge.svg?branch=main)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_water-abstraction-ui&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=DEFRA_water-abstraction-ui)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_water-abstraction-ui&metric=coverage)](https://sonarcloud.io/dashboard?id=DEFRA_water-abstraction-ui)
 [![Known Vulnerabilities](https://snyk.io/test/github/DEFRA/water-abstraction-ui/badge.svg)](https://snyk.io/test/github/DEFRA/water-abstraction-ui)

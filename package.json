@@ -1,6 +1,6 @@
 {
   "name": "water-abstraction-ui",
-  "version": "2.23.0",
+  "version": "2.24.0",
   "description": "Web app for Water Abstraction service",
   "homepage": "https://github.com/DEFRA/water-abstraction-team",
   "main": "index.js",
@@ -24,7 +24,8 @@
     "lint": "standard",
     "lint:fix": "standard --fix",
     "sass": "gulp sass",
-    "sass:watch": "gulp sass:watch"
+    "sass:watch": "gulp sass:watch",
+    "version": "auto-changelog -p --commit-limit false && git add CHANGELOG.md"
   },
   "dependencies": {
     "@envage/hapi-pg-rest-api": "^7.0.0",

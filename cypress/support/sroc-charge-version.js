@@ -151,12 +151,15 @@ const createSrocChargeVersion = (licenceRef) => {
         cy.reload();
       });
       describe('user description contain an unsupported character', () => {
-        cy.get('#description').type('@ is an unsupported character');
-        cy.get('form > .govuk-button').contains('Continue').click();
-        checkInlineAndSummaryErrorMessage(
-          'You can only include letters, numbers, hyphens, the and symbol (&) and brackets. The description must be less than 181 characters');
-        cy.reload();
-      });
+        const characters = ['“', '”', '?', '^', '£', '≥', '≤', '—']
+        cy.wrap(characters).each((index) => {
+          cy.get('#description').type(index)
+          cy.get('form > .govuk-button').contains('Continue').click()
+          checkInlineAndSummaryErrorMessage(
+            'You can not use “ ” ? ^ £ ≥ ≤ — (long dash) in the charge reference description')
+          cy.reload()
+        })
+      })
       describe('user description contains an unusual but supported character', () => {
         cy.get('#description').type('-\'.,()&* are supported characters');
         cy.get('form > .govuk-button').contains('Continue').click();
@@ -195,7 +198,7 @@ const createSrocChargeVersion = (licenceRef) => {
       describe('user clicks continue entering a value that\'s too low', () => {
         cy.get('#volume').type('-1');
         cy.get('form > .govuk-button').contains('Continue').click();
-        checkInlineAndSummaryErrorMessage('The volume must be equal to or greater than 0');
+        checkInlineAndSummaryErrorMessage('The volume must be greater than 0');
         cy.reload();
       });
       describe('user inputs value between 0 and 1', () => {
@@ -210,7 +213,7 @@ const createSrocChargeVersion = (licenceRef) => {
         cy.get('#volume').clear().type('0');
         cy.get('form > .govuk-button').contains('Continue').click();
         // Check that no error message was generated, then go back from the page we arrived at
-        checkNoErrorMessage();
+        checkInlineAndSummaryErrorMessage('The volume must be greater than 0');
         cy.get('.govuk-back-link').click();
       });
       describe('user inputs amount', () => {

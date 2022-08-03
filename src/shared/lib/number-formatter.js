@@ -1,6 +1,5 @@
 'use strict'
 
-const { isFinite } = require('lodash')
 const commaNumber = require('comma-number')
 
 /**

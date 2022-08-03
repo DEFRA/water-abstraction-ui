@@ -26,7 +26,11 @@ experiment('charge Nunjucks filter', () => {
     expect(charge(null)).to.equal(undefined)
   })
 
-  test('When the second argument is true, keeps the sign for negative charges', async () => {
+  test('When isSigned is true, keeps the sign for negative charges', async () => {
     expect(charge(-353, true)).to.equal('-£3.53')
+  })
+
+  test('When isPence is false does NOT convert pounds to pence', async () => {
+    expect(charge(353, false, false)).to.equal('£353.00')
   })
 })

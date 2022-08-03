@@ -29,10 +29,10 @@ const maxPrecision = (number, decimalPlaces) => {
  * @param {Number|String} number
  * @param {Boolean} [showSign]
  * @param {Boolean} [showCurrency]
- * @param {Boolean} [poundsToPence]
+ * @param {Boolean} [penceToPounds]
  * @return {String}
  */
-const formatCurrency = (number, showSign = false, showCurrency = false, poundsToPence = true) => {
+const formatCurrency = (number, showSign = false, showCurrency = false, penceToPounds = true) => {
   const parsedNumber = parseFloat(number)
 
   if (isNaN(parsedNumber)) {
@@ -40,7 +40,7 @@ const formatCurrency = (number, showSign = false, showCurrency = false, poundsTo
   }
 
   const sign = showSign && parsedNumber < 0 ? '-' : ''
-  const value = poundsToPence ? (Math.abs(number) / 100) : number
+  const value = penceToPounds ? (Math.abs(number) / 100) : number
   const currencySymbol = showCurrency ? '£' : ''
   return `${sign}${currencySymbol}${commaNumber(value.toFixed(2))}`
 }

@@ -40,9 +40,12 @@ const formatCurrency = (number, showSign = false, showCurrency = false, penceToP
   }
 
   const sign = showSign && parsedNumber < 0 ? '-' : ''
-  const value = penceToPounds ? (Math.abs(number) / 100) : number
   const currencySymbol = showCurrency ? '£' : ''
-  return `${sign}${currencySymbol}${commaNumber(value.toFixed(2))}`
+  const conversionFactor = penceToPounds ? 100 : 1
+
+  const value = (Math.abs(parsedNumber) / conversionFactor).toFixed(2)
+
+  return `${sign}${currencySymbol}${commaNumber(value)}`
 }
 
 exports.formatCurrency = formatCurrency

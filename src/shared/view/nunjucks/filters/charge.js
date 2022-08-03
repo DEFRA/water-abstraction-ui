@@ -6,13 +6,14 @@ const { isNil } = require('lodash')
  * with "Credit note"
  * @param {Number} value - charge as an integer in pence
  * @param {Boolean} [isSigned] - if true, the sign is displayed
+ * @param {Boolean} [isPence] - if true, the value is divided by 100
  * @return {String} formatted number with £ prefix
  */
-const charge = (value, isSigned = false) => {
+const charge = (value, isSigned = false, isPence = true) => {
   if (isNil(value)) {
     return
   }
-  return `${numberFormatter.penceToPound(value, isSigned, true)}`
+  return `${numberFormatter.formatCurrency(value, isSigned, true, isPence)}`
 }
 
 exports.charge = charge

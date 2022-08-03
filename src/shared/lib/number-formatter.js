@@ -25,25 +25,26 @@ const maxPrecision = (number, decimalPlaces) => {
 }
 
 /**
- * Moves the decimal 2 spaces left for a number and
+ * Optionally moves the decimal 2 spaces left for a number and
  * adds an optional currency symbol
  * @param {Number|String} number
- * @param {Boolean} isSigned
- * @param {Boolean} showCurrency
+ * @param {Boolean} [showSign]
+ * @param {Boolean} [showCurrency]
+ * @param {Boolean} [poundsToPence]
  * @return {String}
  */
-const penceToPound = (number, isSigned = false, showCurrency = false) => {
+const formatCurrency = (number, showSign = false, showCurrency = false, poundsToPence = true) => {
   const parsedNumber = parseFloat(number)
 
-  if (!isFinite(parsedNumber)) {
+  if (isNaN(parsedNumber)) {
     return number
   }
 
-  const sign = parsedNumber < 0 && isSigned ? '-' : ''
-  const value = (Math.abs(number) / 100).toFixed(2)
+  const sign = showSign && parsedNumber < 0 ? '-' : ''
+  const value = poundsToPence ? (Math.abs(number) / 100) : number
   const currencySymbol = showCurrency ? '£' : ''
-  return `${sign}${currencySymbol}${commaNumber(value)}`
+  return `${sign}${currencySymbol}${commaNumber(value.toFixed(2))}`
 }
 
-exports.penceToPound = penceToPound
+exports.formatCurrency = formatCurrency
 exports.maxPrecision = maxPrecision

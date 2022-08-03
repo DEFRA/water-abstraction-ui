@@ -49,9 +49,9 @@
 
 {% macro transactionDescription(transaction) %}
   {% if transaction.isCompensationCharge %}
-    Compensation charge 
+    Compensation charge
   {% elif transaction.isMinimumCharge %}
-    Minimum charge 
+    Minimum charge
   {% else %}
     {{ transaction.description }}
   {% endif %}
@@ -68,7 +68,7 @@
 {% macro transactionChargePeriod(transaction) %}
   <p class="govuk-body-s">
     <br><strong>Charge period:</strong> {{ transaction.chargePeriod.startDate | date }} to {{ transaction.chargePeriod.endDate | date }}
-    <br><strong>Charge reference:</strong> {{ transaction.chargeElement.chargeCategory.reference }} ({{ transaction.grossValuesCalculated.baselineCharge | charge(true) }})
+    <br><strong>Charge reference:</strong> {{ transaction.chargeElement.chargeCategory.reference }} ({{ transaction.grossValuesCalculated.baselineCharge | charge(true, false) }})
     <br><strong>Charge description:</strong> {{ transaction.chargeElement.chargeCategory.shortDescription }}<br>
     {% if transaction.additionalCharges %}
       <br><strong>Additional charges: </strong>{{ transaction.additionalCharges }}

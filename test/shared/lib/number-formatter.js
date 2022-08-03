@@ -1,7 +1,7 @@
 const { experiment, test } = exports.lab = require('@hapi/lab').script()
 const { expect } = require('@hapi/code')
 
-const { maxPrecision, penceToPound } = require('shared/lib/number-formatter')
+const { maxPrecision, formatCurrency } = require('shared/lib/number-formatter')
 
 experiment('Test number formatter helpers', () => {
   experiment('.maxPrecision', () => {
@@ -26,38 +26,38 @@ experiment('Test number formatter helpers', () => {
     })
   })
 
-  experiment('.penceToPound', () => {
+  experiment('.formatCurrency', () => {
     test('should return a value with 2 decimal places', async () => {
-      expect(penceToPound(6678)).to.equal('66.78')
+      expect(formatCurrency(6678)).to.equal('66.78')
     })
 
     test('should not have the currency symbol if not provided', async () => {
-      expect(penceToPound(6678, false)).to.equal('66.78')
+      expect(formatCurrency(6678, false)).to.equal('66.78')
     })
 
     test('should add the currency symbol if provided', async () => {
-      expect(penceToPound(6678, false, '£')).to.equal('£66.78')
+      expect(formatCurrency(6678, false, '£')).to.equal('£66.78')
     })
 
     test('should still return a zero with 2 decimal places', async () => {
-      expect(penceToPound(0)).to.equal('0.00')
+      expect(formatCurrency(0)).to.equal('0.00')
     })
 
     test('should handle negative numbers', async () => {
-      expect(penceToPound(-462, true)).to.equal('-4.62')
+      expect(formatCurrency(-462, true)).to.equal('-4.62')
     })
 
     test('should add the currency symbol after the negative sign but before numbers', async () => {
-      expect(penceToPound(-462, true, '£')).to.equal('-£4.62')
+      expect(formatCurrency(-462, true, '£')).to.equal('-£4.62')
     })
 
     test('tolerates a string representation of a number', async () => {
-      expect(penceToPound('-462', true, '£')).to.equal('-£4.62')
-      expect(penceToPound('6678', false)).to.equal('66.78')
+      expect(formatCurrency('-462', true, '£')).to.equal('-£4.62')
+      expect(formatCurrency('6678', false)).to.equal('66.78')
     })
 
     test('returns a bad numeric if passed', async () => {
-      expect(penceToPound('potatoes')).to.equal('potatoes')
+      expect(formatCurrency('potatoes')).to.equal('potatoes')
     })
   })
 })

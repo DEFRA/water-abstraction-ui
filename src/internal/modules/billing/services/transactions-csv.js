@@ -173,7 +173,7 @@ function _creditLineValue (isCredit, value) {
     return null
   }
 
-  return numberFormatter.penceToPound(value, true)
+  return numberFormatter.formatCurrency(value, true)
 }
 
 function _debitLineValue (isCredit, value) {
@@ -181,7 +181,7 @@ function _debitLineValue (isCredit, value) {
     return null
   }
 
-  return numberFormatter.penceToPound(value, true)
+  return numberFormatter.formatCurrency(value, true)
 }
 
 function _rowToStrings (row) {

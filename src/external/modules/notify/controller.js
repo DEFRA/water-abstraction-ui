@@ -7,7 +7,12 @@ const callback = async (request, h) => {
     return h.response('Unauthorized').code(403)
   }
 
-  services.water.notify.postNotifyCallback(request.payload)
+  try {
+    await services.water.notify.postNotifyCallback(request.payload)
+  } catch (error) {
+    return h.response(null).code(error.statusCode)
+  }
+
   return h.response(null).code(204)
 }
 

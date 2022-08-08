@@ -6,7 +6,7 @@ const { experiment, test, beforeEach, afterEach, before } = exports.lab = requir
 const services = require('external/lib/connectors/services')
 const controller = require('external/modules/notify/controller')
 
-experiment('callback', () => {
+experiment('notify callback', () => {
   const request = {
     method: 'POST',
     url: '/notify/callback',
@@ -64,6 +64,17 @@ experiment('callback', () => {
     test('returns 204 with blank body', async () => {
       await controller.callback(request, h)
       expect(responseStub.code.calledWith(204)).to.be.true()
+    })
+
+    experiment.only('but the request results in an error', () => {
+      test('passes the error back in the response', async () => {
+        // We replace the stub within the test as doing it in `before` would occur prior to the initial `beforeEach`
+        sandbox.restore()
+        sandbox.stub(services.water.notify, 'postNotifyCallback').rejects({ statusCode: 404 })
+
+        await controller.callback(request, h)
+        expect(responseStub.code.calledWith(404)).to.be.true()
+      })
     })
   })
 })

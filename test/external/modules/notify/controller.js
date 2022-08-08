@@ -66,7 +66,7 @@ experiment('notify callback', () => {
       expect(responseStub.code.calledWith(204)).to.be.true()
     })
 
-    experiment.only('but the request results in an error', () => {
+    experiment('but the request results in an error', () => {
       test('passes the error back in the response', async () => {
         // We replace the stub within the test as doing it in `before` would occur prior to the initial `beforeEach`
         sandbox.restore()

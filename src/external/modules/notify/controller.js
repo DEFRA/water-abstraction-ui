@@ -10,6 +10,7 @@ const callback = async (request, h) => {
   try {
     await services.water.notify.postNotifyCallback(request.payload)
   } catch (error) {
+    logger.info(`A Notify callback request was declined due to HTTP error code ${error.statusCode}`)
     return h.response(null).code(error.statusCode)
   }
 

@@ -17,3 +17,5 @@
 
 # Replace ESLint with Standard (#2118)
 14ccc1ec5e3234b06f9d211ba0640c1d82e4b76f
+# Tech-Debt: Remove and update dependencies (#2017)
+72b6c03c5b67d56954084e8a52dbcab5ed3528da

@@ -44,7 +44,7 @@ if (config.featureToggles.allowChargeVersionUploads) {
         payload: {
           output: 'stream',
           allow: 'multipart/form-data',
-          maxBytes: 5e+7,
+          maxBytes: 2e+7,
           multipart: true
         }
       }

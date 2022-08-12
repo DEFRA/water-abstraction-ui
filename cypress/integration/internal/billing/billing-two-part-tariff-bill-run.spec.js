@@ -1,4 +1,4 @@
-const{ setUp, tearDown} = require('../../../support/setup')
+const { setUp, tearDown } = require('../../../support/setup')
 
 describe('two-part-tariff bill run', () => {
   before(() => {

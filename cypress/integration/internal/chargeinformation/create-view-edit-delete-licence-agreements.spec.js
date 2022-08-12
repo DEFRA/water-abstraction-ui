@@ -1,4 +1,4 @@
-const { setUp, tearDown } = require('../../support/setup')
+const { setUp, tearDown } = require('../../../support/setup')
 
 describe('Licence agreement - Set up, View, End and Delete', () => {
   before(() => {

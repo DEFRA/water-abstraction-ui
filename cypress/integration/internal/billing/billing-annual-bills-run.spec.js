@@ -1,6 +1,6 @@
-const { setUp, tearDown } = require('../../support/setup')
-const { createSrocChargeVersion, approveSrocChargeVersion } = require('../../support/sroc-charge-version')
-const { createAnnualBillRun } = require('../../support/annual-bill-run')
+const{ setUp, tearDown} = require('../../../support/setup')
+const { createSrocChargeVersion, approveSrocChargeVersion } = require('../../../support/sroc-charge-version')
+const { createAnnualBillRun } = require('../../../support/annual-bill-run')
 const LICENCE_NUMBER = 'AT/CURR/DAILY/01'
 
 describe('annual bill run', () => {

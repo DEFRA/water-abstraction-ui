@@ -1,4 +1,4 @@
-const { setUp, tearDown } = require('../../support/setup')
+const { setUp, tearDown } = require('../../../support/setup')
 
 describe('tag a licence to a gauging station, send a warning, and remove the tag', () => {
   before(() => {
@@ -43,7 +43,7 @@ describe('tag a licence to a gauging station, send a warning, and remove the tag
 
       // enter the data required to tag the licenceand click continue
       cy.get('#threshold').type(104)
-      cy.get('#unit').select('mBOD')
+      cy.get('#unit').select('Ml/d')
       cy.get('form > .govuk-button').contains('Continue').click()
       cy.get('.govuk-heading-l').contains('Does the licence holder need to stop or reduce at this threshold?')
       cy.get('[type="radio"]').check('stop')
@@ -76,7 +76,7 @@ describe('tag a licence to a gauging station, send a warning, and remove the tag
         .should('contain', '10 October to 11 November')
         .should('contain', 'Stop')
         .should('contain', '104')
-        .should('contain', 'mBOD')
+        .should('contain', 'Ml/d')
     })
 
     describe('User issues a stop warning by clicking on Create a water abstraction alert', () => {
@@ -105,7 +105,7 @@ describe('tag a licence to a gauging station, send a warning, and remove the tag
         cy.get('.govuk-checkboxes').children().should('have.lengthOf', 1)
       })
       describe('selects the available option', () => {
-        cy.get('.govuk-checkboxes__label').contains('104 mBOD').click()
+        cy.get('.govuk-checkboxes__label').contains('104 Ml/d').click()
         cy.get('form > .govuk-button').contains('Continue').click()
       })
       describe('sees the check page which displays the right licence', () => {

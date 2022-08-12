@@ -1,5 +1,5 @@
-const { setUp, tearDown } = require('../../support/setup')
-const { checkInlineAndSummaryErrorMessage, validateRadioOptions } = require('../../support/validation')
+const { setUp, tearDown } = require('../../../support/setup')
+const { checkInlineAndSummaryErrorMessage, validateRadioOptions } = require('../../../support/validation')
 const LICENCE_NUMBER = 'L1'
 
 const billingAddress = 'Environment Agency Horizon House Deanery Road, Bristol, BS1 5AH'

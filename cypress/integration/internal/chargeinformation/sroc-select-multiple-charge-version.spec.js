@@ -1,4 +1,4 @@
-const { setUp, tearDown } = require('../../support/setup')
+const { setUp, tearDown } = require('../../../support/setup')
 const LICENCE_NUMBER = 'AT/CURR/DAILY/01'
 
 describe('Create SRoC Charge version workflow journey', () => {

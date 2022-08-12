@@ -1,4 +1,4 @@
-const { setUp, tearDown } = require('../../support/setup')
+const { setUp, tearDown } = require('../../../support/setup')
 
 describe('check for different status for a licence in returns tab as internal user', () => {
   before(() => {

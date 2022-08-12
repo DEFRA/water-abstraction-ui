@@ -1,4 +1,4 @@
-const { setUp, tearDown } = require('../../support/setup')
+const { setUp, tearDown } = require('../../../support/setup')
 const { v4: uuid } = require('uuid')
 
 describe('creating an internal user:', () => {

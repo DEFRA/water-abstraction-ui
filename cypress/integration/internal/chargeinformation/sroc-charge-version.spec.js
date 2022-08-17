@@ -1,5 +1,5 @@
-const { setUp, tearDown } = require('../../support/setup')
-const { checkInlineAndSummaryErrorMessage, validateRadioOptions, validateRadioOptionsNthChild1, checkNoErrorMessage } = require('../../support/validation')
+const { setUp, tearDown } = require('../../../support/setup')
+const { checkInlineAndSummaryErrorMessage, validateRadioOptions, validateRadioOptionsNthChild1, checkNoErrorMessage } = require('../../../support/validation')
 const LICENCE_NUMBER = 'AT/CURR/DAILY/01'
 
 describe('Create SRoC Charge version workflow journey', () => {

@@ -1,4 +1,4 @@
-const { setUp, tearDown } = require('../../support/setup')
+const { setUp, tearDown } = require('../../../support/setup')
 const {
   login,
   viewBillRuns,
@@ -11,7 +11,7 @@ const {
   recalculateBills,
   markLicenceForNextSupplementaryRun,
   reviewTwoPartTariffBillingVolume
-} = require('../../support/common')
+} = require('../../../support/common')
 
 // const 2partHistoricrecalculateChargesTest = (customVolume = 25) => {
 const recalculateChargesTest = (customVolume = 25) => {

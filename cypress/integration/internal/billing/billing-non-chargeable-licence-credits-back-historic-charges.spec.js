@@ -1,11 +1,11 @@
-const { tearDown, setUp } = require('../../support/setup')
+const { setUp, tearDown } = require('../../../support/setup')
 const {
   getYearStart,
   login,
   viewBillRuns,
   createBillRun,
   viewChargeInformation
-} = require('../../support/common')
+} = require('../../../support/common')
 
 describe('non-chargeable licence credits back historic charges', () => {
   before(() => {

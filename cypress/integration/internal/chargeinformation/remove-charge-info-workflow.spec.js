@@ -1,4 +1,4 @@
-const { setUp, tearDown } = require('../../support/setup')
+const { setUp, tearDown } = require('../../../support/setup')
 const firstRowSelector = '#toSetUp .govuk-table > tbody:nth-child(2) > tr:nth-child(1)'
 
 describe('remove charge info workflow as B&D user', () => {

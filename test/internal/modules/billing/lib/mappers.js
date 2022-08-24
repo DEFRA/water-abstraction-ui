@@ -64,7 +64,15 @@ const invoice = {
           endDate: '2020-03-31'
         },
         chargeElement: {
-          id: 'charge_element_licence_1'
+          id: 'charge_element_licence_1',
+          adjustments: {
+            aggregate: 0.25,
+            charge: 0.35,
+            s126: 0.45,
+            s127: true,
+            s130: true,
+            winter: true
+          }
         },
         volume: 12.35,
         billingVolume: {
@@ -362,6 +370,32 @@ experiment('modules/billing/lib/mappers', () => {
 
       test('the link to delete the invoice licence is null', async () => {
         expect(result.links.delete).to.be.null()
+      })
+    })
+
+    experiment('when adjustments are present', () => {
+      const invoiceLicence = invoice.invoiceLicences[0]
+
+      beforeEach(async () => {
+        result = mappers.mapInvoiceLicence(batch, invoice, invoiceLicence)
+      })
+
+      test('the adjustments are displayed', async () => {
+        expect(result.transactions[0].adjustments).to.equal(
+          'Aggregate factor (0.25), Adjustment factor (0.35), Abatement factor (0.45), Two-part tariff (0.5), Canal and River Trust (0.5), Winter discount (0.5)'
+          )
+      })
+    })
+
+    experiment('when adjustments are not present', () => {
+      const invoiceLicence = invoice.invoiceLicences[1]
+
+      beforeEach(async () => {
+        result = mappers.mapInvoiceLicence(batch, invoice, invoiceLicence)
+      })
+
+      test('the adjustments are not displayed', async () => {
+        expect(result.transactions[0].adjustments).to.equal('')
       })
     })
   })

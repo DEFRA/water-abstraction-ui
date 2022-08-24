@@ -71,6 +71,9 @@ const getAdjustments = transaction => {
   if (transaction.chargeElement?.adjustments?.s126) {
     adjustments.push(`Abatement factor (${transaction.chargeElement.adjustments.s126})`)
   }
+  if (transaction.chargeElement?.adjustments?.s127) {
+    adjustments.push('Two-part tariff (0.5)')
+  }
   if (transaction.chargeElement?.adjustments?.s130) {
     adjustments.push('Canal and River Trust (0.5)')
   }

@@ -383,7 +383,7 @@ experiment('modules/billing/lib/mappers', () => {
       test('the adjustments are displayed', async () => {
         expect(result.transactions[0].adjustments).to.equal(
           'Aggregate factor (0.25), Adjustment factor (0.35), Abatement factor (0.45), Two-part tariff (0.5), Canal and River Trust (0.5), Winter discount (0.5)'
-          )
+        )
       })
     })
 

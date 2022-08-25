@@ -68,8 +68,6 @@ module.exports = {
     application: 'water_vml'
   },
 
-
-
   jwt: {
     token: process.env.JWT_TOKEN,
     key: process.env.JWT_SECRET,

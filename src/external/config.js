@@ -6,6 +6,7 @@ const testMode = parseInt(process.env.TEST_MODE) === 1
 
 const environment = process.env.ENVIRONMENT
 const isLocal = environment === 'local'
+const isProduction = environment === 'prd'
 
 const isTlsConnection = (process.env.REDIS_HOST || '').includes('aws')
 const isRedisLazy = !!process.env.LAZY_REDIS
@@ -67,7 +68,7 @@ module.exports = {
     application: 'water_vml'
   },
 
-  isLocal,
+
 
   jwt: {
     token: process.env.JWT_TOKEN,
@@ -107,6 +108,9 @@ module.exports = {
   },
 
   testMode,
+  environment,
+  isLocal,
+  isProduction,
 
   // Configured to last for 5 days but will be reset on sign in and
   // sign out meaning that the session lasts for as long as the user's

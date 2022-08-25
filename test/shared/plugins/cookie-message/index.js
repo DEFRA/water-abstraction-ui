@@ -38,7 +38,7 @@ experiment('plugins/cookie-message/index', () => {
       state: {}
     }
 
-    sandbox.stub(process.env, 'NODE_ENV').value('dev')
+    sandbox.stub(process.env, 'ENVIRONMENT').value('dev')
   })
   afterEach(async () => {
     sandbox.restore()

@@ -75,8 +75,6 @@ module.exports = {
     application: 'water_admin'
   },
 
-  isLocal,
-
   jwt: {
     key: process.env.JWT_SECRET,
     verifyOptions: { algorithms: ['HS256'] },
@@ -116,6 +114,9 @@ module.exports = {
   },
 
   testMode,
+  environment,
+  isLocal,
+  isProduction,
 
   // Configured to last 5 days but will be reset on sign in and
   // sign out meaning that the session lasts for as long as the user's

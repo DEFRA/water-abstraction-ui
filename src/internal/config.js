@@ -1,20 +1,22 @@
 'use strict'
 
 const { get } = require('lodash')
+
 const testMode = parseInt(process.env.TEST_MODE) === 1
 
-const isLocal = process.env.NODE_ENV === 'local'
-const isProduction = process.env.NODE_ENV === 'production'
+const environment = process.env.ENVIRONMENT
+const isLocal = environment === 'local'
+const isProduction = environment === 'prd'
 
 const isTlsConnection = (process.env.REDIS_HOST || '').includes('aws')
 const isRedisLazy = !!process.env.LAZY_REDIS
 
 const crmUri = process.env.CRM_URI || 'http://127.0.0.1:8002/crm/1.0'
+
 const srocStartDate = new Date('2022-04-01')
+const isSrocLive = new Date() >= srocStartDate || !isProduction
 
 const { internal } = require('./lib/constants').scope
-const isSrocLive = new Date() >= srocStartDate ||
-  ['local', 'dev', 'development', 'test', 'qa', 'preprod'].includes(process.env.NODE_ENV)
 
 module.exports = {
 

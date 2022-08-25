@@ -1,12 +1,14 @@
 'use strict'
 
+const { withQueryStringSubset } = require('./lib/url')
+
 const testMode = parseInt(process.env.TEST_MODE) === 1
-const isLocal = process.env.NODE_ENV === 'local'
+
+const environment = process.env.ENVIRONMENT
+const isLocal = environment === 'local'
 
 const isTlsConnection = (process.env.REDIS_HOST || '').includes('aws')
 const isRedisLazy = !!process.env.LAZY_REDIS
-
-const { withQueryStringSubset } = require('./lib/url')
 
 module.exports = {
 

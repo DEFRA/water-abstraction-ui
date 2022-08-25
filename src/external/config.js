@@ -1,6 +1,9 @@
 const testMode = parseInt(process.env.TEST_MODE) === 1
 const isLocal = process.env.NODE_ENV === 'local'
-const isTest = process.env.NODE_ENV === 'test'
+
+const isTlsConnection = (process.env.REDIS_HOST || '').includes('aws')
+const isRedisLazy = !!process.env.LAZY_REDIS
+
 const { withQueryStringSubset } = require('./lib/url')
 
 module.exports = {
@@ -123,8 +126,8 @@ module.exports = {
     host: process.env.REDIS_HOST || '127.0.0.1',
     port: process.env.REDIS_PORT || 6379,
     password: process.env.REDIS_PASSWORD || '',
-    ...!isLocal && { tls: {} },
-    db: 0,
-    lazyConnect: isTest
+    ...(isTlsConnection) && { tls: {} },
+    db: process.env.NODE_ENV === 'test' ? 5 : 0,
+    lazyConnect: isRedisLazy
   }
 }

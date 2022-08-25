@@ -4,8 +4,10 @@ const { get } = require('lodash')
 const testMode = parseInt(process.env.TEST_MODE) === 1
 
 const isLocal = process.env.NODE_ENV === 'local'
-const isTest = process.env.NODE_ENV === 'test'
 const isProduction = process.env.NODE_ENV === 'production'
+
+const isTlsConnection = (process.env.REDIS_HOST || '').includes('aws')
+const isRedisLazy = !!process.env.LAZY_REDIS
 
 const crmUri = process.env.CRM_URI || 'http://127.0.0.1:8002/crm/1.0'
 const srocStartDate = new Date('2022-04-01')
@@ -140,9 +142,9 @@ module.exports = {
     host: process.env.REDIS_HOST || '127.0.0.1',
     port: process.env.REDIS_PORT || 6379,
     password: process.env.REDIS_PASSWORD || '',
-    ...!isLocal && { tls: {} },
-    db: 1,
-    lazyConnect: isTest
+    ...(isTlsConnection) && { tls: {} },
+    db: process.env.NODE_ENV === 'test' ? 6 : 1,
+    lazyConnect: isRedisLazy
   },
   isSrocLive,
   srocStartDate,

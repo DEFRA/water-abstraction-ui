@@ -1,8 +1,15 @@
-require('dotenv').config()
-const testMode = parseInt(process.env.TEST_MODE) === 1
-const isLocal = process.env.NODE_ENV === 'local'
-const isTest = process.env.NODE_ENV === 'test'
+'use strict'
+
 const { withQueryStringSubset } = require('./lib/url')
+
+const testMode = parseInt(process.env.TEST_MODE) === 1
+
+const environment = process.env.ENVIRONMENT
+const isLocal = environment === 'local'
+const isProduction = environment === 'prd'
+
+const isTlsConnection = (process.env.REDIS_HOST || '').includes('aws')
+const isRedisLazy = !!process.env.LAZY_REDIS
 
 module.exports = {
 
@@ -61,8 +68,6 @@ module.exports = {
     application: 'water_vml'
   },
 
-  isLocal,
-
   jwt: {
     token: process.env.JWT_TOKEN,
     key: process.env.JWT_SECRET,
@@ -101,6 +106,9 @@ module.exports = {
   },
 
   testMode,
+  environment,
+  isLocal,
+  isProduction,
 
   // Configured to last for 5 days but will be reset on sign in and
   // sign out meaning that the session lasts for as long as the user's
@@ -124,8 +132,8 @@ module.exports = {
     host: process.env.REDIS_HOST || '127.0.0.1',
     port: process.env.REDIS_PORT || 6379,
     password: process.env.REDIS_PASSWORD || '',
-    ...!isLocal && { tls: {} },
-    db: 0,
-    lazyConnect: isTest
+    ...(isTlsConnection) && { tls: {} },
+    db: process.env.NODE_ENV === 'test' ? 5 : 0,
+    lazyConnect: isRedisLazy
   }
 }

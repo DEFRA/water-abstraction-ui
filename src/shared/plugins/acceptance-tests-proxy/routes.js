@@ -1,10 +1,10 @@
-const controller = require('./controller')
+'use strict'
 
-const isAcceptanceTestTarget = ['local', 'dev', 'development', 'test', 'qa', 'preprod'].includes(process.env.NODE_ENV)
+const controller = require('./controller')
 
 const routes = []
 
-if (isAcceptanceTestTarget) {
+if (process.env.ENVIRONMENT !== 'prd') {
   routes.push({
     method: 'POST',
     path: '/acceptance-tests/{tail*}',

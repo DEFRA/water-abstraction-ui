@@ -73,7 +73,7 @@ function viewContextDefaults (request) {
 
   viewContext.tracking = getTracking(request.defra)
 
-  viewContext.env = process.env.NODE_ENV
+  viewContext.env = config.environment
   viewContext.crownCopyrightMessage = '© Crown copyright'
   viewContext.surveyType = getSurveyType(viewContext.isAuthenticated)
 

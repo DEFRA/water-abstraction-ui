@@ -1,6 +1,5 @@
 'use strict'
 
-require('dotenv').config()
 const { get } = require('lodash')
 const testMode = parseInt(process.env.TEST_MODE) === 1
 

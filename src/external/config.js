@@ -1,4 +1,3 @@
-require('dotenv').config()
 const testMode = parseInt(process.env.TEST_MODE) === 1
 const isLocal = process.env.NODE_ENV === 'local'
 const isTest = process.env.NODE_ENV === 'test'

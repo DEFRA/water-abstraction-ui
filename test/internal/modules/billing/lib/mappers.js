@@ -265,7 +265,7 @@ experiment('modules/billing/lib/mappers', () => {
 
   experiment('.mapInvoiceLicence', () => {
     experiment('for the first invoice licence', () => {
-      const [invoiceLicence] = invoice.invoiceLicences
+      const invoiceLicence = invoice.invoiceLicences[0]
 
       beforeEach(async () => {
         result = mappers.mapInvoiceLicence(batch, invoice, invoiceLicence)
@@ -298,13 +298,13 @@ experiment('modules/billing/lib/mappers', () => {
       })
 
       test('the first transaction is mapped correctly', async () => {
-        const [transaction] = result.transactions
+        const transaction = result.transactions[0]
         const keys = ['value', 'chargePeriod', 'chargeElement', 'volume', 'billingVolume', 'isMinimumCharge']
         expect(pick(transaction, keys)).to.equal(pick(invoiceLicence.transactions[0], keys))
       })
 
       test('the first transaction agreements are mapped correctly', async () => {
-        const [{ agreements }] = result.transactions
+        const { agreements } = result.transactions[0]
         expect(agreements).to.equal([
           {
             code: 'S127',
@@ -314,19 +314,19 @@ experiment('modules/billing/lib/mappers', () => {
       })
 
       test('the second transaction is mapped correctly', async () => {
-        const [, transaction] = result.transactions
+        const transaction = result.transactions[1]
         const keys = ['value', 'chargePeriod', 'chargeElement', 'volume', 'billingVolume', 'isMinimumCharge']
         expect(pick(transaction, keys)).to.equal(pick(invoiceLicence.transactions[1], keys))
       })
 
       test('the second transaction agreements are an empty array', async () => {
-        const [, { agreements }] = result.transactions
+        const { agreements } = result.transactions[1]
         expect(agreements).to.equal([])
       })
     })
 
     experiment('when the invoice is a rebilling invoice', () => {
-      const [invoiceLicence] = invoice.invoiceLicences
+      const invoiceLicence = invoice.invoiceLicences[0]
 
       beforeEach(async () => {
         result = mappers.mapInvoiceLicence(batch, {
@@ -341,7 +341,7 @@ experiment('modules/billing/lib/mappers', () => {
     })
 
     experiment('when the batch is not ready', () => {
-      const [invoiceLicence] = invoice.invoiceLicences
+      const invoiceLicence = invoice.invoiceLicences[0]
 
       beforeEach(async () => {
         result = mappers.mapInvoiceLicence({
@@ -356,7 +356,7 @@ experiment('modules/billing/lib/mappers', () => {
     })
 
     experiment('when the invoice has only 1 licence', () => {
-      const [invoiceLicence] = invoice.invoiceLicences
+      const invoiceLicence = invoice.invoiceLicences[0]
 
       beforeEach(async () => {
         const invoiceWithSingleLicence = {

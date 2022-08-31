@@ -125,7 +125,7 @@ function setCookiePreferences (isAnalyticsAccepted) {
  * @returns {Object}
  */
 const getCookieOptions = () => ({
-  isSecure: process.env.NODE_ENV !== 'local',
+  isSecure: process.env.ENVIRONMENT !== 'local',
   isHttpOnly: true,
   ttl: 365 * 24 * 60 * 60 * 1000,
   isSameSite: 'Lax'

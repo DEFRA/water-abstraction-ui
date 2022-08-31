@@ -1,4 +1,6 @@
 const nunjucksEngine = require('./nunjucks')
+
+const config = require('../../config')
 const defaultContext = require('shared/view/default-context')
 
 module.exports = {
@@ -7,6 +9,6 @@ module.exports = {
   },
   path: './src/external/views',
   context: defaultContext,
-  isCached: process.env.NODE_ENV === 'production',
+  isCached: config.isProduction,
   defaultExtension: 'njk'
 }

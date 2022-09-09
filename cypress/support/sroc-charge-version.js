@@ -7,7 +7,6 @@ const {
 } = require('./validation');
 
 const createSrocChargeVersion = (licenceRef) => {
-  //cy.visit(Cypress.env('ADMIN_URI'));
   describe('User login', () => {
     // Enter the user name and Password  
       // assert once the user is signed in

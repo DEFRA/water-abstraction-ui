@@ -145,7 +145,8 @@ const createOneTimeAddressRole = (company, fullName, address) => ({
   roleName: ONE_TIME_ADDRESS_ROLE,
   contact: {
     type: 'department',
-    department: fullName
+    department: fullName,
+    dataSource: 'wrls'
   }
 })
 

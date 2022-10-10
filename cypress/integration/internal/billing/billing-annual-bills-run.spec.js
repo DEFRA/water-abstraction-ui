@@ -41,5 +41,9 @@ describe('annual bill run', () => {
         cy.get('.govuk-grid-column-full > .govuk-button').click()
       })
     })
+    describe('Check the TPT flag',()=>{
+      cy.get('.govuk-visually-hidden').eq(0).click({force: true})
+      cy.get('li').should('contain','Two-part tariff (0.5)')
+    })
   })
 })

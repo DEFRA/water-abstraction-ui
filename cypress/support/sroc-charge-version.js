@@ -276,6 +276,7 @@ const createSrocChargeVersion = (licenceRef) => {
       describe('user selects option', () => {
         cy.get('#adjustments-2').click();
         cy.get('#chargeFactor').type('25');
+        cy.get('#adjustments-4').click();
         cy.get('form > .govuk-button').contains('Continue').click();
       });
     });

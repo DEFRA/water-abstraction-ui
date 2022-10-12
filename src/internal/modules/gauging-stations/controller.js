@@ -448,8 +448,8 @@ const postSendAlertSelectAlertThresholds = async (request, h) => {
       (
         ['resume', 'warning'].includes(sendingAlertType.value) ||
         (
-          (eachLGS.alertType === 'stop_or_reduce' && eachOption.value === 'reduce') ||
-          sendingAlertType.value === 'reduce' || sendingAlertType.value === 'stop'
+          (eachLGS.alertType === 'stop_or_reduce' && sendingAlertType.value === 'reduce') ||
+          eachLGS.alertType === sendingAlertType.value
         )
       )
     )), 'licenceId'))

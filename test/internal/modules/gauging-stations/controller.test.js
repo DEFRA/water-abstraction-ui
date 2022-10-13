@@ -1371,6 +1371,65 @@ experiment('internal/modules/gauging-stations/controller - sending', () => {
   })
 
   experiment('.postSendAlertSelectAlertThresholds', () => {
+    const reduce100 = {
+      licenceGaugingStationId: 'f2b11b1c-f1e3-4f81-9964-ae0d9c588041',
+      alertType: 'reduce',
+      thresholdValue: '100',
+      thresholdUnit: 'Ml/d',
+      licenceId: '8eef81a1-a5ea-44ea-88f7-783e9c67ca55'
+    }
+
+    const reduce100SameLicence = {
+      licenceGaugingStationId: '82be84bc-1835-49a8-9d31-dfe7c7f1fae6',
+      alertType: 'reduce',
+      thresholdValue: '100',
+      thresholdUnit: 'Ml/d',
+      licenceId: '8eef81a1-a5ea-44ea-88f7-783e9c67ca55'
+    }
+
+    const reduce100DifferentUnit = {
+      licenceGaugingStationId: '092e0113-64cf-4f98-ad23-f40d7e9e7bee',
+      alertType: 'reduce',
+      thresholdValue: '100',
+      thresholdUnit: 'm3/s',
+      licenceId: 'd9601864-39f8-46db-ae80-ad1f4b6b9aca'
+    }
+
+    const stop100 = {
+      licenceGaugingStationId: '1599a8ba-f42d-4603-9f0b-88322153f9c1',
+      alertType: 'stop',
+      thresholdValue: '100',
+      thresholdUnit: 'Ml/d',
+      licenceId: '02f997e0-af85-4f7f-8d3e-2422ae4b26f5'
+    }
+
+    const stopOrReduce100 = {
+      licenceGaugingStationId: '90ef9059-d1b9-4a60-bbd8-e4f90bf2a8a7',
+      alertType: 'stop_or_reduce',
+      thresholdValue: '100',
+      thresholdUnit: 'Ml/d',
+      licenceId: '5df7d8e1-1fc2-4e51-aa77-4c80cf2f15ba'
+    }
+
+    const reduce200 = {
+      licenceGaugingStationId: '4215514d-778d-4af3-9cd7-37e0f3e6d37a',
+      alertType: 'reduce',
+      thresholdValue: '200',
+      thresholdUnit: 'Ml/d',
+      licenceId: '401dc321-7712-4b42-8b4c-e42408b18446'
+    }
+
+    const licenceGaugingStations = {
+      data: [
+        reduce100,
+        reduce100SameLicence,
+        reduce100DifferentUnit,
+        stop100,
+        stopOrReduce100,
+        reduce200
+      ]
+    }
+
     const request = {
       path: 'http://example.com/monitoring-stations/123/send-alert/alert-thresholds',
       method: 'post',
@@ -1386,7 +1445,7 @@ experiment('internal/modules/gauging-stations/controller - sending', () => {
         csrfToken: 'some-token'
       },
       pre: {
-        licenceGaugingStations: { data: [] }
+        licenceGaugingStations
       }
     }
 
@@ -1399,16 +1458,13 @@ experiment('internal/modules/gauging-stations/controller - sending', () => {
     const formContent = {
       fields: [{
         name: 'alertThresholds',
-        value: ['{"unit":"Ml/d", "value":100}']
+        value: ['{"unit":"Ml/d", "value":"100"}']
       }]
     }
 
-    const storedData = {
-      alertThresholds: {
-        name: 'alertThresholds',
-        value: ['{"unit":"Ml/d", "value":100}']
-      },
-      selectedGroupedLicences: []
+    const alertThresholds = {
+      name: 'alertThresholds',
+      value: ['{"unit":"Ml/d", "value":"100"}']
     }
 
     experiment('when the payload is invalid', () => {
@@ -1438,26 +1494,123 @@ experiment('internal/modules/gauging-stations/controller - sending', () => {
     experiment('when the payload is valid', () => {
       beforeEach(async () => {
         sandbox.stub(formHandler, 'handleFormRequest').resolves({})
-        sandbox.stub(session, 'get').resolves({
-          sendingAlertType: {
-            name: 'sendingAlertType',
-            value: 'warning'
-          }
-        })
+
         sandbox.stub(session, 'merge').resolves({})
+
         sandbox.stub(session, 'clear').resolves({})
+
         await formHandler.handleFormRequest.resolves({
           ...formContent,
           isValid: true
         })
-        await controller.postSendAlertSelectAlertThresholds(request, h)
       })
+
       afterEach(async () => sandbox.restore())
-      test('calls session.merge with the expected data', () => {
-        expect(session.merge.lastCall.args[1]).to.equal(storedData)
-      })
-      test('calls handleFormRequest to process the payload through the form', () => {
+
+      test('calls handleFormRequest to process the payload through the form', async () => {
+        sandbox.stub(session, 'get').resolves({
+          sendingAlertType: {
+            name: 'alertType',
+            value: 'reduce'
+          }
+        })
+
+        await controller.postSendAlertSelectAlertThresholds(request, h)
+
         expect(formHandler.handleFormRequest.called).to.be.true()
+      })
+
+      experiment('for an alert type of \'reduce\'', () => {
+        const sendingAlertType = {
+          name: 'alertType',
+          value: 'reduce'
+        }
+
+        const storedData = {
+          alertThresholds,
+          selectedGroupedLicences: [
+            [reduce100, reduce100SameLicence],
+            [stopOrReduce100]
+          ]
+        }
+
+        test('calls session.merge with the expected data', async () => {
+          sandbox.stub(session, 'get').resolves({ sendingAlertType })
+
+          await controller.postSendAlertSelectAlertThresholds(request, h)
+
+          expect(session.merge.lastCall.args[1]).to.equal(storedData)
+        })
+      })
+
+      experiment('for an alert type of \'stop\'', () => {
+        const sendingAlertType = {
+          name: 'alertType',
+          value: 'stop'
+        }
+
+        const storedData = {
+          alertThresholds,
+          selectedGroupedLicences: [
+            [stop100]
+          ]
+        }
+
+        test('calls session.merge with the expected data', async () => {
+          sandbox.stub(session, 'get').resolves({ sendingAlertType })
+
+          await controller.postSendAlertSelectAlertThresholds(request, h)
+
+          expect(session.merge.lastCall.args[1]).to.equal(storedData)
+        })
+      })
+
+      experiment('for an alert type of \'resume\'', () => {
+        const sendingAlertType = {
+          name: 'alertType',
+          value: 'resume'
+        }
+
+        const storedData = {
+          alertThresholds,
+          selectedGroupedLicences: [
+            [reduce100, reduce100SameLicence],
+            [stop100],
+            [stopOrReduce100]
+          ]
+        }
+
+        test('calls session.merge with the expected data', async () => {
+          sandbox.stub(session, 'get').resolves({ sendingAlertType })
+
+          await controller.postSendAlertSelectAlertThresholds(request, h)
+
+          expect(session.merge.lastCall.args[1]).to.equal(storedData)
+        })
+      })
+
+      experiment('for an alert type of \'warning\'', () => {
+        const sendingAlertType = {
+          name: 'alertType',
+          value: 'warning'
+        }
+
+        const storedData = {
+          alertThresholds,
+          selectedGroupedLicences: [
+            [reduce100, reduce100SameLicence],
+            [stop100],
+            [stopOrReduce100]
+          ]
+        }
+
+        test('calls session.merge with the expected data', async () => {
+          sandbox.stub(session, 'get').resolves({ sendingAlertType })
+
+          await controller.postSendAlertSelectAlertThresholds(request, h)
+
+          expect(session.merge.lastCall.args[1]).to.equal(storedData)
+        })
       })
     })
   })

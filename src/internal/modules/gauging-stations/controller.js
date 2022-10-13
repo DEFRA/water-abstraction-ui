@@ -444,14 +444,8 @@ const postSendAlertSelectAlertThresholds = async (request, h) => {
   const validOptions = selectedAlertThresholds.value.map(each => JSON.parse(each))
 
   const selectedGroupedLicences = Object.values(groupBy(licenceGaugingStations.data.filter(eachLGS =>
-    validOptions.some(eachOption => (eachLGS.thresholdValue === eachOption.value && eachLGS.thresholdUnit === eachOption.unit) &&
-      (
-        ['resume', 'warning'].includes(sendingAlertType.value) ||
-        (
-          (eachLGS.alertType === 'stop_or_reduce' && eachOption.value === 'reduce') ||
-          sendingAlertType.value === 'reduce' || sendingAlertType.value === 'stop'
-        )
-      )
+    validOptions.some(
+      eachOption => checkThreshold(eachLGS, eachOption) && checkAlertType(eachLGS, sendingAlertType)
     )), 'licenceId'))
 
   session.merge(request, {
@@ -460,6 +454,32 @@ const postSendAlertSelectAlertThresholds = async (request, h) => {
   })
 
   return h.redirect(request.path.replace(/\/[^/]*$/, '/check-licence-matches'))
+}
+
+/**
+ * Check that the provided licence gauging station's threshold value and unit match the provided option's threshold
+ * value and unit
+ */
+function checkThreshold (licenceGaugingStation, option) {
+  return licenceGaugingStation.thresholdValue === option.value && licenceGaugingStation.thresholdUnit === option.unit
+}
+
+/**
+ * Check that the provided licence gauging station's alert type matches the provided sending alert type
+ */
+function checkAlertType (licenceGaugingStation, sendingAlertType) {
+  const { value: sendingAlertTypeValue } = sendingAlertType
+  const { alertType: lgsAlertTypeValue } = licenceGaugingStation
+
+  // We always want to include a licence gauging station if the sending alert type is `resume` or `warning`
+  if (sendingAlertTypeValue === 'resume' || sendingAlertTypeValue === 'warning') {
+    return true
+  }
+
+  // We treat a licence gauging station alert type of `stop_or_reduce` as if it's `reduce`
+  const normalisedLgsAlertTypeValue = lgsAlertTypeValue === 'stop_or_reduce' ? 'reduce' : lgsAlertTypeValue
+
+  return normalisedLgsAlertTypeValue === sendingAlertTypeValue
 }
 
 const getSendAlertCheckLicenceMatches = async (request, h) => {

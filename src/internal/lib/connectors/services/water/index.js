@@ -1,3 +1,5 @@
+'use strict'
+
 // Shared services
 const CommunicationsService = require('shared/lib/connectors/services/water/CommunicationsService')
 const CompaniesService = require('shared/lib/connectors/services/water/CompaniesService')
@@ -9,6 +11,7 @@ const ChargeVersionsService = require('shared/lib/connectors/services/water/Char
 const ChargeVersionWorkflowsService = require('shared/lib/connectors/services/water/ChargeVersionWorkflowsService')
 
 // Internal services (possibly unique, or overriding shared)
+const AcceptanceTestsProxyService = require('./AcceptanceTestsProxyService')
 const ReturnsService = require('./ReturnsService')
 const BatchNotificationsService = require('./BatchNotificationsService')
 const ChangeReasonsService = require('./ChangeReasonsService')
@@ -52,6 +55,7 @@ module.exports = config => ({
   licenceVersionPurposeConditionsService: new LicenceVersionPurposeConditionsService(config.services.water, logger),
   users: new UsersService(config.services.water, logger),
   // Internal services
+  acceptanceTestsProxy: new AcceptanceTestsProxyService(config.services.water, logger),
   addressSearch: new AddressSearchService(config.services.water, logger),
   agreements: new AgreementsService(config.services.water, logger),
   batchNotifications: new BatchNotificationsService(config.services.water, logger),

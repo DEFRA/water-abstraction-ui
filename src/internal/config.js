@@ -159,6 +159,7 @@ module.exports = {
     deleteAllBillingData: process.env.ENABLE_DELETE_ALL_BILLING_DATA_FEATURE === 'true' && !isProduction,
     waterAbstractionAlerts: true,
     recalculateBills: true,
-    allowChargeVersionUploads: (get(process.env, 'ALLOW_CHARGE_VERSION_UPLOADS') || '').toLowerCase() === 'true'
+    allowChargeVersionUploads: (get(process.env, 'ALLOW_CHARGE_VERSION_UPLOADS') || '').toLowerCase() === 'true',
+    acceptanceTestsProxy: !isProduction
   }
 }

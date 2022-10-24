@@ -1,4 +1,4 @@
-const ServiceClient = require('../ServiceClient')
+const ServiceClient = require('shared/lib/connectors/services/ServiceClient')
 
 class AcceptanceTestsService extends ServiceClient {
   async postToPath (path, payload) {

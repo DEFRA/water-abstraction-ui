@@ -1,5 +1,3 @@
-const services = require('../connectors/services')
-
 module.exports = {
   config: require('shared/plugins/config'),
   csrf: require('shared/plugins/csrf'),
@@ -24,11 +22,5 @@ module.exports = {
   noRobots: require('shared/plugins/no-robots'),
   staticAssets: require('shared/plugins/static-assets'),
   userJourney: require('shared/plugins/user-journey'),
-  acceptanceTestsProxy: {
-    plugin: require('shared/plugins/acceptance-tests-proxy'),
-    options: {
-      postToPath: (path, payload) => services.water.acceptanceTests.postToPath(path, payload)
-    }
-  },
   csp: require('shared/plugins/csp')
 }

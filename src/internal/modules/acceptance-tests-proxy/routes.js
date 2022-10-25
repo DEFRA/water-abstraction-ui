@@ -2,12 +2,8 @@
 
 const controller = require('./controller')
 
-const config = require('../../config')
-
-const routes = []
-
-if (config.featureToggles.acceptanceTestsProxy) {
-  routes.push({
+const routes = [
+  {
     method: 'POST',
     path: '/acceptance-tests/{tail*}',
     handler: controller.postAcceptanceTestsProxy,
@@ -15,7 +11,7 @@ if (config.featureToggles.acceptanceTestsProxy) {
       auth: false,
       description: 'Proxies requests to the water service for acceptance tests'
     }
-  })
-}
+  }
+]
 
 module.exports = routes

@@ -1,3 +1,6 @@
+'use strict'
+
+// External only routes
 const coreRoutes = require('./core/routes')
 const contentRoutes = require('./content/routes')
 const notificationsRoutes = require('./notifications/routes')
@@ -18,11 +21,14 @@ const chargeInformationRoutes = require('./charge-information/routes')
 const chargeInformationUploadRoutes = require('./charge-information-upload/routes')
 const agreementsRoutes = require('./agreements/routes')
 const reportingRoutes = require('./reporting/routes')
-const kpiReporting = require('../../internal/modules/kpi-reporting/routes')
 const viewLicences = require('./view-licences/routes')
 const gaugingStations = require('./gauging-stations/routes')
 const customers = require('./customers/routes')
 const notes = require('./notes/routes')
+
+// Shared routes
+const healthRoutes = require('../../shared/modules/health/routes')
+const kpiReporting = require('../../internal/modules/kpi-reporting/routes')
 
 module.exports = [
   ...Object.values(coreRoutes),
@@ -50,5 +56,6 @@ module.exports = [
   ...Object.values(viewLicences),
   ...Object.values(gaugingStations),
   ...Object.values(customers),
-  ...Object.values(notes)
+  ...Object.values(notes),
+  ...Object.values(healthRoutes)
 ]

@@ -1,3 +1,6 @@
+'use strict'
+
+// Internal only routes
 const addLicencesRoutes = require('./add-licences/routes')
 const coreRoutes = require('./core/routes')
 const contentRoutes = require('./content/routes')
@@ -10,6 +13,9 @@ const accountRoutes = require('./account/routes')
 const notificationRoutes = require('./notifications/routes')
 const notifyRoutes = require('./notify/routes')
 
+// Shared routes
+const healthRoutes = require('../../shared/modules/health/routes')
+
 module.exports = [
   ...Object.values(addLicencesRoutes),
   ...Object.values(coreRoutes),
@@ -21,5 +27,6 @@ module.exports = [
   ...Object.values(companySelector),
   ...Object.values(notificationRoutes),
   ...Object.values(accountRoutes),
-  ...Object.values(notifyRoutes)
+  ...Object.values(notifyRoutes),
+  ...Object.values(healthRoutes)
 ]

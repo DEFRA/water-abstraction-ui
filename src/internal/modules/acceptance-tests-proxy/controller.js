@@ -13,14 +13,20 @@ const { logger } = require('../../logger')
  * path in order to work.
  *
  * When the app runs in AWS you can't access the water-abstraction-service because port 8001 is not exposed. So, this
- * endpoint ad controller in the app allows us to still run acceptance by providing a proxy to the internal API service.
+ * endpoint and controller in the app allows us to still run acceptance tests by providing a proxy to the internal API
+ * service.
  *
  * The route is only added in our non-production environments.
  */
 const postAcceptanceTestsProxy = async (request, h) => {
   const service = new AcceptanceTestsProxyService(config.services.water, logger)
+  let result
 
-  const result = await service.postToPath(request.params.tail, request.payload)
+  try {
+    result = await service.postToPath(request.params.tail, request.payload)
+  } catch (error) {
+    result = error.error
+  }
 
   return h.response(result)
 }

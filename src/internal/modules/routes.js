@@ -1,6 +1,9 @@
 'use strict'
 
+const config = require('../config')
+
 // External only routes
+const acceptanceTestsProxyRoutes = require('./acceptance-tests-proxy/routes')
 const coreRoutes = require('./core/routes')
 const contentRoutes = require('./content/routes')
 const notificationsRoutes = require('./notifications/routes')
@@ -30,7 +33,7 @@ const notes = require('./notes/routes')
 const healthRoutes = require('../../shared/modules/health/routes')
 const kpiReporting = require('../../internal/modules/kpi-reporting/routes')
 
-module.exports = [
+const routes = [
   ...Object.values(coreRoutes),
   ...Object.values(contentRoutes),
   ...Object.values(notificationsRoutes),
@@ -59,3 +62,9 @@ module.exports = [
   ...Object.values(notes),
   ...Object.values(healthRoutes)
 ]
+
+if (config.featureToggles.acceptanceTestsProxy) {
+  routes.push(...acceptanceTestsProxyRoutes)
+}
+
+module.exports = routes

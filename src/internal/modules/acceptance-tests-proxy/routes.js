@@ -2,18 +2,16 @@
 
 const controller = require('./controller')
 
-const routes = []
-
-if (process.env.ENVIRONMENT !== 'prd') {
-  routes.push({
+const routes = [
+  {
     method: 'POST',
     path: '/acceptance-tests/{tail*}',
-    handler: controller.proxyToWaterService,
+    handler: controller.postAcceptanceTestsProxy,
     config: {
       auth: false,
       description: 'Proxies requests to the water service for acceptance tests'
     }
-  })
-}
+  }
+]
 
 module.exports = routes

@@ -17,18 +17,20 @@ const SystemProxyService = require(
 // Thing under test
 const controller = require('../../../../src/internal/modules/system-proxy/controller')
 
-experiment.only('System proxy controller', () => {
+experiment('System proxy controller', () => {
   let request
   let h
 
+  let codeFake
   let typeFake
   let headerFake
   let responseFake
 
   beforeEach(async () => {
+    codeFake = sandbox.fake()
     typeFake = sandbox.fake()
     headerFake = sandbox.fake.returns({ type: typeFake })
-    responseFake = sandbox.fake.returns({ header: headerFake })
+    responseFake = sandbox.fake.returns({ header: headerFake, code: codeFake })
 
     h = {
       response: responseFake
@@ -124,24 +126,76 @@ experiment.only('System proxy controller', () => {
     })
 
     experiment('when the request is invalid', () => {
-      let errorResponse
-
       beforeEach(() => {
-        errorResponse = {
-          error: {
-            statusCode: 404,
-            message: 'OH NO'
-          }
+        const error = {
+          statusCode: 404,
+          message: 'OH NO'
         }
-        sandbox.stub(SystemProxyService.prototype, 'getToPath').rejects(errorResponse)
+        sandbox.stub(SystemProxyService.prototype, 'getToPath').rejects(error)
       })
 
-      test('returns the system error details', async () => {
+      test('returns the system error status code', async () => {
         await controller.getSystemJsProxy(request, h)
+
+        const result = codeFake.lastCall.firstArg
+
+        expect(result).to.equal(404)
+      })
+    })
+  })
+
+  experiment('.getSystemCssProxy', () => {
+    beforeEach(() => {
+      request = {
+        payload: null
+      }
+    })
+
+    experiment('when the request is valid', () => {
+      beforeEach(() => {
+        sandbox.stub(SystemProxyService.prototype, 'getToPath').resolves('OK')
+      })
+
+      test('returns whatever the system returns', async () => {
+        await controller.getSystemCssProxy(request, h)
 
         const result = responseFake.lastCall.args[0]
 
-        expect(result).to.equal(errorResponse.error)
+        expect(result).to.equal('OK')
+      })
+
+      test('sets the expected header', async () => {
+        await controller.getSystemCssProxy(request, h)
+
+        const result = headerFake.lastCall.args
+
+        expect(result).to.include(['cache-control', 'no-cache'])
+      })
+
+      test('sets the expected type', async () => {
+        await controller.getSystemCssProxy(request, h)
+
+        const result = typeFake.lastCall.args[0]
+
+        expect(result).to.equal('text/css')
+      })
+    })
+
+    experiment('when the request is invalid', () => {
+      beforeEach(() => {
+        const error = {
+          statusCode: 404,
+          message: 'OH NO'
+        }
+        sandbox.stub(SystemProxyService.prototype, 'getToPath').rejects(error)
+      })
+
+      test('returns the system error status code', async () => {
+        await controller.getSystemCssProxy(request, h)
+
+        const result = codeFake.lastCall.firstArg
+
+        expect(result).to.equal(404)
       })
     })
   })

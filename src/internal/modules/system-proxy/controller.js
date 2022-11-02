@@ -28,33 +28,39 @@ const getSystemProxy = async (request, h) => {
 }
 
 const getSystemJsProxy = async (request, h) => {
+  let response
+
   const service = new SystemProxyService(config.services.system, logger)
-  let result
 
   try {
-    result = await service.getToPath('assets/all.js')
+    const result = await service.getToPath('assets/all.js')
+
+    response = h.response(result)
+      .header('cache-control', 'no-cache')
+      .type('application/javascript')
   } catch (error) {
-    result = error.error
+    response = h.response().code(error.statusCode)
   }
 
-  return h.response(result)
-    .header('cache-control', 'no-cache')
-    .type('application/javascript')
+  return response
 }
 
 const getSystemCssProxy = async (request, h) => {
+  let response
+
   const service = new SystemProxyService(config.services.system, logger)
-  let result
 
   try {
-    result = await service.getToPath('assets/stylesheets/application.css')
+    const result = await service.getToPath('assets/stylesheets/application.css')
+
+    response = h.response(result)
+      .header('cache-control', 'no-cache')
+      .type('text/css')
   } catch (error) {
-    result = error.error
+    response = h.response().code(error.statusCode)
   }
 
-  return h.response(result)
-    .header('cache-control', 'no-cache')
-    .type('text/css')
+  return response
 }
 
 module.exports = {

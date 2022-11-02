@@ -2,7 +2,7 @@
 
 const config = require('../config')
 
-// External only routes
+// Internal only routes
 const acceptanceTestsProxyRoutes = require('./acceptance-tests-proxy/routes')
 const coreRoutes = require('./core/routes')
 const contentRoutes = require('./content/routes')

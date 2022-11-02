@@ -28,6 +28,7 @@ const viewLicences = require('./view-licences/routes')
 const gaugingStations = require('./gauging-stations/routes')
 const customers = require('./customers/routes')
 const notes = require('./notes/routes')
+const systemProxyRoutes = require('./system-proxy/routes')
 
 // Shared routes
 const healthRoutes = require('../../shared/modules/health/routes')
@@ -60,7 +61,8 @@ const routes = [
   ...Object.values(gaugingStations),
   ...Object.values(customers),
   ...Object.values(notes),
-  ...Object.values(healthRoutes)
+  ...Object.values(healthRoutes),
+  ...systemProxyRoutes
 ]
 
 if (config.featureToggles.acceptanceTestsProxy) {

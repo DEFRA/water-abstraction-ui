@@ -110,7 +110,8 @@ module.exports = {
     crm_v2: crmUri.replace('1.0', '2.0'),
     idm: process.env.IDM_URI || 'http://127.0.0.1:8003/idm/1.0',
     permits: process.env.PERMIT_URI || 'http://127.0.0.1:8004/API/1.0/',
-    returns: process.env.RETURNS_URI || 'http://127.0.0.1:8006/returns/1.0'
+    returns: process.env.RETURNS_URI || 'http://127.0.0.1:8006/returns/1.0',
+    system: process.env.SYSTEM_URI || 'http://127.0.0.1:8013'
   },
 
   testMode,

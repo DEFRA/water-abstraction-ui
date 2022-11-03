@@ -66,16 +66,16 @@ experiment('System proxy controller', () => {
     })
 
     experiment('when the request is invalid', () => {
-      let errorResponse
+      let error
 
       beforeEach(() => {
-        errorResponse = {
-          error: {
-            statusCode: 404,
-            message: 'OH NO'
-          }
+        error = {
+          error: 'OH NO',
+          statusCode: 404,
+          message: '404 - "OH NO"',
+          name: 'StatusCodeError'
         }
-        sandbox.stub(SystemProxyService.prototype, 'getToPath').rejects(errorResponse)
+        sandbox.stub(SystemProxyService.prototype, 'getToPath').rejects(error)
       })
 
       test('returns the system error details', async () => {
@@ -83,7 +83,7 @@ experiment('System proxy controller', () => {
 
         const result = responseFake.lastCall.args[0]
 
-        expect(result).to.equal(errorResponse.error)
+        expect(result).to.equal(error.error)
       })
     })
   })

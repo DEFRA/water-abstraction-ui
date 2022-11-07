@@ -50,7 +50,7 @@ experiment('Auth plugin', () => {
     test('a pre handler is registered on the server', async () => {
       expect(server.ext.callCount).to.equal(1)
       const [ext] = server.ext.lastCall.args
-      expect(ext.type).to.equal('onPreHandler')
+      expect(ext.type).to.equal('onPreAuth')
       expect(ext.method).to.be.a.function()
     })
 

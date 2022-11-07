@@ -73,6 +73,8 @@ function viewContextDefaults (request) {
   viewContext.crownCopyrightMessage = '© Crown copyright'
   viewContext.surveyType = getSurveyType(viewContext.isAuthenticated)
 
+  viewContext.showVerificationCode = config.featureToggles.showVerificationCode
+
   return viewContext
 }
 

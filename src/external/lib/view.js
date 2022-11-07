@@ -80,6 +80,8 @@ function viewContextDefaults (request) {
   viewContext.hasMultipleCompanies = hasMultipleCompanies(request)
   viewContext.companyName = get(request, 'defra.companyName')
 
+  viewContext.showVerificationCode = config.featureToggles.showVerificationCode
+
   return viewContext
 }
 

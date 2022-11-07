@@ -25,7 +25,7 @@ const authPlugin = {
 
     // Attach methods to request
     server.ext({
-      type: 'onPreHandler',
+      type: 'onPreAuth',
       method: async (request, h) => {
         request.logIn = async (user) => {
           await options.signIn(request, user)

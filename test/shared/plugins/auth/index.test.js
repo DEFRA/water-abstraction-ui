@@ -51,10 +51,10 @@ experiment('auth pluging', () => {
       expect(plugin.version).to.be.a.string()
     })
 
-    test('defines a register function with a preHandler', async () => {
+    test('defines a register function with a preAuth', async () => {
       plugin.register(server)
       const [{ type, method }] = server.ext.lastCall.args
-      expect(type).to.equal('onPreHandler')
+      expect(type).to.equal('onPreAuth')
       expect(method).to.be.a.function()
     })
 

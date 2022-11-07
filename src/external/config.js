@@ -135,5 +135,9 @@ module.exports = {
     ...(isTlsConnection) && { tls: {} },
     db: process.env.NODE_ENV === 'test' ? 5 : 0,
     lazyConnect: isRedisLazy
+  },
+
+  featureToggles: {
+    showVerificationCode: process.env.SHOW_VERIFICATION_CODE_FEATURE === 'true' && !isProduction
   }
 }

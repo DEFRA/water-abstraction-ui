@@ -18,7 +18,7 @@ const mapConditionText = (condition) => {
   if (!conditionTitle) {
     const message = 'Could not find condition title'
     const error = new Error(message)
-    logger.error(message, error, condition)
+    logger.error(message, error.stack, condition)
     throw error
   }
 

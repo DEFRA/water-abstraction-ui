@@ -13,7 +13,7 @@ const create = config => {
 
     const paramsToLog = Object.assign(params, userJourney, { requestDetails })
 
-    logger.error(msg, error, paramsToLog)
+    logger.error(msg, error.stack, paramsToLog)
   }
 
   return logger

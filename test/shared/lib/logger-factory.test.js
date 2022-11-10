@@ -57,7 +57,7 @@ experiment('shared/lib/logger-factory', () => {
       const [msg, error] = logger.error.lastCall.args
 
       expect(msg).to.equal('message')
-      expect(error).to.equal(err)
+      expect(error).to.equal(err.stack)
     })
 
     test('errorWithJourney adds journey data when no extra error params are included', async () => {
@@ -67,7 +67,7 @@ experiment('shared/lib/logger-factory', () => {
       const [msg, error, params] = logger.error.lastCall.args
 
       expect(msg).to.equal('message')
-      expect(error).to.equal(err)
+      expect(error).to.equal(err.stack)
       expect(params.userJourney).to.equal({
         'user-agent': 'safari'
       })
@@ -85,7 +85,7 @@ experiment('shared/lib/logger-factory', () => {
       const [msg, error, parameters] = logger.error.lastCall.args
 
       expect(msg).to.equal('message')
-      expect(error).to.equal(err)
+      expect(error).to.equal(err.stack)
       expect(parameters).to.equal({
         userJourney: { 'user-agent': 'safari' },
         numbers: { one: 1 },

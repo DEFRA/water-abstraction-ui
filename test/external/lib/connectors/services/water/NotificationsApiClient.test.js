@@ -244,9 +244,10 @@ experiment('external/NotificationsApiClient', () => {
 
     experiment('when there is an error', () => {
       let result
+      const error = new Error('oops')
 
       beforeEach(async () => {
-        client.sendNotifyMessage.rejects({ error: 'some-error' })
+        client.sendNotifyMessage.rejects(error)
         result = await client.sendAccessNotification({
           email: 'recipient@example.com',
           sender: 'sender@example.com'
@@ -256,11 +257,11 @@ experiment('external/NotificationsApiClient', () => {
       test('the error is logged', async () => {
         const [msg, err] = logger.error.lastCall.args
         expect(msg).to.equal('Error sending access notification')
-        expect(err).to.equal({ error: 'some-error' })
+        expect(err).to.equal(error.stack)
       })
 
       test('the error is returned', async () => {
-        expect(result).to.equal({ error: 'some-error' })
+        expect(result).to.equal(error)
       })
     })
   })

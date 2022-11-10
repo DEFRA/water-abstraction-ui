@@ -796,7 +796,7 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
     })
 
     experiment('when there is an error', () => {
-      const ERROR = new Error('oops')
+      const error = new Error('oops')
 
       beforeEach(async () => {
         request = createPostRequest({
@@ -804,14 +804,14 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
             csrf_token: CSRF_TOKEN
           }
         })
-        services.water.companies.postInvoiceAccount.rejects(ERROR)
+        services.water.companies.postInvoiceAccount.rejects(error)
       })
 
       test('the error is logged and rethrown', async () => {
         const func = () => controller.postCheckAnswers(request, h)
         await expect(func()).to.reject()
         expect(logger.error.calledWith(
-          'Error saving billing account', ERROR
+          'Error saving billing account', error.stack
         )).to.be.true()
       })
     })

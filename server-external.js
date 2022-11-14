@@ -88,14 +88,14 @@ async function start () {
 
     server.log(['info'], `Server started on ${server.info.uri} port ${server.info.port}`)
   } catch (err) {
-    logger.error('Failed to start server', err)
+    logger.error('Failed to start server', err.stack)
   }
 
   return server
 }
 
 const processError = message => err => {
-  logger.error(message, err)
+  logger.error(message, err.stack)
   process.exit(1)
 }
 

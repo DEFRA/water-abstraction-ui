@@ -42,7 +42,7 @@ class NotificationsApiClient extends SharedNotificationsApiClient {
     try {
       await this.sendNotifyMessage(messageRef, email, personalisation)
     } catch (err) {
-      this.logger.error('Error sending access notification', err)
+      this.logger.error('Error sending access notification', err.stack)
       return err
     };
   }

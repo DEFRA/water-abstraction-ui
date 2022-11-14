@@ -160,7 +160,7 @@ async function postAddAccess (request, h) {
 
     return h.view('nunjucks/manage-licences/add-access-success', viewContext)
   } catch (err) {
-    logger.errorWithJourney('Post add access error', err, request)
+    logger.errorWithJourney('Post add access error', err.stack, request)
     throw err
   }
 }

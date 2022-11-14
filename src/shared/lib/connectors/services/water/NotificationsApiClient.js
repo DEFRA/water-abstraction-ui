@@ -42,7 +42,7 @@ class NotificationsApiClient extends APIClient {
       const response = await serviceRequest.post(url, { body })
       return response.body
     } catch (err) {
-      this.logger.error('Error sending notify message', { error: err })
+      this.logger.error('Error sending notify message', { error: err.stack })
       return err
     };
   }

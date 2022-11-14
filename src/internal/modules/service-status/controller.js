@@ -24,7 +24,7 @@ const getRedisCacheStatus = async (redisConfig, logger) => {
       result = 'Connected'
     }
   } catch (err) {
-    logger.error('Cache not connected', err)
+    logger.error('Cache not connected', err.stack)
   }
 
   return result

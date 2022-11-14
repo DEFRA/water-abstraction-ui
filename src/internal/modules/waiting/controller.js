@@ -52,7 +52,7 @@ const getWaiting = async (request, h) => {
 
   if (error) {
     const message = 'Unknown event type'
-    logger.error(message, error, { params: event })
+    logger.error(message, error.stack, { params: event })
     throw new Error('Unknown event type')
   }
   throwIfError(error)

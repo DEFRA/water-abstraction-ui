@@ -25,7 +25,8 @@
     "lint:fix": "standard --fix",
     "sass": "gulp sass",
     "sass:watch": "gulp sass:watch",
-    "version": "npx --yes auto-changelog -p --commit-limit false && git add CHANGELOG.md"
+    "version": "npx --yes auto-changelog -p --commit-limit false && git add CHANGELOG.md",
+    "postinstall": "gulp build"
   },
   "dependencies": {
     "@envage/hapi-pg-rest-api": "^7.0.0",

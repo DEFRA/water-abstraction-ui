@@ -71,7 +71,7 @@ experiment('internal/modules/billing/lib/routing', () => {
             })
 
             test('returns the sroc supplementary url', () => {
-              expect(getBillingBatchRoute(batch)).to.equal('/SROC/SUPPLEMENTARY')
+              expect(getBillingBatchRoute(batch)).to.equal('/billing/batch/sroc')
             })
           })
 

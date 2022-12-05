@@ -36,7 +36,7 @@ function _determineReadyUrl (opts, id, batchType, scheme) {
   }
 
   if (config.featureToggles.triggerSrocSupplementary && batchType === 'supplementary' && scheme === 'presroc') {
-    return '/SROC/SUPPLEMENTARY'
+    return '/billing/batch/sroc'
   }
 
   return `/billing/batch/${id}/summary`

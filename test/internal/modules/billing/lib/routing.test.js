@@ -6,10 +6,18 @@ const { getBillingBatchRoute } = require('internal/modules/billing/lib/routing')
 
 experiment('internal/modules/billing/lib/routing', () => {
   experiment('.getBillingBatchRoute', () => {
-    const batch = { id: 'test-batch-id' }
+    const defaultBatch = {
+      id: 'test-batch-id'
+    }
+
     experiment('when batch status is "processing"', () => {
+      let batch
+
       beforeEach(() => {
-        batch.status = 'processing'
+        batch = {
+          ...defaultBatch,
+          status: 'processing'
+        }
       })
 
       test('returns the expected url', () => {
@@ -26,13 +34,22 @@ experiment('internal/modules/billing/lib/routing', () => {
     })
 
     experiment('when batch status is "ready"', () => {
-      test('returns the batch summary url if no invoice ID is supplied', () => {
-        batch.status = 'ready'
-        expect(getBillingBatchRoute(batch)).to.equal('/billing/batch/test-batch-id/summary')
+      let batch
+
+      beforeEach(() => {
+        batch = {
+          ...defaultBatch,
+          status: 'ready'
+        }
+      })
+
+      test('when no invoice ID is supplied', () => {
+        test('returns the batch summary url', () => {
+          expect(getBillingBatchRoute(batch)).to.equal('/billing/batch/test-batch-id/summary')
+        })
       })
 
       test('returns the invoice page if an invoice ID is supplied', () => {
-        batch.status = 'ready'
         const options = {
           invoiceId: 'test-invoice-id'
         }
@@ -41,8 +58,13 @@ experiment('internal/modules/billing/lib/routing', () => {
     })
 
     experiment('when batch status is "sent"', () => {
+      let batch
+
       beforeEach(() => {
-        batch.status = 'sent'
+        batch = {
+          ...defaultBatch,
+          status: 'sent'
+        }
       })
 
       test('returns the summary url by default', () => {
@@ -55,13 +77,29 @@ experiment('internal/modules/billing/lib/routing', () => {
     })
 
     experiment('when batch status is "review"', () => {
+      let batch
+
+      beforeEach(() => {
+        batch = {
+          ...defaultBatch,
+          status: 'review'
+        }
+      })
+
       test('returns the summary url by default', () => {
-        batch.status = 'review'
         expect(getBillingBatchRoute(batch)).to.equal('/billing/batch/test-batch-id/two-part-tariff-review')
       })
     })
 
     experiment('when isErrorRoutesIncluded flag is true', () => {
+      let batch
+
+      beforeEach(() => {
+        batch = {
+          ...defaultBatch
+        }
+      })
+
       test('and batch status is "error" returns the processing page url', () => {
         batch.status = 'error'
         expect(getBillingBatchRoute(batch, { isErrorRoutesIncluded: true })).to.equal('/billing/batch/test-batch-id/processing')

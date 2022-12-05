@@ -7,7 +7,9 @@ const { getBillingBatchRoute } = require('internal/modules/billing/lib/routing')
 experiment('internal/modules/billing/lib/routing', () => {
   experiment('.getBillingBatchRoute', () => {
     const defaultBatch = {
-      id: 'test-batch-id'
+      id: 'test-batch-id',
+      batchType: 'supplementary',
+      scheme: 'presroc'
     }
 
     experiment('when batch status is "processing"', () => {
@@ -43,17 +45,19 @@ experiment('internal/modules/billing/lib/routing', () => {
         }
       })
 
+      test('when an invoice ID is supplied', () => {
+        test('returns the invoice page', () => {
+          const options = {
+            invoiceId: 'test-invoice-id'
+          }
+          expect(getBillingBatchRoute(batch, options)).to.equal('/billing/batch/test-batch-id/invoice/test-invoice-id')
+        })
+      })
+
       test('when no invoice ID is supplied', () => {
         test('returns the batch summary url', () => {
           expect(getBillingBatchRoute(batch)).to.equal('/billing/batch/test-batch-id/summary')
         })
-      })
-
-      test('returns the invoice page if an invoice ID is supplied', () => {
-        const options = {
-          invoiceId: 'test-invoice-id'
-        }
-        expect(getBillingBatchRoute(batch, options)).to.equal('/billing/batch/test-batch-id/invoice/test-invoice-id')
       })
     })
 

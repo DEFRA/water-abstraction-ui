@@ -1,3 +1,5 @@
+const config = require('../../../config')
+
 /**
  * Gets the correct route for the specified batch depending on its
  * current status
@@ -33,7 +35,7 @@ function _determineReadyUrl (opts, id, batchType, scheme) {
     return `/billing/batch/${id}/invoice/${opts.invoiceId}`
   }
 
-  if (batchType === 'supplementary' && scheme === 'presroc') {
+  if (config.featureToggles.triggerSrocSupplementary && batchType === 'supplementary' && scheme === 'presroc') {
     return '/SROC/SUPPLEMENTARY'
   }
 

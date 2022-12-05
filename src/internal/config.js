@@ -161,6 +161,7 @@ module.exports = {
     waterAbstractionAlerts: true,
     recalculateBills: true,
     allowChargeVersionUploads: (get(process.env, 'ALLOW_CHARGE_VERSION_UPLOADS') || '').toLowerCase() === 'true',
+    triggerSrocSupplementary: (get(process.env, 'TRIGGER_SROC_SUPPLEMENTARY') || '').toLowerCase() === 'true',
     acceptanceTestsProxy: !isProduction,
     showVerificationCode: process.env.SHOW_VERIFICATION_CODE_FEATURE === 'true' && !isProduction
   }

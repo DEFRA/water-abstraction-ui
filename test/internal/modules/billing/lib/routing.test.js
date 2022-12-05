@@ -1,10 +1,19 @@
 'use strict'
 
 const { expect } = require('@hapi/code')
-const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script()
+const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script()
 const { getBillingBatchRoute } = require('internal/modules/billing/lib/routing')
 
+const config = require('internal/config')
+const Sinon = require('sinon')
+
+const sandbox = Sinon.createSandbox()
+
 experiment('internal/modules/billing/lib/routing', () => {
+  afterEach(() => {
+    sandbox.restore()
+  })
+
   experiment('.getBillingBatchRoute', () => {
     const defaultBatch = {
       id: 'test-batch-id',
@@ -56,8 +65,24 @@ experiment('internal/modules/billing/lib/routing', () => {
 
       experiment('when no invoice ID is supplied', () => {
         experiment('when the batch type is `supplementary` and the scheme is `presroc`', () => {
-          test('returns the sroc supplementary url', () => {
-            expect(getBillingBatchRoute(batch)).to.equal('/SROC/SUPPLEMENTARY')
+          experiment('when the feature toggle is switched on', () => {
+            beforeEach(() => {
+              sandbox.stub(config.featureToggles, 'triggerSrocSupplementary').value(true)
+            })
+
+            test('returns the sroc supplementary url', () => {
+              expect(getBillingBatchRoute(batch)).to.equal('/SROC/SUPPLEMENTARY')
+            })
+          })
+
+          experiment('when the feature toggle is switched off', () => {
+            beforeEach(() => {
+              sandbox.stub(config.featureToggles, 'triggerSrocSupplementary').value(false)
+            })
+
+            test('returns the batch summary url', () => {
+              expect(getBillingBatchRoute(batch)).to.equal('/billing/batch/test-batch-id/summary')
+            })
           })
         })
 

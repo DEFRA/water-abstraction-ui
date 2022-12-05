@@ -45,7 +45,7 @@ experiment('internal/modules/billing/lib/routing', () => {
         }
       })
 
-      test('when an invoice ID is supplied', () => {
+      experiment('when an invoice ID is supplied', () => {
         test('returns the invoice page', () => {
           const options = {
             invoiceId: 'test-invoice-id'
@@ -54,9 +54,25 @@ experiment('internal/modules/billing/lib/routing', () => {
         })
       })
 
-      test('when no invoice ID is supplied', () => {
-        test('returns the batch summary url', () => {
-          expect(getBillingBatchRoute(batch)).to.equal('/billing/batch/test-batch-id/summary')
+      experiment('when no invoice ID is supplied', () => {
+        experiment('when the batch type is `supplementary` and the scheme is `presroc`', () => {
+          test('returns the sroc supplementary url', () => {
+            expect(getBillingBatchRoute(batch)).to.equal('/SROC/SUPPLEMENTARY')
+          })
+        })
+
+        experiment('when the batch type is not `supplementary`', () => {
+          test('returns the batch summary url', () => {
+            batch.batchType = 'NOT_SUPPLEMENTARY'
+            expect(getBillingBatchRoute(batch)).to.equal('/billing/batch/test-batch-id/summary')
+          })
+        })
+
+        experiment('when the scheme is not `presroc`', () => {
+          test('returns the batch summary url', () => {
+            batch.batchType = 'NOT_PRESROC'
+            expect(getBillingBatchRoute(batch)).to.equal('/billing/batch/test-batch-id/summary')
+          })
         })
       })
     })

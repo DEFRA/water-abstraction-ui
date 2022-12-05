@@ -83,6 +83,16 @@ module.exports = {
     }
   },
 
+  postSrocBillingBatch: {
+    method: 'POST',
+    path: '/billing/batch/sroc',
+    handler: controller.postSrocBillingBatch,
+    config: {
+      auth: { scope: allowedScopes },
+      description: 'post handler for creating an sroc billing batch'
+    }
+  },
+
   getBillingBatchExists: {
     method: 'GET',
     path: '/billing/batch/{batchId}/exists',

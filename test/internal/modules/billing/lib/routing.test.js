@@ -64,7 +64,7 @@ experiment('internal/modules/billing/lib/routing', () => {
         })
       })
 
-      experiment.only('when no invoice ID is supplied', () => {
+      experiment('when no invoice ID is supplied', () => {
         experiment('when the batch type is `supplementary` and the scheme is `presroc`', () => {
           experiment('when the feature toggle is switched on', () => {
             beforeEach(() => {

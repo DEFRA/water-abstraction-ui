@@ -133,7 +133,7 @@ const createRequest = () => ({
   }
 })
 
-experiment.only('internal/modules/billing/controllers/create-bill-run', () => {
+experiment('internal/modules/billing/controllers/create-bill-run', () => {
   let h, request, batchData
 
   beforeEach(async () => {

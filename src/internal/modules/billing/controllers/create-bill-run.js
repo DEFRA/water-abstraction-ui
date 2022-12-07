@@ -146,12 +146,13 @@ const postBillingBatchFinancialYear = async (request, h) => {
   return _batching(h, batch)
 }
 
-async function postSrocBillingBatch (request, h) {
-  const { batch } = request.pre
+async function getBillingBatchSroc (request, h) {
+  // TODO: Correctly populate batch
   const dummyBatch = {
-    id: batch.id,
-    batchType: batch.type,
+    id: 'DUMMY_SROC_BATCH',
+    region: request.params.region,
     scheme: 'sroc',
+    batchType: 'supplementary',
     status: 'ready'
   }
 
@@ -305,4 +306,4 @@ exports.getBillingBatchDuplicate = getBillingBatchDuplicate
 exports.getBillingBatchFinancialYear = getBillingBatchFinancialYear
 exports.postBillingBatchFinancialYear = postBillingBatchFinancialYear
 
-exports.postSrocBillingBatch = postSrocBillingBatch
+exports.getBillingBatchSroc = getBillingBatchSroc

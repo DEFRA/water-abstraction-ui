@@ -18,7 +18,8 @@ experiment('internal/modules/billing/lib/routing', () => {
     const defaultBatch = {
       id: 'test-batch-id',
       batchType: 'supplementary',
-      scheme: 'presroc'
+      scheme: 'presroc',
+      region: 'test-batch-region'
     }
 
     experiment('when batch status is "processing"', () => {
@@ -63,7 +64,7 @@ experiment('internal/modules/billing/lib/routing', () => {
         })
       })
 
-      experiment('when no invoice ID is supplied', () => {
+      experiment.only('when no invoice ID is supplied', () => {
         experiment('when the batch type is `supplementary` and the scheme is `presroc`', () => {
           experiment('when the feature toggle is switched on', () => {
             beforeEach(() => {
@@ -71,7 +72,7 @@ experiment('internal/modules/billing/lib/routing', () => {
             })
 
             test('returns the sroc supplementary url', () => {
-              expect(getBillingBatchRoute(batch)).to.equal('/billing/batch/sroc')
+              expect(getBillingBatchRoute(batch)).to.equal('/billing/batch/sroc/test-batch-region')
             })
           })
 

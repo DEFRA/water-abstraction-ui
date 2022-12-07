@@ -133,7 +133,7 @@ const createRequest = () => ({
   }
 })
 
-experiment('internal/modules/billing/controllers/create-bill-run', () => {
+experiment.only('internal/modules/billing/controllers/create-bill-run', () => {
   let h, request, batchData
 
   beforeEach(async () => {
@@ -755,12 +755,12 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
     })
   })
 
-  experiment('.postSrocBillingBatch', () => {
+  experiment('.getBillingBatchSroc', () => {
     test('it redirects to the summary page', async () => {
-      await controller.postSrocBillingBatch(request, h)
+      await controller.getBillingBatchSroc(request, h)
 
       const [url] = h.redirect.lastCall.args
-      expect(url).to.equal('/billing/batch/test-batch-id/summary')
+      expect(url).to.equal('/billing/batch/DUMMY_SROC_BATCH/summary')
     })
   })
 })

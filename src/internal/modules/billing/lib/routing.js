@@ -12,12 +12,12 @@ const config = require('../../../config')
  * @return {String} the link
  */
 const getBillingBatchRoute = (batch, opts = {}) => {
-  const { id, batchType, scheme } = batch
+  const { id, batchType, scheme, region } = batch
 
   const routeMap = new Map()
     .set('processing', `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`)
     .set('sending', `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`)
-    .set('ready', _determineReadyUrl(opts, id, batchType, scheme))
+    .set('ready', _determineReadyUrl(opts, id, batchType, scheme, region))
     .set('sent', opts.showSuccessPage ? `/billing/batch/${id}/confirm/success` : `/billing/batch/${id}/summary`)
     .set('review', `/billing/batch/${id}/two-part-tariff-review`)
 
@@ -30,13 +30,13 @@ const getBillingBatchRoute = (batch, opts = {}) => {
   return routeMap.get(batch.status)
 }
 
-function _determineReadyUrl (opts, id, batchType, scheme) {
+function _determineReadyUrl (opts, id, batchType, scheme, region) {
   if (opts.invoiceId) {
     return `/billing/batch/${id}/invoice/${opts.invoiceId}`
   }
 
   if (config.featureToggles.triggerSrocSupplementary && batchType === 'supplementary' && scheme === 'presroc') {
-    return '/billing/batch/sroc'
+    return `/billing/batch/sroc/${region}`
   }
 
   return `/billing/batch/${id}/summary`

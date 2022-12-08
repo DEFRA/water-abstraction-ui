@@ -89,7 +89,7 @@ module.exports = {
     handler: controller.getBillingBatchSroc,
     config: {
       auth: { scope: allowedScopes },
-      description: 'post handler for creating an sroc billing batch',
+      description: 'get handler for creating an sroc billing batch',
       validate: {
         params: Joi.object().keys({
           region: Joi.string().uuid()

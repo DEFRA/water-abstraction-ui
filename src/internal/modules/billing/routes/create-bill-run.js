@@ -83,6 +83,21 @@ module.exports = {
     }
   },
 
+  getBillingBatchSroc: {
+    method: 'GET',
+    path: '/billing/batch/sroc/{region}',
+    handler: controller.getBillingBatchSroc,
+    config: {
+      auth: { scope: allowedScopes },
+      description: 'get handler for creating an sroc billing batch',
+      validate: {
+        params: Joi.object().keys({
+          region: Joi.string().uuid()
+        })
+      }
+    }
+  },
+
   getBillingBatchExists: {
     method: 'GET',
     path: '/billing/batch/{batchId}/exists',

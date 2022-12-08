@@ -754,4 +754,13 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
       })
     })
   })
+
+  experiment('.getBillingBatchSroc', () => {
+    test('it redirects to the summary page', async () => {
+      await controller.getBillingBatchSroc(request, h)
+
+      const [url] = h.redirect.lastCall.args
+      expect(url).to.equal('/billing/batch/DUMMY_SROC_BATCH/summary')
+    })
+  })
 })

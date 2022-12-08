@@ -146,6 +146,28 @@ const postBillingBatchFinancialYear = async (request, h) => {
   return _batching(h, batch)
 }
 
+async function getBillingBatchSroc (request, h) {
+  // TODO: Correctly populate batch
+  const dummyBatch = {
+    id: 'DUMMY_SROC_BATCH',
+    region: request.params.region,
+    scheme: 'sroc',
+    batchType: 'supplementary',
+    status: 'ready'
+  }
+
+  try {
+    // TODO: Call the service to create our sroc supplementary billing batch
+    const path = routing.getBillingBatchRoute(dummyBatch, { isBackEnabled: false })
+    return h.redirect(path)
+  } catch (err) {
+    if (err.statusCode === 409) {
+      return h.redirect(_creationErrorRedirectUrl(err))
+    }
+    throw err
+  }
+}
+
 /**
  * If a bill run for the region exists, then display a basic summary page
  *
@@ -283,3 +305,5 @@ exports.getBillingBatchDuplicate = getBillingBatchDuplicate
 
 exports.getBillingBatchFinancialYear = getBillingBatchFinancialYear
 exports.postBillingBatchFinancialYear = postBillingBatchFinancialYear
+
+exports.getBillingBatchSroc = getBillingBatchSroc

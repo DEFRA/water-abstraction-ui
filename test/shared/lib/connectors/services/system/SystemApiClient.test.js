@@ -7,7 +7,7 @@ const {
 } = exports.lab = require('@hapi/lab').script()
 const { expect } = require('@hapi/code')
 
-experiment.only('shared/services/SystemApiClient', () => {
+experiment('shared/services/SystemApiClient', () => {
   let logger
   let config
   let client

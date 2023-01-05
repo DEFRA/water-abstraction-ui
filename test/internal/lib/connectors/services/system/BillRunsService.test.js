@@ -13,14 +13,14 @@ const sandbox = Sinon.createSandbox()
 const { serviceRequest } = require('@envage/water-abstraction-helpers')
 
 // Thing under test
-const SystemService = require('../../../../../../src/internal/lib/connectors/services/system/SystemService.js')
+const BillRunsService = require('../../../../../../src/internal/lib/connectors/services/system/BillRunsService.js')
 
-experiment('services/system/SystemService', () => {
+experiment('services/system/BillRunsService', () => {
   let service
 
   beforeEach(async () => {
     sandbox.stub(serviceRequest, 'post')
-    service = new SystemService('http://127.0.0.1:8013')
+    service = new BillRunsService('http://127.0.0.1:8013')
   })
 
   afterEach(async () => {

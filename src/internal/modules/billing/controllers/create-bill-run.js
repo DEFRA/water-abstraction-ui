@@ -11,7 +11,6 @@ const seasons = require('../lib/seasons')
 const routing = require('../lib/routing')
 const sessionForms = require('shared/lib/session-forms')
 const { getBatchFinancialYearEnding } = require('../lib/batch-financial-year')
-const { water } = require('internal/lib/connectors/services')
 
 /**
  * Step 1a of create billing batch flow - display form to select type
@@ -198,7 +197,7 @@ const _batchBillableYears = async (season, billingType, userEmail, regionId) => 
     currentFinancialYear,
     isSummer
   }
-  const billableYears = await water.billingBatches.getBatchBillableYears(requestBody)
+  const billableYears = await services.water.billingBatches.getBatchBillableYears(requestBody)
 
   return billableYears.unsentYears.map(unsentYear => {
     const hint = unsentYear === currentFinancialYear ? { text: 'current year' } : null

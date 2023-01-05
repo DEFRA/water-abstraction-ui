@@ -15,7 +15,7 @@ const { serviceRequest } = require('@envage/water-abstraction-helpers')
 // Thing under test
 const SystemService = require('../../../../../../src/internal/lib/connectors/services/system/SystemService.js')
 
-experiment.only('services/system/SystemService', () => {
+experiment('services/system/SystemService', () => {
   let service
 
   beforeEach(async () => {

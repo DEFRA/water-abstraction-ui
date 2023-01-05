@@ -146,18 +146,15 @@ const postBillingBatchFinancialYear = async (request, h) => {
 }
 
 async function getBillingBatchSroc (request, h) {
-  // TODO: Correctly populate batch
-  const dummyBatch = {
-    id: 'DUMMY_SROC_BATCH',
-    region: request.params.region,
-    scheme: 'sroc',
-    batchType: 'supplementary',
-    status: 'ready'
-  }
-
   try {
-    // TODO: Call the service to create our sroc supplementary billing batch
-    const path = routing.getBillingBatchRoute(dummyBatch, { isBackEnabled: false })
+    const { data } = await services.system.billRuns.createBillRun(
+      'supplementary',
+      'sroc',
+      request.params.region,
+      request.defra.user.user_name
+    )
+
+    const path = routing.getBillingBatchRoute(data, { isBackEnabled: false })
     return h.redirect(path)
   } catch (err) {
     if (err.statusCode === 409) {

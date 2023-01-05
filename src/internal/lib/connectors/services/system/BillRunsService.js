@@ -14,7 +14,7 @@ class SystemService extends ServiceClient {
    *
    * @return {Promise} resolves with the new bill run details
    */
-  postCreateBillRun (type, scheme, region, user, previousBillRunId = undefined) {
+  createBillRun (type, scheme, region, user, previousBillRunId = undefined) {
     const url = this.joinUrl('bill-runs')
     const options = {
       body: {

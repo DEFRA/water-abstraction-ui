@@ -27,9 +27,9 @@ experiment('services/system/BillRunsService', () => {
     sandbox.restore()
   })
 
-  experiment('.postCreateBillRun', () => {
+  experiment('.createBillRun', () => {
     beforeEach(async () => {
-      await service.postCreateBillRun(
+      await service.createBillRun(
         'supplementary',
         'sroc',
         'fdf130c3-3021-408d-869c-2be1fb067e67',

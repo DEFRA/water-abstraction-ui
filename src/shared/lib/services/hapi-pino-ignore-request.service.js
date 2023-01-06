@@ -6,7 +6,7 @@
  */
 
 /**
- * Returns true or false whether a request should be loged
+ * Returns true or false whether a request should be logged
  *
  * Used by `src/shared/plugins/hapi-pino.plugin.js` to control what does and doesn't get added to our log output.
  * `/status` is to support the AWS load balancer health checks which fire approximately every 500ms. If we logged these
@@ -25,7 +25,7 @@
  * @returns {boolean} true if the request should be ignored, else false
  */
 function go (options, request) {
-  const staticPaths = ['/', '/status', '/csp/report']
+  const staticPaths = ['/', '/status', '/csp/report', '/robots.txt']
 
   // If request is a known path ignore it
   if (staticPaths.includes(request.path)) {

@@ -14,7 +14,7 @@ const viewEngine = require('./src/external/lib/view-engine/')
 const { logger } = require('./src/external/logger')
 const connectors = require('./src/external/lib/connectors/services')
 
-const common = createPlugins(config, logger, connectors)
+const common = createPlugins(config, connectors)
 
 // Configure auth plugin
 const AuthConfig = require('external/lib/AuthConfig')

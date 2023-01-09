@@ -102,13 +102,11 @@ const batchInvoicesResult = [
   }]
 
 const createdBillRun = {
-  data: {
-    id: 'f561990b-b29a-42f4-b71a-398c52339f78',
-    region: '07ae7f3a-2677-4102-b352-cc006828948c',
-    scheme: 'sroc',
-    batchType: 'supplementary',
-    status: 'ready'
-  }
+  id: 'f561990b-b29a-42f4-b71a-398c52339f78',
+  region: '07ae7f3a-2677-4102-b352-cc006828948c',
+  scheme: 'sroc',
+  batchType: 'supplementary',
+  status: 'ready'
 }
 
 const secondHeader = sandbox.stub()

@@ -10,7 +10,6 @@ const registrationRoutes = require('./registration/routes')
 const returnsRoutes = require('./returns/routes')
 const companySelector = require('./company-selector/routes')
 const accountRoutes = require('./account/routes')
-const notificationRoutes = require('./notifications/routes')
 const notifyRoutes = require('./notify/routes')
 
 // Shared routes
@@ -25,7 +24,6 @@ module.exports = [
   ...Object.values(viewLicenceRoutes),
   ...Object.values(returnsRoutes),
   ...Object.values(companySelector),
-  ...Object.values(notificationRoutes),
   ...Object.values(accountRoutes),
   ...Object.values(notifyRoutes),
   ...Object.values(healthRoutes)

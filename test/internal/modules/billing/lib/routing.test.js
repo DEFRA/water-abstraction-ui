@@ -17,9 +17,9 @@ experiment('internal/modules/billing/lib/routing', () => {
   experiment('.getBillingBatchRoute', () => {
     const defaultBatch = {
       id: 'test-batch-id',
-      batchType: 'supplementary',
-      scheme: 'presroc',
-      region: 'test-batch-region'
+      type: 'supplementary',
+      scheme: 'alcs',
+      region: { id: 'test-batch-region' }
     }
 
     experiment('when batch status is "processing"', () => {

@@ -11,7 +11,6 @@ const seasons = require('../lib/seasons')
 const routing = require('../lib/routing')
 const sessionForms = require('shared/lib/session-forms')
 const { getBatchFinancialYearEnding } = require('../lib/batch-financial-year')
-const { water } = require('internal/lib/connectors/services')
 
 /**
  * Step 1a of create billing batch flow - display form to select type
@@ -147,18 +146,15 @@ const postBillingBatchFinancialYear = async (request, h) => {
 }
 
 async function getBillingBatchSroc (request, h) {
-  // TODO: Correctly populate batch
-  const dummyBatch = {
-    id: 'DUMMY_SROC_BATCH',
-    region: request.params.region,
-    scheme: 'sroc',
-    batchType: 'supplementary',
-    status: 'ready'
-  }
-
   try {
-    // TODO: Call the service to create our sroc supplementary billing batch
-    const path = routing.getBillingBatchRoute(dummyBatch, { isBackEnabled: false })
+    const batch = await services.system.billRuns.createBillRun(
+      'supplementary',
+      'sroc',
+      request.params.region,
+      request.defra.user.user_name
+    )
+
+    const path = routing.getBillingBatchRoute(batch, { isBackEnabled: false })
     return h.redirect(path)
   } catch (err) {
     if (err.statusCode === 409) {
@@ -198,7 +194,7 @@ const _batchBillableYears = async (season, billingType, userEmail, regionId) => 
     currentFinancialYear,
     isSummer
   }
-  const billableYears = await water.billingBatches.getBatchBillableYears(requestBody)
+  const billableYears = await services.water.billingBatches.getBatchBillableYears(requestBody)
 
   return billableYears.unsentYears.map(unsentYear => {
     const hint = unsentYear === currentFinancialYear ? { text: 'current year' } : null

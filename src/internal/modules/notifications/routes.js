@@ -4,6 +4,8 @@ const contactRoutes = require('./contact-routes')
 const apiController = require('./api-controller')
 const { scope } = require('../../lib/constants')
 
+const config = require('../../config.js')
+
 const allowedScopes = [scope.hofNotifications, scope.renewalNotifications]
 
 const routes = {
@@ -192,7 +194,7 @@ const routes = {
 
 }
 
-if (parseInt(process.env.TEST_MODE) === 1) {
+if (!config.isProduction) {
   routes.findEmailByAddress = {
     method: 'GET',
     path: '/notifications/last',

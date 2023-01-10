@@ -101,6 +101,14 @@ const batchInvoicesResult = [
     isWaterUndertaker: true
   }]
 
+const createdBillRun = {
+  id: 'f561990b-b29a-42f4-b71a-398c52339f78',
+  region: '07ae7f3a-2677-4102-b352-cc006828948c',
+  scheme: 'sroc',
+  batchType: 'supplementary',
+  status: 'ready'
+}
+
 const secondHeader = sandbox.stub()
 const header = sandbox.stub().returns({ header: secondHeader })
 
@@ -153,6 +161,8 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
 
     sandbox.stub(services.water.billingBatches, 'cancelBatch').resolves()
     sandbox.stub(services.water.billingBatches, 'approveBatch').resolves()
+
+    sandbox.stub(services.system.billRuns, 'createBillRun').resolves(createdBillRun)
 
     sandbox.stub(batchService, 'getBatchList')
     sandbox.stub(batchService, 'getBatchInvoice').resolves({ id: 'invoice-account-id', accountNumber: 'A12345678A' })
@@ -760,7 +770,7 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
       await controller.getBillingBatchSroc(request, h)
 
       const [url] = h.redirect.lastCall.args
-      expect(url).to.equal('/billing/batch/DUMMY_SROC_BATCH/summary')
+      expect(url).to.equal('/billing/batch/f561990b-b29a-42f4-b71a-398c52339f78/summary')
     })
   })
 })

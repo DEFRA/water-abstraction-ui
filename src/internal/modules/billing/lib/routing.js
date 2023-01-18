@@ -1,4 +1,4 @@
-const config = require('../../../config')
+'use strict'
 
 /**
  * Gets the correct route for the specified batch depending on its
@@ -12,12 +12,12 @@ const config = require('../../../config')
  * @return {String} the link
  */
 const getBillingBatchRoute = (batch, opts = {}) => {
-  const { id, type, scheme, region } = batch
+  const { id } = batch
 
   const routeMap = new Map()
     .set('processing', `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`)
     .set('sending', `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`)
-    .set('ready', _determineReadyUrl(opts, id, type, scheme, region))
+    .set('ready', opts.invoiceId ? `/billing/batch/${id}/invoice/${opts.invoiceId}` : `/billing/batch/${id}/summary`)
     .set('sent', opts.showSuccessPage ? `/billing/batch/${id}/confirm/success` : `/billing/batch/${id}/summary`)
     .set('review', `/billing/batch/${id}/two-part-tariff-review`)
 
@@ -28,18 +28,6 @@ const getBillingBatchRoute = (batch, opts = {}) => {
   }
 
   return routeMap.get(batch.status)
-}
-
-function _determineReadyUrl (opts, id, type, scheme, region) {
-  if (opts.invoiceId) {
-    return `/billing/batch/${id}/invoice/${opts.invoiceId}`
-  }
-
-  if (config.featureToggles.triggerSrocSupplementary && type === 'supplementary' && scheme === 'alcs') {
-    return `/billing/batch/sroc/${region.id}`
-  }
-
-  return `/billing/batch/${id}/summary`
 }
 
 const getTwoPartTariffLicenceReviewRoute = (batch, invoiceLicenceId) =>

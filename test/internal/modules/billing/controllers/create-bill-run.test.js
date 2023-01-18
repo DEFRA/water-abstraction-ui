@@ -12,6 +12,7 @@ const sandbox = require('sinon').createSandbox()
 const { v4: uuid } = require('uuid')
 
 const { logger } = require('internal/logger')
+const config = require('../../../../../src/internal/config')
 const forms = require('shared/lib/forms')
 const services = require('internal/lib/connectors/services')
 const controller = require('internal/modules/billing/controllers/create-bill-run')
@@ -751,6 +752,101 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
       test('redirects back to form', async () => {
         const [url] = h.redirect.lastCall.args
         expect(url).to.equal(`/billing/batch/financial-year/${request.params.billingType}/${request.params.season}/${request.params.region}`)
+      })
+    })
+  })
+
+  experiment('when the journey is complete', () => {
+    const createdSrocBillRun = {
+      id: 'f561990b-b29a-42f4-b71a-398c52339f78',
+      region: '07ae7f3a-2677-4102-b352-cc006828948c',
+      scheme: 'sroc',
+      batchType: 'supplementary',
+      status: 'ready'
+    }
+    let createSrocBillRunStub
+    let createSrocBillRunSpy
+    let loggerErrorStub
+
+    beforeEach(() => {
+      request.params.region = '07ae7f3a-2677-4102-b352-cc006828948c'
+      request.params.season = 'summer'
+
+      request.payload['select-financial-year'] = '2022'
+
+      loggerErrorStub = sandbox.stub(logger, 'error')
+      sandbox.stub(services.water.billingBatches, 'createBillingBatch').resolves({
+        data: {
+          batch: {
+            id: 'test-batch-id',
+            status: 'processing'
+          }
+        }
+      })
+    })
+
+    experiment('and SROC supplementary billing is enabled', () => {
+      beforeEach(() => {
+        sandbox.stub(config.featureToggles, 'triggerSrocSupplementary').value(true)
+      })
+
+      experiment('and the bill run to be created is supplementary', () => {
+        beforeEach(() => {
+          request.params.billingType = 'supplementary'
+        })
+
+        experiment('and the request to water-abstraction-system is successful', () => {
+          beforeEach(() => {
+            createSrocBillRunStub = sandbox.stub(services.system.billRuns, 'createBillRun').resolves(createdSrocBillRun)
+          })
+
+          test('triggers the creation of an SROC supplementary bill run', async () => {
+            await controller.postBillingBatchFinancialYear(request, h)
+
+            expect(createSrocBillRunStub.called).to.be.true()
+            expect(loggerErrorStub.called).to.be.false()
+          })
+        })
+
+        experiment('and the request to water-abstraction-system is not successful', () => {
+          beforeEach(() => {
+            createSrocBillRunStub = sandbox.stub(services.system.billRuns, 'createBillRun').rejects()
+          })
+
+          test('does not trigger the creation of an SROC supplementary bill run and logs the error', async () => {
+            await controller.postBillingBatchFinancialYear(request, h)
+
+            expect(createSrocBillRunStub.called).to.be.true()
+            expect(loggerErrorStub.called).to.be.true()
+          })
+        })
+      })
+
+      experiment('and the bill run to be created is not supplementary', () => {
+        beforeEach(() => {
+          request.params.billingType = 'two-part-tariff'
+          createSrocBillRunSpy = sandbox.spy(services.system.billRuns, 'createBillRun')
+        })
+
+        test('does not trigger the creation of an SROC supplementary bill run', async () => {
+          await controller.postBillingBatchFinancialYear(request, h)
+
+          expect(createSrocBillRunSpy.called).to.be.false()
+        })
+      })
+    })
+
+    experiment('and SROC supplementary billing is not enabled', () => {
+      beforeEach(() => {
+        sandbox.stub(config.featureToggles, 'triggerSrocSupplementary').value(false)
+        request.params.billingType = 'supplementary'
+        createSrocBillRunSpy = sandbox.spy(services.system.billRuns, 'createBillRun')
+      })
+
+      test('does not trigger the creation of an SROC supplementary bill run', async () => {
+        await controller.postBillingBatchFinancialYear(request, h)
+
+        expect(createSrocBillRunSpy.called).to.be.false()
       })
     })
   })

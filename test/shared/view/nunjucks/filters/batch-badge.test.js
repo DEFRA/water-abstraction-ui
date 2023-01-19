@@ -102,12 +102,12 @@ experiment('batchBadge Nunjucks filter', () => {
       badge = batchBadge({ status: 'empty' })
     })
 
-    test('badge text is "Error"', async () => {
-      expect(badge.text).to.equal('Error')
+    test('badge text is "Empty"', async () => {
+      expect(badge.text).to.equal('Empty')
     })
 
-    test('badge status is error', async () => {
-      expect(badge.status).to.equal('error')
+    test('badge status is inactive', async () => {
+      expect(badge.status).to.equal('inactive')
     })
 
     test('badge is not large', async () => {

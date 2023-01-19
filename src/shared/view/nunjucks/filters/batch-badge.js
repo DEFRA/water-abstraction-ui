@@ -7,7 +7,7 @@ const badge = {
   sent: { status: 'success', text: 'Sent' },
   review: { status: 'todo', text: 'Review' },
   error: { status: 'error', text: 'Error' },
-  empty: { status: 'error', text: 'Error' }
+  empty: { status: 'inactive', text: 'Empty' }
 }
 
 exports.batchBadge = (batch, isLarge) => ({

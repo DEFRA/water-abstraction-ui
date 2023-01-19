@@ -12,6 +12,9 @@ const routing = require('../lib/routing')
 const sessionForms = require('shared/lib/session-forms')
 const { getBatchFinancialYearEnding } = require('../lib/batch-financial-year')
 
+const { logger } = require('../../../logger')
+const config = require('../../../config')
+
 /**
  * Step 1a of create billing batch flow - display form to select type
  * i.e. Annual, Supplementary, Two-Part Tariff
@@ -145,25 +148,6 @@ const postBillingBatchFinancialYear = async (request, h) => {
   return _batching(h, batch)
 }
 
-async function getBillingBatchSroc (request, h) {
-  try {
-    const batch = await services.system.billRuns.createBillRun(
-      'supplementary',
-      'sroc',
-      request.params.region,
-      request.defra.user.user_name
-    )
-
-    const path = routing.getBillingBatchRoute(batch, { isBackEnabled: false })
-    return h.redirect(path)
-  } catch (err) {
-    if (err.statusCode === 409) {
-      return h.redirect(_creationErrorRedirectUrl(err))
-    }
-    throw err
-  }
-}
-
 /**
  * If a bill run for the region exists, then display a basic summary page
  *
@@ -208,6 +192,7 @@ const _batchBillableYears = async (season, billingType, userEmail, regionId) => 
 
 const _batching = async (h, batch) => {
   try {
+    await _initiateSrocBatch(batch)
     const { data } = await services.water.billingBatches.createBillingBatch(batch)
     const path = routing.getBillingBatchRoute(data.batch, { isBackEnabled: false })
     return h.redirect(path)
@@ -216,6 +201,23 @@ const _batching = async (h, batch) => {
       return h.redirect(_creationErrorRedirectUrl(err))
     }
     throw err
+  }
+}
+
+async function _initiateSrocBatch (batch) {
+  const { batchType, financialYearEnding, regionId, userEmail } = batch
+
+  // SROC is still in development so controlled by a feature toggle and only supplementary is supported
+  if (!config.featureToggles.triggerSrocSupplementary || batchType !== 'supplementary') {
+    return
+  }
+
+  try {
+    await services.system.billRuns.createBillRun(batchType, 'sroc', regionId, userEmail)
+  } catch (error) {
+    // We only log the error and swallow the exception. The UI will have made the request and is expecting the result
+    // of the legacy process, whether that's an SROC annual or PRESROC supplementary or 2PT bill run.
+    logger.error(`Error creating SROC ${batchType} batch for ${regionId}|${financialYearEnding}`, error.stack)
   }
 }
 
@@ -301,5 +303,3 @@ exports.getBillingBatchDuplicate = getBillingBatchDuplicate
 
 exports.getBillingBatchFinancialYear = getBillingBatchFinancialYear
 exports.postBillingBatchFinancialYear = postBillingBatchFinancialYear
-
-exports.getBillingBatchSroc = getBillingBatchSroc

@@ -1,35 +1,15 @@
 'use strict'
 
 const { expect } = require('@hapi/code')
-const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script()
+const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script()
 const { getBillingBatchRoute } = require('internal/modules/billing/lib/routing')
 
-const config = require('internal/config')
-const Sinon = require('sinon')
-
-const sandbox = Sinon.createSandbox()
-
 experiment('internal/modules/billing/lib/routing', () => {
-  afterEach(() => {
-    sandbox.restore()
-  })
-
   experiment('.getBillingBatchRoute', () => {
-    const defaultBatch = {
-      id: 'test-batch-id',
-      type: 'supplementary',
-      scheme: 'alcs',
-      region: { id: 'test-batch-region' }
-    }
-
+    const batch = { id: 'test-batch-id' }
     experiment('when batch status is "processing"', () => {
-      let batch
-
       beforeEach(() => {
-        batch = {
-          ...defaultBatch,
-          status: 'processing'
-        }
+        batch.status = 'processing'
       })
 
       test('returns the expected url', () => {
@@ -46,71 +26,23 @@ experiment('internal/modules/billing/lib/routing', () => {
     })
 
     experiment('when batch status is "ready"', () => {
-      let batch
+      test('returns the batch summary url if no invoice ID is supplied', () => {
+        batch.status = 'ready'
+        expect(getBillingBatchRoute(batch)).to.equal('/billing/batch/test-batch-id/summary')
+      })
 
-      beforeEach(() => {
-        batch = {
-          ...defaultBatch,
-          status: 'ready'
+      test('returns the invoice page if an invoice ID is supplied', () => {
+        batch.status = 'ready'
+        const options = {
+          invoiceId: 'test-invoice-id'
         }
-      })
-
-      experiment('when an invoice ID is supplied', () => {
-        test('returns the invoice page', () => {
-          const options = {
-            invoiceId: 'test-invoice-id'
-          }
-          expect(getBillingBatchRoute(batch, options)).to.equal('/billing/batch/test-batch-id/invoice/test-invoice-id')
-        })
-      })
-
-      experiment('when no invoice ID is supplied', () => {
-        experiment('when the batch type is `supplementary` and the scheme is `presroc`', () => {
-          experiment('when the feature toggle is switched on', () => {
-            beforeEach(() => {
-              sandbox.stub(config.featureToggles, 'triggerSrocSupplementary').value(true)
-            })
-
-            test('returns the sroc supplementary url', () => {
-              expect(getBillingBatchRoute(batch)).to.equal('/billing/batch/sroc/test-batch-region')
-            })
-          })
-
-          experiment('when the feature toggle is switched off', () => {
-            beforeEach(() => {
-              sandbox.stub(config.featureToggles, 'triggerSrocSupplementary').value(false)
-            })
-
-            test('returns the batch summary url', () => {
-              expect(getBillingBatchRoute(batch)).to.equal('/billing/batch/test-batch-id/summary')
-            })
-          })
-        })
-
-        experiment('when the batch type is not `supplementary`', () => {
-          test('returns the batch summary url', () => {
-            batch.batchType = 'NOT_SUPPLEMENTARY'
-            expect(getBillingBatchRoute(batch)).to.equal('/billing/batch/test-batch-id/summary')
-          })
-        })
-
-        experiment('when the scheme is not `presroc`', () => {
-          test('returns the batch summary url', () => {
-            batch.batchType = 'NOT_PRESROC'
-            expect(getBillingBatchRoute(batch)).to.equal('/billing/batch/test-batch-id/summary')
-          })
-        })
+        expect(getBillingBatchRoute(batch, options)).to.equal('/billing/batch/test-batch-id/invoice/test-invoice-id')
       })
     })
 
     experiment('when batch status is "sent"', () => {
-      let batch
-
       beforeEach(() => {
-        batch = {
-          ...defaultBatch,
-          status: 'sent'
-        }
+        batch.status = 'sent'
       })
 
       test('returns the summary url by default', () => {
@@ -123,29 +55,13 @@ experiment('internal/modules/billing/lib/routing', () => {
     })
 
     experiment('when batch status is "review"', () => {
-      let batch
-
-      beforeEach(() => {
-        batch = {
-          ...defaultBatch,
-          status: 'review'
-        }
-      })
-
       test('returns the summary url by default', () => {
+        batch.status = 'review'
         expect(getBillingBatchRoute(batch)).to.equal('/billing/batch/test-batch-id/two-part-tariff-review')
       })
     })
 
     experiment('when isErrorRoutesIncluded flag is true', () => {
-      let batch
-
-      beforeEach(() => {
-        batch = {
-          ...defaultBatch
-        }
-      })
-
       test('and batch status is "error" returns the processing page url', () => {
         batch.status = 'error'
         expect(getBillingBatchRoute(batch, { isErrorRoutesIncluded: true })).to.equal('/billing/batch/test-batch-id/processing')

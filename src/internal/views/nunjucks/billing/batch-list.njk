@@ -45,6 +45,10 @@
                   {% else %}
                     {{ batch.dateCreated | date }}
                   {% endif %}
+                  {% if batch.scheme === 'alcs' %}
+                    <br />
+                    <span class="govuk-body-s">Old charge scheme</span>
+                  {% endif %}
                 </td>
                 <td class="govuk-table__cell">{{ batch.region.displayName }}</td>
                 <td class="govuk-table__cell">{{ batch.batchType }}</td>

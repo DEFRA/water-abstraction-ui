@@ -473,7 +473,8 @@ experiment('internal/modules/billing/controller', () => {
             creditNoteCount: 2,
             invoiceCount: 12,
             netTotal: 4005,
-            externalId: 1234
+            externalId: 1234,
+            scheme: 'alcs'
           },
           {
             invoices: [],
@@ -499,7 +500,8 @@ experiment('internal/modules/billing/controller', () => {
             creditNoteCount: 5,
             invoiceCount: 3,
             netTotal: 4005,
-            externalId: 244
+            externalId: 244,
+            scheme: 'sroc'
           }
         ],
         pagination: {
@@ -524,11 +526,13 @@ experiment('internal/modules/billing/controller', () => {
       expect(batches[0].status).to.equal('processing')
       expect(batches[0].billCount).to.equal(14)
       expect(batches[0].link).to.equal('/billing/batch/8ae7c31b-3c5a-44b8-baa5-a10b40aef9e1/processing?back=1')
+      expect(batches[0].scheme).to.equal('alcs')
       expect(batches[1].type).to.equal('Two-part tariff')
       expect(batches[1].region.name).to.equal('Midlands')
       expect(batches[1].status).to.equal('review')
       expect(batches[1].billCount).to.equal(8)
       expect(batches[1].link).to.be.equal('/billing/batch/8ae7c31b-3c5a-44b8-baa5-a10b40aef9e2/two-part-tariff-review')
+      expect(batches[1].scheme).to.equal('sroc')
     })
 
     test('configures the expected view template', async () => {

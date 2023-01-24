@@ -23,7 +23,7 @@
 {% endmacro %}
 
 {% macro cancelStatusBatchButton(batch) %}
-  {% if batch.status in['processing'] %}
+  {% if batch.status in['queued', 'processing'] %}
     {{
     govukButton({
       text: "Cancel bill run",

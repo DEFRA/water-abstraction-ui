@@ -293,7 +293,7 @@ const routes = {
     handler: controller.getBillingBatchProcessing,
     config: {
       app: {
-        validBatchStatuses: ['processing', 'error', 'sending']
+        validBatchStatuses: ['queued', 'processing', 'error', 'sending']
       },
       auth: { scope: allowedScopes },
       plugins: {

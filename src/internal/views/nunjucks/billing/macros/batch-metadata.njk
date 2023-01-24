@@ -18,6 +18,16 @@
       {% endif %}
       </dd>
     </div>
+    <div class="meta__row">
+      <dt class="meta__key">Charge scheme</dt>
+      <dd class="meta__value">
+      {% if batch.scheme == 'sroc' %}
+        Current
+      {% else %}
+        Old
+      {% endif %}
+      </dd>
+    </div>
     {% if invoice %}
     <div class="meta__row">
       <dt class="meta__key">Financial year</dt>

@@ -21,6 +21,7 @@ const getBillingBatchRoute = (batch, opts = {}) => {
     .set('sent', opts.showSuccessPage ? `/billing/batch/${id}/confirm/success` : `/billing/batch/${id}/summary`)
     .set('review', `/billing/batch/${id}/two-part-tariff-review`)
     .set('empty', `/billing/batch/${id}/empty`)
+    .set('error', `/billing/batch/${id}/error`)
     .set('queued', `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`)
 
   if (opts.isErrorRoutesIncluded) {

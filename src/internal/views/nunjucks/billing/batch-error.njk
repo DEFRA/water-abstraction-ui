@@ -1,0 +1,23 @@
+{% extends "./nunjucks/layout.njk" %}
+
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "./nunjucks/billing/macros/batch-header.njk" import batchHeader %}
+
+{% block content %}
+
+  {{ govukErrorSummary({
+    titleText: "There is a problem with this bill run",
+    errorList: [
+      {
+        text: "Computer said no."
+      }
+    ]
+  }) }}
+
+  {{ batchHeader(pageTitle, batch) }}
+
+  <p>
+    <a href="{{ back }}">Return to bill runs</a>
+  </p>
+
+{% endblock %}

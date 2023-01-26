@@ -258,6 +258,21 @@ const getBillingBatchEmpty = async (request, h) => {
 }
 
 /**
+ * Renders an error page if the batch is errored - i.e. no transactions
+ * @param {Object} request.pre.batch - billing batch loaded by pre handler
+ */
+const getBillingBatchError = async (request, h) => {
+  const { batch } = request.pre
+
+  return h.view('nunjucks/billing/batch-error', {
+    ...request.view,
+    pageTitle: getBillRunPageTitle(batch),
+    batch,
+    back: BATCH_LIST_ROUTE
+  })
+}
+
+/**
  * Deletes all billing data
  */
 const postDeleteAllBillingData = async (request, h) => {
@@ -283,6 +298,7 @@ exports.getTransactionsCSV = getTransactionsCSV
 
 exports.getBillingBatchProcessing = getBillingBatchProcessing
 exports.getBillingBatchEmpty = getBillingBatchEmpty
+exports.getBillingBatchError = getBillingBatchError
 
 exports.postDeleteAllBillingData = postDeleteAllBillingData
 exports.getBillingBatchStatusToCancel = getBillingBatchStatusToCancel

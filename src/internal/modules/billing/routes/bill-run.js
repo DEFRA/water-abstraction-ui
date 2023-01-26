@@ -341,6 +341,32 @@ const routes = {
         { method: preHandlers.redirectOnBatchStatus }
       ]
     }
+  },
+
+  getBillingBatchError: {
+    method: 'GET',
+    path: '/billing/batch/{batchId}/error',
+    handler: controller.getBillingBatchError,
+    config: {
+      app: {
+        validBatchStatuses: ['error']
+      },
+      auth: { scope: allowedScopes },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'bill-runs'
+        }
+      },
+      validate: {
+        params: Joi.object().keys({
+          batchId: Joi.string().uuid()
+        })
+      },
+      pre: [
+        { method: preHandlers.loadBatch, assign: 'batch' },
+        { method: preHandlers.redirectOnBatchStatus }
+      ]
+    }
   }
 }
 

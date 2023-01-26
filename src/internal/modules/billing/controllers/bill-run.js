@@ -286,10 +286,7 @@ const _errorList = (errorCode) => {
   ]
 
   const error = errors.find((error) => {
-    if (error.code === errorCode) {
-      return true
-    }
-    return false
+    return error.code === errorCode
   })
 
   return [{ text: error.text }]

@@ -66,14 +66,20 @@ experiment.only('internal/modules/billing/lib/routing', () => {
         batch.status = 'sent'
       })
 
-      test('returns the summary url by default', () => {
-        const result = getBillingBatchRoute(batch)
+      experiment('and show success page is not set', () => {
+        test('returns the summary batch page url', () => {
+          const result = getBillingBatchRoute(batch)
 
-        expect(result).to.equal(`/billing/batch/${batch.id}/summary`)
+          expect(result).to.equal(`/billing/batch/${batch.id}/summary`)
+        })
       })
 
-      test('returns success page url when showSuccessPage flag is true', () => {
-        expect(getBillingBatchRoute(batch, { showSuccessPage: true })).to.equal(`/billing/batch/${batch.id}/confirm/success`)
+      experiment('and show success page is set', () => {
+        test('returns the success batch page url', () => {
+          const result = getBillingBatchRoute(batch, { showSuccessPage: true })
+
+          expect(result).to.equal(`/billing/batch/${batch.id}/confirm/success`)
+        })
       })
     })
 

@@ -253,7 +253,7 @@ const getBillingBatchEmpty = async (request, h) => {
 }
 
 /**
- * Renders an error page if the batch is errored - i.e. no transactions
+ * Renders an error page if the batch is errored - i.e. the charging module is down
  * @param {Object} request.pre.batch - billing batch loaded by pre handler
  */
 const getBillingBatchError = async (request, h) => {

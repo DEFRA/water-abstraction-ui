@@ -19,16 +19,20 @@ experiment.only('internal/modules/billing/lib/routing', () => {
         expect(result).to.startWith(`/billing/batch/${batch.id}/processing`)
       })
 
-      test('sets back query param to 0 by default', () => {
-        const result = getBillingBatchRoute(batch)
+      experiment('and the back option is not set', () => {
+        test('defaults the back query param to 0', () => {
+          const result = getBillingBatchRoute(batch)
 
-        expect(result).to.endWith('?back=0')
+          expect(result).to.endWith('?back=0')
+        })
       })
 
-      test('sets back query param to 1 when isBackEnabled is true', () => {
-        const result = getBillingBatchRoute(batch, { isBackEnabled: true })
+      experiment('and the back option is set', () => {
+        test('sets the back query param to 1', () => {
+          const result = getBillingBatchRoute(batch, { isBackEnabled: true })
 
-        expect(result).to.endWith('?back=1')
+          expect(result).to.endWith('?back=1')
+        })
       })
     })
 
@@ -91,6 +95,22 @@ experiment.only('internal/modules/billing/lib/routing', () => {
 
         expect(result).to.startWith(`/billing/batch/${batch.id}/empty`)
       })
+
+      experiment('and the back option is not set', () => {
+        test('defaults the back query param to 0', () => {
+          const result = getBillingBatchRoute(batch)
+
+          expect(result).to.endWith('?back=0')
+        })
+      })
+
+      experiment('and the back option is set', () => {
+        test('sets the back query param to 1', () => {
+          const result = getBillingBatchRoute(batch, { isBackEnabled: true })
+
+          expect(result).to.endWith('?back=1')
+        })
+      })
     })
 
     experiment('when batch status is "error"', () => {
@@ -102,6 +122,22 @@ experiment.only('internal/modules/billing/lib/routing', () => {
         const result = getBillingBatchRoute(batch)
 
         expect(result).to.startWith(`/billing/batch/${batch.id}/error`)
+      })
+
+      experiment('and the back option is not set', () => {
+        test('defaults the back query param to 0', () => {
+          const result = getBillingBatchRoute(batch)
+
+          expect(result).to.endWith('?back=0')
+        })
+      })
+
+      experiment('and the back option is set', () => {
+        test('sets the back query param to 1', () => {
+          const result = getBillingBatchRoute(batch, { isBackEnabled: true })
+
+          expect(result).to.endWith('?back=1')
+        })
       })
     })
   })

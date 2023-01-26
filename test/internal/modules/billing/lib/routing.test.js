@@ -13,7 +13,7 @@ experiment.only('internal/modules/billing/lib/routing', () => {
         batch.status = 'processing'
       })
 
-      test('returns the expected url', () => {
+      test('returns the processing batch page url', () => {
         const result = getBillingBatchRoute(batch)
 
         expect(result).to.startWith(`/billing/batch/${batch.id}/processing`)
@@ -74,7 +74,7 @@ experiment.only('internal/modules/billing/lib/routing', () => {
         batch.status = 'review'
       })
 
-      test('returns the summary url by default', () => {
+      test('returns the two part tariff review url', () => {
         const result = getBillingBatchRoute(batch)
 
         expect(result).to.equal(`/billing/batch/${batch.id}/two-part-tariff-review`)

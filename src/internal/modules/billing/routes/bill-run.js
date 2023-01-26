@@ -233,6 +233,7 @@ const routes = {
       pre: [{ method: preHandlers.loadBatch, assign: 'batch' }]
     }
   },
+
   getBillingBatchDeleteInvoice: {
     method: 'GET',
     path: '/billing/batch/{batchId}/delete-invoice/{invoiceId}',
@@ -262,6 +263,7 @@ const routes = {
       ]
     }
   },
+
   postBillingBatchDeleteInvoice: {
     method: 'POST',
     path: '/billing/batch/{batchId}/delete-invoice/{invoiceId}',

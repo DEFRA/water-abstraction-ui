@@ -111,7 +111,7 @@ const redirectOnBatchStatus = async (request, h) => {
   }
 
   // Redirect to the correct page for this batch
-  const path = routing.getBillingBatchRoute(batch, { isBackEnabled: true, isErrorRoutesIncluded: true, showSuccessPage: true, invoiceId })
+  const path = routing.getBillingBatchRoute(batch, { isBackEnabled: true, showSuccessPage: true, invoiceId })
   return h.redirect(path).takeover()
 }
 

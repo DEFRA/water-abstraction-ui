@@ -6,7 +6,6 @@
  * @param {Object} batch - the batch object from water service
  * @param {Object} options - whether back should be enabled on processing page
  *          {Boolean} isBackEnabled - whether back should be enabled on processing page
- *          {Boolean} isErrorRoutesIncluded - whether to include error/empty batch routes
  *          {Boolean} showSuccessPage - whether to show success or summary page for sent batch
  *          {String} invoiceId - set if user should be redirected to invoice page when batch ready
  * @return {String} the link
@@ -20,14 +19,9 @@ const getBillingBatchRoute = (batch, opts = {}) => {
     .set('ready', opts.invoiceId ? `/billing/batch/${id}/invoice/${opts.invoiceId}` : `/billing/batch/${id}/summary`)
     .set('sent', opts.showSuccessPage ? `/billing/batch/${id}/confirm/success` : `/billing/batch/${id}/summary`)
     .set('review', `/billing/batch/${id}/two-part-tariff-review`)
-    .set('empty', `/billing/batch/${id}/empty`)
-    .set('error', `/billing/batch/${id}/error`)
+    .set('empty', `/billing/batch/${id}/empty?back=${opts.isBackEnabled ? 1 : 0}`)
+    .set('error', `/billing/batch/${id}/error?back=${opts.isBackEnabled ? 1 : 0}`)
     .set('queued', `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`)
-
-  if (opts.isErrorRoutesIncluded) {
-    routeMap
-      .set('error', `/billing/batch/${id}/processing`)
-  }
 
   return routeMap.get(batch.status)
 }

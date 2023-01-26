@@ -3,7 +3,6 @@
 const { titleCase } = require('shared/lib/string-formatter')
 const { pluralize } = require('shared/lib/pluralize')
 const moment = require('moment')
-const Boom = require('@hapi/boom')
 const { get } = require('lodash')
 
 const { cancelOrConfirmBatchForm } = require('../forms/cancel-or-confirm-batch')

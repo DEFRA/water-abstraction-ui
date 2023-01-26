@@ -41,19 +41,23 @@ experiment.only('internal/modules/billing/lib/routing', () => {
         batch.status = 'ready'
       })
 
-      test('returns the batch summary url if no invoice ID is supplied', () => {
-        const result = getBillingBatchRoute(batch)
+      experiment('and an invoice Id is not set', () => {
+        test('returns the summary batch page url', () => {
+          const result = getBillingBatchRoute(batch)
 
-        expect(result).to.equal(`/billing/batch/${batch.id}/summary`)
+          expect(result).to.equal(`/billing/batch/${batch.id}/summary`)
+        })
       })
 
-      test('returns the invoice page if an invoice ID is supplied', () => {
-        const options = {
-          invoiceId: '9683aba6-39ab-4b2d-885c-542ff864dbe9'
-        }
-        const result = getBillingBatchRoute(batch, options)
+      experiment('and an invoice Id is set', () => {
+        test('returns the invoice batch page url', () => {
+          const options = {
+            invoiceId: '9683aba6-39ab-4b2d-885c-542ff864dbe9'
+          }
+          const result = getBillingBatchRoute(batch, options)
 
-        expect(result).to.equal(`/billing/batch/${batch.id}/invoice/${options.invoiceId}`)
+          expect(result).to.equal(`/billing/batch/${batch.id}/invoice/${options.invoiceId}`)
+        })
       })
     })
 

@@ -300,26 +300,22 @@ const postDeleteAllBillingData = async (request, h) => {
   return h.redirect(BATCH_LIST_ROUTE)
 }
 
-exports.getBillingBatchList = getBillingBatchList
-exports.getBillingBatchSummary = getBillingBatchSummary
-exports.getBillingBatchInvoice = getBillingBatchInvoice
-
-exports.getBillingBatchCancel = getBillingBatchCancel
-exports.postBillingBatchCancel = postBillingBatchCancel
-
-exports.getBillingBatchConfirm = getBillingBatchConfirm
-exports.postBillingBatchConfirm = postBillingBatchConfirm
-exports.getBillingBatchConfirmSuccess = getBillingBatchConfirmSuccess
-
-exports.getBillingBatchDeleteInvoice = getBillingBatchDeleteInvoice
-exports.postBillingBatchDeleteInvoice = postBillingBatchDeleteInvoice
-
-exports.getTransactionsCSV = getTransactionsCSV
-
-exports.getBillingBatchProcessing = getBillingBatchProcessing
-exports.getBillingBatchEmpty = getBillingBatchEmpty
-exports.getBillingBatchError = getBillingBatchError
-
-exports.postDeleteAllBillingData = postDeleteAllBillingData
-exports.getBillingBatchStatusToCancel = getBillingBatchStatusToCancel
-exports.postBillingBatchStatusToCancel = postBillingBatchStatusToCancel
+module.exports = {
+  getBillingBatchList,
+  getBillingBatchSummary,
+  getBillingBatchInvoice,
+  getBillingBatchCancel,
+  postBillingBatchCancel,
+  getBillingBatchConfirm,
+  postBillingBatchConfirm,
+  getBillingBatchConfirmSuccess,
+  getBillingBatchDeleteInvoice,
+  postBillingBatchDeleteInvoice,
+  getTransactionsCSV,
+  getBillingBatchProcessing,
+  getBillingBatchEmpty,
+  getBillingBatchError,
+  postDeleteAllBillingData,
+  getBillingBatchStatusToCancel,
+  postBillingBatchStatusToCancel
+}

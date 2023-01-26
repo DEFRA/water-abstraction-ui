@@ -269,39 +269,30 @@ const getBillingBatchError = async (request, h) => {
 }
 
 const _errorList = (errorCode) => {
-  const error = { text: 'No error code was assigned. We have no further information at this time.' }
-
-  switch (errorCode) {
-    case 10:
-      error.text = 'Error when populating the charge versions.'
-      break
-    case 20:
-      error.text = 'Error when processing the charge versions.'
-      break
-    case 30:
-      error.text = 'Error when preparing the transactions.'
-      break
-    case 40:
-      error.text = 'Error when requesting or processing a transaction charge.'
-      break
-    case 50:
-      error.text = 'Error when creating the Charging Module bill run.'
-      break
-    case 60:
-      error.text = 'Error when deleting an invoice.'
-      break
-    case 70:
-      error.text = 'Error when processing two-part tariff.'
-      break
-    case 80:
-      error.text = 'Error when getting the Charging Module bill run summary.'
-      break
-    case 90:
-      error.text = 'Error when re-billing a bill run.'
-      break
+  if (!errorCode) {
+    return [{ text: 'No error code was assigned. We have no further information at this time.' }]
   }
 
-  return [error]
+  const errors = [
+    { code: 10, text: 'Error when populating the charge versions.' },
+    { code: 20, text: 'Error when processing the charge versions.' },
+    { code: 30, text: 'Error when preparing the transactions.' },
+    { code: 40, text: 'Error when requesting or processing a transaction charge.' },
+    { code: 50, text: 'Error when creating the Charging Module bill run.' },
+    { code: 60, text: 'Error when deleting an invoice.' },
+    { code: 70, text: 'Error when processing two-part tariff.' },
+    { code: 80, text: 'Error when getting the Charging Module bill run summary.' },
+    { code: 90, text: 'Error when re-billing a bill run.' }
+  ]
+
+  const error = errors.find((error) => {
+    if (error.code === errorCode) {
+      return true
+    }
+    return false
+  })
+
+  return [{ text: error.text }]
 }
 
 /**

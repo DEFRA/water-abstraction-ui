@@ -4,7 +4,7 @@ const { expect } = require('@hapi/code')
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script()
 const { getBillingBatchRoute } = require('internal/modules/billing/lib/routing')
 
-experiment.only('internal/modules/billing/lib/routing', () => {
+experiment('internal/modules/billing/lib/routing', () => {
   experiment('.getBillingBatchRoute', () => {
     const batch = { id: '59203fa0-41d5-44c3-994e-032dc0985ea1' }
 
@@ -160,6 +160,34 @@ experiment.only('internal/modules/billing/lib/routing', () => {
         const result = getBillingBatchRoute(batch)
 
         expect(result).to.equal(`/billing/batch/${batch.id}/error?back=0`)
+      })
+
+      experiment('and the back option is not set', () => {
+        test('defaults the back query param to 0', () => {
+          const result = getBillingBatchRoute(batch)
+
+          expect(result).to.endWith('?back=0')
+        })
+      })
+
+      experiment('and the back option is set', () => {
+        test('sets the back query param to 1', () => {
+          const result = getBillingBatchRoute(batch, { isBackEnabled: true })
+
+          expect(result).to.endWith('?back=1')
+        })
+      })
+    })
+
+    experiment('when batch status is "queued"', () => {
+      beforeEach(() => {
+        batch.status = 'queued'
+      })
+
+      test('returns the processing batch page url', () => {
+        const result = getBillingBatchRoute(batch)
+
+        expect(result).to.equal(`/billing/batch/${batch.id}/processing?back=0`)
       })
 
       experiment('and the back option is not set', () => {

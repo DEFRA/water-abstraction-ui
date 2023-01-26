@@ -770,7 +770,7 @@ experiment('internal/modules/billing/controller', () => {
   experiment('.getBillingBatchProcessing', () => {
     let request
 
-    const createRequest = (status, back = 1) => ({
+    const createRequest = (back = 1) => ({
       query: {
         back
       },
@@ -778,7 +778,7 @@ experiment('internal/modules/billing/controller', () => {
         batch: {
           id: 'test-batch-id',
           type: 'two_part_tariff',
-          status,
+          status: 'processing',
           createdAt: '2020-02-01',
           region: {
             displayName: 'Anglian'
@@ -788,7 +788,7 @@ experiment('internal/modules/billing/controller', () => {
     })
 
     beforeEach(async () => {
-      request = createRequest('processing')
+      request = createRequest()
       await controller.getBillingBatchProcessing(request, h)
     })
 
@@ -821,7 +821,7 @@ experiment('internal/modules/billing/controller', () => {
 
     experiment('when the back query param is 0', () => {
       beforeEach(async () => {
-        const request = createRequest('processing', 0)
+        request = createRequest(0)
         await controller.getBillingBatchProcessing(request, h)
       })
 

@@ -131,23 +131,7 @@ experiment('internal/modules/billing/lib/routing', () => {
       test('returns the empty batch page url', () => {
         const result = getBillingBatchRoute(batch)
 
-        expect(result).to.equal(`/billing/batch/${batch.id}/empty?back=0`)
-      })
-
-      experiment('and the back option is not set', () => {
-        test('defaults the back query param to 0', () => {
-          const result = getBillingBatchRoute(batch)
-
-          expect(result).to.endWith('?back=0')
-        })
-      })
-
-      experiment('and the back option is set', () => {
-        test('sets the back query param to 1', () => {
-          const result = getBillingBatchRoute(batch, { isBackEnabled: true })
-
-          expect(result).to.endWith('?back=1')
-        })
+        expect(result).to.equal(`/billing/batch/${batch.id}/empty`)
       })
     })
 
@@ -159,23 +143,7 @@ experiment('internal/modules/billing/lib/routing', () => {
       test('returns the error batch page url', () => {
         const result = getBillingBatchRoute(batch)
 
-        expect(result).to.equal(`/billing/batch/${batch.id}/error?back=0`)
-      })
-
-      experiment('and the back option is not set', () => {
-        test('defaults the back query param to 0', () => {
-          const result = getBillingBatchRoute(batch)
-
-          expect(result).to.endWith('?back=0')
-        })
-      })
-
-      experiment('and the back option is set', () => {
-        test('sets the back query param to 1', () => {
-          const result = getBillingBatchRoute(batch, { isBackEnabled: true })
-
-          expect(result).to.endWith('?back=1')
-        })
+        expect(result).to.equal(`/billing/batch/${batch.id}/error`)
       })
     })
 

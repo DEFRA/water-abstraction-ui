@@ -36,6 +36,34 @@ experiment.only('internal/modules/billing/lib/routing', () => {
       })
     })
 
+    experiment('when batch status is "sending"', () => {
+      beforeEach(() => {
+        batch.status = 'sending'
+      })
+
+      test('returns the processing batch page url', () => {
+        const result = getBillingBatchRoute(batch)
+
+        expect(result).to.equal(`/billing/batch/${batch.id}/processing?back=0`)
+      })
+
+      experiment('and the back option is not set', () => {
+        test('defaults the back query param to 0', () => {
+          const result = getBillingBatchRoute(batch)
+
+          expect(result).to.endWith('?back=0')
+        })
+      })
+
+      experiment('and the back option is set', () => {
+        test('sets the back query param to 1', () => {
+          const result = getBillingBatchRoute(batch, { isBackEnabled: true })
+
+          expect(result).to.endWith('?back=1')
+        })
+      })
+    })
+
     experiment('when batch status is "ready"', () => {
       beforeEach(() => {
         batch.status = 'ready'

@@ -875,6 +875,69 @@ experiment('internal/modules/billing/controller', () => {
     })
   })
 
+  experiment('.getBillingBatchError', () => {
+    let request
+
+    const createRequest = (errorCode = null) => ({
+      pre: {
+        batch: {
+          id: 'test-batch-id',
+          type: 'two_part_tariff',
+          status: 'error',
+          createdAt: '2020-02-01',
+          region: {
+            displayName: 'Anglian'
+          },
+          errorCode
+        }
+      }
+    })
+
+    beforeEach(async () => {
+      request = createRequest()
+      await controller.getBillingBatchError(request, h)
+    })
+
+    test('the correct template is used', async () => {
+      const [template] = h.view.lastCall.args
+      expect(template).to.equal('nunjucks/billing/batch-error')
+    })
+
+    test('outputs the page title to the view', async () => {
+      const [, { pageTitle }] = h.view.lastCall.args
+      expect(pageTitle).to.equal('Anglian two-part tariff bill run')
+    })
+
+    test('outputs the batch from request.pre to the view', async () => {
+      const [, { batch }] = h.view.lastCall.args
+      expect(batch).to.equal(request.pre.batch)
+    })
+
+    test('back link is to the batch list page', async () => {
+      const [, { back }] = h.view.lastCall.args
+      expect(back).to.equal('/billing/batch/list')
+    })
+
+    experiment('when the batch does not have an error code', () => {
+      test('the default error message is used', async () => {
+        const [, { errorList }] = h.view.lastCall.args
+        expect(errorList[0].text).to.equal('No error code was assigned. We have no further information at this time.')
+      })
+    })
+
+    experiment('when the batch has an error code', () => {
+      beforeEach(async () => {
+        request = createRequest(50)
+        await controller.getBillingBatchError(request, h)
+      })
+
+      test('the error message matches the code', async () => {
+        const [, { errorList }] = h.view.lastCall.args
+        expect(errorList[0].text).to.equal('Error when creating the Charging Module bill run.')
+      })
+    })
+  })
+
   experiment('.postDeleteAllBillingData', () => {
     beforeEach(async () => {
       await controller.postDeleteAllBillingData(request, h)

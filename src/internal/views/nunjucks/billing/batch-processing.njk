@@ -25,4 +25,10 @@
     <meta http-equiv="refresh" content="10">
     <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
     <img class="spinner" src="/public/images/ajax-loader.gif" alt="spinner">
+
+    <div class="govuk-grid-row">
+      <div class="govuk-!-text-align-centre">
+        <p class="govuk-body-m">Gathering transactions for {{ 'current' if batch.scheme == 'sroc' else 'old' }} charge scheme</p>
+      </div>
+    </div>
 {% endblock %}

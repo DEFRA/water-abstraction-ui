@@ -28,7 +28,7 @@
 
     <div class="govuk-grid-row">
       <div class="govuk-!-text-align-centre">
-        <p class="govuk-body-m">Gathering transactions</p>
+        <p class="govuk-body-m">Gathering transactions for {{ 'current' if batch.scheme == 'sroc' else 'old' }} charge scheme</p>
       </div>
     </div>
 {% endblock %}

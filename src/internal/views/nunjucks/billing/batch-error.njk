@@ -7,11 +7,7 @@
 
   {{ govukErrorSummary({
     titleText: "There is a problem with this bill run",
-    errorList: [
-      {
-        text: "Computer said no."
-      }
-    ]
+    errorList: errorList
   }) }}
 
   {{ batchHeader(pageTitle, batch) }}

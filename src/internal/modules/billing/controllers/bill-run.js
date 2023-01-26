@@ -218,20 +218,16 @@ const postBillingBatchDeleteInvoice = async (request, h) => {
 
 /**
  * Renders a 'waiting' page while the batch is processing.
- * If the batch is in error, responds with a 500 error page.
+ *
  * The redirectOnBatchStatus pre handler will have already redirected to the appropriate page
  * if the batch is processed.
+ *
  * @param {Object} request.pre.batch - billing batch loaded by pre handler
  * @param {Number} request.query.back - whether to render back button
  */
 const getBillingBatchProcessing = async (request, h) => {
   const { batch } = request.pre
   const back = !!request.query.back
-
-  // Render error page if batch has errored
-  if (batch.status === 'error') {
-    return Boom.badImplementation('Billing batch error')
-  }
 
   return h.view('nunjucks/billing/batch-processing', {
     batch,
@@ -268,8 +264,45 @@ const getBillingBatchError = async (request, h) => {
     ...request.view,
     pageTitle: getBillRunPageTitle(batch),
     batch,
-    back: BATCH_LIST_ROUTE
+    back: BATCH_LIST_ROUTE,
+    errorList: _errorList(batch.errorCode)
   })
+}
+
+const _errorList = (errorCode) => {
+  const error = { text: 'No error code was assigned. We have no further information at this time.' }
+
+  switch (errorCode) {
+    case 10:
+      error.text = 'Error when populating the charge versions.'
+      break
+    case 20:
+      error.text = 'Error when processing the charge versions.'
+      break
+    case 30:
+      error.text = 'Error when preparing the transactions.'
+      break
+    case 40:
+      error.text = 'Error when creating a charge.'
+      break
+    case 50:
+      error.text = 'Error when creating the Charging Module bill run.'
+      break
+    case 60:
+      error.text = 'Error when deleting an invoice.'
+      break
+    case 70:
+      error.text = 'Error when processing two-part tariff.'
+      break
+    case 80:
+      error.text = 'Error when getting the Charging Module bill run summary.'
+      break
+    case 90:
+      error.text = 'Error when re-billing a bill run.'
+      break
+  }
+
+  return [error]
 }
 
 /**

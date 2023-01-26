@@ -14,30 +14,42 @@ experiment.only('internal/modules/billing/lib/routing', () => {
       })
 
       test('returns the expected url', () => {
-        expect(getBillingBatchRoute(batch)).to.startWith(`/billing/batch/${batch.id}/processing`)
+        const result = getBillingBatchRoute(batch)
+
+        expect(result).to.startWith(`/billing/batch/${batch.id}/processing`)
       })
 
       test('sets back query param to 0 by default', () => {
-        expect(getBillingBatchRoute(batch)).to.endWith('?back=0')
+        const result = getBillingBatchRoute(batch)
+
+        expect(result).to.endWith('?back=0')
       })
 
       test('sets back query param to 1 when isBackEnabled is true', () => {
-        expect(getBillingBatchRoute(batch, { isBackEnabled: true })).to.endWith('?back=1')
+        const result = getBillingBatchRoute(batch, { isBackEnabled: true })
+
+        expect(result).to.endWith('?back=1')
       })
     })
 
     experiment('when batch status is "ready"', () => {
-      test('returns the batch summary url if no invoice ID is supplied', () => {
+      beforeEach(() => {
         batch.status = 'ready'
-        expect(getBillingBatchRoute(batch)).to.equal(`/billing/batch/${batch.id}/summary`)
+      })
+
+      test('returns the batch summary url if no invoice ID is supplied', () => {
+        const result = getBillingBatchRoute(batch)
+
+        expect(result).to.equal(`/billing/batch/${batch.id}/summary`)
       })
 
       test('returns the invoice page if an invoice ID is supplied', () => {
-        batch.status = 'ready'
         const options = {
           invoiceId: '9683aba6-39ab-4b2d-885c-542ff864dbe9'
         }
-        expect(getBillingBatchRoute(batch, options)).to.equal(`/billing/batch/${batch.id}/invoice/${options.invoiceId}`)
+        const result = getBillingBatchRoute(batch, options)
+
+        expect(result).to.equal(`/billing/batch/${batch.id}/invoice/${options.invoiceId}`)
       })
     })
 
@@ -47,7 +59,9 @@ experiment.only('internal/modules/billing/lib/routing', () => {
       })
 
       test('returns the summary url by default', () => {
-        expect(getBillingBatchRoute(batch)).to.equal(`/billing/batch/${batch.id}/summary`)
+        const result = getBillingBatchRoute(batch)
+
+        expect(result).to.equal(`/billing/batch/${batch.id}/summary`)
       })
 
       test('returns success page url when showSuccessPage flag is true', () => {
@@ -56,9 +70,14 @@ experiment.only('internal/modules/billing/lib/routing', () => {
     })
 
     experiment('when batch status is "review"', () => {
-      test('returns the summary url by default', () => {
+      beforeEach(() => {
         batch.status = 'review'
-        expect(getBillingBatchRoute(batch)).to.equal(`/billing/batch/${batch.id}/two-part-tariff-review`)
+      })
+
+      test('returns the summary url by default', () => {
+        const result = getBillingBatchRoute(batch)
+
+        expect(result).to.equal(`/billing/batch/${batch.id}/two-part-tariff-review`)
       })
     })
 
@@ -68,7 +87,9 @@ experiment.only('internal/modules/billing/lib/routing', () => {
       })
 
       test('returns the empty batch page url', () => {
-        expect(getBillingBatchRoute(batch)).to.startWith(`/billing/batch/${batch.id}/empty`)
+        const result = getBillingBatchRoute(batch)
+
+        expect(result).to.startWith(`/billing/batch/${batch.id}/empty`)
       })
     })
 
@@ -78,7 +99,9 @@ experiment.only('internal/modules/billing/lib/routing', () => {
       })
 
       test('returns the error batch page url', () => {
-        expect(getBillingBatchRoute(batch)).to.startWith(`/billing/batch/${batch.id}/error`)
+        const result = getBillingBatchRoute(batch)
+
+        expect(result).to.startWith(`/billing/batch/${batch.id}/error`)
       })
     })
   })

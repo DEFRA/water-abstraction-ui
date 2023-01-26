@@ -16,7 +16,7 @@ experiment.only('internal/modules/billing/lib/routing', () => {
       test('returns the processing batch page url', () => {
         const result = getBillingBatchRoute(batch)
 
-        expect(result).to.startWith(`/billing/batch/${batch.id}/processing`)
+        expect(result).to.equal(`/billing/batch/${batch.id}/processing?back=0`)
       })
 
       experiment('and the back option is not set', () => {
@@ -103,7 +103,7 @@ experiment.only('internal/modules/billing/lib/routing', () => {
       test('returns the empty batch page url', () => {
         const result = getBillingBatchRoute(batch)
 
-        expect(result).to.startWith(`/billing/batch/${batch.id}/empty`)
+        expect(result).to.equal(`/billing/batch/${batch.id}/empty?back=0`)
       })
 
       experiment('and the back option is not set', () => {
@@ -131,7 +131,7 @@ experiment.only('internal/modules/billing/lib/routing', () => {
       test('returns the error batch page url', () => {
         const result = getBillingBatchRoute(batch)
 
-        expect(result).to.startWith(`/billing/batch/${batch.id}/error`)
+        expect(result).to.equal(`/billing/batch/${batch.id}/error?back=0`)
       })
 
       experiment('and the back option is not set', () => {

@@ -282,7 +282,7 @@ const _errorList = (errorCode) => {
       error.text = 'Error when preparing the transactions.'
       break
     case 40:
-      error.text = 'Error when creating a charge.'
+      error.text = 'Error when requesting or processing a transaction charge.'
       break
     case 50:
       error.text = 'Error when creating the Charging Module bill run.'

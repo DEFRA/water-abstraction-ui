@@ -1,4 +1,4 @@
-# Water Abtrsaction UI
+# Water Abstraction UI
 
 ![Build Status](https://github.com/DEFRA/water-abstraction-ui/workflows/CI/badge.svg?branch=main)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_water-abstraction-ui&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=DEFRA_water-abstraction-ui)

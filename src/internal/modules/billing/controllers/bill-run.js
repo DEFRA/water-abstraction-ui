@@ -3,7 +3,6 @@
 const { titleCase } = require('shared/lib/string-formatter')
 const { pluralize } = require('shared/lib/pluralize')
 const moment = require('moment')
-const Boom = require('@hapi/boom')
 const { get } = require('lodash')
 
 const { cancelOrConfirmBatchForm } = require('../forms/cancel-or-confirm-batch')
@@ -218,20 +217,16 @@ const postBillingBatchDeleteInvoice = async (request, h) => {
 
 /**
  * Renders a 'waiting' page while the batch is processing.
- * If the batch is in error, responds with a 500 error page.
+ *
  * The redirectOnBatchStatus pre handler will have already redirected to the appropriate page
  * if the batch is processed.
+ *
  * @param {Object} request.pre.batch - billing batch loaded by pre handler
  * @param {Number} request.query.back - whether to render back button
  */
 const getBillingBatchProcessing = async (request, h) => {
   const { batch } = request.pre
   const back = !!request.query.back
-
-  // Render error page if batch has errored
-  if (batch.status === 'error') {
-    return Boom.badImplementation('Billing batch error')
-  }
 
   return h.view('nunjucks/billing/batch-processing', {
     batch,
@@ -258,6 +253,46 @@ const getBillingBatchEmpty = async (request, h) => {
 }
 
 /**
+ * Renders an error page if the batch is errored - i.e. the charging module is down
+ * @param {Object} request.pre.batch - billing batch loaded by pre handler
+ */
+const getBillingBatchError = async (request, h) => {
+  const { batch } = request.pre
+
+  return h.view('nunjucks/billing/batch-error', {
+    ...request.view,
+    pageTitle: getBillRunPageTitle(batch),
+    batch,
+    back: BATCH_LIST_ROUTE,
+    errorList: _errorList(batch.errorCode)
+  })
+}
+
+const _errorList = (errorCode) => {
+  if (!errorCode) {
+    return [{ text: 'No error code was assigned. We have no further information at this time.' }]
+  }
+
+  const errors = [
+    { code: 10, text: 'Error when populating the charge versions.' },
+    { code: 20, text: 'Error when processing the charge versions.' },
+    { code: 30, text: 'Error when preparing the transactions.' },
+    { code: 40, text: 'Error when requesting or processing a transaction charge.' },
+    { code: 50, text: 'Error when creating the Charging Module bill run.' },
+    { code: 60, text: 'Error when deleting an invoice.' },
+    { code: 70, text: 'Error when processing two-part tariff.' },
+    { code: 80, text: 'Error when getting the Charging Module bill run summary.' },
+    { code: 90, text: 'Error when re-billing a bill run.' }
+  ]
+
+  const error = errors.find((error) => {
+    return error.code === errorCode
+  })
+
+  return [{ text: error.text }]
+}
+
+/**
  * Deletes all billing data
  */
 const postDeleteAllBillingData = async (request, h) => {
@@ -265,25 +300,22 @@ const postDeleteAllBillingData = async (request, h) => {
   return h.redirect(BATCH_LIST_ROUTE)
 }
 
-exports.getBillingBatchList = getBillingBatchList
-exports.getBillingBatchSummary = getBillingBatchSummary
-exports.getBillingBatchInvoice = getBillingBatchInvoice
-
-exports.getBillingBatchCancel = getBillingBatchCancel
-exports.postBillingBatchCancel = postBillingBatchCancel
-
-exports.getBillingBatchConfirm = getBillingBatchConfirm
-exports.postBillingBatchConfirm = postBillingBatchConfirm
-exports.getBillingBatchConfirmSuccess = getBillingBatchConfirmSuccess
-
-exports.getBillingBatchDeleteInvoice = getBillingBatchDeleteInvoice
-exports.postBillingBatchDeleteInvoice = postBillingBatchDeleteInvoice
-
-exports.getTransactionsCSV = getTransactionsCSV
-
-exports.getBillingBatchProcessing = getBillingBatchProcessing
-exports.getBillingBatchEmpty = getBillingBatchEmpty
-
-exports.postDeleteAllBillingData = postDeleteAllBillingData
-exports.getBillingBatchStatusToCancel = getBillingBatchStatusToCancel
-exports.postBillingBatchStatusToCancel = postBillingBatchStatusToCancel
+module.exports = {
+  getBillingBatchList,
+  getBillingBatchSummary,
+  getBillingBatchInvoice,
+  getBillingBatchCancel,
+  postBillingBatchCancel,
+  getBillingBatchConfirm,
+  postBillingBatchConfirm,
+  getBillingBatchConfirmSuccess,
+  getBillingBatchDeleteInvoice,
+  postBillingBatchDeleteInvoice,
+  getTransactionsCSV,
+  getBillingBatchProcessing,
+  getBillingBatchEmpty,
+  getBillingBatchError,
+  postDeleteAllBillingData,
+  getBillingBatchStatusToCancel,
+  postBillingBatchStatusToCancel
+}

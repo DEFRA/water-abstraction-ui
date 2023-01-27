@@ -96,9 +96,9 @@ experiment('internal/modules/billing/routes', () => {
       expect(routePreHandlers[1]).to.equal({ method: preHandlers.redirectOnBatchStatus })
     })
 
-    test('redirects unless batch status is "processing" or "error"', async () => {
+    test('redirects unless batch status is "queued", "processing" or "sending"', async () => {
       const { validBatchStatuses } = routes.getBillingBatchProcessing.config.app
-      expect(validBatchStatuses).to.equal(['queued', 'processing', 'error', 'sending'])
+      expect(validBatchStatuses).to.equal(['queued', 'processing', 'sending'])
     })
   })
 

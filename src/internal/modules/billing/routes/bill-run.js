@@ -233,6 +233,7 @@ const routes = {
       pre: [{ method: preHandlers.loadBatch, assign: 'batch' }]
     }
   },
+
   getBillingBatchDeleteInvoice: {
     method: 'GET',
     path: '/billing/batch/{batchId}/delete-invoice/{invoiceId}',
@@ -262,6 +263,7 @@ const routes = {
       ]
     }
   },
+
   postBillingBatchDeleteInvoice: {
     method: 'POST',
     path: '/billing/batch/{batchId}/delete-invoice/{invoiceId}',
@@ -293,7 +295,7 @@ const routes = {
     handler: controller.getBillingBatchProcessing,
     config: {
       app: {
-        validBatchStatuses: ['queued', 'processing', 'error', 'sending']
+        validBatchStatuses: ['queued', 'processing', 'sending']
       },
       auth: { scope: allowedScopes },
       plugins: {
@@ -324,6 +326,32 @@ const routes = {
     config: {
       app: {
         validBatchStatuses: ['empty']
+      },
+      auth: { scope: allowedScopes },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'bill-runs'
+        }
+      },
+      validate: {
+        params: Joi.object().keys({
+          batchId: Joi.string().uuid()
+        })
+      },
+      pre: [
+        { method: preHandlers.loadBatch, assign: 'batch' },
+        { method: preHandlers.redirectOnBatchStatus }
+      ]
+    }
+  },
+
+  getBillingBatchError: {
+    method: 'GET',
+    path: '/billing/batch/{batchId}/error',
+    handler: controller.getBillingBatchError,
+    config: {
+      app: {
+        validBatchStatuses: ['error']
       },
       auth: { scope: allowedScopes },
       plugins: {

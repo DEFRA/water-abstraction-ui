@@ -768,9 +768,9 @@ experiment('internal/modules/billing/controller', () => {
   })
 
   experiment('.getBillingBatchProcessing', () => {
-    let result
+    let request
 
-    const createRequest = (status, back = 1) => ({
+    const createRequest = (back = 1) => ({
       query: {
         back
       },
@@ -778,7 +778,7 @@ experiment('internal/modules/billing/controller', () => {
         batch: {
           id: 'test-batch-id',
           type: 'two_part_tariff',
-          status,
+          status: 'processing',
           createdAt: '2020-02-01',
           region: {
             displayName: 'Anglian'
@@ -787,56 +787,47 @@ experiment('internal/modules/billing/controller', () => {
       }
     })
 
-    experiment('when the batch has "error" status', () => {
-      beforeEach(async () => {
-        const request = createRequest('error')
-        result = await controller.getBillingBatchProcessing(request, h)
-      })
+    beforeEach(async () => {
+      request = createRequest()
+      await controller.getBillingBatchProcessing(request, h)
+    })
 
-      test('a Boom 500 error is returned to render a standard technical problem page', async () => {
-        expect(result.isBoom).to.be.true()
-        expect(result.output.statusCode).to.equal(500)
+    test('the correct template is used', async () => {
+      const [template] = h.view.lastCall.args
+      expect(template).to.equal('nunjucks/billing/batch-processing')
+    })
+
+    test('outputs the page title to the view', async () => {
+      const [, { pageTitle }] = h.view.lastCall.args
+      expect(pageTitle).to.equal('Anglian two-part tariff bill run')
+    })
+
+    test('outputs the batch from request.pre to the view', async () => {
+      const [, { batch }] = h.view.lastCall.args
+      expect(batch).to.equal(request.pre.batch)
+    })
+
+    test('outputs the formatted batch creation date as the caption', async () => {
+      const [, { caption }] = h.view.lastCall.args
+      expect(caption).to.equal('1 February 2020')
+    })
+
+    experiment('when the back query param is 1', () => {
+      test('back link is to the batch list page', async () => {
+        const [, { back }] = h.view.lastCall.args
+        expect(back).to.equal('/billing/batch/list')
       })
     })
 
-    experiment('when the batch does not have "error" status', () => {
-      experiment('and the back query param is 1', () => {
-        beforeEach(async () => {
-          const request = createRequest('processing')
-          await controller.getBillingBatchProcessing(request, h)
-        })
-
-        test('the correct template is used', async () => {
-          const [template] = h.view.lastCall.args
-          expect(template).to.equal('nunjucks/billing/batch-processing')
-        })
-
-        test('outputs the formatted batch creation date as the caption', async () => {
-          const [, { caption }] = h.view.lastCall.args
-          expect(caption).to.equal('1 February 2020')
-        })
-
-        test('outputs the page title', async () => {
-          const [, { pageTitle }] = h.view.lastCall.args
-          expect(pageTitle).to.equal('Anglian two-part tariff bill run')
-        })
-
-        test('back link is to the batch list page', async () => {
-          const [, { back }] = h.view.lastCall.args
-          expect(back).to.equal('/billing/batch/list')
-        })
+    experiment('when the back query param is 0', () => {
+      beforeEach(async () => {
+        request = createRequest(0)
+        await controller.getBillingBatchProcessing(request, h)
       })
 
-      experiment('and the back query param is 0', () => {
-        beforeEach(async () => {
-          const request = createRequest('processing', 0)
-          await controller.getBillingBatchProcessing(request, h)
-        })
-
-        test('back link is false', async () => {
-          const [, { back }] = h.view.lastCall.args
-          expect(back).to.be.false()
-        })
+      test('back link is false', async () => {
+        const [, { back }] = h.view.lastCall.args
+        expect(back).to.be.false()
       })
     })
   })
@@ -881,6 +872,69 @@ experiment('internal/modules/billing/controller', () => {
     test('back link is to the batch list page', async () => {
       const [, { back }] = h.view.lastCall.args
       expect(back).to.equal('/billing/batch/list')
+    })
+  })
+
+  experiment('.getBillingBatchError', () => {
+    let request
+
+    const createRequest = (errorCode = null) => ({
+      pre: {
+        batch: {
+          id: 'test-batch-id',
+          type: 'two_part_tariff',
+          status: 'error',
+          createdAt: '2020-02-01',
+          region: {
+            displayName: 'Anglian'
+          },
+          errorCode
+        }
+      }
+    })
+
+    beforeEach(async () => {
+      request = createRequest()
+      await controller.getBillingBatchError(request, h)
+    })
+
+    test('the correct template is used', async () => {
+      const [template] = h.view.lastCall.args
+      expect(template).to.equal('nunjucks/billing/batch-error')
+    })
+
+    test('outputs the page title to the view', async () => {
+      const [, { pageTitle }] = h.view.lastCall.args
+      expect(pageTitle).to.equal('Anglian two-part tariff bill run')
+    })
+
+    test('outputs the batch from request.pre to the view', async () => {
+      const [, { batch }] = h.view.lastCall.args
+      expect(batch).to.equal(request.pre.batch)
+    })
+
+    test('back link is to the batch list page', async () => {
+      const [, { back }] = h.view.lastCall.args
+      expect(back).to.equal('/billing/batch/list')
+    })
+
+    experiment('when the batch does not have an error code', () => {
+      test('the default error message is used', async () => {
+        const [, { errorList }] = h.view.lastCall.args
+        expect(errorList[0].text).to.equal('No error code was assigned. We have no further information at this time.')
+      })
+    })
+
+    experiment('when the batch has an error code', () => {
+      beforeEach(async () => {
+        request = createRequest(50)
+        await controller.getBillingBatchError(request, h)
+      })
+
+      test('the error message matches the code', async () => {
+        const [, { errorList }] = h.view.lastCall.args
+        expect(errorList[0].text).to.equal('Error when creating the Charging Module bill run.')
+      })
     })
   })
 

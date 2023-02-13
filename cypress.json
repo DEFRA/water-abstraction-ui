@@ -15,6 +15,7 @@
   },
   "env": {
   },
+  "video": false,
   "integrationFolder": "./cypress/integration",
   "videosFolder": "./cypress/videos",
   "screenshotsFolder": "./cypress/screenshots",

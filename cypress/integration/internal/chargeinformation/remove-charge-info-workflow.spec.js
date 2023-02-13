@@ -7,11 +7,6 @@ describe('remove charge info workflow as B&D user', () => {
     setUp('charge-version-workflow')
   })
 
-  after(() => {
-    cy.get('#signout').click()
-    tearDown()
-  })
-
   it('navigates to charge info workflow page', () => {
     cy.visit(Cypress.env('ADMIN_URI'))
     cy.fixture('users.json').then(users => {

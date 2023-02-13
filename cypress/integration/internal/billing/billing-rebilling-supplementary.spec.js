@@ -6,10 +6,6 @@ describe('rebilling supplementary bill run', () => {
     setUp('supplementary-billing')
   })
 
-  after(() => {
-    tearDown()
-  })
-
   it('user logs in', () => {
     // cy.visit to visit the URL
     cy.visit(Cypress.env('ADMIN_URI'))

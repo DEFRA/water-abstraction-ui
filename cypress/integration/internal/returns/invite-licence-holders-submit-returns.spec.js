@@ -6,10 +6,6 @@ describe('Inviting users to submit the returns', () => {
     setUp('barebones')
   })
 
-  after(() => {
-    tearDown()
-  })
-
   it('Inviting users to submit the returns', () => {
     // cy.visit to visit the URL
     cy.visit(Cypress.env('ADMIN_URI'))

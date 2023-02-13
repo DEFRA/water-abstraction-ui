@@ -12,10 +12,6 @@ describe('submit a return metered readings return as an external user', () => {
     setUp('barebones')
   })
 
-  afterEach(() => {
-    tearDown()
-  })
-
   it('sees the page title', () => {
     cy.visit(Cypress.env('USER_URI'))
 

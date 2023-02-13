@@ -6,10 +6,6 @@ describe('change internal user permissions as B&D user', () => {
     setUp('barebones')
   })
 
-  after(() => {
-    tearDown()
-  })
-
   it('searches for user by email address', () => {
     cy.visit(Cypress.env('ADMIN_URI'))
     cy.fixture('users.json').then(users => {

@@ -7,10 +7,6 @@ describe('check for different return status as an external user', () => {
     setUp('barebones')
   })
 
-  afterEach(() => {
-    tearDown()
-  })
-
   it('sees the page title', () => {
     cy.visit(Cypress.env('USER_URI'))
 

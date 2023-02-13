@@ -7,10 +7,6 @@ describe('Create SRoC Charge version workflow journey', () => {
     setUp('billing-data')
   })
 
-  after(() => {
-    tearDown()
-  })
-
   it('Create SRoC Charge version workflow journey', () => {
     cy.visit(Cypress.env('ADMIN_URI'))
 

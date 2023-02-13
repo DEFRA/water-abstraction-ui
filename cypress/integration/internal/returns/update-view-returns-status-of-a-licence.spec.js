@@ -6,10 +6,6 @@ describe('check and update different status for a licence in returns tab as inte
     setUp('barebones')
   })
 
-  after(() => {
-    tearDown()
-  })
-
   it('user logs in and searches for a License and updates retuns status', () => {
     cy.visit(Cypress.env('ADMIN_URI'))
     cy.fixture('users.json').then(users => {

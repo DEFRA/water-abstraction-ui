@@ -6,10 +6,6 @@ describe('External user sharing license access with new external user ', () => {
     setUp('barebones')
   })
 
-  after(() => {
-    tearDown()
-  })
-
   it('User assigning the license to a new user', () => {
     //  User logs in
     cy.visit(Cypress.env('USER_URI'))

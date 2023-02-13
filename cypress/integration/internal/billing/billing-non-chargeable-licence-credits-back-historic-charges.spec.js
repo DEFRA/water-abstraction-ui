@@ -13,10 +13,6 @@ describe('non-chargeable licence credits back historic charges', () => {
     setUp('five-year-two-part-tariff-bill-runs')
   })
 
-  after(() => {
-    tearDown()
-  })
-
   it('user logs in', () => {
     login('billingAndData', 'DEFAULT_PASSWORD')
 

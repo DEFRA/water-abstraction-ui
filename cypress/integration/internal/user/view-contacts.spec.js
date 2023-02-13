@@ -7,10 +7,6 @@ describe('view contacts assigned to the licence ', () => {
     setUp('billing-data')
   })
 
-  after(() => {
-    tearDown()
-  })
-
   it('searches for licence by licence number and clicks on it', () => {
     // cy.visit to visit the URL
     cy.visit(Cypress.env('ADMIN_URI'))

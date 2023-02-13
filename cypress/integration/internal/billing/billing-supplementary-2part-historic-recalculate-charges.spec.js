@@ -55,11 +55,6 @@ describe('2part historic recalculating charges', () => {
     login('billingAndData', 'DEFAULT_PASSWORD')
   })
 
-  afterEach(() => {
-    cy.get('#signout').click()
-    tearDown()
-  })
-
   it('with no change to charge versions', () => {
     recalculateChargesTest()
   })

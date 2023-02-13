@@ -6,10 +6,6 @@ describe('check for different status for a licence in returns tab as internal us
     setUp('barebones')
   })
 
-  after(() => {
-    tearDown()
-  })
-
   it('logs in and searches for a licence', () => {
     // cy.visit to visit the URL
     cy.visit(Cypress.env('ADMIN_URI'))

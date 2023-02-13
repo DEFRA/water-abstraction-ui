@@ -6,10 +6,6 @@ describe('Licence agreement - Set up, View, End and Delete', () => {
     setUp('barebones')
   })
 
-  after(() => {
-    tearDown()
-  })
-
   it('user logs in and sets up new License Agreement, Ends it and deletes the agreement', () => {
     cy.visit(Cypress.env('ADMIN_URI'))
     cy.fixture('users.json').then(users => {

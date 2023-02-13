@@ -6,10 +6,6 @@ describe('two-part-tariff bill run', () => {
     setUp('two-part-tariff-billing-data')
   })
 
-  after(() => {
-    tearDown()
-  })
-
   it('user logs in', () => {
     // cy.visit to visit the URL
     cy.visit(Cypress.env('ADMIN_URI'))

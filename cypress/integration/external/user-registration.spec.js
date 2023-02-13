@@ -6,10 +6,6 @@ describe('User registration', () => {
     setUp('barebones')
   })
 
-  after(() => {
-    tearDown()
-  })
-
   it('redirects to the welcome page', () => {
     cy.visit(Cypress.env('USER_URI'))
     cy.contains('Sign in or create an account').should('have.class', 'govuk-heading-l')

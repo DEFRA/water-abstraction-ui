@@ -6,10 +6,6 @@ describe('User Login and Log out', () => {
     setUp('barebones')
   })
 
-  after(() => {
-    tearDown()
-  })
-
   it('User login and logout', () => {
     //  cy.visit to visit the URL
     cy.visit(Cypress.env('USER_URI'))

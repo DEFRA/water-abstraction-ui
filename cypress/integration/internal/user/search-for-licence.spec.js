@@ -6,10 +6,6 @@ describe('search for licences as internal user', () => {
     setUp('billing-data')
   })
 
-  after(() => {
-    tearDown()
-  })
-
   it('user logs in and searches for a License', () => {
     // cy.visit to visit the URL
     cy.visit(Cypress.env('ADMIN_URI'))

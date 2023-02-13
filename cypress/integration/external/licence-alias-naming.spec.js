@@ -5,10 +5,6 @@ describe('View Licences as external user', () => {
     setUp('barebones')
   })
 
-  after(() => {
-    tearDown()
-  })
-
   it('Create the alias name for the licences user is holding', () => {
     //  cy.visit to visit the URL
     cy.visit(Cypress.env('USER_URI'))

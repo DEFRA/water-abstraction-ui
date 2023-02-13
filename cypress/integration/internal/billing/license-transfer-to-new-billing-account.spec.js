@@ -12,10 +12,6 @@ describe('License transfer to new billing account', () => {
     setUp('five-year-two-part-tariff-bill-runs')
   })
 
-  after(() => {
-    tearDown()
-  })
-
   it('License transfer to new billing account', () => {
     cy.visit(Cypress.env('ADMIN_URI'))
 

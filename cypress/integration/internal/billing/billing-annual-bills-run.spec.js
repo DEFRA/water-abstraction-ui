@@ -9,10 +9,6 @@ describe('annual bill run', () => {
     setUp('billing-data')
   })
 
-  afterEach(() => {
-    tearDown()
-  })
-
   it('user logs in and generates annual bill', () => {
     // cy.visit to visit the URL
     cy.visit(Cypress.env('ADMIN_URI'))

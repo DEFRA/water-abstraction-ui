@@ -7,10 +7,6 @@ describe('creating an internal user:', () => {
     setUp('barebones')
   })
 
-  after(() => {
-    tearDown()
-  })
-
   it('navigates to the new internal user form and creates an internal account', () => {
     cy.visit(Cypress.env('ADMIN_URI'))
     cy.fixture('users.json').then(users => {

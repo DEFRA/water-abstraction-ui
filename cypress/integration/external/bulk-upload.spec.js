@@ -7,10 +7,6 @@ describe('Bulk upload returns test', () => {
     setUp('bulk-return')
   })
 
-  after(() => {
-    tearDown()
-  })
-
   it('User bulk upload test', () => {
     //  cy.visit to visit the URL
     cy.visit(Cypress.env('USER_URI'))

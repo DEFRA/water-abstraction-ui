@@ -6,10 +6,6 @@ describe('Cancel bill run', () => {
     setUp('supplementary-billing')
   })
 
-  after(() => {
-    tearDown()
-  })
-
   it('user logs in, creates and cancels a bill run [supplimentary, annual, 2PT]', () => {
     // cy.visit to visit the URL
     cy.visit(Cypress.env('ADMIN_URI'))

@@ -6,10 +6,6 @@ describe('tag a licence to a gauging station, send a warning, and remove the tag
     setUp('barebones')
   })
 
-  after(() => {
-    tearDown()
-  })
-
   it('user logs and searches for a gauging station, tags and untags the licences', () => {
     describe('User Tags the licence', () => {
       // cy.visit to visit the URL

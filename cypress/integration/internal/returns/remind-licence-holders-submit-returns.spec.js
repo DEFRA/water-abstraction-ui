@@ -6,10 +6,6 @@ describe('Sending returns reminders to users ', () => {
     setUp('barebones')
   })
 
-  after(() => {
-    tearDown()
-  })
-
   it('sending reminder to users asking to submit the returns', () => {
     // cy.visit to visit the URL
     cy.visit(Cypress.env('ADMIN_URI'))

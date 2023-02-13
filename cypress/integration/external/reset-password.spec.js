@@ -6,10 +6,6 @@ describe('Reset password', () => {
     setUp('barebones')
   })
 
-  after(() => {
-    tearDown()
-  })
-
   it('Navigate to the signin page', () => {
     cy.visit(Cypress.env('USER_URI'))
     cy.get('a[href*="/signin"]').click()

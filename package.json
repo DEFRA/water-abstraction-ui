@@ -16,7 +16,7 @@
     "install-assets": "gulp build",
     "test": "lab",
     "test:cypress": "node_modules/.bin/cypress open",
-    "test:cypress-silently": "npm run pretest && node_modules/.bin/cypress run && npm run test:cypress-prepare-report",
+    "test:cypress-silently": "npm run pretest && node_modules/.bin/cypress run; npm run test:cypress-prepare-report",
     "test:cypress-prepare-report": "mochawesome-merge ./cypress/reports/mocha/*.json > ./cypress/reports/mocha/combined-report.json && marge --reportDir cypress/reports/mocha/ ./cypress/reports/mocha/combined-report.json",
     "lint": "standard",
     "lint:fix": "standard --fix",

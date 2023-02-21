@@ -14,5 +14,11 @@ module.exports = {
   'silent-skips': true,
   // lcov reporter required for SonarCloud
   reporter: ['console', 'html', 'lcov'],
-  output: ['stdout', 'coverage/coverage.html', 'coverage/lcov.info']
+  output: ['stdout', 'coverage/coverage.html', 'coverage/lcov.info'],
+  // Some packages we use expose global variables which cause lab to return a non-zero exit code if we don't ignore
+  // them. lab expects the list of globals to ignored to be a single comma-delimited string; for ease of management we
+  // define them in an array then join them.
+  globals: [
+    'Symbol(undici.globalDispatcher.1)'
+  ].join(',')
 };

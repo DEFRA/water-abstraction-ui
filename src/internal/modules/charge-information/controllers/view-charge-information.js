@@ -22,6 +22,7 @@ const getViewChargeInformation = async (request, h) => {
   const { chargeVersion, licence, billingAccount } = request.pre
   const { chargeVersionWorkflowId } = request.params
   const backLink = await getLicencePageUrl(licence, true)
+  const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount)
 
   const { data: documentRoles } = await services.crm.documentRoles.getFullHistoryOfDocumentRolesByDocumentRef(licence.licenceNumber)
 
@@ -29,8 +30,6 @@ const getViewChargeInformation = async (request, h) => {
     moment(role.startDate).isSameOrBefore(chargeVersion.dateRange.startDate, 'd') &&
     (!role.endDate || moment(role.endDate).isAfter(chargeVersion.dateRange.startDate, 'd'))
   )
-
-  const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount)
 
   return h.view('nunjucks/charge-information/view', {
     ...getDefaultView(request, backLink),
@@ -61,10 +60,9 @@ const getReviewChargeInformation = async (request, h) => {
   const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount)
 
   const validatedDraftChargeVersion = chargeInformationValidator.addValidation(draftChargeInformation)
-  // const { data: documentRoles } = await services.crm.documentRoles.getDocumentRolesByDocumentRef(licence.licenceNumber)
-  // const licenceHolder = documentRoles.find(role => role.roleName === 'licenceHolder')
 
   const { data: documentRoles } = await services.crm.documentRoles.getFullHistoryOfDocumentRolesByDocumentRef(licence.licenceNumber)
+
   const licenceHolder = documentRoles.find(role => role.roleName === 'licenceHolder' &&
     moment(role.startDate).isSameOrBefore(draftChargeInformation.dateRange.startDate, 'd') &&
     (!role.endDate || moment(role.endDate).isAfter(draftChargeInformation.dateRange.startDate, 'd'))
@@ -101,8 +99,11 @@ const postReviewChargeInformation = async (request, h) => {
     reviewFormSchema(request)
   )
   if (!form.isValid) {
-    const { data: documentRoles } = await services.crm.documentRoles.getDocumentRolesByDocumentRef(licence.licenceNumber)
-    const licenceHolder = documentRoles.find(role => role.roleName === 'licenceHolder')
+    const { data: documentRoles } = await services.crm.documentRoles.getFullHistoryOfDocumentRolesByDocumentRef(licence.licenceNumber)
+    const licenceHolder = documentRoles.find(role => role.roleName === 'licenceHolder' &&
+      moment(role.startDate).isSameOrBefore(draftChargeInformation.dateRange.startDate, 'd') &&
+      (!role.endDate || moment(role.endDate).isAfter(draftChargeInformation.dateRange.startDate, 'd'))
+    )
 
     return h.view('nunjucks/charge-information/view', {
       ...getDefaultView(request, backLink),

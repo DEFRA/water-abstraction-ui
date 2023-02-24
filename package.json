@@ -38,7 +38,6 @@
     "@hapi/yar": "^10.1.1",
     "@joi/date": "^2.1.0",
     "accessible-autocomplete": "^1.6.2",
-    "acorn": "^5.7.4",
     "ajv": "^6.12.6",
     "app-module-path": "^2.2.0",
     "archiver": "^3.1.1",

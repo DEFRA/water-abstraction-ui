@@ -74,7 +74,6 @@
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9",
     "shallow-diff": "^0.0.5",
-    "slugify": "^1.6.5",
     "url-join": "^4.0.1",
     "uuid": "^8.3.2",
     "winston": "^3.6.0"

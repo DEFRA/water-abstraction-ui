@@ -70,7 +70,6 @@
     "parse-domain": "^4.1.0",
     "path": "^0.12.7",
     "pluralize": "^8.0.0",
-    "randomatic": "^3.1.1",
     "read-chunk": "^3.2.0",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9",

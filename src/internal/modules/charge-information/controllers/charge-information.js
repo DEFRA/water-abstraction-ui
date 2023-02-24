@@ -211,8 +211,14 @@ const getCheckData = async (request, h) => {
   const { licenceId } = request.params
   const isApprover = hasScope(request, chargeVersionWorkflowReviewer)
 
-  const { data: documentRoles } = await services.crm.documentRoles.getDocumentRolesByDocumentRef(licence.licenceNumber)
-  const licenceHolder = documentRoles.find(role => role.roleName === 'licenceHolder')
+  // const { data: documentRoles } = await services.crm.documentRoles.getDocumentRolesByDocumentRef(licence.licenceNumber)
+  // const licenceHolder = documentRoles.find(role => role.roleName === 'licenceHolder')
+
+  const { data: documentRoles } = await services.crm.documentRoles.getFullHistoryOfDocumentRolesByDocumentRef(licence.licenceNumber)
+  const licenceHolder = documentRoles.find(role => role.roleName === 'licenceHolder' &&
+    moment(role.startDate).isSameOrBefore(draftChargeInformation.dateRange.startDate, 'd') &&
+    (!role.endDate || moment(role.endDate).isAfter(draftChargeInformation.dateRange.startDate, 'd'))
+  )
 
   const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount)
   const editChargeVersionWarning = await isOverridingChargeVersion(request, draftChargeInformation.dateRange.startDate)

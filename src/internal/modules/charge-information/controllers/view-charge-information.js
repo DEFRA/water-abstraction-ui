@@ -61,8 +61,14 @@ const getReviewChargeInformation = async (request, h) => {
   const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount)
 
   const validatedDraftChargeVersion = chargeInformationValidator.addValidation(draftChargeInformation)
-  const { data: documentRoles } = await services.crm.documentRoles.getDocumentRolesByDocumentRef(licence.licenceNumber)
-  const licenceHolder = documentRoles.find(role => role.roleName === 'licenceHolder')
+  // const { data: documentRoles } = await services.crm.documentRoles.getDocumentRolesByDocumentRef(licence.licenceNumber)
+  // const licenceHolder = documentRoles.find(role => role.roleName === 'licenceHolder')
+
+  const { data: documentRoles } = await services.crm.documentRoles.getFullHistoryOfDocumentRolesByDocumentRef(licence.licenceNumber)
+  const licenceHolder = documentRoles.find(role => role.roleName === 'licenceHolder' &&
+    moment(role.startDate).isSameOrBefore(draftChargeInformation.dateRange.startDate, 'd') &&
+    (!role.endDate || moment(role.endDate).isAfter(draftChargeInformation.dateRange.startDate, 'd'))
+  )
 
   return h.view('nunjucks/charge-information/view', {
     ...getDefaultView(request, backLink),

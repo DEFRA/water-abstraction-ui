@@ -131,7 +131,7 @@ const _licenceHolder = async (chargeInformation, licenceNumber) => {
   const { data: documentRoles } = await services.crm.documentRoles.getFullHistoryOfDocumentRolesByDocumentRef(licenceNumber)
   const licenceHolder = documentRoles.find(role => role.roleName === 'licenceHolder' &&
     moment(role.startDate).isSameOrBefore(chargeInformation.dateRange.startDate, 'd') &&
-    (!role.endDate || moment(role.endDate).isAfter(chargeInformation.dateRange.startDate, 'd'))
+    (!role.endDate || moment(role.endDate).isSameOrAfter(chargeInformation.dateRange.startDate, 'd'))
   )
 
   return licenceHolder

@@ -1,5 +1,5 @@
-const Entities = require('html-entities').AllHtmlEntities
-const htmlEntityEncoder = new Entities()
+const { encode } = require('html-entities')
+// const htmlEntityEncoder = new Entities()
 
 /**
  * For the abstraction reform comparison table, maps the data from the view
@@ -32,7 +32,7 @@ const mapARComparisonTable = (data) => {
  * @return {String} rendered condition text string with bolded values
  */
 const ARConditionPlaceholder = (str) => {
-  let tpl = htmlEntityEncoder.encode(str)
+  let tpl = encode(str)
   tpl = tpl.replace(/\[/g, '<strong>[')
   return tpl.replace(/\]/g, ']</strong>')
 }

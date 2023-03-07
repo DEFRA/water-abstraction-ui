@@ -59,7 +59,7 @@
     "iframe-resizer": "^3.6.6",
     "immutability-helper": "^3.1.1",
     "joi": "^17.6.0",
-    "json-schema-ref-parser": "^6.1.0",
+    "json-schema-ref-parser": "^9.0.9",
     "lodash": "^4.17.21",
     "marked": "^4.0.12",
     "moment": "^2.29.1",

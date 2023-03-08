@@ -34,7 +34,7 @@
     "@hapi/hoek": "^9.2.1",
     "@hapi/inert": "^7.0.1",
     "@hapi/scooter": "^7.0.0",
-    "@hapi/vision": "^6.1.0",
+    "@hapi/vision": "^7.0.1",
     "@hapi/yar": "^10.1.1",
     "@joi/date": "^2.1.0",
     "accessible-autocomplete": "^2.0.4",

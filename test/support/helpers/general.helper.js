@@ -1,6 +1,6 @@
 'use strict'
 
-const Hoek = require('@hapi/hoek')
+const { clone } = require('@hapi/hoek')
 
 /**
  * Class of general test helper methods
@@ -27,7 +27,7 @@ class GeneralHelper {
    * @returns {Object} a deep clone of the object
    */
   static cloneObject (thingToBeCloned) {
-    return Hoek.clone(thingToBeCloned)
+    return clone(thingToBeCloned)
   }
 }
 

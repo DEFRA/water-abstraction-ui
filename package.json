@@ -30,7 +30,7 @@
     "@hapi/boom": "^10.0.1",
     "@hapi/catbox-redis": "^6.0.2",
     "@hapi/h2o2": "^10.0.0",
-    "@hapi/hapi": "^20.2.1",
+    "@hapi/hapi": "^21.3.0",
     "@hapi/hoek": "^11.0.2",
     "@hapi/inert": "^7.0.1",
     "@hapi/scooter": "^7.0.0",

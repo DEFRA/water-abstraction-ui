@@ -45,7 +45,7 @@
     "blipp": "^4.0.2",
     "comma-number": "^2.1.0",
     "csv-parse": "^5.3.6",
-    "csv-stringify": "^5.6.5",
+    "csv-stringify": "^6.3.0",
     "decimal.js-light": "^2.5.1",
     "dotenv": "^16.0.3",
     "es6-error": "^4.1.1",

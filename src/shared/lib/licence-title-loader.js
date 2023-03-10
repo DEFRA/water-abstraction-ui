@@ -1,6 +1,8 @@
 const files = require('./files')
 const util = require('util')
-const csvParse = util.promisify(require('csv-parse'))
+const { parse } = require('csv-parse')
+
+const parseCsv = util.promisify(parse)
 
 /**
  * Loads and transforms licence condition title data from
@@ -26,7 +28,7 @@ class LicenceTitleLoader {
 
     // Read condition titles from CSV
     const str = await files.readFile('./data/condition_titles.csv')
-    const data = await csvParse(str, { columns: true })
+    const data = await parseCsv(str, { columns: true })
 
     // Sentence case all titles
     const dataTransformed = data.map((row) => {

@@ -1,6 +1,7 @@
 const { find, pick } = require('lodash')
 const fs = require('fs')
-const parse = require('csv-parse/lib/sync')
+const { parse } = require('csv-parse/sync')
+
 const csvData = fs.readFileSync('./data/condition_titles.csv')
 const conditionTitles = parse(csvData, { columns: true })
 const { logger } = require('../../../logger')

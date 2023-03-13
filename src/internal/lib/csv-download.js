@@ -1,5 +1,7 @@
 const util = require('util')
-const csvStringify = util.promisify(require('csv-stringify'))
+const { stringify } = require('csv-stringify')
+
+const csvStringify = util.promisify(stringify)
 
 /**
  * Provides a convenient way to download a CSV file

@@ -3,7 +3,9 @@ const { pick } = require('lodash')
 const fileType = require('file-type')
 const readChunk = require('read-chunk')
 const util = require('util')
-const parseCsv = util.promisify(require('csv-parse'))
+const { parse } = require('csv-parse')
+
+const parseCsv = util.promisify(parse)
 const childProcessHelpers = require('./child-process-helpers')
 const files = require('./files')
 

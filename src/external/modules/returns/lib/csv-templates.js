@@ -5,11 +5,13 @@ const helpers = require('@envage/water-abstraction-helpers')
 const { getLineLabel } = require('shared/modules/returns/forms/common')
 const moment = require('moment')
 const util = require('util')
-const csvStringify = util.promisify(require('csv-stringify'))
 const archiver = require('archiver')
+const path = require('path')
+const { stringify } = require('csv-stringify')
+
+const csvStringify = util.promisify(stringify)
 const { logger } = require('../../../logger')
 const files = require('../../../../shared/lib/files')
-const path = require('path')
 
 /**
  * Gets the label for a particular return line in the CSV

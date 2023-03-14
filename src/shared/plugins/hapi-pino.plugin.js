@@ -28,8 +28,12 @@ const HapiPinoIgnoreRequestService = require('../lib/services/hapi-pino-ignore-r
  * the returned value will allow it to be incorporated with our default hapi-pino options.
  */
 const testOptions = logInTest => {
+  const level = process.env.WRLS_LOG_LEVEL || 'warn'
+
   if (process.env.NODE_ENV !== 'test' || logInTest) {
-    return {}
+    return {
+      level
+    }
   }
 
   return {

@@ -9,6 +9,7 @@ const routing = require('./lib/routing')
 const { NEW_ADDRESS } = require('./lib/constants')
 const addressForms = require('./forms')
 const { handleFormRequest } = require('shared/lib/form-handler')
+const preHandlers = require('./pre-handlers')
 
 const getDefaultView = request => {
   const { sessionData: { caption, back } } = request.pre
@@ -60,7 +61,7 @@ const postSelectAddress = (request, h) => {
   }
 
   const { key } = request.params
-  const { addressSearchResults } = request.pre
+  const { addressSearchResults } = preHandlers.searchForAddressesByPostcode(request)
   const { uprn } = forms.getValues(form)
 
   const selectedAddress = addressSearchResults.find(address => address.uprn === parseInt(uprn))

@@ -77,7 +77,7 @@ const form = request => {
 const getUprn = address => address.uprn
 
 const schema = request => {
-  const { addressSearchResults } = request.pre
+  const addressSearchResults = request.pre.addressSearchResults || []
   const validUprns = addressSearchResults.map(getUprn)
   return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),

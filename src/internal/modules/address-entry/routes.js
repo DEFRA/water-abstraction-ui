@@ -46,8 +46,6 @@ module.exports = {
       },
       pre: [{
         method: preHandlers.getSessionData, assign: 'sessionData'
-      }, {
-        method: preHandlers.searchForAddressesByPostcode, assign: 'addressSearchResults'
       }]
     }
   },

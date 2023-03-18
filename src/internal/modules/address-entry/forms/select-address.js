@@ -56,6 +56,9 @@ const form = request => {
     errors: {
       'any.only': {
         message: 'Select an address from the list'
+      },
+      'number.base': {
+        message: 'Select an address from the list'
       }
     },
     label: 'Select an address',

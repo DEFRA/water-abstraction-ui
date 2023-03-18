@@ -1,6 +1,6 @@
 'use strict'
 
-const { omit, add } = require('lodash')
+const { omit } = require('lodash')
 
 const forms = require('shared/lib/forms')
 const { addressSources } = require('shared/lib/constants')

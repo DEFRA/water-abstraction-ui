@@ -89,5 +89,8 @@ const schema = request => {
   })
 }
 
-exports.form = form
-exports.schema = schema
+module.exports = {
+  form,
+  getAddressChoices,
+  schema
+}

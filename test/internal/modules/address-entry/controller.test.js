@@ -10,6 +10,7 @@ const {
 const sandbox = require('sinon').createSandbox()
 const { v4: uuid } = require('uuid')
 
+const AddressEntryPreHandlers = require('../../../../src/internal/modules/address-entry/pre-handlers.js')
 const controller = require('internal/modules/address-entry/controller')
 const session = require('internal/modules/address-entry/lib/session')
 
@@ -80,6 +81,8 @@ experiment('src/internal/modules/address-entry/controller.js', () => {
       redirect: sandbox.stub(),
       postRedirectGet: sandbox.stub()
     }
+
+    sandbox.stub(AddressEntryPreHandlers, 'searchForAddressesByPostcode').resolves(request.pre.addressSearchResults)
 
     sandbox.stub(session, 'merge').returns({
       redirectPath: REDIRECT_PATH

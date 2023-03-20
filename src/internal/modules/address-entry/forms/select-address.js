@@ -56,6 +56,9 @@ const form = request => {
     errors: {
       'any.only': {
         message: 'Select an address from the list'
+      },
+      'number.base': {
+        message: 'Select an address from the list'
       }
     },
     label: 'Select an address',
@@ -77,7 +80,7 @@ const form = request => {
 const getUprn = address => address.uprn
 
 const schema = request => {
-  const { addressSearchResults } = request.pre
+  const addressSearchResults = request.pre.addressSearchResults || []
   const validUprns = addressSearchResults.map(getUprn)
   return Joi.object().keys({
     csrf_token: Joi.string().uuid().required(),
@@ -86,5 +89,8 @@ const schema = request => {
   })
 }
 
-exports.form = form
-exports.schema = schema
+module.exports = {
+  form,
+  getAddressChoices,
+  schema
+}

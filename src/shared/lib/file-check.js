@@ -1,7 +1,5 @@
 const fs = require('fs')
 const { pick } = require('lodash')
-const fileType = require('file-type')
-const readChunk = require('read-chunk')
 const util = require('util')
 const { parse } = require('csv-parse')
 
@@ -75,10 +73,10 @@ const isCsv = async file => {
 
 const detectFileType = async (file) => {
   throwIfFileDoesNotExist(file)
+  const { fileTypeFromFile } = await import('file-type')
 
   // Detect file types supported by file-type module
-  const buffer = readChunk.sync(file, 0, fileType.minimumBytes)
-  const result = fileType(buffer)
+  const result = await fileTypeFromFile(file)
   if (result) {
     return result.ext
   }

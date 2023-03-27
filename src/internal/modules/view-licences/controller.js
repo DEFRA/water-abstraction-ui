@@ -78,6 +78,7 @@ const getLicenceSummary = async (request, h) => {
     },
     links: getLinks({ licenceId, documentId }, permissions),
     validityMessage: mappers.getValidityNotice(licence),
+    includeInSupplementaryBillingMessage: _includeInSupplementaryBillingMessage(licence),
     back: '/licences'
   })
 }
@@ -133,6 +134,22 @@ const postMarkLicenceForSupplementaryBilling = async (request, h) => {
     panelText: `Licence number: ${licenceRef}`,
     licenceId
   })
+}
+
+const _includeInSupplementaryBillingMessage = (licence) => {
+  const includeInPresroc = ['yes', 'reprocess'].includes(licence.includeInSupplementaryBilling)
+  const includeInSroc = licence.includeInSrocSupplementaryBilling
+
+  let message = null
+  if (includeInPresroc && includeInSroc) {
+    message = 'This licence has been marked for the next old charge and current charge scheme supplementary bill runs'
+  } else if (includeInPresroc) {
+    message = 'This licence has been marked for the next old charge scheme supplementary bill run'
+  } else if (includeInSroc) {
+    message = 'This licence has been marked for the next supplementary bill run'
+  }
+
+  return message
 }
 
 exports.getLicenceSummary = getLicenceSummary

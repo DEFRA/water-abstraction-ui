@@ -9,9 +9,9 @@
     <div class="govuk-grid-column-full">
 
 
-    {% if licence.includeInSupplementaryBilling == 'yes' or licence.includeInSupplementaryBilling == 'reprocess'  %}
+    {% if includeInSupplementaryBillingMessage %}
         {{ govukNotificationBanner({
-              html: '<strong>This licence has been marked for the next supplementary bill run</strong>'
+              html: '<strong>' + includeInSupplementaryBillingMessage + '</strong>'
         }) }}
     {% endif %}
 

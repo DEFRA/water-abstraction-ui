@@ -40,7 +40,7 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
   })
 
   experiment('.getLicenceSummary', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       request = {
         auth: {
           credentials: {
@@ -116,49 +116,66 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
           }
         }
       }
-      await controller.getLicenceSummary(request, h)
     })
 
     test('uses the correct nunjucks template', async () => {
+      await controller.getLicenceSummary(request, h)
+
       const [template] = h.view.lastCall.args
       expect(template).to.equal('nunjucks/view-licences/licence.njk')
     })
 
-    test('calls the CRM to grab contact details', () => {
+    test('calls the CRM to grab contact details', async () => {
+      await controller.getLicenceSummary(request, h)
+
       expect(services.crm.documentRoles.getDocumentRolesByDocumentRef.called).to.be.true()
     })
 
     test('sets the correct page title in the view', async () => {
+      await controller.getLicenceSummary(request, h)
+
       const [, { pageTitle }] = h.view.lastCall.args
       expect(pageTitle).to.equal('Licence 01/123')
     })
 
     test('includes the featureToggles config property', async () => {
+      await controller.getLicenceSummary(request, h)
+
       const [, { featureToggles }] = h.view.lastCall.args
       expect(featureToggles).to.be.an.object()
     })
 
     test('includes the featureToggles config property', async () => {
+      await controller.getLicenceSummary(request, h)
+
       const [, { featureToggles }] = h.view.lastCall.args
       expect(featureToggles).to.be.an.object()
     })
 
     test('includes the licenceId', async () => {
+      await controller.getLicenceSummary(request, h)
+
       const [, view] = h.view.lastCall.args
       expect(view.licenceId).to.equal(licenceId)
     })
 
     test('includes the documentId', async () => {
+      await controller.getLicenceSummary(request, h)
+
       const [, view] = h.view.lastCall.args
       expect(view.documentId).to.equal(documentId)
     })
 
     test('maps the gauging stations', async () => {
+      await controller.getLicenceSummary(request, h)
+
       const [, { gaugingStationsData }] = h.view.lastCall.args
       expect(gaugingStationsData).to.equal([])
     })
 
     test('includes the licence, bills, notifications, primaryUser and summary from request.pre', async () => {
+      await controller.getLicenceSummary(request, h)
+
       const [, view] = h.view.lastCall.args
       expect(view.licence).to.equal(request.pre.licence)
       expect(view.bills).to.equal(request.pre.bills)
@@ -168,6 +185,8 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
     })
 
     test('maps the charge versions, sorted by workflows then by data and version number', async () => {
+      await controller.getLicenceSummary(request, h)
+
       const [, { chargeVersions }] = h.view.lastCall.args
       const ids = chargeVersions.map(row => row.id)
       expect(ids).to.equal([
@@ -179,12 +198,16 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
     })
 
     test('maps the agreements, including a human-readable description', async () => {
+      await controller.getLicenceSummary(request, h)
+
       const [, { agreements }] = h.view.lastCall.args
       expect(agreements).to.be.an.array().length(1)
       expect(agreements[0].agreement.description).to.equal('Two-part tariff')
     })
 
     test('maps the returns to include a view/edit link', async () => {
+      await controller.getLicenceSummary(request, h)
+
       const [, { returns }] = h.view.lastCall.args
       expect(returns.data).to.equal([
         {
@@ -207,6 +230,8 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
     })
 
     test('includes links', async () => {
+      await controller.getLicenceSummary(request, h)
+
       const [, { links }] = h.view.lastCall.args
       expect(links.bills).to.equal(`/licences/${licenceId}/bills`)
       expect(links.returns).to.equal(`/licences/${documentId}/returns`)
@@ -214,28 +239,99 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
     })
 
     test('includes validity message', async () => {
+      await controller.getLicenceSummary(request, h)
+
       const [, { validityMessage }] = h.view.lastCall.args
       expect(validityMessage).to.equal('This licence starts on 1 January 3000')
     })
 
     test('includes a back link', async () => {
+      await controller.getLicenceSummary(request, h)
+
       const [, { back }] = h.view.lastCall.args
       expect(back).to.equal('/licences')
     })
-    experiment('when the licence has ended less than 6 years ago', () => {
-      test('links to manage charge versions and agreements are omitted', async () => {
-        request.pre.licence.endDate = moment().add(-5, 'years').format('YYYY-MM-DD')
+
+    experiment('when the licence is not marked for supplementary billing', () => {
+      test('does not include a marked for supplementary billing message', async () => {
         await controller.getLicenceSummary(request, h)
+
+        const [, { includeInSupplementaryBillingMessage }] = h.view.lastCall.args
+        expect(includeInSupplementaryBillingMessage).to.be.null()
+      })
+    })
+
+    experiment('when the licence is marked for supplementary billing', () => {
+      experiment('for the old (presroc) charge scheme', () => {
+        beforeEach(() => {
+          request.pre.licence.includeInSupplementaryBilling = 'yes'
+        })
+
+        test('includes the right marked for supplementary billing message', async () => {
+          await controller.getLicenceSummary(request, h)
+
+          const [, { includeInSupplementaryBillingMessage }] = h.view.lastCall.args
+          expect(includeInSupplementaryBillingMessage).to.equal(
+            'This licence has been marked for the next old charge scheme supplementary bill run'
+          )
+        })
+      })
+
+      experiment('for the current (sroc) charge scheme', () => {
+        beforeEach(() => {
+          request.pre.licence.includeInSrocSupplementaryBilling = true
+        })
+
+        test('includes the right marked for supplementary billing message', async () => {
+          await controller.getLicenceSummary(request, h)
+
+          const [, { includeInSupplementaryBillingMessage }] = h.view.lastCall.args
+          expect(includeInSupplementaryBillingMessage).to.equal(
+            'This licence has been marked for the next supplementary bill run'
+          )
+        })
+      })
+
+      experiment('for both (sroc & presroc) charge schemes', () => {
+        beforeEach(() => {
+          request.pre.licence.includeInSupplementaryBilling = 'yes'
+          request.pre.licence.includeInSrocSupplementaryBilling = true
+        })
+
+        test('includes the right marked for supplementary billing message', async () => {
+          await controller.getLicenceSummary(request, h)
+
+          const [, { includeInSupplementaryBillingMessage }] = h.view.lastCall.args
+          expect(includeInSupplementaryBillingMessage).to.equal(
+            'This licence has been marked for the next old charge and current charge scheme supplementary bill runs'
+          )
+        })
+      })
+    })
+
+    experiment('when the licence has ended less than 6 years ago', () => {
+      beforeEach(() => {
+        request.pre.licence.endDate = moment().add(-5, 'years').format('YYYY-MM-DD')
+      })
+
+      test('links to manage charge versions and agreements are omitted', async () => {
+        await controller.getLicenceSummary(request, h)
+
         const [, { links }] = h.view.lastCall.args
         expect(links.setupCharge).to.equal(`/licences/${licenceId}/charge-information/create`)
         expect(links.makeNonChargeable).to.equal(`/licences/${licenceId}/charge-information/non-chargeable-reason?start=1`)
         expect(links.addAgreement).to.equal(`/licences/${licenceId}/agreements/select-type`)
       })
     })
+
     experiment('when the licence has ended more than 6 years ago', () => {
-      test('createChargeVersions flag is false', async () => {
+      beforeEach(() => {
         request.pre.licence.endDate = moment().add(-7, 'years').format('YYYY-MM-DD')
+      })
+
+      test('createChargeVersions flag is false', async () => {
         await controller.getLicenceSummary(request, h)
+
         const [, { links }] = h.view.lastCall.args
         expect(links.setupCharge).to.be.false()
         expect(links.makeNonChargeable).to.be.false()

@@ -13,7 +13,6 @@ const uploadHelpers = new UploadHelpers('returns', validTypes, services, logger,
 const { NO_FILE, OK } = UploadHelpers.fileStatuses
 const uploadSummaryHelpers = require('../lib/upload-summary-helpers')
 const csvTemplates = require('../lib/csv-templates')
-const { Readable } = require('stream')
 
 const confirmForm = require('../forms/confirm-upload')
 const helpers = require('../lib/helpers')
@@ -241,13 +240,7 @@ const getCSVTemplates = async (request, h) => {
   const zip = await csvTemplates.buildZip(data, companyName)
   const fileName = getZipFilename(companyName, endDate.substring(0, 4))
 
-  // At this stage `zip` is a stream in objectMode. Hapi will not return streams in objectMode so we wrap it in a
-  // readable stream. A better solution would be for `zip` to not be in objectMode in the first place but as far as we
-  // can see the archiver library we use does not support this. More info can be found here:
-  // https://github.com/hapijs/hapi/issues/3733
-  const zipStream = new Readable().wrap(zip)
-
-  return h.response(zipStream)
+  return h.response(zip)
     .header('Content-type', 'application/zip')
     .header('Content-disposition', `attachment; filename="${fileName}"`)
 }

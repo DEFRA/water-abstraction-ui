@@ -7,6 +7,7 @@ const moment = require('moment')
 const util = require('util')
 const archiver = require('archiver')
 const path = require('path')
+const { Readable } = require('stream')
 const { stringify } = require('csv-stringify')
 
 const csvStringify = util.promisify(stringify)
@@ -229,7 +230,11 @@ const buildZip = async (data, companyName, archive) => {
 
   archive.finalize()
 
-  return archive
+  // At this stage `archive` is a stream in objectMode. Hapi will not return streams in objectMode so we wrap it in a
+  // readable stream. A better solution would be for `zip` to not be in objectMode in the first place but as far as we
+  // can see the archiver library we use does not support this. More info can be found here:
+  // https://github.com/hapijs/hapi/issues/3733
+  return new Readable().wrap(archive)
 }
 
 exports._getCSVLineLabel = getCSVLineLabel

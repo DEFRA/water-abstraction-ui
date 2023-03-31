@@ -231,8 +231,8 @@ const buildZip = async (data, companyName, archive) => {
   archive.finalize()
 
   // At this stage `archive` is a stream in objectMode. Hapi will not return streams in objectMode so we wrap it in a
-  // readable stream. A better solution would be for `zip` to not be in objectMode in the first place but as far as we
-  // can see the archiver library we use does not support this. More info can be found here:
+  // readable stream. A better solution would be for `archive` to not be in objectMode in the first place but as far as
+  // we can see the archiver library we use does not support this. More info can be found here:
   // https://github.com/hapijs/hapi/issues/3733
   return new Readable().wrap(archive)
 }

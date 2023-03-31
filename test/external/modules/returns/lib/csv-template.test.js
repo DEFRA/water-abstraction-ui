@@ -382,7 +382,8 @@ experiment('csv templates', () => {
 
   experiment('buildZip', () => {
     beforeEach(async () => {
-      // Creating an actual 'archive' instance as we weren't able to wrap it as a readable stream
+      // We create an instance of `archive` so the function can wrap it as a readable stream, which would be awkward to
+      // do if we simply created a mock object.
       archive = archiver('zip')
       archive.append = sandbox.stub()
       archive.finalize = sandbox.stub()

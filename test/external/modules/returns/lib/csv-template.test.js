@@ -7,6 +7,7 @@ const sandbox = require('sinon').createSandbox()
 
 const helpers = require('@envage/water-abstraction-helpers')
 
+const archiver = require('archiver')
 const { logger } = require('external/logger')
 const csvTemplates = require('external/modules/returns/lib/csv-templates')
 
@@ -14,10 +15,6 @@ experiment('csv templates', () => {
   let archive
 
   beforeEach(async () => {
-    archive = {
-      append: sandbox.stub(),
-      finalize: sandbox.stub()
-    }
     sandbox.stub(logger, 'warn')
   })
 
@@ -310,6 +307,12 @@ experiment('csv templates', () => {
   })
 
   experiment('addCSVToArchive', () => {
+    beforeEach(async () => {
+      archive = {
+        append: sandbox.stub()
+      }
+    })
+
     test('adds the CSV file specified in the key to the ZIP archive', async () => {
       const data = {
         day: [['foo', 'bar']]
@@ -324,6 +327,12 @@ experiment('csv templates', () => {
   })
 
   experiment('addReadmeToArchive', () => {
+    beforeEach(async () => {
+      archive = {
+        append: sandbox.stub()
+      }
+    })
+
     test('adds the readme file to the ZIP archive', async () => {
       await csvTemplates._addReadmeToArchive(archive)
 
@@ -372,6 +381,13 @@ experiment('csv templates', () => {
   })
 
   experiment('buildZip', () => {
+    beforeEach(async () => {
+      // Creating an actual 'archive' instance as we weren't able to wrap it as a readable stream
+      archive = archiver('zip')
+      archive.append = sandbox.stub()
+      archive.finalize = sandbox.stub()
+    })
+
     test('should build a zip file', async () => {
       const data = {
         day: [['foo', 'bar']]

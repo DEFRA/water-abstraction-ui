@@ -7,6 +7,7 @@ const sandbox = require('sinon').createSandbox()
 
 const helpers = require('@envage/water-abstraction-helpers')
 
+const archiver = require('archiver')
 const { logger } = require('external/logger')
 const csvTemplates = require('external/modules/returns/lib/csv-templates')
 
@@ -14,10 +15,12 @@ experiment('csv templates', () => {
   let archive
 
   beforeEach(async () => {
-    archive = {
-      append: sandbox.stub(),
-      finalize: sandbox.stub()
-    }
+    // We create an instance of `archive` so it can be piped through a passthrough stream, which would be awkward to do
+    // if we simply created a mock object.
+    archive = archiver('zip')
+    archive.append = sandbox.stub()
+    archive.finalize = sandbox.stub()
+
     sandbox.stub(logger, 'warn')
   })
 

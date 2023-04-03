@@ -15,6 +15,12 @@ experiment('csv templates', () => {
   let archive
 
   beforeEach(async () => {
+    // We create an instance of `archive` so it can be piped through a passthrough stream, which would be awkward to do
+    // if we simply created a mock object.
+    archive = archiver('zip')
+    archive.append = sandbox.stub()
+    archive.finalize = sandbox.stub()
+
     sandbox.stub(logger, 'warn')
   })
 
@@ -307,12 +313,6 @@ experiment('csv templates', () => {
   })
 
   experiment('addCSVToArchive', () => {
-    beforeEach(async () => {
-      archive = {
-        append: sandbox.stub()
-      }
-    })
-
     test('adds the CSV file specified in the key to the ZIP archive', async () => {
       const data = {
         day: [['foo', 'bar']]
@@ -327,12 +327,6 @@ experiment('csv templates', () => {
   })
 
   experiment('addReadmeToArchive', () => {
-    beforeEach(async () => {
-      archive = {
-        append: sandbox.stub()
-      }
-    })
-
     test('adds the readme file to the ZIP archive', async () => {
       await csvTemplates._addReadmeToArchive(archive)
 
@@ -381,14 +375,6 @@ experiment('csv templates', () => {
   })
 
   experiment('buildZip', () => {
-    beforeEach(async () => {
-      // We create an instance of `archive` so the function can wrap it as a readable stream, which would be awkward to
-      // do if we simply created a mock object.
-      archive = archiver('zip')
-      archive.append = sandbox.stub()
-      archive.finalize = sandbox.stub()
-    })
-
     test('should build a zip file', async () => {
       const data = {
         day: [['foo', 'bar']]

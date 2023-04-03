@@ -7,7 +7,7 @@ const moment = require('moment')
 const util = require('util')
 const archiver = require('archiver')
 const path = require('path')
-const { Readable } = require('stream')
+const { PassThrough } = require('stream')
 const { stringify } = require('csv-stringify')
 
 const csvStringify = util.promisify(stringify)
@@ -230,11 +230,11 @@ const buildZip = async (data, companyName, archive) => {
 
   archive.finalize()
 
-  // At this stage `archive` is a stream in objectMode. Hapi will not return streams in objectMode so we wrap it in a
-  // readable stream. A better solution would be for `archive` to not be in objectMode in the first place but as far as
-  // we can see the archiver library we use does not support this. More info can be found here:
-  // https://github.com/hapijs/hapi/issues/3733
-  return new Readable().wrap(archive)
+  // At this stage `archive` is a stream in objectMode. As of 21.0.0 Hapi will not return streams in objectMode so we
+  // pipe it though a readable passthrough stream. A better solution would be for `archive` to not be in objectMode in
+  // the first place but as far as we can see the archiver library we use does not support this. More info can be found
+  // in the 21.0.0 release notes: https://github.com/hapijs/hapi/issues/4386
+  return archive.pipe(new PassThrough())
 }
 
 exports._getCSVLineLabel = getCSVLineLabel

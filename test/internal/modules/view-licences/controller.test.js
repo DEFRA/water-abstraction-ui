@@ -272,7 +272,7 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
 
           const [, { includeInSupplementaryBillingMessage }] = h.view.lastCall.args
           expect(includeInSupplementaryBillingMessage).to.equal(
-            'This licence has been marked for the next old charge scheme supplementary bill run'
+            'This licence has been marked for the next supplementary bill run for the old charge scheme.'
           )
         })
       })
@@ -287,7 +287,7 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
 
           const [, { includeInSupplementaryBillingMessage }] = h.view.lastCall.args
           expect(includeInSupplementaryBillingMessage).to.equal(
-            'This licence has been marked for the next supplementary bill run'
+            'This licence has been marked for the next supplementary bill run.'
           )
         })
       })
@@ -303,7 +303,7 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
 
           const [, { includeInSupplementaryBillingMessage }] = h.view.lastCall.args
           expect(includeInSupplementaryBillingMessage).to.equal(
-            'This licence has been marked for the next old charge and current charge scheme supplementary bill runs'
+            'This licence has been marked for the next supplementary bill runs for the current and old charge schemes.'
           )
         })
       })

@@ -142,11 +142,11 @@ const _includeInSupplementaryBillingMessage = (licence) => {
 
   let message = null
   if (includeInPresroc && includeInSroc) {
-    message = 'This licence has been marked for the next old charge and current charge scheme supplementary bill runs'
+    message = 'This licence has been marked for the next supplementary bill runs for the current and old charge schemes.'
   } else if (includeInPresroc) {
-    message = 'This licence has been marked for the next old charge scheme supplementary bill run'
+    message = 'This licence has been marked for the next supplementary bill run for the old charge scheme.'
   } else if (includeInSroc) {
-    message = 'This licence has been marked for the next supplementary bill run'
+    message = 'This licence has been marked for the next supplementary bill run.'
   }
 
   return message

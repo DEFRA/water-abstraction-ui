@@ -1,5 +1,4 @@
 const sinon = require('sinon')
-const got = require('got')
 const sandbox = sinon.createSandbox()
 
 const {
@@ -13,10 +12,13 @@ const { expect } = require('@hapi/code')
 const ReportingService = require('internal/lib/connectors/services/water/ReportingService')
 const { serviceRequest } = require('@envage/water-abstraction-helpers')
 
+let got
+
 experiment('services/water/ReportingService', () => {
   beforeEach(async () => {
-    sandbox.stub(serviceRequest, 'get')
+    got = (await import('got')).got
     sandbox.stub(got, 'stream')
+    sandbox.stub(serviceRequest, 'get')
   })
 
   afterEach(async () => {

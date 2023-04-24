@@ -50,7 +50,7 @@
     "dotenv": "^16.0.3",
     "es6-error": "^4.1.1",
     "file-type": "^18.2.1",
-    "got": "^11.8.5",
+    "got": "^12.6.0",
     "govuk-frontend": "^3.14.0",
     "hapi-auth-cookie": "^9.1.0",
     "hapi-pino": "^12.0.0",

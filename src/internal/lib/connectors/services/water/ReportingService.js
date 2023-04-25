@@ -1,5 +1,4 @@
 const ServiceClient = require('shared/lib/connectors/services/ServiceClient')
-const got = require('got')
 
 class ReportingService extends ServiceClient {
   /**
@@ -8,7 +7,9 @@ class ReportingService extends ServiceClient {
    * @param reportIdentifier {string} The report identifier
    * @returns {Request} Request body
    */
-  getReport (userId, reportIdentifier) {
+  async getReport (userId, reportIdentifier) {
+    const { got } = await import('got')
+
     const uri = this.joinUrl('report/', reportIdentifier)
     const options = {
       headers: {

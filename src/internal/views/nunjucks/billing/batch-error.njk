@@ -1,7 +1,9 @@
 {% extends "./nunjucks/layout.njk" %}
 
+{% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "./nunjucks/billing/macros/batch-header.njk" import batchHeader %}
+{% from "./nunjucks/billing/macros/batch-buttons.njk" import cancelBatchButton %}
 
 {% block content %}
 
@@ -11,6 +13,16 @@
   }) }}
 
   {{ batchHeader(pageTitle, batch) }}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <section class="govuk-!-margin-bottom-6">
+
+        {{ cancelBatchButton(batch) }}
+
+      </section>
+    </div>
+  </div>
 
   <p class="govuk-body">
     <a href="{{ back }}">Return to bill runs</a>

@@ -12,7 +12,7 @@ const transactionsCSV = require('../services/transactions-csv')
 const csv = require('internal/lib/csv-download')
 const { logger } = require('internal/logger')
 const mappers = require('../lib/mappers')
-const { featureToggles } = require('../../../config')
+const { featureToggles, recordsToDisplayPerPage } = require('../../../config')
 
 const confirmForm = require('shared/lib/forms/confirm-form')
 
@@ -85,7 +85,7 @@ const getBillingBatchInvoice = async (request, h) => {
 
 const getBillingBatchList = async (request, h) => {
   const { page } = request.query
-  const { data, pagination } = await batchService.getBatchList(page, 10)
+  const { data, pagination } = await batchService.getBatchList(page, recordsToDisplayPerPage)
 
   return h.view('nunjucks/billing/batch-list', {
     ...request.view,

@@ -170,5 +170,6 @@ module.exports = {
     triggerSrocSupplementary: (get(process.env, 'TRIGGER_SROC_SUPPLEMENTARY') || '').toLowerCase() === 'true',
     acceptanceTestsProxy: !isProduction,
     showVerificationCode: process.env.SHOW_VERIFICATION_CODE_FEATURE === 'true' && !isProduction
-  }
+  },
+  billRunsToDisplayPerPage: process.env.BILL_RUNS_TO_DISPLAY_PER_PAGE || 20
 }

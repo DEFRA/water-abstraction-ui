@@ -171,5 +171,5 @@ module.exports = {
     acceptanceTestsProxy: !isProduction,
     showVerificationCode: process.env.SHOW_VERIFICATION_CODE_FEATURE === 'true' && !isProduction
   },
-  recordsToDisplayPerPage: process.env.RECORDS_TO_DISPLAY_PER_PAGE || 20
+  billRunsToDisplayPerPage: process.env.BILL_RUNS_TO_DISPLAY_PER_PAGE || 20
 }

@@ -52,7 +52,7 @@ const getSortKey = trans => `${get(trans, 'chargeElement.id')}_${trans.isCompens
 const getAdditionalCharges = transaction => {
   const additionalCharges = []
   if (transaction.supportedSourceName) {
-    additionalCharges.push(`Supported source ${transaction.supportedSourceName} (${numberFormatter.formatCurrency(transaction.grossValuesCalculated.supportedSourceCharge, transaction.isCredit, true)})`)
+    additionalCharges.push(`Supported source ${transaction.supportedSourceName} (${numberFormatter.formatCurrency(transaction.grossValuesCalculated.supportedSourceCharge, transaction.isCredit, true, false)})`)
   }
   if (transaction.isWaterCompanyCharge) {
     additionalCharges.push('Public Water Supply')

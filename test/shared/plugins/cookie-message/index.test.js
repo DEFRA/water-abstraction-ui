@@ -199,7 +199,7 @@ experiment('plugins/cookie-message/index', () => {
   experiment('the setCookiePreferences toolkit method', () => {
     experiment('when cookies are accepted', () => {
       beforeEach(async () => {
-        plugin._setCookiePreferences.call(h, true)
+        await plugin._setCookiePreferences.call(h, true)
       })
 
       test('sets the preferences cookie', async () => {
@@ -213,7 +213,7 @@ experiment('plugins/cookie-message/index', () => {
 
     experiment('when cookies are rejected', () => {
       beforeEach(async () => {
-        plugin._setCookiePreferences.call(h, false)
+        await plugin._setCookiePreferences.call(h, false)
       })
 
       test('sets the preferences cookie', async () => {

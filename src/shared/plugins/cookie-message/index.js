@@ -104,15 +104,17 @@ function isAnalyticsCookiesEnabled () {
  *
  * @param {Boolean} isAnalyticsAccepted
  */
-function setCookiePreferences (isAnalyticsAccepted) {
+async function setCookiePreferences (isAnalyticsAccepted) {
   // Set preferences
   this.state(constants.cookieName, isAnalyticsAccepted ? constants.accepted : constants.rejected)
+
+  const domain = await getAnalyticsCookieDomain(this.request.info.hostname)
 
   // Clear analytics cookies
   if (!isAnalyticsAccepted) {
     ['_ga', '_gid', '_gat', '_gat_govuk_shared'].forEach(cookieName => {
       this.unstate(cookieName, {
-        domain: getAnalyticsCookieDomain(this.request.info.hostname)
+        domain
       })
     })
   }

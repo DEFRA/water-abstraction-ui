@@ -1,6 +1,5 @@
 'use strict'
 
-const { parseDomain } = require('parse-domain')
 const localHost = 'localhost'
 
 /**
@@ -8,11 +7,12 @@ const localHost = 'localhost'
  * @param {String} hostName
  * @returns {String}
  */
-const getAnalyticsCookieDomain = hostName => {
+const getAnalyticsCookieDomain = async (hostName) => {
   if (hostName.includes(localHost)) {
     return localHost
   }
 
+  const { parseDomain } = await import('parse-domain')
   const { domain, topLevelDomains } = parseDomain(hostName)
 
   return `.${domain}.${topLevelDomains.join('.')}`

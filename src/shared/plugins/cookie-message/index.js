@@ -104,11 +104,11 @@ function isAnalyticsCookiesEnabled () {
  *
  * @param {Boolean} isAnalyticsAccepted
  */
-async function setCookiePreferences (isAnalyticsAccepted) {
+function setCookiePreferences (isAnalyticsAccepted) {
   // Set preferences
   this.state(constants.cookieName, isAnalyticsAccepted ? constants.accepted : constants.rejected)
 
-  const domain = await getAnalyticsCookieDomain(this.request.info.hostname)
+  const domain = getAnalyticsCookieDomain(this.request.info.hostname)
 
   // Clear analytics cookies
   if (!isAnalyticsAccepted) {

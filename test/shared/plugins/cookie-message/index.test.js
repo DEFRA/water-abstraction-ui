@@ -7,7 +7,7 @@ const constants = require('shared/plugins/cookie-message/lib/constants')
 experiment('plugins/cookie-message/index', () => {
   let server, request, h
 
-  beforeEach(async () => {
+  beforeEach(() => {
     server = {
       state: sandbox.stub(),
       ext: sandbox.stub(),
@@ -21,7 +21,7 @@ experiment('plugins/cookie-message/index', () => {
       continue: 'continue',
       request: {
         info: {
-          hostname: 'subdomain.domain.gov.uk'
+          hostname: 'subdomain.defra.cloud'
         }
       }
     }
@@ -40,11 +40,11 @@ experiment('plugins/cookie-message/index', () => {
 
     sandbox.stub(process, 'env').value({ ENVIRONMENT: 'dev' })
   })
-  afterEach(async () => {
+  afterEach(() => {
     sandbox.restore()
   })
 
-  test('includes package name and version', async () => {
+  test('includes package name and version', () => {
     expect(plugin.pkg).to.equal({
       name: 'cookieMessagePlugin',
       version: '2.0.0',
@@ -54,7 +54,7 @@ experiment('plugins/cookie-message/index', () => {
     })
   })
 
-  test('has a register function', async () => {
+  test('has a register function', () => {
     expect(plugin.register).to.be.a.function()
   })
 
@@ -63,7 +63,7 @@ experiment('plugins/cookie-message/index', () => {
       plugin.register(server)
     })
 
-    test('defines the state cookie', async () => {
+    test('defines the state cookie', () => {
       expect(server.state.calledWith(
         'accept_analytics_cookies',
         {
@@ -75,20 +75,20 @@ experiment('plugins/cookie-message/index', () => {
       )).to.be.true()
     })
 
-    test('registers the pre handler', async () => {
+    test('registers the pre handler', () => {
       expect(server.ext.calledWith({
         type: 'onPreHandler',
         method: plugin._handler
       })).to.be.true()
     })
 
-    test('decorates request with isAnalyticsCookiesEnabled method', async () => {
+    test('decorates request with isAnalyticsCookiesEnabled method', () => {
       expect(server.decorate.calledWith(
         'request', 'isAnalyticsCookiesEnabled', plugin._isAnalyticsCookiesEnabled
       )).to.be.true()
     })
 
-    test('decorates response toolkit with setCookiePreferences method', async () => {
+    test('decorates response toolkit with setCookiePreferences method', () => {
       expect(server.decorate.calledWith(
         'toolkit', 'setCookiePreferences', plugin._setCookiePreferences
       )).to.be.true()
@@ -103,7 +103,7 @@ experiment('plugins/cookie-message/index', () => {
         await plugin._handler(request, h)
       })
 
-      test('state is set in the view', async () => {
+      test('state is set in the view', () => {
         expect(request.view.cookieBanner).to.equal({
           isAnalyticsCookiesEnabled: null,
           isVisible: true,
@@ -123,7 +123,7 @@ experiment('plugins/cookie-message/index', () => {
         await plugin._handler(request, h)
       })
 
-      test('the cookie banner is hidden', async () => {
+      test('the cookie banner is hidden', () => {
         expect(request.view.cookieBanner.isVisible).to.be.false()
       })
     })
@@ -135,11 +135,11 @@ experiment('plugins/cookie-message/index', () => {
         await plugin._handler(request, h)
       })
 
-      test('the cookie banner is hidden', async () => {
+      test('the cookie banner is hidden', () => {
         expect(request.view.cookieBanner.isVisible).to.be.false()
       })
 
-      test('the flag is set to enable the cookies', async () => {
+      test('the flag is set to enable the cookies', () => {
         expect(request.view.cookieBanner.isAnalyticsCookiesEnabled).to.be.true()
       })
     })
@@ -151,11 +151,11 @@ experiment('plugins/cookie-message/index', () => {
         await plugin._handler(request, h)
       })
 
-      test('the cookie banner is hidden', async () => {
+      test('the cookie banner is hidden', () => {
         expect(request.view.cookieBanner.isVisible).to.be.false()
       })
 
-      test('the flag is cleared to disable the cookies', async () => {
+      test('the flag is cleared to disable the cookies', () => {
         expect(request.view.cookieBanner.isAnalyticsCookiesEnabled).to.be.false()
       })
     })
@@ -169,26 +169,26 @@ experiment('plugins/cookie-message/index', () => {
         await plugin._handler(request, h)
       })
 
-      test('the flash message is set in the view', async () => {
+      test('the flash message is set in the view', () => {
         expect(request.view.cookieBanner.flashMessage).to.equal(flashMessage)
       })
     })
   })
 
   experiment('the isAnalyticsCookiesEnabled request method', () => {
-    test('returns null when the cookie is not set', async () => {
+    test('returns null when the cookie is not set', () => {
       request.state = {}
       expect(plugin._isAnalyticsCookiesEnabled.call(request)).to.be.null()
     })
 
-    test('returns true when the cookie is accepted', async () => {
+    test('returns true when the cookie is accepted', () => {
       request.state = {
         [constants.cookieName]: constants.accepted
       }
       expect(plugin._isAnalyticsCookiesEnabled.call(request)).to.be.true()
     })
 
-    test('returns false when the cookie is rejected', async () => {
+    test('returns false when the cookie is rejected', () => {
       request.state = {
         [constants.cookieName]: constants.rejected
       }
@@ -198,33 +198,33 @@ experiment('plugins/cookie-message/index', () => {
 
   experiment('the setCookiePreferences toolkit method', () => {
     experiment('when cookies are accepted', () => {
-      beforeEach(async () => {
-        await plugin._setCookiePreferences.call(h, true)
+      beforeEach(() => {
+        plugin._setCookiePreferences.call(h, true)
       })
 
-      test('sets the preferences cookie', async () => {
+      test('sets the preferences cookie', () => {
         expect(h.state.calledWith(constants.cookieName, constants.accepted)).to.be.true()
       })
 
-      test('does not unset any cookies', async () => {
+      test('does not unset any cookies', () => {
         expect(h.unstate.called).to.be.false()
       })
     })
 
     experiment('when cookies are rejected', () => {
-      beforeEach(async () => {
-        await plugin._setCookiePreferences.call(h, false)
+      beforeEach(() => {
+        plugin._setCookiePreferences.call(h, false)
       })
 
-      test('sets the preferences cookie', async () => {
+      test('sets the preferences cookie', () => {
         expect(h.state.calledWith(constants.cookieName, constants.rejected)).to.be.true()
       })
 
-      test('unset any analytics cookies', async () => {
-        expect(h.unstate.calledWith('_ga', { domain: '.domain.gov.uk' })).to.be.true()
-        expect(h.unstate.calledWith('_gid', { domain: '.domain.gov.uk' })).to.be.true()
-        expect(h.unstate.calledWith('_gat', { domain: '.domain.gov.uk' })).to.be.true()
-        expect(h.unstate.calledWith('_gat_govuk_shared', { domain: '.domain.gov.uk' })).to.be.true()
+      test('unset any analytics cookies', () => {
+        expect(h.unstate.calledWith('_ga', { domain: '.defra.cloud' })).to.be.true()
+        expect(h.unstate.calledWith('_gid', { domain: '.defra.cloud' })).to.be.true()
+        expect(h.unstate.calledWith('_gat', { domain: '.defra.cloud' })).to.be.true()
+        expect(h.unstate.calledWith('_gat_govuk_shared', { domain: '.defra.cloud' })).to.be.true()
       })
     })
   })

@@ -40,7 +40,7 @@ const postCookies = async (request, h) => {
   if (form.isValid) {
     // Set the cookie preferences
     const { acceptAnalyticsCookies } = getValues(form)
-    await h.setCookiePreferences(acceptAnalyticsCookies)
+    h.setCookiePreferences(acceptAnalyticsCookies)
   }
 
   return h.postRedirectGet(form)
@@ -61,7 +61,7 @@ const getSetCookiePreferences = async (request, h) => {
   const { acceptAnalytics, redirectPath } = request.query
 
   // Set preferences
-  await h.setCookiePreferences(acceptAnalytics)
+  h.setCookiePreferences(acceptAnalytics)
 
   // Set flash message in session
   const message = `You’ve ${acceptAnalytics ? 'accepted' : 'rejected'} analytics cookies.`

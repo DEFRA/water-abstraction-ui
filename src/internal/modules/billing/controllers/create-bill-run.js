@@ -192,15 +192,14 @@ const _batchBillableYears = async (season, billingType, userEmail, regionId) => 
 
 const _batching = async (h, batch) => {
   try {
-    const result = { batch: null }
-    result.batch = await _initiateSrocBatch(batch)
+    let batchData = await _initiateSrocBatch(batch)
 
     if (!config.featureToggles.srocOnlyBilling) {
       const { data } = await services.water.billingBatches.createBillingBatch(batch)
-      result.batch = data.batch
+      batchData = data.batch
     }
 
-    const path = routing.getBillingBatchRoute(result.batch, { isBackEnabled: false })
+    const path = routing.getBillingBatchRoute(batchData, { isBackEnabled: false })
 
     return h.redirect(path)
   } catch (err) {

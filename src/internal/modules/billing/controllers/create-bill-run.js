@@ -213,22 +213,20 @@ const _batching = async (h, batch) => {
 
 async function _initiateSrocBatch (batch) {
   const { batchType, financialYearEnding, regionId, userEmail } = batch
-  let result = {}
 
   // SROC is still in development so controlled by a feature toggle and only supplementary is supported
   if (!config.featureToggles.triggerSrocSupplementary || batchType !== 'supplementary') {
-    return result
+    return {}
   }
 
   try {
-    result = await services.system.billRuns.createBillRun(batchType, 'sroc', regionId, userEmail)
+    const result = await services.system.billRuns.createBillRun(batchType, 'sroc', regionId, userEmail)
+    return result
   } catch (error) {
     // We only log the error and swallow the exception. The UI will have made the request and is expecting the result
     // of the legacy process, whether that's an SROC annual or PRESROC supplementary or 2PT bill run.
     logger.error(`Error creating SROC ${batchType} batch for ${regionId}|${financialYearEnding}`, error.stack)
   }
-
-  return result
 }
 
 const _batchingDetails = (request, billingRegionForm, refDate = null) => {

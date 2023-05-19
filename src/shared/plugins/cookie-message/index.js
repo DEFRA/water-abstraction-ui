@@ -108,13 +108,11 @@ function setCookiePreferences (isAnalyticsAccepted) {
   // Set preferences
   this.state(constants.cookieName, isAnalyticsAccepted ? constants.accepted : constants.rejected)
 
-  const domain = getAnalyticsCookieDomain(this.request.info.hostname)
-
   // Clear analytics cookies
   if (!isAnalyticsAccepted) {
     ['_ga', '_gid', '_gat', '_gat_govuk_shared'].forEach(cookieName => {
       this.unstate(cookieName, {
-        domain
+        domain: getAnalyticsCookieDomain(this.request.info.hostname)
       })
     })
   }

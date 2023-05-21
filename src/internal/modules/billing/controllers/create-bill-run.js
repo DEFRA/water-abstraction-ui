@@ -192,9 +192,15 @@ const _batchBillableYears = async (season, billingType, userEmail, regionId) => 
 
 const _batching = async (h, batch) => {
   try {
-    await _initiateSrocBatch(batch)
-    const { data } = await services.water.billingBatches.createBillingBatch(batch)
-    const path = routing.getBillingBatchRoute(data.batch, { isBackEnabled: false })
+    let batchData = await _initiateSrocBatch(batch)
+
+    if (!config.featureToggles.srocOnlyBilling) {
+      const { data } = await services.water.billingBatches.createBillingBatch(batch)
+      batchData = data.batch
+    }
+
+    const path = routing.getBillingBatchRoute(batchData, { isBackEnabled: false })
+
     return h.redirect(path)
   } catch (err) {
     if (err.statusCode === 409) {
@@ -209,11 +215,12 @@ async function _initiateSrocBatch (batch) {
 
   // SROC is still in development so controlled by a feature toggle and only supplementary is supported
   if (!config.featureToggles.triggerSrocSupplementary || batchType !== 'supplementary') {
-    return
+    return {}
   }
 
   try {
-    await services.system.billRuns.createBillRun(batchType, 'sroc', regionId, userEmail)
+    const result = await services.system.billRuns.createBillRun(batchType, 'sroc', regionId, userEmail)
+    return result
   } catch (error) {
     // We only log the error and swallow the exception. The UI will have made the request and is expecting the result
     // of the legacy process, whether that's an SROC annual or PRESROC supplementary or 2PT bill run.

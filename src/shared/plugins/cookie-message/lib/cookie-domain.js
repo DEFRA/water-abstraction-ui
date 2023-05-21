@@ -1,6 +1,5 @@
 'use strict'
 
-const { parseDomain } = require('parse-domain')
 const localHost = 'localhost'
 
 /**
@@ -8,14 +7,21 @@ const localHost = 'localhost'
  * @param {String} hostName
  * @returns {String}
  */
-const getAnalyticsCookieDomain = hostName => {
+const getAnalyticsCookieDomain = (hostName) => {
+  const domains = ['defra.cloud', 'manage-water-abstraction-impoundment-licence.service.gov.uk']
+  let analyticsCookieDomain
+
   if (hostName.includes(localHost)) {
     return localHost
   }
 
-  const { domain, topLevelDomains } = parseDomain(hostName)
+  domains.forEach((domain) => {
+    if (hostName.includes(domain)) {
+      analyticsCookieDomain = domain
+    }
+  })
 
-  return `.${domain}.${topLevelDomains.join('.')}`
+  return `.${analyticsCookieDomain}`
 }
 
 exports.getAnalyticsCookieDomain = getAnalyticsCookieDomain

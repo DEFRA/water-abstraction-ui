@@ -3,13 +3,22 @@ const sass = require('gulp-sass')(require('sass'))
 const sourcemaps = require('gulp-sourcemaps')
 const concat = require('gulp-concat')
 const uglify = require('gulp-uglify')
-const del = require('del')
+const fs = require('fs')
 
 const paths = {
   public: 'public/'
 }
 
-gulp.task('clean', () => del([paths.public]))
+gulp.task('clean', (done) => {
+  fs.rm(paths.public, { recursive: true }, (error) => {
+    if (error) {
+      console.error(error.message)
+    } else {
+      console.log(`Directory ${paths.public} deleted!`)
+    }
+    done()
+  })
+})
 
 const combineMinifyJs = (files, destination) => {
   return gulp.src(files)

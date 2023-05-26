@@ -12,7 +12,7 @@ const paths = {
 gulp.task('clean', (done) => {
   fs.rm(paths.public, { recursive: true }, (error) => {
     if (error) {
-      console.error(error.message)
+      console.log(error.message)
     } else {
       console.log(`Directory ${paths.public} deleted!`)
     }

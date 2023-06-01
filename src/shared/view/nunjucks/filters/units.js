@@ -1,4 +1,3 @@
-
 const map = {
   'm³': 'Cubic metres',
   gal: 'Gallons',

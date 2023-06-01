@@ -1,4 +1,3 @@
-
 const { formFactory, fields } = require('shared/lib/forms/')
 const Joi = require('joi')
 const { getChargeCategoryActionUrl } = require('../../lib/form-helpers')

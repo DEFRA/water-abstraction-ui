@@ -1,4 +1,3 @@
-
 /**
  * Creates a link object
  * @param  {String} text - The link text

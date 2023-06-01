@@ -1,4 +1,3 @@
-
 /**
  * Given an object of key/value pairs from meters/readings forms,
  * maps to an array of items with { startDate, endDate, [valueKey]}

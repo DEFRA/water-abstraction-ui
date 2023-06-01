@@ -1,4 +1,3 @@
-
 const noteForms = require('./forms')
 const { handleFormRequest } = require('shared/lib/form-handler')
 const session = require('./lib/session')

@@ -1,4 +1,3 @@
-
 const { setUp, tearDown } = require('../../support/setup')
 
 describe('check for different return status as an external user', () => {

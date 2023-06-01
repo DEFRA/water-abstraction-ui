@@ -1,4 +1,3 @@
-
 const { setUp, tearDown } = require('../../support/setup')
 const checkErrorMessage = (message) => {
   describe('it sees the correct error message', () => {

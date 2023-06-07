@@ -3,18 +3,24 @@
 {% from "paginate.njk" import paginate %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "./nunjucks/billing/macros/totals.njk" import chargeOrDash %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 
 {% block content %}
 
+  {% if billRunBuilding %}
+    {{ govukNotificationBanner({
+        html: '<p class="govuk-notification-banner__heading">A bill run is currently building.</p>
+          <p class="govuk-body">You must wait for this bill run to finish before you can create another one.</p>'
+    }) }}
+  {% endif %}
+
   {{ title(pageTitle) }}
   <p class="govuk-body">Create a supplementary, annual or two-part tariff bill run.</p>
-  {{
 
-  govukButton({
-    text: "Create a bill run",
-    href: '/billing/batch/type'
-  })
-}}
+  {{ govukButton({
+      text: "Create a bill run",
+      href: '/billing/batch/type'
+    }) }}
 
   {% if batches.length %}
     <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible govuk-!-margin-top-3">

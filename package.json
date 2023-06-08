@@ -91,16 +91,6 @@
       "data",
       "govuk_modules",
       "public"
-    ],
-    "globals": [
-      "cy",
-      "describe",
-      "expect",
-      "it",
-      "before",
-      "beforeEach",
-      "after",
-      "afterEach"
     ]
   }
 }

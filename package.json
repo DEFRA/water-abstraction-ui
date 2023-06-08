@@ -90,18 +90,10 @@
       "coverage",
       "data",
       "govuk_modules",
-      "public",
-      "cypress/fixtues/",
-      "cypress/plugins/",
-      "cypress/reports/",
-      "cypress/screenshots/",
-      "cypress/support/",
-      "cypress/videos/",
-      "cypress/temp/"
+      "public"
     ],
     "globals": [
       "cy",
-      "Cypress",
       "describe",
       "expect",
       "it",

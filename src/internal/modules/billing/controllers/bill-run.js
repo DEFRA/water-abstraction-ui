@@ -89,7 +89,7 @@ const getBillingBatchList = async (request, h) => {
   const batches = data.map(mappers.mapBatchListRow)
 
   const billRunBuilding = batches.some((batch) => {
-    return batch.status === 'processing'
+    return batch.status === 'processing' || batch.status === 'queued'
   })
 
   return h.view('nunjucks/billing/batch-list', {

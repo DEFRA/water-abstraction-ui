@@ -86,10 +86,16 @@ const getBillingBatchInvoice = async (request, h) => {
 const getBillingBatchList = async (request, h) => {
   const { page } = request.query
   const { data, pagination } = await batchService.getBatchList(page, billRunsToDisplayPerPage)
+  const batches = data.map(mappers.mapBatchListRow)
+
+  const billRunBuilding = batches.some((batch) => {
+    return batch.status === 'processing' || batch.status === 'queued'
+  })
 
   return h.view('nunjucks/billing/batch-list', {
     ...request.view,
-    batches: data.map(mappers.mapBatchListRow),
+    batches,
+    billRunBuilding,
     pagination,
     form: featureToggles.deleteAllBillingData && confirmForm.form(request, 'Delete all bills and charge information', {
       action: '/billing/batch/delete-all-data',

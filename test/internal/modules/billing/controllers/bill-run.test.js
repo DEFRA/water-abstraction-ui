@@ -518,7 +518,7 @@ experiment('internal/modules/billing/controller', () => {
 
     test('passes the required batch list data to the view', async () => {
       const [, context] = h.view.lastCall.args
-      const { batches } = context
+      const { batches, billRunBuilding } = context
 
       expect(batches).to.be.array()
       expect(batches[0].batchType).to.equal('Supplementary')
@@ -533,6 +533,7 @@ experiment('internal/modules/billing/controller', () => {
       expect(batches[1].billCount).to.equal(8)
       expect(batches[1].link).to.be.equal('/billing/batch/8ae7c31b-3c5a-44b8-baa5-a10b40aef9e2/two-part-tariff-review')
       expect(batches[1].scheme).to.equal('sroc')
+      expect(billRunBuilding).to.be.true()
     })
 
     test('configures the expected view template', async () => {

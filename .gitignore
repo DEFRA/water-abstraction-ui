@@ -41,11 +41,6 @@ coverage/
 coverage.html
 lcov.info
 
-# Cypress acceptance test output
-cypress/reports/
-cypress/screenshots/
-cypress/videos/
-
 # The assets generated after running `npm run install-assets`
 public/
 

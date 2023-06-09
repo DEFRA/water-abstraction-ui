@@ -13,10 +13,6 @@
   "scripts": {
     "install-assets": "gulp build",
     "test": "lab",
-    "test:cypress": "node_modules/.bin/cypress open",
-    "test:cypress-silently": "npm run test:cypress-clean-report && node_modules/.bin/cypress run; npm run test:cypress-prepare-report",
-    "test:cypress-clean-report": "rm -rf cypress/reports/*",
-    "test:cypress-prepare-report": "mochawesome-merge ./cypress/reports/mocha/*.json > ./cypress/reports/mocha/combined-report.json && marge --reportDir cypress/reports/mocha/ ./cypress/reports/mocha/combined-report.json",
     "lint": "standard",
     "lint:fix": "standard --fix",
     "sass": "gulp sass",
@@ -79,18 +75,11 @@
     "@babel/preset-env": "^7.21.4",
     "@hapi/code": "^9.0.3",
     "@hapi/lab": "^25.1.2",
-    "cypress": "^8.7.0",
-    "cypress-file-upload": "^5.0.8",
-    "cypress-multi-reporters": "^1.6.3",
     "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",
     "gulp-sass": "^5.1.0",
     "gulp-sourcemaps": "^3.0.0",
     "gulp-uglify": "^3.0.2",
-    "mocha": "^10.2.0",
-    "mochawesome": "^7.1.3",
-    "mochawesome-merge": "^4.3.0",
-    "mochawesome-report-generator": "^6.2.0",
     "pino-pretty": "^10.0.0",
     "sass": "^1.62.0",
     "sinon": "^15.0.4",
@@ -101,25 +90,7 @@
       "coverage",
       "data",
       "govuk_modules",
-      "public",
-      "cypress/fixtues/",
-      "cypress/plugins/",
-      "cypress/reports/",
-      "cypress/screenshots/",
-      "cypress/support/",
-      "cypress/videos/",
-      "cypress/temp/"
-    ],
-    "globals": [
-      "cy",
-      "Cypress",
-      "describe",
-      "expect",
-      "it",
-      "before",
-      "beforeEach",
-      "after",
-      "afterEach"
+      "public"
     ]
   }
 }

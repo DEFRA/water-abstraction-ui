@@ -67,7 +67,7 @@ const getBillingBatchInvoice = async (request, h) => {
   return h.view('nunjucks/billing/batch-invoice', {
     ...request.view,
     back: `/billing/batch/${batchId}/summary`,
-    pageTitle: `Bill for ${titleCase(invoice.invoiceAccount.company.name)}`,
+    pageTitle: `Bill for ${titleCase(_billForName(invoice.invoiceAccount))}`,
     invoice,
     financialYearEnding: invoice.financialYear.yearEnding,
     batch,
@@ -304,6 +304,18 @@ const _errorList = (errorCode) => {
 const postDeleteAllBillingData = async (request, h) => {
   await services.water.billingBatches.deleteAllBillingData()
   return h.redirect(BATCH_LIST_ROUTE)
+}
+
+function _billForName (invoiceAccount) {
+  invoiceAccount.invoiceAccountAddresses.sort((a, b) => {
+    return new Date(b.date) - new Date(a.date)
+  })
+
+  if (invoiceAccount.invoiceAccountAddresses[0]?.agentCompany?.name) {
+    return invoiceAccount.invoiceAccountAddresses[0]?.agentCompany?.name
+  }
+
+  return invoiceAccount.company.name
 }
 
 module.exports = {

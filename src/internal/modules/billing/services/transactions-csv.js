@@ -39,15 +39,19 @@ const getCSVFileName = batch => {
 }
 
 function _billForName (invoiceAccount) {
-  invoiceAccount.invoiceAccountAddresses.sort((a, b) => {
-    return new Date(b.date) - new Date(a.date)
-  })
+  let result = invoiceAccount.company.name
 
-  if (invoiceAccount.invoiceAccountAddresses[0]?.agentCompany?.name) {
-    return invoiceAccount.invoiceAccountAddresses[0]?.agentCompany?.name
+  if (invoiceAccount.invoiceAccountAddresses) {
+    invoiceAccount.invoiceAccountAddresses.sort((a, b) => {
+      return new Date(b.date) - new Date(a.date)
+    })
+
+    if (invoiceAccount.invoiceAccountAddresses[0]?.agentCompany?.name) {
+      result = invoiceAccount.invoiceAccountAddresses[0]?.agentCompany?.name
+    }
   }
 
-  return invoiceAccount.company.name
+  return result
 }
 
 function _csvLineAlcs (invoice, invoiceLicence, transaction, chargeVersions) {

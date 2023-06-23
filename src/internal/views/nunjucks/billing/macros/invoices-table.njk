@@ -42,22 +42,11 @@
 {% macro billingContactCell(invoice) %}
   <td class="govuk-table__cell">
 
-    {% if invoice.faoContact  %}
-      {{ invoice.faoContact }}
-
-      {% elif invoice.billingContact.agentCompanyName %}
+    {% if invoice.billingContact.agentCompanyName  %}
       {{ invoice.billingContact.agentCompanyName }}
-
-      {% elif invoice.billingContact.roleContact.licenceHolder %}
-      {{  invoice.billingContact.roleContact.licenceHolder }}
-
-      {% elif invoice.billingContact.roleContact.billing %}
-      {{  invoice.billingContact.roleContact.billing }}
-
     {% else %}
       {{ invoice.name | titleCase }}
     {% endif %}
-
 
   </td>
 {% endmacro %}

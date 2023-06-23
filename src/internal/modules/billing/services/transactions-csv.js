@@ -38,6 +38,18 @@ const getCSVFileName = batch => {
   return `${batch.region.displayName} ${batchType.toLowerCase()} bill run ${batch.billRunNumber}.csv`
 }
 
+function _billForName (invoiceAccount) {
+  invoiceAccount.invoiceAccountAddresses.sort((a, b) => {
+    return new Date(b.date) - new Date(a.date)
+  })
+
+  if (invoiceAccount.invoiceAccountAddresses[0]?.agentCompany?.name) {
+    return invoiceAccount.invoiceAccountAddresses[0]?.agentCompany?.name
+  }
+
+  return invoiceAccount.company.name
+}
+
 function _csvLineAlcs (invoice, invoiceLicence, transaction, chargeVersions) {
   const csvLine = {
     'Billing account number': invoice.invoiceAccount.invoiceAccountNumber,
@@ -101,7 +113,7 @@ function _csvLineAlcs (invoice, invoiceLicence, transaction, chargeVersions) {
 function _csvLineSroc (invoice, invoiceLicence, transaction, chargeVersions) {
   const csvLine = {
     'Billing account number': invoice.invoiceAccount.invoiceAccountNumber,
-    'Customer name': invoice.invoiceAccount.company.name,
+    'Customer name': _billForName(invoice.invoiceAccount),
     'Licence number': invoiceLicence.licenceRef,
     'Bill number': invoice.invoiceNumber,
     'Financial year': invoice.financialYearEnding,

@@ -35,11 +35,12 @@ const getBillingAccount = (request, h) => {
     `/billing-accounts/${billingAccountId}/bills`
 
   const metadataHtml = generateBillingAccountMetadata(billingAccount)
+  console.log('🚀 ~ file: billing-accounts.js:38 ~ getBillingAccount ~ billingAccount:', billingAccount)
 
   return h.view('nunjucks/billing-accounts/view', {
     ...request.view,
     caption: getBillingAccountCaption(billingAccount),
-    pageTitle: `Billing account for ${titleCase(billingAccount.company.name)}`,
+    pageTitle: `Billing account for ${titleCase(_billForName(billingAccount))}`,
     back,
     currentAddress: getCurrentAddress(billingAccount),
     billingAccount,
@@ -68,6 +69,18 @@ const getBillingAccountBills = (request, h) => {
     pagination,
     path: request.path
   })
+}
+
+function _billForName (invoiceAccount) {
+  invoiceAccount.invoiceAccountAddresses.sort((a, b) => {
+    return new Date(b.date) - new Date(a.date)
+  })
+
+  if (invoiceAccount.invoiceAccountAddresses[0]?.agentCompany?.name) {
+    return invoiceAccount.invoiceAccountAddresses[0]?.agentCompany?.name
+  }
+
+  return invoiceAccount.company.name
 }
 
 exports.getBillingAccount = getBillingAccount

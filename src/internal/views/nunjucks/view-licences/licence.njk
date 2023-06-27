@@ -18,7 +18,7 @@
       {% if not primaryUser %}
         {{ title(licence.licenceNumber, 'Unregistered licence') }}
       {% else %}
-        {{ title('Licence number ' + summary.licenceNumber, summary.documentName ) }}
+        {{ title('Licence number ' + licence.licenceNumber, summary.documentName ) }}
       {% endif %}
 
       {% if validityMessage %}

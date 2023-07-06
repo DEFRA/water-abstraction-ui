@@ -94,6 +94,11 @@ const invoiceData =
             isWaterCompanyCharge: true,
             isSupportedSource: true,
             supportedSourceName: 'Name of supported source',
+            grossValuesCalculated: {
+              baselineCharge: 62000,
+              waterCompanyCharge: 123,
+              supportedSourceCharge: 456
+            },
             calcWinterDiscountFactor: null,
             calcS130Factor: null,
             aggregateFactor: 1,
@@ -172,6 +177,11 @@ const invoiceData =
             isWaterCompanyCharge: true,
             isSupportedSource: true,
             supportedSourceName: 'Name of supported source',
+            grossValuesCalculated: {
+              baselineCharge: 62000,
+              waterCompanyCharge: 123,
+              supportedSourceCharge: 456
+            },
             calcWinterDiscountFactor: null,
             calcS130Factor: null,
             aggregateFactor: 1,
@@ -556,6 +566,7 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(result[0]['Authorised days']).to.equal('152')
         expect(result[0]['Billable days']).to.equal('152')
         expect(result[0]['Charge reference']).to.equal('4.5.55')
+        expect(result[0]['Base charge']).to.equal('62000')
         expect(result[0]['Charge reference description']).to.equal('Medium loss, non-tidal')
         expect(result[0]['Charge reference']).to.equal('4.5.55')
         expect(result[0].Source).to.equal('non-tidal')
@@ -564,8 +575,10 @@ experiment('internal/modules/billing/services/transactions-csv', () => {
         expect(result[0]['Water available Y/N']).to.equal('Y')
         expect(result[0].Modelling).to.equal('no model')
         expect(result[0]['Public water supply Y/N']).to.equal('Y')
+        expect(result[0]['Public water supply additional charge']).to.equal('123')
         expect(result[0]['Supported source Y/N']).to.equal('Y')
         expect(result[0]['Supported source name']).to.equal('Name of supported source')
+        expect(result[0]['Supported source additional charge']).to.equal('456')
         expect(result[0]['Winter discount']).to.equal('')
         expect(result[0]['Canal and Rivers trust agreement']).to.equal('')
         expect(result[0]['Aggregate factor']).to.equal('1')

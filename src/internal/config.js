@@ -169,12 +169,7 @@ module.exports = {
     allowChargeVersionUploads: (get(process.env, 'ALLOW_CHARGE_VERSION_UPLOADS') || '').toLowerCase() === 'true',
     triggerSrocSupplementary: (get(process.env, 'TRIGGER_SROC_SUPPLEMENTARY') || '').toLowerCase() === 'true',
     acceptanceTestsProxy: !isProduction,
-    showVerificationCode: process.env.SHOW_VERIFICATION_CODE_FEATURE === 'true' && !isProduction,
-    // This flag was added to support SROC billing UAT. In production we would want both the SROC and PRESROC bill runs
-    // to be kicked off. But during SROC UAT the billing & data team are only concerned with the results of SROC bill
-    // runs. To help performance (testing is much heavier usage compared to normal) we provide the option to 'skip'
-    // generating the PRESROC bill run.
-    srocOnlyBilling: (get(process.env, 'SROC_ONLY_BILLING_FEATURE') || '').toLowerCase() === 'true'
+    showVerificationCode: process.env.SHOW_VERIFICATION_CODE_FEATURE === 'true' && !isProduction
   },
   billRunsToDisplayPerPage: process.env.BILL_RUNS_TO_DISPLAY_PER_PAGE || 20
 }

@@ -23,8 +23,8 @@ experiment('/status', () => {
       expect(response.statusCode).to.equal(200)
     })
 
-    test('responds with an object containing the application version', async () => {
-      expect(response.result.version).to.match(/\d*\.\d*\.\d*/g)
+    test('responds with an object containing the application status', async () => {
+      expect(response.result.status).to.equal('alive')
     })
   })
 

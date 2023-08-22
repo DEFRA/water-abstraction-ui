@@ -1,8 +1,8 @@
+'use strict'
+
 const { VALID_UTM } = require('shared/lib/validators')
 const controller = require('./controller')
-const pkg = require('../../../../package.json')
 const Joi = require('joi')
-const { version } = pkg
 
 module.exports = {
 
@@ -32,7 +32,7 @@ module.exports = {
   status: {
     method: 'GET',
     path: '/status',
-    handler: () => ({ version }),
+    handler: () => ({ status: 'alive' }),
     config: {
       auth: {
         strategy: 'standard',

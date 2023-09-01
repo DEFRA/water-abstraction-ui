@@ -1,10 +1,10 @@
 'use strict'
 
 // Internal services
-const BillRunsService = require('./BillRunsService.js')
+const BillRunsApiClient = require('./BillRunsApiClient.js')
 
 const { logger } = require('../../../../logger')
 
 module.exports = config => ({
-  billRuns: new BillRunsService(config.services.system, logger)
+  billRuns: new BillRunsApiClient(config.services.system, logger)
 })

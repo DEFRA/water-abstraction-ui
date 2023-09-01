@@ -132,7 +132,7 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
     sandbox.stub(session, 'get').returns(data.sessionData)
     sandbox.stub(session, 'setProperty')
     sandbox.stub(services.water.companies, 'postInvoiceAccount')
-    sandbox.stub(services.water.invoiceAccounts, 'createInvoiceAccountAddress')
+    sandbox.stub(services.system.billingAccounts, 'changeAddress')
     sandbox.stub(logger, 'error')
   })
 
@@ -764,7 +764,7 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
       })
 
       test('creates the billing account address', async () => {
-        const [invoiceAccountId, data] = services.water.invoiceAccounts.createInvoiceAccountAddress.lastCall.args
+        const [invoiceAccountId, data] = services.system.billingAccounts.changeAddress.lastCall.args
         expect(invoiceAccountId).to.equal(INVOICE_ACCOUNT_ID)
         expect(data).to.equal({
           agentCompany: null,
@@ -791,7 +791,7 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
 
       test('only the "create address" service endpoint is called', async () => {
         expect(services.water.companies.postInvoiceAccount.called).to.be.false()
-        expect(services.water.invoiceAccounts.createInvoiceAccountAddress.called).to.be.true()
+        expect(services.system.billingAccounts.changeAddress.called).to.be.true()
       })
     })
 

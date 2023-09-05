@@ -1,11 +1,7 @@
 'use strict'
 
-const config = require('../../config.js')
-
 const getServiceStatus = async (_request, h) => {
-  const healthInfoUrl = new URL('/health/info', config.services.system)
-
-  return h.redirect(healthInfoUrl)
+  return h.redirect('/system/health/info')
 }
 
 exports.getServiceStatus = getServiceStatus

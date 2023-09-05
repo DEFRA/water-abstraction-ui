@@ -4,6 +4,8 @@ const Catbox = require('@hapi/catbox')
 const CatboxRedis = require('@hapi/catbox-redis')
 const { pick } = require('lodash')
 
+const config = require('../../config.js')
+
 const getRedisCacheStatus = async (redisConfig, logger) => {
   let result = 'Not connected'
 
@@ -48,22 +50,9 @@ const getVirusScannerStatus = async () => {
 }
 
 const getServiceStatus = async (request, h) => {
-  const { services, redis, logger } = h.realm.pluginOptions
+  const healthInfoUrl = new URL('/health/info', config.services.system)
 
-  const [status, virusScanner, cacheConnection] = await Promise.all([
-    services.water.serviceStatus.getServiceStatus(),
-    getVirusScannerStatus(),
-    getRedisCacheStatus(redis, logger)
-  ])
-
-  const serviceStatus = Object.assign({}, status.data, { virusScanner }, { cacheConnection })
-
-  return request.query.format === 'json'
-    ? serviceStatus
-    : h.view('nunjucks/service-status/index', {
-      ...request.view,
-      ...serviceStatus
-    })
+  return h.redirect(healthInfoUrl)
 }
 
 exports.getServiceStatus = getServiceStatus

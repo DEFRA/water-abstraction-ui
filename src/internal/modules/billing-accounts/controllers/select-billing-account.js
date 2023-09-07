@@ -258,7 +258,8 @@ const persistData = async state => {
 
   // For both new account and address updates, post the agent, contact and address
   // to the create address endpoint
-  const invoiceAccountAddress = await services.water.invoiceAccounts.createInvoiceAccountAddress(clonedState.data.id,
+  const invoiceAccountAddress = await services.system.billingAccounts.changeAddress(
+    clonedState.data.id,
     mapper.mapSessionDataToCreateInvoiceAccountAddress(clonedState)
   )
   Object.assign(clonedState.data, pick(invoiceAccountAddress, ['address', 'agentCompany', 'contact']))

@@ -2,7 +2,7 @@
 
 const ServiceClient = require('../../../../../shared/lib/connectors/services/ServiceClient')
 
-class SystemService extends ServiceClient {
+class BillRunsApiClient extends ServiceClient {
   /**
    * Creates a new bill run
    *
@@ -29,4 +29,4 @@ class SystemService extends ServiceClient {
   }
 }
 
-module.exports = SystemService
+module.exports = BillRunsApiClient

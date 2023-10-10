@@ -341,8 +341,6 @@ async function getSendViewContext (id, data, sender) {
   const licenceNumbers = taskData.getNewTaggingLicenceNumbers()
   const params = taskData.getParameters()
   const uniqueJobId = taskData.getUniqueJobId()
-
-  // Calling the API in service
   const { error, data: previewData } = await services.water.notifications.sendNotification(id, licenceNumbers, uniqueJobId, params, sender)
 
   // Get summary data

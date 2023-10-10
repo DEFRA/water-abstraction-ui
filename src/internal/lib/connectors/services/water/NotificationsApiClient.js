@@ -11,7 +11,7 @@ class NotificationsApiClient extends SharedNotificationsApiClient {
    * @param {String} sender - email address of sender.  If not supplied, reverts to preview mode
    * @return {Promise} resolves with an array of contacts, each with licence numbers and rendered templates attached
    */
-  sendNotification (taskConfigId, licenceNumbers, params = {}, sender = null) {
+  sendNotification (taskConfigId, licenceNumbers, params = {}, sender = null, uniqueJobId) {
     const url = urlJoin(this.config.serviceUrl, 'notification', sender ? 'send' : 'preview')
     const options = {
       body: {
@@ -22,7 +22,8 @@ class NotificationsApiClient extends SharedNotificationsApiClient {
         },
         taskConfigId,
         params,
-        sender
+        sender,
+        uniqueJobId
       }
     }
     return serviceRequest.post(url, options)

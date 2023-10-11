@@ -11,7 +11,13 @@ const proxyDefaults = {
   // Sets the 'X-Forwarded-For', 'X-Forwarded-Port', 'X-Forwarded-Proto', 'X-Forwarded-Host' headers. 'X-Forwarded-For',
   // for example, is the standard header for identifying the originating IP address of a client connecting to a web
   // server through a proxy server. As such, it is often used in security and authentication checks.
-  xforward: true
+  xforward: true,
+  // When false (the default) any locally defined state is removed from incoming requests before being sent to the
+  // upstream service. In practice we saw any other cookies set in our browser were being passed to system but not the
+  // ones set by this app; sid and session. This app still handles login and initialises the sid cookie. System needs
+  // to be able to see it to also confirm the user is authenticated and authorised to access whatever page they've been
+  // directed to. Hence, we set this to true.
+  localStatePassThrough: true
 }
 
 const routes = [

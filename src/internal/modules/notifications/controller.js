@@ -7,6 +7,7 @@ const { forceArray } = require('shared/lib/array-helpers')
 const services = require('../../lib/connectors/services')
 const { licenceValidator } = require('./lib/licence-validator')
 const { checkAccess } = require('./lib/permission')
+const { v4: uuid } = require('uuid')
 
 const createErrorList = error =>
   error.map(err => ({ text: err.message, href: `#${err.field}` }))
@@ -290,6 +291,9 @@ async function postVariableData (request, h) {
 
   checkAccess(request, task)
 
+  // Add a unique job ID to get passed to the service
+  request.yar.get('notificationsFlow').uniqueJobId = uuid()
+
   // Load data from previous step(s)
   const taskData = new TaskData(task, request.yar.get('notificationsFlow'))
   const { error } = taskData.processParameterRequest(request.payload)
@@ -336,7 +340,8 @@ async function getSendViewContext (id, data, sender) {
   // Generate preview
   const licenceNumbers = taskData.getNewTaggingLicenceNumbers()
   const params = taskData.getParameters()
-  const { error, data: previewData } = await services.water.notifications.sendNotification(id, licenceNumbers, params, sender)
+  const uniqueJobId = taskData.getUniqueJobId()
+  const { error, data: previewData } = await services.water.notifications.sendNotification(id, licenceNumbers, uniqueJobId, params, sender)
 
   // Get summary data
   const summary = {

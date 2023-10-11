@@ -106,6 +106,14 @@ class TaskData {
   }
 
   /**
+   * Get unique job ID
+   * @return {Array}
+   */
+  getUniqueJobId () {
+    return this.data.uniqueJobId
+  }
+
+  /**
    * Set custom template parameter data
    * @param {Object} payload - from HAPI request interface
    */

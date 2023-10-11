@@ -3,6 +3,7 @@ const { expect } = require('@hapi/code')
 const sandbox = require('sinon').createSandbox()
 const NotificationsApiClient = require('internal/lib/connectors/services/water/NotificationsApiClient')
 const { serviceRequest } = require('@envage/water-abstraction-helpers')
+const { v4: uuid } = require('uuid')
 
 experiment('internal/NotificationsApiClient', () => {
   let logger
@@ -50,23 +51,24 @@ experiment('internal/NotificationsApiClient', () => {
     const licenceNumbers = ['123', '456']
     const params = { one: 1 }
     const sender = 'test-sender'
+    const uniqueJobId = uuid()
 
     test('uses the preview url when no sender', async () => {
-      await client.sendNotification(taskConfigId, licenceNumbers, params)
+      await client.sendNotification(taskConfigId, licenceNumbers, uniqueJobId, params)
       const [url] = serviceRequest.post.lastCall.args
 
       expect(url).to.equal('https://example.com/water/notification/preview')
     })
 
     test('uses the send url when a sender is passed', async () => {
-      await client.sendNotification(taskConfigId, licenceNumbers, params, sender)
+      await client.sendNotification(taskConfigId, licenceNumbers, uniqueJobId, params, sender)
       const [url] = serviceRequest.post.lastCall.args
 
       expect(url).to.equal('https://example.com/water/notification/send')
     })
 
     test('passes the expected body', async () => {
-      await client.sendNotification(taskConfigId, licenceNumbers, params, sender)
+      await client.sendNotification(taskConfigId, licenceNumbers, uniqueJobId, params, sender)
       const [, options] = serviceRequest.post.lastCall.args
 
       expect(options).to.equal({
@@ -78,7 +80,8 @@ experiment('internal/NotificationsApiClient', () => {
           },
           taskConfigId,
           params,
-          sender
+          sender,
+          uniqueJobId
         }
       })
     })

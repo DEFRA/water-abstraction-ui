@@ -29,7 +29,7 @@ const form = (request, h) => {
         message: 'Your password must be contain an uppercase character'
       },
       'password.symbol': {
-        message: 'Your password must be contain a symbol character'
+        message: 'Your password must contain a symbol character'
       }
 
     }

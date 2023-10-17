@@ -407,7 +407,8 @@ experiment('internal/modules/returns-notifications/controllers/paper-forms', () 
           'address',
           'company',
           'contact',
-          'returns'
+          'returns',
+          'uniqueJobId'
         ])
       })
 
@@ -419,7 +420,8 @@ experiment('internal/modules/returns-notifications/controllers/paper-forms', () 
           'address',
           'company',
           'contact',
-          'returns'
+          'returns',
+          'uniqueJobId'
         ])
         expect(data.forms[0].returns).to.be.an.array().length(1)
       })

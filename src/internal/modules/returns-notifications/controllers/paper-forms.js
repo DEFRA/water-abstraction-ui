@@ -2,6 +2,7 @@
 
 const Boom = require('@hapi/boom')
 const { get, partialRight, has } = require('lodash')
+const { v4: uuid } = require('uuid')
 
 const sessionForms = require('shared/lib/session-forms')
 const { handleRequest, getValues, applyErrors } = require('shared/lib/forms')
@@ -69,6 +70,7 @@ const postEnterLicenceNumber = async (request, h) => {
 
     // Set session state and redirect
     const nextState = reducer({}, actions.setInitialState(request, data))
+    nextState.uniqueJobId = uuid()
     request.yar.set(SESSION_KEYS.paperFormsFlow, nextState)
 
     let path
@@ -144,7 +146,8 @@ const mapStateToWaterApi = state => ({
         contact: contact || null,
         returns: returns.filter(ret => ret.isSelected).map(ret => ({
           returnId: ret.id
-        }))
+        })),
+        uniqueJobId: state.uniqueJobId
       }
     })
 })

@@ -99,10 +99,15 @@
   </td>
 {% endmacro %}
 
-{% macro actionsCell(batch, invoice) %}
+{% macro actionsCell(batch, invoice, useNewBillView) %}
   <td class="govuk-table__cell govuk-table__cell--numeric">
     {% if invoice.netTotal %}
-      <a class="govuk-link" href="/billing/batch/{{batch.id}}/invoice/{{invoice.id}}">View<span class="govuk-visually-hidden">
+      {% if useNewBillView === true %}
+        {% set link = '/system/bills/' + invoice.id %}
+      {% else %}
+        {% set link = '/billing/batch/' + batch.id + '/invoice/' + invoice.id %}
+      {% endif %}
+      <a class="govuk-link" href="{{ link }}">View<span class="govuk-visually-hidden">
           invoice for
           {{ invoice.accountNumber }}</span></a>
     {% endif %}
@@ -121,54 +126,54 @@
   </td>
 {% endmacro %}
 
-{% macro tableRow(batch, invoice) %}
+{% macro tableRow(batch, invoice, useNewBillView) %}
   <tr class="govuk-table__row">
     {{ billingAccountCell(invoice) }}
     {{ billingContactCell(invoice) }}
     {{ licenceNumbersCell(invoice) }}
     {{ totalCell(invoice)}}
-    {{ actionsCell(batch, invoice) }}
+    {{ actionsCell(batch, invoice, useNewBillView) }}
   {% endmacro %}
 
-  {% macro tableRowSupplementary(batch, invoice) %}
+  {% macro tableRowSupplementary(batch, invoice, useNewBillView) %}
     <tr class="govuk-table__row">
       {{ billingAccountCell(invoice) }}
       {{ billingContactCell(invoice) }}
       {{ licenceNumbersCell(invoice) }}
       {{ financialYearCell(invoice) }}
       {{ totalCell(invoice) }}
-      {{ actionsCell(batch, invoice) }}
+      {{ actionsCell(batch, invoice, useNewBillView) }}
     </tr>
   {% endmacro %}
 
-  {% macro nonSupplementaryInvoicesTable(batch, invoices) %}
+  {% macro nonSupplementaryInvoicesTable(batch, invoices, useNewBillView) %}
     <table class="govuk-table">
       {{ tableHeader() }}
       <tbody class="govuk-table__body">
         {% for invoice in invoices %}
-          {{ tableRow(batch, invoice) }}
+          {{ tableRow(batch, invoice, useNewBillView) }}
         {% endfor %}
       </tbody>
     </table>
   {% endmacro %}
 
-  {% macro supplementaryInvoicesTable(batch, invoices) %}
+  {% macro supplementaryInvoicesTable(batch, invoices, useNewBillView) %}
     <table class="govuk-table">
       {{ tableHeaderSupplementary() }}
       <tbody class="govuk-table__body">
         {% for invoice in invoices %}
-          {{ tableRowSupplementary(batch, invoice) }}
+          {{ tableRowSupplementary(batch, invoice, useNewBillView) }}
         {% endfor %}
       </tbody>
     </table>
   {% endmacro %}
 
-  {% macro invoicesTable(batch, invoices) %}
+  {% macro invoicesTable(batch, invoices, useNewBillView) %}
     {% if invoices.length > 0 %}
       {% if batch.type == 'supplementary' %}
-        {{ supplementaryInvoicesTable(batch, invoices) }}
+        {{ supplementaryInvoicesTable(batch, invoices, useNewBillView) }}
       {% else %}
-        {{ nonSupplementaryInvoicesTable(batch, invoices) }}
+        {{ nonSupplementaryInvoicesTable(batch, invoices, useNewBillView) }}
       {% endif %}
     {% endif %}
   {% endmacro %}

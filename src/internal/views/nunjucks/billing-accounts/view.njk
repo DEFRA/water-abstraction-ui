@@ -39,8 +39,7 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-
-    {{ billsTable(bills, "Sent bills") }}
+    {{ billsTable(bills, "Sent bills", useNewBillView) }}
 
     {% if moreBillsLink %}
     <p>

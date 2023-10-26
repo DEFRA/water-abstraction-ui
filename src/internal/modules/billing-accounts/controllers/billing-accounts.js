@@ -4,6 +4,8 @@ const { pick } = require('lodash')
 const { titleCase } = require('shared/lib/string-formatter')
 const { getCurrentAddress, generateBillingAccountMetadata } = require('../lib/helpers')
 
+const { featureToggles } = require('../../../config.js')
+
 const getBillingAccountCaption = billingAccount =>
   `Billing account ${billingAccount.accountNumber}`
 
@@ -48,7 +50,8 @@ const getBillingAccount = (request, h) => {
     moreBillsLink,
     rebillingLink: `/billing-accounts/${billingAccountId}/rebilling`,
     rebillable: rebillableBills.length > 0,
-    metadataHtml
+    metadataHtml,
+    useNewBillView: featureToggles.useNewBillView
   })
 }
 
@@ -66,7 +69,8 @@ const getBillingAccountBills = (request, h) => {
     back: `/billing-accounts/${billingAccountId}`,
     bills,
     pagination,
-    path: request.path
+    path: request.path,
+    useNewBillView: featureToggles.useNewBillView
   })
 }
 

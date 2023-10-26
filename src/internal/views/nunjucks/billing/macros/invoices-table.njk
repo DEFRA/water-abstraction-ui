@@ -204,9 +204,14 @@
      {% endif %}
   {% endmacro %}
 
-  {% macro invoiceLink(row) %}
+  {% macro invoiceLink(row, useNewBillView) %}
+    {% if useNewBillView === true %}
+      {% set link = '/system/bills/' + row.invoice.id %}
+    {% else %}
+      {% set link = '/billing/batch/' + row.batch.id + '/invoice/' + row.invoice.id %}
+    {% endif %}
     <td class="govuk-table__cell" scope="row">
-      <a href="/billing/batch/{{ row.batch.id }}/invoice/{{ row.invoice.id }}">
+      <a href="{{ link }}">
         {{row.invoice.displayLabel}}
       </a>
       {{displayRebillingState(row.invoice)}}

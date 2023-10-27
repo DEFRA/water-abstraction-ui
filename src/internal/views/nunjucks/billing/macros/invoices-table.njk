@@ -234,9 +234,9 @@
     </td>
   {% endmacro %}
 
-  {% macro tableRowLicenceInvoices(row) %}
+  {% macro tableRowLicenceInvoices(row, useNewBillView) %}
     <tr class="govuk-table__row">
-      {{ invoiceLink(row) }}
+      {{ invoiceLink(row, useNewBillView) }}
       {{ dateCreatedCell(row) }}
       {{ billingAccountCell(row.invoice) }}
       {{ batchTypeCell(row.batch) }}
@@ -245,7 +245,7 @@
     </tr>
   {% endmacro %}
 
-  {% macro licenceInvoicesTable(invoices, caption) %}
+  {% macro licenceInvoicesTable(invoices, caption, useNewBillView) %}
     <table class="govuk-table">
     {% if caption %}
       <caption class="govuk-table__caption govuk-heading-m">
@@ -255,15 +255,15 @@
       {{ tableHeaderLicenceInvoices() }}
       <tbody class="govuk-table__body">
         {% for invoice in invoices %}
-          {{ tableRowLicenceInvoices(invoice) }}
+          {{ tableRowLicenceInvoices(invoice, useNewBillView) }}
         {% endfor %}
       </tbody>
     </table>
   {% endmacro %}
 
-  {% macro licenceInvoicesView(invoices, caption) %}
+  {% macro licenceInvoicesView(invoices, caption, useNewBillView) %}
     {% if invoices.length > 0 %}
-      {{ licenceInvoicesTable(invoices, caption) }}
+      {{ licenceInvoicesTable(invoices, caption, useNewBillView) }}
     {% else %}
       <p>No bills sent for this licence.</p>
     {% endif %}

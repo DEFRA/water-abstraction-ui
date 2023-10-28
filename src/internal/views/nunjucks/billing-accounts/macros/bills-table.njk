@@ -13,11 +13,11 @@
   </thead>
 {% endmacro %}
 
-{% macro tableRow(bill) %}
+{% macro tableRow(bill, useNewBillView) %}
   {% set row = { invoice : bill, batch: bill.batch } %}
 
   <tr class="govuk-table__row">
-      {{ invoiceLink(row) }}
+      {{ invoiceLink(row, useNewBillView) }}
       {{ dateCreatedCell(row) }}
       {{ batchTypeCell(bill.batch) }}
       {{ billRunNumberCell(bill.batch) }}
@@ -26,7 +26,7 @@
   </tr>
 {% endmacro %}
 
-{% macro billsTable(bills, caption) %}
+{% macro billsTable(bills, caption, useNewBillView) %}
   <table class="govuk-table">
     {% if caption %}
     <caption class="govuk-table__caption govuk-heading-l">
@@ -36,7 +36,7 @@
     {{ tableHeader() }}
     <tbody class="govuk-table__body">
       {% for bill in bills %}
-        {{ tableRow(bill) }}
+        {{ tableRow(bill, useNewBillView) }}
       {% endfor %}
     </tbody>
   </table>

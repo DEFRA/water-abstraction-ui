@@ -103,6 +103,9 @@ const createRequest = (overrides = {}) => ({
     billingAccounts: overrides.billingAccounts || data.billingAccounts,
     account: data.account
   },
+  headers: {
+    cookie: 'taste=yummy'
+  },
   accountEntryRedirect: sandbox.stub().returns(ACCOUNT_ENTRY_PATH),
   addressLookupRedirect: sandbox.stub().returns(ADDRESS_ENTRY_PATH),
   contactEntryRedirect: sandbox.stub().returns(CONTACT_ENTRY_PATH),

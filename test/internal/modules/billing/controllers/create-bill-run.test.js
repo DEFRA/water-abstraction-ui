@@ -131,6 +131,9 @@ const createRequest = () => ({
     }),
     set: sandbox.stub(),
     clear: sandbox.stub()
+  },
+  headers: {
+    cookie: 'taste=yummy'
   }
 })
 
@@ -289,6 +292,7 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
     }
     beforeEach(async () => {
       sandbox.stub(services.water.billingBatches, 'createBillingBatch')
+      sandbox.stub(services.system.billRuns, 'createBillRun').resolves()
     })
 
     experiment('when the form is valid', () => {

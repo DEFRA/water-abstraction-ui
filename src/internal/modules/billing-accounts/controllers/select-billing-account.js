@@ -244,7 +244,9 @@ const getCheckAnswers = (request, h) => {
   })
 }
 
-const persistData = async state => {
+const persistData = async request => {
+  const cookie = request.headers.cookie
+  const state = request.pre.sessionData
   const clonedState = cloneDeep(state)
   const { isUpdate } = state
 
@@ -260,7 +262,8 @@ const persistData = async state => {
   // to the create address endpoint
   const invoiceAccountAddress = await services.system.billingAccounts.changeAddress(
     clonedState.data.id,
-    mapper.mapSessionDataToCreateInvoiceAccountAddress(clonedState)
+    mapper.mapSessionDataToCreateInvoiceAccountAddress(clonedState),
+    cookie
   )
   Object.assign(clonedState.data, pick(invoiceAccountAddress, ['address', 'agentCompany', 'contact']))
   return clonedState
@@ -268,7 +271,7 @@ const persistData = async state => {
 
 const postCheckAnswers = async (request, h) => {
   try {
-    const { data } = await persistData(request.pre.sessionData)
+    const { data } = await persistData(request)
     // Set address in session and redirect back to parent flow
     const { key } = request.params
     const { redirectPath } = session.merge(request, key, { data })

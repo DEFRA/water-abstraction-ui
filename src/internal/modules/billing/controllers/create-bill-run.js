@@ -85,7 +85,7 @@ const postBillingBatchRegion = async (request, h) => {
 
   if (selectedBillingType !== TWO_PART_TARIFF) {
     batch = _batchingDetails(request, billingRegionForm)
-    return _batching(h, batch)
+    return _batching(h, batch, request)
   }
 
   const billableYears = await _batchBillableYears(
@@ -97,7 +97,7 @@ const postBillingBatchRegion = async (request, h) => {
     return h.postRedirectGet('', path)
   }
   batch = _batchingDetails(request, billingRegionForm, billableYears[0]?.value)
-  return _batching(h, batch)
+  return _batching(h, batch, request)
 }
 
 const getBillingBatchFinancialYear = async (request, h) => {
@@ -145,7 +145,7 @@ const postBillingBatchFinancialYear = async (request, h) => {
     isSummer: request.params.season === seasons.SUMMER
   }
 
-  return _batching(h, batch)
+  return _batching(h, batch, request)
 }
 
 /**
@@ -190,9 +190,9 @@ const _batchBillableYears = async (season, billingType, userEmail, regionId) => 
   })
 }
 
-const _batching = async (h, batch) => {
+const _batching = async (h, batch, request) => {
   try {
-    await _initiateSrocBatch(batch)
+    await _initiateSrocBatch(batch, request.headers.cookie)
 
     const { data } = await services.water.billingBatches.createBillingBatch(batch)
     const path = routing.getBillingBatchRoute(data.batch, { isBackEnabled: false })
@@ -206,7 +206,7 @@ const _batching = async (h, batch) => {
   }
 }
 
-async function _initiateSrocBatch (batch) {
+async function _initiateSrocBatch (batch, cookie) {
   const { batchType, financialYearEnding, regionId, userEmail } = batch
 
   // SROC is still in development so controlled by a feature toggle and only supplementary is supported
@@ -215,7 +215,7 @@ async function _initiateSrocBatch (batch) {
   }
 
   try {
-    await services.system.billRuns.createBillRun(batchType, 'sroc', regionId, userEmail)
+    await services.system.billRuns.createBillRun(batchType, 'sroc', regionId, userEmail, cookie)
   } catch (error) {
     // We only log the error and swallow the exception. The UI will have made the request and is expecting the result
     // of the legacy process, whether that's an SROC annual or PRESROC supplementary or 2PT bill run.

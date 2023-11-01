@@ -3,9 +3,12 @@
 const ServiceClient = require('../../../../../shared/lib/connectors/services/ServiceClient')
 
 class BillingAccountsApiClient extends ServiceClient {
-  changeAddress (invoiceAccountId, data) {
+  changeAddress (invoiceAccountId, data, cookie) {
     const url = this.joinUrl(`billing-accounts/${invoiceAccountId}/change-address`)
     const options = {
+      headers: {
+        cookie
+      },
       body: {
         ...data
       }

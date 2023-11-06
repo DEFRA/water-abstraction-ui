@@ -11,7 +11,7 @@
  * @return {String} the link
  */
 const getBillingBatchRoute = (batch, opts = {}) => {
-  const { id } = batch
+  const { id, scheme, type } = batch
 
   const routeMap = new Map()
     .set('processing', `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`)
@@ -22,6 +22,13 @@ const getBillingBatchRoute = (batch, opts = {}) => {
     .set('empty', `/billing/batch/${id}/empty`)
     .set('error', `/billing/batch/${id}/error`)
     .set('queued', `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`)
+
+  const routeMapSrocTpt = new Map()
+    .set('review', `/billing/batch/${id}/two-part-tariff-sroc-review`)
+
+  if (scheme === 'sroc' && type === 'two_part_tariff' && batch.status === 'review') {
+    return routeMapSrocTpt.get(batch.status)
+  }
 
   return routeMap.get(batch.status)
 }

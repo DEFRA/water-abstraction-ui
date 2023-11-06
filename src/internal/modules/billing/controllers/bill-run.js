@@ -84,10 +84,18 @@ const getBillingBatchInvoice = async (request, h) => {
   })
 }
 
+const getTptSrocReview = async (request, h) => {
+  return h.redirect('/system/billing/batch/{batchId}/two-part-tariff-sroc-review')
+}
+
 const getBillingBatchList = async (request, h) => {
   const { page } = request.query
+  console.log('Page :', page)
   const { data, pagination } = await batchService.getBatchList(page, billRunsToDisplayPerPage)
+  console.log('Data and Pagination :', data, pagination)
   const batches = data.map(mappers.mapBatchListRow)
+
+  console.log('Batches :', batches)
 
   const billRunBuilding = batches.some((batch) => {
     return batch.status === 'processing' || batch.status === 'queued'
@@ -340,5 +348,6 @@ module.exports = {
   getBillingBatchError,
   postDeleteAllBillingData,
   getBillingBatchStatusToCancel,
-  postBillingBatchStatusToCancel
+  postBillingBatchStatusToCancel,
+  getTptSrocReview
 }

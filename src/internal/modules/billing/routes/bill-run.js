@@ -82,6 +82,27 @@ const routes = {
     }
   },
 
+  getTptSrocReview: {
+    method: 'GET',
+    path: '/billing/batch/{batchId}/two-part-tariff-sroc-review',
+    handler: controller.getTptSrocReview,
+    config: {
+      auth: { scope: allowedScopes },
+      description: 'displays a list of past bill runs',
+      plugins: {
+        viewContext: {
+          pageTitle: 'Bill runs',
+          activeNavLink: 'bill-runs'
+        }
+      },
+      validate: {
+        query: Joi.object().keys({
+          page: Joi.number().integer().min(1).default(1)
+        })
+      }
+    }
+  },
+
   getBillingBatchConfirm: {
     method: 'GET',
     path: '/billing/batch/{batchId}/confirm',

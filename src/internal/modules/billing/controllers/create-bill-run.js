@@ -218,13 +218,10 @@ async function _initiateSrocBatch (batch, cookie) {
     type: batchType,
     scheme: 'sroc',
     region: regionId,
-    user: userEmail
-  }
-
-  // Currently there are outstanding 2PT charges for multiple years so we have to allow for the users to pick the year.
-  // Usually 2PT is for the current financial year only
-  if (batchType === TWO_PART_TARIFF) {
-    body.financialYearEnding = financialYearEnding
+    user: userEmail,
+    // Currently there are outstanding 2PT charges for multiple years so we have to allow for the users to pick the
+    // year. Usually 2PT is for the current financial year only
+    financialYearEnding: batchType === TWO_PART_TARIFF ? financialYearEnding : null
   }
 
   try {

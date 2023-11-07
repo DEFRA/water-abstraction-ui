@@ -24,7 +24,7 @@ const getBillingBatchRoute = (batch, opts = {}) => {
     .set('queued', `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`)
 
   const routeMapTptSroc = new Map()
-    .set('review', `/billing/batch/${id}/two-part-tariff-sroc-review`)
+    .set('review', `/system/bill-runs/${id}/review`)
 
   if (scheme === 'sroc' && type === 'two_part_tariff' && batch.status === 'review') {
     return routeMapTptSroc.get(batch.status)

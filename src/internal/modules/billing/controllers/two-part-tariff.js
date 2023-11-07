@@ -36,10 +36,6 @@ const getTwoPartTariffReview = async (request, h) => {
   })
 }
 
-const getTwoPartTariffSrocReview = async (request, h) => {
-  return h.redirect('/system/bill-runs/{batchId}/two-part-tariff-sroc-review')
-}
-
 /**
  * Allows user to view issues with a single invoice licence
  */
@@ -258,4 +254,3 @@ exports.getApproveReview = getApproveReview
 exports.postApproveReview = postApproveReview
 exports.getRemoveFinancialYearEnding = getRemoveFinancialYearEnding
 exports.postRemoveFinancialYearEnding = postRemoveFinancialYearEnding
-exports.getTwoPartTariffSrocReview = getTwoPartTariffSrocReview

@@ -35,27 +35,6 @@ module.exports = {
     }
   },
 
-  getBillingTwoPartTariffSrocReview: {
-    method: 'GET',
-    path: '/billing/batch/{batchId}/two-part-tariff-sroc-review',
-    handler: controller.getTwoPartTariffSrocReview,
-    config: {
-      pre,
-      auth: { scope: allowedScopes },
-      description: 'view list of 2PT SROC returns data',
-      plugins: {
-        viewContext: {
-          activeNavLink: 'bill-runs'
-        }
-      },
-      validate: {
-        params: Joi.object().keys({
-          batchId: VALID_GUID
-        })
-      }
-    }
-  },
-
   getLicenceReview: {
     method: 'GET',
     path: '/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}',

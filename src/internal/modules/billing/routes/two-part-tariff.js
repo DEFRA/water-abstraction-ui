@@ -34,7 +34,6 @@ module.exports = {
       }
     }
   },
-
   getLicenceReview: {
     method: 'GET',
     path: '/billing/batch/{batchId}/two-part-tariff/licence/{licenceId}',

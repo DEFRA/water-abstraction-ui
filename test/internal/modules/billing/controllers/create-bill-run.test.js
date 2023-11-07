@@ -789,14 +789,59 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
       })
     })
 
-    experiment('and SROC supplementary billing is enabled', () => {
+    experiment('and the bill run to be created is SROC supplementary', () => {
       beforeEach(() => {
-        sandbox.stub(config.featureToggles, 'triggerSrocSupplementary').value(true)
+        request.params.billingType = 'supplementary'
       })
 
-      experiment('and the bill run to be created is supplementary', () => {
+      experiment('and the request to water-abstraction-system is successful', () => {
         beforeEach(() => {
-          request.params.billingType = 'supplementary'
+          createSrocBillRunStub = sandbox.stub(services.system.billRuns, 'createBillRun').resolves(createdSrocBillRun)
+        })
+
+        test('triggers the creation of an SROC supplementary bill run', async () => {
+          await controller.postBillingBatchFinancialYear(request, h)
+
+          expect(createSrocBillRunStub.called).to.be.true()
+          expect(loggerErrorStub.called).to.be.false()
+        })
+      })
+
+      experiment('and the request to water-abstraction-system is not successful', () => {
+        beforeEach(() => {
+          createSrocBillRunStub = sandbox.stub(services.system.billRuns, 'createBillRun').rejects()
+        })
+
+        test('does not trigger the creation of an SROC supplementary bill run and logs the error', async () => {
+          await controller.postBillingBatchFinancialYear(request, h)
+
+          expect(createSrocBillRunStub.called).to.be.true()
+          expect(loggerErrorStub.called).to.be.true()
+        })
+      })
+    })
+
+    experiment('and the bill run to be created is SROC annual', () => {
+      beforeEach(() => {
+        request.params.billingType = 'annual'
+        createSrocBillRunSpy = sandbox.spy(services.system.billRuns, 'createBillRun')
+      })
+
+      test('does not trigger the creation of an SROC supplementary or SROC two-part-tariff bill run', async () => {
+        await controller.postBillingBatchFinancialYear(request, h)
+
+        expect(createSrocBillRunSpy.called).to.be.false()
+      })
+    })
+
+    experiment('and SROC two-part-tariff billing is enabled', () => {
+      beforeEach(() => {
+        sandbox.stub(config.featureToggles, 'triggerSrocTwoPartTariff').value(true)
+      })
+
+      experiment('and the bill run to be created is two-part-tariff', () => {
+        beforeEach(() => {
+          request.params.billingType = 'two_part_tariff'
         })
 
         experiment('and the request to water-abstraction-system is successful', () => {
@@ -804,7 +849,7 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
             createSrocBillRunStub = sandbox.stub(services.system.billRuns, 'createBillRun').resolves(createdSrocBillRun)
           })
 
-          test('triggers the creation of an SROC supplementary bill run', async () => {
+          test('triggers the creation of an SROC two-part-tariff bill run', async () => {
             await controller.postBillingBatchFinancialYear(request, h)
 
             expect(createSrocBillRunStub.called).to.be.true()
@@ -817,7 +862,7 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
             createSrocBillRunStub = sandbox.stub(services.system.billRuns, 'createBillRun').rejects()
           })
 
-          test('does not trigger the creation of an SROC supplementary bill run and logs the error', async () => {
+          test('does not trigger the creation of an SROC two-part-tariff bill run and logs the error', async () => {
             await controller.postBillingBatchFinancialYear(request, h)
 
             expect(createSrocBillRunStub.called).to.be.true()
@@ -825,29 +870,16 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
           })
         })
       })
-
-      experiment('and the bill run to be created is not supplementary', () => {
-        beforeEach(() => {
-          request.params.billingType = 'two-part-tariff'
-          createSrocBillRunSpy = sandbox.spy(services.system.billRuns, 'createBillRun')
-        })
-
-        test('does not trigger the creation of an SROC supplementary bill run', async () => {
-          await controller.postBillingBatchFinancialYear(request, h)
-
-          expect(createSrocBillRunSpy.called).to.be.false()
-        })
-      })
     })
 
-    experiment('and SROC supplementary billing is not enabled', () => {
+    experiment('and SROC two-part-tariff billing is not enabled', () => {
       beforeEach(() => {
-        sandbox.stub(config.featureToggles, 'triggerSrocSupplementary').value(false)
-        request.params.billingType = 'supplementary'
+        sandbox.stub(config.featureToggles, 'triggerSrocTwoPartTariff').value(false)
+        request.params.billingType = 'two_part_tariff'
         createSrocBillRunSpy = sandbox.spy(services.system.billRuns, 'createBillRun')
       })
 
-      test('does not trigger the creation of an SROC supplementary bill run', async () => {
+      test('does not trigger the creation of an SROC two-part-tariff bill run', async () => {
         await controller.postBillingBatchFinancialYear(request, h)
 
         expect(createSrocBillRunSpy.called).to.be.false()

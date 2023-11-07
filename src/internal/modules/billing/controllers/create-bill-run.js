@@ -209,13 +209,13 @@ const _batching = async (h, batch, request) => {
 async function _initiateSrocBatch (batch, cookie) {
   const { batchType, financialYearEnding, regionId, userEmail } = batch
 
-  // SROC is still in development so controlled by a feature toggle and only supplementary is supported
-  if (!config.featureToggles.triggerSrocSupplementary || batchType !== 'supplementary') {
+  // SROC 2PT is still in development so controlled by a feature toggle and 'annual' is processed by the old engine
+  if ((!config.featureToggles.triggerSrocTwoPartTariff && batchType === 'two_part_tariff') || batchType === 'annual') {
     return
   }
 
   try {
-    await services.system.billRuns.createBillRun(batchType, 'sroc', regionId, userEmail, cookie)
+    await services.system.billRuns.createBillRun(batchType, financialYearEnding, 'sroc', regionId, userEmail, cookie)
   } catch (error) {
     // We only log the error and swallow the exception. The UI will have made the request and is expecting the result
     // of the legacy process, whether that's an SROC annual or PRESROC supplementary or 2PT bill run.

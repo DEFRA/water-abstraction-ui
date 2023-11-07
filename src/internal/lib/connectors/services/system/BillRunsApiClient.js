@@ -7,6 +7,7 @@ class BillRunsApiClient extends ServiceClient {
    * Creates a new bill run
    *
    * @param {String} type The type of bill run to create (ie. supplementary etc.)
+   * @param {String} financialYearEnding The financial year ending of the batch
    * @param {String} scheme The scheme to create the bill run for (ie. sroc etc.)
    * @param {String} region The GUID of the region to create the bill run for
    * @param {String} user The email address of the user requesting bill run creation
@@ -15,7 +16,7 @@ class BillRunsApiClient extends ServiceClient {
    *
    * @return {Promise} resolves with the new bill run details
    */
-  createBillRun (type, scheme, region, user, cookie, previousBillRunId = undefined) {
+  createBillRun (type, financialYearEnding, scheme, region, user, cookie, previousBillRunId = undefined) {
     const url = this.joinUrl('bill-runs')
     const options = {
       headers: {
@@ -23,6 +24,7 @@ class BillRunsApiClient extends ServiceClient {
       },
       body: {
         type,
+        financialYearEnding,
         scheme,
         region,
         user,

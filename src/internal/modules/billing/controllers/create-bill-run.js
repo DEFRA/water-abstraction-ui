@@ -214,13 +214,39 @@ async function _initiateSrocBatch (batch, cookie) {
     return
   }
 
+  const body = {
+    type: batchType,
+    scheme: 'sroc',
+    region: regionId,
+    user: userEmail
+  }
+
+  // Currently there are outstanding 2PT charges for multiple years so we have to allow for the users to pick the year.
+  // Usually 2PT is for the current financial year only
+  if (batchType === 'two_part_tariff') {
+    body.financialYearEnding = financialYearEnding
+  }
+
   try {
-    await services.system.billRuns.createBillRun(batchType, financialYearEnding, 'sroc', regionId, userEmail, cookie)
+    await services.system.billRuns.createBillRun(body, cookie)
   } catch (error) {
     // We only log the error and swallow the exception. The UI will have made the request and is expecting the result
     // of the legacy process, whether that's an SROC annual or PRESROC supplementary or 2PT bill run.
     logger.error(`Error creating SROC ${batchType} batch for ${regionId}|${financialYearEnding}`, error.stack)
   }
+
+  // // SROC 2PT is still in development so controlled by a feature toggle and 'annual' is processed by the old engine
+  // if ((!config.featureToggles.triggerSrocTwoPartTariff && batchType === 'two_part_tariff') || batchType === 'annual') {
+  //   return
+  // }
+
+  // try {
+  //   await services.system.billRuns.createBillRun(batchType, financialYearEnding, 'sroc', regionId, userEmail, cookie)
+  // } catch (error) {
+  //   // We only log the error and swallow the exception. The UI will have made the request and is expecting the result
+  //   // of the legacy process, whether that's an SROC annual or PRESROC supplementary or 2PT bill run.
+  //   logger.error(`Error creating SROC ${batchType} batch for ${regionId}|${financialYearEnding}`, error.stack)
+  // }
 }
 
 const _batchingDetails = (request, billingRegionForm, refDate = null) => {

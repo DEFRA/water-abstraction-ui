@@ -23,7 +23,6 @@ const billingRoutes = require('./billing/routes')
 const chargeInformationRoutes = require('./charge-information/routes')
 const chargeInformationUploadRoutes = require('./charge-information-upload/routes')
 const agreementsRoutes = require('./agreements/routes')
-const reportingRoutes = require('./reporting/routes')
 const viewLicences = require('./view-licences/routes')
 const gaugingStations = require('./gauging-stations/routes')
 const customers = require('./customers/routes')
@@ -55,7 +54,6 @@ const routes = [
   ...Object.values(chargeInformationRoutes),
   ...Object.values(chargeInformationUploadRoutes),
   ...Object.values(agreementsRoutes),
-  ...Object.values(reportingRoutes),
   ...Object.values(kpiReporting),
   ...Object.values(viewLicences),
   ...Object.values(gaugingStations),

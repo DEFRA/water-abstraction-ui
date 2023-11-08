@@ -29,12 +29,13 @@ experiment('services/system/BillRunsApiClient', () => {
 
   experiment('.createBillRun', () => {
     beforeEach(async () => {
-      await service.createBillRun(
-        'supplementary',
-        'sroc',
-        'fdf130c3-3021-408d-869c-2be1fb067e67',
-        'test@test.com'
-      )
+      await service.createBillRun({
+        type: 'supplementary',
+        scheme: 'sroc',
+        region: 'fdf130c3-3021-408d-869c-2be1fb067e67',
+        user: 'test@test.com',
+        financialYearEnding: 2023
+      })
     })
 
     test('passes the expected URL to the service request', async () => {
@@ -51,6 +52,7 @@ experiment('services/system/BillRunsApiClient', () => {
         scheme: 'sroc',
         region: 'fdf130c3-3021-408d-869c-2be1fb067e67',
         user: 'test@test.com',
+        financialYearEnding: 2023,
         previousBillRunId: undefined
       })
     })

@@ -6,7 +6,7 @@ const services = require('internal/lib/connectors/services')
 
 const { selectBillingTypeForm, billingTypeFormSchema } = require('../forms/billing-type')
 const { selectBillingRegionForm, billingRegionFormSchema } = require('../forms/billing-region')
-const { TWO_PART_TARIFF } = require('../lib/bill-run-types')
+const { ANNUAL, TWO_PART_TARIFF } = require('../lib/bill-run-types')
 const seasons = require('../lib/seasons')
 const routing = require('../lib/routing')
 const sessionForms = require('shared/lib/session-forms')
@@ -209,13 +209,23 @@ const _batching = async (h, batch, request) => {
 async function _initiateSrocBatch (batch, cookie) {
   const { batchType, financialYearEnding, regionId, userEmail } = batch
 
-  // SROC is still in development so controlled by a feature toggle and only supplementary is supported
-  if (!config.featureToggles.triggerSrocSupplementary || batchType !== 'supplementary') {
+  // SROC 2PT is still in development so controlled by a feature toggle and 'annual' is processed by the old engine
+  if ((!config.featureToggles.triggerSrocTwoPartTariff && batchType === TWO_PART_TARIFF) || batchType === ANNUAL) {
     return
   }
 
+  const body = {
+    type: batchType,
+    scheme: 'sroc',
+    region: regionId,
+    user: userEmail,
+    // Currently there are outstanding 2PT charges for multiple years so we have to allow for the users to pick the
+    // year. Usually 2PT is for the current financial year only
+    financialYearEnding: batchType === TWO_PART_TARIFF ? financialYearEnding : null
+  }
+
   try {
-    await services.system.billRuns.createBillRun(batchType, 'sroc', regionId, userEmail, cookie)
+    await services.system.billRuns.createBillRun(body, cookie)
   } catch (error) {
     // We only log the error and swallow the exception. The UI will have made the request and is expecting the result
     // of the legacy process, whether that's an SROC annual or PRESROC supplementary or 2PT bill run.

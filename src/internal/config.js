@@ -167,7 +167,7 @@ module.exports = {
     waterAbstractionAlerts: true,
     recalculateBills: true,
     allowChargeVersionUploads: (get(process.env, 'ALLOW_CHARGE_VERSION_UPLOADS') || '').toLowerCase() === 'true',
-    triggerSrocSupplementary: (get(process.env, 'TRIGGER_SROC_SUPPLEMENTARY') || '').toLowerCase() === 'true',
+    triggerSrocTwoPartTariff: (get(process.env, 'TRIGGER_SROC_TWO_PART_TARIFF') || '').toLowerCase() === 'true',
     acceptanceTestsProxy: !isProduction,
     showVerificationCode: process.env.SHOW_VERIFICATION_CODE_FEATURE === 'true' && !isProduction,
     useNewBillView: (get(process.env, 'USE_NEW_BILL_VIEW') || '').toLowerCase() === 'true'

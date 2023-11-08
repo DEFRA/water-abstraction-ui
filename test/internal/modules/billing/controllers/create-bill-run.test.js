@@ -776,7 +776,7 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
       request.params.region = '07ae7f3a-2677-4102-b352-cc006828948c'
       request.params.season = 'summer'
 
-      request.payload['select-financial-year'] = '2022'
+      request.payload['select-financial-year'] = '2023'
 
       loggerErrorStub = sandbox.stub(logger, 'error')
       sandbox.stub(services.water.billingBatches, 'createBillingBatch').resolves({
@@ -786,6 +786,22 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
             status: 'processing'
           }
         }
+      })
+    })
+
+    experiment('and the financial year ending is less than 2023', () => {
+      beforeEach(() => {
+        request.params.billingType = 'supplementary'
+
+        request.payload['select-financial-year'] = '2022'
+        createSrocBillRunStub = sandbox.stub(services.system.billRuns, 'createBillRun')
+      })
+
+      test('does not trigger the creation of an SROC bill run', async () => {
+        await controller.postBillingBatchFinancialYear(request, h)
+
+        expect(createSrocBillRunStub.called).to.be.false()
+        expect(loggerErrorStub.called).to.be.false()
       })
     })
 

@@ -209,6 +209,11 @@ const _batching = async (h, batch, request) => {
 async function _initiateSrocBatch (batch, cookie) {
   const { batchType, financialYearEnding, regionId, userEmail } = batch
 
+  // SROC only applies from 1st April 2022 so we don't care about any with a FYE < 2023
+  if (financialYearEnding < 2023) {
+    return
+  }
+
   // SROC 2PT is still in development so controlled by a feature toggle and 'annual' is processed by the old engine
   if ((!config.featureToggles.triggerSrocTwoPartTariff && batchType === TWO_PART_TARIFF) || batchType === ANNUAL) {
     return

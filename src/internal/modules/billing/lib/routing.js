@@ -11,7 +11,11 @@
  * @return {String} the link
  */
 const getBillingBatchRoute = (batch, opts = {}) => {
-  const { id } = batch
+  const { id, scheme, type } = batch
+
+  if (scheme === 'sroc' && type === 'two_part_tariff' && batch.status === 'review') {
+    return `/system/bill-runs/${id}/review`
+  }
 
   const routeMap = new Map()
     .set('processing', `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`)

@@ -121,6 +121,19 @@ experiment('internal/modules/billing/lib/routing', () => {
 
         expect(result).to.equal(`/billing/batch/${batch.id}/two-part-tariff-review`)
       })
+
+      experiment('when the bill-run is a two part tariff sroc scheme', () => {
+        beforeEach(() => {
+          batch.scheme = 'sroc'
+          batch.type = 'two_part_tariff'
+        })
+
+        test('returns the system review url', () => {
+          const result = getBillingBatchRoute(batch)
+
+          expect(result).to.equal(`/system/bill-runs/${batch.id}/review`)
+        })
+      })
     })
 
     experiment('when batch status is "empty"', () => {

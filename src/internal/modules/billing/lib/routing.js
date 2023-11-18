@@ -1,5 +1,7 @@
 'use strict'
 
+const { featureToggles } = require('../../../config.js')
+
 /**
  * Gets the correct route for the specified batch depending on its
  * current status
@@ -11,23 +13,45 @@
  * @return {String} the link
  */
 const getBillingBatchRoute = (batch, opts = {}) => {
-  const { id, scheme, type } = batch
+  const { id, scheme, status } = batch
 
-  if (scheme === 'sroc' && type === 'two_part_tariff' && batch.status === 'review') {
-    return `/system/bill-runs/${id}/review`
+  if (status === 'processing' || status === 'queued' || status === 'sending') {
+    return `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`
   }
 
-  const routeMap = new Map()
-    .set('processing', `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`)
-    .set('sending', `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`)
-    .set('ready', opts.invoiceId ? `/billing/batch/${id}/invoice/${opts.invoiceId}` : `/billing/batch/${id}/summary`)
-    .set('sent', opts.showSuccessPage ? `/billing/batch/${id}/confirm/success` : `/billing/batch/${id}/summary`)
-    .set('review', `/billing/batch/${id}/two-part-tariff-review`)
-    .set('empty', `/billing/batch/${id}/empty`)
-    .set('error', `/billing/batch/${id}/error`)
-    .set('queued', `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`)
+  if (status === 'ready') {
+    if (opts.invoiceId) {
+      return `/billing/batch/${id}/invoice/${opts.invoiceId}`
+    }
 
-  return routeMap.get(batch.status)
+    if (featureToggles.useNewBillView) {
+      return `/system/bill-runs/${id}`
+    }
+
+    return `/billing/batch/${id}/summary`
+  }
+
+  if (status === 'sent') {
+    if (opts.showSuccessPage) {
+      return `/billing/batch/${id}/confirm/success`
+    }
+
+    if (featureToggles.useNewBillView) {
+      return `/system/bill-runs/${id}`
+    }
+
+    return `/billing/batch/${id}/summary`
+  }
+
+  if (status === 'review') {
+    if (scheme === 'sroc') {
+      return `/system/bill-runs/${id}/review`
+    }
+
+    return `/billing/batch/${id}/two-part-tariff-review`
+  }
+
+  return `/billing/batch/${id}/${status}`
 }
 
 const getTwoPartTariffLicenceReviewRoute = (batch, invoiceLicenceId) =>

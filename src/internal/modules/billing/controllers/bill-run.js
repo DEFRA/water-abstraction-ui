@@ -39,9 +39,8 @@ const getBillingBatchSummary = async (request, h) => {
     isAnnual: batch.type === 'annual',
     isEditable: batch.status === 'ready',
     errors: mappers.mapBatchLevelErrors(batch, invoices),
-    // only show the back link from the list page, so not to offer the link
-    // as part of the batch creation flow.
-    back: request.query.back && BATCH_LIST_ROUTE,
+    back: '/billing/batch/list',
+    backText: 'Go back to bill runs',
     useNewBillView: featureToggles.useNewBillView
   })
 }

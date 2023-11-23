@@ -290,14 +290,8 @@ experiment('internal/modules/billing/controller', () => {
         })
       })
 
-      test('does not include the back link if the "back" query param is zero', async () => {
+      test('includes a backlink to the bill runs page', async () => {
         await controller.getBillingBatchSummary(request, h)
-        const [, view] = h.view.lastCall.args
-        expect(view.back).to.equal(0)
-      })
-
-      test('includes the back link if "back" query param is 1', async () => {
-        await controller.getBillingBatchSummary({ ...request, query: { back: 1 } }, h)
         const [, view] = h.view.lastCall.args
         expect(view.back).to.equal('/billing/batch/list')
       })

@@ -116,7 +116,7 @@
     Set up a new charge
   </a>
 {% endif %}
-{% if links.makeNonChargeable %} 
+{% if links.makeNonChargeable %}
   <a href="{{ links.makeNonChargeable }}" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
     Make licence non-chargeable
   </a>
@@ -156,4 +156,14 @@
   text: 'Set up a new agreement',
   classes: 'govuk-button--secondary'
 })}}
+{% endif %}
+
+{% if featureToggles.showReturnRequirements %}
+<h2 class="govuk-heading-l">Returns requirements (for testing)</h2>
+<a href="/system/licences/{{ licenceId }}/returns-required" role="button" draggable="false" class="govuk-button govuk-button--secondary govuk-!-margin-right-3" data-module="govuk-button">
+    Set up new returns requirement
+</a>
+<a href="/system/licences/{{ licenceId }}/no-returns-required" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+    No returns required
+</a>
 {% endif %}

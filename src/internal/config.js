@@ -170,7 +170,8 @@ module.exports = {
     triggerSrocTwoPartTariff: (get(process.env, 'TRIGGER_SROC_TWO_PART_TARIFF') || '').toLowerCase() === 'true',
     acceptanceTestsProxy: !isProduction,
     showVerificationCode: process.env.SHOW_VERIFICATION_CODE_FEATURE === 'true' && !isProduction,
-    useNewBillView: (get(process.env, 'USE_NEW_BILL_VIEW') || '').toLowerCase() === 'true'
+    useNewBillView: (get(process.env, 'USE_NEW_BILL_VIEW') || '').toLowerCase() === 'true',
+    showReturnRequirements: (get(process.env, 'SHOW_RETURN_REQUIREMENTS') || '').toLowerCase() === 'true' && !isProduction
   },
   billRunsToDisplayPerPage: process.env.BILL_RUNS_TO_DISPLAY_PER_PAGE || 20
 }

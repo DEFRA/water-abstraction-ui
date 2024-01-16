@@ -160,7 +160,8 @@ const getBillingBatchConfirmSuccess = (request, h) => {
     ...request.view,
     pageTitle: 'Bill run sent',
     panelText: `You've sent the ${getBillRunPageTitle(batch)} ${batch.billRunNumber}`,
-    batch
+    batch,
+    featureToggles
   })
 }
 

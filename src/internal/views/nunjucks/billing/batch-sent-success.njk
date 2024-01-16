@@ -6,7 +6,7 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      {{ 
+      {{
         govukPanel({
           titleText: pageTitle,
           text: panelText
@@ -17,7 +17,13 @@
 
       {{ downloadBatchButton(batch) }}
 
-      <p><a href="/billing/batch/{{batch.id}}/summary">Go to bill run</a></p>
+      {% if featureToggles.useNewBillView %}
+        {% set viewLink = '/system/bill-runs/' + batch.id %}
+      {% else %}
+        {% set viewLink = '/billing/batch/' + batch.id + '/summary' %}
+      {% endif %}
+
+      <p><a href="{{viewLink}}">Go to bill run</a></p>
 
     </div>
   </div>

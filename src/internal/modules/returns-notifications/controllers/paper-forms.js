@@ -50,7 +50,21 @@ const getEnterLicenceNumber = async (request, h) => {
 
 const isMultipleLicenceHoldersForLicence = data => data.some(row => row.documents.length > 1)
 const isReturnsDueForLicences = data => data.some(row => row.documents.length > 0)
-const licencesWithNoReturnsDue = data => Object.values(data).filter(row => !(has(row, 'document')))
+const licencesWithNoReturnsDue = (data) => {
+  const results = []
+
+  for (const [key, value] of Object.entries(data)) {
+    if (key === 'uniqueJobId') {
+      continue
+    }
+
+    if (!value.document) {
+      results.push(value)
+    }
+  }
+
+  return results
+}
 
 /**
  * Post handler for licence numbers entry

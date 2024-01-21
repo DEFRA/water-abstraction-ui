@@ -1,7 +1,7 @@
 'use strict'
 
 const Boom = require('@hapi/boom')
-const { get, partialRight, has } = require('lodash')
+const { get, partialRight } = require('lodash')
 const { v4: uuid } = require('uuid')
 
 const sessionForms = require('shared/lib/session-forms')

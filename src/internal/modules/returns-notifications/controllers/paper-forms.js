@@ -1,7 +1,7 @@
 'use strict'
 
 const Boom = require('@hapi/boom')
-const { get, partialRight, has } = require('lodash')
+const { get, partialRight } = require('lodash')
 const { v4: uuid } = require('uuid')
 
 const sessionForms = require('shared/lib/session-forms')
@@ -50,7 +50,21 @@ const getEnterLicenceNumber = async (request, h) => {
 
 const isMultipleLicenceHoldersForLicence = data => data.some(row => row.documents.length > 1)
 const isReturnsDueForLicences = data => data.some(row => row.documents.length > 0)
-const licencesWithNoReturnsDue = data => Object.values(data).filter(row => !(has(row, 'document')))
+const licencesWithNoReturnsDue = (data) => {
+  const results = []
+
+  for (const [key, value] of Object.entries(data)) {
+    if (key === 'uniqueJobId') {
+      continue
+    }
+
+    if (!value.document) {
+      results.push(value)
+    }
+  }
+
+  return results
+}
 
 /**
  * Post handler for licence numbers entry

@@ -213,19 +213,21 @@ const _batching = async (h, batch, request) => {
 async function _initiateSrocBatch (batch, cookie) {
   const { batchType, financialYearEnding, regionId, userEmail } = batch
 
+  let result = null
+
   // SROC only applies from 1st April 2022 so we don't care about any with a FYE < 2023
   if (financialYearEnding < 2023) {
-    return
+    return result
   }
 
   // SROC 2PT is still in development so controlled by a feature toggle
   if (!config.featureToggles.triggerSrocTwoPartTariff && batchType === TWO_PART_TARIFF) {
-    return
+    return result
   }
 
   // SROC annual is still in development so controlled by a feature toggle
   if (!config.featureToggles.triggerSrocAnnual && batchType === ANNUAL) {
-    return
+    return result
   }
 
   const body = {
@@ -238,7 +240,6 @@ async function _initiateSrocBatch (batch, cookie) {
     financialYearEnding: batchType === TWO_PART_TARIFF ? financialYearEnding : null
   }
 
-  let result = {}
   try {
     result = await services.system.billRuns.createBillRun(body, cookie)
   } catch (error) {

@@ -76,7 +76,7 @@ experiment('internal/modules/billing/lib/routing', () => {
         batch.status = 'ready'
       })
 
-      experiment.only('and an invoice Id is not set', () => {
+      experiment('and an invoice Id is not set', () => {
         test('returns the summary batch page url', () => {
           const result = getBillingBatchRoute(batch)
 

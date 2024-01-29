@@ -194,7 +194,7 @@ const _batching = async (h, batch, request) => {
     const srocBatch = await _initiateSrocBatch(batch, request.headers.cookie)
 
     let billingBatchId
-    if (config.featureToggles.triggerSrocAnnual && batch.batchType === ANNUAL) {
+    if (srocBatch && [ANNUAL, TWO_PART_TARIFF].includes(batch.batchType)) {
       billingBatchId = srocBatch.billingBatchId
     } else {
       const { data } = await services.water.billingBatches.createBillingBatch(batch)

@@ -8,7 +8,6 @@ const { selectBillingTypeForm, billingTypeFormSchema } = require('../forms/billi
 const { selectBillingRegionForm, billingRegionFormSchema } = require('../forms/billing-region')
 const { ANNUAL, TWO_PART_TARIFF } = require('../lib/bill-run-types')
 const seasons = require('../lib/seasons')
-const routing = require('../lib/routing')
 const sessionForms = require('shared/lib/session-forms')
 const { getBatchFinancialYearEnding } = require('../lib/batch-financial-year')
 
@@ -192,12 +191,17 @@ const _batchBillableYears = async (season, billingType, userEmail, regionId) => 
 
 const _batching = async (h, batch, request) => {
   try {
-    await _initiateSrocBatch(batch, request.headers.cookie)
+    const srocBatch = await _initiateSrocBatch(batch, request.headers.cookie)
 
-    const { data } = await services.water.billingBatches.createBillingBatch(batch)
-    const path = routing.getBillingBatchRoute(data.batch, { isBackEnabled: false })
+    let billingBatchId
+    if (srocBatch && [ANNUAL, TWO_PART_TARIFF].includes(batch.batchType)) {
+      billingBatchId = srocBatch.billingBatchId
+    } else {
+      const { data } = await services.water.billingBatches.createBillingBatch(batch)
+      billingBatchId = data.batch.id
+    }
 
-    return h.redirect(path)
+    return h.redirect(`/billing/batch/${billingBatchId}/processing?back=0`)
   } catch (err) {
     if (err.statusCode === 409) {
       return h.redirect(_creationErrorRedirectUrl(err))
@@ -209,14 +213,21 @@ const _batching = async (h, batch, request) => {
 async function _initiateSrocBatch (batch, cookie) {
   const { batchType, financialYearEnding, regionId, userEmail } = batch
 
+  let result = null
+
   // SROC only applies from 1st April 2022 so we don't care about any with a FYE < 2023
   if (financialYearEnding < 2023) {
-    return
+    return result
   }
 
-  // SROC 2PT is still in development so controlled by a feature toggle and 'annual' is processed by the old engine
-  if ((!config.featureToggles.triggerSrocTwoPartTariff && batchType === TWO_PART_TARIFF) || batchType === ANNUAL) {
-    return
+  // SROC 2PT is still in development so controlled by a feature toggle
+  if (!config.featureToggles.triggerSrocTwoPartTariff && batchType === TWO_PART_TARIFF) {
+    return result
+  }
+
+  // SROC annual is still in development so controlled by a feature toggle
+  if (!config.featureToggles.triggerSrocAnnual && batchType === ANNUAL) {
+    return result
   }
 
   const body = {
@@ -230,12 +241,14 @@ async function _initiateSrocBatch (batch, cookie) {
   }
 
   try {
-    await services.system.billRuns.createBillRun(body, cookie)
+    result = await services.system.billRuns.createBillRun(body, cookie)
   } catch (error) {
     // We only log the error and swallow the exception. The UI will have made the request and is expecting the result
     // of the legacy process, whether that's an SROC annual or PRESROC supplementary or 2PT bill run.
     logger.error(`Error creating SROC ${batchType} batch for ${regionId}|${financialYearEnding}`, error.stack)
   }
+
+  return result
 }
 
 const _batchingDetails = (request, billingRegionForm, refDate = null) => {

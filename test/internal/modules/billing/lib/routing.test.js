@@ -2,9 +2,16 @@
 
 const { expect } = require('@hapi/code')
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script()
+const sandbox = require('sinon').createSandbox()
+const config = require('../../../../../src/internal/config')
+
 const { getBillingBatchRoute } = require('internal/modules/billing/lib/routing')
 
 experiment('internal/modules/billing/lib/routing', () => {
+  beforeEach(() => {
+    sandbox.stub(config.featureToggles, 'useNewBillView').value(false)
+  })
+
   experiment('.getBillingBatchRoute', () => {
     const batch = { id: '59203fa0-41d5-44c3-994e-032dc0985ea1' }
 

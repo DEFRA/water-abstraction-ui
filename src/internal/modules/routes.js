@@ -27,11 +27,11 @@ const viewLicences = require('./view-licences/routes')
 const gaugingStations = require('./gauging-stations/routes')
 const customers = require('./customers/routes')
 const notes = require('./notes/routes')
-const systemProxyRoutes = require('./system-proxy/routes')
 
 // Shared routes
 const healthRoutes = require('../../shared/modules/health/routes')
 const kpiReporting = require('../../internal/modules/kpi-reporting/routes')
+const systemProxyRoutes = require('../../shared/modules/system-proxy/routes')
 
 const routes = [
   ...Object.values(coreRoutes),

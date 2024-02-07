@@ -1,6 +1,6 @@
 'use strict'
 
-const config = require('../../config')
+const config = require('../../../internal/config')
 
 const systemUrl = new URL(config.services.system)
 const proxyDefaults = {

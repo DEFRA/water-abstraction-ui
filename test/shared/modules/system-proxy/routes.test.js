@@ -8,7 +8,7 @@ const { experiment, test, beforeEach } = exports.lab = Lab.script()
 const { expect } = Code
 
 // Thing under test
-const routes = require('../../../../src/internal/modules/system-proxy/routes')
+const routes = require('../../../../src/shared/modules/system-proxy/routes')
 
 experiment('system-proxy routes', () => {
   let route

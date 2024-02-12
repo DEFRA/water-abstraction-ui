@@ -5,6 +5,7 @@ const { createPlugins, createCache } = require('./server-common')
 
 // -------------- Require vendor code -----------------
 const Hapi = require('@hapi/hapi')
+const H2o2 = require('@hapi/h2o2')
 
 // -------------- Require project code -----------------
 const config = require('./src/external/config')
@@ -81,6 +82,9 @@ async function start () {
 
     // Auth plugin
     await server.register(authPlugin)
+
+    // Proxy plugin
+    await server.register(H2o2)
 
     server.route(routes)
 

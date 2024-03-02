@@ -91,10 +91,15 @@ const getBillingBatchList = async (request, h) => {
     return batch.status === 'processing' || batch.status === 'queued'
   })
 
+  const billRunCancelling = batches.some((batch) => {
+    return batch.status === 'cancel'
+  })
+
   return h.view('nunjucks/billing/batch-list', {
     ...request.view,
     batches,
     billRunBuilding,
+    billRunCancelling,
     pagination,
     form: featureToggles.deleteAllBillingData && confirmForm.form(request, 'Delete all bills and charge information', {
       action: '/billing/batch/delete-all-data',

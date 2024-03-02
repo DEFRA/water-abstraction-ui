@@ -13,6 +13,10 @@
 const getBillingBatchRoute = (batch, opts = {}) => {
   const { id, scheme, status } = batch
 
+  if (status === 'cancel') {
+    return null
+  }
+
   if (status === 'processing' || status === 'queued' || status === 'sending') {
     return `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`
   }

@@ -7,10 +7,20 @@
 
 {% block content %}
 
-  {% if billRunBuilding %}
+  {% if billRunBuilding and billRunCancelling %}
+    {{ govukNotificationBanner({
+        html: '<p class="govuk-notification-banner__heading">Bill runs are currently busy building and cancelling.</p>
+          <p class="govuk-body">Please wait for these bill runs to finish before creating another one.</p>'
+    }) }}
+  {% elif billRunBuilding %}
     {{ govukNotificationBanner({
         html: '<p class="govuk-notification-banner__heading">A bill run is currently building.</p>
           <p class="govuk-body">Please wait for this bill run to finish building before creating another one.</p>'
+    }) }}
+  {% elif billRunCancelling %}
+    {{ govukNotificationBanner({
+        html: '<p class="govuk-notification-banner__heading">A bill run is currently cancelling.</p>
+          <p class="govuk-body">Please wait for this bill run to finish cancelling before creating another one.</p>'
     }) }}
   {% endif %}
 
@@ -41,7 +51,6 @@
           </thead>
           <tbody class="govuk-table__body">
             {% for batch in batches %}
-            {% if (batch.status !== 'cancel') %}
               <tr class="govuk-table__row">
                 <td class="govuk-table__cell">
                   {% if batch.link %}
@@ -70,7 +79,6 @@
 
                 <td class="govuk-table__cell govuk-table__cell--numeric">{{ badge(batch | batchBadge) }}</td>
               </tr>
-              {% endif %}
             {% endfor %}
           </tbody>
         </table>

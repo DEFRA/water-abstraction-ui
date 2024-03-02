@@ -145,7 +145,7 @@ experiment('internal/modules/billing/lib/routing', () => {
       test('returns the empty batch page url', () => {
         const result = getBillingBatchRoute(batch)
 
-        expect(result).to.equal(`/billing/batch/${batch.id}/empty`)
+        expect(result).to.equal(`/system/bill-runs/${batch.id}`)
       })
     })
 

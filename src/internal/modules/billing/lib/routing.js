@@ -17,20 +17,12 @@ const getBillingBatchRoute = (batch, opts = {}) => {
     return `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`
   }
 
-  if (status === 'ready') {
-    if (opts.invoiceId) {
-      return `/billing/batch/${id}/invoice/${opts.invoiceId}`
-    }
-
-    return `/system/bill-runs/${id}`
+  if (opts.invoiceId && status === 'ready') {
+    return `/billing/batch/${id}/invoice/${opts.invoiceId}`
   }
 
-  if (status === 'sent') {
-    if (opts.showSuccessPage) {
-      return `/billing/batch/${id}/confirm/success`
-    }
-
-    return `/system/bill-runs/${id}`
+  if (opts.showSuccessPage && status === 'sent') {
+    return `/billing/batch/${id}/confirm/success`
   }
 
   if (status === 'review') {
@@ -41,7 +33,11 @@ const getBillingBatchRoute = (batch, opts = {}) => {
     return `/billing/batch/${id}/two-part-tariff-review`
   }
 
-  return `/billing/batch/${id}/${status}`
+  if (status === 'error') {
+    return `/billing/batch/${id}/error`
+  }
+
+  return `/system/bill-runs/${id}`
 }
 
 const getTwoPartTariffLicenceReviewRoute = (batch, invoiceLicenceId) =>

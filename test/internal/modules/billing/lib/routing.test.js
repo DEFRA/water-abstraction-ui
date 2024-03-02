@@ -2,16 +2,10 @@
 
 const { expect } = require('@hapi/code')
 const { experiment, test, beforeEach } = exports.lab = require('@hapi/lab').script()
-const sandbox = require('sinon').createSandbox()
-const config = require('../../../../../src/internal/config')
 
 const { getBillingBatchRoute } = require('internal/modules/billing/lib/routing')
 
 experiment('internal/modules/billing/lib/routing', () => {
-  beforeEach(() => {
-    sandbox.stub(config.featureToggles, 'useNewBillView').value(false)
-  })
-
   experiment('.getBillingBatchRoute', () => {
     const batch = { id: '59203fa0-41d5-44c3-994e-032dc0985ea1' }
 
@@ -80,7 +74,7 @@ experiment('internal/modules/billing/lib/routing', () => {
         test('returns the summary batch page url', () => {
           const result = getBillingBatchRoute(batch)
 
-          expect(result).to.equal(`/billing/batch/${batch.id}/summary`)
+          expect(result).to.equal(`/system/bill-runs/${batch.id}`)
         })
       })
 
@@ -105,7 +99,7 @@ experiment('internal/modules/billing/lib/routing', () => {
         test('returns the summary batch page url', () => {
           const result = getBillingBatchRoute(batch)
 
-          expect(result).to.equal(`/billing/batch/${batch.id}/summary`)
+          expect(result).to.equal(`/system/bill-runs/${batch.id}`)
         })
       })
 

@@ -99,12 +99,12 @@ chargeOrDash %}
 
         {% set waterUndertakersHtml %}
         <h2 class="govuk-heading-l">Water companies</h2>
-        {{ invoicesTable(batch, invoices.waterUndertakers, useNewBillView )}}
+        {{ invoicesTable(batch, invoices.waterUndertakers )}}
         {% endset %}
 
         {% set otherAbstractorsHtml %}
         <h2 class="govuk-heading-l">Other abstractors</h2>
-        {{ invoicesTable(batch, invoices.otherAbstractors, useNewBillView )}}
+        {{ invoicesTable(batch, invoices.otherAbstractors )}}
         {% endset %}
 
         {{ govukTabs({
@@ -127,7 +127,7 @@ chargeOrDash %}
         }) }}
 
       {% else %}
-        {{ invoicesTable(batch, invoices, useNewBillView )}}
+        {{ invoicesTable(batch, invoices )}}
       {% endif %}
 
     </div>

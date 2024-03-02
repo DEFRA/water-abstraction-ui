@@ -17,11 +17,7 @@
 
       {{ downloadBatchButton(batch) }}
 
-      {% if featureToggles.useNewBillView %}
-        {% set viewLink = '/system/bill-runs/' + batch.id %}
-      {% else %}
-        {% set viewLink = '/billing/batch/' + batch.id + '/summary' %}
-      {% endif %}
+      {% set viewLink = '/system/bill-runs/' + batch.id %}
 
       <p><a href="{{viewLink}}">Go to bill run</a></p>
 

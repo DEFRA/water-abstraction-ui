@@ -1,7 +1,5 @@
 'use strict'
 
-const { featureToggles } = require('../../../config.js')
-
 /**
  * Gets the correct route for the specified batch depending on its
  * current status
@@ -24,11 +22,7 @@ const getBillingBatchRoute = (batch, opts = {}) => {
       return `/billing/batch/${id}/invoice/${opts.invoiceId}`
     }
 
-    if (featureToggles.useNewBillView) {
-      return `/system/bill-runs/${id}`
-    }
-
-    return `/billing/batch/${id}/summary`
+    return `/system/bill-runs/${id}`
   }
 
   if (status === 'sent') {
@@ -36,11 +30,7 @@ const getBillingBatchRoute = (batch, opts = {}) => {
       return `/billing/batch/${id}/confirm/success`
     }
 
-    if (featureToggles.useNewBillView) {
-      return `/system/bill-runs/${id}`
-    }
-
-    return `/billing/batch/${id}/summary`
+    return `/system/bill-runs/${id}`
   }
 
   if (status === 'review') {

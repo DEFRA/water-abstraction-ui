@@ -33,10 +33,6 @@ const getBillingBatchRoute = (batch, opts = {}) => {
     return `/billing/batch/${id}/two-part-tariff-review`
   }
 
-  if (status === 'error') {
-    return `/billing/batch/${id}/error`
-  }
-
   return `/system/bill-runs/${id}`
 }
 

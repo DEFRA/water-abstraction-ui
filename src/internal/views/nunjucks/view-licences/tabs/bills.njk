@@ -1,7 +1,7 @@
 {% from 'nunjucks/billing/macros/invoices-table.njk' import licenceInvoicesView %}
 
 <h2 class="govuk-heading-l">Bills</h2>
-{{ licenceInvoicesView(bills.data, '', featureToggles.useNewBillView) }}
+{{ licenceInvoicesView(bills.data, '') }}
 
 {% if bills.pagination | hasMorePages %}
 <p>

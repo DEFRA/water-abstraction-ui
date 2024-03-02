@@ -40,8 +40,7 @@ const getBillingBatchSummary = async (request, h) => {
     isEditable: batch.status === 'ready',
     errors: mappers.mapBatchLevelErrors(batch, invoices),
     back: '/billing/batch/list',
-    backText: 'Go back to bill runs',
-    useNewBillView: featureToggles.useNewBillView
+    backText: 'Go back to bill runs'
   })
 }
 

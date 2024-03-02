@@ -102,8 +102,7 @@ const getBillsForLicence = async (request, h) => {
     bills: data,
     pagination,
     licenceId,
-    back: `/licences/${licenceId}#bills`,
-    useNewBillView: featureToggles.useNewBillView
+    back: `/licences/${licenceId}#bills`
   })
 }
 

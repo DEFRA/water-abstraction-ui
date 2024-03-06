@@ -27,10 +27,16 @@
   {{ title(pageTitle) }}
   <p class="govuk-body">Create a supplementary, annual or two-part tariff bill run.</p>
 
+  {% if useNewBillRunSetup %}
+    {% set createBillRunLink = '/system/bill-runs/setup' %}
+  {% else %}
+    {% set createBillRunLink = '/billing/batch/type' %}
+  {% endif %}
+
   {{ govukButton({
-      text: "Create a bill run",
-      href: '/billing/batch/type'
-    }) }}
+    text: "Create a bill run",
+    href: createBillRunLink
+  }) }}
 
   {% if batches.length %}
     <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible govuk-!-margin-top-3">

@@ -13,3 +13,10 @@
 .govuk-table__override_no_bottom_border{
   border-bottom: none !important;
 }
+
+// Added to allow us to force the content block inside a notification banner to fill the whole banner. Out of the box
+// GOVUK set `max-width: 605px` on the content and when we asked a maintainer the only response was 'why would you
+// ever want it wider'.
+.max-width-full {
+  max-width: 100% !important;
+}

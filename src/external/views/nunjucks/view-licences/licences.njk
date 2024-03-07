@@ -1,6 +1,7 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 
 {% from "paginate.njk" import paginate %}
 {% from "sort-icon.njk" import sortIcon %}
@@ -10,6 +11,15 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
+      {% set addLicencesBannerHtml %}
+        <p class="govuk-notification-banner__heading govuk-!-margin-bottom-0 max-width-full">Renewed licences not showing in your licences need to be added to your account.</p>
+        <a class="govuk-notification-banner__heading govuk-notification-banner__link" href="/manage_licences">Add licence</a>
+      {% endset %}
+
+      {{ govukNotificationBanner({
+        html: addLicencesBannerHtml
+      }) }}
+
       {{ title(pageTitle) }}
 
       {% if showVerificationAlert %}

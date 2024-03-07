@@ -12,9 +12,8 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       {% set addLicencesBannerHtml %}
-        <div class="govuk-notification-banner__heading max-width-full">Renewed licences not showing in your licences need to be added to your account.<br>
-        <a class="govuk-notification-banner__link" href="/manage_licences">Add licence</a>
-        </div>
+        <p class="govuk-notification-banner__heading govuk-!-margin-bottom-0 max-width-full">Renewed licences not showing in your licences need to be added to your account.</p>
+        <a class="govuk-notification-banner__heading govuk-notification-banner__link" href="/manage_licences">Add licence</a>
       {% endset %}
 
       {{ govukNotificationBanner({

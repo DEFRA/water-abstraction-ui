@@ -22,7 +22,7 @@ const getBillingBatchRoute = (batch, opts = {}) => {
   }
 
   if (opts.invoiceId && status === 'ready') {
-    return `/billing/batch/${id}/invoice/${opts.invoiceId}`
+    return `/system/bills/${opts.invoiceId}`
   }
 
   if (opts.showSuccessPage && status === 'sent') {

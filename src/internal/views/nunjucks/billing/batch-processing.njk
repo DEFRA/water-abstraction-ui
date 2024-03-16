@@ -1,12 +1,9 @@
 {% extends "./nunjucks/layout.njk" %}
-{% from "./nunjucks/billing/macros/batch-buttons.njk" import cancelStatusBatchButton %}
 {% from "badge.njk" import badge %}
+
 {% block content %}
-
-
- 
     {{ title(pageTitle, billRunDate | date('D MMMM YYYY')) }}
-    
+
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
         <p class="govuk-body">
@@ -16,12 +13,6 @@
       </div>
     </div>
 
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        {{ cancelStatusBatchButton(batch) }}
-      </div>
-    </div>
-    
     <meta http-equiv="refresh" content="10">
     <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
     <img class="spinner" src="/public/images/ajax-loader.gif" alt="spinner">

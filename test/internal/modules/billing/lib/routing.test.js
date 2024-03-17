@@ -85,7 +85,7 @@ experiment('internal/modules/billing/lib/routing', () => {
           }
           const result = getBillingBatchRoute(batch, options)
 
-          expect(result).to.equal(`/billing/batch/${batch.id}/invoice/${options.invoiceId}`)
+          expect(result).to.equal(`/system/bills/${options.invoiceId}`)
         })
       })
     })

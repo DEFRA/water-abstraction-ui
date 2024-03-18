@@ -21,7 +21,7 @@ const mapBatchListRow = batch => ({
   ...batch,
   batchType: mapBatchType(batch.type),
   billCount: getBillCount(batch),
-  link: routing.getBillingBatchRoute(batch, { isBackEnabled: true })
+  link: routing.getBillingBatchRoute(batch)
 })
 
 const isTransactionInErrorStatus = transaction => transaction.status === transactionStatuses.error

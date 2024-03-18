@@ -320,7 +320,7 @@ experiment('internal/modules/billing/pre-handlers', () => {
       await preHandlers.redirectOnBatchStatus(request, h)
 
       const [path] = h.redirect.lastCall.args
-      expect(path).to.equal('/billing/batch/test-batch-id/processing?back=1')
+      expect(path).to.equal('/billing/batch/test-batch-id/processing')
       expect(h.takeover.called).to.be.true()
     })
   })

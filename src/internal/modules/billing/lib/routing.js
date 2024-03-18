@@ -3,11 +3,11 @@
 /**
  * Gets the correct route for the specified batch depending on its
  * current status
+ *
  * @param {Object} batch - the batch object from water service
- * @param {Object} options - whether back should be enabled on processing page
- *          {Boolean} isBackEnabled - whether back should be enabled on processing page
- *          {Boolean} showSuccessPage - whether to show success or summary page for sent batch
- *          {String} invoiceId - set if user should be redirected to invoice page when batch ready
+ * @param {Object} options - whether to show the success page or batch summary ({Boolean} showSuccessPage). Whether to
+ * redirect to the bill page when the batch status becomes 'ready' ({String} invoiceId)
+ *
  * @return {String} the link
  */
 const getBillingBatchRoute = (batch, opts = {}) => {
@@ -18,7 +18,7 @@ const getBillingBatchRoute = (batch, opts = {}) => {
   }
 
   if (status === 'processing' || status === 'queued' || status === 'sending') {
-    return `/billing/batch/${id}/processing?back=${opts.isBackEnabled ? 1 : 0}`
+    return `/billing/batch/${id}/processing`
   }
 
   if (opts.invoiceId && status === 'ready') {

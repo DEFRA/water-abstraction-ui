@@ -238,14 +238,12 @@ const postBillingBatchDeleteInvoice = async (request, h) => {
  */
 const getBillingBatchProcessing = async (request, h) => {
   const { batch } = request.pre
-  const back = !!request.query.back
 
   return h.view('nunjucks/billing/batch-processing', {
     batch,
     ...request.view,
     caption: moment(batch.createdAt).format('D MMMM YYYY'),
-    pageTitle: `${batch.region.displayName} ${mappers.mapBatchType(batch.type).toLowerCase()} bill run`,
-    back: back && BATCH_LIST_ROUTE
+    pageTitle: `${batch.region.displayName} ${mappers.mapBatchType(batch.type).toLowerCase()} bill run`
   })
 }
 

@@ -519,7 +519,7 @@ experiment('internal/modules/billing/controller', () => {
       expect(batches[0].region.name).to.equal('Anglian')
       expect(batches[0].status).to.equal('processing')
       expect(batches[0].billCount).to.equal(14)
-      expect(batches[0].link).to.equal('/billing/batch/8ae7c31b-3c5a-44b8-baa5-a10b40aef9e1/processing?back=1')
+      expect(batches[0].link).to.equal('/billing/batch/8ae7c31b-3c5a-44b8-baa5-a10b40aef9e1/processing')
       expect(batches[0].scheme).to.equal('alcs')
       expect(batches[1].type).to.equal('Two-part tariff')
       expect(batches[1].region.name).to.equal('Midlands')
@@ -805,25 +805,6 @@ experiment('internal/modules/billing/controller', () => {
     test('outputs the formatted batch creation date as the caption', async () => {
       const [, { caption }] = h.view.lastCall.args
       expect(caption).to.equal('1 February 2020')
-    })
-
-    experiment('when the back query param is 1', () => {
-      test('back link is to the batch list page', async () => {
-        const [, { back }] = h.view.lastCall.args
-        expect(back).to.equal('/billing/batch/list')
-      })
-    })
-
-    experiment('when the back query param is 0', () => {
-      beforeEach(async () => {
-        request = createRequest(0)
-        await controller.getBillingBatchProcessing(request, h)
-      })
-
-      test('back link is false', async () => {
-        const [, { back }] = h.view.lastCall.args
-        expect(back).to.be.false()
-      })
     })
   })
 

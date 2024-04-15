@@ -7,6 +7,9 @@ const moment = require('moment')
 const { get, sortBy, isEmpty, pick } = require('lodash')
 const { v4: uuid } = require('uuid')
 const { flattenAdditionalChargesProperties } = require('./lib/mappers')
+
+const { featureToggles } = require('../../config.js')
+
 const errorHandler = (err, message) => {
   if (err.statusCode === 404) {
     return Boom.notFound(message)
@@ -205,6 +208,27 @@ const loadChargeVersionWorkflows = async request => {
   const { toSetupPageNumber, reviewPageNumber, changeRequestPageNumber } = request.query
   try {
     const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(toSetupPageNumber, 100, 'to_setup')
+    workflows.data.forEach((workflow) => {
+      const { chargeVersionWorkflowId, data, licenceId } = workflow
+
+      if (featureToggles.useWorkflowSetupLinks && data?.timeLimitedChargeVersionId) {
+        workflow.link = {
+          href: `/licences/${licenceId}/charge-information/${data.timeLimitedChargeVersionId}/view`,
+          text: 'Time limited'
+        }
+      } else if (featureToggles.useWorkflowSetupLinks && data?.chargeVersionExists) {
+        workflow.link = {
+          href: `/licences/${licenceId}#charge`,
+          text: 'Updated'
+        }
+      } else {
+        workflow.link = {
+          href: `/licences/${licenceId}/charge-information/create?chargeVersionWorkflowId=${chargeVersionWorkflowId}`,
+          text: 'Set up'
+        }
+      }
+    })
+
     return {
       data: sortBy(workflows.data, chargeVersionWorkflowsOrder),
       pagination: {

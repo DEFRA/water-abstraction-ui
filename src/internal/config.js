@@ -172,7 +172,8 @@ module.exports = {
     showVerificationCode: process.env.SHOW_VERIFICATION_CODE_FEATURE === 'true' && !isProduction,
     showReturnRequirements: (get(process.env, 'SHOW_RETURN_REQUIREMENTS') || '').toLowerCase() === 'true' && !isProduction,
     triggerSrocAnnual: (get(process.env, 'TRIGGER_SROC_ANNUAL') || '').toLowerCase() === 'true',
-    useNewBillRunSetup: (get(process.env, 'USE_NEW_BILL_RUN_SETUP') || '').toLowerCase() === 'true'
+    useNewBillRunSetup: (get(process.env, 'USE_NEW_BILL_RUN_SETUP') || '').toLowerCase() === 'true',
+    useWorkflowSetupLinks: (get(process.env, 'USE_WORKFLOW_SETUP_LINKS') || 'true').toLowerCase() === 'true'
   },
   billRunsToDisplayPerPage: process.env.BILL_RUNS_TO_DISPLAY_PER_PAGE || 20
 }

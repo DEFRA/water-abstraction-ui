@@ -293,7 +293,7 @@ experiment('internal/modules/billing/controller', () => {
       test('includes a backlink to the bill runs page', async () => {
         await controller.getBillingBatchSummary(request, h)
         const [, view] = h.view.lastCall.args
-        expect(view.back).to.equal('/billing/batch/list')
+        expect(view.back).to.equal('/system/bill-runs')
       })
     })
   })
@@ -568,7 +568,7 @@ experiment('internal/modules/billing/controller', () => {
     test('the user is redirected back to the list of batches', async () => {
       await controller.postBillingBatchCancel(request, h)
       const [redirectPath] = h.redirect.lastCall.args
-      expect(redirectPath).to.equal('/billing/batch/list')
+      expect(redirectPath).to.equal('/system/bill-runs')
     })
 
     test('if the cancellation failed, the user is still redirected back to the list of batches', async () => {
@@ -576,7 +576,7 @@ experiment('internal/modules/billing/controller', () => {
       await controller.postBillingBatchCancel(request, h)
 
       const [redirectPath] = h.redirect.lastCall.args
-      expect(redirectPath).to.equal('/billing/batch/list')
+      expect(redirectPath).to.equal('/system/bill-runs')
     })
   })
 
@@ -847,7 +847,7 @@ experiment('internal/modules/billing/controller', () => {
 
     test('back link is to the batch list page', async () => {
       const [, { back }] = h.view.lastCall.args
-      expect(back).to.equal('/billing/batch/list')
+      expect(back).to.equal('/system/bill-runs')
     })
   })
 
@@ -891,7 +891,7 @@ experiment('internal/modules/billing/controller', () => {
 
     test('back link is to the batch list page', async () => {
       const [, { back }] = h.view.lastCall.args
-      expect(back).to.equal('/billing/batch/list')
+      expect(back).to.equal('/system/bill-runs')
     })
 
     experiment('when the batch does not have an error code', () => {
@@ -924,7 +924,7 @@ experiment('internal/modules/billing/controller', () => {
     })
 
     test('redirects to the billing page', async () => {
-      expect(h.redirect.calledWith('/billing/batch/list')).to.be.true()
+      expect(h.redirect.calledWith('/system/bill-runs')).to.be.true()
     })
   })
 
@@ -940,7 +940,7 @@ experiment('internal/modules/billing/controller', () => {
 
     test('the user is redirected back to the batch summary', async () => {
       const [redirectPath] = h.redirect.lastCall.args
-      expect(redirectPath).to.equal('/billing/batch/list')
+      expect(redirectPath).to.equal('/system/bill-runs')
     })
 
     test('if fails to set batch status to error, the user is redirected to the batch summary, an error is thrown', async () => {
@@ -948,7 +948,7 @@ experiment('internal/modules/billing/controller', () => {
       await controller.postBillingBatchStatusToCancel(request, h)
 
       const [redirectPath] = h.redirect.lastCall.args
-      expect(redirectPath).to.equal('/billing/batch/list')
+      expect(redirectPath).to.equal('/system/bill-runs')
     })
   })
 

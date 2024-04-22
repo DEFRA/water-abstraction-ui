@@ -232,7 +232,7 @@ experiment('internal/modules/billing/controller/two-part-tariff', () => {
 
     test('returns the correct back link to the view', async () => {
       const [, view] = h.view.lastCall.args
-      expect(view.back).to.equal('/billing/batch/list')
+      expect(view.back).to.equal('/system/bill-runs')
     })
 
     experiment('when there are no errors', () => {

@@ -32,7 +32,7 @@ const getTwoPartTariffReview = async (request, h) => {
     readyLink: `/billing/batch/${batch.id}/two-part-tariff-ready`,
     licences,
     totals,
-    back: '/billing/batch/list'
+    back: '/system/bill-runs'
   })
 }
 

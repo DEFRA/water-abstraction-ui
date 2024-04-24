@@ -18,7 +18,7 @@ const confirmForm = require('shared/lib/forms/confirm-form')
 
 const getBillRunPageTitle = batch => `${batch.region.displayName} ${mappers.mapBatchType(batch.type).toLowerCase()} bill run`
 
-const BATCH_LIST_ROUTE = '/billing/batch/list'
+const BATCH_LIST_ROUTE = '/system/bill-runs'
 
 /**
  * Shows a batch with its list of invoices
@@ -39,7 +39,7 @@ const getBillingBatchSummary = async (request, h) => {
     isAnnual: batch.type === 'annual',
     isEditable: batch.status === 'ready',
     errors: mappers.mapBatchLevelErrors(batch, invoices),
-    back: '/billing/batch/list',
+    back: BATCH_LIST_ROUTE,
     backText: 'Go back to bill runs'
   })
 }

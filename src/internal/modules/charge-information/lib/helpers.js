@@ -11,7 +11,7 @@ const routing = require('../lib/routing')
 const { ROUTING_CONFIG } = require('../lib/charge-categories/constants')
 const actions = require('../lib/actions')
 const noteSession = require('../../../modules/notes/lib/session')
-const config = require("internal/config");
+const config = require('internal/config')
 
 const getPostedForm = (request, formContainer) => {
   const schema = Joi.isSchema(formContainer.schema) ? formContainer.schema : formContainer.schema(request)

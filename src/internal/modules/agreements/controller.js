@@ -29,7 +29,6 @@ const {
 } = require('./lib/helpers')
 const actions = require('./lib/actions')
 
-
 const linkToLicenceChargeInformation = (licenceId) => {
   if (config.featureToggles.enableSystemLicenceView) {
     return `/system/licences/${licenceId}/set-up`
@@ -64,7 +63,7 @@ const postDeleteAgreement = async (request, h) => {
   } catch (err) {
     logger.info(`Did not successfully delete agreement ${agreementId}`)
   }
-  return h.redirect(linkToLicenceChargeInformation(licence.id),)
+  return h.redirect(linkToLicenceChargeInformation(licence.id))
 }
 
 const getEndAgreement = async (request, h) => {
@@ -126,7 +125,7 @@ const postConfirmEndAgreement = async (request, h) => {
   try {
     await water.agreements.endAgreement(agreementId, { endDate })
     await helpers.clearEndAgreementSessionData(request, agreementId)
-    return h.redirect(linkToLicenceChargeInformation(licence.id),)
+    return h.redirect(linkToLicenceChargeInformation(licence.id))
   } catch (err) {
     logger.info(`Did not successfully end agreement ${agreementId}`)
   }
@@ -142,7 +141,7 @@ const getSelectAgreementType = async (request, h) => {
     ...getDefaultView(request),
     pageTitle: 'Select agreement',
     form: sessionForms.get(request, selectAgreementType.form(request)),
-    back: linkToLicenceChargeInformation(id),
+    back: linkToLicenceChargeInformation(id)
   }
   return h.view('nunjucks/agreements/form', view)
 }

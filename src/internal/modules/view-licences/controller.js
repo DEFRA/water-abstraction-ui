@@ -10,7 +10,7 @@ const { hasScope } = require('../../lib/permissions')
 const { featureToggles } = require('../../config')
 const returnsMapper = require('../../lib/mappers/returns')
 const services = require('../../lib/connectors/services')
-const config = require("internal/config");
+const config = require('internal/config')
 
 const linkToLicenceChargeInformation = (licenceId) => {
   if (config.featureToggles.enableSystemLicenceView) {
@@ -20,7 +20,7 @@ const linkToLicenceChargeInformation = (licenceId) => {
   }
 }
 
-const linkToLicenceBills= (licenceId) => {
+const linkToLicenceBills = (licenceId) => {
   if (config.featureToggles.enableSystemLicenceView) {
     return `/system/licences/${licenceId}/bills`
   } else {

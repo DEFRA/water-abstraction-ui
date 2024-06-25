@@ -104,17 +104,10 @@
           {% for licence in licenceData %}
             <div class="licence-result">
               <h2 class="licence-result__column">
-                {% if featureFlags.enableSystemLicenceView == true%}
-                  <a href="/system/licences/{{licence.document_id}}/summary">
-                    <span class="govuk-visually-hidden">View licence </span>
-                    {{ licence.system_external_id }}
-                  </a>
-                {% else %}
-                  <a href="/licences/{{licence.document_id}}">
-                    <span class="govuk-visually-hidden">View licence </span>
-                    {{ licence.system_external_id }}
-                  </a>
-                {% endif %}
+                <a href="/licences/{{licence.document_id}}">
+                  <span class="govuk-visually-hidden">View licence </span>
+                  {{ licence.system_external_id }}
+                </a>
               </h2>
               <p class="licence-result__column licence-result__column--description">
                 {% if licence.document_name %}

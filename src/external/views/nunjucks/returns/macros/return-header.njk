@@ -10,11 +10,7 @@
   </dl>
 
   <p class="govuk-!-margin-bottom-7">
-    {% if featureFlags.enableSystemLicenceView == true%}
-      <a href="/system/licences/{{ documentHeader.document_id }}/summary">View this licence</a>
-    {% else %}
-      <a href="/licences/{{ documentHeader.document_id }}">View this licence</a>
-    {% endif %}
+    <a href="/licences/{{ documentHeader.document_id }}">View this licence</a>
   </p>
   {% endif %}
 {% endmacro %}

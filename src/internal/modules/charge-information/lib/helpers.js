@@ -11,6 +11,7 @@ const routing = require('../lib/routing')
 const { ROUTING_CONFIG } = require('../lib/charge-categories/constants')
 const actions = require('../lib/actions')
 const noteSession = require('../../../modules/notes/lib/session')
+const config = require("internal/config");
 
 const getPostedForm = (request, formContainer) => {
   const schema = Joi.isSchema(formContainer.schema) ? formContainer.schema : formContainer.schema(request)
@@ -127,7 +128,15 @@ const prepareChargeInformation = (licenceId, chargeData) => ({
   }
 })
 
-const getLicencePageUrl = licence => `/licences/${licence.id}#charge`
+const linkToLicenceChargeInformation = (licenceId) => {
+  if (config.featureToggles.enableSystemLicenceView) {
+    return `/system/licences/${licenceId}/set-up`
+  } else {
+    return `/licences/${licenceId}#charge`
+  }
+}
+
+const getLicencePageUrl = licence => linkToLicenceChargeInformation(licence.id)
 
 const isCurrentAddress = invoiceAccountAddress => invoiceAccountAddress.dateRange.endDate === null
 

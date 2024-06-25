@@ -10,6 +10,23 @@ const { hasScope } = require('../../lib/permissions')
 const { featureToggles } = require('../../config')
 const returnsMapper = require('../../lib/mappers/returns')
 const services = require('../../lib/connectors/services')
+const config = require("internal/config");
+
+const linkToLicenceChargeInformation = (licenceId) => {
+  if (config.featureToggles.enableSystemLicenceView) {
+    return `/system/licences/${licenceId}/set-up`
+  } else {
+    return `/licences/${licenceId}#charge`
+  }
+}
+
+const linkToLicenceBills= (licenceId) => {
+  if (config.featureToggles.enableSystemLicenceView) {
+    return `/system/licences/${licenceId}/bills`
+  } else {
+    return `/licences/${licenceId}#bills`
+  }
+}
 
 const getDocumentId = doc => doc.document_id
 
@@ -102,7 +119,7 @@ const getBillsForLicence = async (request, h) => {
     bills: data,
     pagination,
     licenceId,
-    back: `/licences/${licenceId}#bills`
+    back: linkToLicenceBills(licenceId)
   })
 }
 
@@ -116,7 +133,7 @@ const getMarkLicenceForSupplementaryBilling = (request, h) => {
     pageTitle: 'You\'re about to mark this licence for the next supplementary bill run',
     caption: `Licence ${licenceRef}`,
     form: formHandler.handleFormRequest(request, forms.markForSupplementaryBilling),
-    back: `/licences/${licenceId}#charge`
+    back: linkToLicenceChargeInformation(licenceId)
   })
 }
 

@@ -136,7 +136,9 @@ const linkToLicenceChargeInformation = (licenceId) => {
   }
 }
 
-const getLicencePageUrl = licence => linkToLicenceChargeInformation(licence.id)
+const getLicencePageUrl = (licence) => {
+  return linkToLicenceChargeInformation(licence.id)
+}
 
 const isCurrentAddress = invoiceAccountAddress => invoiceAccountAddress.dateRange.endDate === null
 

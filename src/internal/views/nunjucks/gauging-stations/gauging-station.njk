@@ -113,7 +113,7 @@
             {% for licenceGaugingStation in licenceGaugingStations %}
                 <tr class="govuk-table__row">
                     <td class="govuk-table__cell">
-                      {% if featureFlags.enableSystemLicenceView == true%}
+                      {% if featureFlags.enableSystemLicenceView == true %}
                         <a href="/system/licences/{{ licenceGaugingStation.licenceId }}/summary">
                           {{ licenceGaugingStation.licenceRef }}
                         </a>

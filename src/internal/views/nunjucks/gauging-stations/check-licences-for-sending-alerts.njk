@@ -33,13 +33,13 @@
   <tr>
     {% if linkage === licenceGroup[0] %}
         <td class="govuk-table__cell" rowspan={{licenceGroup.length}}>
-          {% if featureFlags.enableSystemLicenceView == true%}
-            <a href="/system/licences/{{licenceGroup[0].licenceId}}/summary">
-              {{licenceGroup[0].licenceRef}}
+          {% if featureFlags.enableSystemLicenceView == true %}
+            <a href="/system/licences/{{ licenceGroup[0].licenceId }}/summary">
+              {{ licenceGroup[0].licenceRef }}
             </a>
           {% else %}
-            <a href="/licences/{{licenceGroup[0].licenceId}}">
-              {{licenceGroup[0].licenceRef}}
+            <a href="/licences/{{ licenceGroup[0].licenceId }}">
+              {{ licenceGroup[0].licenceRef }}
             </a>
           {% endif %}
         </td>

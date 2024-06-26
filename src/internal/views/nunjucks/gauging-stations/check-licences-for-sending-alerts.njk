@@ -33,9 +33,15 @@
   <tr>
     {% if linkage === licenceGroup[0] %}
         <td class="govuk-table__cell" rowspan={{licenceGroup.length}}>
-          <a href="/licences/{{licenceGroup[0].licenceId}}">
-            {{licenceGroup[0].licenceRef}}
-          </a>
+          {% if featureFlags.enableSystemLicenceView == true %}
+            <a href="/system/licences/{{ licenceGroup[0].licenceId }}/summary">
+              {{ licenceGroup[0].licenceRef }}
+            </a>
+          {% else %}
+            <a href="/licences/{{ licenceGroup[0].licenceId }}">
+              {{ licenceGroup[0].licenceRef }}
+            </a>
+          {% endif %}
         </td>
     {% endif %}
           <td class="govuk-table__cell {{'govuk-table__override_no_bottom_border' if linkage !== licenceGroup[licenceGroup.length-1] else ''}}">

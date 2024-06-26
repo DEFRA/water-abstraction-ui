@@ -113,9 +113,15 @@
             {% for licenceGaugingStation in licenceGaugingStations %}
                 <tr class="govuk-table__row">
                     <td class="govuk-table__cell">
-                        <a href="/licences/{{licenceGaugingStation.licenceId}}">
-                            {{licenceGaugingStation.licenceRef}}
+                      {% if featureFlags.enableSystemLicenceView == true %}
+                        <a href="/system/licences/{{ licenceGaugingStation.licenceId }}/summary">
+                          {{ licenceGaugingStation.licenceRef }}
                         </a>
+                      {% else %}
+                        <a href="/licences/{{ licenceGaugingStation.licenceId }}">
+                          {{ licenceGaugingStation.licenceRef }}
+                        </a>
+                      {% endif %}
                     </td>
                     <td class="govuk-table__cell">
                         <table role="presentation">

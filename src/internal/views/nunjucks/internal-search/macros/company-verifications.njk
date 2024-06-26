@@ -8,7 +8,11 @@
       <ul class="govuk-list">
         {% for licence in verification.licences %}
           <li>
-            <a class="govuk-link" href="/licences/{{licence.documentId}}">{{licence.licenceRef}}</a>
+            {% if featureFlags.enableSystemLicenceView == true %}
+              <a class="govuk-link" href="/system/licences/{{ licence.documentId }}}/summary">{{ licence.licenceRef }}</a>
+            {% else %}
+              <a class="govuk-link" href="/licences/{{ licence.documentId }}">{{ licence.licenceRef }}</a>
+            {% endif %}
           </li>
         {% endfor %}
       </ul>

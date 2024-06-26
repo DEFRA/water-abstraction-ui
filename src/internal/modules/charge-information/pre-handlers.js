@@ -17,6 +17,14 @@ const errorHandler = (err, message) => {
   throw err
 }
 
+const linkToLicenceChargeInformation = (licenceId) => {
+  if (featureToggles.enableSystemLicenceView) {
+    return `/system/licences/${licenceId}/set-up`
+  } else {
+    return `/licences/${licenceId}#charge`
+  }
+}
+
 const getChargeVersionWorkflowId = request => request.query.chargeVersionWorkflowId || request.params.chargeVersionWorkflowId
 
 /**
@@ -218,7 +226,7 @@ const loadChargeVersionWorkflows = async request => {
         }
       } else if (featureToggles.useWorkflowSetupLinks && data?.chargeVersionExists) {
         workflow.link = {
-          href: `/licences/${licenceId}#charge`,
+          href: linkToLicenceChargeInformation(licenceId),
           text: 'Updated'
         }
       } else {

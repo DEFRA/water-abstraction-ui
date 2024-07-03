@@ -26,6 +26,8 @@ const {
   internalRoutingFormSchema
 } = require('../forms')
 
+const config = require('../../../config.js')
+
 /**
  * Loads a WaterReturn instance using the supplied returnId
  * @param  {String}  returnId - return service return ID
@@ -75,7 +77,7 @@ const getInternalRouting = async (request, h, form) => {
     return: data,
     back: STEP_LICENCES,
     links: {
-      licence: `/licences/${licence.id}`
+      licence: linkToViewLicence(licence.id)
     }
   })
 }
@@ -190,6 +192,14 @@ const getReceiptLogged = async (request, h) => {
 const getQueryLogged = async (request, h) => {
   const view = await getSubmittedViewData(request)
   return h.view('nunjucks/returns/query-logged', view)
+}
+
+const linkToViewLicence = (licenceId) => {
+  if (config.featureToggles.enableSystemLicenceView) {
+    return `/system/licences/${licenceId}/summary`
+  } else {
+    return `/licences/${licenceId}`
+  }
 }
 
 exports.getInternalRouting = getInternalRouting

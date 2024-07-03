@@ -8,6 +8,8 @@ const { getEditButtonPath } = require('internal/lib/return-path')
 
 const services = require('../../../lib/connectors/services')
 
+const config = require('../../../config.js')
+
 /**
  * Get a list of returns for a particular licence
  * @param {String} request.params.documenId - the CRM doc ID for the licence
@@ -67,11 +69,19 @@ const getReturn = async (request, h) => {
     isVoid: data.status === 'void',
     endReading: get(data, `meters[0].readings.${helpers.endReadingKey(data)}`),
     links: {
-      licence: `/licences/${licence.id}`
+      licence: linkToViewLicence(licence.id)
     }
   }
 
   return h.view('nunjucks/returns/return', view)
+}
+
+const linkToViewLicence = (licenceId) => {
+  if (config.featureToggles.enableSystemLicenceView) {
+    return `/system/licences/${licenceId}/summary`
+  } else {
+    return `/licences/${licenceId}`
+  }
 }
 
 module.exports = {

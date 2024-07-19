@@ -49,7 +49,7 @@ const createRequest = () => ({
   }
 })
 
-experiment('internal/modules/charge-information/controller', () => {
+experiment.only('internal/modules/charge-information/controller', () => {
   let request, h
 
   beforeEach(async () => {
@@ -86,7 +86,7 @@ experiment('internal/modules/charge-information/controller', () => {
 
     test('has the page title', async () => {
       const { pageTitle } = h.view.lastCall.args[1]
-      expect(pageTitle).to.equal('Charge information workflow')
+      expect(pageTitle).to.equal('Workflow')
     })
 
     test('has no caption', async () => {

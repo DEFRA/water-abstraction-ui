@@ -49,7 +49,7 @@ const createRequest = () => ({
   }
 })
 
-experiment.only('internal/modules/charge-information/controller', () => {
+experiment('internal/modules/charge-information/controller', () => {
   let request, h
 
   beforeEach(async () => {

@@ -217,7 +217,7 @@ const loadChargeVersionWorkflows = async request => {
   try {
     const workflows = await services.water.chargeVersionWorkflows.getChargeVersionWorkflows(toSetupPageNumber, 100, 'to_setup')
     workflows.data.forEach((workflow) => {
-      const { chargeVersionWorkflowId, data, licenceId } = workflow
+      const { data, licenceId } = workflow
 
       if (featureToggles.useWorkflowSetupLinks && data?.timeLimitedChargeVersionId) {
         workflow.link = {
@@ -230,9 +230,16 @@ const loadChargeVersionWorkflows = async request => {
           text: 'Updated'
         }
       } else {
-        workflow.link = {
-          href: `/licences/${licenceId}/charge-information/create?chargeVersionWorkflowId=${chargeVersionWorkflowId}`,
-          text: 'Set up'
+        if (featureToggles.enableSystemLicenceView) {
+          workflow.link = {
+            href: `/licences/${licenceId}/set-up`,
+            text: 'Set up'
+          }
+        } else {
+          workflow.link = {
+            href: `/licences/${licenceId}#charge`,
+            text: 'Set up'
+          }
         }
       }
     })

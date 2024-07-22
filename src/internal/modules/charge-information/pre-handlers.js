@@ -229,17 +229,15 @@ const loadChargeVersionWorkflows = async request => {
           href: linkToLicenceChargeInformation(licenceId),
           text: 'Updated'
         }
+      } else if (featureToggles.enableSystemLicenceView) {
+        workflow.link = {
+          href: `/licences/${licenceId}/set-up`,
+          text: 'Set up'
+        }
       } else {
-        if (featureToggles.enableSystemLicenceView) {
-          workflow.link = {
-            href: `/licences/${licenceId}/set-up`,
-            text: 'Set up'
-          }
-        } else {
-          workflow.link = {
-            href: `/licences/${licenceId}#charge`,
-            text: 'Set up'
-          }
+        workflow.link = {
+          href: `/licences/${licenceId}#charge`,
+          text: 'Set up'
         }
       }
     })

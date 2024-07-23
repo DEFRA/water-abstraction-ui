@@ -86,7 +86,7 @@ experiment('internal/modules/charge-information/controller', () => {
 
     test('has the page title', async () => {
       const { pageTitle } = h.view.lastCall.args[1]
-      expect(pageTitle).to.equal('Charge information workflow')
+      expect(pageTitle).to.equal('Workflow')
     })
 
     test('has no caption', async () => {

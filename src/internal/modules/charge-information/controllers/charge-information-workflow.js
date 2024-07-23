@@ -14,7 +14,7 @@ const getChargeInformationWorkflow = async (request, h) => {
   const view = {
     back: '/manage',
     ...request.view,
-    pageTitle: 'Charge information workflow',
+    pageTitle: 'Workflow',
     licences: {
       changeRequest,
       toSetUp,

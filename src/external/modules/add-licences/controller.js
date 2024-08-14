@@ -78,10 +78,13 @@ async function postLicenceAdd (request, reply) {
     }
 
     const res = await services.crm.documents.getUnregisteredLicences(licenceNumbers)
+    console.log('🚀 ~ postLicenceAdd ~ res:', res)
 
     if (res.error) {
       throw res.error
     }
+
+    console.log('🚀 ~ postLicenceAdd ~ res.data:', res.data)
 
     // Check 1+ licences found
     if (res.data.length < 1) {

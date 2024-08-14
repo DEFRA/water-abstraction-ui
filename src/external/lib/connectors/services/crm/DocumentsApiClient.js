@@ -37,6 +37,7 @@ class DocumentsApiClient extends SharedDocumentsApiClient {
    */
   getUnregisteredLicences (licenceNumbers) {
     const args = getUnregisteredLicenceQueryArguments('system_external_id', licenceNumbers)
+    console.log('🚀 ~ DocumentsApiClient ~ getUnregisteredLicences ~ args:', args)
     return this.findMany(...args)
   };
 

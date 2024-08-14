@@ -64,6 +64,8 @@ async function postLicenceAdd (request, reply) {
     licence_no: Joi.string().required().trim().max(9000),
     csrf_token: Joi.string().guid()
   })
+
+  let res
   try {
     // Validate post data
     const { error, value } = schema.validate(request.payload)
@@ -77,7 +79,7 @@ async function postLicenceAdd (request, reply) {
       throw new LicenceNotFoundError()
     }
 
-    const res = await services.crm.documents.getUnregisteredLicences(licenceNumbers)
+    res = await services.crm.documents.getUnregisteredLicences(licenceNumbers)
     console.log('🚀 ~ postLicenceAdd ~ res:', res)
 
     if (res.error) {
@@ -122,6 +124,7 @@ async function postLicenceAdd (request, reply) {
   } catch (err) {
     if (['ValidationError', 'LicenceNotFoundError', 'LicenceMissingError', 'LicenceSimilarityError'].includes(err.name)) {
       viewContext.error = err
+      viewContext.result = res
       return reply.view('nunjucks/add-licences/index', viewContext)
     }
 

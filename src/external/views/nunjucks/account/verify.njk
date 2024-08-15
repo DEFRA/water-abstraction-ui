@@ -26,6 +26,11 @@
         If the email hasn’t arrived you can
         <a href="/account/change-email/enter-new-email">request another code.</a>
       </p>
+      {%if showVerificationCode%}
+      <p>
+        Your code is <code><b><span data-test="security-code">{{ securityCode }}</span></b></code>
+      </p>
+      {%endif%}
     </div>
   </div>
 {% endblock %}

@@ -17,6 +17,8 @@ const isLockedHttpStatus = err => [423, 429].includes(err.statusCode)
 const isErrorHttpStatus = err => [401, 404].includes(err.statusCode)
 const isConflictHttpStatus = err => err.statusCode === 409
 
+const config = require('../../config.js')
+
 /**
  * Renders account screen with options to change email/password
  */
@@ -131,12 +133,13 @@ const getVerifyEmail = async (request, h, form) => {
   const { userId } = request.defra
 
   try {
-    const response = await services.water
-      .changeEmailAddress.getStatus(userId)
+    const response = await services.water.changeEmailAddress.getStatus(userId)
 
     const verifyForm = form || verifyNewEmailForm(request)
     const view = {
       ...request.view,
+      showVerificationCode: config.featureToggles.showVerificationCode,
+      securityCode: response.data.securityCode,
       form: verifyForm,
       back: '/account',
       newEmail: get(response, 'data.email')

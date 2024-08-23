@@ -86,12 +86,14 @@ const loadLicence = async (documentId) => {
  * @return {Promise} resolves with {licence, arLicence, finalState }
  */
 const load = async (documentId) => {
+  // TODO: uses permit
   const { licence, arLicence } = await loadLicence(documentId)
 
   // Setup initial state
   const initialState = getInitialState(licence)
 
   // Calculate final state after actions applied
+  // TODO: use the permit licence data licence_data_value
   const finalState = stateManager(initialState, arLicence.licence_data_value.actions)
 
   return {

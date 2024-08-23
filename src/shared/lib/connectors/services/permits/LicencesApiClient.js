@@ -11,6 +11,7 @@ class LicencesApiClient extends APIClient {
    * @param {Object} logger The system logger object
    */
   constructor (config, logger) {
+    // TODO: any permit call here
     const serviceUrl = config.services.permits
 
     super(http.request, {

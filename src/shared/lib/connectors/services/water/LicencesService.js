@@ -50,6 +50,7 @@ class LicencesService extends ServiceClient {
   }
 
   getPointsByDocumentId (documentId) {
+    // TODO: mention of points
     const url = this.joinUrl('documents', documentId, 'licence/points')
     return getRequest(this.serviceRequest, url)
   }

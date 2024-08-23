@@ -115,6 +115,7 @@ const update = async (licenceId, data, licenceNumber) => {
     licence_data_value: JSON.stringify(data)
   }
   const result = await services.permits.licences.updateOne(licenceId, payload)
+  // TODO: uses the /ar/licence route
   await services.water.abstractionReformAnalysis.arRefreshLicenceWebhook(licenceNumber)
   return result
 }

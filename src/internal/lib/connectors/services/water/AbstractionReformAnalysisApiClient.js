@@ -2,6 +2,7 @@ const { APIClient } = require('@envage/hapi-pg-rest-api')
 const urlJoin = require('url-join')
 const { http, serviceRequest } = require('@envage/water-abstraction-helpers')
 
+// TODO: uses the /ar/licence route - permit
 const getEndpoint = serviceUrl => urlJoin(serviceUrl, '/ar/licences')
 
 class AbstractionReformAnalysisApiClient extends APIClient {

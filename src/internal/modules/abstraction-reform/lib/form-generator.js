@@ -38,6 +38,7 @@ const resolveLicenceConditions = async context => {
 }
 
 const resolveLicencePoints = async context => {
+  // TODO: wants points
   const connector = services.water.licences.getPointsByDocumentId
   return resolveLicenceData(context, connector, mapPoint)
 }

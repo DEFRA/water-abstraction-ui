@@ -30,6 +30,7 @@ const pre = async (request, h) => {
   const { documentId } = request.params
 
   // Load licence / AR licence from CRM
+  // TODO: uses permit
   const { licence, arLicence, finalState } = await load(documentId)
 
   request.licence = licence

@@ -413,6 +413,7 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
 
   experiment('.postMarkLicenceForSupplementaryBilling', () => {
     const tempLicenceId = uuid()
+    const tempReturnId = uuid()
     const request = {
       view: {},
       method: 'get',
@@ -423,7 +424,7 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
         cookie: 'taste=yummy'
       },
       payload: {
-        returnId: 'some-return-id'
+        returnId: tempReturnId
       },
       pre: {
         document: {
@@ -438,6 +439,10 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
 
     test('calls the backend', () => {
       expect(services.water.licences.postMarkLicenceForSupplementaryBilling.calledWith(tempLicenceId)).to.be.true()
+    })
+
+    test('calls system', () => {
+      expect(services.system.licences.supplementary.calledWith(tempReturnId)).to.be.true()
     })
 
     test('returns the correct view data objects', async () => {

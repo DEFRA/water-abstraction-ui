@@ -11,6 +11,7 @@ const { featureToggles } = require('../../config')
 const returnsMapper = require('../../lib/mappers/returns')
 const services = require('../../lib/connectors/services')
 const config = require('internal/config')
+const { logger } = require('./../../../internal/logger.js')
 
 const linkToLicenceChargeInformation = (licenceId) => {
   if (config.featureToggles.enableSystemLicenceView) {
@@ -139,11 +140,22 @@ const getMarkLicenceForSupplementaryBilling = (request, h) => {
 
 const postMarkLicenceForSupplementaryBilling = async (request, h) => {
   const { licenceId } = request.params
+  const { returnId } = request.payload
+  const cookie = request.headers.cookie
+
   const { document } = request.pre
   const { system_external_id: licenceRef } = document
 
   // Call backend to mark the licence for supplementary billing
   await services.water.licences.postMarkLicenceForSupplementaryBilling(licenceId)
+
+  if (returnId) {
+    try {
+      await services.system.licences.supplementary(returnId, cookie)
+    } catch (error) {
+      logger.error('Flag supplementary request to system failed', error.stack)
+    }
+  }
 
   return h.view('nunjucks/billing/marked-licence-for-supplementary-billing', {
     ...request.view,

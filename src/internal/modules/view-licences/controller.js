@@ -141,8 +141,6 @@ const getMarkLicenceForSupplementaryBilling = (request, h) => {
 const postMarkLicenceForSupplementaryBilling = async (request, h) => {
   const { licenceId } = request.params
   const { returnId } = request.payload
-  const cookie = request.headers.cookie
-
   const { document } = request.pre
   const { system_external_id: licenceRef } = document
 
@@ -151,6 +149,8 @@ const postMarkLicenceForSupplementaryBilling = async (request, h) => {
 
   if (returnId) {
     try {
+      const cookie = request.headers.cookie
+
       await services.system.licences.supplementary(returnId, cookie)
     } catch (error) {
       logger.error('Flag supplementary request to system failed', error.stack)

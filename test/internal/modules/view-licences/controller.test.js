@@ -28,6 +28,7 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
       redirect: sandbox.stub()
     }
     sandbox.stub(services.water.licences, 'postMarkLicenceForSupplementaryBilling').resolves()
+    sandbox.stub(services.system.licences, 'supplementary').resolves()
     sandbox.stub(services.water.licences, 'getDocumentByLicenceId').resolves({
       metadata: {},
       system_external_id: 'test id'
@@ -385,6 +386,9 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
       params: {
         licenceId: tempLicenceId
       },
+      query: {
+        returnId: 'some-return-id'
+      },
       pre: {
         document: {
           system_external_id: '10/10/10'
@@ -414,6 +418,12 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
       method: 'get',
       params: {
         licenceId: tempLicenceId
+      },
+      headers: {
+        cookie: 'taste=yummy'
+      },
+      payload: {
+        returnId: 'some-return-id'
       },
       pre: {
         document: {

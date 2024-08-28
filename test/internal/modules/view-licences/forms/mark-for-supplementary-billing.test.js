@@ -10,6 +10,9 @@ const createRequest = () => ({
   },
   params: {
     licenceId: 'some-licence-id'
+  },
+  query: {
+    returnId: 'some-return-id'
   }
 })
 
@@ -32,6 +35,11 @@ experiment('mark for supplementary billing form', () => {
   test('has CSRF token field', async () => {
     const csrf = findField(form, 'csrf_token')
     expect(csrf.value).to.equal('token')
+  })
+
+  test('has returnId as a hidden field', async () => {
+    const returnId = findField(form, 'returnId')
+    expect(returnId.value).to.equal('some-return-id')
   })
 
   test('has a confirm button', async () => {

@@ -362,7 +362,7 @@ const getSubmitted = async (request, h) => {
 
   const returnUrl = `/returns/return?id=${data.returnId}`
 
-  const markForSupplementaryBillingUrl = `/licences/${licence.id}/mark-for-supplementary-billing`
+  const markForSupplementaryBillingUrl = `/licences/${licence.id}/mark-for-supplementary-billing?returnId=${data.returnId}`
 
   return h.view('nunjucks/returns/submitted', {
     ...request.view,

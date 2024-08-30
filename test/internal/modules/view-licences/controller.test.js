@@ -28,6 +28,7 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
       redirect: sandbox.stub()
     }
     sandbox.stub(services.water.licences, 'postMarkLicenceForSupplementaryBilling').resolves()
+    sandbox.stub(services.system.licences, 'supplementary').resolves()
     sandbox.stub(services.water.licences, 'getDocumentByLicenceId').resolves({
       metadata: {},
       system_external_id: 'test id'
@@ -385,6 +386,9 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
       params: {
         licenceId: tempLicenceId
       },
+      query: {
+        returnId: 'some-return-id'
+      },
       pre: {
         document: {
           system_external_id: '10/10/10'
@@ -409,11 +413,18 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
 
   experiment('.postMarkLicenceForSupplementaryBilling', () => {
     const tempLicenceId = uuid()
+    const tempReturnId = uuid()
     const request = {
       view: {},
       method: 'get',
       params: {
         licenceId: tempLicenceId
+      },
+      headers: {
+        cookie: 'taste=yummy'
+      },
+      payload: {
+        returnId: tempReturnId
       },
       pre: {
         document: {
@@ -428,6 +439,10 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
 
     test('calls the backend', () => {
       expect(services.water.licences.postMarkLicenceForSupplementaryBilling.calledWith(tempLicenceId)).to.be.true()
+    })
+
+    test('calls system', () => {
+      expect(services.system.licences.supplementary.calledWith(tempReturnId)).to.be.true()
     })
 
     test('returns the correct view data objects', async () => {

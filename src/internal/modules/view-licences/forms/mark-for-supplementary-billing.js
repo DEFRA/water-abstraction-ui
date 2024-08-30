@@ -6,6 +6,7 @@ const markForSupplementaryBillingForm = request => {
 
   f.fields.push(fields.hidden('csrf_token', {}, request.view.csrfToken))
   f.fields.push(fields.hidden('licenceId', {}, request.params.licenceId))
+  f.fields.push(fields.hidden('returnId', {}, request.query.returnId))
 
   f.fields.push(fields.button(null, { label: 'Confirm' }))
   return f

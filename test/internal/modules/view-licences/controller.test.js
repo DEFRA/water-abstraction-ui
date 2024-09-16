@@ -412,46 +412,74 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
   })
 
   experiment('.postMarkLicenceForSupplementaryBilling', () => {
-    const tempLicenceId = uuid()
-    const tempReturnId = uuid()
-    const request = {
-      view: {},
-      method: 'get',
-      params: {
-        licenceId: tempLicenceId
-      },
-      headers: {
-        cookie: 'taste=yummy'
-      },
-      payload: {
-        returnId: tempReturnId
-      },
-      pre: {
-        document: {
-          system_external_id: '10/10/10'
-        }
-      },
-      yar: { get: sandbox.spy() }
-    }
-    beforeEach(async () => {
-      await controller.postMarkLicenceForSupplementaryBilling(request, h)
+    experiment('when passed a returnId', () => {
+      const tempLicenceId = uuid()
+      const tempReturnId = uuid()
+      const request = {
+        view: {},
+        method: 'get',
+        params: {
+          licenceId: tempLicenceId
+        },
+        headers: {
+          cookie: 'taste=yummy'
+        },
+        payload: {
+          returnId: tempReturnId
+        },
+        pre: {
+          document: {
+            system_external_id: '10/10/10'
+          }
+        },
+        yar: { get: sandbox.spy() }
+      }
+
+      beforeEach(async () => {
+        await controller.postMarkLicenceForSupplementaryBilling(request, h)
+      })
+
+      test('calls system', () => {
+        expect(services.system.licences.supplementary.calledWith(tempReturnId)).to.be.true()
+      })
     })
 
-    test('calls the backend', () => {
-      expect(services.water.licences.postMarkLicenceForSupplementaryBilling.calledWith(tempLicenceId)).to.be.true()
-    })
+    experiment('when not passed a returnId', () => {
+      const tempLicenceId = uuid()
+      const request = {
+        view: {},
+        method: 'get',
+        params: {
+          licenceId: tempLicenceId
+        },
+        headers: {
+          cookie: 'taste=yummy'
+        },
+        payload: {},
+        pre: {
+          document: {
+            system_external_id: '10/10/10'
+          }
+        },
+        yar: { get: sandbox.spy() }
+      }
 
-    test('calls system', () => {
-      expect(services.system.licences.supplementary.calledWith(tempReturnId)).to.be.true()
-    })
+      beforeEach(async () => {
+        await controller.postMarkLicenceForSupplementaryBilling(request, h)
+      })
 
-    test('returns the correct view data objects', async () => {
-      const keys = Object.keys(h.view.lastCall.args[1])
+      test('calls the backend', () => {
+        expect(services.water.licences.postMarkLicenceForSupplementaryBilling.calledWith(tempLicenceId)).to.be.true()
+      })
 
-      expect(keys).to.include([
-        'pageTitle',
-        'panelText',
-        'licenceId'])
+      test('returns the correct view data objects', async () => {
+        const keys = Object.keys(h.view.lastCall.args[1])
+
+        expect(keys).to.include([
+          'pageTitle',
+          'panelText',
+          'licenceId'])
+      })
     })
   })
 })

@@ -145,7 +145,7 @@ const getMarkLicenceForSupplementaryBilling = (request, h) => {
  * 2. When the 'Recalculate Bills' link is clicked on the legacy licence page
  *
  * Recent changes to support SROC two-part tariff supplementary billing require passing the `returnId`
- * to this function. This enables the system repo to determine whether the licence needs flagging based on the update
+ * to this function. This enables the system repo to determine whether the licence needs flagging based on the updated
  * return.
  *
  * In the case of the legacy "Recalculate Bills" link, only the licence ID is needed to flag the licence

@@ -138,14 +138,24 @@ const getMarkLicenceForSupplementaryBilling = (request, h) => {
   })
 }
 
+/**
+ * The `postMarkLicenceForSupplementaryBilling` function is used in two different scenarios:
+ *
+ * 1. When a return is submitted
+ * 2. When the 'Recalculate Bills' link is clicked on the legacy licence page
+ *
+ * Recent changes to support SROC two-part tariff supplementary billing require passing the `returnId`
+ * to this function. This enables the system repo to determine whether the licence needs flagging based on the updated
+ * return.
+ *
+ * In the case of the legacy "Recalculate Bills" link, only the licence ID is needed to flag the licence
+ * for pre-SROC and SROC supplementary billing.
+ */
 const postMarkLicenceForSupplementaryBilling = async (request, h) => {
   const { licenceId } = request.params
   const { returnId } = request.payload
   const { document } = request.pre
   const { system_external_id: licenceRef } = document
-
-  // Call backend to mark the licence for supplementary billing
-  await services.water.licences.postMarkLicenceForSupplementaryBilling(licenceId)
 
   if (returnId) {
     try {
@@ -155,6 +165,9 @@ const postMarkLicenceForSupplementaryBilling = async (request, h) => {
     } catch (error) {
       logger.error('Flag supplementary request to system failed', error.stack)
     }
+  } else {
+    // Call backend to mark the licence for supplementary billing
+    await services.water.licences.postMarkLicenceForSupplementaryBilling(licenceId)
   }
 
   return h.view('nunjucks/billing/marked-licence-for-supplementary-billing', {

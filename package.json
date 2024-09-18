@@ -1,6 +1,6 @@
 {
   "name": "water-abstraction-ui",
-  "version": "2.41.2",
+  "version": "2.41.3",
   "description": "Web app for Water Abstraction service",
   "homepage": "https://github.com/DEFRA/water-abstraction-team",
   "main": "index.js",

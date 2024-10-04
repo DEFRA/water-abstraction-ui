@@ -7,7 +7,9 @@
       Site description
     </dt>
     <dd class="meta__value">
-      {{ return.metadata.description }}
+      {% if return.metadata.description != 'null' %}
+        {{ return.metadata.description }}
+      {% endif %}
     </dd>
   </div>
   <div class="meta__row">

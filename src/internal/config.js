@@ -174,7 +174,8 @@ module.exports = {
     triggerSrocAnnual: (get(process.env, 'TRIGGER_SROC_ANNUAL') || '').toLowerCase() === 'true',
     useNewBillRunSetup: (get(process.env, 'USE_NEW_BILL_RUN_SETUP') || '').toLowerCase() === 'true',
     useWorkflowSetupLinks: (get(process.env, 'USE_WORKFLOW_SETUP_LINKS') || 'true').toLowerCase() === 'true',
-    enableSystemLicenceView: process.env.ENABLE_SYSTEM_LICENCE_VIEW === 'true'
+    enableSystemLicenceView: process.env.ENABLE_SYSTEM_LICENCE_VIEW === 'true',
+    enableMonitoringStationsView: process.env.ENABLE_MONITORING_STATIONS_VIEW === 'true'
   },
   billRunsToDisplayPerPage: process.env.BILL_RUNS_TO_DISPLAY_PER_PAGE || 20
 }

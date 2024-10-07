@@ -6,6 +6,7 @@ module.exports = {
   htmlLang: 'en',
   cssVersion: pkg.version,
   featureFlags: {
-    enableSystemLicenceView: config.featureToggles.enableSystemLicenceView
+    enableSystemLicenceView: config.featureToggles.enableSystemLicenceView,
+    enableMonitoringStationsView: config.featureToggles.enableMonitoringStationsView
   }
 }

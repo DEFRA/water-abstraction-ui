@@ -5,6 +5,7 @@ const { deleteChargeInfo } = require('../forms')
 const services = require('../../../lib/connectors/services')
 const { sortBy } = require('lodash')
 const { clearNoteSessionData } = require('internal/modules/charge-information/lib/helpers')
+const { logger } = require('./../../../logger.js')
 
 const getChargeInformationWorkflow = async (request, h) => {
   const toSetUp = request.pre.chargeInformationWorkflows
@@ -47,6 +48,14 @@ const getRemoveChargeInformationWorkflow = (request, h) => {
 
 const postRemoveChargeInformationWorkflow = async (request, h) => {
   const { chargeVersionWorkflowId } = request.params
+
+  try {
+    const cookie = request.headers.cookie
+    await services.system.workflow.supplementary(chargeVersionWorkflowId, cookie)
+  } catch (error) {
+    logger.error('Flag supplementary request to system failed', error.stack)
+  }
+
   await services.water.chargeVersionWorkflows.deleteChargeVersionWorkflow(chargeVersionWorkflowId)
   clearNoteSessionData(request)
   return h.redirect('/charge-information-workflow')

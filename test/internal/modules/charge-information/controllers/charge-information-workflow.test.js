@@ -17,6 +17,9 @@ const services = require('../../../../../src/internal/lib/connectors/services')
 const controller = require('../../../../../src/internal/modules/charge-information/controllers/charge-information-workflow')
 
 const createRequest = () => ({
+  headers: {
+    cookie: 'taste=yummy'
+  },
   params: {
     licenceId: 'test-licence-id',
     chargeVersionWorkflowId: 'test-charge-version-workflow-id'
@@ -61,6 +64,7 @@ experiment('internal/modules/charge-information/controller', () => {
 
     sandbox.stub(services.water.chargeVersionWorkflows, 'postChargeVersionWorkflow').resolves()
     sandbox.stub(services.water.chargeVersionWorkflows, 'deleteChargeVersionWorkflow').resolves()
+    sandbox.stub(services.system.workflow, 'supplementary').resolves()
   })
 
   afterEach(async () => {
@@ -190,6 +194,11 @@ experiment('internal/modules/charge-information/controller', () => {
     beforeEach(async () => {
       request = createRequest()
       await controller.postRemoveChargeInformationWorkflow(request, h)
+    })
+
+    test('calls the system repo to flag for supplementary billing', async () => {
+      const [workflowId] = services.system.workflow.supplementary.lastCall.args
+      expect(workflowId).to.equal('test-charge-version-workflow-id')
     })
 
     test('deletes the charge version workflow', async () => {

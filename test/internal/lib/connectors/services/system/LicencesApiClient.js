@@ -29,7 +29,7 @@ experiment('services/system/LicencesApiClient', () => {
 
   experiment('.supplementary', () => {
     beforeEach(async () => {
-      await service.supplementary('v1:6:01/115:10032782:2023-04-01:2024-03-31')
+      await service.supplementary('eac49574-f9cc-4619-8807-2a759018728b')
     })
 
     test('passes the expected URL to the service request', async () => {
@@ -41,7 +41,7 @@ experiment('services/system/LicencesApiClient', () => {
     test('passes the query in the request body', async () => {
       const options = serviceRequest.post.lastCall.args[1]
 
-      expect(options.body).to.equal({ returnId: 'v1:6:01/115:10032782:2023-04-01:2024-03-31' })
+      expect(options.body).to.equal({ licenceId: 'eac49574-f9cc-4619-8807-2a759018728b' })
     })
   })
 })

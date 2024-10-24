@@ -156,18 +156,18 @@ const postMarkLicenceForSupplementaryBilling = async (request, h) => {
   const { returnId } = request.payload
   const { document } = request.pre
   const { system_external_id: licenceRef } = document
+  const cookie = request.headers.cookie
 
-  if (returnId) {
-    try {
-      const cookie = request.headers.cookie
-
-      await services.system.licences.supplementary(returnId, cookie)
-    } catch (error) {
-      logger.error('Flag supplementary request to system failed', error.stack)
+  try {
+    // If there is a returnId, it means we are flagging for a new return being added/edited
+    if (returnId) {
+      await services.system.returns.supplementary(returnId, cookie)
+    } else {
+      // Otherwise it means the user has gone through the recalculate bills link so flag the licence for supp billing
+      await services.system.licences.supplementary(licenceId, cookie)
     }
-  } else {
-    // Call backend to mark the licence for supplementary billing
-    await services.water.licences.postMarkLicenceForSupplementaryBilling(licenceId)
+  } catch (error) {
+    logger.error('Flag supplementary request to system failed', error.stack)
   }
 
   return h.view('nunjucks/billing/marked-licence-for-supplementary-billing', {

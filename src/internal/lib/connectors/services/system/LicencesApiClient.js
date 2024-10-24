@@ -6,19 +6,19 @@ class LicencesApiClient extends ServiceClient {
   /**
    * Flags a licence for the supplementary bill run
    *
-   * @param {String} returnId - The UUID of the return log that needs flagging
+   * @param {String} licenceId - The UUID of the licence that needs flagging
    * @param {Object} cookie - Existing cookie set by this app needed for pass-through authentication
    *
    * @returns {Promise} resolves with the licence being flagged for the supplementary bill run
    */
-  supplementary (returnId, cookie) {
+  supplementary (licenceId, cookie) {
     const url = this.joinUrl('licences/supplementary')
     const options = {
       headers: {
         cookie
       },
       body: {
-        returnId
+        licenceId
       }
     }
     return this.serviceRequest.post(url, options)

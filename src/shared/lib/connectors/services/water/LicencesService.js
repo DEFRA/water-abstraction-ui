@@ -166,11 +166,6 @@ class LicencesService extends ServiceClient {
       }
     })
   }
-
-  postMarkLicenceForSupplementaryBilling (licenceId) {
-    const uri = this.joinUrl('licences', licenceId, 'mark-for-supplementary-billing')
-    return this.serviceRequest.post(uri)
-  }
 }
 
 module.exports = LicencesService

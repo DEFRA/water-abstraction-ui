@@ -162,10 +162,9 @@ const postMarkLicenceForSupplementaryBilling = async (request, h) => {
     // If there is a returnId, it means we are flagging for a new return being added/edited
     if (returnId) {
       await services.system.returns.supplementary(returnId, cookie)
-    } else {
-      // Otherwise it means the user has gone through the recalculate bills link so flag the licence for supp billing
-      await services.system.licences.supplementary(licenceId, cookie)
     }
+    // Otherwise it means the user has gone through the legacy recalculate bills link (they shouldn't do this).
+    // This functionality has been migrated to our new licence page so nothing needs to happen here
   } catch (error) {
     logger.error('Flag supplementary request to system failed', error.stack)
   }

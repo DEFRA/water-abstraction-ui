@@ -27,7 +27,6 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
       response: sandbox.stub().returns(),
       redirect: sandbox.stub()
     }
-    sandbox.stub(services.system.licences, 'supplementary').resolves()
     sandbox.stub(services.system.returns, 'supplementary').resolves()
     sandbox.stub(services.water.licences, 'getDocumentByLicenceId').resolves({
       metadata: {},
@@ -466,10 +465,6 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
 
       beforeEach(async () => {
         await controller.postMarkLicenceForSupplementaryBilling(request, h)
-      })
-
-      test('calls system with the licenceId', () => {
-        expect(services.system.licences.supplementary.calledWith(tempLicenceId)).to.be.true()
       })
 
       test('returns the correct view data objects', async () => {

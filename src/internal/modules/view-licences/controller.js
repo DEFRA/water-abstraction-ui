@@ -148,8 +148,9 @@ const getMarkLicenceForSupplementaryBilling = (request, h) => {
  * to this function. This enables the system repo to determine whether the licence needs flagging based on the updated
  * return.
  *
- * In the case of the legacy "Recalculate Bills" link, only the licence ID is needed to flag the licence
- * for pre-SROC and SROC supplementary billing.
+ * We no longer support the legacy recalculate bills page for flagging a licence. This means this route should only be
+ * used for editing a return and as a result of that we only call the system repo for flagging when a returnId is
+ * present
  */
 const postMarkLicenceForSupplementaryBilling = async (request, h) => {
   const { licenceId } = request.params

@@ -96,7 +96,7 @@ experiment('internal/modules/agreements/controller', () => {
 
     test('has the correct back link', () => {
       const [, view] = h.view.lastCall.args
-      expect(view.back).to.equal('/licences/test-licence-id#charge')
+      expect(view.back).to.equal('/system/licences/test-licence-id/set-up')
     })
 
     test('has the correct verb for the warning message', () => {
@@ -128,7 +128,7 @@ experiment('internal/modules/agreements/controller', () => {
 
     test('redirects back to the licence page', () => {
       const [redirectPath] = h.redirect.lastCall.args
-      expect(redirectPath).to.equal('/licences/test-licence-id#charge')
+      expect(redirectPath).to.equal('/system/licences/test-licence-id/set-up')
     })
 
     experiment('when an error occurs', () => {
@@ -141,7 +141,7 @@ experiment('internal/modules/agreements/controller', () => {
 
       test('redirects back to licence page', () => {
         const [redirectPath] = h.redirect.lastCall.args
-        expect(redirectPath).to.equal('/licences/test-licence-id#charge')
+        expect(redirectPath).to.equal('/system/licences/test-licence-id/set-up')
       })
     })
   })
@@ -169,7 +169,7 @@ experiment('internal/modules/agreements/controller', () => {
 
     test('has the correct back link', () => {
       const [, view] = h.view.lastCall.args
-      expect(view.back).to.equal('/licences/test-licence-id#charge')
+      expect(view.back).to.equal('/system/licences/test-licence-id/set-up')
     })
 
     test('contains the agreement', () => {
@@ -284,7 +284,7 @@ experiment('internal/modules/agreements/controller', () => {
         water.agreements.endAgreement.resolves()
       })
       test('redirects the client', () => {
-        expect(h.redirect.calledWith('/licences/test-licence-id#charge')).to.be.true()
+        expect(h.redirect.calledWith('/system/licences/test-licence-id/set-up')).to.be.true()
       })
     })
   })
@@ -352,7 +352,7 @@ experiment('internal/modules/agreements/controller', () => {
 
       test('sets the correct back link in the view', async () => {
         const [, { back }] = h.view.lastCall.args
-        expect(back).to.equal(`/licences/${licenceId}#charge`)
+        expect(back).to.equal(`/system/licences/${licenceId}/set-up`)
       })
 
       test('defines a form', async () => {
@@ -650,7 +650,7 @@ experiment('internal/modules/agreements/controller', () => {
 
       test('redirects back to licence page', () => {
         const [redirectPath] = h.redirect.lastCall.args
-        expect(redirectPath).to.equal(`/licences/${licenceId}#charge`)
+        expect(redirectPath).to.equal(`/system/licences/${licenceId}/set-up`)
       })
     })
   })

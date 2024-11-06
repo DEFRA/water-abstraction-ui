@@ -115,7 +115,7 @@ experiment('internal/modules/charge-information/controller', () => {
         request.query = { start: 1 }
         await controller.getNonChargeableReason(request, h)
         const { back } = h.view.lastCall.args[1]
-        expect(back).to.equal('/licences/test-licence-id#charge')
+        expect(back).to.equal('/system/licences/test-licence-id/set-up')
       })
     })
 

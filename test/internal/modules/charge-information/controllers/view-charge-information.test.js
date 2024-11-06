@@ -106,7 +106,7 @@ const createRequest = () => ({
   clearDraftChargeInformation: sandbox.stub()
 })
 
-const licencePageUrl = '/licences/test-licence-id#charge'
+const licencePageUrl = '/system/licences/test-licence-id/set-up'
 
 experiment('internal/modules/charge-information/controllers/view-charge-information', () => {
   let request, h

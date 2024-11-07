@@ -157,12 +157,11 @@ const postMarkLicenceForSupplementaryBilling = async (request, h) => {
   const { returnId } = request.payload
   const { document } = request.pre
   const { system_external_id: licenceRef } = document
-  const cookie = request.headers.cookie
 
   try {
     // If there is a returnId, it means we are flagging for a new return being added/edited
     if (returnId) {
-      await services.system.returns.supplementary(returnId, cookie)
+      await services.system.returns.supplementary(returnId)
     }
     // Otherwise it means the user has gone through the legacy recalculate bills link (they shouldn't do this).
     // This functionality has been migrated to our new licence page so nothing needs to happen here

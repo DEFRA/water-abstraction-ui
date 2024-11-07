@@ -420,9 +420,6 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
         params: {
           licenceId: tempLicenceId
         },
-        headers: {
-          cookie: 'taste=yummy'
-        },
         payload: {
           returnId: tempReturnId
         },
@@ -450,9 +447,6 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
         method: 'get',
         params: {
           licenceId: tempLicenceId
-        },
-        headers: {
-          cookie: 'taste=yummy'
         },
         payload: {},
         pre: {

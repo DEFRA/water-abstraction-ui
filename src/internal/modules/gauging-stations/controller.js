@@ -250,11 +250,18 @@ const postNewTaggingCheckYourAnswers = async (request, h) => {
 const getNewTaggingFlowComplete = (request, h) => {
   const { licenceNumber } = session.get(request)
   session.clear(request)
+
+  let monitoringStationUrl = `/monitoring-stations/${request.params.gaugingStationId}/`
+
+  if (featureFlags.enableMonitoringStationsView) {
+    monitoringStationUrl = `/system${monitoringStationUrl}`
+  }
+
   return h.view('nunjucks/gauging-stations/new-tag-complete', {
     pageTitle: 'Licence added to monitoring station',
     back: null,
     licenceRef: licenceNumber.value,
-    gaugingStationId: request.params.gaugingStationId
+    monitoringStationUrl
   })
 }
 

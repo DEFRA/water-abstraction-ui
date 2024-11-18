@@ -403,7 +403,14 @@ const getRemoveTagComplete = async (request, h) => {
 
 const postRemoveTagComplete = async (request, h) => {
   await helpers.handleRemovePost(request)
-  return helpers.redirectTo(request, h, '/../')
+
+  let monitoringStationUrl = `/monitoring-stations/${request.params.gaugingStationId}/`
+
+  if (featureFlags.enableMonitoringStationsView) {
+    monitoringStationUrl = `/system${monitoringStationUrl}`
+  }
+
+  return h.redirect(monitoringStationUrl)
 }
 
 const getSendAlertSelectAlertType = async (request, h) => {

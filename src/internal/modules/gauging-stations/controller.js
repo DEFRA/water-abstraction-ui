@@ -261,6 +261,7 @@ const getNewTaggingFlowComplete = (request, h) => {
     pageTitle: 'Licence added to monitoring station',
     back: null,
     licenceRef: licenceNumber.value,
+    gaugingStationId: request.params.gaugingStationId,
     monitoringStationUrl
   })
 }

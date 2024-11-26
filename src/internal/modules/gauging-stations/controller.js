@@ -12,6 +12,8 @@ const { waterAbstractionAlerts: isWaterAbstractionAlertsEnabled } = require('../
 const { hasScope } = require('../../lib/permissions')
 const { manageGaugingStationLicenceLinks, hofNotifications } = require('../../lib/constants').scope
 
+const { featureToggles: featureFlags } = require('../../config.js')
+
 /**
  * Main Gauging station page
  * All data is loaded via shared pre-handlers
@@ -248,11 +250,19 @@ const postNewTaggingCheckYourAnswers = async (request, h) => {
 const getNewTaggingFlowComplete = (request, h) => {
   const { licenceNumber } = session.get(request)
   session.clear(request)
+
+  let monitoringStationUrl = `/monitoring-stations/${request.params.gaugingStationId}/`
+
+  if (featureFlags.enableMonitoringStationsView) {
+    monitoringStationUrl = `/system${monitoringStationUrl}`
+  }
+
   return h.view('nunjucks/gauging-stations/new-tag-complete', {
     pageTitle: 'Licence added to monitoring station',
     back: null,
     licenceRef: licenceNumber.value,
-    gaugingStationId: request.params.gaugingStationId
+    gaugingStationId: request.params.gaugingStationId,
+    monitoringStationUrl
   })
 }
 
@@ -268,6 +278,14 @@ const getRemoveTags = async (request, h) => {
   const { licenceGaugingStations } = request.pre
   const { data } = licenceGaugingStations
 
+  // NOTE: We have updated this just for correctness! Back links are ignored in the legacy UI because of the back link
+  // high-jacking implemented in client-side JavaScript we send to the browser.
+  let back = `/monitoring-stations/${request.params.gaugingStationId}/`
+
+  if (featureFlags.enableMonitoringStationsView) {
+    back = `/system${back}`
+  }
+
   /* Used in second step for Multiple tags */
   session.merge(request, {
     selectedLicence: [],
@@ -281,7 +299,7 @@ const getRemoveTags = async (request, h) => {
     pageTitle,
     form: formHandler.handleFormRequest(request, linkageForms.removeTagsLicenceView), /* Generates deduplicated list */
     sessionData: session.get(request),
-    back: `/monitoring-stations/${request.params.gaugingStationId}/`
+    back
   })
 }
 
@@ -386,12 +404,27 @@ const getRemoveTagComplete = async (request, h) => {
 
 const postRemoveTagComplete = async (request, h) => {
   await helpers.handleRemovePost(request)
-  return helpers.redirectTo(request, h, '/../')
+
+  let monitoringStationUrl = `/monitoring-stations/${request.params.gaugingStationId}/`
+
+  if (featureFlags.enableMonitoringStationsView) {
+    monitoringStationUrl = `/system${monitoringStationUrl}`
+  }
+
+  return h.redirect(monitoringStationUrl)
 }
 
 const getSendAlertSelectAlertType = async (request, h) => {
   const pageTitle = 'Select the type of alert you need to send'
   const caption = await helpers.getCaption(request)
+
+  // NOTE: We have updated this just for correctness! Back links are ignored in the legacy UI because of the back link
+  // high-jacking implemented in client-side JavaScript we send to the browser.
+  let back = `/monitoring-stations/${request.params.gaugingStationId}/`
+
+  if (featureFlags.enableMonitoringStationsView) {
+    back = `/system${back}`
+  }
 
   return h.view('nunjucks/form', {
     ...request.view,
@@ -399,7 +432,7 @@ const getSendAlertSelectAlertType = async (request, h) => {
     pageTitle,
     sessionData: session.get(request),
     form: formHandler.handleFormRequest(request, linkageForms.sendingAlertType),
-    back: `/monitoring-stations/${request.params.gaugingStationId}`
+    back
   })
 }
 
@@ -617,9 +650,15 @@ const getSendAlertCheck = async (request, h) => {
   const pageTitle = 'Check the alert for each licence and send'
   const caption = await helpers.getCaption(request)
 
+  let monitoringStationUrl = `/monitoring-stations/${request.params.gaugingStationId}/`
+
+  if (featureFlags.enableMonitoringStationsView) {
+    monitoringStationUrl = `/system${monitoringStationUrl}`
+  }
+
   const { notificationEventId } = session.get(request)
   if (!notificationEventId) {
-    return h.redirect(`/monitoring-stations/${request.params.gaugingStationId}`)
+    return h.redirect(monitoringStationUrl)
   }
   const event = await services.water.events.findOne(notificationEventId)
   const { data: notifications } = await services.water.notifications.getNotificationMessages(notificationEventId)
@@ -669,9 +708,15 @@ const getSendAlertConfirm = async (request, h) => {
   const pageTitle = 'Check the alert for each licence and send'
   const caption = await helpers.getCaption(request)
 
+  let monitoringStationUrl = `/monitoring-stations/${request.params.gaugingStationId}/`
+
+  if (featureFlags.enableMonitoringStationsView) {
+    monitoringStationUrl = `/system${monitoringStationUrl}`
+  }
+
   const { notificationEventId } = await session.get(request)
   if (!notificationEventId) {
-    return h.redirect(`/monitoring-stations/${request.params.gaugingStationId}`)
+    return h.redirect(monitoringStationUrl)
   }
 
   const event = await services.water.events.findOne(notificationEventId)
@@ -683,13 +728,14 @@ const getSendAlertConfirm = async (request, h) => {
     logger.warn(e)
   }
   session.clear(request)
+
   return h.view('nunjucks/gauging-stations/confirm-sending-successful', {
     ...request.view,
     caption,
     pageTitle,
     recipientCount: event.data.metadata.recipients,
     notificationsReportUrl: '/notifications/report',
-    monitoringStationUrl: `/monitoring-stations/${request.params.gaugingStationId}`
+    monitoringStationUrl
   })
 }
 

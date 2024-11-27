@@ -2,10 +2,11 @@
  * Contains functions to help with building a list of notifications that
  * can be sent by the current authenticated user
  */
-const { hasScope } = require('../../../lib/permissions')
-const { scope } = require('../../../lib/constants')
+const config = require('internal/config')
 const { featureToggles } = require('../../../config')
+const { hasScope } = require('../../../lib/permissions')
 const { mapValues } = require('lodash')
+const { scope } = require('../../../lib/constants')
 
 /**
  * Creates a link object for the manage tab view
@@ -28,7 +29,7 @@ const manageTabSkeleton = () => ({
     createLink('Key performance indicators', '/reporting/kpi-reporting', scope.hasManageTab)
   ],
   returnNotifications: [
-    createLink('Invitations', '/returns-notifications/invitations', scope.bulkReturnNotifications),
+    createLink('Invitations', _returnNotificationsInvitations(), scope.bulkReturnNotifications),
     createLink('Paper forms', '/returns-notifications/forms', scope.returns),
     createLink('Reminders', '/returns-notifications/reminders', scope.bulkReturnNotifications)
   ],
@@ -64,5 +65,13 @@ const getManageTabConfig = request => mapValues(
   manageTabSkeleton(),
   links => links.filter(link => hasScope(request, link.scopes))
 )
+
+const _returnNotificationsInvitations = () => {
+  if (config.featureToggles.enableSystemNotificationsInvitations) {
+    return '/system/notifications/invitations/setup/returns-period'
+  } else {
+    return '/returns-notifications/invitations'
+  }
+}
 
 exports.getManageTabConfig = getManageTabConfig

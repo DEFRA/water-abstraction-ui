@@ -45,7 +45,7 @@ experiment('getManageTabConfig', () => {
 
   experiment('when user has bulk returns notifications scope', () => {
     beforeEach(() => {
-      config.featureToggles.enableSystemNotificationsInvitations = false
+      config.featureToggles.enableSystemNotifications = false
     })
 
     test('they can view notification report, return invitations and return reminders notifications', async () => {
@@ -224,9 +224,9 @@ experiment('getManageTabConfig', () => {
     })
   })
 
-  experiment('when the "enableSystemNotificationsInvitations" flag is true', () => {
+  experiment('when the "enableSystemNotifications" flag is true', () => {
     beforeEach(() => {
-      config.featureToggles.enableSystemNotificationsInvitations = true
+      config.featureToggles.enableSystemNotifications = true
     })
 
     test('they click the link to "system"', async () => {
@@ -235,7 +235,7 @@ experiment('getManageTabConfig', () => {
 
       expect(config.returnNotifications[0]).to.equal({
         name: 'Invitations',
-        path: '/system/notifications/invitations/setup/returns-period',
+        path: '/system/notifications/setup/returns-period',
         scopes: 'bulk_return_notifications'
       })
     })

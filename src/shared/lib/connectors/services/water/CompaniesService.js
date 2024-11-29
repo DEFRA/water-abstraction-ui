@@ -2,6 +2,9 @@ const ServiceClient = require('../ServiceClient')
 const { last } = require('lodash')
 const { returns: { date: { createReturnCycles } } } = require('@envage/water-abstraction-helpers')
 
+//added Moment
+const moment = require('moment')
+
 class CompaniesService extends ServiceClient {
   /**
    * Gets due returns in the current returns cycle for the specified company
@@ -9,13 +12,27 @@ class CompaniesService extends ServiceClient {
    * @return {Promise<Array>} resolves with an array of returns
    */
   getCurrentDueReturns (entityId) {
-    const currentCycle = last(createReturnCycles())
+    let currentCycle = last(createReturnCycles())
+    console.log(currentCycle)
+   /* 
+    currentCycle =
+    {
+     'startDate': '2023-04-01',
+    'endDate': '2024-03-31',
+     'isSummer': false,
+     'dueDate': '2024-04-28'
+      }
+*/
+
     const url = this.joinUrl('company', entityId, 'returns')
+
+    console.log("The url " + url)
     const options = {
       qs: {
-        startDate: currentCycle.startDate,
-        endDate: currentCycle.endDate,
-        isSummer: currentCycle.isSummer,
+        //startDate: moment().subtract(9, 'months').format('YYYY-MM-DD'), //currentCycle.startDate, Get any returns that started less than a year ago
+        //endDate: moment().format('YYYY-MM-DD'), //currentCycle.endDate,  Get any returns that have now ended.
+       // dueDate: moment().subtract(1, 'years').format('YYYY-MM-DD'), //get any return with the due date less than a year
+       // isSummer: currentCycle.isSummer,
         status: 'due'
       }
     }

@@ -1,6 +1,6 @@
 'use strict'
 
-const { last, find, groupBy, lowerCase, get } = require('lodash')
+const { last, find, groupBy, lowerCase, get, forEach } = require('lodash')
 const helpers = require('@envage/water-abstraction-helpers')
 const { getLineLabel } = require('shared/modules/returns/forms/common')
 const moment = require('moment')
@@ -13,6 +13,9 @@ const { stringify } = require('csv-stringify')
 const csvStringify = util.promisify(stringify)
 const { logger } = require('../../../logger')
 const files = require('../../../../shared/lib/files')
+
+
+
 
 /**
  * Gets the label for a particular return line in the CSV
@@ -31,8 +34,14 @@ const getCSVLineLabel = line => {
  * @return {Object} - cycle description with { startDate, endDate, isSummer }
  */
 const getCurrentCycle = (refDate) => {
+  //refDate = "2024-10-01"
+  //console.log("refDate="+refDate)
   const cycles = helpers.returns.date.createReturnCycles(undefined, refDate)
+ // console.log("Cycles="+JSON.stringify(cycles))
+
+ // console.log("Last cycle="+JSON.stringify(last(cycles)))
   return last(cycles)
+  
 }
 
 /**
@@ -42,15 +51,31 @@ const getCurrentCycle = (refDate) => {
  *                             the current cycle calculation
  * @return {[type]}           [description]
  */
-const initialiseCSV = (frequency, refDate) => {
+const initialiseCSV = (frequency, startDate, endDate) => {
   // Get date range of current active return cycle
-  const { startDate, endDate } = getCurrentCycle(refDate)
+  //refDate = "2024-10-01"
+  
+//const startDate = "2024-01-01"//moment().subtract(1, 'years').format('YYYY-MM-DD')
+//const endDate =   "2024-10-31"//moment().format('YYYY-MM-DD') //This shows when the lines need to stop on the labels.
 
+
+ // const { startDate, endDate } = getCurrentCycle(refDate)
+
+
+
+
+
+  
+  //console.log(getCurrentCycle(refDate))
   // Get date lines for the cycle dates and frequency
   const dateLines = helpers.returns.lines.getRequiredLines(startDate, endDate, frequency)
-
+//console.log("date Lines " + JSON.stringify(dateLines))
+  
   // Map to the first column of data in the CSV
   const lineLabels = dateLines.map(line => [getCSVLineLabel(line)])
+
+ // console.log("line labels "+lineLabels)
+
   return [
     ['Licence number'],
     ['Return reference'],
@@ -62,6 +87,7 @@ const initialiseCSV = (frequency, refDate) => {
     ['Meter serial number'],
     ...lineLabels,
     ['Unique return reference']
+    
   ]
 }
 
@@ -73,7 +99,16 @@ const initialiseCSV = (frequency, refDate) => {
  */
 const createReturnColumn = (ret, csvLines) => {
   const isFinal = get(ret, 'metadata.isFinal', false)
+
+  //console.log("return isFinal = " + isFinal)
+
+
+
+
+
+ // console.log("return startDate " + ret.startDate)
   const requiredLines = helpers.returns.lines.getRequiredLines(ret.startDate, ret.endDate, ret.frequency, isFinal)
+  
 
   // Iterate over all date rows in the CSV
   const lines = csvLines.map(line => {
@@ -109,6 +144,9 @@ const pushColumn = (data, column) => {
   return data
 }
 
+
+
+
 /**
  * Given an array of returns loaded from the water service, creates
  * an object of 2D arrays describing a CSV template for each return
@@ -117,29 +155,118 @@ const pushColumn = (data, column) => {
  * @return {Object}
  */
 const createCSVData = (returns, refDate) => {
-  const data = {}
+  //const data = {}
+  const allData = []
+  //refDate = "2024-10-01"
 
   // Get current return cycle dates
-  const { startDate, endDate } = getCurrentCycle(refDate)
+  //const { startDate, endDate } = getCurrentCycle(refDate)
 
-  // Group returns by frequency
-  const grouped = groupBy(returns, ret => ret.frequency)
+ // const startDate = moment().subtract(1, 'years').format('YYYY-MM-DD')
+ // const endDate = moment().format('YYYY-MM-DD') //This shows when the lines need to stop on the returns.
 
-  for (const frequency in grouped) {
+console.log("the returns for creating the CSV " + JSON.stringify(returns));
+
+
+
+
+
+// Group returns by return end date and then sub group by frequency
+  const nestedGroups = groupBy(returns, ret => ret.dueDate);
+  forEach(nestedGroups, (group, key) => {
+    nestedGroups[key] = groupBy(group, ret => ret.frequency);
+  });
+
+
+ 
+// Loop though all the groups
+ for (const grouped in nestedGroups) {
+
+  
+ // Group returns by frequency
+ //const grouped = groupBy(returns, ret => ret.frequency)
+
+ console.log("the returns " + JSON.stringify(grouped));
+
+ // Loop through the different frequencies in each group
+  for (const frequency in nestedGroups[grouped]) {
+   const data = {}
+    
+
+
+        const groupedFrequency = nestedGroups[grouped][frequency]
+
+        //sort by return ID 
+        groupedFrequency.sort((a, b) => {
+          return a.returnId.localeCompare(b.returnId);
+        });
+
+
+
+                //////get earliest start date from returns
+                // Initialize a variable to store the earliest date, starting with the first object's start date
+                let earliestDate = new Date(groupedFrequency[0].startDate);
+
+                // Iterate through the array of objects 
+                for (let i = 1; i < groupedFrequency.length; i++) {
+                  const currentDate = new Date(groupedFrequency[i].startDate);
+
+                  // If the current date is earlier than the stored earliest date, update it
+                  if (currentDate < earliestDate) {
+                    earliestDate = currentDate;
+                  }
+                }
+
+                // Format the earliest date as a string in the desired format (YYYY-MM-DD)
+                const startDate = earliestDate.toISOString().split('T')[0];
+
+                //////get latest end date from returns
+                // Initialize a variable to store the latest end date, starting with the first object's end date
+                let latestEndDate = new Date(groupedFrequency[0].endDate);
+
+                // Iterate through the array of objects
+                for (let i = 1; i < groupedFrequency.length; i++) {
+                  const currentDate = new Date(groupedFrequency[i].endDate);
+
+                  // If the current date is later than the stored latest date, update it
+                  if (currentDate > latestEndDate) {
+                    latestEndDate = currentDate;
+                  }
+                }
+
+                // Format the latest end date as a string in the desired format (YYYY-MM-DD)
+                const endDate = latestEndDate.toISOString().split('T')[0];
+
+                console.log("widest return period "+ startDate + " " + endDate )
+
+
+
     // Initialise the 2D array
-    data[frequency] = initialiseCSV(frequency)
+    data[frequency] = initialiseCSV(frequency, startDate, endDate)
 
     // Get all CSV lines for current cycle/frequency
     const csvLines = helpers.returns.lines.getRequiredLines(startDate, endDate, frequency)
 
     // For each return of this frequency, generate a column and add to the CSV data
-    grouped[frequency].forEach(ret => {
+    nestedGroups[grouped][frequency].forEach(ret => {
       const column = createReturnColumn(ret, csvLines)
       pushColumn(data[frequency], column)
     })
+
+
+    const groups = {[grouped]: data}
+
+      allData.push(groups)
+
+ 
   }
 
-  return data
+}
+
+console.log("data returned")
+return allData
+
+
 }
 
 /**
@@ -149,13 +276,13 @@ const createCSVData = (returns, refDate) => {
  * @param  {String} frequency   - the return frequency
  * @return {String}             filename, e.g. my-company-daily.csv
  */
-const getCSVFilename = (companyName, frequency, isMultipleReturns) => {
+const getCSVFilename = (companyName, frequency, dataSet, isMultipleReturns) => {
   const map = {
     day: 'daily',
     week: 'weekly',
     month: 'monthly'
   }
-  return lowerCase(`${companyName} ${map[frequency]}`) + ` ${isMultipleReturns ? 'returns' : 'return'}.csv`
+  return lowerCase(`${companyName} ${map[frequency]}`) + ` ${isMultipleReturns ? 'returns' : 'return'}` + ` due ` + lowerCase(`${dataSet}`) + `.csv` 
 }
 
 const isMultipleReturns = (data, key) => data[key][0].length > 2
@@ -167,9 +294,9 @@ const isMultipleReturns = (data, key) => data[key][0].length > 2
  * @param  {String}  key     - the return frequency
  * @return {Promise}         resolves when added
  */
-const addCSVToArchive = async (archive, companyName, data, key) => {
+const addCSVToArchive = async (archive, companyName, data, key, dataSet) => {
   const str = await csvStringify(data[key])
-  const name = getCSVFilename(companyName, key, isMultipleReturns(data, key))
+  const name = getCSVFilename(companyName, key, dataSet, isMultipleReturns(data, key))
   return archive.append(str, { name })
 }
 
@@ -213,22 +340,52 @@ const createArchive = () => {
 /**
  * Builds the ZIP archive containing several CSV templates for users
  * to complete their return data
+ * @param  [Array]  allData - array of objects, objects are each set of CSVs
  * @param  {Object}  data        - CSV data object, keys are return frequency
  * @param  {String}  companyName - the current company
  * @param {Object} [archive] - an archiver instance can be passed in for test
  * @return {Promise<Object>} resolves with archive object when finalised
  */
-const buildZip = async (data, companyName, archive) => {
+const buildZip = async (allData, companyName, archive) => {
   archive = archive || createArchive()
 
+  //console.log("all Data " + JSON.stringify(allData))
+
+
   // Add a CSV to the archive for each frequency
-  const tasks = Object.keys(data).map(key => {
-    return addCSVToArchive(archive, companyName, data, key)
+for(const dataSets of allData){
+ 
+  for (const dataSet in dataSets ){
+ 
+    
+
+console.log("CSVAdded")
+  let data = dataSets[dataSet] 
+
+  //console.log("the data for the CSV " + JSON.stringify(data))
+
+ const tasks = Object.keys(data).map(key => {
+ // console.log(data)
+    return addCSVToArchive(archive, companyName, data, key, dataSet)
   })
+
+  
   tasks.push(addReadmeToArchive(archive))
   await Promise.all(tasks)
+ 
+}
 
-  archive.finalize()
+
+}
+
+archive.finalize()
+
+
+  
+  
+  
+
+  
 
   // At this stage `archive` is a stream in objectMode. As of 21.0.0 Hapi will not return streams in objectMode so we
   // pipe it though a readable passthrough stream. A better solution would be for `archive` to not be in objectMode in

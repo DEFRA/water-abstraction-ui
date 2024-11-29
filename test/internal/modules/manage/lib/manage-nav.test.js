@@ -5,9 +5,9 @@ const { expect } = require('@hapi/code')
 
 const { getManageTabConfig } = require('internal/modules/manage/lib/manage-nav')
 const { scope } = require('internal/lib/constants')
+const config = require('internal/config')
 
 const { flatMap } = require('lodash')
-const config = require('internal/config')
 const sinon = require('sinon')
 
 const mapLinkGroup = (links, group) => links.map(link => ({
@@ -44,6 +44,10 @@ experiment('getManageTabConfig', () => {
   })
 
   experiment('when user has bulk returns notifications scope', () => {
+    beforeEach(() => {
+      config.featureToggles.enableSystemNotifications = false
+    })
+
     test('they can view notification report, return invitations and return reminders notifications', async () => {
       const request = createRequest(scope.bulkReturnNotifications)
       const config = getManageTabConfig(request)
@@ -217,6 +221,23 @@ experiment('getManageTabConfig', () => {
         }
 
       ])
+    })
+  })
+
+  experiment('when the "enableSystemNotifications" flag is true', () => {
+    beforeEach(() => {
+      config.featureToggles.enableSystemNotifications = true
+    })
+
+    test('they click the link to "system"', async () => {
+      const request = createRequest(scope.bulkReturnNotifications)
+      const config = getManageTabConfig(request)
+
+      expect(config.returnNotifications[0]).to.equal({
+        name: 'Invitations',
+        path: '/system/notifications/setup/returns-period',
+        scopes: 'bulk_return_notifications'
+      })
     })
   })
 })

@@ -148,8 +148,9 @@ const getMarkLicenceForSupplementaryBilling = (request, h) => {
  * to this function. This enables the system repo to determine whether the licence needs flagging based on the updated
  * return.
  *
- * In the case of the legacy "Recalculate Bills" link, only the licence ID is needed to flag the licence
- * for pre-SROC and SROC supplementary billing.
+ * We no longer support the legacy recalculate bills page for flagging a licence. This means this route should only be
+ * used for editing a return and as a result of that we only call the system repo for flagging when a returnId is
+ * present
  */
 const postMarkLicenceForSupplementaryBilling = async (request, h) => {
   const { licenceId } = request.params
@@ -157,17 +158,15 @@ const postMarkLicenceForSupplementaryBilling = async (request, h) => {
   const { document } = request.pre
   const { system_external_id: licenceRef } = document
 
-  if (returnId) {
-    try {
-      const cookie = request.headers.cookie
-
-      await services.system.licences.supplementary(returnId, cookie)
-    } catch (error) {
-      logger.error('Flag supplementary request to system failed', error.stack)
+  try {
+    // If there is a returnId, it means we are flagging for a new return being added/edited
+    if (returnId) {
+      await services.system.returns.supplementary(returnId)
     }
-  } else {
-    // Call backend to mark the licence for supplementary billing
-    await services.water.licences.postMarkLicenceForSupplementaryBilling(licenceId)
+    // Otherwise it means the user has gone through the legacy recalculate bills link (they shouldn't do this).
+    // This functionality has been migrated to our new licence page so nothing needs to happen here
+  } catch (error) {
+    logger.error('Flag supplementary request to system failed', error.stack)
   }
 
   return h.view('nunjucks/billing/marked-licence-for-supplementary-billing', {

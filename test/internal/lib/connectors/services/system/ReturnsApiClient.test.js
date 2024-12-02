@@ -13,14 +13,14 @@ const sandbox = Sinon.createSandbox()
 const { serviceRequest } = require('@envage/water-abstraction-helpers')
 
 // Thing under test
-const WorkflowApiClient = require('../../../../../../src/internal/lib/connectors/services/system/WorkflowApiClient.js')
+const ReturnsApiClient = require('../../../../../../src/internal/lib/connectors/services/system/ReturnsApiClient.js')
 
-experiment('services/system/WorkflowApiClient', () => {
+experiment('services/system/ReturnsApiClient', () => {
   let service
 
   beforeEach(async () => {
     sandbox.stub(serviceRequest, 'post')
-    service = new WorkflowApiClient('http://127.0.0.1:8013')
+    service = new ReturnsApiClient('http://127.0.0.1:8013')
   })
 
   afterEach(async () => {
@@ -29,7 +29,7 @@ experiment('services/system/WorkflowApiClient', () => {
 
   experiment('.supplementary', () => {
     beforeEach(async () => {
-      await service.supplementary('eac49574-f9cc-4619-8807-2a759018728b')
+      await service.supplementary('v1:6:01/115:10032782:2023-04-01:2024-03-31')
     })
 
     test('passes the expected URL to the service request', async () => {
@@ -41,7 +41,7 @@ experiment('services/system/WorkflowApiClient', () => {
     test('passes the query in the request body', async () => {
       const options = serviceRequest.post.lastCall.args[1]
 
-      expect(options.body).to.equal({ workflowId: 'eac49574-f9cc-4619-8807-2a759018728b' })
+      expect(options.body).to.equal({ returnId: 'v1:6:01/115:10032782:2023-04-01:2024-03-31' })
     })
   })
 })

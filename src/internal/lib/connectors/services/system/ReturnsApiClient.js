@@ -2,7 +2,7 @@
 
 const ServiceClient = require('../../../../../shared/lib/connectors/services/ServiceClient')
 
-class LicencesApiClient extends ServiceClient {
+class ReturnsApiClient extends ServiceClient {
   /**
    * Flags a licence for the supplementary bill run
    *
@@ -25,4 +25,4 @@ class LicencesApiClient extends ServiceClient {
   }
 }
 
-module.exports = LicencesApiClient
+module.exports = ReturnsApiClient

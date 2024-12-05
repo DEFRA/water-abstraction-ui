@@ -152,6 +152,7 @@ const getEditObject = async (request, h) => {
   const args = getAdditionalArgs(id)
 
   // Load licence / AR licence from CRM
+  // TODO: uses permit
   const { licence, finalState } = await load(documentId)
 
   // Check permissions

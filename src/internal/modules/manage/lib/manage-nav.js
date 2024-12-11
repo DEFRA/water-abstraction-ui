@@ -32,7 +32,7 @@ const manageTabSkeleton = () => ({
     createLink('Invitations', _returnNotificationsInvitations(), scope.bulkReturnNotifications),
     createLink('Paper forms', '/returns-notifications/forms', scope.returns),
     createLink('Reminders', '/returns-notifications/reminders', scope.bulkReturnNotifications),
-    createLink('Ad-hoc returns', '/system/notifications/setup/ad-hoc-returns', scope.returns)
+    createLink('Ad-hoc returns', '/system/notifications/setup/ad-hoc-returns/licence', scope.returns)
   ],
   licenceNotifications: [
     createLink('Renewal', 'notifications/2?start=1', scope.renewalNotifications)

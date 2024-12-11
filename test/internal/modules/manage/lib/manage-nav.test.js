@@ -139,7 +139,7 @@ experiment('getManageTabConfig', () => {
         {
           group: 'returnNotifications',
           name: 'Ad-hoc returns',
-          path: '/ad-hoc-returns'
+          path: '/system/notifications/setup/ad-hoc-returns'
         }])
     })
   })

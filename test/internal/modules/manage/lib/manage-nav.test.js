@@ -135,11 +135,6 @@ experiment('getManageTabConfig', () => {
           group: 'returnNotifications',
           name: 'Paper forms',
           path: '/returns-notifications/forms'
-        },
-        {
-          group: 'returnNotifications',
-          name: 'Ad-hoc returns',
-          path: '/system/notifications/ad-hoc-returns/licence'
         }])
     })
   })

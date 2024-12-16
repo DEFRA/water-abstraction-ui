@@ -12,7 +12,7 @@ module.exports = {
   // Means when we use *.only() in our tests we just get the output for what we've flagged rather than all output but
   // greyed out to show it was skipped
   'silent-skips': true,
-  // lcov reporter required for SonarCloud
+  // lcov reporter required for SonarQube
   reporter: ['console', 'html', 'lcov'],
   output: ['stdout', 'coverage/coverage.html', 'coverage/lcov.info'],
   // Some packages we use expose global variables which cause lab to return a non-zero exit code if we don't ignore

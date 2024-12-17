@@ -68,7 +68,7 @@ const getManageTabConfig = request => mapValues(
 
 const _returnNotificationsInvitations = () => {
   if (config.featureToggles.enableSystemNotifications) {
-    return '/system/notifications/setup/returns-period'
+    return '/system/notifications/setup'
   } else {
     return '/returns-notifications/invitations'
   }

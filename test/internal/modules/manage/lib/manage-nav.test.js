@@ -88,7 +88,7 @@ experiment('getManageTabConfig', () => {
   })
 
   experiment('when user has renewal notifications scope', () => {
-    test('they can view notifications report and renewal notifice', async () => {
+    test('they can view notifications report and renewal notice', async () => {
       const request = createRequest(scope.renewalNotifications)
       const config = getManageTabConfig(request)
       expect(getAllLinks(config)).to.equal([

@@ -53,6 +53,7 @@ const getAddFormAndSchema = async (request) => {
   const { documentId, schema: schemaName } = request.params
 
   const action = getAddFormAction(documentId, schemaName)
+  // TODO: uses permits licence here
   const schema = await formGenerator.dereference(getSchema(schemaName), { documentId })
   const form = formGenerator.schemaToForm(action, request, schema)
 

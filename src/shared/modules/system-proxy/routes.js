@@ -77,7 +77,7 @@ const routes = [
     },
     config: {
       auth: false,
-      description: 'Proxies CSS asset requests to the Water Abstraction System'
+      description: 'Proxies image asset requests to the Water Abstraction System'
     }
   },
   {

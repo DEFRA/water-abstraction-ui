@@ -67,6 +67,20 @@ const routes = [
     }
   },
   {
+    method: 'GET',
+    path: '/assets/images/{path*}',
+    handler: {
+      proxy: {
+        uri: `${systemUrl.protocol}//${systemUrl.hostname}:${systemUrl.port}/assets/{path*}`,
+        ...proxyDefaults
+      }
+    },
+    config: {
+      auth: false,
+      description: 'Proxies CSS asset requests to the Water Abstraction System'
+    }
+  },
+  {
     method: 'POST',
     // This will match all path segments after /system. Note in our proxy URI we refer to this only as {tail}. The path
     // param hapi provides will contain all the segments, for example, request.params.tail === '/test/supplementary'.

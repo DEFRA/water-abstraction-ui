@@ -68,16 +68,44 @@ const routes = [
   },
   {
     method: 'GET',
-    path: '/assets/images/{path*}',
+    path: '/assets/images/example-excel-01-min.png',
     handler: {
       proxy: {
-        uri: `${systemUrl.protocol}//${systemUrl.hostname}:${systemUrl.port}/assets/{path*}`,
+        uri: `${systemUrl.protocol}//${systemUrl.hostname}:${systemUrl.port}/assets/example-excel-01-min.png`,
         ...proxyDefaults
       }
     },
     config: {
       auth: false,
-      description: 'Proxies image asset requests to the Water Abstraction System'
+      description: 'Proxies image `example-excel-01-min.png` asset request to the Water Abstraction System'
+    }
+  },
+  {
+    method: 'GET',
+    path: '/assets/images/example-excel-02-min.png',
+    handler: {
+      proxy: {
+        uri: `${systemUrl.protocol}//${systemUrl.hostname}:${systemUrl.port}/assets/example-excel-02-min.png`,
+        ...proxyDefaults
+      }
+    },
+    config: {
+      auth: false,
+      description: 'Proxies image `example-excel-02-min.png` asset request to the Water Abstraction System'
+    }
+  },
+  {
+    method: 'GET',
+    path: '/assets/images/example-input-01-min.png',
+    handler: {
+      proxy: {
+        uri: `${systemUrl.protocol}//${systemUrl.hostname}:${systemUrl.port}/assets/example-input-01-min.png`,
+        ...proxyDefaults
+      }
+    },
+    config: {
+      auth: false,
+      description: 'Proxies image `example-input-01-min.png` asset request to the Water Abstraction System'
     }
   },
   {

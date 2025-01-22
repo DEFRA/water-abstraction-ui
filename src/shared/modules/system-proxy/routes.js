@@ -67,6 +67,48 @@ const routes = [
     }
   },
   {
+    method: 'GET',
+    path: '/assets/images/example-excel-01-min.png',
+    handler: {
+      proxy: {
+        uri: `${systemUrl.protocol}//${systemUrl.hostname}:${systemUrl.port}/assets/example-excel-01-min.png`,
+        ...proxyDefaults
+      }
+    },
+    config: {
+      auth: false,
+      description: 'Proxies image `example-excel-01-min.png` asset request to the Water Abstraction System'
+    }
+  },
+  {
+    method: 'GET',
+    path: '/assets/images/example-excel-02-min.png',
+    handler: {
+      proxy: {
+        uri: `${systemUrl.protocol}//${systemUrl.hostname}:${systemUrl.port}/assets/example-excel-02-min.png`,
+        ...proxyDefaults
+      }
+    },
+    config: {
+      auth: false,
+      description: 'Proxies image `example-excel-02-min.png` asset request to the Water Abstraction System'
+    }
+  },
+  {
+    method: 'GET',
+    path: '/assets/images/example-input-01-min.png',
+    handler: {
+      proxy: {
+        uri: `${systemUrl.protocol}//${systemUrl.hostname}:${systemUrl.port}/assets/example-input-01-min.png`,
+        ...proxyDefaults
+      }
+    },
+    config: {
+      auth: false,
+      description: 'Proxies image `example-input-01-min.png` asset request to the Water Abstraction System'
+    }
+  },
+  {
     method: 'POST',
     // This will match all path segments after /system. Note in our proxy URI we refer to this only as {tail}. The path
     // param hapi provides will contain all the segments, for example, request.params.tail === '/test/supplementary'.

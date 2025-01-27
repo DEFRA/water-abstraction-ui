@@ -19,10 +19,6 @@ const createPlugins = (config, connectors) => {
       options: config.blankie
     },
     {
-      plugin: require('blipp'),
-      options: config.blipp
-    },
-    {
       plugin: require('@hapi/yar'),
       options: config.yar
     },

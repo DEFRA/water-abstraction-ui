@@ -32,10 +32,6 @@ module.exports = {
     reportUri: '/csp/report'
   },
 
-  blipp: {
-    showAuth: true
-  },
-
   crm: {
     regimes: {
       water: {

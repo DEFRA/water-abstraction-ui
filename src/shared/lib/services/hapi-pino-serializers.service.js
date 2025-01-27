@@ -81,7 +81,7 @@
  *
  * @returns {object} an object containing functions to serialize the `req` and `res` objects returned by pino
  */
-function go() {
+function go () {
   return {
     req: _req,
     res: _res
@@ -102,7 +102,7 @@ function go() {
  * ```
  * @private
  */
-function _req(req) {
+function _req (req) {
   return {
     id: req.id,
     method: 'get',
@@ -122,7 +122,7 @@ function _req(req) {
  * ```
  * @private
  */
-function _res(res) {
+function _res (res) {
   return {
     statusCode: res.statusCode
   }

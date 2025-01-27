@@ -13,6 +13,7 @@
 const HapiPino = require('hapi-pino')
 
 const HapiPinoIgnoreRequestService = require('../lib/services/hapi-pino-ignore-request.service.js')
+const HapiPinoSerializersService = require('../lib/services/hapi-pino-serializers.service.js')
 
 /**
  * Return test configuration options for the logger
@@ -59,7 +60,15 @@ const HapiPinoPlugin = (logInTest, logAssetRequests) => {
       // We want our logs to focus on the main requests and not become full of 'noise' from requests for /assets or
       // pings from the AWS load balancer to /status. We pass this function to hapi-pino to control what gets filtered
       // https://github.com/pinojs/hapi-pino#optionsignorefunc-options-request--boolean
-      ignoreFunc: HapiPinoIgnoreRequestService.go
+      ignoreFunc: HapiPinoIgnoreRequestService.go,
+      // Add the request params as pathParams to the response event log. This, along with `logPathParams` and
+      // `logQueryParams` helps us see what data was sent in the request to the app in the event of an error.
+      logPathParams: true,
+      // Add the request payload as `payload:` to the response event log
+      logPayload: true,
+      // Add the request query as `queryParams:` to the response event log
+      logQueryParams: true,
+      serializers: HapiPinoSerializersService.go()
     }
   }
 }

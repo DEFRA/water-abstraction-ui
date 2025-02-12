@@ -229,7 +229,7 @@ experiment('getManageTabConfig', () => {
       config.featureToggles.enableSystemNotifications = true
     })
 
-    test.only('they click the link to "system"', async () => {
+    test('they click the link to "system"', async () => {
       const request = createRequest(scope.bulkReturnNotifications)
       const config = getManageTabConfig(request)
 

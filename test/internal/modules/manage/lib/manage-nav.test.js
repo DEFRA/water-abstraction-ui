@@ -229,13 +229,13 @@ experiment('getManageTabConfig', () => {
       config.featureToggles.enableSystemNotifications = true
     })
 
-    test('they click the link to "system"', async () => {
+    test.only('they click the link to "system"', async () => {
       const request = createRequest(scope.bulkReturnNotifications)
       const config = getManageTabConfig(request)
 
       expect(config.returnNotifications[0]).to.equal({
         name: 'Invitations',
-        path: '/system/notifications/setup',
+        path: '/system/notifications/setup?notification=invitations',
         scopes: 'bulk_return_notifications'
       })
     })

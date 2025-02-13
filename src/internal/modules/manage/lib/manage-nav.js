@@ -32,7 +32,7 @@ const manageTabSkeleton = () => ({
     createLink('Invitations', _returnNotificationsInvitations(), scope.bulkReturnNotifications),
     createLink('Paper forms', '/returns-notifications/forms', scope.returns),
     createLink('Reminders', '/returns-notifications/reminders', scope.bulkReturnNotifications),
-    createLink('Ad-hoc returns', '/system/notifications/setup?notification=ad-hoc', config.featureToggles.enableSystemNotifications && scope.returns)
+    createLink('Ad-hoc returns', '/system/notifications/setup?journey=ad-hoc', config.featureToggles.enableSystemNotifications && scope.returns)
   ],
   licenceNotifications: [
     createLink('Renewal', 'notifications/2?start=1', scope.renewalNotifications)
@@ -69,7 +69,7 @@ const getManageTabConfig = request => mapValues(
 
 const _returnNotificationsInvitations = () => {
   if (config.featureToggles.enableSystemNotifications) {
-    return '/system/notifications/setup?notification=invitations'
+    return '/system/notifications/setup?journey=invitations'
   } else {
     return '/returns-notifications/invitations'
   }

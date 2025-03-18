@@ -22,7 +22,7 @@ const mockLogger = {
 }
 
 const UploadHelpers = require('shared/lib/upload-helpers')
-const uploadHelpers = new UploadHelpers('test-upload', ['csv', 'xml'], mockServices, mockLogger)
+const uploadHelpers = new UploadHelpers('test-upload', ['csv'], mockServices, mockLogger)
 
 const form = {
   file: {
@@ -95,7 +95,7 @@ experiment('upload Helpers', () => {
       const updated = {
         ...form,
         errors: [{
-          message: 'The selected file must be a CSV or XML file',
+          message: 'The selected file must be a CSV file',
           name: 'file'
         }]
       }
@@ -107,7 +107,7 @@ experiment('upload Helpers', () => {
       const updated = {
         ...form,
         errors: [{
-          message: 'Select a CSV or XML file',
+          message: 'Select a CSV file',
           name: 'file'
         }]
       }
@@ -162,13 +162,13 @@ experiment('upload Helpers', () => {
     const { OK, VIRUS, INVALID_TYPE } = UploadHelpers.fileStatuses
     test('returns OK status when virus check passes and supported file type', async () => {
       await fileCheck.virusCheck.resolves({ isClean: true })
-      const status = await uploadHelpers.getUploadedFileStatus('fileName', 'xml')
+      const status = await uploadHelpers.getUploadedFileStatus('fileName', 'csv')
       expect(status).to.equal(OK)
     })
 
     test('returns virus status when virus check fails', async () => {
       await fileCheck.virusCheck.resolves({ isClean: false })
-      const status = await uploadHelpers.getUploadedFileStatus('fileName', 'xml')
+      const status = await uploadHelpers.getUploadedFileStatus('fileName', 'csv')
       expect(status).to.equal(VIRUS)
     })
 
@@ -180,7 +180,7 @@ experiment('upload Helpers', () => {
 
     test('logs the error if the file is infected', async () => {
       await fileCheck.virusCheck.resolves({ isClean: false })
-      await uploadHelpers.getUploadedFileStatus('fileName', 'xml')
+      await uploadHelpers.getUploadedFileStatus('fileName')
       expect(mockLogger.error.callCount).to.equal(1)
     })
   })

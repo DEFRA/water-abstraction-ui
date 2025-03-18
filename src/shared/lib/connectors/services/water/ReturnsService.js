@@ -36,7 +36,7 @@ class ReturnsService extends ServiceClient {
     * Post to send XML return to water service
     * @param {string} fileData - file data to be sent as a string
     * @param {string} userName - userName of active user
-    * @param {String} type - the file type, supported is 'xml', 'csv'
+    * @param {String} type - the file type, supported is 'csv'
     * @return {string} - JSON containing, eventId, filename, location, etc
     */
   postUpload (fileData, userName, companyId, type = 'csv') {

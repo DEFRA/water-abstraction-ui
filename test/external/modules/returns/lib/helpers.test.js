@@ -46,7 +46,7 @@ experiment('isBulkUpload', () => {
       })
     })
 
-    test('returns true for external XML Upload user', async () => {
+    test('returns true for external CSV Upload user', async () => {
       const result = await helpers.isBulkUpload([])
       expect(result).to.equal(true)
     })

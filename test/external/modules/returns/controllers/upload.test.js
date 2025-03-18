@@ -35,7 +35,7 @@ const createRequest = () => {
       returnId
     },
     payload: {
-      file: '<xml>'
+      file: '<csv>'
     },
     defra: {
       userName,
@@ -123,8 +123,8 @@ experiment('external/modules/returns/controllers/upload', () => {
     sandbox.stub(services.water.companies, 'getCurrentDueReturns').resolves(companyReturns)
     sandbox.stub(csvTemplates, 'createCSVData').returns(csvData)
     sandbox.stub(csvTemplates, 'buildZip').resolves(zipObject)
-    sandbox.stub(fileCheck, 'detectFileType').resolves('xml')
-    sandbox.stub(helpers, 'getReturnsViewData').returns({ xmlUser: true })
+    sandbox.stub(fileCheck, 'detectFileType').resolves('csv')
+    sandbox.stub(helpers, 'getReturnsViewData').returns({ csvUser: true })
     sandbox.stub(logger, 'errorWithJourney')
     sandbox.stub(logger, 'error')
     sandbox.stub(logger, 'info')
@@ -135,7 +135,7 @@ experiment('external/modules/returns/controllers/upload', () => {
   })
 
   experiment('.getBulkUpload', () => {
-    test('it should display the upload xml page', async () => {
+    test('it should display the upload csv page', async () => {
       await controller.getBulkUpload(request, h)
       const [template, view] = h.view.lastCall.args
 
@@ -146,7 +146,7 @@ experiment('external/modules/returns/controllers/upload', () => {
 
   experiment('.postBulkUpload', () => {
     const { OK, VIRUS, INVALID_TYPE } = UploadHelpers.fileStatuses
-    const uploadHelpers = new UploadHelpers('test-upload', ['csv', 'xml'], services, logger)
+    const uploadHelpers = new UploadHelpers('test-upload', ['csv'], services, logger)
 
     test('redirects to spinner page if there are no errors', async () => {
       uploadHelpers.getUploadedFileStatus.resolves(OK)
@@ -263,13 +263,13 @@ experiment('external/modules/returns/controllers/upload', () => {
     })
 
     test('if status === "error", it should redirect to upload page with the key in the query string', async () => {
-      const response = createResponse('error', { error: { key: 'invalid-xml', message: 'Schema Check failed' } })
+      const response = createResponse('error', { error: { key: 'invalid-csv', message: 'Schema Check failed' } })
       services.water.events.findMany.resolves(response)
       await controller.getSpinnerPage(createSpinnerRequest(), h)
 
       expect(h.redirect.callCount).to.equal(1)
       const [path] = h.redirect.lastCall.args
-      expect(path).to.equal('/returns/upload?error=invalid-xml')
+      expect(path).to.equal('/returns/upload?error=invalid-csv')
     })
   })
 

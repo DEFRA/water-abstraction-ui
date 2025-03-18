@@ -30,9 +30,9 @@ experiment('uploadForm', () => {
     expect(names).to.include(['csrf_token', 'file'])
   })
 
-  test('upload field should only accept XML or CSV files', async () => {
+  test('upload field should only accept CSV files', async () => {
     const field = find(form.fields, { name: 'file' })
-    expect(field.options.attr.accept).to.equal('.xml,.csv')
+    expect(field.options.attr.accept).to.equal('.csv')
   })
 
   test('should include the CSRF token from the request', async () => {

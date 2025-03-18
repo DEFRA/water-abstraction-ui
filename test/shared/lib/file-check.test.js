@@ -77,11 +77,6 @@ experiment('detectFileType', () => {
     expect(func()).to.reject()
   })
 
-  test('returns "xml" if the file is XML', async () => {
-    const result = await fileCheck.detectFileType('test/shared/lib/test-files/test-xml.xml')
-    expect(result).to.equal('xml')
-  })
-
   test('returns "csv" if the file is CSV', async () => {
     const result = await fileCheck.detectFileType('test/shared/lib/test-files/test-file.csv')
     expect(result).to.equal('csv')

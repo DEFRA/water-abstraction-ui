@@ -83,7 +83,7 @@ module.exports = {
   },
 
   returns: {
-    showFutureReturns: testMode
+    showFutureReturns:    testMode
   },
 
   sanitize: {

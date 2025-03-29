@@ -31,7 +31,18 @@ experiment('getLicenceReturns', () => {
 })
 
 experiment('isBulkUpload', () => {
+  let clock
+  let testDate
+
+  // Control what the current date is when the test is run
+  beforeEach(() => {
+    testDate = new Date(2025, 2, 29, 20, 31, 57)
+
+    clock = sandbox.useFakeTimers(testDate)
+  })
+
   afterEach(async () => {
+    clock.restore()
     sandbox.restore()
   })
 
@@ -79,38 +90,23 @@ experiment('isBulkUpload', () => {
       expect(filter.status).to.equal('due')
     })
 
-    test('are in the current return cycle', async () => {
-      expect(filter['metadata->>isSummer']).to.equal('false')
-      expect(filter.start_date).to.equal({
-        $gte: '2018-04-01'
-      })
+    test('have an end date after or on the 2018-10-31', async () => {
       expect(filter.end_date).to.equal({
         $gte: '2018-10-31',
-        $lte: '2019-03-31'
+        $lte: testDate
+      })
+    })
+
+    test('have an end date before or on the current date', async () => {
+      expect(filter.end_date).to.equal({
+        $gte: '2018-10-31',
+        $lte: testDate
       })
     })
 
     test('are for the users\' licence numbers', async () => {
       expect(filter.licence_ref).to.equal({
         $in: ['01/123', '04/567']
-      })
-    })
-
-    experiment('for a summer return cycle', () => {
-      beforeEach(async () => {
-        await helpers.isBulkUpload(['01/123', '04/567'], '2019-11-01')
-        filter = services.returns.returns.findMany.lastCall.args[0]
-      })
-
-      test('are in the current return cycle', async () => {
-        expect(filter['metadata->>isSummer']).to.equal('true')
-        expect(filter.start_date).to.equal({
-          $gte: '2018-11-01'
-        })
-        expect(filter.end_date).to.equal({
-          $gte: '2018-10-31',
-          $lte: '2019-10-31'
-        })
       })
     })
   })

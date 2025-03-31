@@ -20,6 +20,8 @@ const dates = require('shared/lib/returns/dates')
  * @return {Object}      { startDate, endDate, isSummer }
  */
 const getCurrentCycle = (date) => {
+//  date = "2024-10-28"
+// console.log(helpers.returns.date.createReturnCycles(undefined, date))
   return last(helpers.returns.date.createReturnCycles(undefined, date))
 }
 
@@ -48,7 +50,8 @@ const getNewTaggingLicenceNumbers = (request, filter = {}) => {
  */
 const getLicenceReturnsFilter = licenceNumbers => {
   const showFutureReturns = get(config, 'returns.showFutureReturns', false)
-
+  //showFutureReturns = false;
+//console.log(showFutureReturns);
   const filter = {
     regime: 'water',
     licence_type: 'abstraction',
@@ -115,29 +118,41 @@ const getLicenceReturns = async (licenceNumbers, page = 1) => {
  * @return {Promise<boolean>} if user has bulk Upload functionality
  */
 const isBulkUpload = async (licenceNumbers, refDate) => {
-  const cycle = getCurrentCycle(refDate)
+
+//  const cycle = getCurrentCycle(refDate)
 
   const filter = {
     'metadata->>isUpload': 'true',
     'metadata->>isCurrent': 'true',
-    'metadata->>isSummer': cycle.isSummer ? 'true' : 'false',
+   // 'metadata->>isSummer': cycle.isSummer ? 'true' : 'false',   Don't care about summer or winter
     status: 'due',
-    start_date: { $gte: cycle.startDate },
+    start_date: { $gte: moment().subtract(10, 'years').format('YYYY-MM-DD') //cycle.startDate 
+    }, 
     end_date: {
       $gte: '2018-10-31',
-      $lte: cycle.endDate
+      $lte: moment().format('YYYY-MM-DD') //todays date, the end date must be less than or equal to today's date. e.g. not future ones. this used to be cycle.endDate
     },
     licence_ref: { $in: licenceNumbers }
   }
 
+  console.log(filter)
+  
+
   const requestPagination = { page: 1, perPage: 1 }
   const columns = ['return_id']
+
+  
 
   const { error, pagination } = await services.returns.returns.findMany(filter, {}, requestPagination, columns)
   throwIfError(error)
 
+  console.log(pagination)
+
+
   return pagination.totalRows > 0
 }
+
+
 
 /**
  * Groups and sorts returns by year descending
@@ -227,6 +242,7 @@ const getReturnsViewData = async (request) => {
   const licenceNumbers = documents.map(row => row.system_external_id)
 
   const bulkUpload = await isBulkUpload(licenceNumbers)
+ 
   const externalReturns = permissions.isReturnsUser(request)
 
   const view = {

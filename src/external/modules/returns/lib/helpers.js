@@ -10,18 +10,8 @@ const services = require('../../../lib/connectors/services')
 const { getReturnPath } = require('external/lib/return-path')
 const { throwIfError } = require('@envage/hapi-pg-rest-api')
 const permissions = require('external/lib/permissions')
-const helpers = require('@envage/water-abstraction-helpers')
 const badge = require('shared/lib/returns/badge')
 const dates = require('shared/lib/returns/dates')
-
-/**
- * Gets the current return cycle object
- * @param  {String} [date] - reference date, for unit testing
- * @return {Object}      { startDate, endDate, isSummer }
- */
-const getCurrentCycle = (date) => {
-  return last(helpers.returns.date.createReturnCycles(undefined, date))
-}
 
 /**
  * Gets all licences from the CRM that can be viewed by the supplied entity ID
@@ -115,17 +105,13 @@ const getLicenceReturns = async (licenceNumbers, page = 1) => {
  * @return {Promise<boolean>} if user has bulk Upload functionality
  */
 const isBulkUpload = async (licenceNumbers, refDate) => {
-  const cycle = getCurrentCycle(refDate)
-
   const filter = {
     'metadata->>isUpload': 'true',
     'metadata->>isCurrent': 'true',
-    'metadata->>isSummer': cycle.isSummer ? 'true' : 'false',
     status: 'due',
-    start_date: { $gte: cycle.startDate },
     end_date: {
       $gte: '2018-10-31',
-      $lte: cycle.endDate
+      $lte: moment().format('YYYY-MM-DD')
     },
     licence_ref: { $in: licenceNumbers }
   }

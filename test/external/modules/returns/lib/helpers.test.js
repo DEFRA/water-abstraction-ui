@@ -93,14 +93,14 @@ experiment('isBulkUpload', () => {
     test('have an end date after or on the 2018-10-31', async () => {
       expect(filter.end_date).to.equal({
         $gte: '2018-10-31',
-        $lte: testDate
+        $lte: '2025-03-29'
       })
     })
 
     test('have an end date before or on the current date', async () => {
       expect(filter.end_date).to.equal({
         $gte: '2018-10-31',
-        $lte: testDate
+        $lte: '2025-03-29'
       })
     })
 

@@ -233,8 +233,6 @@ const getCSVTemplates = async (request, h) => {
     throw Boom.notFound('CSV templates error - no current due returns', { companyId })
   }
 
-  const endDate = returns[0].endDate
-
   // Generate CSV data and build zip
   const data = csvTemplates.createCSVData(returns)
   const zip = await csvTemplates.buildZip(data, companyName)

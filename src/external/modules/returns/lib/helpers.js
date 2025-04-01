@@ -2,7 +2,7 @@
 
 const Boom = require('@hapi/boom')
 const moment = require('moment')
-const { get, isObject, last } = require('lodash')
+const { get, isObject } = require('lodash')
 
 const config = require('../../../config')
 const services = require('../../../lib/connectors/services')

@@ -351,12 +351,6 @@ experiment('external/modules/returns/controllers/upload', () => {
         }
       })
     })
-
-    // test('redirects to upload form if upload contains no data', async () => {
-    //   services.water.returns.getUploadPreview.resolves([]);
-    //   await controller.getSummary(request, h);
-    //   expect(h.redirect.calledWith(`/returns/upload?error=empty`)).to.equal(true);
-    // });
   })
 
   experiment('.getSummaryReturn', () => {
@@ -488,7 +482,7 @@ experiment('external/modules/returns/controllers/upload', () => {
       test('sets the correct content disposition in the response', async () => {
         const [key, value] = header.secondCall.args
         expect(key).to.equal('Content-disposition')
-        expect(value).to.equal('attachment; filename="test co ltd return templates 2019.zip"')
+        expect(value).to.equal('attachment; filename="test co ltd return templates.zip"')
       })
     })
 

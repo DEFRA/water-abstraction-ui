@@ -9,6 +9,8 @@ const moment = require('moment')
 const services = require('internal/lib/connectors/services')
 const forms = require('shared/lib/forms')
 
+const config = require('../../../config.js')
+
 const {
   STEP_INTERNAL_ROUTING, STEP_DATE_RECEIVED, STEP_START,
   STEP_CONFIRM, STEP_METHOD, STEP_UNITS, STEP_METER_READINGS, STEP_QUANTITIES,
@@ -360,7 +362,7 @@ const getSubmitted = async (request, h) => {
 
   const licence = await services.water.licences.getLicenceByLicenceNumber(data.licenceNumber)
 
-  const returnUrl = `/returns/return?id=${data.returnId}`
+  const returnUrl = _returnUrl(data.returnId)
 
   const markForSupplementaryBillingUrl = `/licences/${licence.id}/mark-for-supplementary-billing?returnId=${data.returnId}`
 
@@ -371,6 +373,14 @@ const getSubmitted = async (request, h) => {
     markForSupplementaryBillingUrl,
     pageTitle: `Abstraction return - ${data.isNil ? 'nil ' : ''}submitted`
   })
+}
+
+function _returnUrl (returnId) {
+  if (config.featureToggles.enableSystemReturnsView) {
+    return `/system/return-logs?id=${returnId}`
+  }
+
+  return `/returns/return?id=${returnId}`
 }
 
 module.exports = {

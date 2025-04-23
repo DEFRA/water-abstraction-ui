@@ -235,7 +235,7 @@ experiment('getManageTabConfig', () => {
 
       expect(config.returnNotifications[0]).to.equal({
         name: 'Invitations',
-        path: '/system/notifications/setup?journey=invitations',
+        path: '/system/notices/setup?journey=invitations',
         scopes: 'bulk_return_notifications'
       })
     })

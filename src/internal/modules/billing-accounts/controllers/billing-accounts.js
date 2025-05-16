@@ -24,6 +24,27 @@ const getBillingAccountRedirectLink = request => {
 }
 
 /**
+ * Change billing account address
+ */
+const getBillingAccountChangeAddress = (request, h) => {
+  const { billingAccountId } = request.params
+  const { billingAccount } = request.pre
+
+  const data = {
+    caption: `Billing account ${billingAccount.accountNumber}`,
+    key: `change-address-${billingAccountId}`,
+    back: `/billing-accounts/${billingAccountId}`,
+    redirectPath: `/billing-accounts/${billingAccountId}`,
+    isUpdate: true,
+    data: pick(billingAccount, 'id', 'company')
+  }
+
+  const redirectPath = request.billingAccountEntryRedirect(data)
+
+  return h.redirect(redirectPath)
+}
+
+/**
  * View billing account
  */
 const getBillingAccount = (request, h) => {
@@ -72,3 +93,4 @@ const getBillingAccountBills = (request, h) => {
 
 exports.getBillingAccount = getBillingAccount
 exports.getBillingAccountBills = getBillingAccountBills
+exports.getBillingAccountChangeAddress = getBillingAccountChangeAddress

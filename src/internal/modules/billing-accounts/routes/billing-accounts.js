@@ -38,6 +38,31 @@ module.exports = {
     }
   },
 
+  getBillingAccountChangeAddress: {
+    method: 'GET',
+    path: '/billing-accounts/{billingAccountId}/change-address',
+    handler: controller.getBillingAccountChangeAddress,
+    options: {
+      auth: {
+        scope: allowedScopes
+      },
+      plugins: {
+        viewContext: {
+          activeNavLink: 'view'
+        }
+      },
+      validate: {
+        params: Joi.object().keys({
+          billingAccountId: VALID_GUID
+        }),
+        query: Joi.object().keys({
+          back: Joi.string().optional()
+        })
+      },
+      pre: [{ method: preHandlers.loadBillingAccount, assign: 'billingAccount' }]
+    }
+  },
+
   getBillingAccountBills: {
     method: 'GET',
     path: '/billing-accounts/{billingAccountId}/bills',

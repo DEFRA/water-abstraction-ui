@@ -32,9 +32,7 @@ const getCSVLineLabel = line => {
  */
 const getCurrentCycle = (refDate) => {
   const cycles = helpers.returns.date.createReturnCycles(undefined, refDate)
-
   return last(cycles)
-
 }
 
 /**
@@ -62,7 +60,6 @@ const initialiseCSV = (frequency, startDate, endDate) => {
     ['Meter serial number'],
     ...lineLabels,
     ['Unique return reference']
-
   ]
 }
 
@@ -74,9 +71,7 @@ const initialiseCSV = (frequency, startDate, endDate) => {
  */
 const createReturnColumn = (ret, csvLines) => {
   const isFinal = get(ret, 'metadata.isFinal', false)
-
   const requiredLines = helpers.returns.lines.getRequiredLines(ret.startDate, ret.endDate, ret.frequency, isFinal)
-
 
   // Iterate over all date rows in the CSV
   const lines = csvLines.map(line => {

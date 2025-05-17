@@ -168,9 +168,9 @@ const isMultipleReturns = (data, key) => data[key][0].length > 2
  * @param  {String}  key     - the return frequency
  * @return {Promise}         resolves when added
  */
-const addCSVToArchive = async (archive, companyName, data, key, dueDateDataSetKey) => {
+const addCSVToArchive = async (archive, companyName, data, key, dueDateAsString) => {
   const str = await csvStringify(data[key])
-  const name = getCSVFilename(companyName, key, dueDateDataSetKey, isMultipleReturns(data, key))
+  const name = getCSVFilename(companyName, key, dueDateAsString, isMultipleReturns(data, key))
   return archive.append(str, { name })
 }
 

@@ -48,7 +48,6 @@ const initialiseCSV = (frequency, startDate, endDate) => {
 
   // Map to the first column of data in the CSV
   const lineLabels = dateLines.map(line => [getCSVLineLabel(line)])
-
   return [
     ['Licence number'],
     ['Return reference'],

@@ -234,8 +234,8 @@ const getCSVTemplates = async (request, h) => {
   }
 
   // Generate CSV data and build zip
-  const data = csvTemplates.createCSVData(returns)
-  const zip = await csvTemplates.buildZip(data, companyName)
+  const csvDataSets = csvTemplates.createCSVData(returns)
+  const zip = await csvTemplates.buildZip(csvDataSets, companyName)
   const fileName = getZipFilename(companyName)
 
   return h.response(zip)

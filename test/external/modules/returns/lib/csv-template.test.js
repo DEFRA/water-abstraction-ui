@@ -45,62 +45,73 @@ experiment('csv templates', () => {
     })
   })
 
-  experiment('getCurrentCycle', () => {
-    test('should return the current return cycle', async () => {
-      const cycle = csvTemplates._getCurrentCycle('2019-04-01')
-      expect(cycle).to.equal({
-        dueDate: '2019-04-28',
-        startDate: '2018-04-01',
-        endDate: '2019-03-31',
-        isSummer: false
+  experiment('initialiseCSV', () => {
+    let dateLines
+
+    experiment('when the period is daily', () => {
+      beforeEach(() => {
+        dateLines = helpers.returns.lines.getRequiredLines('2018-04-01', '2019-03-31', 'day')
+      })
+
+      test('should initialise a daily CSV 2D array', async () => {
+        const daily = csvTemplates._initialiseCSV(dateLines)
+
+        expect(daily[0][0]).to.equal('Licence number')
+        expect(daily[1][0]).to.equal('Return reference')
+        expect(daily[2][0]).to.equal('Site description')
+        expect(daily[3][0]).to.equal('Purpose')
+        expect(daily[4][0]).to.equal('Nil return Y/N')
+        expect(daily[5][0]).to.equal('Did you use a meter Y/N')
+        expect(daily[6][0]).to.equal('Meter make')
+        expect(daily[7][0]).to.equal('Meter serial number')
+        expect(daily[8][0]).to.equal('1 April 2018')
+        expect(daily[372][0]).to.equal('31 March 2019')
+        expect(daily[373][0]).to.equal('Unique return reference')
       })
     })
-  })
 
-  experiment('initialiseCSV', () => {
-    test('should initialise a daily CSV 2D array', async () => {
-      const daily = csvTemplates._initialiseCSV('day', '2019-04-01')
-      expect(daily[0][0]).to.equal('Licence number')
-      expect(daily[1][0]).to.equal('Return reference')
-      expect(daily[2][0]).to.equal('Site description')
-      expect(daily[3][0]).to.equal('Purpose')
-      expect(daily[4][0]).to.equal('Nil return Y/N')
-      expect(daily[5][0]).to.equal('Did you use a meter Y/N')
-      expect(daily[6][0]).to.equal('Meter make')
-      expect(daily[7][0]).to.equal('Meter serial number')
-      expect(daily[8][0]).to.equal('1 April 2018')
-      expect(daily[372][0]).to.equal('31 March 2019')
-      expect(daily[373][0]).to.equal('Unique return reference')
+    experiment('when the period is weekly', () => {
+      beforeEach(() => {
+        dateLines = helpers.returns.lines.getRequiredLines('2018-04-01', '2019-03-31', 'week')
+      })
+
+      test('should initialise a weekly 2D array', async () => {
+        const weekly = csvTemplates._initialiseCSV(dateLines)
+
+        expect(weekly[0][0]).to.equal('Licence number')
+        expect(weekly[1][0]).to.equal('Return reference')
+        expect(weekly[2][0]).to.equal('Site description')
+        expect(weekly[3][0]).to.equal('Purpose')
+        expect(weekly[4][0]).to.equal('Nil return Y/N')
+        expect(weekly[5][0]).to.equal('Did you use a meter Y/N')
+        expect(weekly[6][0]).to.equal('Meter make')
+        expect(weekly[7][0]).to.equal('Meter serial number')
+        expect(weekly[8][0]).to.equal('Week ending 7 April 2018')
+        expect(weekly[59][0]).to.equal('Week ending 30 March 2019')
+        expect(weekly[60][0]).to.equal('Unique return reference')
+      })
     })
 
-    test('should initialise a weekly CSV 2D array', async () => {
-      const weekly = csvTemplates._initialiseCSV('week', '2019-04-01')
-      expect(weekly[0][0]).to.equal('Licence number')
-      expect(weekly[1][0]).to.equal('Return reference')
-      expect(weekly[2][0]).to.equal('Site description')
-      expect(weekly[3][0]).to.equal('Purpose')
-      expect(weekly[4][0]).to.equal('Nil return Y/N')
-      expect(weekly[5][0]).to.equal('Did you use a meter Y/N')
-      expect(weekly[6][0]).to.equal('Meter make')
-      expect(weekly[7][0]).to.equal('Meter serial number')
-      expect(weekly[8][0]).to.equal('Week ending 7 April 2018')
-      expect(weekly[59][0]).to.equal('Week ending 30 March 2019')
-      expect(weekly[60][0]).to.equal('Unique return reference')
-    })
+    experiment('when the period is monthly', () => {
+      beforeEach(() => {
+        dateLines = helpers.returns.lines.getRequiredLines('2018-04-01', '2019-03-31', 'month')
+      })
 
-    test('should initialise a monthly CSV 2D array', async () => {
-      const monthly = csvTemplates._initialiseCSV('month', '2019-04-01')
-      expect(monthly[0][0]).to.equal('Licence number')
-      expect(monthly[1][0]).to.equal('Return reference')
-      expect(monthly[2][0]).to.equal('Site description')
-      expect(monthly[3][0]).to.equal('Purpose')
-      expect(monthly[4][0]).to.equal('Nil return Y/N')
-      expect(monthly[5][0]).to.equal('Did you use a meter Y/N')
-      expect(monthly[6][0]).to.equal('Meter make')
-      expect(monthly[7][0]).to.equal('Meter serial number')
-      expect(monthly[8][0]).to.equal('April 2018')
-      expect(monthly[19][0]).to.equal('March 2019')
-      expect(monthly[20][0]).to.equal('Unique return reference')
+      test('should initialise a monthly 2D array', async () => {
+        const monthly = csvTemplates._initialiseCSV(dateLines)
+
+        expect(monthly[0][0]).to.equal('Licence number')
+        expect(monthly[1][0]).to.equal('Return reference')
+        expect(monthly[2][0]).to.equal('Site description')
+        expect(monthly[3][0]).to.equal('Purpose')
+        expect(monthly[4][0]).to.equal('Nil return Y/N')
+        expect(monthly[5][0]).to.equal('Did you use a meter Y/N')
+        expect(monthly[6][0]).to.equal('Meter make')
+        expect(monthly[7][0]).to.equal('Meter serial number')
+        expect(monthly[8][0]).to.equal('April 2018')
+        expect(monthly[19][0]).to.equal('March 2019')
+        expect(monthly[20][0]).to.equal('Unique return reference')
+      })
     })
   })
 
@@ -244,13 +255,14 @@ experiment('csv templates', () => {
   })
 
   experiment('createCSVData', () => {
-    test('should create CSV arrays grouped by return frequency', async () => {
+    test('should create CSV arrays grouped by due date and return frequency', async () => {
       const returns = [{
         returnId: 'return_1',
         licenceNumber: 'licence_1',
         returnRequirement: 'requirement_1',
         startDate: '2018-04-01',
         endDate: '2019-03-31',
+        dueDate: '2019-04-28',
         frequency: 'day',
         siteDescription: 'test',
         purposes: []
@@ -260,6 +272,7 @@ experiment('csv templates', () => {
         returnRequirement: 'requirement_2',
         startDate: '2018-04-01',
         endDate: '2019-03-31',
+        dueDate: '2019-04-28',
         frequency: 'month',
         siteDescription: 'test',
         purposes: []
@@ -269,46 +282,54 @@ experiment('csv templates', () => {
         returnRequirement: 'requirement_3',
         startDate: '2018-04-01',
         endDate: '2019-03-31',
+        dueDate: '2019-04-28',
         frequency: 'week',
         siteDescription: 'test',
         purposes: []
       }]
 
-      const csvData = csvTemplates.createCSVData(returns, '2019-03-31')
+      const csvDataSets = csvTemplates.createCSVData(returns)
+      const csvDueDateData = csvDataSets[0]
 
       // Daily
-      expect(csvData.day[0][1]).to.equal('licence_1')
-      expect(csvData.day[1][1]).to.equal('requirement_1')
-      expect(csvData.day[373][1]).to.equal('return_1')
+      const csvDailyData = csvDueDateData['2019-04-28'].day
+
+      expect(csvDailyData[0][1]).to.equal('licence_1')
+      expect(csvDailyData[1][1]).to.equal('requirement_1')
+      expect(csvDailyData[373][1]).to.equal('return_1')
 
       // Monthly
-      expect(csvData.month[0][1]).to.equal('licence_2')
-      expect(csvData.month[1][1]).to.equal('requirement_2')
-      expect(csvData.month[20][1]).to.equal('return_2')
+      const csvMonthlyData = csvDueDateData['2019-04-28'].month
+
+      expect(csvMonthlyData[0][1]).to.equal('licence_2')
+      expect(csvMonthlyData[1][1]).to.equal('requirement_2')
+      expect(csvMonthlyData[20][1]).to.equal('return_2')
 
       // Weekly
-      expect(csvData.week[0][1]).to.equal('licence_3')
-      expect(csvData.week[1][1]).to.equal('requirement_3')
-      expect(csvData.week[60][1]).to.equal('return_3')
+      const csvWeeklyData = csvDueDateData['2019-04-28'].week
+
+      expect(csvWeeklyData[0][1]).to.equal('licence_3')
+      expect(csvWeeklyData[1][1]).to.equal('requirement_3')
+      expect(csvWeeklyData[60][1]).to.equal('return_3')
     })
   })
 
   experiment('getCSVFilename', () => {
     test('creates a filename based on the company name and daily return frequency', async () => {
-      const result = csvTemplates._getCSVFilename('TEST CO', 'day', false)
-      expect(result).to.equal('test co daily return.csv')
+      const result = csvTemplates._getCSVFilename('TEST CO', 'day', '2019-04-28', false)
+      expect(result).to.equal('test co daily return due 2019 04 28.csv')
     })
     test('creates a filename based on the company name and weekly return frequency', async () => {
-      const result = csvTemplates._getCSVFilename('TEST CO', 'week', false)
-      expect(result).to.equal('test co weekly return.csv')
+      const result = csvTemplates._getCSVFilename('TEST CO', 'week', '2019-04-28', false)
+      expect(result).to.equal('test co weekly return due 2019 04 28.csv')
     })
     test('creates a filename based on the company name and monthly return frequency', async () => {
-      const result = csvTemplates._getCSVFilename('TEST CO', 'month', false)
-      expect(result).to.equal('test co monthly return.csv')
+      const result = csvTemplates._getCSVFilename('TEST CO', 'month', '2019-04-28', false)
+      expect(result).to.equal('test co monthly return due 2019 04 28.csv')
     })
     test('pluralises "return" to "returns" when isMultipleReturns is true', async () => {
-      const result = csvTemplates._getCSVFilename('TEST CO', 'day', true)
-      expect(result).to.equal('test co daily returns.csv')
+      const result = csvTemplates._getCSVFilename('TEST CO', 'day', '2019-04-28', true)
+      expect(result).to.equal('test co daily returns due 2019 04 28.csv')
     })
   })
 
@@ -317,12 +338,12 @@ experiment('csv templates', () => {
       const data = {
         day: [['foo', 'bar']]
       }
-      await csvTemplates._addCSVToArchive(archive, 'TEST CO', data, 'day')
+      await csvTemplates._addCSVToArchive(archive, 'TEST CO', data, 'day', '2024-04-01')
 
       const [csvStr, options] = archive.append.lastCall.args
 
       expect(csvStr).to.equal('foo,bar\n')
-      expect(options.name).to.equal('test co daily return.csv')
+      expect(options.name).to.equal('test co daily return due 2024 04 01.csv')
     })
   })
 
@@ -376,10 +397,14 @@ experiment('csv templates', () => {
 
   experiment('buildZip', () => {
     test('should build a zip file', async () => {
-      const data = {
-        day: [['foo', 'bar']]
-      }
-      const result = await csvTemplates.buildZip(data, 'TEST CO', archive)
+      const csvDataSets = [
+        {
+          '2024-04-28': {
+            day: [['foo', 'bar']]
+          }
+        }
+      ]
+      const result = await csvTemplates.buildZip(csvDataSets, 'TEST CO', archive)
 
       expect(result).to.be.an.object()
 

@@ -9,9 +9,6 @@ const {
 } = exports.lab = require('@hapi/lab').script()
 const { expect } = require('@hapi/code')
 
-const { returns: { date: { createReturnCycles } } } = require('@envage/water-abstraction-helpers')
-const { last } = require('lodash')
-
 const CompaniesService = require('shared/lib/connectors/services/water/CompaniesService')
 const { serviceRequest } = require('@envage/water-abstraction-helpers')
 
@@ -43,13 +40,9 @@ experiment('services/water/CompaniesService', () => {
     test('passes the expected options to the service request', async () => {
       await service.getCurrentDueReturns('entity_1')
 
-      const cycle = last(createReturnCycles())
       const [, { qs }] = serviceRequest.get.lastCall.args
 
       expect(qs.status).to.equal('due')
-      expect(qs.startDate).to.equal(cycle.startDate)
-      expect(qs.endDate).to.equal(cycle.endDate)
-      expect(qs.isSummer).to.equal(cycle.isSummer)
     })
   })
 

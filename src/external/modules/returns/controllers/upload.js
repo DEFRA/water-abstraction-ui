@@ -218,7 +218,7 @@ const getSubmitted = async (request, h) => {
   return h.view('nunjucks/returns/upload-submitted', view)
 }
 
-const getZipFilename = (companyName, year) => `${lowerCase(companyName)} return templates ${year}.zip`
+const getZipFilename = (companyName, year) => `${lowerCase(companyName)} return templates.zip`
 
 /**
  * Downloads a ZIP of CSV templates

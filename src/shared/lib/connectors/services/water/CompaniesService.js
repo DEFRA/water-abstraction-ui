@@ -1,6 +1,4 @@
 const ServiceClient = require('../ServiceClient')
-const { last } = require('lodash')
-const { returns: { date: { createReturnCycles } } } = require('@envage/water-abstraction-helpers')
 
 class CompaniesService extends ServiceClient {
   /**
@@ -9,13 +7,10 @@ class CompaniesService extends ServiceClient {
    * @return {Promise<Array>} resolves with an array of returns
    */
   getCurrentDueReturns (entityId) {
-    const currentCycle = last(createReturnCycles())
     const url = this.joinUrl('company', entityId, 'returns')
+
     const options = {
       qs: {
-        startDate: currentCycle.startDate,
-        endDate: currentCycle.endDate,
-        isSummer: currentCycle.isSummer,
         status: 'due'
       }
     }

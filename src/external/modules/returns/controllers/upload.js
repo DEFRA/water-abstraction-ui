@@ -228,7 +228,7 @@ const getCSVTemplates = async (request, h) => {
 
   // Fetch returns for current company
   const returns = await services.water.companies.getCurrentDueReturns(companyId)
-console.log("The returns called in upload.js " + JSON.stringify(returns))
+
   if (returns.length === 0) {
     throw Boom.notFound('CSV templates error - no current due returns', { companyId })
   }

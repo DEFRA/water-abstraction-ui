@@ -1,6 +1,6 @@
 'use strict'
 
-const { last, find, groupBy, lowerCase, get } = require('lodash')
+const { find, groupBy, lowerCase, get } = require('lodash')
 const helpers = require('@envage/water-abstraction-helpers')
 const { getLineLabel } = require('shared/modules/returns/forms/common')
 const moment = require('moment')
@@ -113,8 +113,8 @@ const createCSVData = (returns) => {
 
       // sort by return ID
       frequencyGroup.sort((a, b) => {
-        return a.returnId.localeCompare(b.returnId);
-      });
+        return a.returnId.localeCompare(b.returnId)
+      })
 
       const { earliestStartDate, latestEndDate } = _earliestAndLatestDates(frequencyGroup)
 

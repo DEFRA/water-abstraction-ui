@@ -218,7 +218,7 @@ const getSubmitted = async (request, h) => {
   return h.view('nunjucks/returns/upload-submitted', view)
 }
 
-const getZipFilename = (companyName, year) => `${lowerCase(companyName)} return templates ${year}.zip`
+const getZipFilename = (companyName) => `${lowerCase(companyName)} return templates.zip`
 
 /**
  * Downloads a ZIP of CSV templates
@@ -233,12 +233,10 @@ const getCSVTemplates = async (request, h) => {
     throw Boom.notFound('CSV templates error - no current due returns', { companyId })
   }
 
-  const endDate = returns[0].endDate
-
   // Generate CSV data and build zip
-  const data = csvTemplates.createCSVData(returns)
-  const zip = await csvTemplates.buildZip(data, companyName)
-  const fileName = getZipFilename(companyName, endDate.substring(0, 4))
+  const csvDataSets = csvTemplates.createCSVData(returns)
+  const zip = await csvTemplates.buildZip(csvDataSets, companyName)
+  const fileName = getZipFilename(companyName)
 
   return h.response(zip)
     .header('Content-type', 'application/zip')

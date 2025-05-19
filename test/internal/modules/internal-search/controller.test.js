@@ -10,6 +10,7 @@ const { scope } = require('internal/lib/constants')
 const { permissionsChoices } = require('internal/modules/account/forms/set-permissions')
 const forms = require('shared/lib/forms')
 
+const config = require('../../../../src/internal/config.js')
 const getUserStatusResponses = require('../../../shared/responses/water-service/user/_userId_/status')
 
 experiment('getSearchForm', () => {
@@ -81,22 +82,53 @@ experiment('getSearchForm', () => {
     expect(path).to.equal(`/return/internal?returnId=${returnId}`)
   })
 
-  test('It should redirect if user searches for exact billing account ref', async () => {
-    const billingAccountRef = 'Y12232313A'
-    const invoiceAccountId = 'some-guid'
-    sandbox.restore()
-    sandbox.stub(services.water.internalSearch, 'getInternalSearchResults').resolves({
-      billingAccount: {
-        invoiceAccountId
-      }
+  experiment('When enableBillingAccountView is not enabled', () => {
+    beforeEach(async () => {
+      sandbox.restore()
+      sandbox.stub(config.featureToggles, 'enableBillingAccountView').value(false)
     })
 
-    const request = set(cloneDeep(baseRequest), 'query.query', billingAccountRef)
-    await controller.getSearchForm(request, h)
+    test('It should redirect to the legacy billing account view if user searches for exact billing account ref', async () => {
+      const billingAccountRef = 'Y12232313A'
+      const invoiceAccountId = 'some-guid'
+      sandbox.stub(services.water.internalSearch, 'getInternalSearchResults').resolves({
+        billingAccount: {
+          invoiceAccountId
+        }
+      })
 
-    const [path] = h.redirect.firstCall.args
+      const request = set(cloneDeep(baseRequest), 'query.query', billingAccountRef)
+      await controller.getSearchForm(request, h)
 
-    expect(path).to.equal(`/billing-accounts/${invoiceAccountId}`)
+      const [path] = h.redirect.firstCall.args
+
+      expect(path).to.equal(`/billing-accounts/${invoiceAccountId}`)
+    })
+  })
+
+  experiment('When enableBillingAccountView is enabled', () => {
+    beforeEach(async () => {
+      sandbox.restore()
+      sandbox.stub(config.featureToggles, 'enableBillingAccountView').value(true)
+    })
+
+    test('It should redirect to the new billing account view if user searches for exact billing account ref', async () => {
+      const billingAccountRef = 'Y12232313A'
+      const invoiceAccountId = 'some-guid'
+
+      sandbox.stub(services.water.internalSearch, 'getInternalSearchResults').resolves({
+        billingAccount: {
+          invoiceAccountId
+        }
+      })
+
+      const request = set(cloneDeep(baseRequest), 'query.query', billingAccountRef)
+      await controller.getSearchForm(request, h)
+
+      const [path] = h.redirect.firstCall.args
+
+      expect(path).to.equal(`/system/billing-accounts/${invoiceAccountId}`)
+    })
   })
 })
 

@@ -1,6 +1,8 @@
 const { get } = require('lodash')
 const Boom = require('@hapi/boom')
 
+const config = require('../../../config')
+
 /**
  * Redirects the user to the billing account
  * @param  {Object} billingAccount
@@ -11,7 +13,11 @@ const Boom = require('@hapi/boom')
 const redirectToBillingAccount = (billingAccount, view, h) => {
   const billingAccountId = get(view, 'billingAccount.invoiceAccountId')
   if (billingAccountId) {
-    return h.redirect(`/billing-accounts/${billingAccountId}`)
+    if (config.featureToggles.enableBillingAccountView) {
+      return h.redirect(`/system/billing-accounts/${billingAccountId}`)
+    } else {
+      return h.redirect(`/billing-accounts/${billingAccountId}`)
+    }
   } else {
     throw Boom.notFound('Billing account not found')
   }

@@ -75,6 +75,7 @@ const createRequest = (query = {}) => ({
 })
 
 const h = {
+  redirect: sandbox.stub(),
   view: sandbox.stub()
 }
 
@@ -192,6 +193,31 @@ experiment('internal/modules/billing-accounts/controllers/billing-accounts', () 
       const { billingAccountId } = request.params
       const [, { back }] = h.view.lastCall.args
       expect(back).to.equal(`/billing-accounts/${billingAccountId}`)
+    })
+  })
+
+  experiment('.getBillingAccountChangeAddress', () => {
+    beforeEach(() => {
+      request = createRequest()
+      controller.getBillingAccountChangeAddress(request, h)
+    })
+
+    test('redirects to the change address link', () => {
+      expect(h.redirect.calledWith(addressChangeLink)).to.be.true()
+    })
+
+    test('calls billingAccountEntryRedirect with correct data', () => {
+      const [data] = request.billingAccountEntryRedirect.lastCall.args
+
+      expect(data.caption).to.equal('Billing account A12345678A')
+      expect(data.key).to.equal('change-address-test-billing-account-id')
+      expect(data.back).to.equal('/billing-accounts/test-billing-account-id')
+      expect(data.redirectPath).to.equal('/billing-accounts/test-billing-account-id')
+      expect(data.isUpdate).to.be.true()
+      expect(data.data).to.equal({
+        id: 'test-billing-account-id',
+        company: { name: 'Test Company' }
+      })
     })
   })
 })

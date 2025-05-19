@@ -7,6 +7,8 @@ const forms = require('shared/lib/forms')
 const services = require('internal/lib/connectors/services')
 const { URL } = require('url')
 
+const InternalConfig = require('../../../../../src/internal/config.js')
+
 const {
   STEP_START, STEP_METHOD, STEP_UNITS,
   STEP_QUANTITIES, STEP_METER_READINGS, STEP_METER_DETAILS, STEP_CONFIRM,
@@ -104,6 +106,8 @@ experiment('returns edit controller: ', () => {
   let h
 
   beforeEach(async () => {
+    sandbox.stub(InternalConfig, 'featureToggles').value({ enableSystemReturnsView: false })
+
     h = {
       redirect: sandbox.stub(),
       view: sandbox.stub()

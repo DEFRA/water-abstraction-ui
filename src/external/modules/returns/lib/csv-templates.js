@@ -1,6 +1,6 @@
 'use strict'
 
-const { last, find, groupBy, lowerCase, get } = require('lodash')
+const { find, groupBy, lowerCase, get } = require('lodash')
 const helpers = require('@envage/water-abstraction-helpers')
 const { getLineLabel } = require('shared/modules/returns/forms/common')
 const moment = require('moment')
@@ -24,33 +24,10 @@ const getCSVLineLabel = line => {
   return getLineLabel(line) + ' ' + moment(line.endDate).format('YYYY')
 }
 
-/**
- * Gets the current active return cycle
- * @param {String} [refDate] - for unit testing, controls the date for
- *                             the current cycle calculation
- * @return {Object} - cycle description with { startDate, endDate, isSummer }
- */
-const getCurrentCycle = (refDate) => {
-  const cycles = helpers.returns.date.createReturnCycles(undefined, refDate)
-  return last(cycles)
-}
-
-/**
- * Initialises a 2D array structure to hold on of the CSVs
- * @param  {String} frequency - day|week|month
- * @param {String} [refDate] - for unit testing, controls the date for
- *                             the current cycle calculation
- * @return {[type]}           [description]
- */
-const initialiseCSV = (frequency, refDate) => {
-  // Get date range of current active return cycle
-  const { startDate, endDate } = getCurrentCycle(refDate)
-
-  // Get date lines for the cycle dates and frequency
-  const dateLines = helpers.returns.lines.getRequiredLines(startDate, endDate, frequency)
-
+const initialiseCSV = (dateLines) => {
   // Map to the first column of data in the CSV
   const lineLabels = dateLines.map(line => [getCSVLineLabel(line)])
+
   return [
     ['Licence number'],
     ['Return reference'],
@@ -116,30 +93,48 @@ const pushColumn = (data, column) => {
  * @param  {Array} returns - loaded from water service
  * @return {Object}
  */
-const createCSVData = (returns, refDate) => {
-  const data = {}
+const createCSVData = (returns) => {
+  const csvDataSets = []
 
-  // Get current return cycle dates
-  const { startDate, endDate } = getCurrentCycle(refDate)
+  // Group returns by return end date and then sub group by frequency
+  const nestedGroups = groupBy(returns, ret => ret.dueDate)
 
-  // Group returns by frequency
-  const grouped = groupBy(returns, ret => ret.frequency)
-
-  for (const frequency in grouped) {
-    // Initialise the 2D array
-    data[frequency] = initialiseCSV(frequency)
-
-    // Get all CSV lines for current cycle/frequency
-    const csvLines = helpers.returns.lines.getRequiredLines(startDate, endDate, frequency)
-
-    // For each return of this frequency, generate a column and add to the CSV data
-    grouped[frequency].forEach(ret => {
-      const column = createReturnColumn(ret, csvLines)
-      pushColumn(data[frequency], column)
-    })
+  for (const [key, group] of Object.entries(nestedGroups)) {
+    nestedGroups[key] = groupBy(group, ret => ret.frequency)
   }
 
-  return data
+  const data = {}
+
+  for (const dueDateKey in nestedGroups) {
+    const dueDateGroup = nestedGroups[dueDateKey]
+
+    for (const frequencyKey in dueDateGroup) {
+      const frequencyGroup = dueDateGroup[frequencyKey]
+
+      // sort by return ID
+      frequencyGroup.sort((a, b) => {
+        return a.returnId.localeCompare(b.returnId)
+      })
+
+      const { earliestStartDate, latestEndDate } = _earliestAndLatestDates(frequencyGroup)
+
+      // Get date lines between the two dates based on the specified frequency
+      const dateLines = helpers.returns.lines.getRequiredLines(earliestStartDate, latestEndDate, frequencyKey)
+
+      // Setup the 2D array
+      data[frequencyKey] = initialiseCSV(dateLines)
+
+      for (const returnLog of frequencyGroup) {
+        const column = createReturnColumn(returnLog, dateLines)
+
+        pushColumn(data[frequencyKey], column)
+      }
+
+      csvDataSets.push({ [dueDateKey]: data })
+    }
+  }
+
+  return csvDataSets
 }
 
 /**
@@ -149,13 +144,19 @@ const createCSVData = (returns, refDate) => {
  * @param  {String} frequency   - the return frequency
  * @return {String}             filename, e.g. my-company-daily.csv
  */
-const getCSVFilename = (companyName, frequency, isMultipleReturns) => {
+const getCSVFilename = (companyName, frequency, dueDateAsString, isMultipleReturns) => {
   const map = {
     day: 'daily',
     week: 'weekly',
     month: 'monthly'
   }
-  return lowerCase(`${companyName} ${map[frequency]}`) + ` ${isMultipleReturns ? 'returns' : 'return'}.csv`
+
+  const lowerCaseName = lowerCase(companyName)
+  const frequencyText = map[frequency]
+  const returnsText = isMultipleReturns ? 'returns' : 'return'
+  const dueDateSeparatedWithSpaces = lowerCase(dueDateAsString)
+
+  return `${lowerCaseName} ${frequencyText} ${returnsText} due ${dueDateSeparatedWithSpaces}.csv`
 }
 
 const isMultipleReturns = (data, key) => data[key][0].length > 2
@@ -167,9 +168,9 @@ const isMultipleReturns = (data, key) => data[key][0].length > 2
  * @param  {String}  key     - the return frequency
  * @return {Promise}         resolves when added
  */
-const addCSVToArchive = async (archive, companyName, data, key) => {
+const addCSVToArchive = async (archive, companyName, data, key, dueDateAsString) => {
   const str = await csvStringify(data[key])
-  const name = getCSVFilename(companyName, key, isMultipleReturns(data, key))
+  const name = getCSVFilename(companyName, key, dueDateAsString, isMultipleReturns(data, key))
   return archive.append(str, { name })
 }
 
@@ -213,20 +214,28 @@ const createArchive = () => {
 /**
  * Builds the ZIP archive containing several CSV templates for users
  * to complete their return data
- * @param  {Object}  data        - CSV data object, keys are return frequency
+ * @param  {Object}  csvDataSets - Array of CSV data objects, keys are return frequency
  * @param  {String}  companyName - the current company
  * @param {Object} [archive] - an archiver instance can be passed in for test
  * @return {Promise<Object>} resolves with archive object when finalised
  */
-const buildZip = async (data, companyName, archive) => {
+const buildZip = async (csvDataSets, companyName, archive) => {
   archive = archive || createArchive()
 
-  // Add a CSV to the archive for each frequency
-  const tasks = Object.keys(data).map(key => {
-    return addCSVToArchive(archive, companyName, data, key)
-  })
-  tasks.push(addReadmeToArchive(archive))
-  await Promise.all(tasks)
+  // Add a CSV to the archive for each due date and frequency
+  for (const csvDataSet of csvDataSets) {
+    for (const dueDateDataSetKey in csvDataSet) {
+      const dueDateDataSet = csvDataSet[dueDateDataSetKey]
+
+      const tasks = Object.keys(dueDateDataSet).map(key => {
+        return addCSVToArchive(archive, companyName, dueDateDataSet, key, dueDateDataSetKey)
+      })
+
+      tasks.push(addReadmeToArchive(archive))
+
+      await Promise.all(tasks)
+    }
+  }
 
   archive.finalize()
 
@@ -237,8 +246,30 @@ const buildZip = async (data, companyName, archive) => {
   return archive.pipe(new PassThrough())
 }
 
+function _earliestAndLatestDates (returnLogs) {
+  let earliestStartDate = new Date(returnLogs[0].startDate)
+  let latestEndDate = new Date(returnLogs[0].endDate)
+
+  for (const returnLog of returnLogs) {
+    const startDate = new Date(returnLog.startDate)
+    const endDate = new Date(returnLog.endDate)
+
+    if (startDate < earliestStartDate) {
+      earliestStartDate = startDate
+    }
+
+    if (endDate > latestEndDate) {
+      latestEndDate = endDate
+    }
+  }
+
+  return {
+    earliestStartDate: earliestStartDate.toISOString().split('T')[0],
+    latestEndDate: latestEndDate.toISOString().split('T')[0]
+  }
+}
+
 exports._getCSVLineLabel = getCSVLineLabel
-exports._getCurrentCycle = getCurrentCycle
 exports._initialiseCSV = initialiseCSV
 exports._createReturnColumn = createReturnColumn
 exports._pushColumn = pushColumn

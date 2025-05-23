@@ -10,6 +10,8 @@ const { logger } = require('../../../logger')
 const services = require('../../../lib/connectors/services')
 const mapper = require('../lib/mapper')
 
+const { featureToggles } = require('../../../config')
+
 // Form containers
 const selectBillingAccountForm = require('../forms/select-billing-account')
 const selectAccountForm = require('../forms/select-account')
@@ -275,7 +277,12 @@ const postCheckAnswers = async (request, h) => {
     // Set address in session and redirect back to parent flow
     const { key } = request.params
     const { redirectPath } = session.merge(request, key, { data })
-    return h.redirect(redirectPath)
+
+    if (featureToggles.enableBillingAccountView) {
+      return h.redirect('/system' + redirectPath)
+    } else {
+      return h.redirect(redirectPath)
+    }
   } catch (err) {
     logger.error('Error saving billing account', err.stack)
     throw err

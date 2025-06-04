@@ -103,12 +103,11 @@ const createCSVData = (returns) => {
     nestedGroups[key] = groupBy(group, ret => ret.frequency)
   }
 
-  const data = {}
-
   for (const dueDateKey in nestedGroups) {
     const dueDateGroup = nestedGroups[dueDateKey]
 
     for (const frequencyKey in dueDateGroup) {
+      const data = {}
       const frequencyGroup = dueDateGroup[frequencyKey]
 
       // sort by return ID

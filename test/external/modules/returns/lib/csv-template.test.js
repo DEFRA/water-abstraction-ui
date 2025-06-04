@@ -289,24 +289,23 @@ experiment('csv templates', () => {
       }]
 
       const csvDataSets = csvTemplates.createCSVData(returns)
-      const csvDueDateData = csvDataSets[0]
 
       // Daily
-      const csvDailyData = csvDueDateData['2019-04-28'].day
+      const csvDailyData = csvDataSets[0]['2019-04-28'].day
 
       expect(csvDailyData[0][1]).to.equal('licence_1')
       expect(csvDailyData[1][1]).to.equal('requirement_1')
       expect(csvDailyData[373][1]).to.equal('return_1')
 
       // Monthly
-      const csvMonthlyData = csvDueDateData['2019-04-28'].month
+      const csvMonthlyData = csvDataSets[1]['2019-04-28'].month
 
       expect(csvMonthlyData[0][1]).to.equal('licence_2')
       expect(csvMonthlyData[1][1]).to.equal('requirement_2')
       expect(csvMonthlyData[20][1]).to.equal('return_2')
 
       // Weekly
-      const csvWeeklyData = csvDueDateData['2019-04-28'].week
+      const csvWeeklyData = csvDataSets[2]['2019-04-28'].week
 
       expect(csvWeeklyData[0][1]).to.equal('licence_3')
       expect(csvWeeklyData[1][1]).to.equal('requirement_3')

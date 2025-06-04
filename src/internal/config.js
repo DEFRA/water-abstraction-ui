@@ -170,6 +170,7 @@ module.exports = {
     triggerSrocAnnual: (get(process.env, 'TRIGGER_SROC_ANNUAL') || '').toLowerCase() === 'true',
     useNewBillRunSetup: (get(process.env, 'USE_NEW_BILL_RUN_SETUP') || '').toLowerCase() === 'true',
     useWorkflowSetupLinks: (get(process.env, 'USE_WORKFLOW_SETUP_LINKS') || 'true').toLowerCase() === 'true',
+    enableAdHocNotifications: process.env.ENABLE_AD_HOC_NOTIFICATIONS === 'true',
     enableBillingAccountView: process.env.ENABLE_BILLING_ACCOUNT_VIEW === 'true',
     enableSystemLicenceView: process.env.ENABLE_SYSTEM_LICENCE_VIEW === 'true',
     enableSystemNotifications: process.env.ENABLE_SYSTEM_NOTIFICATIONS === 'true',

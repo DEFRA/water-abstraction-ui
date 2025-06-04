@@ -10,7 +10,8 @@ class CompaniesService extends ServiceClient {
     const url = this.joinUrl('company', entityId, 'returns')
     const options = {
       qs: {
-        status: 'due'
+        status: 'due',
+        endDate: new Date().toISOString().split('T')[0]
       }
     }
     return this.serviceRequest.get(url, options)

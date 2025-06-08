@@ -23,7 +23,7 @@ const createLink = (name, path, scopes) => ({ name, path, scopes })
  */
 const manageTabSkeleton = () => ({
   reports: [
-    createLink('Notices', '/notifications/report', scope.allNotifications),
+    createLink('Notices', _notices(), scope.allNotifications),
     createLink('Returns cycles', '/returns-reports', scope.returns),
     createLink('Digitise!', '/digitise/report', scope.abstractionReformApprover),
     createLink('Key performance indicators', '/reporting/kpi-reporting', scope.hasManageTab)
@@ -66,6 +66,14 @@ const getManageTabConfig = request => mapValues(
   manageTabSkeleton(),
   links => links.filter(link => hasScope(request, link.scopes))
 )
+
+const _notices = () => {
+  if (config.featureToggles.enableSystemNotices) {
+    return '/system/notices'
+  } else {
+    return '/notifications/report'
+  }
+}
 
 const _returnNotificationsInvitations = () => {
   if (config.featureToggles.enableSystemNotifications) {

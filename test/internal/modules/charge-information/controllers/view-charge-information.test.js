@@ -183,7 +183,7 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
 
           const { billingAccount } = h.view.lastCall.args[1].links
           expect(billingAccount).to.equal(
-            '/system/billing-accounts/test-billing-account-id?charge-version-id=test-charge-version-id'
+            '/system/billing-accounts/test-billing-account-id?charge-version-id=test-charge-version-id&licence-id=test-licence-id'
           )
         })
       })

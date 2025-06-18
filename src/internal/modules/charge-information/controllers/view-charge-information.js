@@ -32,6 +32,7 @@ const getViewChargeInformation = async (request, h) => {
   const { chargeVersionWorkflowId } = request.params
   const backLink = await getLicencePageUrl(licence, true)
   const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount)
+  const billingAccountLink = _billingAccountLink(billingAccount.id, chargeVersion.id)
 
   const licenceHolder = await _licenceHolder(chargeVersion, licence.licenceNumber)
 
@@ -46,7 +47,7 @@ const getViewChargeInformation = async (request, h) => {
     billingAccountAddress,
     licenceHolder,
     links: {
-      billingAccount: hasScope(request, manageBillingAccounts) && billingAccount && `/billing-accounts/${billingAccount.id}`
+      billingAccount: hasScope(request, manageBillingAccounts) && billingAccount && billingAccountLink
     },
     // @TODO: use request.pre.isChargeable to determine this
     // after the chargeVersion import ticket has been completed
@@ -134,6 +135,14 @@ const postReviewChargeInformation = async (request, h) => {
 
     return h.redirect(linkToLicenceChargeInformation(licence.id))
   }
+}
+
+const _billingAccountLink = (billingAccountId, chargeVersionId) => {
+  if (featureToggles.enableBillingAccountView) {
+    return `/system/billing-accounts/${billingAccountId}?charge-version-id=${chargeVersionId}`
+  }
+
+  return `/billing-accounts/${billingAccountId}`
 }
 
 const _licenceHolder = async (chargeInformation, licenceNumber) => {

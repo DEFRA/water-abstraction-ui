@@ -10,6 +10,8 @@ const { hasScope } = require('../../lib/permissions')
 const { addressSources, crmRoles } = require('shared/lib/constants')
 const { hofNotifications, manageBillingAccounts } = require('../../lib/constants').scope
 
+const { featureToggles } = require('../../config.js')
+
 const getCustomer = async (request, h) => {
   const { companyId } = request.params
   const { newContactKey } = request.query
@@ -50,7 +52,8 @@ const getCustomer = async (request, h) => {
       return eachInvoiceAccount
     }), 'id'),
     caption: 'Customer',
-    back: '/licences'
+    back: '/licences',
+    enableBillingAccountView: featureToggles.enableBillingAccountView
   })
 }
 

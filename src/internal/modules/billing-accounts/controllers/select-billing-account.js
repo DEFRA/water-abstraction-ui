@@ -278,15 +278,23 @@ const postCheckAnswers = async (request, h) => {
     const { key } = request.params
     const { redirectPath } = session.merge(request, key, { data })
 
-    if (featureToggles.enableBillingAccountView) {
-      return h.redirect('/system' + redirectPath)
-    } else {
-      return h.redirect(redirectPath)
-    }
+    return h.redirect(_checkAnswersRedirectPath(redirectPath))
   } catch (err) {
     logger.error('Error saving billing account', err.stack)
     throw err
   }
+}
+
+function _checkAnswersRedirectPath (redirectPath) {
+  if (!featureToggles.enableBillingAccountView) {
+    return redirectPath
+  }
+
+  if (redirectPath.startsWith('/licences')) {
+    return redirectPath
+  }
+
+  return `/system${redirectPath}`
 }
 
 exports.getSelectExistingBillingAccount = getSelectExistingBillingAccount

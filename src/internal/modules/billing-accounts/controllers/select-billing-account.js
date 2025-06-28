@@ -295,7 +295,6 @@ function _checkAnswersRedirectPath (redirectPath) {
   }
 
   return `/system${redirectPath}`
-
 }
 
 exports.getSelectExistingBillingAccount = getSelectExistingBillingAccount

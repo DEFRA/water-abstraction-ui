@@ -14,6 +14,8 @@ const {
   isVoid
 } = require('shared/lib/returns/return-path-helpers')
 
+const { featureToggles } = require('../config.js')
+
 /**
  * Checks if return can be edited by internal returns user
  * @param  {Object} ret     - return row
@@ -45,6 +47,11 @@ const getEditButtonPath = (ret, request) => {
  */
 const getReturnPath = (ret, request) => {
   const returnId = getReturnId(ret)
+
+  if (featureToggles.enableSystemReturnsView) {
+    return { path: `/system/return-logs?id=${returnId}`, isEdit: false }
+  }
+
   // Link to completed/void return
   if (isCompleted(ret) || isVoid(ret)) {
     return { path: `/returns/return?id=${returnId}`, isEdit: false }

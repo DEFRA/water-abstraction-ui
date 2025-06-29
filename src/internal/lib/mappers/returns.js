@@ -1,7 +1,6 @@
 'use strict'
 
-const dates = require('shared/lib/returns/dates')
-const badge = require('shared/lib/returns/badge')
+const { statusBadge } = require('shared/lib/returns/badge')
 const { getReturnPath } = require('../return-path')
 
 /**
@@ -13,10 +12,11 @@ const { getReturnPath } = require('../return-path')
  * @returns {Object}
  */
 const mapReturn = (ret, request) => {
-  const isPastDueDate = dates.isReturnPastDueDate(ret)
+  const badge = statusBadge(ret)
+
   return {
     ...ret,
-    badge: badge.getBadge(ret.status, isPastDueDate),
+    badge,
     ...getReturnPath(ret, request)
   }
 }

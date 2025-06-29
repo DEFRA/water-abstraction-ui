@@ -2,8 +2,7 @@
  * Contains functions to help with building a list of notifications that
  * can be sent by the current authenticated user
  */
-const config = require('internal/config')
-const { featureToggles } = require('../../../config')
+const config = require('../../../config')
 const { hasScope } = require('../../../lib/permissions')
 const { mapValues } = require('lodash')
 const { scope } = require('../../../lib/constants')
@@ -43,7 +42,7 @@ const manageTabSkeleton = () => ({
     createLink('Resume', 'notifications/4?start=1', scope.hofNotifications)
   ],
   uploadChargeInformation: [
-    createLink('Upload a file', '/charge-information/upload', featureToggles.allowChargeVersionUploads && scope.chargeVersionWorkflowReviewer)
+    createLink('Upload a file', '/charge-information/upload', config.featureToggles.allowChargeVersionUploads && scope.chargeVersionWorkflowReviewer)
   ],
   accounts: [
     createLink('Create an internal account', '/account/create-user', scope.manageAccounts)

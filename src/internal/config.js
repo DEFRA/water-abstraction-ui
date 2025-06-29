@@ -90,10 +90,6 @@ module.exports = {
     airbrakeLevel: 'error'
   },
 
-  returns: {
-    showFutureReturns: testMode
-  },
-
   sanitize: {
     pruneMethod: 'replace',
     replaceValue: ''

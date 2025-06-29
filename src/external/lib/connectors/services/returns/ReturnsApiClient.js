@@ -6,10 +6,9 @@ const SharedReturnsApiClient = require('shared/lib/connectors/services/returns/R
 /**
  * Gets the filter to use for retrieving licences from returns service
  * @param {Array} licenceNumbers
- * @param {Boolean} showFutureReturns
  * @return {Object} filter
  */
-const getLicenceReturnsFilter = (licenceNumbers, showFutureReturns = false) => {
+const getLicenceReturnsFilter = (licenceNumbers) => {
   const filter = {
     regime: 'water',
     licence_type: 'abstraction',
@@ -24,12 +23,6 @@ const getLicenceReturnsFilter = (licenceNumbers, showFutureReturns = false) => {
     },
     'metadata->>isCurrent': 'true',
     status: { $ne: 'void' }
-  }
-
-  // External users on production-like environments can only view returns where
-  // return cycle is in the past
-  if (showFutureReturns) {
-    delete filter.end_date
   }
 
   return filter
@@ -50,7 +43,7 @@ class ReturnsApiClient extends SharedReturnsApiClient {
    * @return {Promise} resolves with returns
    */
   async getLicenceReturns (licenceNumbers, page = 1) {
-    const filter = getLicenceReturnsFilter(licenceNumbers, this.showFutureReturns)
+    const filter = getLicenceReturnsFilter(licenceNumbers)
 
     const sort = {
       start_date: -1,

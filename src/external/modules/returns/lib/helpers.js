@@ -37,8 +37,6 @@ const getNewTaggingLicenceNumbers = (request, filter = {}) => {
  * @return {Object} filter
  */
 const getLicenceReturnsFilter = licenceNumbers => {
-  const showFutureReturns = get(config, 'returns.showFutureReturns', false)
-
   const filter = {
     regime: 'water',
     licence_type: 'abstraction',
@@ -48,17 +46,12 @@ const getLicenceReturnsFilter = licenceNumbers => {
     start_date: {
       $gte: '2008-04-01'
     },
+    end_date: {
+      $lte: moment().format('YYYY-MM-DD')
+    },
     'metadata->>isCurrent': 'true',
     status: {
       $ne: 'void'
-    }
-  }
-
-  // External users on production-like environments can only view returns where
-  // return cycle is in the past
-  if (!showFutureReturns) {
-    filter.end_date = {
-      $lte: moment().format('YYYY-MM-DD')
     }
   }
 

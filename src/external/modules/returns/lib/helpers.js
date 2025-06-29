@@ -10,8 +10,7 @@ const services = require('../../../lib/connectors/services')
 const { getReturnPath } = require('external/lib/return-path')
 const { throwIfError } = require('@envage/hapi-pg-rest-api')
 const permissions = require('external/lib/permissions')
-const badge = require('shared/lib/returns/badge')
-const dates = require('shared/lib/returns/dates')
+const { statusBadge } = require('shared/lib/returns/badge')
 
 /**
  * Gets all licences from the CRM that can be viewed by the supplied entity ID
@@ -161,10 +160,11 @@ const mergeReturnsAndLicenceNames = (returnsData, documents) => {
 }
 
 const mapReturnRow = (row, request) => {
-  const isPastDueDate = dates.isReturnPastDueDate(row)
+  const badge = statusBadge(row)
+
   return {
     ...row,
-    badge: badge.getBadge(row.status, isPastDueDate),
+    badge,
     ...getReturnPath(row, request)
   }
 }

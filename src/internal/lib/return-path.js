@@ -14,7 +14,7 @@ const {
   isVoid
 } = require('shared/lib/returns/return-path-helpers')
 
-const { featureToggles } = require('../config.js')
+const config = require('../config.js')
 
 /**
  * Checks if return can be edited by internal returns user
@@ -48,7 +48,7 @@ const getEditButtonPath = (ret, request) => {
 const getReturnPath = (ret, request) => {
   const returnId = getReturnId(ret)
 
-  if (featureToggles.enableSystemReturnsView) {
+  if (config.featureToggles.enableSystemReturnsView) {
     return { path: `/system/return-logs?id=${returnId}`, isEdit: false }
   }
 

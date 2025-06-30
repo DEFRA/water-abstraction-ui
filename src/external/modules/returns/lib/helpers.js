@@ -46,7 +46,7 @@ const getLicenceReturnsFilter = licenceNumbers => {
       $gte: '2008-04-01'
     },
     end_date: {
-      $lte: moment().format('YYYY-MM-DD')
+      $lt: moment().format('YYYY-MM-DD')
     },
     'metadata->>isCurrent': 'true',
     status: {

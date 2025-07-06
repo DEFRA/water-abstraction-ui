@@ -1,8 +1,14 @@
 {% extends "./nunjucks/layout.njk" %}
 {% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 {% from "forms/index.njk" import formRender %}
 
 {% block content %}
+
+  {{ govukWarningText({
+    text: "You confirm that all details you're providing are correct to the best of your knowledge.",
+    iconFallbackText: "Warning"
+  }) }}
 
   {{ title(pageTitle) }}
 

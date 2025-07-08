@@ -66,5 +66,26 @@ module.exports = {
       }
     },
     handler: controller.staticPage
+  },
+
+  researchPrivacy: {
+    method: 'GET',
+    path: '/research-privacy-policy',
+    config: {
+      auth: {
+        strategy: 'standard',
+        mode: 'try'
+      },
+      plugins: {
+        viewContext: {
+          pageTitle: 'Privacy notice for water resources user research',
+          back: '/licences'
+        },
+        config: {
+          view: 'nunjucks/content/research-privacy-policy'
+        }
+      }
+    },
+    handler: controller.staticPage
   }
 }

@@ -31,22 +31,22 @@ const manageTabSkeleton = () => ({
     createLink('Invitations', _returnNotificationsInvitations(), scope.bulkReturnNotifications),
     createLink('Paper forms', '/returns-notifications/forms', scope.returns),
     createLink('Reminders', _returnNotificationsReminders(), scope.bulkReturnNotifications),
-    createLink('Ad-hoc', '/system/notices/setup?journey=ad-hoc', config.featureToggles.enableAdHocNotifications && scope.returns)
+    createLink('Ad-hoc', '/system/notices/setup/adHoc', config.featureToggles.enableAdHocNotifications && scope.returns)
   ],
-  licenceNotifications: [
-    createLink('Renewal', 'notifications/2?start=1', scope.renewalNotifications)
-  ],
+  licenceNotifications: [createLink('Renewal', 'notifications/2?start=1', scope.renewalNotifications)],
   hofNotifications: [
     createLink('Restriction', 'notifications/1?start=1', scope.hofNotifications),
     createLink('Hands-off flow', 'notifications/3?start=1', scope.hofNotifications),
     createLink('Resume', 'notifications/4?start=1', scope.hofNotifications)
   ],
   uploadChargeInformation: [
-    createLink('Upload a file', '/charge-information/upload', config.featureToggles.allowChargeVersionUploads && scope.chargeVersionWorkflowReviewer)
+    createLink(
+      'Upload a file',
+      '/charge-information/upload',
+      config.featureToggles.allowChargeVersionUploads && scope.chargeVersionWorkflowReviewer
+    )
   ],
-  accounts: [
-    createLink('Create an internal account', '/account/create-user', scope.manageAccounts)
-  ],
+  accounts: [createLink('Create an internal account', '/account/create-user', scope.manageAccounts)],
   chargeInformationWorkflow: [
     createLink('Check licences in workflow', '/charge-information-workflow', [
       scope.chargeVersionWorkflowEditor,
@@ -61,10 +61,8 @@ const manageTabSkeleton = () => ({
  * @param  {Object} request
  * @return {[type]}         [description]
  */
-const getManageTabConfig = request => mapValues(
-  manageTabSkeleton(),
-  links => links.filter(link => hasScope(request, link.scopes))
-)
+const getManageTabConfig = (request) =>
+  mapValues(manageTabSkeleton(), (links) => links.filter((link) => hasScope(request, link.scopes)))
 
 const _notices = () => {
   if (config.featureToggles.enableSystemNotices) {
@@ -76,7 +74,7 @@ const _notices = () => {
 
 const _returnNotificationsInvitations = () => {
   if (config.featureToggles.enableSystemNotifications) {
-    return '/system/notices/setup?journey=invitations'
+    return '/system/notices/setup/standard?noticeType=invitations'
   } else {
     return '/returns-notifications/invitations'
   }
@@ -84,7 +82,7 @@ const _returnNotificationsInvitations = () => {
 
 const _returnNotificationsReminders = () => {
   if (config.featureToggles.enableSystemNotifications) {
-    return '/system/notices/setup?journey=reminders'
+    return '/system/notices/setup/standard?noticeType=reminders'
   } else {
     return '/returns-notifications/reminders'
   }

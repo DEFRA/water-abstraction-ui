@@ -1,0 +1,40 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.1
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JS-INFLIGHT-6095116:
+    - '*':
+        reason: Version jump is beyond scope for legacy
+        expires: 2025-09-06T09:44:14.705Z
+        created: 2025-08-07T09:44:14.706Z
+  SNYK-JS-FORMDATA-10841150:
+    - '*':
+        reason: No direct upgrade or patch
+        expires: 2025-09-06T09:45:07.974Z
+        created: 2025-08-07T09:45:07.979Z
+  SNYK-JS-REQUEST-3361831:
+    - '*':
+        reason: No direct upgrade or patch
+        expires: 2025-09-06T09:45:50.237Z
+        created: 2025-08-07T09:45:50.247Z
+  SNYK-JS-SEMVER-3247795:
+    - '*':
+        reason: No direct upgrade or patch
+        expires: 2025-09-06T09:46:15.410Z
+        created: 2025-08-07T09:46:15.416Z
+  SNYK-JS-TOUGHCOOKIE-5672873:
+    - '*':
+        reason: No direct upgrade or patch
+        expires: 2025-09-06T09:46:51.119Z
+        created: 2025-08-07T09:46:51.127Z
+  SNYK-JS-USERAGENT-174737:
+    - '*':
+        reason: No direct upgrade or patch
+        expires: 2025-09-06T09:47:21.166Z
+        created: 2025-08-07T09:47:21.172Z
+  SNYK-JS-USERAGENT-8309369:
+    - '*':
+        reason: No direct upgrade or patch
+        expires: 2025-09-06T09:47:46.633Z
+        created: 2025-08-07T09:47:46.640Z
+patch: {}

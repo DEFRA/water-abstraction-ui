@@ -1,4 +1,5 @@
 const { get } = require('lodash')
+const { featureToggles: { useNewProfilePage } } = require('../../config')
 const { createLink, setActiveLink } = require('./helpers')
 
 const {
@@ -10,7 +11,9 @@ const createPropositionLink = (label, path, id) => {
   return createLink(label, path, id, { id })
 }
 
-const contactLink = createPropositionLink('Contact information', '/contact-information', 'contact-information')
+const contactLink = useNewProfilePage
+  ? createPropositionLink('Profile details', '/system/users/me/profile-details', 'profile-details')
+  : createPropositionLink('Contact information', '/contact-information', 'contact-information')
 const changePasswordLink = createPropositionLink('Change password', '/account/update-password', 'change-password')
 const signoutLink = createPropositionLink('Sign out', '/signout', 'signout')
 

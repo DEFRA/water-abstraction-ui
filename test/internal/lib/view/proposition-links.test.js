@@ -6,6 +6,9 @@ const lab = exports.lab = Lab.script()
 
 const { expect } = require('@hapi/code')
 
+const config = require('../../../../src/internal/config.js')
+const sandbox = require('sinon').createSandbox()
+
 const { getPropositionLinks } = require('internal/lib/view/proposition-links')
 const { scope } = require('internal/lib/constants')
 
@@ -27,10 +30,18 @@ const getAuthenticatedRequest = (scope = []) => {
 }
 
 lab.experiment('getPropositionLinks', () => {
+  lab.beforeEach(() => {
+    sandbox.stub(config.featureToggles, 'useNewProfilePage').value(false)
+  })
+
   lab.test('It should not display any links if the user is not authenticated', async () => {
     const request = {}
     const result = getPropositionLinks(request)
     expect(result.length).to.equal(0)
+  })
+
+  lab.afterEach(() => {
+    sandbox.restore()
   })
 
   lab.test('It should display change password, signout links for internal users', async () => {

@@ -15,6 +15,8 @@ const controller = require('internal/modules/view-licences/controller')
 const services = require('internal/lib/connectors/services')
 const { scope } = require('internal/lib/constants')
 
+const config = require('../../../../src/internal/config.js')
+
 experiment('internal/modules/billing/controllers/bills-tab', () => {
   let request, h
 
@@ -41,6 +43,8 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
 
   experiment('.getLicenceSummary', () => {
     beforeEach(() => {
+      sandbox.stub(config.featureToggles, 'enableSystemReturnsView').value(false)
+
       request = {
         auth: {
           credentials: {

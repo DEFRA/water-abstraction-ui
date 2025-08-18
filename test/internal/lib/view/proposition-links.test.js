@@ -6,6 +6,9 @@ const lab = exports.lab = Lab.script()
 
 const { expect } = require('@hapi/code')
 
+const config = require('../../../../src/internal/config.js')
+const sandbox = require('sinon').createSandbox()
+
 const { getPropositionLinks } = require('internal/lib/view/proposition-links')
 const { scope } = require('internal/lib/constants')
 
@@ -27,10 +30,18 @@ const getAuthenticatedRequest = (scope = []) => {
 }
 
 lab.experiment('getPropositionLinks', () => {
+  lab.beforeEach(() => {
+    sandbox.stub(config.featureToggles, 'enableSystemProfiles').value(false)
+  })
+
   lab.test('It should not display any links if the user is not authenticated', async () => {
     const request = {}
     const result = getPropositionLinks(request)
     expect(result.length).to.equal(0)
+  })
+
+  lab.afterEach(() => {
+    sandbox.restore()
   })
 
   lab.test('It should display change password, signout links for internal users', async () => {
@@ -45,6 +56,14 @@ lab.experiment('getPropositionLinks', () => {
     const links = getPropositionLinks(request)
     const ids = links.map(link => link.id)
     expect(ids).to.equal(['contact-information', 'change-password', 'signout'])
+  })
+
+  lab.test('It should display profile details if the feature flag is set', async () => {
+    sandbox.stub(config.featureToggles, 'enableSystemProfiles').value(true)
+    const request = getAuthenticatedRequest(scope.hofNotifications)
+    const links = getPropositionLinks(request)
+    const ids = links.map(link => link.id)
+    expect(ids).to.equal(['profile-details', 'change-password', 'signout'])
   })
 
   lab.test('It should display contact details, change password, signout links for internal users with renewal notification scope', async () => {

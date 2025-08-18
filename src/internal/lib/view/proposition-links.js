@@ -11,7 +11,6 @@ const createPropositionLink = (label, path, id) => {
   return createLink(label, path, id, { id })
 }
 
-const contactLink = _contactLink()
 const changePasswordLink = createPropositionLink('Change password', '/account/update-password', 'change-password')
 const signoutLink = createPropositionLink('Sign out', '/signout', 'signout')
 
@@ -29,7 +28,7 @@ const getPropositionLinks = (request) => {
   const links = []
 
   if (isHofOrRenewalNotifications(request)) {
-    links.push(contactLink)
+    links.push(_contactLink())
   }
   links.push(changePasswordLink, signoutLink)
 

@@ -31,7 +31,7 @@ const getAuthenticatedRequest = (scope = []) => {
 
 lab.experiment('getPropositionLinks', () => {
   lab.beforeEach(() => {
-    sandbox.stub(config.featureToggles, 'useNewProfilePage').value(false)
+    sandbox.stub(config.featureToggles, 'enableSystemProfiles').value(false)
   })
 
   lab.test('It should not display any links if the user is not authenticated', async () => {

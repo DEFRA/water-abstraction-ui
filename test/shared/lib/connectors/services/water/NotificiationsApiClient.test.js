@@ -52,14 +52,15 @@ experiment('shared/services/water/NotificationsApiClient', () => {
       const [filter] = client.findMany.lastCall.args
       expect(filter).to.equal({
         recipient: 'user@example.com',
-        message_type: 'email'
+        message_type: 'email',
+        date_created: { $ne: null }
       })
     })
 
     test('calls client.findMany with correct sort', async () => {
       await client.getLatestEmailByAddress('user@example.com')
       const [, sort] = client.findMany.lastCall.args
-      expect(sort).to.equal({ send_after: -1 })
+      expect(sort).to.equal({ date_created: -1 })
     })
 
     test('calls client.findMany with correct sort', async () => {

@@ -28,8 +28,8 @@ class NotificationsApiClient extends APIClient {
    * @param {String} emailAddress
    */
   getLatestEmailByAddress (emailAddress) {
-    const filter = { recipient: emailAddress, message_type: 'email' }
-    const sort = { send_after: -1 }
+    const filter = { recipient: emailAddress, message_type: 'email', date_created: { $ne: null } }
+    const sort = { date_created: -1 }
     const pagination = { page: 1, perPage: 1 }
     return this.findMany(filter, sort, pagination)
   };

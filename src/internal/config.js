@@ -173,7 +173,8 @@ module.exports = {
     enableSystemNotifications: process.env.ENABLE_SYSTEM_NOTIFICATIONS === 'true',
     enableSystemReturnsView: process.env.ENABLE_SYSTEM_RETURNS_VIEW === 'true',
     enableMonitoringStationsView: process.env.ENABLE_MONITORING_STATIONS_VIEW === 'true',
-    enableSystemProfiles: process.env.ENABLE_SYSTEM_PROFILES === 'true'
+    enableSystemProfiles: process.env.ENABLE_SYSTEM_PROFILES === 'true',
+    enableSystemManageView: process.env.ENABLE_SYSTEM_MANAGE_VIEW === 'true'
   },
   billRunsToDisplayPerPage: process.env.BILL_RUNS_TO_DISPLAY_PER_PAGE || 20
 }

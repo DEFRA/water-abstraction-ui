@@ -5,6 +5,7 @@ const BADGE_STYLES = {
   complete: 'success',
   due: 'todo',
   'not due yet': 'inactive',
+  open: 'todo',
   overdue: 'warning',
   received: 'success',
   void: 'inactive'
@@ -13,8 +14,9 @@ const BADGE_STYLES = {
 function statusBadge (returnLog) {
   const status = returnLog.status
   const dueDateString = returnLog.due_date || returnLog.dueDate
+  const endDateString = returnLog.end_date || returnLog.endDate
 
-  const displayStatus = _displayStatus(status, dueDateString)
+  const displayStatus = _displayStatus(status, endDateString, dueDateString)
 
   return {
     text: displayStatus,
@@ -22,47 +24,54 @@ function statusBadge (returnLog) {
   }
 }
 
-function _displayStatus (status, dueDateString) {
+function _displayStatus (status, endDateString, dueDateString) {
   // If the return is completed we are required to display it as 'complete'. This also takes priority over the other
   // statues
   if (status === 'completed') {
     return 'complete'
   }
 
-  // For all other statuses except 'due' we can just return the status
+  // For all other statuses (received and void) except 'due' we can just return the status
   if (status !== 'due') {
     return status
   }
 
-  if (!dueDateString) {
+  const todaysDate = new Date()
+  todaysDate.setHours(0, 0, 0, 0)
+
+  const endDate = new Date(endDateString)
+
+  // If the return log has not yet ended then it is not yet due for submissions
+  if (todaysDate <= endDate) {
     return 'not due yet'
   }
 
-  // Work out if the return is overdue (status is still 'due' and it is past the due date)
+  // If we are here, the return log has a status of 'due' and is past its end date. If a due date has not been set then
+  // it is simply 'open' for return submissions
+  if (!dueDateString) {
+    return 'open'
+  }
+
+  // If we are here, the return log has a due date. If todays date is greater than that, then we are overdue
   const dueDate = new Date(dueDateString)
-  const today = new Date()
 
-  // The due date held in the record is date-only. If we compared it against 'today' without this step any return due
-  // 'today' would be flagged as overdue when it is still due (just!)
-  today.setHours(0, 0, 0, 0)
-
-  if (dueDate < today) {
+  if (dueDate < todaysDate) {
     return 'overdue'
   }
 
-  // A return is considered "due" for 28 days, starting 28 days before the due date
-  // Any date before this period should be marked as "not due yet"
-  const notDueUntil = new Date(dueDate)
+  // Calculate the start of the 'due period'. A return is considered "due" when in its 'due period'. This starts 28 days
+  // before its due date (inclusive hence we use 27 in the calculation).
+  const duePeriodStartDate = new Date(dueDate)
 
-  // Calculate the start of the "due" period, which begins 27 days before the due date
-  notDueUntil.setDate(notDueUntil.getDate() - DUE_PERIOD_DAYS)
+  duePeriodStartDate.setDate(duePeriodStartDate.getDate() - DUE_PERIOD_DAYS)
 
-  // If today is before the "due" period starts, the return is "not due yet"
-  if (today < notDueUntil) {
-    return 'not due yet'
+  if (todaysDate >= duePeriodStartDate) {
+    return 'due'
   }
 
-  return 'due'
+  // If we get here then we the return log has a status of 'due', its end date is in the past, and its due date is more
+  // than 28 days in the future. Once dynamic due dates becomes the norm, we are unlikely to get to this point.
+  return 'open'
 }
 
 module.exports = {

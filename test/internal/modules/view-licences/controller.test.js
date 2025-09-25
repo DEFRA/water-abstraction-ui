@@ -218,7 +218,7 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
           id: 'test-return-id-1',
           status: 'due',
           endDate: '2021-03-31',
-          badge: { text: 'not due yet', status: 'inactive' },
+          badge: { text: 'open', status: 'todo' },
           path: '/return/internal?returnId=test-return-id-1',
           isEdit: true
         },

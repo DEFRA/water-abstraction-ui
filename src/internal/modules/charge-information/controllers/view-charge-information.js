@@ -32,7 +32,8 @@ const getViewChargeInformation = async (request, h) => {
   const { chargeVersionWorkflowId } = request.params
   const backLink = await getLicencePageUrl(licence, true)
   const billingAccountAddress = getCurrentBillingAccountAddress(billingAccount)
-  const billingAccountLink = _billingAccountLink(billingAccount.id, chargeVersion.id, licence.id)
+
+  const billingAccountLink = _billingAccountLink(billingAccount?.id, chargeVersion.id, licence.id)
 
   const licenceHolder = await _licenceHolder(chargeVersion, licence.licenceNumber)
 
@@ -138,6 +139,10 @@ const postReviewChargeInformation = async (request, h) => {
 }
 
 const _billingAccountLink = (billingAccountId, chargeVersionId, licenceId) => {
+  if (!billingAccountId) {
+    return null
+  }
+
   if (featureToggles.enableBillingAccountView) {
     return `/system/billing-accounts/${billingAccountId}?charge-version-id=${chargeVersionId}&licence-id=${licenceId}`
   }

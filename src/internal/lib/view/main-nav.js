@@ -11,12 +11,11 @@ const createNavLink = (label, path, id) => {
 
 // Internal links
 const getAvailableLinks = () => {
-  const notificationPath = featureToggles.enableSystemManageView ? '/system/manage' : '/manage'
   return {
     licences: createNavLink('Search', '/licences', 'view'),
     billRuns: createNavLink('Bill runs', '/system/bill-runs', 'bill-runs'),
     ar: createNavLink('Digitise!', '/digitise', 'ar'),
-    notifications: createNavLink('Manage', notificationPath, 'notifications')
+    notifications: createNavLink('Manage', '/system/manage', 'notifications')
   }
 }
 

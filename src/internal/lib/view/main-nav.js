@@ -3,8 +3,6 @@ const { get } = require('lodash')
 const { isAnyAR, isAuthenticated, isBilling, isManageTab } = require('../permissions')
 const { createLink, setActiveLink } = require('./helpers')
 
-const { featureToggles } = require('../../config')
-
 const createNavLink = (label, path, id) => {
   return createLink(label, path, id, { id: `navbar-${id}` })
 }

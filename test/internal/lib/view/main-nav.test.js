@@ -67,6 +67,7 @@ experiment('getMainNav', () => {
     expect(find(links, { id: 'bill-runs' }).active).to.equal(false)
     expect(find(links, { id: 'ar' }).active).to.equal(false)
     expect(find(links, { id: 'notifications' }).active).to.equal(false)
+    expect(find(links, { id: 'notices' }).active).to.equal(false)
   })
 
   test('It should display correct links for internal user', async () => {
@@ -84,7 +85,7 @@ experiment('getMainNav', () => {
   test('It should display correct links for AR approver', async () => {
     const request = getARApproverRequest()
     const ids = getIds(getMainNav(request))
-    expect(ids).to.equal(['view', 'bill-runs', 'ar', 'notifications'])
+    expect(ids).to.equal(['view', 'bill-runs', 'ar', 'notices', 'notifications'])
   })
 
   test('It should display correct links for Billing user', async () => {
@@ -96,6 +97,6 @@ experiment('getMainNav', () => {
   test('It should display correct links for WIRS/returns user', async () => {
     const request = getReturnsRequest()
     const ids = getIds(getMainNav(request))
-    expect(ids).to.equal(['view', 'notifications'])
+    expect(ids).to.equal(['view', 'notices', 'notifications'])
   })
 })

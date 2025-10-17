@@ -20,6 +20,19 @@ const hasScope = (request, scope) => {
 
 const isAuthenticated = request => !!get(request, 'auth.credentials.userId')
 
+// Notices
+const isNotices = request => {
+  return [
+    scope.abstractionReformApprover,
+    scope.bulkReturnNotifications,
+    scope.hofNotifications,
+    scope.manageAccounts,
+    scope.renewalNotifications,
+    scope.returns
+  ]
+    .some(scope => hasScope(request, scope))
+}
+
 // Returns
 const isReturnsUser = request => hasScope(request, scope.returns)
 const isBulkReturnNotifications = request => hasScope(request, scope.bulkReturnNotifications)
@@ -62,3 +75,4 @@ exports.isBasicUser = isBasicUser
 exports.isManageTab = isManageTab
 exports.isManageAccounts = isManageAccounts
 exports.isBilling = isBilling
+exports.isNotices = isNotices

@@ -1,6 +1,6 @@
 const { get } = require('lodash')
 
-const { isAnyAR, isAuthenticated, isBilling, isManageTab } = require('../permissions')
+const { isAnyAR, isAuthenticated, isBilling, isManageTab, isNotices } = require('../permissions')
 const { createLink, setActiveLink } = require('./helpers')
 
 const createNavLink = (label, path, id) => {
@@ -13,7 +13,8 @@ const getAvailableLinks = () => {
     licences: createNavLink('Search', '/licences', 'view'),
     billRuns: createNavLink('Bill runs', '/system/bill-runs', 'bill-runs'),
     ar: createNavLink('Digitise!', '/digitise', 'ar'),
-    notifications: createNavLink('Manage', '/system/manage', 'notifications')
+    notifications: createNavLink('Manage', '/system/manage', 'notifications'),
+    notices: createLink('Notices', '/system/notices', 'notices')
   }
 }
 
@@ -25,15 +26,20 @@ const getAvailableLinks = () => {
 const getNavigationForUser = (request) => {
   const availableLinks = getAvailableLinks()
   const links = [availableLinks.licences]
+
   if (isBilling(request)) {
     links.push(availableLinks.billRuns)
   }
   if (isAnyAR(request)) {
     links.push(availableLinks.ar)
   }
+  if (isNotices(request)) {
+    links.push(availableLinks.notices)
+  }
   if (isManageTab(request)) {
     links.push(availableLinks.notifications)
   }
+
   return links
 }
 

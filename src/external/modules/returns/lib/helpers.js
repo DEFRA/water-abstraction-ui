@@ -48,7 +48,6 @@ const getLicenceReturnsFilter = licenceNumbers => {
     end_date: {
       $lt: moment().format('YYYY-MM-DD')
     },
-    'metadata->>isCurrent': 'true',
     status: {
       $ne: 'void'
     }

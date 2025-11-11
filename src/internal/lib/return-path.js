@@ -49,7 +49,7 @@ const getReturnPath = (ret, request) => {
   const returnId = getReturnId(ret)
 
   if (config.featureToggles.enableSystemReturnsView) {
-    return { path: `/system/return-logs?id=${returnId}`, isEdit: false }
+    return { path: `/system/return-logs/${ret.id}`, isEdit: false }
   }
 
   // Link to completed/void return

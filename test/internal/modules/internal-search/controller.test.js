@@ -87,15 +87,16 @@ experiment('Internal Search Controller', () => {
     })
 
     test('It should redirect if user searches for exact return ID', async () => {
+      const id = '3ce89af1-6168-4e92-9673-75cfc87f661e'
       const returnId = 'v1:1:01/123:123456:2017-10-31:2018-10-31'
 
-      internalSearchStub.resolves({ returns: [{ return_id: returnId }] })
+      internalSearchStub.resolves({ returns: [{ id, return_id: returnId }] })
 
       const request = set(cloneDeep(baseRequest), 'query.query', returnId)
       await controller.getSearchForm(request, h)
 
       const [path] = h.redirect.firstCall.args
-      expect(path).to.equal(`/system/return-logs?id=${returnId}`)
+      expect(path).to.equal(`/system/return-logs/${id}`)
     })
 
     test('It should redirect to the new billing account view if user searches for exact billing account ref', async () => {

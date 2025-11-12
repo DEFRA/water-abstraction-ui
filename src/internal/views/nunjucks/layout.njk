@@ -17,6 +17,13 @@
     <link href="/public/stylesheets/{{cssVersion}}/application.css" rel="stylesheet" />
   <!--<![endif]-->
 
+  <style>
+    {#  Overide the default width to align with system #}
+    .govuk-width-container {
+      max-width: 1100px !important;
+    }
+  </style>
+
   {# For Internet Explorer 8, you need to compile specific stylesheet #}
   {# see https://github.com/alphagov/govuk-frontend/blob/master/docs/installation/supporting-internet-explorer-8.md #}
   <!--[if IE 8]>

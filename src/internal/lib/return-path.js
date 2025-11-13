@@ -8,13 +8,10 @@
 const { isReturnsUser } = require('./permissions')
 const {
   getReturnId,
-  isCompleted,
   isAfterSummer2018,
   isEndDatePast,
   isVoid
 } = require('shared/lib/returns/return-path-helpers')
-
-const config = require('../config.js')
 
 /**
  * Checks if return can be edited by internal returns user
@@ -45,21 +42,8 @@ const getEditButtonPath = (ret, request) => {
  * @param  {Object} request - HAPI request
  * @return {Object}         { path, isEdit } contains URL path and isEdit flag
  */
-const getReturnPath = (ret, request) => {
-  const returnId = getReturnId(ret)
-
-  if (config.featureToggles.enableSystemReturnsView) {
-    return { path: `/system/return-logs/${ret.id}`, isEdit: false }
-  }
-
-  // Link to completed/void return
-  if (isCompleted(ret) || isVoid(ret)) {
-    return { path: `/returns/return?id=${returnId}`, isEdit: false }
-  }
-  // Link to editable return
-  if (isAfterSummer2018(ret) && isEndDatePast(ret) && isReturnsUser(request)) {
-    return { path: `/return/internal?returnId=${returnId}`, isEdit: true }
-  }
+const getReturnPath = (ret, _request) => {
+  return { path: `/system/return-logs/${ret.id}`, isEdit: false }
 }
 
 exports.getReturnPath = getReturnPath

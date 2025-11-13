@@ -1,7 +1,7 @@
 'use strict'
 
 const Lab = require('@hapi/lab')
-const { experiment, test, beforeEach, afterEach } = (exports.lab = Lab.script())
+const { experiment, test } = (exports.lab = Lab.script())
 const { expect } = require('@hapi/code')
 
 const ReturnPath = require('internal/lib/return-path')

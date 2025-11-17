@@ -8,8 +8,6 @@ const { getEditButtonPath } = require('internal/lib/return-path')
 
 const services = require('../../../lib/connectors/services')
 
-const config = require('../../../config.js')
-
 /**
  * Get a list of returns for a particular licence
  * @param {String} request.params.documenId - the CRM doc ID for the licence
@@ -77,11 +75,7 @@ const getReturn = async (request, h) => {
 }
 
 const linkToViewLicence = (licenceId) => {
-  if (config.featureToggles.enableSystemLicenceView) {
-    return `/system/licences/${licenceId}/summary`
-  } else {
-    return `/licences/${licenceId}`
-  }
+  return `/system/licences/${licenceId}/summary`
 }
 
 module.exports = {

@@ -17,11 +17,7 @@ const config = require('internal/config')
 const isSrocChargeInfoEnabled = featureToggles.srocChargeInformation && isSrocLive
 
 const linkToLicenceChargeInformation = (licenceId) => {
-  if (config.featureToggles.enableSystemLicenceView) {
-    return `/system/licences/${licenceId}/set-up`
-  } else {
-    return `/licences/${licenceId}#charge`
-  }
+  return `/system/licences/${licenceId}/set-up`
 }
 
 const formatDateForPageTitle = startDate =>

@@ -18,11 +18,7 @@ const errorHandler = (err, message) => {
 }
 
 const linkToLicenceChargeInformation = (licenceId) => {
-  if (featureToggles.enableSystemLicenceView) {
-    return `/system/licences/${licenceId}/set-up`
-  } else {
-    return `/licences/${licenceId}#charge`
-  }
+  return `/system/licences/${licenceId}/set-up`
 }
 
 const getChargeVersionWorkflowId = request => request.query.chargeVersionWorkflowId || request.params.chargeVersionWorkflowId

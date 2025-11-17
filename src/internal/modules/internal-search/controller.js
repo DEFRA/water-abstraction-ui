@@ -14,8 +14,6 @@ const { setPermissionsForm, setPermissionsSchema, permissionsChoices } = require
 const { hasScope } = require('../../lib/permissions')
 const { scope } = require('internal/lib/constants')
 
-const config = require('../../config.js')
-
 /**
  * Renders a search form and results pages for internal users to search
  * for licences, licence holders, users, and returns
@@ -101,8 +99,7 @@ const getUserStatus = async (request, h, formFromPost) => {
     userStatus,
     form: formFromPost || await getPermissionsFormData(request),
     deleteAccountLink: `/account/delete-account/${userId}`,
-    unlinkLicencePathTail: `unlink-licence?userId=${userId}`,
-    enableSystemLicenceView: config.featureToggles.enableSystemLicenceView
+    unlinkLicencePathTail: `unlink-licence?userId=${userId}`
   }
 
   return h.view('nunjucks/internal-search/user-status', view)

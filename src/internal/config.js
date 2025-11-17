@@ -171,7 +171,6 @@ module.exports = {
     enableSystemLicenceView: process.env.ENABLE_SYSTEM_LICENCE_VIEW === 'true',
     enableSystemNotices: process.env.ENABLE_SYSTEM_NOTICES_VIEW === 'true',
     enableSystemNotifications: process.env.ENABLE_SYSTEM_NOTIFICATIONS === 'true',
-    enableSystemReturnsView: process.env.ENABLE_SYSTEM_RETURNS_VIEW === 'true',
     enableMonitoringStationsView: process.env.ENABLE_MONITORING_STATIONS_VIEW === 'true',
     enableSystemProfiles: process.env.ENABLE_SYSTEM_PROFILES === 'true'
   },

@@ -13,11 +13,7 @@
         {% if licence.id %}
           <tr class="govuk-table__row">
             <td class="govuk-table__cell" scope="row">
-              {% if featureFlags.enableSystemLicenceView == true %}
-                <a href='/system/licences/{{ licence.id }}/summary'>{{ licence.licenceNumber }}</a>
-              {% else %}
-                <a href='/licences/{{ licence.id }}'>{{ licence.licenceNumber }}</a>
-              {% endif %}
+              <a href='/system/licences/{{ licence.id }}/summary'>{{ licence.licenceNumber }}</a>
             </td>
             <td class="govuk-table__cell" scope="row">
                 {{ licence.name }}

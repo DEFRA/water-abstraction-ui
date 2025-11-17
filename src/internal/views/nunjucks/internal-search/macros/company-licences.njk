@@ -1,6 +1,6 @@
 {% from "details-when.njk" import detailsWhen %}
 
-{% macro companyLicences(licences, userCanUnlinkLicences, unlinkLicencePathTail, enableSystemLicenceView) %}
+{% macro companyLicences(licences, userCanUnlinkLicences, unlinkLicencePathTail) %}
   {% if licences.length > 0 %}
     <h3 class="govuk-heading-m govuk-!-margin-0">
       {{ licences | length }} {{ 'licence' | pluralize(licences) }}
@@ -18,11 +18,7 @@
           {% for licence in licences %}
           <tr class="govuk-table__row">
             <td class="govuk-table__cell" scope="row">
-              {% if enableSystemLicenceView == true %}
-                <a class="govuk-link" href="/system/licences/{{ licence.licence.id }}/summary">{{ licence.licenceRef }}</a>
-              {% else %}
-                <a class="govuk-link" href="/licences/{{ licence.licence.id }}">{{ licence.licenceRef }}</a>
-              {% endif %}
+              <a class="govuk-link" href="/system/licences/{{ licence.licence.id }}/summary">{{ licence.licenceRef }}</a>
             </td>
             <td class="govuk-table__cell">{{licence.licenceHolder}}</td>
 

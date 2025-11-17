@@ -26,8 +26,6 @@ const {
   internalRoutingFormSchema
 } = require('../forms')
 
-const config = require('../../../config.js')
-
 /**
  * Loads a WaterReturn instance using the supplied returnId
  * @param  {String}  returnId - return service return ID
@@ -195,11 +193,7 @@ const getQueryLogged = async (request, h) => {
 }
 
 const linkToViewLicence = (licenceId) => {
-  if (config.featureToggles.enableSystemLicenceView) {
-    return `/system/licences/${licenceId}/summary`
-  } else {
-    return `/licences/${licenceId}`
-  }
+  return `/system/licences/${licenceId}/summary`
 }
 
 exports.getInternalRouting = getInternalRouting

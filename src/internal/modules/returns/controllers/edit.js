@@ -360,7 +360,7 @@ const getSubmitted = async (request, h) => {
 
   const licence = await services.water.licences.getLicenceByLicenceNumber(data.licenceNumber)
 
-  const returnUrl = `/system/return-logs?id=${data.returnId}`
+  const returnUrl = `/returns/return?id=${data.returnId}`
 
   const markForSupplementaryBillingUrl = `/licences/${licence.id}/mark-for-supplementary-billing?returnId=${data.returnId}`
 

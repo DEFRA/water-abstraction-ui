@@ -12,13 +12,7 @@
 
       {{ createBillRun('Create bill run') }}
       <p>or</p>
-      <p>
-        {% if featureFlags.enableSystemLicenceView == true %}
-          <a href="/system/licences/{{ licenceId }}/summary">Return to the licence</a>
-        {% else %}
-          <a href="/licences/{{ licenceId }}">Return to the licence</a>
-        {% endif %}
-      </p>
+      <p><a href="/system/licences/{{ licenceId }}/summary">Return to the licence</a></p>
     </div>
   </div>
 {% endblock %}

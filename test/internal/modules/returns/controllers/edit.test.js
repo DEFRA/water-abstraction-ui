@@ -1035,7 +1035,7 @@ experiment('returns edit controller: ', () => {
 
     test('sets view return URL in view', async () => {
       const [, { returnUrl }] = h.view.lastCall.args
-      expect(returnUrl).to.equal(`/system/return-logs?id=${returnId}`)
+      expect(returnUrl).to.equal(`/returns/return?id=${returnId}`)
     })
 
     test('sets return data from water service in view', async () => {

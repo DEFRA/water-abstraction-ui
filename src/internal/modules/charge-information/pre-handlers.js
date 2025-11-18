@@ -18,11 +18,7 @@ const errorHandler = (err, message) => {
 }
 
 const linkToLicenceChargeInformation = (licenceId) => {
-  if (featureToggles.enableSystemLicenceView) {
-    return `/system/licences/${licenceId}/set-up`
-  } else {
-    return `/licences/${licenceId}#charge`
-  }
+  return `/system/licences/${licenceId}/set-up`
 }
 
 const getChargeVersionWorkflowId = request => request.query.chargeVersionWorkflowId || request.params.chargeVersionWorkflowId
@@ -229,14 +225,9 @@ const loadChargeVersionWorkflows = async request => {
           href: linkToLicenceChargeInformation(licenceId),
           text: 'Updated'
         }
-      } else if (featureToggles.enableSystemLicenceView) {
-        workflow.link = {
-          href: `/system/licences/${licenceId}/set-up`,
-          text: 'Set up'
-        }
       } else {
         workflow.link = {
-          href: `/licences/${licenceId}#charge`,
+          href: `/system/licences/${licenceId}/set-up`,
           text: 'Set up'
         }
       }

@@ -54,15 +54,7 @@
 
 {% macro licenceLink(doc) %}
   {% if doc.licence.id %}
-    {% if featureFlags.enableSystemLicenceView == true %}
-      <a href="/system/licences/{{ doc.licence.id }}/summary">
-        {{ doc.licenceNumber }}
-      </a>
-    {% else %}
-      <a href="/licences/{{ doc.licence.id }}">
-        {{ doc.licenceNumber }}
-      </a>
-    {% endif %}
+    <a href="/system/licences/{{ doc.licence.id }}/summary">{{ doc.licenceNumber }}</a>
   {% else %}
     {{ doc.licenceNumber }}
   {% endif %}

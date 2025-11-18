@@ -13,15 +13,10 @@ const { reviewForm, reviewFormSchema } = require('../forms/review')
 const { hasScope } = require('internal/lib/permissions')
 const moment = require('moment')
 const { featureToggles, isSrocLive } = require('../../../config')
-const config = require('internal/config')
 const isSrocChargeInfoEnabled = featureToggles.srocChargeInformation && isSrocLive
 
 const linkToLicenceChargeInformation = (licenceId) => {
-  if (config.featureToggles.enableSystemLicenceView) {
-    return `/system/licences/${licenceId}/set-up`
-  } else {
-    return `/licences/${licenceId}#charge`
-  }
+  return `/system/licences/${licenceId}/set-up`
 }
 
 const formatDateForPageTitle = startDate =>

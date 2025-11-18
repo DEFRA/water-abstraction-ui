@@ -10,23 +10,14 @@ const { hasScope } = require('../../lib/permissions')
 const { featureToggles } = require('../../config')
 const returnsMapper = require('../../lib/mappers/returns')
 const services = require('../../lib/connectors/services')
-const config = require('internal/config')
 const { logger } = require('./../../../internal/logger.js')
 
 const linkToLicenceChargeInformation = (licenceId) => {
-  if (config.featureToggles.enableSystemLicenceView) {
-    return `/system/licences/${licenceId}/set-up`
-  } else {
-    return `/licences/${licenceId}#charge`
-  }
+  return `/system/licences/${licenceId}/set-up`
 }
 
 const linkToLicenceBills = (licenceId) => {
-  if (config.featureToggles.enableSystemLicenceView) {
-    return `/system/licences/${licenceId}/bills`
-  } else {
-    return `/licences/${licenceId}#bills`
-  }
+  return `/system/licences/${licenceId}/bills`
 }
 
 const getDocumentId = doc => doc.document_id

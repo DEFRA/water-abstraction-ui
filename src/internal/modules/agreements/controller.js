@@ -30,11 +30,7 @@ const {
 const actions = require('./lib/actions')
 
 const linkToLicenceChargeInformation = (licenceId) => {
-  if (config.featureToggles.enableSystemLicenceView) {
-    return `/system/licences/${licenceId}/set-up`
-  } else {
-    return `/licences/${licenceId}#charge`
-  }
+  return `/system/licences/${licenceId}/set-up`
 }
 
 const getDefaultView = request => ({

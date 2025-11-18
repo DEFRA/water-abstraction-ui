@@ -16,8 +16,7 @@ const getUserStatusResponses = require('../../../shared/responses/water-service/
 experiment('Internal Search Controller', () => {
   beforeEach(() => {
     sandbox.stub(InternalConfig, 'featureToggles').value({
-      enableBillingAccountView: true,
-      enableSystemLicenceView: true
+      enableBillingAccountView: true
     })
   })
 

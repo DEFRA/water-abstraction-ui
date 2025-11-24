@@ -1,7 +1,11 @@
 const pkg = require('../../../package.json')
+const config = require('../../internal/config.js')
 
 module.exports = {
   pageTitle: ' Generic Page',
   htmlLang: 'en',
-  cssVersion: pkg.version
+  cssVersion: pkg.version,
+  featureFlags: {
+    enableMonitoringStationsView: config.featureToggles.enableMonitoringStationsView
+  }
 }

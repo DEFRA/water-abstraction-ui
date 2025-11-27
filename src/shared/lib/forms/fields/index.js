@@ -9,6 +9,7 @@ const paragraph = require('./paragraph')
 const warningText = require('./warningText')
 const file = require('./file')
 const link = require('./link')
+const insertText = require('./insertText')
 
 exports.button = button
 exports.date = date
@@ -21,3 +22,5 @@ exports.paragraph = paragraph
 exports.warningText = warningText
 exports.file = file
 exports.link = link
+
+exports.insertText = insertText

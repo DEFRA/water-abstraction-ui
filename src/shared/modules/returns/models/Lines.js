@@ -1,5 +1,7 @@
 const { find, xor } = require('lodash')
 const Joi = require('joi')
+
+const { maxPrecision } = require('shared/lib/number-formatter')
 const { returns: { lines: { getRequiredLines } } } = require('@envage/water-abstraction-helpers')
 const { getDefaultQuantity, getSingleTotalLines } = require('./water-return-helpers')
 
@@ -88,7 +90,7 @@ class Lines {
       const defaultValue = getDefaultQuantity(line, abstractionPeriod)
       return {
         ...line,
-        quantity: updatedLine.quantity || defaultValue
+        quantity: parseFloat(maxPrecision(updatedLine.quantity, 6)) || defaultValue
       }
     })
 

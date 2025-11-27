@@ -9,6 +9,7 @@
 {% from "./file.njk" import formFileWidget %}
 {% from "./link.njk" import formLinkWidget %}
 {% from "./warning-text.njk" import formWarningTextWidget %}
+{% from "./insert-text.njk" import formInsertTextWidget %}
 
 {% macro formWidget(field, form) %}
 
@@ -46,5 +47,8 @@
   {% endif %}
   {% if widget=='link' %}
     {{ formLinkWidget(field) }}
+  {% endif %}
+  {% if widget=='insert-text' %}
+    {{ formInsertTextWidget(field) }}
   {% endif %}
 {% endmacro %}

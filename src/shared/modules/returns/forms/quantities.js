@@ -2,8 +2,8 @@ const Joi = require('joi')
 const { get } = require('lodash')
 const { fields } = require('shared/lib/forms')
 const { getLineName, getLineLabel } = require('./common')
-const { maxPrecision } = require('shared/lib/number-formatter')
 const { getSuffix } = require('./common')
+
 /**
  * Returns form lines
  * @param {Object} returns data model
@@ -49,7 +49,7 @@ const getLineValues = (lines) => {
     const name = getLineName(line)
     return {
       ...acc,
-      [name]: maxPrecision(line.quantity, 3)
+      [name]: line.quantity
     }
   }, {})
 }

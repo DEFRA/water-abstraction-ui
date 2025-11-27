@@ -3,6 +3,7 @@
 ![Build Status](https://github.com/DEFRA/water-abstraction-ui/actions/workflows/ci.yml/badge.svg?branch=main)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_water-abstraction-ui&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=DEFRA_water-abstraction-ui)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_water-abstraction-ui&metric=coverage)](https://sonarcloud.io/dashboard?id=DEFRA_water-abstraction-ui)
+[![shai-hulud-detect](https://github.com/DEFRA/water-abstraction-ui/actions/workflows/shai-hulud-detect.yml/badge.svg)](https://github.com/DEFRA/water-abstraction-ui/actions/workflows/shai-hulud-detect.yml)
 [![Licence](https://img.shields.io/badge/Licence-OGLv3-blue.svg)](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3)
 
 External and Internal UI for the GOV.UK Water Abstraction Service

@@ -1,5 +1,5 @@
 'use strict'
-const { experiment, test, beforeEach, afterEach } = exports.lab = require('@hapi/lab').script()
+const { experiment, test, beforeEach, afterEach } = (exports.lab = require('@hapi/lab').script())
 
 const { expect } = require('@hapi/code')
 
@@ -11,13 +11,14 @@ const sinon = require('sinon')
 
 const ManageNav = require('internal/modules/manage/lib/manage-nav')
 
-const mapLinkGroup = (links, group) => links.map(link => ({
-  group,
-  name: link.name,
-  path: link.path
-}))
+const mapLinkGroup = (links, group) =>
+  links.map((link) => ({
+    group,
+    name: link.name,
+    path: link.path
+  }))
 
-const getAllLinks = config => flatMap(config, mapLinkGroup)
+const getAllLinks = (config) => flatMap(config, mapLinkGroup)
 
 const createRequest = (scopes = []) => {
   return {
@@ -33,7 +34,9 @@ const sandbox = sinon.createSandbox()
 
 experiment('Manage Nav', () => {
   beforeEach(() => {
-    sandbox.stub(InternalConfig, 'featureToggles').value({ allowChargeVersionUploads: true, enableSystemNotifications: false })
+    sandbox
+      .stub(InternalConfig, 'featureToggles')
+      .value({ allowChargeVersionUploads: true, enableSystemNotifications: false })
   })
 
   afterEach(() => {
@@ -137,7 +140,13 @@ experiment('Manage Nav', () => {
             group: 'returnNotifications',
             name: 'Paper forms',
             path: '/returns-notifications/forms'
-          }])
+          },
+          {
+            group: 'returnNotifications',
+            name: 'Ad-hoc',
+            path: '/system/notices/setup/adhoc'
+          }
+        ])
       })
     })
 
@@ -145,31 +154,33 @@ experiment('Manage Nav', () => {
       test('they can view notifications reports and all HoF notifications', async () => {
         const request = createRequest(scope.hofNotifications)
         const result = ManageNav.getManageTabConfig(request)
-        expect(getAllLinks(result)).to.equal([{
-          group: 'reports',
-          name: 'Notices',
-          path: '/notifications/report'
-        },
-        {
-          group: 'reports',
-          name: 'Key performance indicators',
-          path: '/reporting/kpi-reporting'
-        },
-        {
-          group: 'hofNotifications',
-          name: 'Restriction',
-          path: 'notifications/1?start=1'
-        },
-        {
-          group: 'hofNotifications',
-          name: 'Hands-off flow',
-          path: 'notifications/3?start=1'
-        },
-        {
-          group: 'hofNotifications',
-          name: 'Resume',
-          path: 'notifications/4?start=1'
-        }])
+        expect(getAllLinks(result)).to.equal([
+          {
+            group: 'reports',
+            name: 'Notices',
+            path: '/notifications/report'
+          },
+          {
+            group: 'reports',
+            name: 'Key performance indicators',
+            path: '/reporting/kpi-reporting'
+          },
+          {
+            group: 'hofNotifications',
+            name: 'Restriction',
+            path: 'notifications/1?start=1'
+          },
+          {
+            group: 'hofNotifications',
+            name: 'Hands-off flow',
+            path: 'notifications/3?start=1'
+          },
+          {
+            group: 'hofNotifications',
+            name: 'Resume',
+            path: 'notifications/4?start=1'
+          }
+        ])
       })
     })
 
@@ -182,7 +193,8 @@ experiment('Manage Nav', () => {
             group: 'reports',
             name: 'Key performance indicators',
             path: '/reporting/kpi-reporting'
-          }, {
+          },
+          {
             group: 'accounts',
             name: 'Create an internal account',
             path: '/account/create-user'
@@ -200,12 +212,12 @@ experiment('Manage Nav', () => {
             group: 'uploadChargeInformation',
             name: 'Upload a file',
             path: '/charge-information/upload'
-          }, {
+          },
+          {
             group: 'chargeInformationWorkflow',
             name: 'Check licences in workflow',
             path: '/charge-information-workflow'
           }
-
         ])
       })
     })

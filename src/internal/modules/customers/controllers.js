@@ -50,7 +50,7 @@ const getCustomer = async (request, h) => {
       return eachInvoiceAccount
     }), 'id'),
     caption: 'Customer',
-    back: '/licences'
+    back: '/'
   })
 }
 

@@ -1,4 +1,12 @@
-const index = async (request, h) => h.redirect('/licences')
+const config = require('../../config')
+
+const index = async (request, h) => {
+  if (config.featureToggles.useNewSystemSearch) {
+    return h.redirect('/system/search')
+  }
+
+  return h.redirect('/licences')
+}
 
 /**
  * 404 page

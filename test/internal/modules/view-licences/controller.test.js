@@ -249,7 +249,7 @@ experiment('internal/modules/billing/controllers/bills-tab', () => {
       await controller.getLicenceSummary(request, h)
 
       const [, { back }] = h.view.lastCall.args
-      expect(back).to.equal('/licences')
+      expect(back).to.equal('/')
     })
 
     experiment('when the licence is not marked for supplementary billing', () => {

@@ -167,7 +167,6 @@ module.exports = {
     useNewBillRunSetup: (get(process.env, 'USE_NEW_BILL_RUN_SETUP') || '').toLowerCase() === 'true',
     useWorkflowSetupLinks: (get(process.env, 'USE_WORKFLOW_SETUP_LINKS') || 'true').toLowerCase() === 'true',
     enableAdHocNotifications: process.env.ENABLE_AD_HOC_NOTIFICATIONS === 'true',
-    enableBillingAccountView: process.env.ENABLE_BILLING_ACCOUNT_VIEW === 'true',
     enableSystemNotices: process.env.ENABLE_SYSTEM_NOTICES_VIEW === 'true',
     enableSystemNotifications: process.env.ENABLE_SYSTEM_NOTIFICATIONS === 'true',
     enableMonitoringStationsView: process.env.ENABLE_MONITORING_STATIONS_VIEW === 'true',

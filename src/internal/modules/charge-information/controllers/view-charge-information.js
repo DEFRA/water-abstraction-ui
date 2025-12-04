@@ -138,11 +138,7 @@ const _billingAccountLink = (billingAccountId, chargeVersionId, licenceId) => {
     return null
   }
 
-  if (featureToggles.enableBillingAccountView) {
-    return `/system/billing-accounts/${billingAccountId}?charge-version-id=${chargeVersionId}&licence-id=${licenceId}`
-  }
-
-  return `/billing-accounts/${billingAccountId}`
+  return `/system/billing-accounts/${billingAccountId}?charge-version-id=${chargeVersionId}&licence-id=${licenceId}`
 }
 
 const _licenceHolder = async (chargeInformation, licenceNumber) => {

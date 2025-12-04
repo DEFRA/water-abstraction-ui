@@ -15,7 +15,6 @@ const services = require('../../../../../src/internal/lib/connectors/services')
 const { chargeVersionWorkflowReviewer } = require('../../../../../src/internal/lib/constants').scope
 const controller = require('../../../../../src/internal/modules/charge-information/controllers/view-charge-information')
 
-const config = require('../../../../../src/internal/config.js')
 const preHandlers = require('../../../../../src/internal/modules/charge-information/pre-handlers')
 const chargeInformationValidator = require('../../../../../src/internal/modules/charge-information/lib/charge-information-validator')
 
@@ -173,32 +172,13 @@ experiment('internal/modules/charge-information/controllers/view-charge-informat
         request.pre.chargeVersion.id = 'test-charge-version-id'
       })
 
-      experiment('when enableBillingAccountView is true', () => {
-        beforeEach(() => {
-          sandbox.stub(config.featureToggles, 'enableBillingAccountView').value(true)
-        })
+      test('the links.billingAccount will be for systems billing account page', async () => {
+        await controller.getViewChargeInformation(request, h)
 
-        test('the links.billingAccount will be for systems billing account page', async () => {
-          await controller.getViewChargeInformation(request, h)
-
-          const { billingAccount } = h.view.lastCall.args[1].links
-          expect(billingAccount).to.equal(
-            '/system/billing-accounts/test-billing-account-id?charge-version-id=test-charge-version-id&licence-id=test-licence-id'
-          )
-        })
-      })
-
-      experiment('when enableBillingAccountView is false', () => {
-        beforeEach(() => {
-          sandbox.stub(config.featureToggles, 'enableBillingAccountView').value(false)
-        })
-
-        test('the links.billingAccount will be for legacy billing account page', async () => {
-          await controller.getViewChargeInformation(request, h)
-
-          const { billingAccount } = h.view.lastCall.args[1].links
-          expect(billingAccount).to.equal('/billing-accounts/test-billing-account-id')
-        })
+        const { billingAccount } = h.view.lastCall.args[1].links
+        expect(billingAccount).to.equal(
+          '/system/billing-accounts/test-billing-account-id?charge-version-id=test-charge-version-id&licence-id=test-licence-id'
+        )
       })
     })
   })

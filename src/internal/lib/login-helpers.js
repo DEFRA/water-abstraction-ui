@@ -9,7 +9,7 @@ const { isAuthenticated } = require('./permissions')
  */
 const preRedirectIfAuthenticated = async (request, h) => {
   if (isAuthenticated(request)) {
-    const path = '/licences'
+    const path = '/'
     logger.info('Redirecting authenticated user', { from: request.path, path })
     return h.redirect(path).takeover()
   }

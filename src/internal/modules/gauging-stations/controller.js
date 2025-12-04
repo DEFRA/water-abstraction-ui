@@ -37,7 +37,7 @@ const getMonitoringStation = async (request, h) => {
     hasPermissionToSendAlert,
     isWaterAbstractionAlertsEnabled,
     licenceGaugingStations: helpers.groupByLicence(data),
-    back: '/licences'
+    back: '/'
   })
 }
 

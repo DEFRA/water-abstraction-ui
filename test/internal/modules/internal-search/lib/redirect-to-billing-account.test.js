@@ -1,5 +1,4 @@
 const sinon = require('sinon')
-const sandbox = require('sinon').createSandbox()
 const { expect, fail } = require('@hapi/code')
 const { experiment, test, beforeEach } = (exports.lab = require('@hapi/lab').script())
 const { redirectToBillingAccount } = require('internal/modules/internal-search/lib/redirect-to-billing-account')

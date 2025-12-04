@@ -11,11 +11,7 @@
       <tr class="govuk-table__row">
         <td class="govuk-table__cell" scope="row">
             {% if hasPermissionToManageBillingAccounts %}
-              {% if enableBillingAccountView %}
-                <a href='/system/billing-accounts/{{ account.id }}?company-id={{ company.id }}'>{{ account.accountNumber }}</a>
-              {% else %}
-                <a href='/billing-accounts/{{ account.id }}'>{{ account.accountNumber }}</a>
-              {% endif %}
+              <a href='/system/billing-accounts/{{ account.id }}?company-id={{ company.id }}'>{{ account.accountNumber }}</a>
             {% else %}
               {{ account.accountNumber }}
             {% endif %}

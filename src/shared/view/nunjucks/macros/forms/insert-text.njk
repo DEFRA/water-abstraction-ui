@@ -1,0 +1,7 @@
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+
+{% macro formInsertTextWidget(field) %}
+  {{ govukInsetText({
+    text: field.options.text
+  }) }}
+{% endmacro %}

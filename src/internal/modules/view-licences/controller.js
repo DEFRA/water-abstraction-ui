@@ -88,7 +88,7 @@ const getLicenceSummary = async (request, h) => {
     links: getLinks({ licenceId, documentId }, permissions),
     validityMessage: mappers.getValidityNotice(licence),
     includeInSupplementaryBillingMessage: _includeInSupplementaryBillingMessage(licence),
-    back: '/licences'
+    back: '/'
   })
 }
 

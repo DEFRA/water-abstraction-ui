@@ -35,7 +35,7 @@ experiment('internal/lib/AuthConfig', () => {
   experiment('.ifAuthenticated', () => {
     test('calls h.metaRedirect with expected path', () => {
       authConfig.ifAuthenticated(request, h)
-      expect(h.metaRedirect.calledWith('/licences')).to.be.true()
+      expect(h.metaRedirect.calledWith('/')).to.be.true()
     })
   })
 
@@ -43,7 +43,7 @@ experiment('internal/lib/AuthConfig', () => {
     test('calls h.metaRedirect with expected path', () => {
       const user = { user_id: 25, user_name: 'test@example.com' }
       authConfig.onSignIn(request, h, user)
-      expect(h.metaRedirect.calledWith('/licences')).to.be.true()
+      expect(h.metaRedirect.calledWith('/')).to.be.true()
     })
   })
 

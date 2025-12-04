@@ -10,17 +10,10 @@ const { scope } = require('internal/lib/constants')
 const { permissionsChoices } = require('internal/modules/account/forms/set-permissions')
 const forms = require('shared/lib/forms')
 
-const InternalConfig = require('../../../../src/internal/config.js')
 const getUserStatusResponses = require('../../../shared/responses/water-service/user/_userId_/status')
 
 experiment('Internal Search Controller', () => {
-  beforeEach(() => {
-    sandbox.stub(InternalConfig, 'featureToggles').value({
-      enableBillingAccountView: true
-    })
-  })
-
-  afterEach(async () => {
+  afterEach(() => {
     sandbox.restore()
   })
 
@@ -39,7 +32,7 @@ experiment('Internal Search Controller', () => {
 
     let internalSearchStub
 
-    beforeEach(async () => {
+    beforeEach(() => {
       h.view = sandbox.stub()
       h.redirect = sandbox.stub()
       internalSearchStub = sandbox.stub(services.water.internalSearch, 'getInternalSearchResults')
@@ -194,7 +187,7 @@ experiment('Internal Search Controller', () => {
     let request
     let h
 
-    beforeEach(async () => {
+    beforeEach(() => {
       sandbox.stub(services.water.users, 'updateInternalUserPermissions').resolves({})
       sandbox.stub(services.water.users, 'getUserStatus').resolves(
         getUserStatusResponses.internalUser()
@@ -240,7 +233,7 @@ experiment('Internal Search Controller', () => {
     let request
     let h
 
-    beforeEach(async () => {
+    beforeEach(() => {
       sandbox.stub(services.idm.users, 'findOneById').resolves({ user_name: 'test@defra.gov.uk', roles: [], groups: [] })
       sandbox.stub(services.water.users, 'getUserStatus').resolves(
         getUserStatusResponses.internalUser()

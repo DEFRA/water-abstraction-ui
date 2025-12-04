@@ -10,8 +10,6 @@ const { logger } = require('../../../logger')
 const services = require('../../../lib/connectors/services')
 const mapper = require('../lib/mapper')
 
-const { featureToggles } = require('../../../config')
-
 // Form containers
 const selectBillingAccountForm = require('../forms/select-billing-account')
 const selectAccountForm = require('../forms/select-account')
@@ -286,10 +284,6 @@ const postCheckAnswers = async (request, h) => {
 }
 
 function _checkAnswersRedirectPath (redirectPath) {
-  if (!featureToggles.enableBillingAccountView) {
-    return redirectPath
-  }
-
   if (redirectPath.startsWith('/licences')) {
     return redirectPath
   }

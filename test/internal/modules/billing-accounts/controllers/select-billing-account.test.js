@@ -11,7 +11,6 @@ const sandbox = require('sinon').createSandbox()
 const { v4: uuid } = require('uuid')
 const { get } = require('lodash')
 
-const config = require('../../../../../src/internal/config.js')
 const controller = require('internal/modules/billing-accounts/controllers/select-billing-account')
 const session = require('internal/modules/billing-accounts/lib/session')
 const constants = require('internal/modules/billing-accounts/lib/constants')
@@ -743,167 +742,79 @@ experiment('internal/modules/billing-accounts/controllers/select-billing-account
   })
 
   experiment('.postCheckAnswers', () => {
-    experiment('when enableBillingAccountView is set to false', () => {
-      beforeEach(() => {
-        sandbox.stub(config.featureToggles, 'enableBillingAccountView').value(false)
+    experiment('when there are no errors', () => {
+      beforeEach(async () => {
+        services.water.companies.postInvoiceAccount.resolves({
+          id: INVOICE_ACCOUNT_ID
+        })
+
+        request = createPostRequest({
+          payload: {
+            csrf_token: CSRF_TOKEN
+          }
+        })
+        await controller.postCheckAnswers(request, h)
       })
 
-      experiment('when there are no errors', () => {
-        beforeEach(async () => {
-          services.water.companies.postInvoiceAccount.resolves({
-            id: INVOICE_ACCOUNT_ID
-          })
+      test('creates the billing account', async () => {
+        const [companyId, data] = services.water.companies.postInvoiceAccount.lastCall.args
 
-          request = createPostRequest({
-            payload: {
-              csrf_token: CSRF_TOKEN
-            }
-          })
-          await controller.postCheckAnswers(request, h)
-        })
+        expect(companyId).to.equal(COMPANY_ID)
 
-        test('creates the billing account', async () => {
-          const [companyId, data] = services.water.companies.postInvoiceAccount.lastCall.args
-
-          expect(companyId).to.equal(COMPANY_ID)
-
-          expect(data).to.equal({
-            regionId: REGION_ID,
-            startDate: START_DATE
-          })
-        })
-
-        test('creates the billing account address', async () => {
-          const [invoiceAccountId, data] = services.system.billingAccounts.changeAddress.lastCall.args
-          expect(invoiceAccountId).to.equal(INVOICE_ACCOUNT_ID)
-          expect(data).to.equal({
-            agentCompany: null,
-            contact: null,
-            address: ADDRESS
-          })
-        })
-
-        test('redirects to the redirect path', async () => {
-          expect(h.redirect.calledWith(REDIRECT_PATH)).to.be.true()
+        expect(data).to.equal({
+          regionId: REGION_ID,
+          startDate: START_DATE
         })
       })
 
-      experiment('for the "update address" flow', () => {
-        beforeEach(async () => {
-          request = createPostRequest({
-            payload: {
-              csrf_token: CSRF_TOKEN
-            },
-            isUpdate: true
-          })
-          await controller.postCheckAnswers(request, h)
-        })
-
-        test('only the "create address" service endpoint is called', async () => {
-          expect(services.water.companies.postInvoiceAccount.called).to.be.false()
-          expect(services.system.billingAccounts.changeAddress.called).to.be.true()
+      test('creates the billing account address', async () => {
+        const [invoiceAccountId, data] = services.system.billingAccounts.changeAddress.lastCall.args
+        expect(invoiceAccountId).to.equal(INVOICE_ACCOUNT_ID)
+        expect(data).to.equal({
+          agentCompany: null,
+          contact: null,
+          address: ADDRESS
         })
       })
 
-      experiment('when there is an error', () => {
-        const error = new Error('oops')
-
-        beforeEach(async () => {
-          request = createPostRequest({
-            payload: {
-              csrf_token: CSRF_TOKEN
-            }
-          })
-          services.water.companies.postInvoiceAccount.rejects(error)
-        })
-
-        test('the error is logged and rethrown', async () => {
-          const func = () => controller.postCheckAnswers(request, h)
-          await expect(func()).to.reject()
-          expect(logger.error.calledWith('Error saving billing account', error.stack)).to.be.true()
-        })
+      test('redirects to the redirect path', async () => {
+        expect(h.redirect.calledWith('/system' + REDIRECT_PATH)).to.be.true()
       })
     })
 
-    experiment('when enableBillingAccountView is set to true', () => {
-      beforeEach(() => {
-        sandbox.stub(config.featureToggles, 'enableBillingAccountView').value(true)
+    experiment('for the "update address" flow', () => {
+      beforeEach(async () => {
+        request = createPostRequest({
+          payload: {
+            csrf_token: CSRF_TOKEN
+          },
+          isUpdate: true
+        })
+        await controller.postCheckAnswers(request, h)
       })
 
-      experiment('when there are no errors', () => {
-        beforeEach(async () => {
-          services.water.companies.postInvoiceAccount.resolves({
-            id: INVOICE_ACCOUNT_ID
-          })
+      test('only the "create address" service endpoint is called', async () => {
+        expect(services.water.companies.postInvoiceAccount.called).to.be.false()
+        expect(services.system.billingAccounts.changeAddress.called).to.be.true()
+      })
+    })
 
-          request = createPostRequest({
-            payload: {
-              csrf_token: CSRF_TOKEN
-            }
-          })
-          await controller.postCheckAnswers(request, h)
+    experiment('when there is an error', () => {
+      const error = new Error('oops')
+
+      beforeEach(async () => {
+        request = createPostRequest({
+          payload: {
+            csrf_token: CSRF_TOKEN
+          }
         })
-
-        test('creates the billing account', async () => {
-          const [companyId, data] = services.water.companies.postInvoiceAccount.lastCall.args
-
-          expect(companyId).to.equal(COMPANY_ID)
-
-          expect(data).to.equal({
-            regionId: REGION_ID,
-            startDate: START_DATE
-          })
-        })
-
-        test('creates the billing account address', async () => {
-          const [invoiceAccountId, data] = services.system.billingAccounts.changeAddress.lastCall.args
-          expect(invoiceAccountId).to.equal(INVOICE_ACCOUNT_ID)
-          expect(data).to.equal({
-            agentCompany: null,
-            contact: null,
-            address: ADDRESS
-          })
-        })
-
-        test('redirects to the redirect path', async () => {
-          expect(h.redirect.calledWith('/system' + REDIRECT_PATH)).to.be.true()
-        })
+        services.water.companies.postInvoiceAccount.rejects(error)
       })
 
-      experiment('for the "update address" flow', () => {
-        beforeEach(async () => {
-          request = createPostRequest({
-            payload: {
-              csrf_token: CSRF_TOKEN
-            },
-            isUpdate: true
-          })
-          await controller.postCheckAnswers(request, h)
-        })
-
-        test('only the "create address" service endpoint is called', async () => {
-          expect(services.water.companies.postInvoiceAccount.called).to.be.false()
-          expect(services.system.billingAccounts.changeAddress.called).to.be.true()
-        })
-      })
-
-      experiment('when there is an error', () => {
-        const error = new Error('oops')
-
-        beforeEach(async () => {
-          request = createPostRequest({
-            payload: {
-              csrf_token: CSRF_TOKEN
-            }
-          })
-          services.water.companies.postInvoiceAccount.rejects(error)
-        })
-
-        test('the error is logged and rethrown', async () => {
-          const func = () => controller.postCheckAnswers(request, h)
-          await expect(func()).to.reject()
-          expect(logger.error.calledWith('Error saving billing account', error.stack)).to.be.true()
-        })
+      test('the error is logged and rethrown', async () => {
+        const func = () => controller.postCheckAnswers(request, h)
+        await expect(func()).to.reject()
+        expect(logger.error.calledWith('Error saving billing account', error.stack)).to.be.true()
       })
     })
   })

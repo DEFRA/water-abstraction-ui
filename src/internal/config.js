@@ -168,7 +168,6 @@ module.exports = {
     useWorkflowSetupLinks: (get(process.env, 'USE_WORKFLOW_SETUP_LINKS') || 'true').toLowerCase() === 'true',
     enableSystemNotices: process.env.ENABLE_SYSTEM_NOTICES_VIEW === 'true',
     enableSystemNotifications: process.env.ENABLE_SYSTEM_NOTIFICATIONS === 'true',
-    enableMonitoringStationsView: process.env.ENABLE_MONITORING_STATIONS_VIEW === 'true',
     enableSystemProfiles: process.env.ENABLE_SYSTEM_PROFILES === 'true'
   },
   billRunsToDisplayPerPage: process.env.BILL_RUNS_TO_DISPLAY_PER_PAGE || 20

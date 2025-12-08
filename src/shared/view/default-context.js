@@ -1,5 +1,4 @@
 const pkg = require('../../../package.json')
-const config = require('../../internal/config.js')
 
 module.exports = {
   pageTitle: ' Generic Page',

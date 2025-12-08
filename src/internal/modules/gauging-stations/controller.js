@@ -251,18 +251,12 @@ const getNewTaggingFlowComplete = (request, h) => {
   const { licenceNumber } = session.get(request)
   session.clear(request)
 
-  let monitoringStationUrl = `/monitoring-stations/${request.params.gaugingStationId}/`
-
-  if (featureFlags.enableMonitoringStationsView) {
-    monitoringStationUrl = `/system${monitoringStationUrl}`
-  }
-
   return h.view('nunjucks/gauging-stations/new-tag-complete', {
     pageTitle: 'Licence added to monitoring station',
     back: null,
     licenceRef: licenceNumber.value,
     gaugingStationId: request.params.gaugingStationId,
-    monitoringStationUrl
+    monitoringStationUrl: `/system/monitoring-stations/${request.params.gaugingStationId}/`
   })
 }
 
@@ -280,11 +274,7 @@ const getRemoveTags = async (request, h) => {
 
   // NOTE: We have updated this just for correctness! Back links are ignored in the legacy UI because of the back link
   // high-jacking implemented in client-side JavaScript we send to the browser.
-  let back = `/monitoring-stations/${request.params.gaugingStationId}/`
-
-  if (featureFlags.enableMonitoringStationsView) {
-    back = `/system${back}`
-  }
+  let back = `/system/monitoring-stations/${request.params.gaugingStationId}/`
 
   /* Used in second step for Multiple tags */
   session.merge(request, {
@@ -405,11 +395,7 @@ const getRemoveTagComplete = async (request, h) => {
 const postRemoveTagComplete = async (request, h) => {
   await helpers.handleRemovePost(request)
 
-  let monitoringStationUrl = `/monitoring-stations/${request.params.gaugingStationId}/`
-
-  if (featureFlags.enableMonitoringStationsView) {
-    monitoringStationUrl = `/system${monitoringStationUrl}`
-  }
+  let monitoringStationUrl = `/system/monitoring-stations/${request.params.gaugingStationId}/`
 
   return h.redirect(monitoringStationUrl)
 }
@@ -420,11 +406,7 @@ const getSendAlertSelectAlertType = async (request, h) => {
 
   // NOTE: We have updated this just for correctness! Back links are ignored in the legacy UI because of the back link
   // high-jacking implemented in client-side JavaScript we send to the browser.
-  let back = `/monitoring-stations/${request.params.gaugingStationId}/`
-
-  if (featureFlags.enableMonitoringStationsView) {
-    back = `/system${back}`
-  }
+  let back = `/system/monitoring-stations/${request.params.gaugingStationId}/`
 
   return h.view('nunjucks/form', {
     ...request.view,
@@ -650,11 +632,7 @@ const getSendAlertCheck = async (request, h) => {
   const pageTitle = 'Check the alert for each licence and send'
   const caption = await helpers.getCaption(request)
 
-  let monitoringStationUrl = `/monitoring-stations/${request.params.gaugingStationId}/`
-
-  if (featureFlags.enableMonitoringStationsView) {
-    monitoringStationUrl = `/system${monitoringStationUrl}`
-  }
+  let monitoringStationUrl = `/system/monitoring-stations/${request.params.gaugingStationId}/`
 
   const { notificationEventId } = session.get(request)
   if (!notificationEventId) {
@@ -708,11 +686,7 @@ const getSendAlertConfirm = async (request, h) => {
   const pageTitle = 'Check the alert for each licence and send'
   const caption = await helpers.getCaption(request)
 
-  let monitoringStationUrl = `/monitoring-stations/${request.params.gaugingStationId}/`
-
-  if (featureFlags.enableMonitoringStationsView) {
-    monitoringStationUrl = `/system${monitoringStationUrl}`
-  }
+  let monitoringStationUrl = `/system/monitoring-stations/${request.params.gaugingStationId}/`
 
   const { notificationEventId } = await session.get(request)
   if (!notificationEventId) {

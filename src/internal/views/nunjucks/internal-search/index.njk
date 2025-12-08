@@ -73,15 +73,9 @@
 
 {% macro gaugingStationLink(station) %}
   {% if station.gaugingStationId %}
-    {% if featureFlags.enableMonitoringStationsView == true %}
-      <a href="/system/monitoring-stations/{{ station.gaugingStationId }}">
-        {{ station.label }}
-      </a>
-    {% else %}
-      <a href="/monitoring-stations/{{ station.gaugingStationId }}">
-        {{ station.label }}
-      </a>
-    {% endif %}
+    <a href="/system/monitoring-stations/{{ station.gaugingStationId }}">
+      {{ station.label }}
+    </a>
   {% else %}
       {{ station.label }}
   {% endif %}

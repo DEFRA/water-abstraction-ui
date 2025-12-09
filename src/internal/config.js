@@ -167,8 +167,7 @@ module.exports = {
     useNewBillRunSetup: (get(process.env, 'USE_NEW_BILL_RUN_SETUP') || '').toLowerCase() === 'true',
     useWorkflowSetupLinks: (get(process.env, 'USE_WORKFLOW_SETUP_LINKS') || 'true').toLowerCase() === 'true',
     enableSystemNotices: process.env.ENABLE_SYSTEM_NOTICES_VIEW === 'true',
-    enableSystemNotifications: process.env.ENABLE_SYSTEM_NOTIFICATIONS === 'true',
-    enableSystemProfiles: process.env.ENABLE_SYSTEM_PROFILES === 'true'
+    enableSystemNotifications: process.env.ENABLE_SYSTEM_NOTIFICATIONS === 'true'
   },
   billRunsToDisplayPerPage: process.env.BILL_RUNS_TO_DISPLAY_PER_PAGE || 20
 }

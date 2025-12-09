@@ -1,5 +1,4 @@
 const { get } = require('lodash')
-const { featureToggles } = require('../../config')
 const { createLink, setActiveLink } = require('./helpers')
 
 const {
@@ -38,11 +37,7 @@ const getPropositionLinks = (request) => {
 }
 
 function _contactLink () {
-  if (featureToggles.enableSystemProfiles) {
-    return createPropositionLink('Profile details', '/system/users/me/profile-details', 'profile-details')
-  }
-
-  return createPropositionLink('Contact information', '/contact-information', 'contact-information')
+  return createPropositionLink('Profile details', '/system/users/me/profile-details', 'profile-details')
 }
 
 exports.getPropositionLinks = getPropositionLinks

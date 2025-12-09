@@ -162,7 +162,6 @@ module.exports = {
     triggerSrocTwoPartTariff: (get(process.env, 'TRIGGER_SROC_TWO_PART_TARIFF') || '').toLowerCase() === 'true',
     acceptanceTestsProxy: !isProduction,
     showVerificationCode: process.env.SHOW_VERIFICATION_CODE_FEATURE === 'true' && !isProduction,
-    triggerSrocAnnual: (get(process.env, 'TRIGGER_SROC_ANNUAL') || '').toLowerCase() === 'true',
     useNewBillRunSetup: (get(process.env, 'USE_NEW_BILL_RUN_SETUP') || '').toLowerCase() === 'true',
     useWorkflowSetupLinks: (get(process.env, 'USE_WORKFLOW_SETUP_LINKS') || 'true').toLowerCase() === 'true'
   },

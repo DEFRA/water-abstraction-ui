@@ -225,11 +225,6 @@ async function _initiateSrocBatch (batch, cookie) {
     return result
   }
 
-  // SROC annual is still in development so controlled by a feature toggle
-  if (!config.featureToggles.triggerSrocAnnual && batchType === ANNUAL) {
-    return result
-  }
-
   const body = {
     type: batchType,
     scheme: 'sroc',

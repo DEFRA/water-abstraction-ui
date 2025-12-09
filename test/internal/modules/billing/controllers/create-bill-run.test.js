@@ -291,8 +291,6 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
       ]
     }
     beforeEach(async () => {
-      sandbox.stub(config.featureToggles, 'triggerSrocAnnual').value(false)
-
       sandbox.stub(services.water.billingBatches, 'createBillingBatch')
       sandbox.stub(services.system.billRuns, 'createBillRun').resolves()
     })
@@ -844,49 +842,29 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
         request.params.billingType = 'annual'
       })
 
-      experiment('and SROC annual billing is enabled', () => {
+      experiment('and the request to water-abstraction-system is successful', () => {
         beforeEach(() => {
-          sandbox.stub(config.featureToggles, 'triggerSrocAnnual').value(true)
+          createSrocBillRunStub = sandbox.stub(services.system.billRuns, 'createBillRun').resolves(createdSrocBillRun)
         })
 
-        experiment('and the request to water-abstraction-system is successful', () => {
-          beforeEach(() => {
-            createSrocBillRunStub = sandbox.stub(services.system.billRuns, 'createBillRun').resolves(createdSrocBillRun)
-          })
+        test('triggers the creation of an SROC annual bill run', async () => {
+          await controller.postBillingBatchFinancialYear(request, h)
 
-          test('triggers the creation of an SROC annual bill run', async () => {
-            await controller.postBillingBatchFinancialYear(request, h)
-
-            expect(createSrocBillRunStub.called).to.be.true()
-            expect(loggerErrorStub.called).to.be.false()
-          })
-        })
-
-        experiment('and the request to water-abstraction-system is not successful', () => {
-          beforeEach(() => {
-            createSrocBillRunStub = sandbox.stub(services.system.billRuns, 'createBillRun').rejects()
-          })
-
-          test('does not trigger the creation of an SROC annual bill run and logs the error', async () => {
-            await controller.postBillingBatchFinancialYear(request, h)
-
-            expect(createSrocBillRunStub.called).to.be.true()
-            expect(loggerErrorStub.called).to.be.true()
-          })
+          expect(createSrocBillRunStub.called).to.be.true()
+          expect(loggerErrorStub.called).to.be.false()
         })
       })
 
-      experiment('and SROC annual billing is not enabled', () => {
+      experiment('and the request to water-abstraction-system is not successful', () => {
         beforeEach(() => {
-          sandbox.stub(config.featureToggles, 'triggerSrocAnnual').value(false)
-
-          createSrocBillRunSpy = sandbox.spy(services.system.billRuns, 'createBillRun')
+          createSrocBillRunStub = sandbox.stub(services.system.billRuns, 'createBillRun').rejects()
         })
 
-        test('does not trigger the creation of an SROC annual bill run', async () => {
+        test('does not trigger the creation of an SROC annual bill run and logs the error', async () => {
           await controller.postBillingBatchFinancialYear(request, h)
 
-          expect(createSrocBillRunSpy.called).to.be.false()
+          expect(createSrocBillRunStub.called).to.be.true()
+          expect(loggerErrorStub.called).to.be.true()
         })
       })
     })

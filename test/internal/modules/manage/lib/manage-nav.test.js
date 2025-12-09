@@ -60,7 +60,7 @@ experiment('Manage Nav', () => {
           {
             group: 'reports',
             name: 'Notices',
-            path: '/notifications/report'
+            path: '/system/notices'
           },
           {
             group: 'reports',
@@ -100,7 +100,7 @@ experiment('Manage Nav', () => {
           {
             group: 'reports',
             name: 'Notices',
-            path: '/notifications/report'
+            path: '/system/notices'
           },
           {
             group: 'reports',
@@ -124,7 +124,7 @@ experiment('Manage Nav', () => {
           {
             group: 'reports',
             name: 'Notices',
-            path: '/notifications/report'
+            path: '/system/notices'
           },
           {
             group: 'reports',
@@ -158,7 +158,7 @@ experiment('Manage Nav', () => {
           {
             group: 'reports',
             name: 'Notices',
-            path: '/notifications/report'
+            path: '/system/notices'
           },
           {
             group: 'reports',

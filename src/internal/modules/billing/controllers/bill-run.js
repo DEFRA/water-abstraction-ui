@@ -101,7 +101,6 @@ const getBillingBatchList = async (request, h) => {
     billRunBuilding,
     billRunCancelling,
     pagination,
-    useNewBillRunSetup: featureToggles.useNewBillRunSetup,
     form: featureToggles.deleteAllBillingData && confirmForm.form(request, 'Delete all bills and charge information', {
       action: '/billing/batch/delete-all-data',
       isWarning: true

@@ -161,7 +161,6 @@ module.exports = {
     allowChargeVersionUploads: (get(process.env, 'ALLOW_CHARGE_VERSION_UPLOADS') || '').toLowerCase() === 'true',
     acceptanceTestsProxy: !isProduction,
     showVerificationCode: process.env.SHOW_VERIFICATION_CODE_FEATURE === 'true' && !isProduction,
-    useNewBillRunSetup: (get(process.env, 'USE_NEW_BILL_RUN_SETUP') || '').toLowerCase() === 'true',
     useWorkflowSetupLinks: (get(process.env, 'USE_WORKFLOW_SETUP_LINKS') || 'true').toLowerCase() === 'true'
   },
   billRunsToDisplayPerPage: process.env.BILL_RUNS_TO_DISPLAY_PER_PAGE || 20

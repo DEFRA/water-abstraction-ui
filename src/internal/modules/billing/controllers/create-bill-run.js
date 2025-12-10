@@ -220,11 +220,6 @@ async function _initiateSrocBatch (batch, cookie) {
     return result
   }
 
-  // SROC 2PT is still in development so controlled by a feature toggle
-  if (!config.featureToggles.triggerSrocTwoPartTariff && batchType === TWO_PART_TARIFF) {
-    return result
-  }
-
   const body = {
     type: batchType,
     scheme: 'sroc',

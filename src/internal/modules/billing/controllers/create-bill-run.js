@@ -12,7 +12,6 @@ const sessionForms = require('shared/lib/session-forms')
 const { getBatchFinancialYearEnding } = require('../lib/batch-financial-year')
 
 const { logger } = require('../../../logger')
-const config = require('../../../config')
 
 /**
  * Step 1a of create billing batch flow - display form to select type

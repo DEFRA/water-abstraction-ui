@@ -768,7 +768,6 @@ experiment('internal/modules/billing/controllers/create-bill-run', () => {
       status: 'ready'
     }
     let createSrocBillRunStub
-    let createSrocBillRunSpy
     let loggerErrorStub
 
     beforeEach(() => {

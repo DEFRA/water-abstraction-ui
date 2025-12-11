@@ -59,7 +59,7 @@ const getLicenceReturns = async (licenceNumbers, page = 1) => {
 
   const columns = [
     'return_id', 'licence_ref', 'start_date', 'end_date', 'metadata',
-    'status', 'received_date', 'due_date', 'return_requirement'
+    'status', 'received_date', 'due_date', 'return_requirement', 'id'
   ]
 
   const requestPagination = isObject(page)

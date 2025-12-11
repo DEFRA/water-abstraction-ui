@@ -36,7 +36,7 @@ experiment('Manage Nav', () => {
   beforeEach(() => {
     sandbox
       .stub(InternalConfig, 'featureToggles')
-      .value({ allowChargeVersionUploads: true, enableSystemNotifications: false })
+      .value({ allowChargeVersionUploads: true })
   })
 
   afterEach(() => {
@@ -60,7 +60,7 @@ experiment('Manage Nav', () => {
           {
             group: 'reports',
             name: 'Notices',
-            path: '/notifications/report'
+            path: '/system/notices'
           },
           {
             group: 'reports',
@@ -70,12 +70,12 @@ experiment('Manage Nav', () => {
           {
             group: 'returnNotifications',
             name: 'Invitations',
-            path: '/returns-notifications/invitations'
+            path: '/system/notices/setup/standard?noticeType=invitations'
           },
           {
             group: 'returnNotifications',
             name: 'Reminders',
-            path: '/returns-notifications/reminders'
+            path: '/system/notices/setup/standard?noticeType=reminders'
           }
         ])
       })
@@ -100,7 +100,7 @@ experiment('Manage Nav', () => {
           {
             group: 'reports',
             name: 'Notices',
-            path: '/notifications/report'
+            path: '/system/notices'
           },
           {
             group: 'reports',
@@ -124,7 +124,7 @@ experiment('Manage Nav', () => {
           {
             group: 'reports',
             name: 'Notices',
-            path: '/notifications/report'
+            path: '/system/notices'
           },
           {
             group: 'reports',
@@ -158,7 +158,7 @@ experiment('Manage Nav', () => {
           {
             group: 'reports',
             name: 'Notices',
-            path: '/notifications/report'
+            path: '/system/notices'
           },
           {
             group: 'reports',

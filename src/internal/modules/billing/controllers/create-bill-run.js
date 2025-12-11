@@ -12,7 +12,6 @@ const sessionForms = require('shared/lib/session-forms')
 const { getBatchFinancialYearEnding } = require('../lib/batch-financial-year')
 
 const { logger } = require('../../../logger')
-const config = require('../../../config')
 
 /**
  * Step 1a of create billing batch flow - display form to select type
@@ -217,16 +216,6 @@ async function _initiateSrocBatch (batch, cookie) {
 
   // SROC only applies from 1st April 2022 so we don't care about any with a FYE < 2023
   if (financialYearEnding < 2023) {
-    return result
-  }
-
-  // SROC 2PT is still in development so controlled by a feature toggle
-  if (!config.featureToggles.triggerSrocTwoPartTariff && batchType === TWO_PART_TARIFF) {
-    return result
-  }
-
-  // SROC annual is still in development so controlled by a feature toggle
-  if (!config.featureToggles.triggerSrocAnnual && batchType === ANNUAL) {
     return result
   }
 

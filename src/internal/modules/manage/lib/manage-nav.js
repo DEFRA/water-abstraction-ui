@@ -22,15 +22,15 @@ const createLink = (name, path, scopes) => ({ name, path, scopes })
  */
 const manageTabSkeleton = () => ({
   reports: [
-    createLink('Notices', _notices(), scope.allNotifications),
+    createLink('Notices', '/system/notices', scope.allNotifications),
     createLink('Returns cycles', '/returns-reports', scope.returns),
     createLink('Digitise!', '/digitise/report', scope.abstractionReformApprover),
     createLink('Key performance indicators', '/reporting/kpi-reporting', scope.hasManageTab)
   ],
   returnNotifications: [
-    createLink('Invitations', _returnNotificationsInvitations(), scope.bulkReturnNotifications),
+    createLink('Invitations', '/system/notices/setup/standard?noticeType=invitations', scope.bulkReturnNotifications),
     createLink('Paper forms', '/returns-notifications/forms', scope.returns),
-    createLink('Reminders', _returnNotificationsReminders(), scope.bulkReturnNotifications),
+    createLink('Reminders', '/system/notices/setup/standard?noticeType=reminders', scope.bulkReturnNotifications),
     createLink('Ad-hoc', '/system/notices/setup/adhoc', scope.returns)
   ],
   licenceNotifications: [createLink('Renewal', 'notifications/2?start=1', scope.renewalNotifications)],
@@ -63,29 +63,5 @@ const manageTabSkeleton = () => ({
  */
 const getManageTabConfig = (request) =>
   mapValues(manageTabSkeleton(), (links) => links.filter((link) => hasScope(request, link.scopes)))
-
-const _notices = () => {
-  if (config.featureToggles.enableSystemNotices) {
-    return '/system/notices'
-  } else {
-    return '/notifications/report'
-  }
-}
-
-const _returnNotificationsInvitations = () => {
-  if (config.featureToggles.enableSystemNotifications) {
-    return '/system/notices/setup/standard?noticeType=invitations'
-  } else {
-    return '/returns-notifications/invitations'
-  }
-}
-
-const _returnNotificationsReminders = () => {
-  if (config.featureToggles.enableSystemNotifications) {
-    return '/system/notices/setup/standard?noticeType=reminders'
-  } else {
-    return '/returns-notifications/reminders'
-  }
-}
 
 exports.getManageTabConfig = getManageTabConfig

@@ -1,7 +1,7 @@
 const config = require('../../config')
 
 const index = async (request, h) => {
-  if (config.featureToggles.useNewSystemSearch) {
+  if (config.featureToggles.useSystemSearch) {
     return h.redirect('/system/search')
   }
 

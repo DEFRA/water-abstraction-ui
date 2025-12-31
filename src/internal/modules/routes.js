@@ -36,7 +36,7 @@ const systemProxyRoutes = require('../../shared/modules/system-proxy/routes')
 // Internal search is being replaced by a new search page, but for some reason the existing internalSearch route
 // definition also includes additional routes relating to user maintenance. So we only remove the search route here
 // and leave the rest of it in place.
-if (config.featureToggles.useNewSystemSearch) {
+if (config.featureToggles.useSystemSearch) {
   delete internalSearch.getSearchForm
 }
 

@@ -33,6 +33,13 @@ const healthRoutes = require('../../shared/modules/health/routes')
 const kpiReporting = require('../../internal/modules/kpi-reporting/routes')
 const systemProxyRoutes = require('../../shared/modules/system-proxy/routes')
 
+// Internal search is being replaced by a new search page, but for some reason the existing internalSearch route
+// definition also includes additional routes relating to user maintenance. So we only remove the search route here
+// and leave the rest of it in place.
+if (config.featureToggles.useSystemSearch) {
+  delete internalSearch.getSearchForm
+}
+
 const routes = [
   ...Object.values(coreRoutes),
   ...Object.values(contentRoutes),

@@ -15,7 +15,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Accessibility statement for Manage your water abstraction or impoundment licence online',
-          back: '/licences',
+          back: '/',
           baseUrl
         },
         config: {
@@ -37,7 +37,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Tell us what you think about this service',
-          back: '/licences'
+          back: '/'
         },
         config: {
           view: 'nunjucks/content/feedback'
@@ -58,7 +58,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Privacy notice',
-          back: '/licences'
+          back: '/'
         },
         config: {
           view: 'nunjucks/content/privacy-policy'

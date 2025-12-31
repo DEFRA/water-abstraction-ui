@@ -10,7 +10,7 @@ const createNavLink = (label, path, id) => {
 // Internal links
 const getAvailableLinks = () => {
   return {
-    licences: createNavLink('Search', '/licences', 'view'),
+    licences: createNavLink('Search', '/', 'view'),
     billRuns: createNavLink('Bill runs', '/system/bill-runs', 'bill-runs'),
     ar: createNavLink('Digitise!', '/digitise', 'ar'),
     notifications: createNavLink('Manage', '/system/manage', 'notifications'),

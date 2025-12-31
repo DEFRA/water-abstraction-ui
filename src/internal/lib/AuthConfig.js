@@ -4,11 +4,11 @@ const { pick } = require('lodash')
 
 class AuthConfig extends AuthConfigBase {
   ifAuthenticated (request, h) {
-    return h.metaRedirect('/licences')
+    return h.metaRedirect('/')
   }
 
   async onSignIn (request, h, user) {
-    return h.metaRedirect('/licences')
+    return h.metaRedirect('/')
   };
 
   onSignOut (request, h) {

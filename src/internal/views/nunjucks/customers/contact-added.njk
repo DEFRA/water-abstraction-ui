@@ -19,11 +19,16 @@
 
       </div>
 
-          <p class="govuk-body govuk-!-font-weight-bold">
-            <a href="/customer/{{company.id}}#contacts">
-              Go to contacts
-            </a>
-          </p>
+        <p class="govuk-body govuk-!-font-weight-bold">
+          <a
+            {% if featureToggles.enableLicenceHistoryView %}
+              href="/system/customers/{{ company.id }}/contacts"
+            {% else %}
+              href="/customer/{{ company.id }}#contacts"
+            {% endif %}
+          >Go to contacts
+          </a>
+        </p>
 
           <p class="govuk-body">or</p>
 

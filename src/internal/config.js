@@ -162,7 +162,8 @@ module.exports = {
     acceptanceTestsProxy: !isProduction,
     showVerificationCode: process.env.SHOW_VERIFICATION_CODE_FEATURE === 'true' && !isProduction,
     useWorkflowSetupLinks: (get(process.env, 'USE_WORKFLOW_SETUP_LINKS') || 'true').toLowerCase() === 'true',
-    useSystemSearch: process.env.USE_SYSTEM_SEARCH === 'true'
+    useSystemSearch: process.env.USE_SYSTEM_SEARCH === 'true',
+    enableLicenceHistoryView: process.env.ENABLE_LICENCE_HISTORY_VIEW === 'true' && !isProduction
   },
   billRunsToDisplayPerPage: process.env.BILL_RUNS_TO_DISPLAY_PER_PAGE || 20
 }

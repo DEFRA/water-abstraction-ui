@@ -64,6 +64,15 @@
         </dl>
     </div>
     <div>
-      <p><a class="govuk-link" href={{back}}>Back to customer</a></p>
+      <p class="govuk-link">
+        <a
+          {% if featureToggles.enableLicenceHistoryView %}
+            href="/system/customers/{{ companyId }}/contacts"
+          {% else %}
+            href="{{ back }}"
+          {% endif %}
+        >Back to customer
+        </a>
+      </p>
     </div>
 {% endblock %}

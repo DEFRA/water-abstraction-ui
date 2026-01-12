@@ -21,7 +21,7 @@
 
         <p class="govuk-body govuk-!-font-weight-bold">
           <a
-            {% if featureToggles.enableLicenceHistoryView %}
+            {% if featureToggles.enableCustomerView %}
               href="/system/customers/{{ company.id }}/contacts"
             {% else %}
               href="/customer/{{ company.id }}#contacts"

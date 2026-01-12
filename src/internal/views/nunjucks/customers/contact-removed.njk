@@ -14,7 +14,7 @@
 
       <p class="govuk-body">
         <a
-          {% if featureToggles.enableLicenceHistoryView %}
+          {% if featureToggles.enableCustomerView %}
             href="/system/customers/{{ companyId }}/contacts"
           {% else %}
             href="/customer/{{ companyId }}#contacts"

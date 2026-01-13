@@ -8,6 +8,7 @@ const formsHelper = require('shared/lib/forms')
 const formHandler = require('shared/lib/form-handler')
 const { hasScope } = require('../../lib/permissions')
 const { addressSources, crmRoles } = require('shared/lib/constants')
+const config = require('internal/config')
 const { hofNotifications, manageBillingAccounts } = require('../../lib/constants').scope
 
 const getCustomer = async (request, h) => {
@@ -68,7 +69,9 @@ const getCustomerContact = async (request, h) => {
     caption: company.name,
     back: `/customer/${companyId}#contacts`,
     contactName,
-    companyContact
+    companyContact,
+    companyId,
+    featureToggles: config.featureToggles
   })
 }
 
@@ -201,7 +204,8 @@ const postAddCustomerContactEmail = async (request, h) => {
       ...request.view,
       contactName: companyContact.contact.fullName,
       contactId,
-      company
+      company,
+      featureToggles: config.featureToggles
     })
   }
   return h.redirect(request.path.replace(/\/[^/]*$/, ''))
@@ -378,7 +382,8 @@ const getConfirmationRemoveCompanyContact = async (request, h) => {
   return h.view('nunjucks/customers/contact-removed.njk', {
     ...request.view,
     companyId,
-    confirmationMessage: `${contactName} is no longer a contact for ${companyName}`
+    confirmationMessage: `${contactName} is no longer a contact for ${companyName}`,
+    featureToggles: config.featureToggles
   })
 }
 

@@ -75,13 +75,13 @@ const getCurrentLicenceData = async licenceId => {
     const summary = await services.water.licences.getSummaryByDocumentId(doc.document_id)
     const aggregateConditions = mappers.mapConditions(summary.data.conditions.filter(row => row.code === 'AGG'))
     return {
-      returnsLink: `/licences/${doc.document_id}/returns`,
+      returnsLink: `/system/licences/${licenceId}/returns`,
       aggregateConditions,
       aggregateQuantity: summary.data.aggregateQuantity
     }
   } else {
     return {
-      returnsLink: `/licences/${doc.document_id}/returns`
+      returnsLink: `/system/licences/${licenceId}/returns`
     }
   }
 }

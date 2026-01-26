@@ -67,7 +67,7 @@
       <p class="govuk-link">
         <a
           {% if featureToggles.enableCustomerView %}
-            href="/system/customers/{{ companyId }}/contacts"
+            href="/system/companies/{{ companyId }}/contacts"
           {% else %}
             href="{{ back }}"
           {% endif %}

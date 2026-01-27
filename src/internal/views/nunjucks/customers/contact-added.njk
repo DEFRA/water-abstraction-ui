@@ -22,7 +22,7 @@
         <p class="govuk-body govuk-!-font-weight-bold">
           <a
             {% if featureToggles.enableCustomerView %}
-              href="/system/customers/{{ company.id }}/contacts"
+              href="/system/companies/{{ company.id }}/contacts"
             {% else %}
               href="/customer/{{ company.id }}#contacts"
             {% endif %}

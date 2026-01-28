@@ -1,6 +1,8 @@
 const Joi = require('joi')
 const controller = require('./controller')
 
+const config = require('../../config.js')
+
 module.exports = {
   getSearchForm: {
     path: '/licences',
@@ -32,7 +34,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'User status',
-          activeNavLink: 'view'
+          activeNavLink: config.featureToggles.enableUsersView ? 'users' : 'view'
         }
       },
       validate: {

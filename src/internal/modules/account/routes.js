@@ -1,6 +1,10 @@
 const controller = require('./controller')
 const Joi = require('joi')
 
+const config = require('../../config.js')
+
+const activeNavLink = config.featureToggles.enableUsersView ? 'users' : 'notifications'
+
 module.exports = {
   getCreateAccount: {
     method: 'get',
@@ -11,7 +15,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Create an internal account',
-          activeNavLink: 'notifications'
+          activeNavLink
         }
       }
     }
@@ -26,7 +30,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Create an internal account',
-          activeNavLink: 'notifications'
+          activeNavLink
         }
       }
     }
@@ -41,7 +45,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Set permissions',
-          activeNavLink: 'notifications'
+          activeNavLink
         }
       }
     }
@@ -56,7 +60,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Set permissions',
-          activeNavLink: 'notifications'
+          activeNavLink
         }
       }
     }
@@ -71,7 +75,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'New account created',
-          activeNavLink: 'notifications'
+          activeNavLink
         }
       },
       validate: {
@@ -92,7 +96,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Delete user account',
-          activeNavLink: 'notifications'
+          activeNavLink
         }
       },
       validate: {
@@ -113,7 +117,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Delete user account',
-          activeNavLink: 'notifications'
+          activeNavLink
         }
       },
       validate: {
@@ -134,7 +138,7 @@ module.exports = {
       plugins: {
         viewContext: {
           pageTitle: 'Account deleted',
-          activeNavLink: 'notifications'
+          activeNavLink
         }
       },
       validate: {

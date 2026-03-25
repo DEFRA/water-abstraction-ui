@@ -115,7 +115,7 @@ async function postChangePassword (request, h) {
       throw error
     }
 
-    return request.logIn(user)
+    return h.redirect('/signin')
   } catch (error) {
     console.log(error)
     return h.redirect('/reset_password?flash=resetLinkExpired')

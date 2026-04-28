@@ -13,14 +13,7 @@
       }) }}
 
       <p class="govuk-body">
-        <a
-          {% if featureToggles.enableCustomerView %}
-            href="/system/companies/{{ companyId }}/contacts"
-          {% else %}
-            href="/customer/{{ companyId }}#contacts"
-          {% endif %}
-        >Go to contacts
-        </a>
+        <a href="/system/companies/{{ companyId }}/contacts">Go to contacts</a>
       </p>
     </div>
   </div>

@@ -20,14 +20,7 @@
       </div>
 
         <p class="govuk-body govuk-!-font-weight-bold">
-          <a
-            {% if featureToggles.enableCustomerView %}
-              href="/system/companies/{{ company.id }}/contacts"
-            {% else %}
-              href="/customer/{{ company.id }}#contacts"
-            {% endif %}
-          >Go to contacts
-          </a>
+          <a href="/system/companies/{{ company.id }}/contacts">Go to contacts</a>
         </p>
 
           <p class="govuk-body">or</p>

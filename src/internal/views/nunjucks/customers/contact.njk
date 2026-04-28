@@ -65,14 +65,7 @@
     </div>
     <div>
       <p class="govuk-link">
-        <a
-          {% if featureToggles.enableCustomerView %}
-            href="/system/companies/{{ companyId }}/contacts"
-          {% else %}
-            href="{{ back }}"
-          {% endif %}
-        >Back to customer
-        </a>
+        <a href="/system/companies/{{ companyId }}/contacts">Back to customer</a>
       </p>
     </div>
 {% endblock %}

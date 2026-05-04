@@ -11,8 +11,13 @@ const { permissionsChoices } = require('internal/modules/account/forms/set-permi
 const forms = require('shared/lib/forms')
 
 const getUserStatusResponses = require('../../../shared/responses/water-service/user/_userId_/status')
+const config = require('../../../../src/internal/config.js')
 
 experiment('Internal Search Controller', () => {
+  beforeEach(() => {
+    sandbox.stub(config, 'featureToggles').value({ enableUsersManagement: false })
+  })
+
   afterEach(() => {
     sandbox.restore()
   })

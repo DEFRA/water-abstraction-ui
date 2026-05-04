@@ -10,6 +10,8 @@ const sinon = require('sinon')
 const sandbox = sinon.createSandbox()
 const services = require('internal/lib/connectors/services')
 
+const config = require('../../../../src/internal/config.js')
+
 const userData = {
   error: null,
   data: {
@@ -25,6 +27,8 @@ experiment('modules/account/controller', () => {
   let request
 
   beforeEach(async () => {
+    sandbox.stub(config, 'featureToggles').value({ enableUsersManagement: false })
+
     h = {
       view: sandbox.spy(),
       redirect: sandbox.spy()

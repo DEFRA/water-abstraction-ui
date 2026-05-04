@@ -104,7 +104,7 @@ const getDeleteUserAccount = async (request, h, formFromPost) => {
 const postDeleteUserAccount = async (request, h) => {
   const { userId } = request.params
 
-  const { user_name: userEmail } = await services.idm.users.findOneById(userId)
+  const { id, user_name: userEmail } = await services.idm.users.findOneById(userId)
 
   const form = handleRequest(
     deleteUserForm(request, userEmail),
@@ -117,7 +117,7 @@ const postDeleteUserAccount = async (request, h) => {
   }
   try {
     await services.water.users.disableInternalUser(request.defra.userId, userId)
-    return h.redirect(`/account/delete-account/${userId}/success`)
+    return h.redirect(await _postDeleteUserAccountRedirect(id, userId))
   } catch (err) {
     if (err.statusCode === 404) {
       const message = 'The account specified does not exist'
@@ -142,6 +142,14 @@ const getDeleteAccountSuccess = async (request, h) => {
       userId
     }
   })
+}
+
+async function _postDeleteUserAccountRedirect (id, userId) {
+  if (config.featureToggles.enableUsersManagement) {
+    return `/system/users/internal/${id}/details`
+  }
+
+  return `/account/delete-account/${userId}/success`
 }
 
 exports.getCreateAccount = getCreateAccount

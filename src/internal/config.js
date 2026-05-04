@@ -163,6 +163,7 @@ module.exports = {
     showVerificationCode: process.env.SHOW_VERIFICATION_CODE_FEATURE === 'true' && !isProduction,
     useWorkflowSetupLinks: (get(process.env, 'USE_WORKFLOW_SETUP_LINKS') || 'true').toLowerCase() === 'true',
     useSystemSearch: process.env.USE_SYSTEM_SEARCH === 'true',
+    enableUsersManagement: process.env.ENABLE_USERS_MGMT === 'true',
     enableUsersView: process.env.ENABLE_USERS_VIEW === 'true'
   },
   billRunsToDisplayPerPage: process.env.BILL_RUNS_TO_DISPLAY_PER_PAGE || 20

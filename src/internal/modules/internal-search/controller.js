@@ -13,6 +13,7 @@ const { isManageAccounts } = require('../../lib/permissions')
 const { setPermissionsForm, setPermissionsSchema, permissionsChoices } = require('../account/forms/set-permissions')
 const { hasScope } = require('../../lib/permissions')
 const { scope } = require('internal/lib/constants')
+const config = require('../../config.js')
 
 /**
  * Renders a search form and results pages for internal users to search
@@ -117,7 +118,7 @@ const postUpdatePermissions = async (request, h) => {
 
   if (form.isValid) {
     await services.water.users.updateInternalUserPermissions(callingUserId, userId, permission)
-    return h.redirect(`/user/${userId}/update-permissions/success`)
+    return h.redirect(await _postUpdatePermissionsRedirect(userId))
   }
 
   return getUserStatus(request, h, form)
@@ -133,6 +134,16 @@ const getUpdateSuccessful = async (request, h) => {
     updatedPermissions: getPermissionsLabelText(user),
     back: `/user/${userId}/status`
   })
+}
+
+async function _postUpdatePermissionsRedirect (userId) {
+  if (config.featureToggles.enableUsersManagement) {
+    const user = await services.idm.users.findOneById(userId)
+
+    return `/system/users/internal/${user.id}/details`
+  }
+
+  return `/user/${userId}/update-permissions/success`
 }
 
 exports.getSearchForm = getSearchForm

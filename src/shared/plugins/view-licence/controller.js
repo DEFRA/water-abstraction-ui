@@ -103,6 +103,7 @@ const getAddressParts = notification => {
     'addressLine3',
     'addressLine4',
     'addressLine5',
+    'addressLine6',
     'postcode'
   ].reduce((acc, part) => {
     const addressPart = trim(notification.address[part])

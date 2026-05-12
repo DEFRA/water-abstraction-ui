@@ -1,6 +1,7 @@
 .message-preview {
   background-color: govuk-colour("light-grey");
   border: 5px solid  $govuk-secondary-text-colour;
+  overflow-wrap: break-word;
   padding: 2rem;
 }
 

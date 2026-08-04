@@ -11,10 +11,10 @@ const returnsRoutes = require('./returns/routes')
 const companySelector = require('./company-selector/routes')
 const accountRoutes = require('./account/routes')
 const notifyRoutes = require('./notify/routes')
+const externalProxyRoutes = require('../../external/modules/external-proxy/routes')
 
 // Shared routes
 const healthRoutes = require('../../shared/modules/health/routes')
-const systemProxyRoutes = require('../../shared/modules/system-proxy/routes')
 
 module.exports = [
   ...Object.values(addLicencesRoutes),
@@ -28,5 +28,5 @@ module.exports = [
   ...Object.values(accountRoutes),
   ...Object.values(notifyRoutes),
   ...Object.values(healthRoutes),
-  ...systemProxyRoutes
+  ...externalProxyRoutes
 ]

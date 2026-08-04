@@ -18,13 +18,15 @@ const loadUserData = async userId => {
 }
 
 /**
- * Selects the company by setting the company name and ID in the session cookie
+ * Selects the company by setting the company name and ID in the session and sid cookies
  * @param  {Object} request - the current HAPI request
  * @param  {Object} company - company details from water service endpoint
  */
 const selectCompany = (request, company) => {
   request.yar.set('companyId', company.entityId)
   request.yar.set('companyName', company.name)
+
+  request.cookieAuth.set('company', { id: company.entityId, name: company.name })
 }
 
 /**

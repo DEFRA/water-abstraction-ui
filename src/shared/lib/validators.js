@@ -2,7 +2,7 @@
 
 const Joi = require('joi')
 
-const returnIDRegex = /^v1:[1-8]:[^:]+:[0-9]+:[0-9]{4}-[0-9]{2}-[0-9]{2}:[0-9]{4}-[0-9]{2}-[0-9]{2}$/
+const returnIDRegex = /^v1:[1-9]:[^:]+:[0-9]+:[0-9]{4}-[0-9]{2}-[0-9]{2}:[0-9]{4}-[0-9]{2}-[0-9]{2}$/
 
 const joiPasswordValidator = Joi.extend(joi => {
   return {

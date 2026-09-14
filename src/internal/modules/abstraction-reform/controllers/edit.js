@@ -78,6 +78,8 @@ const objectConfig = {
  */
 const getViewLicences = async (request, h) => {
   const { q, page } = request.query
+  console.log('🚀🚀🚀 ~ getViewLicences - page:')
+  console.dir(page, { depth: null, colors: true })
 
   const view = {
     q,
@@ -85,10 +87,14 @@ const getViewLicences = async (request, h) => {
   }
 
   if (q) {
+    console.log('🚀🚀🚀 ~ q:', q)
+
     const { data, pagination } = await search(q, page)
     view.licences = data
     view.pagination = pagination
   } else {
+    console.log('🚀🚀🚀 ~ NO q:')
+
     const { data, pagination } = await recent(page)
     view.licences = data
     view.pagination = pagination

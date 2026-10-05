@@ -24,7 +24,14 @@ class EntityRolesApiClient extends APIClient {
   }
 
   getEntityRoles (entityId) {
-    return this.setParams({ entityId }).findAll()
+    // A client for just this call. findAll makes several requests with awaits in between, so keeping the entity id on
+    // this shared instance (setParams) would let a concurrent call for another user swap it part-way through
+    const client = new APIClient(this.rp, {
+      ...this.config,
+      endpoint: this.config.endpoint.replace('{entityId}', entityId)
+    })
+
+    return client.findAll()
   }
 };
 

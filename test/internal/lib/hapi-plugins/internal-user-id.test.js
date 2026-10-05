@@ -7,128 +7,125 @@ const {
   afterEach
 } = exports.lab = require('@hapi/lab').script()
 const { expect } = require('@hapi/code')
+const Hapi = require('@hapi/hapi')
 const sinon = require('sinon')
 const sandbox = sinon.createSandbox()
 
 const { http } = require('@envage/water-abstraction-helpers')
 const plugin = require('../../../../src/internal/lib/hapi-plugins/internal-user-id')
 
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
+
 experiment('internal/lib/hapi-plugins/internal-user-id', () => {
-  let onPreHandler
-  let onPostHandler
-  let h
+  let onPreRequestHandler
 
   beforeEach(async () => {
     sandbox.stub(http, 'onPreRequest')
-    sandbox.stub(http, 'removePreRequestListener')
-
-    h = {
-      continue: Symbol('continue')
-    }
-
-    const server = {
-      ext: sandbox.spy()
-    }
-
-    await plugin.register(server)
-
-    onPreHandler = server.ext.firstCall.args[0].method
-    onPostHandler = server.ext.secondCall.args[0].method
   })
 
   afterEach(async () => {
     sandbox.restore()
   })
 
-  experiment('onPreHandler', () => {
-    experiment('when the user is not on the request', () => {
-      let result
+  experiment('when registered', () => {
+    let server
 
-      beforeEach(async () => {
-        const request = {}
-        result = await onPreHandler(request, h)
-      })
+    beforeEach(async () => {
+      server = {
+        ext: sandbox.spy(),
+        listener: { prependListener: sandbox.spy() }
+      }
 
-      test('the http.onPreRequest listener is not setup', async () => {
-        expect(http.onPreRequest.called).to.be.false()
-      })
-
-      test('the handler continues', async () => {
-        expect(result).to.equal(h.continue)
-      })
+      await plugin.register(server)
     })
 
-    experiment('when the user is on the request', () => {
-      let result
+    test('a store is created for each incoming request', async () => {
+      expect(server.listener.prependListener.calledOnceWith('request')).to.be.true()
+    })
 
-      beforeEach(async () => {
-        const request = {
-          defra: {
-            user: {
-              user_id: 'test-user-id'
-            }
-          }
-        }
-        result = await onPreHandler(request, h)
-      })
+    test('a single http.onPreRequest listener is set up', async () => {
+      expect(http.onPreRequest.calledOnce).to.be.true()
+    })
 
-      test('the http.onPreRequest listener is setup', async () => {
-        expect(http.onPreRequest.called).to.be.true()
-      })
-
-      test('the listeners updates the headers to include the user id', async () => {
-        const [handler] = http.onPreRequest.lastCall.args
-        const options = {}
-        handler(options)
-
-        expect(options.headers['defra-internal-user-id']).to.equal('test-user-id')
-      })
-
-      test('the handler continues', async () => {
-        expect(result).to.equal(h.continue)
-      })
+    test('an onPreHandler extension is added', async () => {
+      expect(server.ext.calledOnce).to.be.true()
+      expect(server.ext.firstCall.args[0].type).to.equal('onPreHandler')
     })
   })
 
-  experiment('onPostHandler', () => {
-    experiment('when the user is not on the request', () => {
-      let result
+  experiment('when there is no request being handled', () => {
+    test('the outgoing request headers are not changed', async () => {
+      const server = {
+        ext: sandbox.spy(),
+        listener: { prependListener: sandbox.spy() }
+      }
 
-      beforeEach(async () => {
-        const request = {}
-        result = await onPostHandler(request, h)
+      await plugin.register(server)
+
+      const options = {}
+      http.onPreRequest.firstCall.args[0](options)
+
+      expect(options.headers).to.be.undefined()
+    })
+  })
+
+  experiment('when requests from different users overlap', () => {
+    let server
+
+    beforeEach(async () => {
+      server = Hapi.server({ port: 0 })
+
+      // Stand in for the auth strategy, which puts the signed in user on the request
+      server.ext('onPreAuth', (request, h) => {
+        request.defra = { user: { user_id: request.headers['x-test-user-id'] } }
+
+        return h.continue
       })
 
-      test('the onPreRequest listener is not removed', async () => {
-        expect(http.removePreRequestListener.called).to.be.false()
+      // The real app has other onPreHandler extensions ahead of this plugin's, which wait on async work. This one
+      // stands in for them
+      server.ext('onPreHandler', async (request, h) => {
+        await delay(1)
+
+        return h.continue
       })
 
-      test('the handler continues', async () => {
-        expect(result).to.equal(h.continue)
+      await server.register(plugin)
+
+      onPreRequestHandler = http.onPreRequest.firstCall.args[0]
+
+      // Makes an 'outgoing request' after a delay, so requests with a longer delay are still in flight when later ones
+      // start and finish
+      server.route({
+        method: 'GET',
+        path: '/outgoing/{delay}',
+        handler: async request => {
+          await delay(Number(request.params.delay))
+
+          const options = {}
+          onPreRequestHandler(options)
+
+          return { userId: options.headers?.['defra-internal-user-id'] ?? null }
+        }
       })
+
+      await server.start()
     })
 
-    experiment('when the user is on the request', () => {
-      let result
+    afterEach(async () => {
+      await server.stop()
+    })
 
-      beforeEach(async () => {
-        const request = {
-          defra: {
-            user: {
-              user_id: 'test-user-id'
-            }
-          }
-        }
-        result = await onPostHandler(request, h)
-      })
+    test('each outgoing request is sent with the user of the request that made it', async () => {
+      const get = async (delayMs, userId) => {
+        const response = await fetch(`${server.info.uri}/outgoing/${delayMs}`, { headers: { 'x-test-user-id': userId } })
 
-      test('the onPreRequest listener is removed', async () => {
-        expect(http.removePreRequestListener.called).to.be.true()
-      })
+        return (await response.json()).userId
+      }
 
-      test('the handler continues', async () => {
-        expect(result).to.equal(h.continue)
-      })
+      const userIds = await Promise.all([get(50, 'user-a'), get(10, 'user-b'), get(30, 'user-c')])
+
+      expect(userIds).to.equal(['user-a', 'user-b', 'user-c'])
     })
   })
 })

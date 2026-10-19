@@ -15,7 +15,7 @@ experiment('system-proxy routes', () => {
 
   experiment('/system/{tail*}', () => {
     beforeEach(() => {
-      route = routes[0]
+      route = _findRoute('GET', '/system/{tail*}')
     })
 
     test('handles GET requests', () => {
@@ -29,7 +29,7 @@ experiment('system-proxy routes', () => {
 
   experiment('/assets/all.js', () => {
     beforeEach(() => {
-      route = routes[0]
+      route = _findRoute('GET', '/assets/all.js')
     })
 
     test('handles GET requests', () => {
@@ -43,7 +43,7 @@ experiment('system-proxy routes', () => {
 
   experiment('/assets/stylesheets/application.css', () => {
     beforeEach(() => {
-      route = routes[0]
+      route = _findRoute('GET', '/assets/stylesheets/application.css')
     })
 
     test('handles GET requests', () => {
@@ -55,3 +55,9 @@ experiment('system-proxy routes', () => {
     })
   })
 })
+
+function _findRoute(method, path) {
+  return routes.find((route) => {
+    return route.method === method && route.path === path
+  })
+}

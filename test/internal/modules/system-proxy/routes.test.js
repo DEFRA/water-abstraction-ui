@@ -10,7 +10,7 @@ const { expect } = Code
 // Thing under test
 const routes = require('../../../../src/internal/modules/system-proxy/routes')
 
-experiment.only('system-proxy routes', () => {
+experiment('system-proxy routes', () => {
   let route
 
   experiment('/system/', () => {

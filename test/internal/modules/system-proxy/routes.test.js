@@ -142,7 +142,7 @@ experiment('system-proxy routes', () => {
   })
 })
 
-function _findRoute(method, path) {
+function _findRoute (method, path) {
   return routes.find((route) => {
     return route.method === method && route.path === path
   })

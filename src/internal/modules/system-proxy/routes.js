@@ -23,6 +23,17 @@ const proxyDefaults = {
 const routes = [
   {
     method: 'POST',
+    path: '/system/licences/end-dates/{tail*}',
+    handler: (_request, h) => {
+      return h.response().code(404)
+    },
+    config: {
+      auth: false,
+      description: 'Internal-only endpoints not intended for public access'
+    }
+  },
+  {
+    method: 'POST',
     path: '/system/licences/supplementary',
     handler: (_request, h) => {
       return h.response().code(404)

@@ -14,25 +14,49 @@ experiment('system-proxy routes', () => {
   let route
 
   experiment('/system/', () => {
-    experiment('/licences/supplementary', () => {
-      beforeEach(() => {
-        route = _findRoute('POST', '/system/licences/supplementary')
+    experiment('/licences/', () => {
+      experiment('/end-dates/{tail*}', () => {
+        beforeEach(() => {
+          route = _findRoute('POST', '/system/licences/end-dates/{tail*}')
+        })
+
+        test('handles POST requests', () => {
+          expect(route.method).to.equal('POST')
+        })
+
+        test('does not require authentication', () => {
+          expect(route.config.auth).to.equal(false)
+        })
+
+        test('responds with a 404 instead of proxying', () => {
+          const h = { response: () => ({ code: (statusCode) => statusCode }) }
+
+          const response = route.handler({}, h)
+
+          expect(response).to.equal(404)
+        })
       })
 
-      test('handles POST requests', () => {
-        expect(route.method).to.equal('POST')
-      })
+      experiment('/supplementary', () => {
+        beforeEach(() => {
+          route = _findRoute('POST', '/system/licences/supplementary')
+        })
 
-      test('does not require authentication', () => {
-        expect(route.config.auth).to.equal(false)
-      })
+        test('handles POST requests', () => {
+          expect(route.method).to.equal('POST')
+        })
 
-      test('responds with a 404 instead of proxying', () => {
-        const h = { response: () => ({ code: (statusCode) => statusCode }) }
+        test('does not require authentication', () => {
+          expect(route.config.auth).to.equal(false)
+        })
 
-        const response = route.handler({}, h)
+        test('responds with a 404 instead of proxying', () => {
+          const h = { response: () => ({ code: (statusCode) => statusCode }) }
 
-        expect(response).to.equal(404)
+          const response = route.handler({}, h)
+
+          expect(response).to.equal(404)
+        })
       })
     })
 

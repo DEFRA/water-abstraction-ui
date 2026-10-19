@@ -36,6 +36,28 @@ experiment('system-proxy routes', () => {
       })
     })
 
+    experiment('/jobs/{tail*}', () => {
+      beforeEach(() => {
+        route = _findRoute('POST', '/system/jobs/{tail*}')
+      })
+
+      test('handles POST requests', () => {
+        expect(route.method).to.equal('POST')
+      })
+
+      test('does not require authentication', () => {
+        expect(route.config.auth).to.equal(false)
+      })
+
+      test('responds with a 404 instead of proxying', () => {
+        const h = { response: () => ({ code: (statusCode) => statusCode }) }
+
+        const response = route.handler({}, h)
+
+        expect(response).to.equal(404)
+      })
+    })
+
     experiment('{tail*}', () => {
       experiment('GET requests', () => {
         beforeEach(() => {

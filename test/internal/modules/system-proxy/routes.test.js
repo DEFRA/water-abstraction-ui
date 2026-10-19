@@ -10,27 +10,13 @@ const { expect } = Code
 // Thing under test
 const routes = require('../../../../src/internal/modules/system-proxy/routes')
 
-experiment.only('system-proxy routes', () => {
+experiment('system-proxy routes', () => {
   let route
 
-  experiment('/system/{tail*}', () => {
-    experiment('GET requests', () => {
+  experiment('/system/', () => {
+    experiment('/licences/supplementary', () => {
       beforeEach(() => {
-        route = _findRoute('GET', '/system/{tail*}')
-      })
-
-      test('handles GET requests', () => {
-        expect(route.method).to.equal('GET')
-      })
-
-      test('does not require authentication', () => {
-        expect(route.config.auth).to.equal(false)
-      })
-    })
-
-    experiment('POST requests', () => {
-      beforeEach(() => {
-        route = _findRoute('POST', '/system/{tail*}')
+        route = _findRoute('POST', '/system/licences/supplementary')
       })
 
       test('handles POST requests', () => {
@@ -39,6 +25,44 @@ experiment.only('system-proxy routes', () => {
 
       test('does not require authentication', () => {
         expect(route.config.auth).to.equal(false)
+      })
+
+      test('responds with a 404 instead of proxying', () => {
+        const h = { response: () => ({ code: (statusCode) => statusCode }) }
+
+        const response = route.handler({}, h)
+
+        expect(response).to.equal(404)
+      })
+    })
+
+    experiment('{tail*}', () => {
+      experiment('GET requests', () => {
+        beforeEach(() => {
+          route = _findRoute('GET', '/system/{tail*}')
+        })
+
+        test('handles GET requests', () => {
+          expect(route.method).to.equal('GET')
+        })
+
+        test('does not require authentication', () => {
+          expect(route.config.auth).to.equal(false)
+        })
+      })
+
+      experiment('POST requests', () => {
+        beforeEach(() => {
+          route = _findRoute('POST', '/system/{tail*}')
+        })
+
+        test('handles POST requests', () => {
+          expect(route.method).to.equal('POST')
+        })
+
+        test('does not require authentication', () => {
+          expect(route.config.auth).to.equal(false)
+        })
       })
     })
   })

@@ -22,6 +22,17 @@ const proxyDefaults = {
 
 const routes = [
   {
+    method: 'POST',
+    path: '/system/licences/supplementary',
+    handler: (_request, h) => {
+      return h.response().code(404)
+    },
+    config: {
+      auth: false,
+      description: 'Temporary internal-only endpoint not intended for public access'
+    }
+  },
+  {
     method: 'GET',
     // This will match all path segments after /system. Note in our proxy URI we refer to this only as {tail}. The path
     // param hapi provides will contain all the segments, for example, request.params.tail === '/test/supplementary'.

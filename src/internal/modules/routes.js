@@ -45,7 +45,6 @@ const routes = [
   ...Object.values(contentRoutes),
   ...Object.values(notificationsRoutes),
   ...Object.values(reportsRoutes),
-  ...Object.values(contactDetailsRoutes),
   ...Object.values(abstractionReformRoutes),
   ...Object.values(wr22Routes),
   ...Object.values(returnsRoutes),
@@ -56,15 +55,11 @@ const routes = [
   ...Object.values(batchNotifications),
   ...require('./manage/routes'),
   ...Object.values(accountRoutes),
-  ...Object.values(unlinkLicenceRoutes),
   ...Object.values(billingRoutes),
   ...Object.values(chargeInformationRoutes),
   ...Object.values(chargeInformationUploadRoutes),
   ...Object.values(agreementsRoutes),
   ...Object.values(kpiReporting),
-  ...Object.values(viewLicences),
-  ...Object.values(gaugingStations),
-  ...Object.values(customers),
   ...Object.values(notes),
   ...Object.values(healthRoutes),
   ...systemProxyRoutes
@@ -72,6 +67,14 @@ const routes = [
 
 if (config.featureToggles.acceptanceTestsProxy) {
   routes.push(...acceptanceTestsProxyRoutes)
+}
+
+if (!config.isProduction) {
+  routes.push(...Object.values(contactDetailsRoutes))
+  routes.push(...Object.values(unlinkLicenceRoutes))
+  routes.push(...Object.values(viewLicences))
+  routes.push(...Object.values(gaugingStations))
+  routes.push(...Object.values(customers))
 }
 
 module.exports = routes
